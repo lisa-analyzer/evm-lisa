@@ -7,7 +7,7 @@ parser grammar EVMBParser;
 
 options { tokenVocab = EVMBLexer; }
 
-program : (opcodes)+;
+program : (opcodes)+ EOF;
 
 opcodes 
 	: STOP
@@ -33,6 +33,9 @@ opcodes
 	| XOR
 	| NOT
 	| BYTE
+	| SHL
+	| SHR
+	| SAR
 	| SHA3
 	| ADDRESS
 	| BALANCE
@@ -49,12 +52,16 @@ opcodes
 	| EXTCODECOPY
 	| RETURNDATASIZE
 	| RETURNDATACOPY
+	| EXTCODEHASH
 	| BLOCKHASH
 	| COINBASE
 	| TIMESTAMP
 	| NUMBER
 	| DIFFICULTY
 	| GASLIMIT
+	| CHAINID
+	| SELFBALANCE
+	| BASEFEE
 	| POP
 	| MLOAD
 	| MSTORE
@@ -62,8 +69,8 @@ opcodes
 	| SLOAD
 	| SSTORE
 	| JUMP
-	| JUMP1
-	| GETPC
+	| JUMPI
+	| PC
 	| MSIZE
 	| GAS
 	| JUMPDEST
@@ -148,7 +155,7 @@ opcodes
 	| SLOADBYTES
 	| SSTOREBYTES
 	| SSIZE
-	|CREATE
+	| CREATE
 	| CALL
 	| CALLCODE
 	| RETURN
@@ -162,5 +169,3 @@ opcodes
 	| SELFDESTRUCT
 	| UNKNOW
 	;
-	
-	
