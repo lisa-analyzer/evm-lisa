@@ -23,7 +23,6 @@ public class EVMFrontend {
 	}
 	
 	public static void parseContract(String filePath) throws IOException {
-
 		InputStream is = new FileInputStream(filePath);
 		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
 		EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
@@ -31,5 +30,9 @@ public class EVMFrontend {
 		parser.program();
 
 		is.close();
+	}
+	
+	public static void parseContractFromEtherscan(String address, String output) {
+		// TODO
 	}
 }

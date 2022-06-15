@@ -13,7 +13,6 @@ public class SMAddress {
 	public static String parseSMAddress(String address) throws IOException {
         String bytecodeRequest = request("proxy", "eth_getCode", address);
         String[] test = bytecodeRequest.split("\"");
-        System.out.println(test[9]);
         return test[9];
 	}
 	
