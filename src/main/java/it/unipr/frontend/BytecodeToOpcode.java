@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class BytecodeToOpcode {
-	//private static File file;
 	private static BufferedWriter writer;
 	
 	public BytecodeToOpcode(String filepath) {
@@ -31,7 +30,6 @@ public class BytecodeToOpcode {
 	}
 	
 	private static void addPush(String push, int n) throws IOException {
-		//OutputStream output = new FileOutputStream(file);
 		for(int i = 0; i < push.length(); i += 2) {
 			if(i == 0) {
 				writer.write("PUSH" + n + " " + "0x");
