@@ -63,9 +63,8 @@ public class EVMFrontend {
 				String push = bytecode.substring(i + 2, (i + 2 + 2 * pushTest(opcode)));
 				addPush(push, pushTest(opcode));
 				i += 2 * pushTest(opcode);
-			} else {
+			} else
 				addOpcode(opcode);
-			}
 		}
 		writer.close();
 		parseContract(output);
