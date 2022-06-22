@@ -21,7 +21,7 @@ opcodes
 	| ADDMOD
 	| MULMOD
 	| EXP
-	| SIGNEDEXTEND
+	| SIGNEXTEND
 	| LT
 	| GT
 	| SLT

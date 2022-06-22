@@ -1,7 +1,9 @@
 lexer grammar EVMBLexer;
 
 @ lexer :: header
-{package it.unipr.evm.antlr;}
+{
+	package it.unipr.evm.antlr;
+}
 
 STOP:				'STOP';
 ADD:				'ADD';
