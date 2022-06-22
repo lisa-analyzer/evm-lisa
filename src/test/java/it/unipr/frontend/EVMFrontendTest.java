@@ -1,7 +1,6 @@
 package it.unipr.frontend;
 
 import java.io.IOException;
-
 import org.junit.Test;
 
 public class EVMFrontendTest {
