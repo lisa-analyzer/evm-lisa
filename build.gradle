@@ -31,6 +31,9 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     
    	antlr 'org.antlr:antlr4:4.8-1'
+   	
+   	implementation 'com.github.unive-ssv:lisa-sdk:0.1b5'
+	implementation 'com.github.unive-ssv:lisa-core:0.1b5'
 }
 
 generateGrammarSource {
