@@ -1,6 +1,7 @@
 package it.unipr.frontend;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +18,7 @@ public class EVMFrontendOpcodeCompilation {
 
 	@Test
 	public void sm001() throws IOException {
-		String address = "0xe592427a0aece92de3edee1f18e0157c05861564";
+		String address = "0x251f752b85a9f7e1b3c42d802715b5d7a8da3165";
 		EVMFrontend.parseContractFromEtherscan(address, output + "/" + address + "/compiled.op");
 
 		List<String> expected = new ArrayList<>();
@@ -41,7 +42,12 @@ public class EVMFrontendOpcodeCompilation {
 		isExp.close();
 		isAct.close();
 
-		for (int i = 0; i < expected.size(); i++)
-			assertEquals("Position: " + i, expected.get(i), actual.get(i));
+		for (int i = 0; i < expected.size(); i++) {
+			
+			if(actual.get(i).equals("INVALID") && expected.get(i).equals("'fe'(Unknown Opcode)"))
+				assertNotEquals("Position: " + i, expected.get(i), actual.get(i));
+			else
+				assertEquals("Position: " + i, expected.get(i), actual.get(i));
+		}
 	}
 }
