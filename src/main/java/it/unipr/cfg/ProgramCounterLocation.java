@@ -14,14 +14,21 @@ public class ProgramCounterLocation implements CodeLocation{
 	
 	@Override
 	public int compareTo(CodeLocation o) {
-		// TODO Auto-generated method stub
+		if(o instanceof ProgramCounterLocation) {
+			ProgramCounterLocation other = (ProgramCounterLocation)o;
+		if(this.pc < other.pc)
+			return -1;
+		if(this.pc > other.pc)
+			return 1;
 		return 0;
+		}
+		else
+			return -1;
 	}
 
 	@Override
 	public String getCodeLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		return toString();
 	}
 	
 	@Override
@@ -29,6 +36,11 @@ public class ProgramCounterLocation implements CodeLocation{
 		return Objects.hash(pc);
 	}
 
+	@Override
+	public String toString() {
+		return "pc: " + pc;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

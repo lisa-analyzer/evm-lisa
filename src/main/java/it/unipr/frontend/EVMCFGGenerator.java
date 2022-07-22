@@ -1,8 +1,14 @@
 package it.unipr.frontend;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unipr.cfg.*;
 import it.unipr.cfg.Byte;
 import it.unipr.cfg.Number;
+import it.unipr.cfg.push.Push;
 import it.unipr.cfg.push.Push1;
 import it.unipr.cfg.push.Push10;
 import it.unipr.cfg.push.Push11;
@@ -43,6 +49,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 
 public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
@@ -62,18 +69,46 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		CFGDescriptor cfgDesc = new CFGDescriptor(new ProgramCounterLocation(-1), unit, false, filePath, new Parameter[] {});
 		this.cfg =  new CFG(cfgDesc);
 		Statement last = null;
+
+		//pc jump pc dest type
+		Map<Integer, Pair<Integer, String>> jumpmap = new HashMap<>();
 		
-		for (int i = 0; i < ctx.opcodes().size(); i++) {
-			OpcodesContext opCtx = ctx.opcodes(i);
-			System.out.println(opCtx.STOP());
-			Statement st = visitOpcodes(opCtx);
+		OpcodesContext opCtx = ctx.opcodes(0);
+		Statement st = visitOpcodes(opCtx);
+		cfg.addNode(st);
+		cfg.getEntrypoints().add(st);
+		
+		last = st;
+		
+		for (int i = 1; i < ctx.opcodes().size(); i++) {
+			opCtx = ctx.opcodes(i);
+			st = visitOpcodes(opCtx);
 			cfg.addNode(st);
-		
-			if (last != null)
-				cfg.addEdge(new SequentialEdge(last, st));
-			else
-				cfg.getEntrypoints().add(st);
+				
+			if (last != null) {
+				if(st instanceof Jump && last instanceof Push) {
+					cfg.addEdge(new SequentialEdge(last, st));
+					jumpmap.put(pc, Pair.of(((Push)st).getInt(), "Se"));
+					last = null;
+				}
+				else if (last instanceof Push && st instanceof Jumpi) {
+					//st = new LookUp(cfg, new ProgramCounterLocation(pc++));
+					cfg.addEdge(new SequentialEdge(last, st));
+					
+					
+					
+					//Zero equality -> binary expression extends unary expression
+					//creo un altra espressione chiamata InspectStackElement -> expression 
+					//lookup con un solo intero 
+				}
+				else
+					cfg.addEdge(new SequentialEdge(last, st));
+			}
+			last = st;
 		}
+		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++));
+		cfg.addNode(ret);
+		cfg.addEdge(new SequentialEdge(last, ret));
 		return cfg;
 	}
 
@@ -143,6 +178,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return new Caller(cfg, new ProgramCounterLocation(pc++));
 		else if (ctx.CALLVALUE() != null)
 			return new Callvalue(cfg, new ProgramCounterLocation(pc++));
+		else if (ctx.CODECOPY() != null)
+			return new Codecopy(cfg, new ProgramCounterLocation(pc++));
 		else if (ctx.CALLDATALOAD() != null)
 			return new Calldataload(cfg, new ProgramCounterLocation(pc++));
 		else if (ctx.CALLDATASIZE() != null)
@@ -332,133 +369,197 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		
 		else if(ctx.PUSH1() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH1().getText().substring(ctx.PUSH1().getText().indexOf("0x")));
-			return new Push1(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push1(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 2;
+			return st;
 		}
 		else if(ctx.PUSH2() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH2().getText().substring(ctx.PUSH2().getText().indexOf("0x")));
-			return new Push2(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push2(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 3;
+			return st;
 		}
 		else if(ctx.PUSH3() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH3().getText().substring(ctx.PUSH3().getText().indexOf("0x")));
-			return new Push3(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push3(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 4;
+			return st;
 		}
 		else if(ctx.PUSH4() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH4().getText().substring(ctx.PUSH4().getText().indexOf("0x")));
-			return new Push4(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push4(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 5;
+			return st;
 		}
 		else if(ctx.PUSH5() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH5().getText().substring(ctx.PUSH5().getText().indexOf("0x")));
-			return new Push5(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push5(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 6;
+			return st;
 		}
 		else if(ctx.PUSH6() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH6().getText().substring(ctx.PUSH6().getText().indexOf("0x")));
-			return new Push6(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push6(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 7;
+			return st;
 		}
 		else if(ctx.PUSH7() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH7().getText().substring(ctx.PUSH7().getText().indexOf("0x")));
-			return new Push7(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push7(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 8;
+			return st;
 		}
 		else if(ctx.PUSH8() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH8().getText().substring(ctx.PUSH8().getText().indexOf("0x")));
-			return new Push8(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push8(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 9;
+			return st;
 		}
 		else if(ctx.PUSH9() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH9().getText().substring(ctx.PUSH9().getText().indexOf("0x")));
-			return new Push9(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push9(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 10;
+			return st;
 		}
 		else if(ctx.PUSH10() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH10().getText().substring(ctx.PUSH10().getText().indexOf("0x")));
-			return new Push10(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push10(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 11;
+			return st;
 		}
 		else if(ctx.PUSH11() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH11().getText().substring(ctx.PUSH11().getText().indexOf("0x")));
-			return new Push11(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push11(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 12;
+			return st;
 		}
 		else if(ctx.PUSH12() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH12().getText().substring(ctx.PUSH12().getText().indexOf("0x")));
-			return new Push12(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push12(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 13;
+			return st;
 		}
 		else if(ctx.PUSH13() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH13().getText().substring(ctx.PUSH13().getText().indexOf("0x")));
-			return new Push13(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push13(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 14;
+			return st;
 		}
 		else if(ctx.PUSH14() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH14().getText().substring(ctx.PUSH14().getText().indexOf("0x")));
-			return new Push14(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push14(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 15;
+			return st;
 		}
 		else if(ctx.PUSH15() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH15().getText().substring(ctx.PUSH15().getText().indexOf("0x")));
-			return new Push15(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push15(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 16;
+			return st;
 		}
 		else if(ctx.PUSH16() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH16().getText().substring(ctx.PUSH16().getText().indexOf("0x")));
-			return new Push16(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push16(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 17;
+			return st;
 		}
 		else if(ctx.PUSH17() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH17().getText().substring(ctx.PUSH17().getText().indexOf("0x")));
-			return new Push17(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push17(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 18;
+			return st;
 		}
 		else if(ctx.PUSH18() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH18().getText().substring(ctx.PUSH18().getText().indexOf("0x")));
-			return new Push18(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push18(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 19;
+			return st;
 		}
 		else if(ctx.PUSH19() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH19().getText().substring(ctx.PUSH19().getText().indexOf("0x")));
-			return new Push19(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push19(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 20;
+			return st;
 		}
 		else if(ctx.PUSH20() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH20().getText().substring(ctx.PUSH20().getText().indexOf("0x")));
-			return new Push20(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push20(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 21;
+			return st;
 		}
 		else if(ctx.PUSH21() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH21().getText().substring(ctx.PUSH21().getText().indexOf("0x")));
-			return new Push21(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push21(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 22;
+			return st;
 		}
 		else if(ctx.PUSH22() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH22().getText().substring(ctx.PUSH22().getText().indexOf("0x")));
-			return new Push22(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push22(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 23;
+			return st;
 		}
 		else if(ctx.PUSH23() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH23().getText().substring(ctx.PUSH23().getText().indexOf("0x")));
-			return new Push23(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push23(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 24;
+			return st;
 		}
 		else if(ctx.PUSH24() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH24().getText().substring(ctx.PUSH24().getText().indexOf("0x")));
-			return new Push24(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push24(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 25;
+			return st;
 		}
 		else if(ctx.PUSH25() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH25().getText().substring(ctx.PUSH25().getText().indexOf("0x")));
-			return new Push25(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push25(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 26;
+			return st;
 		}
 		else if(ctx.PUSH26() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH26().getText().substring(ctx.PUSH26().getText().indexOf("0x")));
-			return new Push26(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push26(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 27;
+			return st;
 		}
 		else if(ctx.PUSH27() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH27().getText().substring(ctx.PUSH27().getText().indexOf("0x")));
-			return new Push27(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push27(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 28;
+			return st;
 		}
 		else if(ctx.PUSH28() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH28().getText().substring(ctx.PUSH28().getText().indexOf("0x")));
-			return new Push28(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push28(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 29;
+			return st;
 		}
 		else if(ctx.PUSH29() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH29().getText().substring(ctx.PUSH29().getText().indexOf("0x")));
-			return new Push29(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push29(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 30;
+			return st;
 		}
 		else if(ctx.PUSH30() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH30().getText().substring(ctx.PUSH30().getText().indexOf("0x")));
-			return new Push30(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push30(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 31;
+			return st;
 		}
 		else if(ctx.PUSH31() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH31().getText().substring(ctx.PUSH31().getText().indexOf("0x")));
-			return new Push31(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push31(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 32;
+			return st;
 		}
 		else if(ctx.PUSH32() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc), ctx.PUSH32().getText().substring(ctx.PUSH32().getText().indexOf("0x")));
-			return new Push32(cfg, new ProgramCounterLocation(pc), hex);
+			Statement st = new Push32(cfg, new ProgramCounterLocation(pc), hex);
+			pc += 33;
+			return st;
 		}
 		
-		return null;
+		throw new UnsupportedOperationException(ctx.getText());
 	}
 }

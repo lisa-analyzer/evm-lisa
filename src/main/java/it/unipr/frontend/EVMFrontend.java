@@ -38,7 +38,7 @@ public class EVMFrontend {
 	
 
 	public static void main(String[] args) throws IOException, AnalysisException {
-		Program program = toLiSAProgram("0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a", "sm.sol");
+		Program program = toLiSAProgram("0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a", "eth.sol");
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setDumpCFGs(true)
 		.setJsonOutput(true)

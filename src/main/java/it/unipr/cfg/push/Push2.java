@@ -13,11 +13,14 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.UnaryStatement;
 
-public class Push2 extends UnaryStatement {
+public class Push2 extends UnaryStatement implements Push {
+	
+	private HexDecimalLiteral hex;
 
 	public Push2(CFG cfg, CodeLocation location, HexDecimalLiteral expression) {
 		super(cfg, location, expression);
-		// TODO Auto-generated constructor stub
+		this.hex = expression;
+		System.out.println(hex.ConvertFromHexToInt());
 	}
 
 	@Override
@@ -31,6 +34,11 @@ public class Push2 extends UnaryStatement {
 			StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int getInt() {
+		return hex.ConvertFromHexToInt();
 	}
 
 }
