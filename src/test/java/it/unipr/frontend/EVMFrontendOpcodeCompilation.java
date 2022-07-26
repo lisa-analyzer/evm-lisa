@@ -43,8 +43,8 @@ public class EVMFrontendOpcodeCompilation {
 		isAct.close();
 
 		for (int i = 0; i < expected.size(); i++) {
-			
-			if(actual.get(i).equals("INVALID") && expected.get(i).equals("'fe'(Unknown Opcode)"))
+
+			if (actual.get(i).equals("INVALID") && expected.get(i).equals("'fe'(Unknown Opcode)"))
 				assertNotEquals("Position: " + i, expected.get(i), actual.get(i));
 			else
 				assertEquals("Position: " + i, expected.get(i), actual.get(i));

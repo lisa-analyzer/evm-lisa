@@ -1,5 +1,9 @@
 package it.unipr.frontend;
 
+import it.unipr.evm.antlr.EVMBLexer;
+import it.unipr.evm.antlr.EVMBParser;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.CFG;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -10,23 +14,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-
-import it.unipr.evm.antlr.EVMBLexer;
-import it.unipr.evm.antlr.EVMBParser;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFG;
 
 public class EVMFrontend {
 
 	private final static String API_KEY = "V1JWVWVCKP23DVXI1I2TX8V19XICS3TIJ6";
 	private static BufferedWriter writer;
-	
+
 	private static String FROM_0417_TO_058 = "a165627a7a72305820";
 	private static String FROM_0417_TO_058_EXPERIMENTAL = "a265627a7a72305820";
 	private static String FROM_059_TO_0511 = "a265627a7a72305820";
@@ -35,16 +30,26 @@ public class EVMFrontend {
 	private static String FROM_0512_TO_0515_EXPERIMENTAL = "a365627a7a72315820";
 	private static String FROM_060_TO_061 = "a264697066735822";
 	private static String FROM_062_TO_LATEST = "a264697066735822";
-	
 
-	public static void main(String[] args) throws IOException, AnalysisException {
-		Program program = toLiSAProgram("0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a", "eth.sol");
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setDumpCFGs(true)
-		.setJsonOutput(true)
-		.setWorkdir("output");
-		LiSA lisa = new LiSA(conf);
-		lisa.run(program);
+//	public static void main(String[] args) throws IOException, AnalysisException {
+//		Program program = toLiSAProgram("0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a", "eth.sol");
+//		LiSAConfiguration conf = new LiSAConfiguration();
+//		conf.setDumpCFGs(true)
+//		.setJsonOutput(true)
+//		.setWorkdir("output");
+//		LiSA lisa = new LiSA(conf);
+//		lisa.run(program);
+//	}
+
+	public static Program processFile(String filePath) throws IOException {
+		InputStream is = new FileInputStream(filePath);
+		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
+		EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
+		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath);
+		CFG cfg = cfggenerator.visitProgram(parser.program());
+		Program program = new Program();
+		program.addCFG(cfg);
+		return program;
 	}
 
 	public static void parseContract(String filePath) throws IOException {
@@ -57,18 +62,18 @@ public class EVMFrontend {
 
 		is.close();
 	}
-	
+
 	public static Program toLiSAProgram(String address, String output) throws IOException {
 		parseContractFromEtherscan(address, output);
 		InputStream is = new FileInputStream(output);
-        EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
-        EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
-        
-        EVMCFGGenerator cfggenerator = new EVMCFGGenerator(output);
-        CFG cfg = cfggenerator.visitProgram(parser.program());
-        Program program = new Program();
-        program.addCFG(cfg);
-        return program;
+		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
+		EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
+
+		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(output);
+		CFG cfg = cfggenerator.visitProgram(parser.program());
+		Program program = new Program();
+		program.addCFG(cfg);
+		return program;
 	}
 
 	/**
@@ -88,50 +93,49 @@ public class EVMFrontend {
 		String bytecode = test[9];
 
 		writer = new BufferedWriter(new FileWriter(output));
-		
-		
+
 		for (int i = 2; i < bytecode.length(); i += 2) {
 
-			if(bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058) ||
-			   bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL) ||
-			   bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511)	||
-			   bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL) ||
-			   bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515) ||
-			   bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL) ||
-		       bytecode.substring(i, (i + 16)).equals(FROM_060_TO_061) ||
-			   bytecode.substring(i, (i + 16)).equals(FROM_062_TO_LATEST)) {
+			if (bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058) ||
+					bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL) ||
+					bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511) ||
+					bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL) ||
+					bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515) ||
+					bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL) ||
+					bytecode.substring(i, (i + 16)).equals(FROM_060_TO_061) ||
+					bytecode.substring(i, (i + 16)).equals(FROM_062_TO_LATEST)) {
 
 				writer.close();
 				return;
 			}
-			
+
 			String opcode = bytecode.substring(i, i + 2);
-			
+
 			int t = pushTest(opcode);
-			
+
 			if (t != 0) {
 				String push = bytecode.substring(i + 2, (i + 2 + 2 * t));
-				
-				for(int j = i + 2; j < (i + 2 + 2 * t); j +=2) {
-					
-					if(bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058) ||
-					   bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL) ||
-					   bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511)	||
-					   bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL) ||
-					   bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515) ||
-					   bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL) ||
-					   bytecode.substring(j, (j + 16)).equals(FROM_060_TO_061) ||
-					   bytecode.substring(j, (j + 16)).equals(FROM_062_TO_LATEST)) {
+
+				for (int j = i + 2; j < (i + 2 + 2 * t); j += 2) {
+
+					if (bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058) ||
+							bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL) ||
+							bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511) ||
+							bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL) ||
+							bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515) ||
+							bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL) ||
+							bytecode.substring(j, (j + 16)).equals(FROM_060_TO_061) ||
+							bytecode.substring(j, (j + 16)).equals(FROM_062_TO_LATEST)) {
 
 						writer.close();
-							return;
+						return;
 					}
 				}
-				
+
 				addPush(push, t);
 				i += 2 * t;
-			} 
-			
+			}
+
 			else {
 				addOpcode(opcode);
 			}
