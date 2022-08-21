@@ -31,16 +31,16 @@ public class EVMFrontend {
 	private static String FROM_060_TO_061 = "a264697066735822";
 	private static String FROM_062_TO_LATEST = "a264697066735822";
 
-//	public static void main(String[] args) throws IOException, AnalysisException {
-//		Program program = toLiSAProgram("0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a", "eth.sol");
-//		LiSAConfiguration conf = new LiSAConfiguration();
-//		conf.setDumpCFGs(true)
-//		.setJsonOutput(true)
-//		.setWorkdir("output");
-//		LiSA lisa = new LiSA(conf);
-//		lisa.run(program);
-//	}
-
+	/**
+	 * Takes a smart contract stored in {@code filePath} and makes its 
+	 * control flow graph used for create the return value.
+	 * 
+	 * @param filePath Where the smart contract is stored
+	 * 
+	 * @return a program that LiSA can analyze
+	 * 
+	 * @throws IOException
+	 */
 	public static Program processFile(String filePath) throws IOException {
 		InputStream is = new FileInputStream(filePath);
 		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
@@ -52,6 +52,13 @@ public class EVMFrontend {
 		return program;
 	}
 
+	/**
+	 * Verify the correct syntactic of the smart contract bytecode stored in {@code filePath}
+	 * 
+	 * @param filePath where the smart contract is stored
+	 * 
+	 * @throws IOException
+	 */
 	public static void parseContract(String filePath) throws IOException {
 
 		InputStream is = new FileInputStream(filePath);
@@ -63,6 +70,20 @@ public class EVMFrontend {
 		is.close();
 	}
 
+	/**
+	 * Yields the EVM bytecode of a smart contract stored at the address
+	 * {@code address} and stores the result in {@code output}, then 
+	 * starting from the {@code output} makes a control flow graph used 
+	 * by LiSA to analyze the contract.
+	 * 
+	 * @param address the address of the smart contract to be parsed
+	 * @param output the directory where the EMV bytecode corresponding to the
+	 *                    smart contract stored at {@code address} is stored
+	 *                    
+	 * @return a program that LiSA can analyze
+	 * 
+	 * @throws IOException
+	 */
 	public static Program toLiSAProgram(String address, String output) throws IOException {
 		parseContractFromEtherscan(address, output);
 		InputStream is = new FileInputStream(output);

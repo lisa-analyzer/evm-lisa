@@ -6,8 +6,6 @@ import it.unive.lisa.program.cfg.CodeLocation;
 
 public class Push1 extends Push {
 
-	private HexDecimalLiteral hex;
-
 	public Push1(CFG cfg, CodeLocation location, HexDecimalLiteral expression) {
 		super(cfg, location, "PUSH1", expression);
 	}

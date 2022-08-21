@@ -36,7 +36,7 @@ public class ProgramCounterLocation implements CodeLocation {
 
 	@Override
 	public String toString() {
-		return "pc: " + pc;
+		return String.valueOf(pc);
 	}
 
 	@Override

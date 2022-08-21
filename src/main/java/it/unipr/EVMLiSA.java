@@ -15,7 +15,8 @@ import java.io.IOException;
 public class EVMLiSA {
 
 	public static void main(String[] args) throws AnalysisException, IOException {
-		Program program = EVMFrontend.processFile(args[0]);
+		//Program program = EVMFrontend.processFile(args[0]);
+		Program program = EVMFrontend.processFile("sm.sol");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setDumpCFGs(true)

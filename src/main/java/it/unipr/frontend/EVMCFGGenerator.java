@@ -43,11 +43,19 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
@@ -60,7 +68,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 	public EVMCFGGenerator(String filePath) {
 		this.filePath = filePath;
 	}
-
+	
 	@Override
 	public CFG visitProgram(ProgramContext ctx) {
 		CompilationUnit unit = new CompilationUnit(new ProgramCounterLocation(-1), "program", false);
@@ -68,12 +76,16 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 				new Parameter[] {});
 		this.cfg = new CFG(cfgDesc);
 		Statement last = null;
-
-		// pc jump pc dest type
+		
+		ArrayList<Statement> stm = new ArrayList<>();
+		
 		Map<Integer, Pair<Integer, String>> jumpmap = new HashMap<>();
 
 		OpcodesContext opCtx = ctx.opcodes(0);
 		Statement st = visitOpcodes(opCtx);
+		
+		stm.add(st);
+		
 		cfg.addNode(st);
 		cfg.getEntrypoints().add(st);
 
@@ -83,30 +95,272 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			opCtx = ctx.opcodes(i);
 			st = visitOpcodes(opCtx);
 			cfg.addNode(st);
+			
+			System.err.println(st.toString());
+			
+			stm.add(st);
 
 			if (last != null) {
+				
 				if (st instanceof Jump && last instanceof Push) {
-					cfg.addEdge(new SequentialEdge(last, st));
-					jumpmap.put(pc, Pair.of(((Push) st).getInt(), "Se"));
+					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()), Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
+					jumpmap.put(Integer.valueOf(st.getLocation().getCodeLocation()), Pair.of(((Push) last).getInt(), "Se"));
 					last = null;
-				} else if (last instanceof Push && st instanceof Jumpi) {
-					// st = new LookUp(cfg, new ProgramCounterLocation(pc++));
-					cfg.addEdge(new SequentialEdge(last, st));
-
-					// Zero equality -> binary expression extends unary
-					// expression
-					// creo un altra espressione chiamata InspectStackElement ->
-					// expression
-					// lookup con un solo intero
-				} else
-					cfg.addEdge(new SequentialEdge(last, st));
+				} 
+				
+				else if (last instanceof Push && st instanceof Jumpi) {
+					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()), Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
+					jumpmap.put(Integer.valueOf(st.getLocation().getCodeLocation()), Pair.of(((Push) last).getInt(), "Ce"));
+					last = null;
+				} 
+				
+				else if (st instanceof Jump && !(last instanceof Push)) {
+					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()), Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
+					jumpmap.put(Integer.valueOf(st.getLocation().getCodeLocation()), Pair.of(processOrphan(stm), "Se"));
+					last = null;
+				}
+				
+				else {
+					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()), Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
+				}
 			}
-			last = st;
+			
+			if(!(st instanceof Jump) && !(st instanceof Jumpi))
+				last = st;
 		}
+		
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++));
 		cfg.addNode(ret);
-		cfg.addEdge(new SequentialEdge(last, ret));
+		
+		createEdge(jumpmap, cfg, ret);
+		
 		return cfg;
+	}
+	
+	private Integer processOrphan(ArrayList<Statement> stm) {
+		
+		ArrayList<Integer> stk = new ArrayList<>();
+		Boolean check = false;
+		Integer e = -1;
+		
+		//System.out.println(stm);
+		
+		for(int x = 0; x < stm.size(); ++x) {
+			Statement s = stm.get(x);
+			
+			if(Integer.parseInt(s.getLocation().getCodeLocation()) == e) {
+				check = false;
+			}
+			
+			if(check == false) {
+				
+				if(s instanceof Push1 || s instanceof Push2 || s instanceof Push3) {
+					stk.add(((Push) s).getInt());
+				}
+				
+				else if(s instanceof Dup) {
+					int n = Integer.valueOf(s.toString().substring(3));
+					stk.add(stk.get(stk.size() - n));
+				}
+				
+				else if(s instanceof Swap) {
+					int n = Integer.valueOf(s.toString().substring(4));
+					int top = stk.get(stk.size() - 1);
+					int swap = stk.get(stk.size() - (n + 1));
+					stk.set(stk.size() - 1, swap);
+					stk.set(stk.size() - (n + 1), top);
+				}
+				
+				else if(s instanceof Pop) {
+					stk.remove(stk.size() - 1);
+				}
+				
+				else if(s instanceof Jumpi) {
+					stk.remove(stk.size() - 1);
+					stk.remove(stk.size() - 1);
+				}
+				
+				else if(s instanceof And) {
+					int first = stk.remove(stk.size() - 1);
+					int second = stk.remove(stk.size() - 1);
+					
+					BigInteger f = BigInteger.valueOf(first);
+					BigInteger se = BigInteger.valueOf(second);
+					
+					BigInteger re = f.and(se);
+					
+					int result = re.intValue();
+					
+					stk.add(result);
+				}
+				
+				else {
+					if(s instanceof Add || s instanceof Mul || s instanceof Sub || s instanceof Div ||
+							s instanceof Sdiv || s instanceof Mod || s instanceof Smod || s instanceof Exp ||
+							s instanceof Signextend || s instanceof Lt || s instanceof Gt || s instanceof Slt ||
+							s instanceof Sgt || s instanceof Eq || s instanceof Or || s instanceof Xor ||
+							s instanceof Byte || s instanceof Shl || s instanceof Shr || s instanceof Sar) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.add(-1);
+					}
+					else if(s instanceof Addmod || s instanceof Mulmod || s instanceof Create) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.add(-1);
+					}
+					else if(s instanceof Iszero || s instanceof Not || s instanceof Balance || s instanceof Calldataload ||
+							s instanceof Extcodesize || s instanceof Extcodehash || s instanceof Blockhash || s instanceof Mload || 
+							s instanceof Sload || s instanceof Msize || s instanceof Gas) {
+						stk.remove(stk.size() - 1);
+						stk.add(-1);
+					}
+					else if(s instanceof Address || s instanceof Origin || s instanceof Caller || s instanceof Callvalue ||
+							s instanceof Calldatasize || s instanceof Codesize || s instanceof Gasprice || s instanceof Returndatasize) {
+						stk.add(-1);
+					}
+					else if(s instanceof Calldatacopy || s instanceof Codecopy || s instanceof Returndatacopy) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+					}
+					else if(s instanceof Extcodecopy) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+					}
+					else if(s instanceof Coinbase || s instanceof Timestamp || s instanceof Number || s instanceof Difficulty ||
+							s instanceof Gaslimit || s instanceof Chainid || s instanceof Selfbalance || s instanceof Pc || s instanceof Selfdestruct) {
+						stk.add(-1);
+					}
+					else if(s instanceof Mstore || s instanceof Mstore8 || s instanceof Sstore || s instanceof Revert || s instanceof Return) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+					}
+					else if(s instanceof Call) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.add(-1);
+					}
+					else if(s instanceof Delegatecall || s instanceof Staticcall) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.add(-1);
+					}
+					else if(s instanceof Create2) {
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.remove(stk.size() - 1);
+						stk.add(-1);
+					}
+					else if(s instanceof Push && !(s instanceof Push1 || s instanceof Push2 || s instanceof Push3)) {
+						stk.add(-1);
+					}
+					else if(s instanceof Log) {
+						int n = Integer.valueOf(s.toString().substring(3));
+						for(int i = 0; i < (n+2); ++i)
+							stk.remove(stk.size() - 1);
+					}
+				}
+				
+				if(s instanceof Push && stm.get(x+1) instanceof Jump) {
+					stk.remove(stk.size() - 1);
+					check = true;
+					e = ((Push) s).getInt();
+				}
+			}
+		}
+		return stk.get(stk.size() - 1);
+	}
+	
+	private void createEdge(Map<Integer, Pair<Integer, String>> jumpmap, CFG cfg, Ret ret) {
+		
+		for(Map.Entry<Integer, Pair<Integer, String>> entry : jumpmap.entrySet()) {
+			Statement jump = null;
+			Statement dest = null;
+			
+			Collection<Statement> ctc = cfg.getNodes();
+			Iterator<Statement> i = ctc.iterator();
+			System.out.println("\n");
+			System.out.println(entry.getValue().getRight());
+			
+			if(entry.getValue().getRight() == "N") {
+				while(i.hasNext()) {
+					Statement s = i.next();
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
+						jump = s;
+					}
+					
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
+						dest = s;
+					}
+				}
+				if(jump instanceof Revert || jump instanceof Return || jump instanceof Selfdestruct || jump instanceof Stop || jump instanceof Invalid) {
+					cfg.addEdge(new SequentialEdge(jump, ret));
+					System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation()) + jump.toString());
+					System.out.println(Integer.parseInt(ret.getLocation().getCodeLocation()) + ret.toString());
+				}
+				else {
+					cfg.addEdge(new SequentialEdge(jump, dest));
+					System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation()) + jump.toString());
+					System.out.println(Integer.parseInt(dest.getLocation().getCodeLocation()) + dest.toString());
+				}
+			}
+			
+			if(entry.getValue().getRight() == "Se") {
+				while(i.hasNext()) {
+					Statement s = i.next();
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
+						jump = s;
+						System.out.println(Integer.parseInt(s.getLocation().getCodeLocation()) + s.toString());
+					}
+					
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
+						dest = s;
+						System.out.println(Integer.parseInt(s.getLocation().getCodeLocation()) + s.toString());
+					}
+				}
+				cfg.addEdge(new SequentialEdge(jump, dest));
+			}
+			
+			if(entry.getValue().getRight() == "Ce") {
+				Statement destf = null;
+				while(i.hasNext()) {
+					Statement s = i.next();
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
+						jump = s;
+					}
+					
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
+						dest = s;
+					}
+					
+					if(Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey() + 1) {
+						destf = s;
+					}
+				}
+				cfg.addEdge(new TrueEdge(jump, dest));
+				cfg.addEdge(new FalseEdge(jump, destf));
+				
+				System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation()) + jump.toString() + " true");
+				System.out.println(Integer.parseInt(dest.getLocation().getCodeLocation()) + dest.toString() + " true");
+				
+				System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation()) + jump.toString() + " false");
+				System.out.println(Integer.parseInt(destf.getLocation().getCodeLocation()) + destf.toString() + " false");
+			}
+		}
 	}
 
 	@Override
