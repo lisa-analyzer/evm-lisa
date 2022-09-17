@@ -3,10 +3,18 @@ package it.unipr.cfg;
 import it.unive.lisa.program.cfg.CodeLocation;
 import java.util.Objects;
 
+/**
+ * Represent the code location of an opcode in the control flow graph.
+ */
 public class ProgramCounterLocation implements CodeLocation {
 
 	private final int pc;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param pc integer representing the code location of the opcode
+	 */
 	public ProgramCounterLocation(int pc) {
 		this.pc = pc;
 	}

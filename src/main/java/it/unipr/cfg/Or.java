@@ -14,8 +14,18 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
+/**
+ * Or opcode of the program to analyze.
+ */
 public class Or extends Statement {
 
+	/**
+	 * Builds a Or opcode happening at the given source location.
+	 * 
+	 * @param cfg      the cfg that this statement belongs to
+	 * @param location the location where this statement is defined within the
+	 *                     program
+	 */
 	public Or(CFG cfg, CodeLocation location) {
 		super(cfg, location);
 	}

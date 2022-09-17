@@ -17,6 +17,9 @@ import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+/**
+ * Frontend.
+ */
 public class EVMFrontend {
 
 	private final static String API_KEY = "V1JWVWVCKP23DVXI1I2TX8V19XICS3TIJ6";
@@ -53,7 +56,7 @@ public class EVMFrontend {
 	}
 
 	/**
-	 * Verify the correct syntactic of the smart contract bytecode stored in {@code filePath}
+	 * Verify the correct syntactic of the smart contract bytecode stored in {@code filePath}.
 	 * 
 	 * @param filePath where the smart contract is stored
 	 * 

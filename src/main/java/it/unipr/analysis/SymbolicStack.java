@@ -15,10 +15,16 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
+/**
+ * Semantic domain of the execution stack of the contract.
+ */
 public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	private final ArrayDeque<Integer> stack;
 
+	/**
+	 * Constructor of the SymbolicStack class.
+	 */
 	public SymbolicStack() {
 		this(new ArrayDeque<>());
 	}

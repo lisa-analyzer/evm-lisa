@@ -12,11 +12,26 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.program.Program;
 import java.io.IOException;
 
+/**
+ * Analyze an Ethereum Smart Contract from Etherscan and then generate its CFG.
+ */
 public class EVMLiSA {
 
+	/**
+	 * Takes a smart contract stored in {@code args} and makes its 
+	 * control flow graph.
+	 * 
+	 * @param args
+	 * 
+	 * @throws AnalysisException when Lisa is not able to analyze the contract
+	 * @throws IOException when {@code args} is not a valid file path
+	 */
 	public static void main(String[] args) throws AnalysisException, IOException {
+		//EVMFrontend.parseContractFromEtherscan("0x22895ba3ee81ab5f12753bd13b52858f8857d518", "eth.sol");
 		//Program program = EVMFrontend.processFile(args[0]);
-		Program program = EVMFrontend.processFile("sm.sol");
+		//Program program = EVMFrontend.processFile("eth.sol");
+		Program program = EVMFrontend.processFile("benchmark/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48.op");
+		//Program program = EVMFrontend.processFile("sm.sol");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setDumpCFGs(true)
