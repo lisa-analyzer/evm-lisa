@@ -2,7 +2,7 @@
 An abstract interpretation-based static analyzer for [EVM bytecode](https://www.ethervm.io/) built upon [LiSA](https://unive-ssv.github.io/lisa/) (Library for Static Analysis)
 
 # 🛠 Build
-RustLiSA comes as a [Gradle 6.6](https://gradle.org/releases/) project.
+EVMLiSA comes as a [Gradle 6.6](https://gradle.org/releases/) project.
 
 Development is done in [Eclipse](https://www.eclipse.org/downloads/).
 You need to:
