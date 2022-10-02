@@ -15,7 +15,7 @@ You need to:
 - run the `./evm-lisa/gradlew build`
 
 # ⚙️ Run
-To run the project by using Eclipse you can use *Run as Java application* in Eclipse and passing a path to a Rust file as first argument.
+To run the project by using Eclipse you can use *Run as Java application* in Eclipse and passing a path to a file containing EVM bytecode of a smart contract as first argument.
 
 The result will be put under the `output` folder, which will have all the enabled reports and a [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) file with the [LiSA-CFG](https://unive-ssv.github.io/lisa/)
 
