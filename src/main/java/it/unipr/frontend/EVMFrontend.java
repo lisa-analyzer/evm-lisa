@@ -39,11 +39,13 @@ public class EVMFrontend {
 	private static String FROM_062_TO_LATEST = "a264697066735822";
 
 	/**
-	 * Verifies the syntactic correctness of the smart contract bytecode stored in
-	 * {@code filePath} and returns its {@code ProgramContext}.
+	 * Verifies the syntactic correctness of the smart contract bytecode stored
+	 * in {@code filePath} and returns its {@code ProgramContext}.
 	 * 
 	 * @param filePath the path where the smart contract bytecode is stored
+	 * 
 	 * @return the {@code ProgramContext} of the smart contract bytecode
+	 * 
 	 * @throws IOException
 	 */
 	public static ProgramContext parseContract(String filePath) throws IOException {
@@ -64,8 +66,9 @@ public class EVMFrontend {
 	 * stores the result in {@code output}.
 	 * 
 	 * @param address the address of the smart contract to be parsed
-	 * @param output  the directory where the EMV bytecode that correlates with the
-	 *                smart contract stored at {@code address} is stored
+	 * @param output  the directory where the EMV bytecode that correlates with
+	 *                    the smart contract stored at {@code address} is stored
+	 * 
 	 * @throws IOException
 	 */
 	public static void parseContractFromEtherscan(String address, String output) throws IOException {
@@ -130,7 +133,9 @@ public class EVMFrontend {
 	 * {@code contractAddress} and generates its CFG as a {@code Program}.
 	 * 
 	 * @param contractAddress the address of the smart contract of interest
+	 * 
 	 * @return a LiSA {@code Program} representing the generated CFG
+	 * 
 	 * @throws IOException
 	 * @throws AnalysisException
 	 */
@@ -146,11 +151,15 @@ public class EVMFrontend {
 	}
 
 	/**
-	 * Takes the smart contract bytecode stored in {@code filePath} and generates
-	 * its control flow graph which is then returned as a LiSA {@code Program}.
+	 * Takes the smart contract bytecode stored in {@code filePath} and
+	 * generates its control flow graph which is then returned as a LiSA
+	 * {@code Program}.
 	 * 
 	 * @param filePath the path where the smart contract bytecode is stored
-	 * @return a LiSA {@code Program} representing the generated control flow graph
+	 * 
+	 * @return a LiSA {@code Program} representing the generated control flow
+	 *             graph
+	 * 
 	 * @throws IOException
 	 */
 	public static Program generateCfgFromFile(String filePath) throws IOException {

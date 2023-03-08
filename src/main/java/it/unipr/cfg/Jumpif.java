@@ -20,7 +20,8 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 public class Jumpif extends Statement {
 
 	/**
-	 * Builds a Jumpif opcode happening at the given source location (DEPRECTED).
+	 * Builds a Jumpif opcode happening at the given source location
+	 * (DEPRECTED).
 	 * 
 	 * @param cfg      the cfg that this statement belongs to
 	 * @param location the location where this statement is defined within the

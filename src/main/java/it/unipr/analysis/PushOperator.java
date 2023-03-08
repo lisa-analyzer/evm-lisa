@@ -7,7 +7,8 @@ import it.unive.lisa.type.common.Int32;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
- * Implementation of UnaryOperator to represent the Push operator of Ethereum Bytecode.
+ * Implementation of UnaryOperator to represent the Push operator of Ethereum
+ * Bytecode.
  */
 public class PushOperator implements UnaryOperator {
 

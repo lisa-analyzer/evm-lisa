@@ -20,7 +20,8 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 public class Jumpto extends Statement {
 
 	/**
-	 * Builds a Jumpto opcode happening at the given source location (DEPRECATED).
+	 * Builds a Jumpto opcode happening at the given source location
+	 * (DEPRECATED).
 	 * 
 	 * @param cfg      the cfg that this statement belongs to
 	 * @param location the location where this statement is defined within the

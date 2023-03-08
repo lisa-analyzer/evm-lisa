@@ -1,7 +1,5 @@
 package it.unipr.cfg.push;
 
-import java.math.BigInteger;
-
 import it.unipr.analysis.PushOperator;
 import it.unipr.cfg.HexDecimalLiteral;
 import it.unive.lisa.analysis.AbstractState;
@@ -20,6 +18,7 @@ import it.unive.lisa.program.cfg.statement.evaluation.EvaluationOrder;
 import it.unive.lisa.program.cfg.statement.evaluation.LeftToRightEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
+import java.math.BigInteger;
 
 /**
  * A Push opcode with a single sub-expression.
@@ -27,8 +26,8 @@ import it.unive.lisa.type.Untyped;
 public abstract class Push extends UnaryExpression {
 
 	/**
-	 * Builds the Push opcode, happening at the given location in the
-	 * program. The static type of this expression is {@link Untyped}. The
+	 * Builds the Push opcode, happening at the given location in the program.
+	 * The static type of this expression is {@link Untyped}. The
 	 * {@link EvaluationOrder} is {@link LeftToRightEvaluation}.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
@@ -53,15 +52,15 @@ public abstract class Push extends UnaryExpression {
 		return state.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(getStaticType(), expr,
 				PushOperator.INSTANCE, getLocation()), this);
 	}
-	
+
 	/**
 	 * Return the value of the bytes pushed into the stack by the Push opcode.
 	 * 
-	 * @return the BigInteger value 
+	 * @return the BigInteger value
 	 */
 	public BigInteger getInt() {
 		String hexadecimal = ((HexDecimalLiteral) getSubExpression()).getValue().substring(2);
-		//return BigInteger.parseInt(hexadecimal, 16);
+		// return BigInteger.parseInt(hexadecimal, 16);
 		return new BigInteger(hexadecimal, 16);
 	}
 }

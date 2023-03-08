@@ -20,7 +20,8 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 public class Jumpsubv extends Statement {
 
 	/**
-	 * Builds a Jumosubv opcode happening at the given source location (DEPRECATED).
+	 * Builds a Jumosubv opcode happening at the given source location
+	 * (DEPRECATED).
 	 * 
 	 * @param cfg      the cfg that this statement belongs to
 	 * @param location the location where this statement is defined within the

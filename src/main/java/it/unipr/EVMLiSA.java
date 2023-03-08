@@ -44,9 +44,11 @@ public class EVMLiSA {
 	 * Analyzes a control flow graph (represented as a LiSA {@code Program}) and
 	 * stores the outcome in the chosen {@code outputDir}.
 	 * 
-	 * @param program   the control flow graph represented as a LiSA {@code Program}
-	 *                  to be analyzed
-	 * @param outputDir the directory where the analysis outcome should be stored
+	 * @param program   the control flow graph represented as a LiSA
+	 *                      {@code Program} to be analyzed
+	 * @param outputDir the directory where the analysis outcome should be
+	 *                      stored
+	 * 
 	 * @throws AnalysisException
 	 */
 	private static void analyzeCFG(Program program, String outputDir) throws AnalysisException {

@@ -15,10 +15,10 @@ public class HexDecimalLiteral extends Literal<String> {
 	/**
 	 * Constructor of the hexadecimal.
 	 * 
-	 * @param cfg		the cfg that this hexadecimal belongs to
-	 * @param location	the location where this hexadecimal is defined within the
-	 *                  	program
-	 * @param value the string value of the hexadecimal
+	 * @param cfg      the cfg that this hexadecimal belongs to
+	 * @param location the location where this hexadecimal is defined within the
+	 *                     program
+	 * @param value    the string value of the hexadecimal
 	 */
 	public HexDecimalLiteral(CFG cfg, CodeLocation location, String value) {
 		super(cfg, location, value, Untyped.INSTANCE);
