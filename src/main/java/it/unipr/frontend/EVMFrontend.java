@@ -2,15 +2,19 @@ package it.unipr.frontend;
 
 import it.unipr.evm.antlr.EVMBLexer;
 import it.unipr.evm.antlr.EVMBParser;
+import it.unipr.evm.antlr.EVMBParser.ProgramContext;
+import it.unive.lisa.AnalysisException;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -18,12 +22,12 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
- * Frontend.
+ * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
+ * via Etherscan and generating a control flow graph
  */
 public class EVMFrontend {
 
 	private final static String API_KEY = "V1JWVWVCKP23DVXI1I2TX8V19XICS3TIJ6";
-	private static BufferedWriter writer;
 
 	private static String FROM_0417_TO_058 = "a165627a7a72305820";
 	private static String FROM_0417_TO_058_EXPERIMENTAL = "a265627a7a72305820";
@@ -35,99 +39,52 @@ public class EVMFrontend {
 	private static String FROM_062_TO_LATEST = "a264697066735822";
 
 	/**
-	 * Takes a smart contract stored in {@code filePath} and makes its 
-	 * control flow graph used for create the return value.
+	 * Verifies the syntactic correctness of the smart contract bytecode stored in
+	 * {@code filePath} and returns its {@code ProgramContext}.
 	 * 
-	 * @param filePath Where the smart contract is stored
-	 * 
-	 * @return a program that LiSA can analyze
-	 * 
+	 * @param filePath the path where the smart contract bytecode is stored
+	 * @return the {@code ProgramContext} of the smart contract bytecode
 	 * @throws IOException
 	 */
-	public static Program processFile(String filePath) throws IOException {
-		InputStream is = new FileInputStream(filePath);
-		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
+	public static ProgramContext parseContract(String filePath) throws IOException {
+		InputStream fileInputStream = new FileInputStream(filePath);
+
+		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(fileInputStream, StandardCharsets.UTF_8));
 		EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
-		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath);
-		CFG cfg = cfggenerator.visitProgram(parser.program());
-		Program program = new Program();
-		program.addCFG(cfg);
-		return program;
+
+		try {
+			return parser.program();
+		} finally {
+			fileInputStream.close();
+		}
 	}
 
 	/**
-	 * Verify the correct syntactic of the smart contract bytecode stored in {@code filePath}.
-	 * 
-	 * @param filePath where the smart contract is stored
-	 * 
-	 * @throws IOException
-	 */
-	public static void parseContract(String filePath) throws IOException {
-
-		InputStream is = new FileInputStream(filePath);
-		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
-		EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
-
-		parser.program();
-
-		is.close();
-	}
-
-	/**
-	 * Yields the EVM bytecode of a smart contract stored at the address
-	 * {@code address} and stores the result in {@code output}, then 
-	 * starting from the {@code output} makes a control flow graph used 
-	 * by LiSA to analyze the contract.
+	 * Yields the EVM bytecode of a smart contract stored at {@code address} and
+	 * stores the result in {@code output}.
 	 * 
 	 * @param address the address of the smart contract to be parsed
-	 * @param output the directory where the EMV bytecode corresponding to the
-	 *                    smart contract stored at {@code address} is stored
-	 *                    
-	 * @return a program that LiSA can analyze
-	 * 
-	 * @throws IOException
-	 */
-	public static Program toLiSAProgram(String address, String output) throws IOException {
-		parseContractFromEtherscan(address, output);
-		InputStream is = new FileInputStream(output);
-		EVMBLexer lexer = new EVMBLexer(CharStreams.fromStream(is, StandardCharsets.UTF_8));
-		EVMBParser parser = new EVMBParser(new CommonTokenStream(lexer));
-
-		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(output);
-		CFG cfg = cfggenerator.visitProgram(parser.program());
-		Program program = new Program();
-		program.addCFG(cfg);
-		return program;
-	}
-
-	/**
-	 * Yields the EVM bytecode of a smart contract stored at the address
-	 * {@code address} and stores the result in {@code output}.
-	 * 
-	 * @param address the address of the smart contract to be parsed
-	 * @param output  the directory where the EMV bytecode corresponding to the
-	 *                    smart contract stored at {@code address} is stored
-	 * 
+	 * @param output  the directory where the EMV bytecode that correlates with the
+	 *                smart contract stored at {@code address} is stored
 	 * @throws IOException
 	 */
 	public static void parseContractFromEtherscan(String address, String output) throws IOException {
-
-		String bytecodeRequest = request("proxy", "eth_getCode", address);
+		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 		String[] test = bytecodeRequest.split("\"");
 		String bytecode = test[9];
 
-		writer = new BufferedWriter(new FileWriter(output));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 
 		for (int i = 2; i < bytecode.length(); i += 2) {
 
-			if (bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058) ||
-					bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL) ||
-					bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511) ||
-					bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL) ||
-					bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515) ||
-					bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL) ||
-					bytecode.substring(i, (i + 16)).equals(FROM_060_TO_061) ||
-					bytecode.substring(i, (i + 16)).equals(FROM_062_TO_LATEST)) {
+			if (bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058)
+					|| bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL)
+					|| bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511)
+					|| bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL)
+					|| bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515)
+					|| bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL)
+					|| bytecode.substring(i, (i + 16)).equals(FROM_060_TO_061)
+					|| bytecode.substring(i, (i + 16)).equals(FROM_062_TO_LATEST)) {
 
 				writer.close();
 				return;
@@ -142,33 +99,72 @@ public class EVMFrontend {
 
 				for (int j = i + 2; j < (i + 2 + 2 * t); j += 2) {
 
-					if (bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058) ||
-							bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL) ||
-							bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511) ||
-							bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL) ||
-							bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515) ||
-							bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL) ||
-							bytecode.substring(j, (j + 16)).equals(FROM_060_TO_061) ||
-							bytecode.substring(j, (j + 16)).equals(FROM_062_TO_LATEST)) {
+					if (bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058)
+							|| bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058_EXPERIMENTAL)
+							|| bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511)
+							|| bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511_EXPERIMENTAL)
+							|| bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515)
+							|| bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL)
+							|| bytecode.substring(j, (j + 16)).equals(FROM_060_TO_061)
+							|| bytecode.substring(j, (j + 16)).equals(FROM_062_TO_LATEST)) {
 
 						writer.close();
 						return;
 					}
 				}
 
-				addPush(push, t);
+				addPush(push, t, writer);
 				i += 2 * t;
 			}
 
 			else {
-				addOpcode(opcode);
+				addOpcode(opcode, writer);
 			}
 		}
+
 		writer.close();
-		parseContract(output);
 	}
 
-	private static void addOpcode(String opcode) throws IOException {
+	/**
+	 * Yelds the EVM bytecode of a smart contract stored at the address
+	 * {@code contractAddress} and generates its CFG as a {@code Program}.
+	 * 
+	 * @param contractAddress the address of the smart contract of interest
+	 * @return a LiSA {@code Program} representing the generated CFG
+	 * @throws IOException
+	 * @throws AnalysisException
+	 */
+	public static Program generateCfgFromContractAddress(String contractAddress) throws IOException, AnalysisException {
+		final String bytecodeOutputPath = "output/tmp/" + contractAddress + "_bytecode.sol";
+
+		// Get bytecode from Etherscan
+		new File(bytecodeOutputPath).getParentFile().mkdirs();
+		EVMFrontend.parseContractFromEtherscan(contractAddress, bytecodeOutputPath);
+
+		// Parse bytecode to generate CFG
+		return EVMFrontend.generateCfgFromFile(bytecodeOutputPath);
+	}
+
+	/**
+	 * Takes the smart contract bytecode stored in {@code filePath} and generates
+	 * its control flow graph which is then returned as a LiSA {@code Program}.
+	 * 
+	 * @param filePath the path where the smart contract bytecode is stored
+	 * @return a LiSA {@code Program} representing the generated control flow graph
+	 * @throws IOException
+	 */
+	public static Program generateCfgFromFile(String filePath) throws IOException {
+		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath);
+		ProgramContext programContext = EVMFrontend.parseContract(filePath);
+
+		CFG cfg = cfggenerator.visitProgram(programContext);
+		Program program = new Program();
+		program.addCFG(cfg);
+
+		return program;
+	}
+
+	private static void addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
 		case "00":
 			writer.write("STOP\n");
@@ -580,7 +576,7 @@ public class EVMFrontend {
 		}
 	}
 
-	private static void addPush(String push, int n) throws IOException {
+	private static void addPush(String push, int n, Writer writer) throws IOException {
 		for (int i = 0; i < push.length(); i += 2) {
 			if (i == 0) {
 				writer.write("PUSH" + n + " " + "0x");
@@ -591,9 +587,9 @@ public class EVMFrontend {
 		writer.write("\n");
 	}
 
-	private static String request(String module, String action, String address) throws IOException {
-		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s",
-				module, action, address, API_KEY);
+	private static String etherscanRequest(String module, String action, String address) throws IOException {
+		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s", module,
+				action, address, API_KEY);
 
 		URL requestUrl = new URL(request);
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
