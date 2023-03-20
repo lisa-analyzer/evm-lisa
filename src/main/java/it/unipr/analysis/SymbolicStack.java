@@ -1,5 +1,9 @@
 package it.unipr.analysis;
 
+import java.util.ArrayDeque;
+import java.util.Objects;
+
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -12,25 +16,33 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.util.ArrayDeque;
-import java.util.Objects;
 
 /**
  * Semantic domain of the execution stack of the contract.
  */
 public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
+	private static final SymbolicStack TOP = new SymbolicStack();
+	private static final SymbolicStack BOTTOM = new SymbolicStack(null);
+
 	private final ArrayDeque<Integer> stack;
+	private final boolean isTop;
 
 	/**
 	 * Constructor of the SymbolicStack class.
 	 */
 	public SymbolicStack() {
-		this(new ArrayDeque<>());
+		this(true);
 	}
+
+	private SymbolicStack(boolean isTop) {
+		this.isTop = isTop;
+		this.stack = new ArrayDeque<Integer>();
+	} 
 
 	private SymbolicStack(ArrayDeque<Integer> stack) {
 		this.stack = stack;
+		this.isTop = false;
 	}
 
 	@Override
@@ -41,7 +53,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (expression instanceof UnaryExpression) {
+		if (expression instanceof Constant)
+			return this;
+		else if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
 			UnaryOperator op = un.getOperator();
 
@@ -49,10 +63,17 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				ArrayDeque<Integer> result = stack.clone();
 				result.push(toInteger(un.getExpression()));
 				return new SymbolicStack(result);
+			} else if (op instanceof AddOperator) {
+				ArrayDeque<Integer> result = stack.clone();
+				Integer first = result.pop();
+				Integer second = result.pop();
+				result.push(first + second);
+				return new SymbolicStack(result);
 			}
 		}
 
-		return this;
+		
+		return top();
 	}
 
 	@Override
@@ -87,6 +108,10 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public DomainRepresentation representation() {
+		if (isBottom())
+			return Lattice.BOTTOM_REPR;
+		else if (isTop())
+			return Lattice.TOP_REPR;
 		return new StringRepresentation(stack);
 	}
 
@@ -120,17 +145,22 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack top() {
-		return new SymbolicStack();
+		return TOP;
 	}
 
 	@Override
 	public SymbolicStack bottom() {
-		return new SymbolicStack(null);
+		return BOTTOM;
 	}
 
 	@Override
 	public boolean isBottom() {
 		return stack == null;
+	}
+
+	@Override
+	public boolean isTop() {
+		return isTop;
 	}
 
 	private Integer toInteger(SymbolicExpression expression) {

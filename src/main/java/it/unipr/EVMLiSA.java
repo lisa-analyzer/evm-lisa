@@ -35,8 +35,13 @@ public class EVMLiSA {
 		// EVMFrontend.processFile("benchmark/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48.op");
 		// Program program = EVMFrontend.processFile("sm.sol");
 
-		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x22895ba3ee81ab5f12753bd13b52858f8857d518");
+		//Program cfg = EVMFrontend.generateCfgFromContractAddress("0x22895ba3ee81ab5f12753bd13b52858f8857d518");
 
+		
+		Program cfg = EVMFrontend.generateCfgFromFile("eth.sol");
+		analyzeCFG(cfg, "output");
+		
+		
 		EVMLiSA.analyzeCFG(cfg, "output");
 	}
 
