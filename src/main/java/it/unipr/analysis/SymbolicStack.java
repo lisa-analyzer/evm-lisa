@@ -38,7 +38,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private SymbolicStack(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new ArrayDeque<Integer>();
-	} 
+	}
 
 	private SymbolicStack(ArrayDeque<Integer> stack) {
 		this.stack = stack;
@@ -53,26 +53,103 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (expression instanceof Constant)
+		if (expression instanceof Constant) {
 			return this;
-		else if (expression instanceof UnaryExpression) {
+		} else if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
 			UnaryOperator op = un.getOperator();
 
-			if (op instanceof PushOperator) {
+			if (op instanceof PushOperator) { // PUSH
 				ArrayDeque<Integer> result = stack.clone();
+				
 				result.push(toInteger(un.getExpression()));
+				
 				return new SymbolicStack(result);
-			} else if (op instanceof AddOperator) {
+			} else if (op instanceof AddOperator) { // ADD
 				ArrayDeque<Integer> result = stack.clone();
-				Integer first = result.pop();
-				Integer second = result.pop();
-				result.push(first + second);
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 + opnd_2);
+				
+				return new SymbolicStack(result);
+			} else if (op instanceof SubOperator) { // SUB
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 - opnd_2);
+				
+				return new SymbolicStack(result);
+			} else if (op instanceof MulOperator) { // MUL
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 * opnd_2);
+				
+				return new SymbolicStack(result);
+			} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV, SDIV
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				if (opnd_2 == 0) {
+					result.push(0);
+				} else {
+					result.push(opnd_1 / opnd_2);
+				}
+				
+				return new SymbolicStack(result);
+			} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD, SMOD
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				if (opnd_2 == 0) {
+					result.push(0);
+				} else {
+					result.push(opnd_1 % opnd_2);
+				}
+				
+				return new SymbolicStack(result);
+			} else if (op instanceof AddmodOperator) { // ADDMOD
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				Integer opnd_3 = result.pop();
+				
+				if (opnd_3 == 0) {
+					result.push(0);
+				} else {
+					result.push((opnd_1 + opnd_2) % opnd_3);
+				}
+				
+				return new SymbolicStack(result);
+			} else if (op instanceof MulmodOperator) { // MULMOD
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				Integer opnd_3 = result.pop();
+				
+				if (opnd_3 == 0) {
+					result.push(0);
+				} else {
+					result.push((opnd_1 * opnd_2) % opnd_3);
+				}
+				
+				return new SymbolicStack(result);
+			} else if (op instanceof ExpOperator) { // EXP
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push((int)(Math.pow(opnd_1, opnd_2)));
+				
 				return new SymbolicStack(result);
 			}
 		}
 
-		
 		return top();
 	}
 

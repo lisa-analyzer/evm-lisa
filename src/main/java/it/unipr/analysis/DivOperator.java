@@ -6,19 +6,19 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class AddOperator implements UnaryOperator {
+public class DivOperator implements UnaryOperator {
 
 	/**
 	 * The singleton instance of this class.
 	 */
-	public static final AddOperator INSTANCE = new AddOperator();
+	public static final DivOperator INSTANCE = new DivOperator();
 
-	private AddOperator() {
+	private DivOperator() {
 	}
 
 	@Override
 	public String toString() {
-		return "add";
+		return "div";
 	}
 
 	@Override
