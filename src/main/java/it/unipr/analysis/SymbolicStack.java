@@ -147,6 +147,68 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				result.push((int)(Math.pow(opnd_1, opnd_2)));
 				
 				return new SymbolicStack(result);
+			}   else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT, SLT
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 < opnd_2 ? 1 : 0);
+				
+				return new SymbolicStack(result);
+			} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT, SGT
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 > opnd_2 ? 1 : 0);
+				
+				return new SymbolicStack(result);
+			} else if (op instanceof EqOperator) { // EQ
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 == opnd_2 ? 1 : 0);
+				
+				return new SymbolicStack(result);	
+			} else if (op instanceof IszeroOperator) { // ISZERO
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				
+				result.push(opnd_1 == 0 ? 1 : 0);
+				
+				return new SymbolicStack(result);	
+			} else if (op instanceof AndOperator) { // AND
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 & opnd_2);
+				
+				return new SymbolicStack(result);	
+			} else if (op instanceof OrOperator) { // OR
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 | opnd_2);
+				
+				return new SymbolicStack(result);	
+			} else if (op instanceof XorOperator) { // XOR
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				Integer opnd_2 = result.pop();
+				
+				result.push(opnd_1 ^ opnd_2);
+				
+				return new SymbolicStack(result);	
+			} else if (op instanceof NotOperator) { // NOT
+				ArrayDeque<Integer> result = stack.clone();
+				Integer opnd_1 = result.pop();
+				
+				result.push(~opnd_1);
+				
+				return new SymbolicStack(result);	
 			}
 		}
 
