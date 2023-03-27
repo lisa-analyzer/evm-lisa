@@ -1,5 +1,6 @@
 package it.unipr.analysis;
 
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private static final SymbolicStack TOP = new SymbolicStack();
 	private static final SymbolicStack BOTTOM = new SymbolicStack(null);
 
-	private final ArrayDeque<Integer> stack;
+	private final ArrayDeque<BigInteger> stack;
 	private final boolean isTop;
 
 	/**
@@ -37,10 +38,10 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	private SymbolicStack(boolean isTop) {
 		this.isTop = isTop;
-		this.stack = new ArrayDeque<Integer>();
+		this.stack = new ArrayDeque<BigInteger>();
 	}
 
-	private SymbolicStack(ArrayDeque<Integer> stack) {
+	private SymbolicStack(ArrayDeque<BigInteger> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
@@ -60,155 +61,155 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			UnaryOperator op = un.getOperator();
 
 			if (op instanceof PushOperator) { // PUSH
-				ArrayDeque<Integer> result = stack.clone();
-				
-				result.push(toInteger(un.getExpression()));
-				
+				ArrayDeque<BigInteger> result = stack.clone();
+
+				result.push(toBigInteger(un.getExpression()));
+
 				return new SymbolicStack(result);
 			} else if (op instanceof AddOperator) { // ADD
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 + opnd_2);
-				
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.add(opnd2));
+
 				return new SymbolicStack(result);
 			} else if (op instanceof SubOperator) { // SUB
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 - opnd_2);
-				
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.subtract(opnd2));
+
 				return new SymbolicStack(result);
 			} else if (op instanceof MulOperator) { // MUL
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 * opnd_2);
-				
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.multiply(opnd2));
+
 				return new SymbolicStack(result);
 			} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV, SDIV
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				if (opnd_2 == 0) {
-					result.push(0);
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				if (opnd2.equals(BigInteger.ZERO)) {
+					result.push(BigInteger.ZERO);
 				} else {
-					result.push(opnd_1 / opnd_2);
+					result.push(opnd1.divide(opnd2));
 				}
-				
+
 				return new SymbolicStack(result);
 			} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD, SMOD
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				if (opnd_2 == 0) {
-					result.push(0);
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				if (opnd2.equals(BigInteger.ZERO)) {
+					result.push(BigInteger.ZERO);
 				} else {
-					result.push(opnd_1 % opnd_2);
+					result.push(opnd1.mod(opnd2));
 				}
-				
+
 				return new SymbolicStack(result);
 			} else if (op instanceof AddmodOperator) { // ADDMOD
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				Integer opnd_3 = result.pop();
-				
-				if (opnd_3 == 0) {
-					result.push(0);
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+				BigInteger opnd3 = result.pop();
+
+				if (opnd3.equals(BigInteger.ZERO)) {
+					result.push(BigInteger.ZERO);
 				} else {
-					result.push((opnd_1 + opnd_2) % opnd_3);
+					result.push((opnd1.add(opnd2)).mod(opnd3));
 				}
-				
+
 				return new SymbolicStack(result);
 			} else if (op instanceof MulmodOperator) { // MULMOD
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				Integer opnd_3 = result.pop();
-				
-				if (opnd_3 == 0) {
-					result.push(0);
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+				BigInteger opnd3 = result.pop();
+
+				if (opnd3.equals(BigInteger.ZERO)) {
+					result.push(BigInteger.ZERO);
 				} else {
-					result.push((opnd_1 * opnd_2) % opnd_3);
+					result.push((opnd1.multiply(opnd2)).mod(opnd3));
 				}
-				
+
 				return new SymbolicStack(result);
 			} else if (op instanceof ExpOperator) { // EXP
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push((int)(Math.pow(opnd_1, opnd_2)));
-				
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.pow(opnd2.intValue()));
+
 				return new SymbolicStack(result);
-			}   else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT, SLT
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 < opnd_2 ? 1 : 0);
-				
+			} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT, SLT
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.compareTo(opnd2) < 0 ? BigInteger.ONE : BigInteger.ZERO);
+
 				return new SymbolicStack(result);
 			} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT, SGT
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 > opnd_2 ? 1 : 0);
-				
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.compareTo(opnd2) > 0 ? BigInteger.ONE : BigInteger.ZERO);
+
 				return new SymbolicStack(result);
 			} else if (op instanceof EqOperator) { // EQ
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 == opnd_2 ? 1 : 0);
-				
-				return new SymbolicStack(result);	
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.compareTo(opnd2) == 0 ? BigInteger.ONE : BigInteger.ZERO);
+
+				return new SymbolicStack(result);
 			} else if (op instanceof IszeroOperator) { // ISZERO
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				
-				result.push(opnd_1 == 0 ? 1 : 0);
-				
-				return new SymbolicStack(result);	
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+
+				result.push(opnd1.compareTo(BigInteger.ZERO) == 0 ? BigInteger.ONE : BigInteger.ZERO);
+
+				return new SymbolicStack(result);
 			} else if (op instanceof AndOperator) { // AND
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 & opnd_2);
-				
-				return new SymbolicStack(result);	
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.and(opnd2));
+
+				return new SymbolicStack(result);
 			} else if (op instanceof OrOperator) { // OR
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 | opnd_2);
-				
-				return new SymbolicStack(result);	
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.or(opnd2));
+
+				return new SymbolicStack(result);
 			} else if (op instanceof XorOperator) { // XOR
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				Integer opnd_2 = result.pop();
-				
-				result.push(opnd_1 ^ opnd_2);
-				
-				return new SymbolicStack(result);	
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+				BigInteger opnd2 = result.pop();
+
+				result.push(opnd1.xor(opnd2));
+
+				return new SymbolicStack(result);
 			} else if (op instanceof NotOperator) { // NOT
-				ArrayDeque<Integer> result = stack.clone();
-				Integer opnd_1 = result.pop();
-				
-				result.push(~opnd_1);
-				
-				return new SymbolicStack(result);	
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger opnd1 = result.pop();
+
+				result.push(opnd1.not());
+
+				return new SymbolicStack(result);
 			}
 		}
 
@@ -302,11 +303,12 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		return isTop;
 	}
 
-	private Integer toInteger(SymbolicExpression expression) {
+	private BigInteger toBigInteger(SymbolicExpression expression) {
 		Constant c = (Constant) expression;
 		String hex = (String) c.getValue();
 		String hexadecimal = hex.substring(2);
-		return Integer.parseInt(hexadecimal, 16);
+		Integer intVal = Integer.parseInt(hexadecimal, 16);
+		return new BigInteger(intVal.toString());
 	}
 
 	@Override
