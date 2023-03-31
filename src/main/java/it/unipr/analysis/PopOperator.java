@@ -6,19 +6,19 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class XorOperator implements UnaryOperator {
+public class PopOperator implements UnaryOperator {
 
 	/**
 	 * The singleton instance of this class.
 	 */
-	public static final XorOperator INSTANCE = new XorOperator();
+	public static final PopOperator INSTANCE = new PopOperator();
 
-	private XorOperator() {
+	private PopOperator() {
 	}
 
 	@Override
 	public String toString() {
-		return "xor";
+		return "pop";
 	}
 
 	@Override
