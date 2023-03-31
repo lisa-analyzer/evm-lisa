@@ -244,7 +244,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				}
 
 				return new SymbolicStack(result);
-			} else if (op instanceof Dup1Operator) { // POP
+			} else if (op instanceof PopOperator) { // POP
 				ArrayDeque<BigInteger> result = stack.clone();
 
 				result.pop();
