@@ -1,9 +1,5 @@
 package it.unipr.analysis;
 
-import java.math.BigInteger;
-import java.util.ArrayDeque;
-import java.util.Objects;
-
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -17,6 +13,10 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Semantic domain of the execution stack of the contract.
@@ -90,7 +90,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				result.push(opnd1.multiply(opnd2));
 
 				return new SymbolicStack(result);
-			} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV, SDIV
+			} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV,
+																						// SDIV
 				ArrayDeque<BigInteger> result = stack.clone();
 				BigInteger opnd1 = result.pop();
 				BigInteger opnd2 = result.pop();
@@ -102,7 +103,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				}
 
 				return new SymbolicStack(result);
-			} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD, SMOD
+			} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD,
+																						// SMOD
 				ArrayDeque<BigInteger> result = stack.clone();
 				BigInteger opnd1 = result.pop();
 				BigInteger opnd2 = result.pop();
@@ -148,7 +150,17 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				result.push(opnd1.pow(opnd2.intValue()));
 
 				return new SymbolicStack(result);
-			} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT, SLT
+			} else if (op instanceof SignextendOperator) { // SIGNEXTEND
+				ArrayDeque<BigInteger> result = stack.clone();
+				// BigInteger offset = result.pop();
+				result.pop();
+				// BigInteger toExtend = result.pop();
+
+				// result.push(toExtend);
+
+				return new SymbolicStack(result);
+			} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
+																					// SLT
 				ArrayDeque<BigInteger> result = stack.clone();
 				BigInteger opnd1 = result.pop();
 				BigInteger opnd2 = result.pop();
@@ -156,7 +168,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				result.push(opnd1.compareTo(opnd2) < 0 ? BigInteger.ONE : BigInteger.ZERO);
 
 				return new SymbolicStack(result);
-			} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT, SGT
+			} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT,
+																					// SGT
 				ArrayDeque<BigInteger> result = stack.clone();
 				BigInteger opnd1 = result.pop();
 				BigInteger opnd2 = result.pop();
@@ -207,9 +220,158 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				ArrayDeque<BigInteger> result = stack.clone();
 				BigInteger opnd1 = result.pop();
 
+				opnd1.toByteArray();
+
 				result.push(opnd1.not());
 
 				return new SymbolicStack(result);
+			} else if (op instanceof ByteOperator) { // BYTE
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger byteToSelect = result.pop();
+				BigInteger value = result.pop();
+				byte[] valueAsByteArray = value.toByteArray();
+
+				if ((byteToSelect.compareTo(BigInteger.valueOf(0)) < 0)
+						|| (byteToSelect.compareTo(BigInteger.valueOf(valueAsByteArray.length)) >= 0)) {
+					result.push(BigInteger.ZERO);
+				} else {
+					byte selectedByte = value.toByteArray()[byteToSelect.intValue()];
+					byte[] resultByteArray = BigInteger.ZERO.toByteArray();
+
+					resultByteArray[0] = selectedByte;
+
+					result.push(new BigInteger(resultByteArray));
+				}
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Dup1Operator) { // DUP1
+
+				return new SymbolicStack(dupX(1, stack.clone()));
+
+			} else if (op instanceof Dup2Operator) { // DUP2
+
+				return new SymbolicStack(dupX(2, stack.clone()));
+
+			} else if (op instanceof Dup3Operator) { // DUP3
+
+				return new SymbolicStack(dupX(3, stack.clone()));
+
+			} else if (op instanceof Dup4Operator) { // DUP4
+
+				return new SymbolicStack(dupX(4, stack.clone()));
+
+			} else if (op instanceof Dup5Operator) { // DUP5
+
+				return new SymbolicStack(dupX(5, stack.clone()));
+
+			} else if (op instanceof Dup6Operator) { // DUP6
+
+				return new SymbolicStack(dupX(6, stack.clone()));
+
+			} else if (op instanceof Dup7Operator) { // DUP7
+
+				return new SymbolicStack(dupX(7, stack.clone()));
+
+			} else if (op instanceof Dup8Operator) { // DUP8
+
+				return new SymbolicStack(dupX(8, stack.clone()));
+
+			} else if (op instanceof Dup9Operator) { // DUP9
+
+				return new SymbolicStack(dupX(9, stack.clone()));
+
+			} else if (op instanceof Dup10Operator) { // DUP10
+
+				return new SymbolicStack(dupX(10, stack.clone()));
+
+			} else if (op instanceof Dup11Operator) { // DUP11
+
+				return new SymbolicStack(dupX(11, stack.clone()));
+
+			} else if (op instanceof Dup12Operator) { // DUP12
+
+				return new SymbolicStack(dupX(12, stack.clone()));
+
+			} else if (op instanceof Dup13Operator) { // DUP13
+
+				return new SymbolicStack(dupX(13, stack.clone()));
+
+			} else if (op instanceof Dup14Operator) { // DUP14
+
+				return new SymbolicStack(dupX(14, stack.clone()));
+
+			} else if (op instanceof Dup15Operator) { // DUP15
+
+				return new SymbolicStack(dupX(15, stack.clone()));
+
+			} else if (op instanceof Dup16Operator) { // DUP16
+
+				return new SymbolicStack(dupX(16, stack.clone()));
+
+			} else if (op instanceof Swap1Operator) { // SWAP1
+
+				return new SymbolicStack(swapX(1, stack.clone()));
+
+			} else if (op instanceof Swap2Operator) { // SWAP2
+
+				return new SymbolicStack(swapX(2, stack.clone()));
+
+			} else if (op instanceof Swap3Operator) { // SWAP3
+
+				return new SymbolicStack(swapX(3, stack.clone()));
+
+			} else if (op instanceof Swap4Operator) { // SWAP4
+
+				return new SymbolicStack(swapX(4, stack.clone()));
+
+			} else if (op instanceof Swap5Operator) { // SWAP5
+
+				return new SymbolicStack(swapX(5, stack.clone()));
+
+			} else if (op instanceof Swap6Operator) { // SWAP6
+
+				return new SymbolicStack(swapX(6, stack.clone()));
+
+			} else if (op instanceof Swap7Operator) { // SWAP7
+
+				return new SymbolicStack(swapX(7, stack.clone()));
+
+			} else if (op instanceof Swap8Operator) { // SWAP8
+
+				return new SymbolicStack(swapX(8, stack.clone()));
+
+			} else if (op instanceof Swap9Operator) { // SWAP9
+
+				return new SymbolicStack(swapX(9, stack.clone()));
+
+			} else if (op instanceof Swap10Operator) { // SWAP10
+
+				return new SymbolicStack(swapX(10, stack.clone()));
+
+			} else if (op instanceof Swap11Operator) { // SWAP11
+
+				return new SymbolicStack(swapX(11, stack.clone()));
+
+			} else if (op instanceof Swap12Operator) { // SWAP12
+
+				return new SymbolicStack(swapX(12, stack.clone()));
+
+			} else if (op instanceof Swap13Operator) { // SWAP13
+
+				return new SymbolicStack(swapX(13, stack.clone()));
+
+			} else if (op instanceof Swap14Operator) { // SWAP14
+
+				return new SymbolicStack(swapX(14, stack.clone()));
+
+			} else if (op instanceof Swap15Operator) { // SWAP15
+
+				return new SymbolicStack(swapX(15, stack.clone()));
+
+			} else if (op instanceof Swap16Operator) { // SWAP16
+
+				return new SymbolicStack(swapX(16, stack.clone()));
+
 			}
 		}
 
@@ -303,14 +465,6 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		return isTop;
 	}
 
-	private BigInteger toBigInteger(SymbolicExpression expression) {
-		Constant c = (Constant) expression;
-		String hex = (String) c.getValue();
-		String hexadecimal = hex.substring(2);
-		Integer intVal = Integer.parseInt(hexadecimal, 16);
-		return new BigInteger(intVal.toString());
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(stack);
@@ -326,6 +480,48 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			return false;
 		SymbolicStack other = (SymbolicStack) obj;
 		return Objects.equals(stack, other.stack);
+	}
+
+	private BigInteger toBigInteger(SymbolicExpression expression) {
+		Constant c = (Constant) expression;
+		String hex = (String) c.getValue();
+		String hexadecimal = hex.substring(2);
+		Integer intVal = Integer.parseInt(hexadecimal, 16);
+		return new BigInteger(intVal.toString());
+	}
+
+	private ArrayDeque<BigInteger> dupX(int x, ArrayDeque<BigInteger> stack) {
+		int i = 0;
+		BigInteger target = BigInteger.ZERO;
+
+		for (Iterator<BigInteger> iterator = stack.iterator(); iterator.hasNext() && i < x; ++i) {
+			target = (BigInteger) iterator.next();
+		}
+
+		stack.push(target);
+
+		return stack;
+	}
+
+	private ArrayDeque<BigInteger> swapX(int x, ArrayDeque<BigInteger> stack) {
+		BigInteger target1 = stack.pop();
+		BigInteger[] popped = new BigInteger[x];
+
+		// Swap target1 with popped[x - 1]
+
+		for (int i = 0; i < x; ++i) {
+			popped[i] = stack.pop();
+		}
+
+		stack.push(target1);
+
+		for (int i = x - 2; i >= 0; --i) {
+			stack.push(popped[i]);
+		}
+
+		stack.push(popped[x - 1]);
+
+		return stack;
 	}
 
 }

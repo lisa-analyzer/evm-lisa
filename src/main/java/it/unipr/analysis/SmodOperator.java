@@ -25,5 +25,5 @@ public class SmodOperator implements UnaryOperator {
 	public ExternalSet<Type> typeInference(ExternalSet<Type> argument) {
 		return Caches.types().mkSingletonSet(Untyped.INSTANCE);
 	}
-	
+
 }

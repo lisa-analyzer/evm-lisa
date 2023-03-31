@@ -25,5 +25,5 @@ public class IszeroOperator implements UnaryOperator {
 	public ExternalSet<Type> typeInference(ExternalSet<Type> argument) {
 		return Caches.types().mkSingletonSet(Untyped.INSTANCE);
 	}
-	
+
 }
