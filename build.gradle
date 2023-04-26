@@ -12,7 +12,7 @@ plugins {
     id 'application'
    	id 'antlr'
    	id 'eclipse'    
-   	id 'com.diffplug.spotless' version '5.15.0'
+   	id 'com.diffplug.spotless' version '6.18.0'
     id 'checkstyle' 
 }
 
@@ -62,8 +62,8 @@ checkstyleTest.enabled = false
 checkstyleMain {
     finalizedBy 'checkstyleErrorMessage'
     reports {
-        xml.enabled false
-        html.enabled false
+        xml.required = false
+        html.required = false
     }
 }
 
@@ -92,13 +92,11 @@ spotless {
         // use the eclipse formatting with the one provided with the project
         eclipse().configFile(new File(rootProject.projectDir, 'spotless-formatting.xml'))
     
+        target 'src/**/*.java'    
         // ignore generated code
-        target project.fileTree(project.projectDir) {
-            include '**/*.java'
-            exclude '**/build/generated/**'
-            exclude '**/build/generated-src/**'
-            exclude '**/target/generated-sources/**'
-        }
+        targetExclude '**/build/generated/**/*.java'
+        targetExclude '**/build/generated-src/**/*.java'
+        targetExclude '**/target/generated-sources/**/*.java'
     }
     antlr4 {
         target 'src/*/antlr/**/*.g4'
