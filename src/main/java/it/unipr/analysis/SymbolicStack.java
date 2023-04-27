@@ -393,9 +393,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (this.isBottom()) {
+		if (this.isBottom() || this.isTop()) {
 			return this;
-		}
+		} 
 		
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
