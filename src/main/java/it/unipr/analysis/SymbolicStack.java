@@ -383,8 +383,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				return new SymbolicStack(swapX(16, stack.clone()));
 			
 			} else if (op instanceof JumpiOperator) { // JUMPI
-				// Blank
 				// Implemented in assume()
+				return this;
 			}
 		}
 
