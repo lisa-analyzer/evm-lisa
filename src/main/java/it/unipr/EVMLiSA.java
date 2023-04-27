@@ -38,7 +38,7 @@ public class EVMLiSA {
 		// Program cfg =
 		// EVMFrontend.generateCfgFromContractAddress("0x22895ba3ee81ab5f12753bd13b52858f8857d518");
 
-		Program cfg = EVMFrontend.generateCfgFromFile("eth.sol");
+		Program cfg = EVMFrontend.generateCfgFromFile("if_else_eth.sol");
 		analyzeCFG(cfg, "output");
 
 		EVMLiSA.analyzeCFG(cfg, "output");

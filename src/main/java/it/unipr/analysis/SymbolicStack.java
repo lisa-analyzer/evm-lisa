@@ -54,6 +54,10 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+		if (this.isBottom()) {
+			return this;
+		}
+		
 		if (expression instanceof Constant) {
 			return this;
 		} else if (expression instanceof UnaryExpression) {
@@ -377,7 +381,10 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			} else if (op instanceof Swap16Operator) { // SWAP16
 
 				return new SymbolicStack(swapX(16, stack.clone()));
-
+			
+			} else if (op instanceof JumpiOperator) { // JUMPI
+				// Blank
+				// Implemented in assume()
 			}
 		}
 
@@ -386,7 +393,27 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// TODO Auto-generated method stub
+		if (this.isBottom()) {
+			return this;
+		}
+		
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression un = (UnaryExpression) expression;
+			UnaryOperator op = un.getOperator();
+			
+			if (op instanceof JumpiOperator) { // JUMPI
+				ArrayDeque<BigInteger> result = stack.clone();
+				BigInteger condition = result.pop();
+				result.pop(); // BigInteger destination = result.pop();
+				
+				if (condition != BigInteger.ZERO) {
+					return new SymbolicStack(result);
+				} else {
+					return bottom();
+				}
+			}
+		}
+		
 		return this;
 	}
 
