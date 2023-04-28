@@ -12,6 +12,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
@@ -403,13 +404,34 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			
 			if (op instanceof JumpiOperator) { // JUMPI
 				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger condition = result.pop();
 				result.pop(); // BigInteger destination = result.pop();
+				BigInteger condition = result.pop();
 				
 				if (condition != BigInteger.ZERO) {
 					return new SymbolicStack(result);
 				} else {
 					return bottom();
+				}
+			} else if (op instanceof LogicalNegation) {
+				// Get the expression wrapped by LogicalNegation
+				
+				SymbolicExpression wrappedExpr = un.getExpression();
+				
+				if (wrappedExpr instanceof UnaryExpression) {
+					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
+				
+					// Check if LogicalNegation is wrapping a JUMPI
+					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
+						ArrayDeque<BigInteger> result = stack.clone();
+						result.pop(); // BigInteger destination = result.pop();
+						BigInteger condition = result.pop();
+						
+						if (condition == BigInteger.ZERO) {
+							return new SymbolicStack(result);
+						} else {
+							return bottom();
+						}
+					}
 				}
 			}
 		}
