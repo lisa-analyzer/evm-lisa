@@ -1,10 +1,12 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.caches.Caches;
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.common.Int32;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
  * Implementation of UnaryOperator to represent the Push operator of Ethereum
@@ -26,8 +28,8 @@ public class PushOperator implements UnaryOperator {
 	}
 
 	@Override
-	public ExternalSet<Type> typeInference(ExternalSet<Type> argument) {
-		return Caches.types().mkSingletonSet(Int32.INSTANCE);
+	public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+		return Collections.singleton(Untyped.INSTANCE);
 	}
 
 }

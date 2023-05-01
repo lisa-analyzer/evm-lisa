@@ -39,9 +39,11 @@ import it.unipr.cfg.push.Push9;
 import it.unipr.evm.antlr.EVMBParser.OpcodesContext;
 import it.unipr.evm.antlr.EVMBParser.ProgramContext;
 import it.unipr.evm.antlr.EVMBParserBaseVisitor;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
@@ -68,6 +70,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 	private int orpcount = 0;
 
 	private final String filePath;
+	private final Program program;
 	// private Map<Integer, ArrayList<Integer>> orphandest = new HashMap<>();
 
 	private Map<Integer, ArrayList<Integer>> result = new HashMap<>();
@@ -77,14 +80,15 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 	 * 
 	 * @param filePath file path where the smart contract is stored
 	 */
-	public EVMCFGGenerator(String filePath) {
+	public EVMCFGGenerator(String filePath, Program program) {
 		this.filePath = filePath;
+		this.program = program;
 	}
 
 	@Override
 	public CFG visitProgram(ProgramContext ctx) {
-		CompilationUnit unit = new CompilationUnit(new ProgramCounterLocation(-1), "program", false);
-		CFGDescriptor cfgDesc = new CFGDescriptor(new ProgramCounterLocation(-1), unit, false, filePath,
+		ClassUnit unit = new ClassUnit(new ProgramCounterLocation(-1), program, "program", false);
+		CodeMemberDescriptor cfgDesc = new CodeMemberDescriptor(new ProgramCounterLocation(-1), unit, false, filePath,
 				new Parameter[] {});
 		this.cfg = new CFG(cfgDesc);
 		Statement last = null;
@@ -172,6 +176,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		System.out.println(
 				perc + "/" + orpcount + " Jump orfane risolte " + "--> " + (((float) perc) / orpcount) * 100 + "%");
 
+		unit.addCodeMember(cfg);
 		return cfg;
 	}
 

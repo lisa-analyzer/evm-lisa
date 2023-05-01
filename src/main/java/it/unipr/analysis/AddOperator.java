@@ -1,10 +1,12 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.caches.Caches;
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class AddOperator implements UnaryOperator {
 
@@ -22,8 +24,8 @@ public class AddOperator implements UnaryOperator {
 	}
 
 	@Override
-	public ExternalSet<Type> typeInference(ExternalSet<Type> argument) {
-		return Caches.types().mkSingletonSet(Untyped.INSTANCE);
+	public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+		return Collections.singleton(Untyped.INSTANCE);
 	}
 
 }

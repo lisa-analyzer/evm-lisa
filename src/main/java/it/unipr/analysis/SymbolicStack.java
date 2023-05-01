@@ -1,5 +1,11 @@
 package it.unipr.analysis;
 
+import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,10 +20,6 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.math.BigInteger;
-import java.util.ArrayDeque;
-import java.util.Iterator;
-import java.util.Objects;
 
 /**
  * Semantic domain of the execution stack of the contract.
@@ -393,53 +395,6 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	}
 
 	@Override
-	public SymbolicStack assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (this.isBottom() || this.isTop()) {
-			return this;
-		} 
-		
-		if (expression instanceof UnaryExpression) {
-			UnaryExpression un = (UnaryExpression) expression;
-			UnaryOperator op = un.getOperator();
-			
-			if (op instanceof JumpiOperator) { // JUMPI
-				ArrayDeque<BigInteger> result = stack.clone();
-				result.pop(); // BigInteger destination = result.pop();
-				BigInteger condition = result.pop();
-				
-				if (condition != BigInteger.ZERO) {
-					return new SymbolicStack(result);
-				} else {
-					return bottom();
-				}
-			} else if (op instanceof LogicalNegation) {
-				// Get the expression wrapped by LogicalNegation
-				
-				SymbolicExpression wrappedExpr = un.getExpression();
-				
-				if (wrappedExpr instanceof UnaryExpression) {
-					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
-				
-					// Check if LogicalNegation is wrapping a JUMPI
-					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-						ArrayDeque<BigInteger> result = stack.clone();
-						result.pop(); // BigInteger destination = result.pop();
-						BigInteger condition = result.pop();
-						
-						if (condition == BigInteger.ZERO) {
-							return new SymbolicStack(result);
-						} else {
-							return bottom();
-						}
-					}
-				}
-			}
-		}
-		
-		return this;
-	}
-
-	@Override
 	public SymbolicStack forgetIdentifier(Identifier id) throws SemanticException {
 		// TODO Auto-generated method stub
 		return this;
@@ -466,9 +421,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	@Override
 	public DomainRepresentation representation() {
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 		else if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		return new StringRepresentation(stack);
 	}
 
@@ -577,6 +532,60 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		stack.push(popped[x - 1]);
 
 		return stack;
+	}
+
+	@Override
+	public SymbolicStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+			throws SemanticException {
+		if (this.isBottom() || this.isTop()) {
+			return this;
+		} 
+		
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression un = (UnaryExpression) expression;
+			UnaryOperator op = un.getOperator();
+			
+			if (op instanceof JumpiOperator) { // JUMPI
+				ArrayDeque<BigInteger> result = stack.clone();
+				result.pop(); // BigInteger destination = result.pop();
+				BigInteger condition = result.pop();
+				
+				if (condition != BigInteger.ZERO) {
+					return new SymbolicStack(result);
+				} else {
+					return bottom();
+				}
+			} else if (op instanceof LogicalNegation) {
+				// Get the expression wrapped by LogicalNegation
+				
+				SymbolicExpression wrappedExpr = un.getExpression();
+				
+				if (wrappedExpr instanceof UnaryExpression) {
+					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
+				
+					// Check if LogicalNegation is wrapping a JUMPI
+					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
+						ArrayDeque<BigInteger> result = stack.clone();
+						result.pop(); // BigInteger destination = result.pop();
+						BigInteger condition = result.pop();
+						
+						if (condition == BigInteger.ZERO) {
+							return new SymbolicStack(result);
+						} else {
+							return bottom();
+						}
+					}
+				}
+			}
+		}
+		
+		return this;
+	}
+
+	@Override
+	public SymbolicStack forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		// TODO Auto-generated method stub
+		return this;
 	}
 
 }
