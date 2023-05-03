@@ -1,11 +1,5 @@
 package it.unipr.analysis;
 
-import java.math.BigInteger;
-import java.util.ArrayDeque;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,6 +14,11 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Semantic domain of the execution stack of the contract.
@@ -60,7 +59,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		if (this.isBottom()) {
 			return this;
 		}
-		
+
 		if (expression instanceof Constant) {
 			return this;
 		} else if (expression instanceof UnaryExpression) {
@@ -384,7 +383,12 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			} else if (op instanceof Swap16Operator) { // SWAP16
 
 				return new SymbolicStack(swapX(16, stack.clone()));
-			
+
+			} else if (op instanceof JumpOperator) { // JUMP
+				ArrayDeque<BigInteger> result = stack.clone();
+				result.pop(); // BigInteger destination = result.pop();
+
+				return new SymbolicStack(result);
 			} else if (op instanceof JumpiOperator) { // JUMPI
 				// Implemented in assume()
 				return this;
@@ -539,17 +543,17 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			throws SemanticException {
 		if (this.isBottom() || this.isTop()) {
 			return this;
-		} 
-		
+		}
+
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
 			UnaryOperator op = un.getOperator();
-			
+
 			if (op instanceof JumpiOperator) { // JUMPI
 				ArrayDeque<BigInteger> result = stack.clone();
 				result.pop(); // BigInteger destination = result.pop();
 				BigInteger condition = result.pop();
-				
+
 				if (condition != BigInteger.ZERO) {
 					return new SymbolicStack(result);
 				} else {
@@ -557,18 +561,18 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				}
 			} else if (op instanceof LogicalNegation) {
 				// Get the expression wrapped by LogicalNegation
-				
+
 				SymbolicExpression wrappedExpr = un.getExpression();
-				
+
 				if (wrappedExpr instanceof UnaryExpression) {
 					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
-				
+
 					// Check if LogicalNegation is wrapping a JUMPI
 					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
 						ArrayDeque<BigInteger> result = stack.clone();
 						result.pop(); // BigInteger destination = result.pop();
 						BigInteger condition = result.pop();
-						
+
 						if (condition == BigInteger.ZERO) {
 							return new SymbolicStack(result);
 						} else {
@@ -578,7 +582,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				}
 			}
 		}
-		
+
 		return this;
 	}
 
