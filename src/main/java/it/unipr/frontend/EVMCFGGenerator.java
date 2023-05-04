@@ -40,7 +40,6 @@ import it.unipr.evm.antlr.EVMBParser.OpcodesContext;
 import it.unipr.evm.antlr.EVMBParser.ProgramContext;
 import it.unipr.evm.antlr.EVMBParserBaseVisitor;
 import it.unive.lisa.program.ClassUnit;
-import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -136,7 +135,11 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 				else if (st instanceof Jump && !(last instanceof Push)) {
 					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()),
 							Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
+					
+		
+					System.out.println("Couldn't resolve jump at line: " + (i + 1));
 					orpcount++;
+					
 					result.put(Integer.valueOf(st.getLocation().getCodeLocation()), new ArrayList<>());
 					last = null;
 				}
@@ -174,7 +177,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		System.out.println("Orphan jump: " + result);
 
 		System.out.println(
-				perc + "/" + orpcount + " Jump orfane risolte " + "--> " + (((float) perc) / orpcount) * 100 + "%");
+				perc + "/" + orpcount + " orphan jumps resolved " + "--> " + (((float) perc) / orpcount) * 100 + "%");
 
 		unit.addCodeMember(cfg);
 		return cfg;
