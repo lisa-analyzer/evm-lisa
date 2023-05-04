@@ -56,7 +56,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (this.isBottom()) {
+		if (this.isBottom() || this.isTop()) { // BOTTOM or TOP propagation
 			return this;
 		}
 

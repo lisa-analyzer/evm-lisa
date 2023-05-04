@@ -31,20 +31,13 @@ public class EVMLiSA {
 	 * @throws IOException       when {@code args} is not a valid file path
 	 */
 	public static void main(String[] args) throws AnalysisException, IOException {
-		// EVMFrontend.parseContractFromEtherscan("0x22895ba3ee81ab5f12753bd13b52858f8857d518",
-		// "eth.sol");
-		// Program program = EVMFrontend.processFile(args[0]);
-		// Program program = EVMFrontend.processFile("eth.sol");
-		// Program program =
-		// EVMFrontend.processFile("benchmark/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48.op");
-		// Program program = EVMFrontend.processFile("sm.sol");
+		// Generate CFG from a file
+		// Program cfg = EVMFrontend.generateCfgFromFile("if_else_eth.sol");
 
-		// Program cfg =
-		// EVMFrontend.generateCfgFromContractAddress("0x22895ba3ee81ab5f12753bd13b52858f8857d518");
+		// Generate CFG from contract address
+		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
 
-		Program cfg = EVMFrontend.generateCfgFromFile("if_else_eth.sol");
-		analyzeCFG(cfg, "output");
-
+		// Run the analysis
 		EVMLiSA.analyzeCFG(cfg, "output");
 	}
 
