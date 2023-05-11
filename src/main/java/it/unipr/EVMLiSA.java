@@ -20,6 +20,10 @@ import it.unive.lisa.program.Program;
  * Analyze an Ethereum Smart Contract from Etherscan and then generate its CFG.
  */
 public class EVMLiSA {
+	
+	private final static String OUTPUT_DIR = "output";
+	private final static String CONTRACTS_DIR = "test-contracts";
+	
 
 	/**
 	 * Takes a smart contract stored in {@code args} and makes its control flow
@@ -32,13 +36,13 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) throws AnalysisException, IOException {
 		// Generate CFG from a file
-		// Program cfg = EVMFrontend.generateCfgFromFile("if_else_eth.sol");
+		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("if_else_eth.sol"));
 
-		// Generate CFG from contract address
-		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
+//		// Generate CFG from contract address
+//		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
 
 		// Run the analysis
-		EVMLiSA.analyzeCFG(cfg, "output");
+		EVMLiSA.analyzeCFG(cfg, EVMLiSA.OUTPUT_DIR);
 	}
 
 	/**
@@ -67,5 +71,9 @@ public class EVMLiSA {
 		
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
+	}
+	
+	private static String getContractPath(String contractFilename) {
+		return EVMLiSA.CONTRACTS_DIR + "/" + contractFilename;
 	}
 }
