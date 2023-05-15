@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -12,9 +13,10 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.math.BigInteger;
+import it.unive.lisa.util.numeric.IntInterval;
+import it.unive.lisa.util.numeric.MathNumberConversionException;
+
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Objects;
@@ -28,7 +30,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private static final SymbolicStack TOP = new SymbolicStack();
 	private static final SymbolicStack BOTTOM = new SymbolicStack(null);
 
-	private final ArrayDeque<BigInteger> stack;
+	private final ArrayDeque<Interval> stack;
 	private final boolean isTop;
 
 	/**
@@ -40,10 +42,10 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	private SymbolicStack(boolean isTop) {
 		this.isTop = isTop;
-		this.stack = new ArrayDeque<BigInteger>();
+		this.stack = new ArrayDeque<Interval>();
 	}
 
-	private SymbolicStack(ArrayDeque<BigInteger> stack) {
+	private SymbolicStack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
@@ -67,177 +69,274 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			UnaryOperator op = un.getOperator();
 
 			if (op instanceof PushOperator) { // PUSH
-				ArrayDeque<BigInteger> result = stack.clone();
-
-				result.push(toBigInteger(un.getExpression()));
-
+				ArrayDeque<Interval> result = stack.clone();
+				
+				Integer valueToPush = this.toInteger(un.getExpression());
+				
+				result.push(new Interval(valueToPush, valueToPush));
+				
 				return new SymbolicStack(result);
 			} else if (op instanceof AddOperator) { // ADD
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				
+				Interval sum = new Interval(opnd1.plus(opnd2));
 
-				result.push(opnd1.add(opnd2));
+				result.push(sum);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof SubOperator) { // SUB
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				
+				Interval sub = new Interval(opnd1.diff(opnd2));
 
-				result.push(opnd1.subtract(opnd2));
+				result.push(sub);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof MulOperator) { // MUL
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				
+				Interval mul = new Interval(opnd1.mul(opnd2));
 
-				result.push(opnd1.multiply(opnd2));
+				result.push(mul);
 
 				return new SymbolicStack(result);
 			} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV,
 																						// SDIV
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
-
-				if (opnd2.equals(BigInteger.ZERO)) {
-					result.push(BigInteger.ZERO);
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				Interval div;
+				
+				if (opnd2.equals(Interval.ZERO.interval)) {
+					div = Interval.ZERO;
 				} else {
-					result.push(opnd1.divide(opnd2));
+					div = new Interval(opnd1.diff(opnd2));
 				}
+
+				result.push(div);
 
 				return new SymbolicStack(result);
 			} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD,
 																						// SMOD
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
-
-				if (opnd2.equals(BigInteger.ZERO)) {
-					result.push(BigInteger.ZERO);
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				Interval mod;
+				
+				if (opnd2.equals(Interval.ZERO.interval)) {
+					mod = Interval.ZERO;
 				} else {
-					result.push(opnd1.mod(opnd2));
+					int low, high;
+					
+					try {
+						low = opnd1.getLow().toInt() % opnd2.getLow().toInt();
+						high = opnd1.getHigh().toInt() % opnd2.getHigh().toInt();
+					} catch (MathNumberConversionException e) {
+						return this.bottom();
+					}
+					
+					mod = new Interval(low, high);
 				}
+
+				result.push(mod);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof AddmodOperator) { // ADDMOD
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
-				BigInteger opnd3 = result.pop();
-
-				if (opnd3.equals(BigInteger.ZERO)) {
-					result.push(BigInteger.ZERO);
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				IntInterval opnd3 = result.pop().interval;
+				Interval addmod;
+				
+				if (opnd3.equals(Interval.ZERO.interval)) {
+					addmod = Interval.ZERO;
 				} else {
-					result.push((opnd1.add(opnd2)).mod(opnd3));
+					IntInterval sum = opnd1.plus(opnd2);
+					
+					int low, high;
+					
+					try {
+						low = sum.getLow().toInt() % opnd3.getLow().toInt();
+						high = sum.getHigh().toInt() % opnd3.getHigh().toInt();
+					} catch (MathNumberConversionException e) {
+						return this.bottom();
+					}
+					
+					addmod = new Interval(low, high);
 				}
+
+				result.push(addmod);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof MulmodOperator) { // MULMOD
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
-				BigInteger opnd3 = result.pop();
-
-				if (opnd3.equals(BigInteger.ZERO)) {
-					result.push(BigInteger.ZERO);
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				IntInterval opnd3 = result.pop().interval;
+				Interval mulmod;
+				
+				if (opnd3.equals(Interval.ZERO.interval)) {
+					mulmod = Interval.ZERO;
 				} else {
-					result.push((opnd1.multiply(opnd2)).mod(opnd3));
+					IntInterval mul = opnd1.mul(opnd2);
+					int low, high;
+					
+					try {
+						low = mul.getLow().toInt() % opnd3.getLow().toInt();
+						high = mul.getHigh().toInt() % opnd3.getHigh().toInt();
+					} catch (MathNumberConversionException e) {
+						return this.bottom();
+					}
+					
+					mulmod = new Interval(low, high);
 				}
+
+				result.push(mulmod);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof ExpOperator) { // EXP
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
+				
+				int low, high;
+				
+				try {
+					low = (int)Math.pow(opnd1.getLow().toDouble(), opnd1.getLow().toDouble());
+					high = (int)Math.pow(opnd2.getHigh().toDouble(), opnd2.getHigh().toDouble());
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+				
+				Interval exp = new Interval(low, high);
 
-				result.push(opnd1.pow(opnd2.intValue()));
+				result.push(exp);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof SignextendOperator) { // SIGNEXTEND
-				ArrayDeque<BigInteger> result = stack.clone();
-				// BigInteger offset = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				// offset = result.pop().interval;
 				result.pop();
-				// BigInteger toExtend = result.pop();
-
+				// toExtend = result.pop().interval;
 				// result.push(toExtend);
 
 				return new SymbolicStack(result);
 			} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
 																					// SLT
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
 
-				result.push(opnd1.compareTo(opnd2) < 0 ? BigInteger.ONE : BigInteger.ZERO);
+				result.push(opnd1.compareTo(opnd2) < 0 ? new Interval(1,1) : Interval.ZERO);
 
 				return new SymbolicStack(result);
 			} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT,
 																					// SGT
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
 
-				result.push(opnd1.compareTo(opnd2) > 0 ? BigInteger.ONE : BigInteger.ZERO);
+				result.push(opnd1.compareTo(opnd2) > 0 ? new Interval(1,1) : Interval.ZERO);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof EqOperator) { // EQ
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
 
-				result.push(opnd1.compareTo(opnd2) == 0 ? BigInteger.ONE : BigInteger.ZERO);
+				result.push(opnd1.compareTo(opnd2) == 0 ? new Interval(1,1) : Interval.ZERO);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof IszeroOperator) { // ISZERO
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
 
-				result.push(opnd1.compareTo(BigInteger.ZERO) == 0 ? BigInteger.ONE : BigInteger.ZERO);
+				result.push(opnd1.compareTo(Interval.ZERO.interval) == 0 ? new Interval(1,1) : Interval.ZERO);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof AndOperator) { // AND
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
 
-				result.push(opnd1.and(opnd2));
+				int low, high;
+				
+				try {
+					low = opnd1.getLow().toInt() & opnd2.getLow().toInt();
+					high = opnd1.getHigh().toInt() & opnd2.getHigh().toInt();
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+				
+				result.push(new Interval(low, high));
 
 				return new SymbolicStack(result);
 			} else if (op instanceof OrOperator) { // OR
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
 
-				result.push(opnd1.or(opnd2));
+				int low, high;
+				
+				try {
+					low = opnd1.getLow().toInt() | opnd2.getLow().toInt();
+					high = opnd1.getHigh().toInt() | opnd2.getHigh().toInt();
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+				
+				result.push(new Interval(low, high));
 
 				return new SymbolicStack(result);
 			} else if (op instanceof XorOperator) { // XOR
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-				BigInteger opnd2 = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				IntInterval opnd2 = result.pop().interval;
 
-				result.push(opnd1.xor(opnd2));
+				int low, high;
+				
+				try {
+					low = opnd1.getLow().toInt() ^ opnd2.getLow().toInt();
+					high = opnd1.getHigh().toInt() ^ opnd2.getHigh().toInt();
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+				
+				result.push(new Interval(low, high));
 
 				return new SymbolicStack(result);
 			} else if (op instanceof NotOperator) { // NOT
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger opnd1 = result.pop();
-
-				opnd1.toByteArray();
-
-				result.push(opnd1.not());
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval opnd1 = result.pop().interval;
+				
+				int low, high;
+				
+				try {
+					low = ~opnd1.getLow().toInt();
+					high = ~opnd1.getLow().toInt();
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+				
+				result.push(new Interval(low, high));
 
 				return new SymbolicStack(result);
-			} else if (op instanceof ByteOperator) { // BYTE
-				ArrayDeque<BigInteger> result = stack.clone();
-				BigInteger byteToSelect = result.pop();
-				BigInteger value = result.pop();
-				byte[] valueAsByteArray = value.toByteArray();
+			} else if (op instanceof ByteOperator) { // BYTE+
+				/*
+				ArrayDeque<Interval> result = stack.clone();
+				IntInterval byteToSelect = result.pop().interval;
+				IntInterval target = result.pop().interval;
+				
+				byte[] lowAsByteArray = target.getLow().toByte();
+				byte[] highAsByteArray = 
 
-				if ((byteToSelect.compareTo(BigInteger.valueOf(0)) < 0)
+				if ((byteToSelect.compareTo(Interval.ZERO.interval) < 0)
 						|| (byteToSelect.compareTo(BigInteger.valueOf(valueAsByteArray.length)) >= 0)) {
 					result.push(BigInteger.ZERO);
 				} else {
@@ -250,8 +349,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				}
 
 				return new SymbolicStack(result);
+				*/
 			} else if (op instanceof PopOperator) { // POP
-				ArrayDeque<BigInteger> result = stack.clone();
+				ArrayDeque<Interval> result = stack.clone();
 
 				result.pop();
 
@@ -385,8 +485,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				return new SymbolicStack(swapX(16, stack.clone()));
 
 			} else if (op instanceof JumpOperator) { // JUMP
-				ArrayDeque<BigInteger> result = stack.clone();
-				result.pop(); // BigInteger destination = result.pop();
+				ArrayDeque<Interval> result = stack.clone();
+				result.pop(); // Interval destination = result.pop();
 
 				return new SymbolicStack(result);
 			} else if (op instanceof JumpiOperator) { // JUMPI
@@ -496,20 +596,20 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		return Objects.equals(stack, other.stack);
 	}
 
-	private BigInteger toBigInteger(SymbolicExpression expression) {
+	private Integer toInteger(SymbolicExpression expression) {
 		Constant c = (Constant) expression;
 		String hex = (String) c.getValue();
 		String hexadecimal = hex.substring(2);
 		Integer intVal = Integer.parseInt(hexadecimal, 16);
-		return new BigInteger(intVal.toString());
+		return intVal;
 	}
 
-	private ArrayDeque<BigInteger> dupX(int x, ArrayDeque<BigInteger> stack) {
+	private ArrayDeque<Interval> dupX(int x, ArrayDeque<Interval> stack) {
 		int i = 0;
-		BigInteger target = BigInteger.ZERO;
+		Interval target = Interval.ZERO;
 
-		for (Iterator<BigInteger> iterator = stack.iterator(); iterator.hasNext() && i < x; ++i) {
-			target = (BigInteger) iterator.next();
+		for (Iterator<Interval> iterator = stack.iterator(); iterator.hasNext() && i < x; ++i) {
+			target = (Interval) iterator.next();
 		}
 
 		stack.push(target);
@@ -517,9 +617,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		return stack;
 	}
 
-	private ArrayDeque<BigInteger> swapX(int x, ArrayDeque<BigInteger> stack) {
-		BigInteger target1 = stack.pop();
-		BigInteger[] popped = new BigInteger[x];
+	private ArrayDeque<Interval> swapX(int x, ArrayDeque<Interval> stack) {
+		Interval target1 = stack.pop();
+		Interval[] popped = new Interval[x];
 
 		// Swap target1 with popped[x - 1]
 
@@ -543,8 +643,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			throws SemanticException {
 		if (this.isBottom() || this.isTop()) {
 			return this;
-		}
-
+		}/*
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
 			UnaryOperator op = un.getOperator();
@@ -582,7 +681,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				}
 			}
 		}
-
+*/
 		return this;
 	}
 
