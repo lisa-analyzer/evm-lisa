@@ -124,7 +124,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 					last = null;
 				}
 
-				else if (last instanceof Push && st instanceof Jumpi) {
+				else if (st instanceof Jumpi && last instanceof Push) {
 					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()),
 							Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
 					jumpmap.put(Integer.valueOf(st.getLocation().getCodeLocation()),
@@ -135,11 +135,10 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 				else if (st instanceof Jump && !(last instanceof Push)) {
 					jumpmap.put(Integer.valueOf(last.getLocation().getCodeLocation()),
 							Pair.of(Integer.valueOf(st.getLocation().getCodeLocation()), "N"));
-					
-		
+
 					System.out.println("Couldn't resolve jump at line: " + (i + 1));
 					orpcount++;
-					
+
 					result.put(Integer.valueOf(st.getLocation().getCodeLocation()), new ArrayList<>());
 					last = null;
 				}

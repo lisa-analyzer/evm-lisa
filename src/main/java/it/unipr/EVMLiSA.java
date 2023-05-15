@@ -1,7 +1,5 @@
 package it.unipr;
 
-import java.io.IOException;
-
 import it.unipr.analysis.SymbolicStack;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
@@ -15,15 +13,15 @@ import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import java.io.IOException;
 
 /**
  * Analyze an Ethereum Smart Contract from Etherscan and then generate its CFG.
  */
 public class EVMLiSA {
-	
+
 	private final static String OUTPUT_DIR = "output";
 	private final static String CONTRACTS_DIR = "test-contracts";
-	
 
 	/**
 	 * Takes a smart contract stored in {@code args} and makes its control flow
@@ -68,11 +66,11 @@ public class EVMLiSA {
 		conf.serializeResults = true;
 		conf.analysisGraphs = GraphType.DOT;
 		conf.optimize = false;
-		
+
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 	}
-	
+
 	private static String getContractPath(String contractFilename) {
 		return EVMLiSA.CONTRACTS_DIR + "/" + contractFilename;
 	}

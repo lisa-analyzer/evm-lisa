@@ -19,7 +19,7 @@ public class EVMFeatures extends LanguageFeatures {
 
 	@Override
 	public ParameterMatchingStrategy getMatchingStrategy() {
- 		return JavaLikeMatchingStrategy.INSTANCE;
+		return JavaLikeMatchingStrategy.INSTANCE;
 	}
 
 	@Override
