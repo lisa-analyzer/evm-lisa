@@ -34,10 +34,10 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) throws AnalysisException, IOException {
 		// Generate CFG from a file
-		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("if_else_eth.sol"));
+//		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("if_else_eth.sol"));
 
 //		// Generate CFG from contract address
-//		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
+		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
 
 		// Run the analysis
 		EVMLiSA.analyzeCFG(cfg, EVMLiSA.OUTPUT_DIR);

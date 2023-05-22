@@ -358,9 +358,23 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				result.push(resultInterval);
 				return new SymbolicStack(result);
-			} else if (op instanceof PopOperator) { // POP
+			} else if (op instanceof JumpOperator) { // JUMP
 				ArrayDeque<Interval> result = stack.clone();
+				result.pop(); // Interval destination = result.pop();
 
+				return new SymbolicStack(result);
+			} else if (op instanceof JumpiOperator) { // JUMPI
+				// Implemented in assume()
+				return this;
+			}
+			
+			// from here on, top is propagated
+			if (isTop())
+				return this;
+			
+			if (op instanceof PopOperator) { // POP		
+				ArrayDeque<Interval> result = stack.clone();
+			
 				result.pop();
 
 				return new SymbolicStack(result);
@@ -492,15 +506,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				return new SymbolicStack(swapX(16, stack.clone()));
 
-			} else if (op instanceof JumpOperator) { // JUMP
-				ArrayDeque<Interval> result = stack.clone();
-				result.pop(); // Interval destination = result.pop();
-
-				return new SymbolicStack(result);
-			} else if (op instanceof JumpiOperator) { // JUMPI
-				// Implemented in assume()
-				return this;
-			}
+			} 
 		}
 
 		return top();

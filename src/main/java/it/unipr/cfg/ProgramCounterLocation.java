@@ -9,14 +9,16 @@ import java.util.Objects;
 public class ProgramCounterLocation implements CodeLocation {
 
 	private final int pc;
+	private final int sourceCodeLine;
 
 	/**
 	 * Default constructor.
 	 * 
 	 * @param pc integer representing the code location of the opcode
 	 */
-	public ProgramCounterLocation(int pc) {
+	public ProgramCounterLocation(int pc, int sourceCodeLine) {
 		this.pc = pc;
+		this.sourceCodeLine = sourceCodeLine;
 	}
 
 	@Override
