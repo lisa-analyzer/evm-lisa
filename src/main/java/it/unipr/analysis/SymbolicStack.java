@@ -131,10 +131,6 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
 				}
 
-				System.out.println(opnd1);
-				System.out.println(opnd2);
-				System.out.println(div);
-
 				result.push(div);
 
 				return new SymbolicStack(result);
@@ -209,10 +205,6 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				} catch (MathNumberConversionException e) {
 					e.printStackTrace();
 				}
-
-				System.out.println(opnd1);
-				System.out.println(opnd2);
-				System.out.println(exp);
 
 				return new SymbolicStack(result);
 			} else if (op instanceof SignextendOperator) { // SIGNEXTEND
@@ -378,6 +370,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				return new SymbolicStack(result);
 			} else if (op instanceof JumpiOperator) { // JUMPI
 				// Implemented in assume()
+				return this;
+			} else if (op instanceof JumpdestOperator) { // JUMPDEST
 				return this;
 			}
 
@@ -667,7 +661,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		if (this.isBottom() && other.isTop()) {
 			return true; // BOTTOM <= TOP is true
 		}
-
+		
 		// If "this" stack is taller (~ has more elements) than "other" stack,
 		// lessOrEqual is false
 		if (this.stack.size() > other.stack.size()) {

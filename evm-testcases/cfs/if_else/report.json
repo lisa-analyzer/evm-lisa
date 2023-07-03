@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_if_if_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_if_else_if_else_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "53ms",
-    "end" : "2023-07-03T23:31:30.346+02:00",
-    "expressions" : "5",
+    "duration" : "25ms",
+    "end" : "2023-07-03T23:31:30.452+02:00",
+    "expressions" : "7",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2023-07-03T23:31:30.293+02:00",
-    "statements" : "9",
+    "start" : "2023-07-03T23:31:30.427+02:00",
+    "statements" : "13",
     "units" : "0",
     "version" : "0.1b8",
     "warnings" : "0"
@@ -32,6 +32,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "test-outputs/cfs/if"
+    "workdir" : "test-outputs/cfs/if_else"
   }
 }

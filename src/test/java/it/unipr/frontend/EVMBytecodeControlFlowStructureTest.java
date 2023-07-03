@@ -16,7 +16,9 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExecutor{
 
-	
+	private final static boolean GENERATE_CFG = false;
+
+	// Test for /evm-testcases/cfs/if/if_eth.sol
 	@Test
 	public void testIf() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = new CronConfiguration();
@@ -26,10 +28,31 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		conf.testDir = "cfs/if";
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		if (GENERATE_CFG) {
+			conf.analysisGraphs = GraphType.DOT;
+		}
 		conf.programFile = "if_eth.sol";
 		perform(conf);
 	}
 	
+	// Test for /evm-testcases/cfs/if_else/if_else_eth.sol
+	@Test
+	public void testIfElse() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>(new MonolithicHeap(), new SymbolicStack(),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.testDir = "cfs/if_else";
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		if (GENERATE_CFG) {
+			conf.analysisGraphs = GraphType.DOT;
+		}
+		conf.programFile = "if_else_eth.sol";
+		perform(conf);
+	}
+	
+	// Test for /evm-testcases/cfs/while/while_eth.sol
 	@Test
 	public void testWhile() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = new CronConfiguration();
@@ -40,7 +63,9 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.testDir = "cfs/while";
 		conf.serializeInputs = true;
-		conf.analysisGraphs = GraphType.DOT;
+		if (GENERATE_CFG) {
+			conf.analysisGraphs = GraphType.DOT;
+		}
 		conf.programFile = "while_eth.sol";
 		perform(conf);
 	}
