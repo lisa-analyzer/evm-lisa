@@ -1,16 +1,16 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_if_if_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_if_if_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "413ms",
-    "end" : "2023-07-03T11:36:05.830+02:00",
+    "duration" : "85ms",
+    "end" : "2023-07-03T12:28:38.506+02:00",
     "expressions" : "5",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2023-07-03T11:36:05.417+02:00",
+    "start" : "2023-07-03T12:28:38.421+02:00",
     "statements" : "8",
     "units" : "0",
     "version" : "0.1b8",
@@ -32,6 +32,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "test-outputs/if"
+    "workdir" : "test-outputs/cfs/if"
   }
 }
