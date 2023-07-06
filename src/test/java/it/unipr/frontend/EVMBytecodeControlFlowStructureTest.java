@@ -16,7 +16,7 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExecutor{
 
-	private final static boolean GENERATE_CFG = false;
+	private final static boolean GENERATE_CFG = true;
 
 	// Test for /evm-testcases/cfs/if/if_eth.sol
 	@Test
@@ -52,7 +52,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		perform(conf);
 	}
 	
-	// Test for /evm-testcases/cfs/while/while_eth.sol
+	
 	@Test
 	public void testWhile() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = new CronConfiguration();

@@ -634,10 +634,13 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack widening(SymbolicStack other) throws SemanticException {
-		if (isBottom())
-			return other;
-		if (other.isBottom())
+		if (other == null || other.isBottom() || this.isTop()) {
 			return this;
+		}
+
+		if (this.isBottom() || this.isTop()) {
+			return other;
+		}
 
 		// TODO Auto-generated method stub
 		return this;
@@ -645,23 +648,15 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public boolean lessOrEqual(SymbolicStack other) throws SemanticException {
-		if (other == null) {
+		if (other == null)
 			return false;
-		}
 
-		// If both stacks are TOP or BOTTOM, lessOrEqual is true
-		if ((this.isBottom() && other.isBottom()) || (this.isTop() && other.isTop())) {
+		if (this == other || this.isBottom() || other.isTop() || this.equals(other))
 			return true;
-		}
 
-		if (this.isTop() && other.isBottom()) {
-			return false; // TOP <= BOTTOM is false
-		}
-
-		if (this.isBottom() && other.isTop()) {
-			return true; // BOTTOM <= TOP is true
-		}
-		
+		if (this.isTop() || other.isBottom())
+			return false;
+						
 		// If "this" stack is taller (~ has more elements) than "other" stack,
 		// lessOrEqual is false
 		if (this.stack.size() > other.stack.size()) {
