@@ -21,7 +21,7 @@ import java.io.IOException;
 public class EVMLiSA {
 
 	private final static String OUTPUT_DIR = "output";
-	private final static String CONTRACTS_DIR = "test-contracts";
+	private final static String CONTRACTS_DIR = "evm-testcases";
 
 	/**
 	 * Takes a smart contract stored in {@code args} and makes its control flow
@@ -34,10 +34,10 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) throws AnalysisException, IOException {
 		// Generate CFG from a file
-//		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("if_else_eth.sol"));
+		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("cfs/while/while_eth.sol"));
 
 //		// Generate CFG from contract address
-		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
+//		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
 
 		// Run the analysis
 		EVMLiSA.analyzeCFG(cfg, EVMLiSA.OUTPUT_DIR);
@@ -66,6 +66,7 @@ public class EVMLiSA {
 		conf.serializeResults = true;
 		conf.analysisGraphs = GraphType.DOT;
 		conf.optimize = false;
+		conf.wideningThreshold = -1;
 
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
