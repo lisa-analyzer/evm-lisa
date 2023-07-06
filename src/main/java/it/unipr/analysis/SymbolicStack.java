@@ -642,7 +642,20 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			return other;
 		}
 
-		// TODO Auto-generated method stub
+		if (this.stack.size() == other.stack.size()) {
+			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
+			
+			Iterator<Interval> thisIterator = this.stack.iterator();
+			Iterator<Interval> otherIterator = other.stack.iterator();
+			
+			while (thisIterator.hasNext() && otherIterator.hasNext()) {
+				Interval widenedInterval = thisIterator.next().widening(otherIterator.next());
+				widenedStack.push(widenedInterval);
+			}
+			
+			return new SymbolicStack(widenedStack);
+		}
+
 		return this;
 	}
 

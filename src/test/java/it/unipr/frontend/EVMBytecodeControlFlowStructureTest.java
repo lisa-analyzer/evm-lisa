@@ -53,6 +53,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	}
 	
 	
+	// Test for /evm-testcases/cfs/while/while_eth.sol
 	@Test
 	public void testWhile() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = new CronConfiguration();
