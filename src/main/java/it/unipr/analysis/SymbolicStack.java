@@ -602,6 +602,11 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			return other;
 		}
 
+		if (lessOrEqual(other))
+			return this;
+		else if (other.lessOrEqual(this))
+			return other;
+		
 		// Otherwise, let's build a new SymbolicStack
 		ArrayDeque<Interval> result = new ArrayDeque<Interval>();
 
@@ -645,8 +650,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		if (this.stack.size() < other.stack.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 			
-			Iterator<Interval> thisIterator = this.stack.descendingIterator();
-			Iterator<Interval> otherIterator = other.stack.descendingIterator();
+			Iterator<Interval> thisIterator = this.stack.iterator();
+			Iterator<Interval> otherIterator = other.stack.iterator();
 
 			while (thisIterator.hasNext() && otherIterator.hasNext()) {
 				widenedStack.push(thisIterator.next().widening(otherIterator.next()));
