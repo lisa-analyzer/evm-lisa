@@ -1,4 +1,4 @@
-package it.unipr.frontend;
+package it.unipr.analysis.cron;
 
 import it.unive.lisa.conf.LiSAConfiguration;
 

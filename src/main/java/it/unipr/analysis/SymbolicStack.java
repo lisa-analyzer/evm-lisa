@@ -55,7 +55,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		this.stack = new ArrayDeque<Interval>();
 	}
 
-	private SymbolicStack(ArrayDeque<Interval> stack) {
+	public SymbolicStack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
@@ -650,8 +650,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		if (this.stack.size() < other.stack.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 			
-			Iterator<Interval> thisIterator = this.stack.iterator();
-			Iterator<Interval> otherIterator = other.stack.iterator();
+			Iterator<Interval> thisIterator = this.stack.descendingIterator();
+			Iterator<Interval> otherIterator = other.stack.descendingIterator();
 
 			while (thisIterator.hasNext() && otherIterator.hasNext()) {
 				widenedStack.push(thisIterator.next().widening(otherIterator.next()));
@@ -667,8 +667,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		if (this.stack.size() == other.stack.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 			
-			Iterator<Interval> thisIterator = this.stack.iterator();
-			Iterator<Interval> otherIterator = other.stack.iterator();
+			Iterator<Interval> thisIterator = this.stack.descendingIterator();
+			Iterator<Interval> otherIterator = other.stack.descendingIterator();
 			
 			while (thisIterator.hasNext() && otherIterator.hasNext()) {
 				Interval widenedInterval = thisIterator.next().widening(otherIterator.next());
@@ -832,5 +832,4 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		// TODO Auto-generated method stub
 		return this;
 	}
-
 }
