@@ -594,7 +594,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack lub(SymbolicStack other) throws SemanticException {
-		if (this == other && other == null || other.isBottom() || this.isTop()) {
+		if (this == other || other == null || other.isBottom() || this.isTop()) {
 			return this;
 		}
 
@@ -639,7 +639,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack widening(SymbolicStack other) throws SemanticException {
-		if (other == null || other.isBottom() || this.isTop()) {
+		if (this == other || other == null || other.isBottom() || this.isTop()) {
 			return this;
 		}
 
