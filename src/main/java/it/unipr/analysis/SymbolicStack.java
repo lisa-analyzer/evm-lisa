@@ -594,7 +594,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack lub(SymbolicStack other) throws SemanticException {
-		if (other == null || other.isBottom() || this.isTop()) {
+		if (this == other && other == null || other.isBottom() || this.isTop()) {
 			return this;
 		}
 
@@ -603,9 +603,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		}
 
 		if (lessOrEqual(other))
-			return this;
-		else if (other.lessOrEqual(this))
 			return other;
+		else if (other.lessOrEqual(this))
+			return this;
 		
 		// Otherwise, let's build a new SymbolicStack
 		ArrayDeque<Interval> result = new ArrayDeque<Interval>();
