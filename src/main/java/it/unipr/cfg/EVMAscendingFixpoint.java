@@ -1,9 +1,5 @@
 package it.unipr.cfg;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
@@ -13,16 +9,19 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EVMAscendingFixpoint<A extends AbstractState<A, H, V, T>,
-H extends HeapDomain<H>,
-V extends ValueDomain<V>,
-T extends TypeDomain<T>> extends CFGFixpoint<A, H, V, T> {
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> extends CFGFixpoint<A, H, V, T> {
 
 	private final int widenAfter;
 	private final Map<Statement, Integer> lubs;
 	private final Collection<Statement> wideningPoints;
-	
+
 	/**
 	 * Builds the fixpoint implementation.
 	 * 

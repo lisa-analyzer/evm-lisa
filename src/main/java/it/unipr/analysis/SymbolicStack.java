@@ -768,7 +768,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		if (this.stack.size() != other.stack.size())
 			return false;
 
-		// Check if each interval in the stack is equal to the corresponding one in the other stack
+		// Check if each interval in the stack is equal to the corresponding one
+		// in the other stack
 		Iterator<Interval> thisIterator = this.stack.iterator();
 		Iterator<Interval> otherIterator = other.stack.iterator();
 		while (thisIterator.hasNext() && otherIterator.hasNext()) {
@@ -777,7 +778,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			if (!thisInterval.equals(otherInterval))
 				return false;
 		}
-		
+
 		return true;
 	}
 

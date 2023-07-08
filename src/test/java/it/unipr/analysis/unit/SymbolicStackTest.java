@@ -17,14 +17,14 @@ public class SymbolicStackTest {
 	 * Builds a symbolic stack from a list of values, note that the first value
 	 * (to the left) is the top of the stack
 	 */
-	private SymbolicStack buildSymbolicStack(Integer...values) {
+	private SymbolicStack buildSymbolicStack(Integer... values) {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = values.length - 1; i >= 0; i--)
 			stack.push(new Interval(values[i], values[i]));
 		return new SymbolicStack(stack);
 	}
-	
-	private SymbolicStack buildSymbolicStackIntervals(Interval...intervals) {
+
+	private SymbolicStack buildSymbolicStackIntervals(Interval... intervals) {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = intervals.length - 1; i >= 0; i--)
 			stack.push(intervals[i]);
@@ -53,17 +53,20 @@ public class SymbolicStackTest {
 		// two symbolic stacks with same size
 		s1 = buildSymbolicStack(1, 2, 3);
 		s2 = buildSymbolicStack(4, -5, 6);
-		assertEquals(buildSymbolicStackIntervals(new Interval(1, 4), new Interval(-5, 2), new Interval(3, 6)), s1.lub(s2));
-	
+		assertEquals(buildSymbolicStackIntervals(new Interval(1, 4), new Interval(-5, 2), new Interval(3, 6)),
+				s1.lub(s2));
+
 		// two symbolic stacks, first is higher
 		s1 = buildSymbolicStack(1, 2, 3, 4);
 		s2 = buildSymbolicStack(5, 6, 7);
-		assertEquals(buildSymbolicStackIntervals(new Interval(1, 1), new Interval(2, 5), new Interval(3, 6), new Interval(4, 7)), s1.lub(s2));
-	
+		assertEquals(buildSymbolicStackIntervals(new Interval(1, 1), new Interval(2, 5), new Interval(3, 6),
+				new Interval(4, 7)), s1.lub(s2));
+
 		// two symbolic stacks, second is higher
 		s1 = buildSymbolicStack(1, 2, 3);
 		s2 = buildSymbolicStack(-4, 5, -6, 7);
-		assertEquals(buildSymbolicStackIntervals(new Interval(-4, -4), new Interval(1, 5), new Interval(-6, 2), new Interval(3, 7)), s1.lub(s2));
+		assertEquals(buildSymbolicStackIntervals(new Interval(-4, -4), new Interval(1, 5), new Interval(-6, 2),
+				new Interval(3, 7)), s1.lub(s2));
 	}
 
 	@Test

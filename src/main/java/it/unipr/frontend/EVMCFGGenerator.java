@@ -1,14 +1,5 @@
 package it.unipr.frontend;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unipr.cfg.*;
 import it.unipr.cfg.Byte;
 import it.unipr.cfg.Number;
@@ -58,6 +49,13 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * This class provide the methods for generate a control flow graph of an
@@ -89,7 +87,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 	@Override
 	public CFG visitProgram(ProgramContext ctx) {
 		ClassUnit unit = new ClassUnit(new ProgramCounterLocation(-1, -1), program, "program", false);
-		CodeMemberDescriptor cfgDesc = new CodeMemberDescriptor(new ProgramCounterLocation(-1, -1), unit, false, filePath,
+		CodeMemberDescriptor cfgDesc = new CodeMemberDescriptor(new ProgramCounterLocation(-1, -1), unit, false,
+				filePath,
 				new Parameter[] {});
 		this.cfg = new EVMCFG(cfgDesc);
 		Statement last = null;
@@ -513,11 +512,10 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		}
 	}
 
-	
 	private static int getLine(OpcodesContext ctx) {
 		return ctx.getStart().getLine();
 	}
-	
+
 	@Override
 	public Statement visitOpcodes(OpcodesContext ctx) {
 		if (ctx.STOP() != null)
