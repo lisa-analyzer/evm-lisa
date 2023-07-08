@@ -606,7 +606,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			return other;
 		else if (other.lessOrEqual(this))
 			return this;
-		
+
 		// Otherwise, let's build a new SymbolicStack
 		ArrayDeque<Interval> result = new ArrayDeque<Interval>();
 
@@ -649,32 +649,32 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 		if (this.stack.size() < other.stack.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
-			
+
 			Iterator<Interval> thisIterator = this.stack.descendingIterator();
 			Iterator<Interval> otherIterator = other.stack.descendingIterator();
 
 			while (thisIterator.hasNext() && otherIterator.hasNext()) {
 				widenedStack.push(thisIterator.next().widening(otherIterator.next()));
 			}
-			
+
 			while (otherIterator.hasNext()) {
 				widenedStack.push(otherIterator.next());
 			}
-			
+
 			return new SymbolicStack(widenedStack);
 		}
-		
+
 		if (this.stack.size() == other.stack.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
-			
+
 			Iterator<Interval> thisIterator = this.stack.descendingIterator();
 			Iterator<Interval> otherIterator = other.stack.descendingIterator();
-			
+
 			while (thisIterator.hasNext() && otherIterator.hasNext()) {
 				Interval widenedInterval = thisIterator.next().widening(otherIterator.next());
 				widenedStack.push(widenedInterval);
 			}
-			
+
 			return new SymbolicStack(widenedStack);
 		}
 
@@ -691,7 +691,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 		if (this.isTop() || other.isBottom())
 			return false;
-						
+
 		// If "this" stack is taller (~ has more elements) than "other" stack,
 		// lessOrEqual is false
 		if (this.stack.size() > other.stack.size()) {
@@ -744,14 +744,41 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public boolean equals(Object obj) {
+		// SymbolicStack check
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		SymbolicStack other = (SymbolicStack) obj;
-		return Objects.equals(stack, other.stack);
+		// isTop check
+		if (this.isTop != other.isTop)
+			return false;
+		// If both are top, there is no need to check the stack
+		if (this.isTop)
+			return true;
+
+		// Stack check
+		if (this.stack == other.stack)
+			return true;
+		if (this.stack == null || other.stack == null)
+			return false;
+		if (this.stack.size() != other.stack.size())
+			return false;
+
+		// Check if each interval in the stack is equal to the corresponding one in the other stack
+		Iterator<Interval> thisIterator = this.stack.iterator();
+		Iterator<Interval> otherIterator = other.stack.iterator();
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			Interval thisInterval = (Interval) thisIterator.next();
+			Interval otherInterval = (Interval) otherIterator.next();
+			if (!thisInterval.equals(otherInterval))
+				return false;
+		}
+		
+		return true;
 	}
 
 	private BigDecimal toBigDecimal(SymbolicExpression expression) {
