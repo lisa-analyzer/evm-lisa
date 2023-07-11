@@ -50,16 +50,13 @@ public class EVMCFG extends CFG {
 	public Set<Statement> getAllJumpdest() {
 		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 		Set<Statement> jumpdestStatements = new HashSet<>(); // to return
-
-		if (cfgNodeList.getNodes() instanceof Set<Statement>) {
-			Set<Statement> cfgStatements = (Set<Statement>) cfgNodeList.getNodes();
-			for (Statement statement : cfgStatements) {
-				if (statement instanceof Jumpdest) {
-					jumpdestStatements.add(statement);
-				}
+		
+		for (Statement statement : cfgNodeList.getNodes()) {
+			if (statement instanceof Jumpdest) {
+				jumpdestStatements.add(statement);
 			}
 		}
-
+		
 		return jumpdestStatements;
 	}
 
