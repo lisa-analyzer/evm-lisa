@@ -50,20 +50,24 @@ public class EVMCFG extends CFG {
 	public Set<Statement> getAllJumpdest() {
 		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 		Set<Statement> jumpdestStatements = new HashSet<>(); // to return
-		
+
 		for (Statement statement : cfgNodeList.getNodes()) {
 			if (statement instanceof Jumpdest) {
 				jumpdestStatements.add(statement);
 			}
 		}
-		
+
 		return jumpdestStatements;
 	}
 
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalyzedCFG<A, H, V, T> fixpoint(
-			AnalysisState<A, H, V, T> singleton, Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
-			InterproceduralAnalysis<A, H, V, T> interprocedural, WorkingSet<Statement> ws, FixpointConfiguration conf,
-			ScopeId id) throws FixpointException {
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalyzedCFG<A, H, V, T> fixpoint(
+					AnalysisState<A, H, V, T> singleton, Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
+					InterproceduralAnalysis<A, H, V, T> interprocedural, WorkingSet<Statement> ws,
+					FixpointConfiguration conf,
+					ScopeId id) throws FixpointException {
 		// we disable optimizations for ascending phases if there is a
 		// descending one: the latter will need full results to start applying
 		// glbs/narrowings from a post-fixpoint
@@ -104,11 +108,14 @@ public class EVMCFG extends CFG {
 		return flatten(conf.optimize, singleton, startingPoints, interprocedural, id, descending);
 	}
 
-	private <V extends ValueDomain<V>, T extends TypeDomain<T>, A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>> AnalyzedCFG<A, H, V, T> flatten(
-			boolean isOptimized, AnalysisState<A, H, V, T> singleton,
-			Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
-			InterproceduralAnalysis<A, H, V, T> interprocedural, ScopeId id,
-			Map<Statement, CompoundState<A, H, V, T>> fixpointResults) {
+	private <V extends ValueDomain<V>,
+			T extends TypeDomain<T>,
+			A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>> AnalyzedCFG<A, H, V, T> flatten(
+					boolean isOptimized, AnalysisState<A, H, V, T> singleton,
+					Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
+					InterproceduralAnalysis<A, H, V, T> interprocedural, ScopeId id,
+					Map<Statement, CompoundState<A, H, V, T>> fixpointResults) {
 		Map<Statement, AnalysisState<A, H, V, T>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A, H, V, T>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);

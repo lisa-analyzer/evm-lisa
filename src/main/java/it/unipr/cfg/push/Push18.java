@@ -3,6 +3,9 @@ package it.unipr.cfg.push;
 import it.unipr.cfg.HexDecimalLiteral;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.statement.evaluation.EvaluationOrder;
+import it.unive.lisa.program.cfg.statement.evaluation.LeftToRightEvaluation;
+import it.unive.lisa.type.Untyped;
 
 /**
  * A Push18 opcode with a single sub-expression.
