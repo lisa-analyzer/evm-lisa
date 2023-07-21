@@ -364,10 +364,11 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				return new SymbolicStack(result);
 			} else if (op instanceof JumpOperator) { // JUMP
-				ArrayDeque<Interval> result = stack.clone();
-				result.pop(); // Interval destination = result.pop();
-
-				return new SymbolicStack(result);
+//				ArrayDeque<Interval> result = stack.clone();
+//				result.pop(); // Interval destination = result.pop();
+//
+//				return new SymbolicStack(result);
+				return this;
 			} else if (op instanceof JumpiOperator) { // JUMPI
 				// Implemented in assume()
 				return this;
@@ -853,6 +854,10 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		}
 
 		return this;
+	}
+
+	public Interval getTop() {
+		return this.stack.getFirst();
 	}
 
 	@Override

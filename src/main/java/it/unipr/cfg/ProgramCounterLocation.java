@@ -34,6 +34,10 @@ public class ProgramCounterLocation implements CodeLocation {
 			return -1;
 	}
 
+	public int getPc() {
+		return pc;
+	}
+
 	@Override
 	public String getCodeLocation() {
 		return toString();

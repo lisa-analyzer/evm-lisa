@@ -12,8 +12,10 @@ import it.unive.lisa.conf.FixpointConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.DescendingPhaseType;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.interprocedural.ScopeId;
+import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
+import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint.CompoundState;
 import it.unive.lisa.program.cfg.fixpoints.DescendingGLBFixpoint;
@@ -127,6 +129,20 @@ public class EVMCFG extends CFG {
 				? new OptimizedAnalyzedCFG<A, H, V, T>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
 				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+	}
+	
+	@Override
+	public void validate() throws ProgramValidationException {
+		try {
+			list.validate(entrypoints);
+		} catch (ProgramValidationException e) {
+			throw new ProgramValidationException("The matrix behind " + this + " is invalid", e);
+		}
+
+		// all entrypoints should be within the cfg
+		if (!list.getNodes().containsAll(entrypoints))
+			throw new ProgramValidationException(this + " has entrypoints that are not part of the graph: "
+					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
 	}
 
 }

@@ -66,8 +66,7 @@ public class EVMLiSA {
 		conf.serializeResults = true;
 		conf.analysisGraphs = GraphType.DOT;
 		conf.optimize = false;
-		conf.wideningThreshold = -1;
-
+		
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 	}

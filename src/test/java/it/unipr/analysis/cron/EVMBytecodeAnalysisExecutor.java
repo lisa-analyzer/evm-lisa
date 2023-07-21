@@ -6,6 +6,17 @@ import static java.nio.file.Files.delete;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
@@ -19,16 +30,6 @@ import it.unive.lisa.outputs.compare.JsonReportComparer.REPORT_TYPE;
 import it.unive.lisa.outputs.json.JsonReport;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.util.file.FileManager;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
 
 public abstract class EVMBytecodeAnalysisExecutor {
 
@@ -47,7 +48,7 @@ public abstract class EVMBytecodeAnalysisExecutor {
 	 * execution or the one used as baseline) cannot be found or cannot be
 	 * opened</li>
 	 * <li>The two json reports are different</li>
-	 * <li>The external files mentioned in the reports are different</li>
+	 * <li>The external files mentioned in the reports are difzzferent</li>
 	 * </ul>
 	 * 
 	 * @param conf the configuration of the test to run (note that the workdir
