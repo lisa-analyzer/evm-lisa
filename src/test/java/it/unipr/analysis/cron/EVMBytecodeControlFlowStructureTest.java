@@ -46,6 +46,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "cfs/if_else";
 		conf.callGraph = new RTACallGraph();
+		conf.semanticChecks.add(new JumpChecker());
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		if (GENERATE_CFG) {
 			conf.analysisGraphs = GraphType.DOT;
@@ -64,8 +65,9 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "cfs/while";
 		conf.callGraph = new RTACallGraph();
+		conf.semanticChecks.add(new JumpChecker());
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		// conf.serializeInputs = true;
+		conf.serializeInputs = true;
 		if (GENERATE_CFG) {
 			conf.analysisGraphs = GraphType.DOT;
 		}
@@ -84,9 +86,11 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 						new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "cfs/if_else_npbj";
 		conf.callGraph = new RTACallGraph();
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.semanticChecks.add(new JumpChecker());
-		conf.analysisGraphs = GraphType.DOT;
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		if (GENERATE_CFG) {
+			conf.analysisGraphs = GraphType.DOT;
+		}
 		conf.programFile = "if_else_npbj_eth.sol";
 		perform(conf);
 	}
@@ -101,6 +105,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 						new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "cfs/while_npbj";
 		conf.callGraph = new RTACallGraph();
+		conf.semanticChecks.add(new JumpChecker());
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeInputs = true;
 		if (GENERATE_CFG) {
