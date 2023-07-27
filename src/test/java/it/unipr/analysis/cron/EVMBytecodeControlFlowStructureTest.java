@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExecutor {
 
-	private final static boolean GENERATE_CFG = true;
+	private final static boolean GENERATE_CFG = false;
 
 	// Test for /evm-testcases/cfs/if/if_eth.sol
 	@Test
