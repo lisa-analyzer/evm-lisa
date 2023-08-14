@@ -640,11 +640,11 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack widening(SymbolicStack other) throws SemanticException {
-		if (this == other || other == null || other.isBottom() || this.isTop()) {
+		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
 			return this;
 		}
 
-		if (this.isBottom() || this.isTop()) {
+		if (this.isBottom() || other.isTop()) {
 			return other;
 		}
 
