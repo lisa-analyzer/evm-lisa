@@ -34,6 +34,8 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
+	private int resolvedJumps = 0;
+	private int unreachableJumps = 0;
 
 	@Override
 	public void afterExecution(
@@ -57,6 +59,15 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		int totalJumps = cfgToAnalyze.getAllJumps().size();
+		// Print a "table" of the results
+		System.err.println("##############");
+		System.err.println("Total jumps: " + totalJumps);
+		System.err.println("Resolved jumps: " + resolvedJumps);
+		System.err.println("Unreachable jumps: " + unreachableJumps);
+		System.err.println("Percentage of resolved jumps: " + (resolvedJumps*100/(totalJumps-unreachableJumps)) + "%");
+		System.err.println("##############");
 	}
 
 	@Override
@@ -69,9 +80,11 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
+		
+		unreachableJumps = 0;
 
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-
+		
 		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap,
 				SymbolicStack,
@@ -81,9 +94,20 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 			TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
 
 			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
-
-			if (symbolicStack.isTop() || symbolicStack.isBottom())
+			
+			/*
+			if (symbolicStack.isTop() || symbolicStack.isBottom()) {
+				notReachableJumps++;
 				continue;
+			}
+			*/
+
+			if (symbolicStack.isTop()) {
+				continue;
+			} else if (symbolicStack.isBottom()) {
+				unreachableJumps++;
+				continue;
+			}
 
 			for (Long i : symbolicStack.getTop().interval) {
 				Set<Statement> jmps = jumpDestinations.stream()
@@ -92,16 +116,19 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 						.collect(Collectors.toSet());
 
 				System.err.println(jmps + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
+
 				for (Statement jmp : jmps) {	
 					if (node instanceof Jump) {
 						if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
 							cfg.addEdge(new SequentialEdge(node, jmp));
 							fixpoint = false;
+							resolvedJumps++;
 						}
 					} else {
 						if (!cfg.containsEdge(new TrueEdge(node, jmp))) {
 							fixpoint = false;
 							cfg.addEdge(new TrueEdge(node, jmp));
+							resolvedJumps++;
 						}
 					}
 				}

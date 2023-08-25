@@ -61,6 +61,25 @@ public class EVMCFG extends CFG {
 
 		return jumpdestStatements;
 	}
+	
+	/**
+	 * Returns a set of all the JUMP and JUMPI statements in the CFG.
+	 * 
+	 * @return a set of all the JUMP and JUMPI statements in the CFG
+	 */
+	public Set<Statement> getAllJumps() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> jumpStatements = new HashSet<>(); // to return
+
+		for (Statement statement : cfgNodeList.getNodes()) {
+			if (statement instanceof Jump || statement instanceof Jumpi) {
+				jumpStatements.add(statement);
+			}
+		}
+
+		return jumpStatements;
+	}
+	
 
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,

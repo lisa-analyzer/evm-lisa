@@ -184,7 +184,6 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		}
 
 		//		System.out.println("Orphan jump: " + result);
-
 		System.out.println(
 				perc + "/" + orpcount + " orphan jumps resolved " + "--> " + (((float) perc) / orpcount) * 100 + "%");
 
