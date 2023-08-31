@@ -34,9 +34,22 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
+	private int totalJumps = 0;
 	private int resolvedJumps = 0;
 	private int unreachableJumps = 0;
 
+	public int getTotalJumps() {
+		return totalJumps;
+	}
+
+	public int getResolvedJumps() {
+		return resolvedJumps;
+	}
+
+	public int getUnreachableJumps() {
+		return unreachableJumps;
+	}
+	
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
@@ -60,7 +73,7 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 			e.printStackTrace();
 		}
 
-		int totalJumps = cfgToAnalyze.getAllJumps().size();
+		totalJumps = cfgToAnalyze.getAllJumps().size();
 		// Print a "table" of the results
 		System.err.println("##############");
 		System.err.println("Total jumps: " + totalJumps);
@@ -137,4 +150,5 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 		return true;
 	}
+	
 }
