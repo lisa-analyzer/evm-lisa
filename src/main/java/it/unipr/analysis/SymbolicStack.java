@@ -1,5 +1,12 @@
 package it.unipr.analysis;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -25,12 +32,6 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.numeric.MathNumber;
 import it.unive.lisa.util.numeric.MathNumberConversionException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayDeque;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 /**
  * Semantic domain of the execution stack of the contract.
@@ -87,7 +88,154 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				result.push(new Interval(new MathNumber(valueToPush), new MathNumber(valueToPush)));
 
 				return new SymbolicStack(result);
-			} else if (op instanceof AddOperator) { // ADD
+			}  else if (op instanceof AddressOperator) { // ADDRESS
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle ADDRESS
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof OriginOperator) { // ORIGIN
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle ORIGIN
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CallerOperator) { // CALLER
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle CALLER
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CallvalueOperator) { // CALLVALUE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle CALLVALUE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CalldatasizeOperator) { // CALLDATASIZE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle CALLDATASIZE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CodesizeOperator) { // CODESIZE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle CODESIZE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof GaspriceOperator) { // GASPRICE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle GASPRICE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ReturndatasizeOperator) { // RETURNDATASIZE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle RETURNDATASIZE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CoinbaseOperator) { // COINBASE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle COINBASE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof TimestampOperator) { // TIMESTAMP
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle TIMESTAMP
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof NumberOperator) { // NUMBER
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle NUMBER
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof DifficultyOperator) { // DIFFICULTY
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle DIFFICULTY
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof GaslimitOperator) { // GASLIMIT
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle GASLIMIT
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ChainidOperator) { // CHAINID
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle CHAINID
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof SelfbalanceOperator) { // SELFBALANCE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle SELFBALANCE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof PcOperator) { // PC
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle PC
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof GasOperator) { // GAS
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle GAS
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof JumpOperator) { // JUMP
+//				ArrayDeque<Interval> result = stack.clone();
+//				result.pop(); // Interval destination = result.pop();
+//
+//				return new SymbolicStack(result);
+				return this;
+			} else if (op instanceof JumpiOperator) { // JUMPI
+				// Implemented in assume()
+				return this;
+			} else if (op instanceof MsizeOperator) { // MSIZE
+				ArrayDeque<Interval> result = stack.clone();
+
+				// At the moment, we do not handle MSIZE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof JumpdestOperator) { // JUMPDEST
+				return this;
+			}
+
+			// Above, operators that do not perform pop()
+
+			// from here on, top is propagated
+			if (isTop())
+				return this;
+
+			// Below, operators that perform pop()
+			
+			if (op instanceof AddOperator) { // ADD
 				ArrayDeque<Interval> result = stack.clone();
 				Interval opnd1 = result.pop();
 				Interval opnd2 = result.pop();
@@ -209,10 +357,11 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				return new SymbolicStack(result);
 			} else if (op instanceof SignextendOperator) { // SIGNEXTEND
 				ArrayDeque<Interval> result = stack.clone();
-				// offset = result.pop();
 				result.pop();
-				// toExtend = result.pop();
-				// result.push(toExtend);
+				result.pop();
+
+				// At the moment, we do not handle SIGNEXTEND
+				result.push(Interval.TOP);
 
 				return new SymbolicStack(result);
 			} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
@@ -363,27 +512,197 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				result.push(resultInterval);
 
 				return new SymbolicStack(result);
-			} else if (op instanceof JumpOperator) { // JUMP
-//				ArrayDeque<Interval> result = stack.clone();
-//				result.pop(); // Interval destination = result.pop();
-//
-//				return new SymbolicStack(result);
-				return this;
-			} else if (op instanceof JumpiOperator) { // JUMPI
-				// Implemented in assume()
-				return this;
-			} else if (op instanceof JumpdestOperator) { // JUMPDEST
-				return this;
-			}
+			} else if (op instanceof ShlOperator) { // SHL
+				ArrayDeque<Interval> result = stack.clone();
+				Interval opnd1 = result.pop();
+				Interval opnd2 = result.pop();
 
-			// from here on, top is propagated
-			if (isTop())
-				return this;
+				// SHL is not handled in Interval, so we work with low() and
+				// high()
 
-			if (op instanceof PopOperator) { // POP
+				MathNumber low, high;
+
+				try {
+					low = new MathNumber(opnd1.interval.getLow().toByte() << opnd2.interval.getLow().toByte());
+					high = new MathNumber(opnd1.interval.getHigh().toByte() << opnd2.interval.getHigh().toByte());
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+			
+				result.push(new Interval(low, high));
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ShrOperator) { // SHR
+				ArrayDeque<Interval> result = stack.clone();
+				Interval opnd1 = result.pop();
+				Interval opnd2 = result.pop();
+
+				// SHR is not handled in Interval, so we work with low() and
+				// high()
+
+				MathNumber low, high;
+
+				try {
+					low = new MathNumber(opnd1.interval.getLow().toByte() >> opnd2.interval.getLow().toByte());
+					high = new MathNumber(opnd1.interval.getHigh().toByte() >> opnd2.interval.getHigh().toByte());
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+
+				result.push(new Interval(low, high));
+
+				return new SymbolicStack(result);
+
+			} else if (op instanceof SarOperator) { // SAR
+				ArrayDeque<Interval> result = stack.clone();
+				Interval opnd1 = result.pop();
+				Interval opnd2 = result.pop();
+
+				// SAR is not handled in Interval, so we work with low() and
+				// high()
+
+				MathNumber low, high;
+
+				try {
+					low = new MathNumber(opnd1.interval.getLow().toByte() >> opnd2.interval.getLow().toByte());
+					high = new MathNumber(opnd1.interval.getHigh().toByte() >> opnd2.interval.getHigh().toByte());
+				} catch (MathNumberConversionException e) {
+					return this.bottom();
+				}
+
+				result.push(new Interval(low, high));
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Sha3Operator) { // SHA3
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle SHA3
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof BalanceOperator) { // BALANCE
+				ArrayDeque<Interval> result = stack.clone();
+				Interval address = result.pop();
+
+				// At the moment, we do not handle BALANCE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CalldataloadOperator) { // CALLDATALOAD
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+
+				// At the moment, we do not handle CALLDATALOAD
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CalldatacopyOperator) { // CALLDATACOPY
+				ArrayDeque<Interval> result = stack.clone();
+				Interval memOffset = result.pop();
+				Interval dataOffset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle CALLDATACOPY
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CodecopyOperator) { // CODECOPY
+				ArrayDeque<Interval> result = stack.clone();
+				Interval memOffset = result.pop();
+				Interval codeOffset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle CODECOPY
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ExtcodesizeOperator) { // EXTCODESIZE
+				ArrayDeque<Interval> result = stack.clone();
+				Interval address = result.pop();
+
+				// At the moment, we do not handle EXTCODESIZE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ExtcodecopyOperator) { // EXTCODECOPY
+				ArrayDeque<Interval> result = stack.clone();
+				Interval address = result.pop();
+				Interval memOffset = result.pop();
+				Interval codeOffset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle EXTCODECOPY
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ReturndatacopyOperator) { // RETURNDATACOPY
+				ArrayDeque<Interval> result = stack.clone();
+				Interval memOffset = result.pop();
+				Interval retOffset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle RETURNDATACOPY
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ExtcodehashOperator) { // EXTCODEHASH
+				ArrayDeque<Interval> result = stack.clone();
+				Interval address = result.pop();
+
+				// At the moment, we do not handle EXTCODEHASH
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof BlockhashOperator) { // BLOCKHASH
+				ArrayDeque<Interval> result = stack.clone();
+				Interval blockNumber = result.pop();
+
+				// At the moment, we do not handle BLOCKHASH
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof PopOperator) { // POP
 				ArrayDeque<Interval> result = stack.clone();
 
 				result.pop();
+
+				return new SymbolicStack(result);
+			} else if (op instanceof MloadOperator) { // MLOAD
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+
+				// At the moment, we do not handle MLOAD
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof MstoreOperator) { // MSTORE
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval value = result.pop();
+
+				// At the moment, we do not handle MSTORE
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Mstore8Operator) { // MSTORE8
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval value = result.pop();
+
+				// At the moment, we do not handle MSTORE8
+
+				return new SymbolicStack(result);
+			} else if (op instanceof SloadOperator) { // SLOAD
+				ArrayDeque<Interval> result = stack.clone();
+				Interval key = result.pop();
+
+				// At the moment, we do not handle SLOAD
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof SstoreOperator) { // SSTORE
+				ArrayDeque<Interval> result = stack.clone();
+				Interval key = result.pop();
+				Interval value = result.pop();
+
+				// At the moment, we do not handle SSTORE
 
 				return new SymbolicStack(result);
 			} else if (op instanceof Dup1Operator) { // DUP1
@@ -514,15 +833,169 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				return new SymbolicStack(swapX(16, stack.clone()));
 
+			} else if (op instanceof Log0Operator) { // LOG0
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle LOG0
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Log1Operator) { // LOG1
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+				Interval topic1 = result.pop();
+
+				// At the moment, we do not handle LOG1
+				result.push(Interval.ZERO);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Log2Operator) { // LOG2
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+				Interval topic1 = result.pop();
+				Interval topic2 = result.pop();
+
+				// At the moment, we do not handle LOG2
+				result.push(Interval.ZERO);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Log3Operator) { // LOG3
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+				Interval topic1 = result.pop();
+				Interval topic2 = result.pop();
+				Interval topic3 = result.pop();
+
+				// At the moment, we do not handle LOG3
+				result.push(Interval.ZERO);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Log4Operator) { // LOG4
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+				Interval topic1 = result.pop();
+				Interval topic2 = result.pop();
+				Interval topic3 = result.pop();
+				Interval topic4 = result.pop();
+
+				// At the moment, we do not handle LOG4
+				result.push(Interval.ZERO);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CreateOperator) { // CREATE
+				ArrayDeque<Interval> result = stack.clone();
+				Interval value = result.pop();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle CREATE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CallOperator) { // CALL
+				ArrayDeque<Interval> result = stack.clone();
+				Interval gas = result.pop();
+				Interval to = result.pop();
+				Interval value = result.pop();
+				Interval inOffset = result.pop();
+				Interval inLength = result.pop();
+				Interval outOffset = result.pop();
+				Interval outLength = result.pop();
+
+				// At the moment, we do not handle CALL
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof CallcodeOperator) { // CALLCODE
+				ArrayDeque<Interval> result = stack.clone();
+				Interval gas = result.pop();
+				Interval to = result.pop();
+				Interval value = result.pop();
+				Interval inOffset = result.pop();
+				Interval inLength = result.pop();
+				Interval outOffset = result.pop();
+				Interval outLength = result.pop();
+
+				// At the moment, we do not handle CALLCODE
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof ReturnOperator) { // RETURN
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle RETURN
+
+				return new SymbolicStack(result);
+			} else if (op instanceof DelegatecallOperator) { // DELEGATECALL
+				ArrayDeque<Interval> result = stack.clone();
+				Interval gas = result.pop();
+				Interval to = result.pop();
+				Interval inOffset = result.pop();
+				Interval inLength = result.pop();
+				Interval outOffset = result.pop();
+				Interval outLength = result.pop();
+
+				// At the moment, we do not handle DELEGATECALL
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof Create2Operator) { // CREATE2
+				ArrayDeque<Interval> result = stack.clone();
+				Interval value = result.pop();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+				Interval salt = result.pop();
+
+				// At the moment, we do not handle CREATE2
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof StaticcallOperator) { // STATICCALL
+				ArrayDeque<Interval> result = stack.clone();
+				Interval gas = result.pop();
+				Interval to = result.pop();
+				Interval inOffset = result.pop();
+				Interval inLength = result.pop();
+				Interval outOffset = result.pop();
+				Interval outLength = result.pop();
+
+				// At the moment, we do not handle STATICCALL
+				result.push(Interval.TOP);
+
+				return new SymbolicStack(result);
+			} else if (op instanceof RevertOperator) { // REVERT
+				ArrayDeque<Interval> result = stack.clone();
+				Interval offset = result.pop();
+				Interval length = result.pop();
+
+				// At the moment, we do not handle REVERT
+
+				return new SymbolicStack(result);
+			} else if (op instanceof InvalidOperator) { // INVALID
+				return this;
+			} else if (op instanceof SelfdestructOperator) { // SELFDESTRUCT
+				ArrayDeque<Interval> result = stack.clone();
+				Interval recipient = result.pop();
+
+				// At the moment, we do not handle SELFDESTRUCT
+
+				return new SymbolicStack(result);
 			}
 		}
-
+		
 		return top();
 	}
 
 	/*
-	 * Duplicates the x-th element from the top of the stack
-	 */
+	* Duplicates the x-th element from the top of the stack
+	*/
 	private ArrayDeque<Interval> dupX(int x, ArrayDeque<Interval> stack) {
 		int i = 0;
 		Interval target = Interval.ZERO;
@@ -537,8 +1010,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	}
 
 	/*
-	 * Swaps the top element with the x-th element from the top of the stack
-	 */
+	* Swaps the top element with the x-th element from the top of the stack
+	*/
 	private ArrayDeque<Interval> swapX(int x, ArrayDeque<Interval> stack) {
 		Interval target1 = stack.pop();
 		Interval[] popped = new Interval[x];

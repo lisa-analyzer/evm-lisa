@@ -35,7 +35,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * n. ManagedAccount:    0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a
 	 * o. ERC20Salary:	     0xcc2ba2eac448d60e0f943ebe378f409cb7d1b58a
 	 */
-	private final static String CONTRACT_ADDR = "0x7de33b2672efb11fde366dae96bd63b985bce186";
+	private final static String CONTRACT_ADDR = "0xaa602de53347579f86b996d2add74bb6f79462b2";
 
 	// Contract bytecode output directory
 	private final static String BYTECODE_DIR = "bytecodeBenchmark/" + CONTRACT_ADDR;
@@ -65,6 +65,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 		conf.programFile = BYTECODE_FILENAME;
 		perform(conf);
-		System.out.println("Resolved " + checker.getResolvedJumps() + " jumps out of " + checker.getTotalJumps() + " jumps and " + checker.getUnreachableJumps() + " unreachable jumps.");
+		System.err.println("Resolved " + checker.getResolvedJumps() + " jumps out of " + checker.getTotalJumps() + " jumps and " + checker.getUnreachableJumps() + " unreachable jumps.");
 	}
 }
