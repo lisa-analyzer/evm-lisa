@@ -1,5 +1,7 @@
 package it.unipr.checker;
 
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.util.numeric.InfiniteIterationException;
 
 public class JumpChecker
 implements SemanticCheck<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
@@ -34,20 +37,26 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
-	private int totalJumps = 0;
-	private int resolvedJumps = 0;
+	private int solvedJumps = 0;
+	private int unsolvedJumps = 0;
 	private int unreachableJumps = 0;
+	public Set<Statement> unreachable = new HashSet<>();
+	public Set<Statement> unsolvable = new HashSet<>();
 
-	public int getTotalJumps() {
-		return totalJumps;
+	public int getSolvedJumps() {
+		return solvedJumps;
 	}
-
-	public int getResolvedJumps() {
-		return resolvedJumps;
+	
+	public int getUnsolvedJumps() {
+		return unsolvedJumps;
 	}
 
 	public int getUnreachableJumps() {
 		return unreachableJumps;
+	}
+	
+	public EVMCFG getAnalyzedCFG() {
+		return cfgToAnalyze;
 	}
 	
 	@Override
@@ -72,15 +81,6 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		totalJumps = cfgToAnalyze.getAllJumps().size();
-		// Print a "table" of the results
-		System.err.println("##############");
-		System.err.println("Total jumps: " + totalJumps);
-		System.err.println("Resolved jumps: " + resolvedJumps);
-		System.err.println("Unreachable jumps: " + unreachableJumps);
-		System.err.println("Percentage of resolved jumps: " + (resolvedJumps*100/(totalJumps-unreachableJumps)) + "%");
-		System.err.println("##############");
 	}
 
 	@Override
@@ -93,8 +93,6 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
-		
-		unreachableJumps = 0;
 
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
 		
@@ -108,47 +106,94 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
 			
-			/*
-			if (symbolicStack.isTop() || symbolicStack.isBottom()) {
-				notReachableJumps++;
-				continue;
-			}
-			*/
-
 			if (symbolicStack.isTop()) {
+				addUnsolvableJump(node);
 				continue;
 			} else if (symbolicStack.isBottom()) {
-				unreachableJumps++;
+				addUnreachableJump(node);
 				continue;
 			}
+			
+			try {
+				for (Long i : symbolicStack.getTop().interval) {
+					Set<Statement> jmps = jumpDestinations.stream()
+							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+							.filter(pc -> ((ProgramCounterLocation) pc.getLocation()).getPc() == i)
+							.collect(Collectors.toSet());
 
-			for (Long i : symbolicStack.getTop().interval) {
-				Set<Statement> jmps = jumpDestinations.stream()
-						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-						.filter(pc -> ((ProgramCounterLocation) pc.getLocation()).getPc() == i)
-						.collect(Collectors.toSet());
-
-				System.err.println(jmps + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
-
-				for (Statement jmp : jmps) {	
-					if (node instanceof Jump) {
-						if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
-							cfg.addEdge(new SequentialEdge(node, jmp));
-							fixpoint = false;
-							resolvedJumps++;
-						}
-					} else {
-						if (!cfg.containsEdge(new TrueEdge(node, jmp))) {
-							fixpoint = false;
-							cfg.addEdge(new TrueEdge(node, jmp));
-							resolvedJumps++;
+					System.err.println(jmps + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
+					
+					if (jmps.isEmpty()) {
+						addUnsolvableJump(node);
+						continue;
+					}
+					
+					for (Statement jmp : jmps) {	
+						if (node instanceof Jump) { // JUMP
+							if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
+								cfg.addEdge(new SequentialEdge(node, jmp));
+								fixpoint = false;
+								solvedJumps++;
+								removeUnreachableJump(node);
+								removeUnsolvableJump(node);
+							}
+						} else { // JUMPI
+							if (!cfg.containsEdge(new TrueEdge(node, jmp))) {
+								fixpoint = false;
+								cfg.addEdge(new TrueEdge(node, jmp));
+								solvedJumps++;
+								removeUnreachableJump(node);
+								removeUnsolvableJump(node);
+							}
 						}
 					}
+					
 				}
+			} catch (InfiniteIterationException e) {
+				System.err.println("Infinite iteration detected in checker visit()");
+				addUnsolvableJump(node);
+			} catch (NoSuchElementException e) {
+				System.err.println("NoSuchElementException during visit()");
+				addUnsolvableJump(node);
 			}
 		}
 
 		return true;
 	}
-	
+
+	private void addUnsolvableJump(Statement node) {
+		if (!unsolvable.contains(node)) {
+			unsolvable.add(node);
+			unsolvedJumps++;
+			if (unreachable.contains(node)) {
+				unreachable.remove(node);
+				unreachableJumps--;
+			}
+		}
+	}
+
+	private void addUnreachableJump(Statement node) {
+		if (!unreachable.contains(node)) {
+			unreachable.add(node);
+			unreachableJumps++;
+			if (unsolvable.contains(node)) {
+				unsolvable.remove(node);
+				unsolvedJumps--;
+			}
+		}
+	}
+
+	private void removeUnsolvableJump(Statement node) {
+		if (unsolvable.contains(node)) {
+			unsolvable.remove(node);
+			unsolvedJumps--;
+		}
+	}
+
+	private void removeUnreachableJump(Statement node) {
+		if (unreachable.contains(node)) {
+			unreachable.remove(node);
+			unreachableJumps--;
+		}
+	}
 }

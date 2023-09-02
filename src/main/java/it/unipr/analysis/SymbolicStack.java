@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -73,6 +74,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			return SymbolicStack.BOTTOM;
 		}
 
+		try {
 		if (expression instanceof Constant) {
 			return this;
 		} else if (expression instanceof UnaryExpression) {
@@ -208,13 +210,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				return new SymbolicStack(result);
 			} else if (op instanceof JumpOperator) { // JUMP
-//				ArrayDeque<Interval> result = stack.clone();
-//				result.pop(); // Interval destination = result.pop();
-//
-//				return new SymbolicStack(result);
 				return this;
 			} else if (op instanceof JumpiOperator) { // JUMPI
-				// Implemented in assume()
 				return this;
 			} else if (op instanceof MsizeOperator) { // MSIZE
 				ArrayDeque<Interval> result = stack.clone();
@@ -490,26 +487,31 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 																	// retrieved
 																	// bytes
 
-				// Loop through all targets (each value of the target interval)
-				for (Long value : target.interval) {
-					byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
-
-					// Loop through all possible indexes of byte to select
-					for (Long index : indexOfByte.interval) {
-						int intIndex = index.intValue();
-
-						// Check if index is valid (>= 0 and <
-						// valueAsByteArray.length)
-						if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
-							resultInterval.lub(Interval.ZERO);
-						} else {
-							int selectedByteAsInt = valueAsByteArray[intIndex];
-							resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
+				if (target.equals(Interval.TOP)) {
+					result.push(Interval.TOP);
+				} else {
+				
+					// Loop through all targets (each value of the target interval)
+					for (Long value : target.interval) {
+						byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
+	
+						// Loop through all possible indexes of byte to select
+						for (Long index : indexOfByte.interval) {
+							int intIndex = index.intValue();
+	
+							// Check if index is valid (>= 0 and <
+							// valueAsByteArray.length)
+							if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
+								resultInterval.lub(Interval.ZERO);
+							} else {
+								int selectedByteAsInt = valueAsByteArray[intIndex];
+								resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
+							}
 						}
 					}
-				}
 
-				result.push(resultInterval);
+					result.push(resultInterval);
+				}
 
 				return new SymbolicStack(result);
 			} else if (op instanceof ShlOperator) { // SHL
@@ -989,6 +991,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				return new SymbolicStack(result);
 			}
 		}
+		} catch (NoSuchElementException e) {
+			System.err.println("Operation not performed: " + e);
+		}
 		
 		return top();
 	}
@@ -1068,13 +1073,11 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public SymbolicStack lub(SymbolicStack other) throws SemanticException {
-		if (this == other || other == null || other.isBottom() || this.isTop()) {
+		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other))
 			return this;
-		}
 
-		if (this.isBottom() || this.isTop()) {
+		if (this.isBottom() || other.isTop())
 			return other;
-		}
 
 		if (lessOrEqual(other))
 			return other;
@@ -1272,6 +1275,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			return this;
 		}
 
+		try {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
 			UnaryOperator op = un.getOperator();
@@ -1324,6 +1328,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					}
 				}
 			}
+		}
+		} catch (NoSuchElementException e ) {
+			System.err.println("Operation not performed: " + e);
 		}
 
 		return this;

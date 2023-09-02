@@ -1,17 +1,21 @@
 package it.unipr.analysis.cron;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
 import it.unipr.analysis.SymbolicStack;
+import it.unipr.cfg.EVMCFG;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unipr.checker.JumpChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
@@ -35,20 +39,23 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * n. ManagedAccount:    0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a
 	 * o. ERC20Salary:	     0xcc2ba2eac448d60e0f943ebe378f409cb7d1b58a
 	 */
-	private final static String CONTRACT_ADDR = "0xaa602de53347579f86b996d2add74bb6f79462b2";
+	private final static String CONTRACT_ADDR = "0x679131f591b4f369acb8cd8c51e68596806c3916";
 
 	// Contract bytecode output directory
 	private final static String BYTECODE_DIR = "bytecodeBenchmark/" + CONTRACT_ADDR;
 	private final static String BYTECODE_FILENAME = CONTRACT_ADDR + ".sol";
+	private final static String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/" + BYTECODE_DIR + "/" + BYTECODE_FILENAME;
 
 	// Choose whether to generate the CFG or not
 	private final static boolean GENERATE_CFG = true;
 
 	@Test
 	public void testEVMBytecodeAnalysis() throws Exception {
+		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + BYTECODE_DIR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, EXPECTED_RESULTS_DIR + "/" + BYTECODE_DIR + "/" + BYTECODE_FILENAME);
-	
+		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
+		
+		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>(
@@ -65,6 +72,31 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 		conf.programFile = BYTECODE_FILENAME;
 		perform(conf);
-		System.err.println("Resolved " + checker.getResolvedJumps() + " jumps out of " + checker.getTotalJumps() + " jumps and " + checker.getUnreachableJumps() + " unreachable jumps.");
+
+		// Print the results
+		int totalJumps = getTotalJumpsFromFile(BYTECODE_FULLPATH);
+		System.err.println("##############");
+		try {
+			System.err.println("Percentage of solved jumps: " + checker.getSolvedJumps() * 100 / (totalJumps - checker.getUnreachableJumps()) + "%");
+		} catch (ArithmeticException e) {
+			System.err.println("Percentage of solved jumps: 0%");
+		}
+		System.err.println("Total jumps: " + totalJumps);
+		System.err.println("Solved jumps: " + checker.getSolvedJumps());
+		System.err.println("Unsolved jumps: " + checker.getUnsolvedJumps());
+		System.err.println("Unreachable jumps: " + checker.getUnreachableJumps());
+		System.err.println("##############");
+	}
+
+	private static int getTotalJumpsFromFile(String filename) {
+		int totalJumps = 0;
+		try {
+			for (CFG c : EVMFrontend.generateCfgFromFile(filename).getAllCFGs()) {
+				totalJumps = ((EVMCFG) c).getAllJumps().size();
+			}
+		} catch (IOException e) {
+			System.err.println("Incorrect contract filename");
+		}
+		return totalJumps;
 	}
 }
