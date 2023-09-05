@@ -1,8 +1,6 @@
 package it.unipr.checker;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,8 +38,6 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
 	private int solvedJumps = 0;
-	private int unsolvedJumps = 0;
-	private int unreachableJumps = 0;
 	private final Set<Statement> unreachable = new HashSet<>();
 	private final Set<Statement> unsolvable = new HashSet<>();
 
@@ -50,11 +46,11 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	}
 
 	public int getUnsolvedJumps() {
-		return unsolvedJumps;
+		return unsolvable.size();
 	}
 
 	public int getUnreachableJumps() {
-		return unreachableJumps;
+		return unreachable.size();
 	}
 
 	public EVMCFG getAnalyzedCFG() {
@@ -164,38 +160,20 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	}
 
 	private void addUnsolvableJump(Statement node) {
-		if (!unsolvable.contains(node)) {
-			unsolvable.add(node);
-			unsolvedJumps++;
-			if (unreachable.contains(node)) {
-				unreachable.remove(node);
-				unreachableJumps--;
-			}
-		}
+		unsolvable.add(node);
+		unreachable.remove(node);
 	}
 
 	private void addUnreachableJump(Statement node) {
-		if (!unreachable.contains(node)) {
-			unreachable.add(node);
-			unreachableJumps++;
-			if (unsolvable.contains(node)) {
-				unsolvable.remove(node);
-				unsolvedJumps--;
-			}
-		}
+		unreachable.add(node);
+		unsolvable.remove(node);
 	}
 
 	private void removeUnsolvableJump(Statement node) {
-		if (unsolvable.contains(node)) {
-			unsolvable.remove(node);
-			unsolvedJumps--;
-		}
+		unsolvable.remove(node);
 	}
 
 	private void removeUnreachableJump(Statement node) {
-		if (unreachable.contains(node)) {
-			unreachable.remove(node);
-			unreachableJumps--;
-		}
+		unreachable.remove(node);
 	}
 }

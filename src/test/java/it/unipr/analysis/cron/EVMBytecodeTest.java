@@ -15,7 +15,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Statement;
 import it.unipr.checker.JumpChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
