@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_if_else_if_else_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_while_while_eth.sol().json", "untyped_program.evm-testcases_cfs_while_while_eth.sol()_cfg.json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "30ms",
-    "end" : "2023-09-05T17:41:48.262+02:00",
-    "expressions" : "7",
-    "files" : "1",
+    "duration" : "177ms",
+    "end" : "2023-09-05T17:41:48.122+02:00",
+    "expressions" : "6",
+    "files" : "2",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2023-09-05T17:41:48.232+02:00",
-    "statements" : "13",
+    "start" : "2023-09-05T17:41:47.945+02:00",
+    "statements" : "17",
     "units" : "0",
     "version" : "0.1b8",
     "warnings" : "0"
@@ -28,10 +28,10 @@
     "optimize" : "false",
     "recursionWideningThreshold" : "5",
     "semanticChecks" : "JumpChecker",
-    "serializeInputs" : "false",
+    "serializeInputs" : "true",
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "test-outputs/cfs/if_else"
+    "workdir" : "test-outputs/cfs/while"
   }
 }
