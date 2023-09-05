@@ -1,12 +1,16 @@
 package it.unipr.cfg;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
+import it.unipr.analysis.PushOperator;
+import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -79,6 +83,106 @@ public class EVMCFG extends CFG {
 
 		return jumpStatements;
 	}
+	
+	/**
+	 * Returns a set of all the JUMP statements preceded by a PUSH statement in the CFG.
+	 * 
+	 * @return a set of all the JUMP statements preceded by a PUSH statement in the CFG
+	 */
+	public Set<Statement> getAllPushedJUMPs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumps = new HashSet<>(); // to return
+
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jump && (edge.getSource() instanceof Push)) {
+				pushedJumps.add(edge.getDestination());
+			}
+		}
+		
+		return pushedJumps;
+	}
+
+	/**
+	 * Returns a set of all the valid JUMP statements preceded by a PUSH statement in the CFG,
+	 * meaning that the destination address corresponds to a JUMPDEST statement.
+	 * 
+	 * @return a set of all the valid JUMP statements preceded by a PUSH statement in the CFG
+	 */
+	public Set<Statement> getAllValidPushedJUMPs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumps = new HashSet<>(); // to return
+		
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jump && (edge.getSource() instanceof Push)) {
+				if (isValidJumpDestination(edge.getSource())) {
+					pushedJumps.add(edge.getDestination());
+				}				
+			}
+		}
+		
+		return pushedJumps;
+	}
+
+	/**
+	 * Returns a set of all the JUMPI statements preceded by a PUSH statement in the CFG.
+	 * 
+	 * @return a set of all the JUMPI statements preceded by a PUSH statement in the CFG
+	 */
+	public Set<Statement> getAllPushedJUMPIs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumpis = new HashSet<>(); // to return
+
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jumpi && (edge.getSource() instanceof Push)) {
+				pushedJumpis.add(edge.getDestination());
+			}
+		}
+		
+		return pushedJumpis;
+	}
+
+	/**
+	 * Returns a set of all the valid JUMPI statements preceded by a PUSH statement in the CFG,
+	 * meaning that the destination address corresponds to a JUMPDEST statement.
+	 * 
+	 * @return a set of all the valid JUMPI statements preceded by a PUSH statement in the CFG
+	 */
+	public Set<Statement> getAllValidPushedJUMPIs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumpis = new HashSet<>(); // to return
+		
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jumpi && (edge.getSource() instanceof Push)) {
+				if (isValidJumpDestination(edge.getSource())) {
+					pushedJumpis.add(edge.getDestination());
+				}				
+			}
+		}
+		
+		return pushedJumpis;
+	}
+
+	/**
+	 * Checks if the PUSH statement's value is a valid JUMP destination.
+	 * 
+	 * @param pushStatement the PUSH statement to check
+	 * @return true if the PUSH statement's value is a valid JUMP destination, false otherwise
+	 */
+	private boolean isValidJumpDestination(Statement pushStatement) {
+		Set<Statement> jumpDestintations = this.getAllJumpdest();
+
+		String hex = (String) pushStatement.getEvaluationPredecessor().toString();
+		String hexadecimal = hex.substring(2);
+		Long jumpAddress = new BigInteger(hexadecimal, 16).longValue();
+
+		Set<Statement> validDests = jumpDestintations.stream()
+		.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+		.filter(pc -> ((ProgramCounterLocation) pc.getLocation()).getPc() == jumpAddress)
+		.collect(Collectors.toSet());
+
+		return !validDests.isEmpty();
+	}
+
 
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,

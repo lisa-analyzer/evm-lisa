@@ -175,14 +175,14 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 		Collection<Statement> ctc = cfg.getNodes();
 		Iterator<Statement> i = ctc.iterator();
-		while (i.hasNext()) {
-			Statement s = i.next();
-			cfg.getIngoingEdges(s);
-			if (cfg.getIngoingEdges(s).isEmpty() && Integer.valueOf(s.getLocation().getCodeLocation()) != 0) {
-				cfg.getEntrypoints().add(s);
-				System.err.println(s);
-			}
-		}
+//		while (i.hasNext()) {
+//			Statement s = i.next();
+//			cfg.getIngoingEdges(s);
+//			if (cfg.getIngoingEdges(s).isEmpty() && Integer.valueOf(s.getLocation().getCodeLocation()) != 0) {
+//				cfg.getEntrypoints().add(s);
+//				System.err.println(s);
+//			}
+//		}
 
 		//		System.out.println("Orphan jump: " + result);
 		System.out.println(
@@ -384,93 +384,96 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 	//		}
 	//	}
 
-	private void createEdge(Map<Integer, Pair<Integer, String>> jumpmap, CFG cfg, Ret ret) {
-		for (Map.Entry<Integer, Pair<Integer, String>> entry : jumpmap.entrySet()) {
-			Statement jump = null;
-			Statement dest = null;
-
-			Collection<Statement> ctc = cfg.getNodes();
-			Iterator<Statement> i = ctc.iterator();
-			// System.out.println("\n");
-			// System.out.println(entry.getValue().getRight());
-
-			if (entry.getValue().getRight() == "N") {
-				while (i.hasNext()) {
-					Statement s = i.next();
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
-						jump = s;
-					}
-
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
-						dest = s;
-					}
-				}
-
-				if (jump instanceof Revert || jump instanceof Return || jump instanceof Selfdestruct
-						|| jump instanceof Stop || jump instanceof Invalid) {
-					cfg.addEdge(new SequentialEdge(jump, ret));
-					// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
-					// + jump.toString());
-					// System.out.println(Integer.parseInt(ret.getLocation().getCodeLocation())
-					// + ret.toString());
-				} else {
-					cfg.addEdge(new SequentialEdge(jump, dest));
-					// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
-					// + jump.toString());
-					// System.out.println(Integer.parseInt(dest.getLocation().getCodeLocation())
-					// + dest.toString());
-				}
-			}
-
-			if (entry.getValue().getRight() == "Se") {
-				while (i.hasNext()) {
-					Statement s = i.next();
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
-						jump = s;
-						// System.out.println(Integer.parseInt(s.getLocation().getCodeLocation())
-						// + s.toString());
-					}
-
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
-						dest = s;
-						// System.out.println(Integer.parseInt(s.getLocation().getCodeLocation())
-						// + s.toString());
-					}
-				}
-				cfg.addEdge(new SequentialEdge(jump, dest));
-			}
-
-			if (entry.getValue().getRight() == "Ce") {
-				Statement destf = null;
-				while (i.hasNext()) {
-					Statement s = i.next();
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
-						jump = s;
-					}
-
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
-						dest = s;
-					}
-
-					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey() + 1) {
-						destf = s;
-					}
-				}
-				cfg.addEdge(new TrueEdge(jump, dest));
-				cfg.addEdge(new FalseEdge(jump, destf));
-
-				// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
-				// + jump.toString() + " true");
-				// System.out.println(Integer.parseInt(dest.getLocation().getCodeLocation())
-				// + dest.toString() + " true");
-
-				// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
-				// + jump.toString() + " false");
-				// System.out.println(Integer.parseInt(destf.getLocation().getCodeLocation())
-				// + destf.toString() + " false");
-			}
-		}
-	}
+//	private void createEdge(Map<Integer, Pair<Integer, String>> jumpmap, CFG cfg, Ret ret) {
+//		for (Map.Entry<Integer, Pair<Integer, String>> entry : jumpmap.entrySet()) {
+//			Statement jump = null;
+//			Statement dest = null;
+//
+//			Collection<Statement> ctc = cfg.getNodes();
+//			Iterator<Statement> i = ctc.iterator();
+//			// System.out.println("\n");
+//			// System.out.println(entry.getValue().getRight());
+//			
+//
+//			if (entry.getValue().getRight() == "N") {
+//				while (i.hasNext()) {
+//					Statement s = i.next();
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
+//						jump = s;
+//					}
+//
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
+//						dest = s;
+//					}
+//				}
+//
+//				if (jump instanceof Revert || jump instanceof Return || jump instanceof Selfdestruct
+//						|| jump instanceof Stop || jump instanceof Invalid) {
+//					cfg.addEdge(new SequentialEdge(jump, ret));
+//					// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
+//					// + jump.toString());
+//					// System.out.println(Integer.parseInt(ret.getLocation().getCodeLocation())
+//					// + ret.toString());
+//				} else {
+//					cfg.addEdge(new SequentialEdge(jump, dest));
+//					// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
+//					// + jump.toString());
+//					// System.out.println(Integer.parseInt(dest.getLocation().getCodeLocation())
+//					// + dest.toString());
+//				}
+//			}
+//
+//			if (entry.getValue().getRight() == "Se") {
+//				while (i.hasNext()) {
+//					Statement s = i.next();
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
+//						jump = s;
+//						// System.out.println(Integer.parseInt(s.getLocation().getCodeLocation())
+//						// + s.toString());
+//					}
+//
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
+//						dest = s;
+//						// System.out.println(Integer.parseInt(s.getLocation().getCodeLocation())
+//						// + s.toString());
+//					}
+//				}
+//
+//				cfg.addEdge(new SequentialEdge(jump, dest));
+//			}
+//
+//			if (entry.getValue().getRight() == "Ce") {
+//				Statement destf = null;
+//				while (i.hasNext()) {
+//					Statement s = i.next();
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey()) {
+//						jump = s;
+//					}
+//
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getValue().getLeft()) {
+//						dest = s;
+//					}
+//
+//					if (Integer.parseInt(s.getLocation().getCodeLocation()) == entry.getKey() + 1) {
+//						destf = s;
+//					}
+//				}
+//				
+//				cfg.addEdge(new TrueEdge(jump, dest));
+//				cfg.addEdge(new FalseEdge(jump, destf));
+//
+//				// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
+//				// + jump.toString() + " true");
+//				// System.out.println(Integer.parseInt(dest.getLocation().getCodeLocation())
+//				// + dest.toString() + " true");
+//
+//				// System.out.println(Integer.parseInt(jump.getLocation().getCodeLocation())
+//				// + jump.toString() + " false");
+//				// System.out.println(Integer.parseInt(destf.getLocation().getCodeLocation())
+//				// + destf.toString() + " false");
+//			}
+//		}
+//	}
 
 	//	private void createOrphanedge(Map<Integer, ArrayList<Integer>> orpmap, Ret ret) {
 	//

@@ -226,7 +226,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				return new SymbolicStack(result);
 			} else if (op instanceof JumpdestOperator) { // JUMPDEST
-				return this;
+					return this;
 			}
 
 			// Above, operators that do not perform pop()
@@ -353,7 +353,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 					result.push(exp);
 				} catch (MathNumberConversionException e) {
-					e.printStackTrace();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				return new SymbolicStack(result);
@@ -421,7 +422,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(opnd1.interval.getLow().toByte() & opnd2.interval.getLow().toByte());
 					high = new MathNumber(opnd1.interval.getHigh().toByte() & opnd2.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				result.push(new Interval(low, high));
@@ -440,7 +442,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(opnd1.interval.getLow().toByte() | opnd2.interval.getLow().toByte());
 					high = new MathNumber(opnd1.interval.getHigh().toByte() | opnd2.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				result.push(new Interval(low, high));
@@ -459,7 +462,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(opnd1.interval.getLow().toByte() ^ opnd2.interval.getLow().toByte());
 					high = new MathNumber(opnd1.interval.getHigh().toByte() ^ opnd2.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				result.push(new Interval(low, high));
@@ -477,7 +481,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(~opnd1.interval.getLow().toByte());
 					high = new MathNumber(~opnd1.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				result.push(new Interval(low, high));
@@ -533,7 +538,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(opnd1.interval.getLow().toByte() << opnd2.interval.getLow().toByte());
 					high = new MathNumber(opnd1.interval.getHigh().toByte() << opnd2.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 			
 				result.push(new Interval(low, high));
@@ -553,7 +559,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(opnd1.interval.getLow().toByte() >> opnd2.interval.getLow().toByte());
 					high = new MathNumber(opnd1.interval.getHigh().toByte() >> opnd2.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				result.push(new Interval(low, high));
@@ -574,7 +581,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					low = new MathNumber(opnd1.interval.getLow().toByte() >> opnd2.interval.getLow().toByte());
 					high = new MathNumber(opnd1.interval.getHigh().toByte() >> opnd2.interval.getHigh().toByte());
 				} catch (MathNumberConversionException e) {
-					return this.bottom();
+					result.push(Interval.TOP);
+					return new SymbolicStack(result);
 				}
 
 				result.push(new Interval(low, high));

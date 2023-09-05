@@ -3,6 +3,7 @@ package it.unipr.analysis.cron;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -15,6 +16,7 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unipr.checker.JumpChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
@@ -38,7 +40,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * n. ManagedAccount:    0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a
 	 * o. ERC20Salary:	     0xcc2ba2eac448d60e0f943ebe378f409cb7d1b58a
 	 */
-	private final static String CONTRACT_ADDR = "0x679131f591b4f369acb8cd8c51e68596806c3916";
+	private final static String CONTRACT_ADDR = "0x000000000d38df53b45c5733c7b34000de0bdf52";
 
 	// Contract bytecode output directory
 	private final static String BYTECODE_DIR = "bytecodeBenchmark/" + CONTRACT_ADDR;
@@ -73,13 +75,20 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		perform(conf);
 
 		// Print the results
-		int totalJumps = getTotalJumpsFromFile(BYTECODE_FULLPATH);
-		System.err.println("##############");
-		try {
-			System.err.println("Percentage of solved jumps: " + checker.getSolvedJumps() * 100 / (totalJumps - checker.getUnreachableJumps()) + "%");
-		} catch (ArithmeticException e) {
-			System.err.println("Percentage of solved jumps: 0%");
+		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
+		
+		Set<Statement> validJumps = baseCfg.getAllValidPushedJUMPs();
+		System.err.println("JUMP con PUSH prima: " + validJumps.size());
+		for (Statement jump : validJumps) {
+			baseCfg.getIngoingEdges(jump).forEach(t -> {
+				System.err.println(t.getSource().getEvaluationPredecessor());
+			});
 		}
+		
+		int totalOpcodes = baseCfg.getNodesCount() - 1;
+		int totalJumps = baseCfg.getAllValidPushedJUMPs().size();
+		System.err.println("##############");
+		System.err.println("Total opcodes: " + totalOpcodes);
 		System.err.println("Total jumps: " + totalJumps);
 		System.err.println("Solved jumps: " + checker.getSolvedJumps());
 		System.err.println("Unsolved jumps: " + checker.getUnsolvedJumps());
@@ -87,15 +96,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.err.println("##############");
 	}
 
-	private static int getTotalJumpsFromFile(String filename) {
-		int totalJumps = 0;
+	private static CFG getCFGFromFile(String filename) {
+		CFG cfg = null;
 		try {
 			for (CFG c : EVMFrontend.generateCfgFromFile(filename).getAllCFGs()) {
-				totalJumps = ((EVMCFG) c).getAllJumps().size();
+				cfg = c;
 			}
 		} catch (IOException e) {
 			System.err.println("Incorrect contract filename");
 		}
-		return totalJumps;
+		return cfg;
 	}
 }
