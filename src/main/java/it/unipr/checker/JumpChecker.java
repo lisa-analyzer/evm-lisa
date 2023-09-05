@@ -40,9 +40,10 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	private int solvedJumps = 0;
 	private final Set<Statement> unreachable = new HashSet<>();
 	private final Set<Statement> unsolvable = new HashSet<>();
+	private final Set<Statement> solved = new HashSet<>();
 
 	public int getSolvedJumps() {
-		return solvedJumps;
+		return solved.size();
 	}
 
 	public int getUnsolvedJumps() {
@@ -131,17 +132,15 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 							if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
 								cfg.addEdge(new SequentialEdge(node, jmp));
 								fixpoint = false;
-								solvedJumps++;
-								removeUnreachableJump(node);
-								removeUnsolvableJump(node);
+								//solvedJumps++;
+								addSolvedJump(node);
 							}
 						} else { // JUMPI
 							if (!cfg.containsEdge(new TrueEdge(node, jmp))) {
 								fixpoint = false;
 								cfg.addEdge(new TrueEdge(node, jmp));
-								solvedJumps++;
-								removeUnreachableJump(node);
-								removeUnsolvableJump(node);
+								//solvedJumps++;
+								addSolvedJump(node);
 							}
 						}
 					}
@@ -158,22 +157,29 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 		return true;
 	}
+	
+	private void addSolvedJump(Statement node) {
+		if (!solved.contains(node)) {
+			solved.add(node);
+			unsolvable.remove(node);
+			unreachable.remove(node);
+		}
+	}
 
 	private void addUnsolvableJump(Statement node) {
-		unsolvable.add(node);
-		unreachable.remove(node);
+		if (!unsolvable.contains(node)) {
+			unsolvable.add(node);
+			unreachable.remove(node);
+			solved.remove(node);
+		}
 	}
 
 	private void addUnreachableJump(Statement node) {
-		unreachable.add(node);
-		unsolvable.remove(node);
+		if (!unreachable.contains(node)) {
+			unreachable.add(node);
+			unsolvable.remove(node);
+			solved.remove(node);
+		}
 	}
 
-	private void removeUnsolvableJump(Statement node) {
-		unsolvable.remove(node);
-	}
-
-	private void removeUnreachableJump(Statement node) {
-		unreachable.remove(node);
-	}
 }

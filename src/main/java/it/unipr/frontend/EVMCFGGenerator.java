@@ -175,14 +175,14 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 		Collection<Statement> ctc = cfg.getNodes();
 		Iterator<Statement> i = ctc.iterator();
-//		while (i.hasNext()) {
-//			Statement s = i.next();
-//			cfg.getIngoingEdges(s);
-//			if (cfg.getIngoingEdges(s).isEmpty() && Integer.valueOf(s.getLocation().getCodeLocation()) != 0) {
-//				cfg.getEntrypoints().add(s);
-//				System.err.println(s);
-//			}
-//		}
+		while (i.hasNext()) {
+			Statement s = i.next();
+			cfg.getIngoingEdges(s);
+			if (cfg.getIngoingEdges(s).isEmpty() && Integer.valueOf(s.getLocation().getCodeLocation()) != 0) {
+				cfg.getEntrypoints().add(s);
+				System.err.println(s);
+			}
+		}
 
 		//		System.out.println("Orphan jump: " + result);
 		System.out.println(
