@@ -67,3 +67,4 @@ local.properties
 
 /output
 /test-outputs
+/evm-testcases/bytecodeBenchmark
