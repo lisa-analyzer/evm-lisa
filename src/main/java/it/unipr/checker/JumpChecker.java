@@ -1,6 +1,8 @@
 package it.unipr.checker;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,13 +42,13 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	private int solvedJumps = 0;
 	private int unsolvedJumps = 0;
 	private int unreachableJumps = 0;
-	public Set<Statement> unreachable = new HashSet<>();
-	public Set<Statement> unsolvable = new HashSet<>();
+	private final Set<Statement> unreachable = new HashSet<>();
+	private final Set<Statement> unsolvable = new HashSet<>();
 
 	public int getSolvedJumps() {
 		return solvedJumps;
 	}
-	
+
 	public int getUnsolvedJumps() {
 		return unsolvedJumps;
 	}
@@ -54,11 +56,11 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	public int getUnreachableJumps() {
 		return unreachableJumps;
 	}
-	
+
 	public EVMCFG getAnalyzedCFG() {
 		return cfgToAnalyze;
 	}
-	
+
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
@@ -95,7 +97,7 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 			return true;
 
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-		
+
 		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap,
 				SymbolicStack,
@@ -105,7 +107,7 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 			TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
 
 			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
-			
+
 			if (symbolicStack.isTop()) {
 				addUnsolvableJump(node);
 				continue;
@@ -113,7 +115,7 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 				addUnreachableJump(node);
 				continue;
 			}
-			
+
 			try {
 				for (Long i : symbolicStack.getTop().interval) {
 					Set<Statement> jmps = jumpDestinations.stream()
@@ -122,12 +124,12 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 							.collect(Collectors.toSet());
 
 					System.err.println(jmps + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
-					
+
 					if (jmps.isEmpty()) {
 						addUnsolvableJump(node);
 						continue;
 					}
-					
+
 					for (Statement jmp : jmps) {	
 						if (node instanceof Jump) { // JUMP
 							if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
@@ -147,7 +149,7 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 							}
 						}
 					}
-					
+
 				}
 			} catch (InfiniteIterationException e) {
 				System.err.println("Infinite iteration detected in checker visit()");

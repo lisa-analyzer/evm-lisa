@@ -210,7 +210,12 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 				return new SymbolicStack(result);
 			} else if (op instanceof JumpOperator) { // JUMP
-				return this;
+				if ((Integer) ((Constant) un.getExpression()).getValue() > 0) {
+					ArrayDeque<Interval> result = stack.clone();
+					result.pop();
+					return new SymbolicStack(result);
+				} else
+					return this;
 			} else if (op instanceof JumpiOperator) { // JUMPI
 				return this;
 			} else if (op instanceof MsizeOperator) { // MSIZE
