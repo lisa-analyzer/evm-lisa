@@ -38,41 +38,9 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
 	private Set<Statement> solvedJumps = new HashSet<>();
-	private Set<Statement> unsolvedJumps = new HashSet<>();
-	private Set<Statement> unreachableJumps = new HashSet<>();
 
-	public int getSolvedJumps() {
-		return this.solvedJumps.size();
-	}
-
-	public int getUnsolvedJumps() {
-		return this.unsolvedJumps.size();
-	}
-	
-	public int getUnreachableJumps() {
-		return this.unreachableJumps.size();
-	}
-
-	private void addSolvedJump(Statement jump) {
-		if (!this.solvedJumps.contains(jump)) {
-			this.solvedJumps.add(jump);
-			this.unreachableJumps.remove(jump);
-			this.unsolvedJumps.remove(jump);
-		}
-	}
-
-	private void addUnreachableJump(Statement jump) {
-		if (!this.solvedJumps.contains(jump)) {
-			this.unreachableJumps.add(jump);
-			this.unsolvedJumps.remove(jump);
-		}
-	}
-
-	private void addUnsolvedJump(Statement jump) {
-		if (!this.solvedJumps.contains(jump)) {
-			this.unsolvedJumps.add(jump);
-			this.unreachableJumps.remove(jump);
-		}
+	public Set<Statement> getSolvedJumps() {
+		return this.solvedJumps;
 	}
 
 	@Override
@@ -122,15 +90,9 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
 
-			if (symbolicStack.isTop()) {
-				this.addUnsolvedJump(node);
-				continue;
-			} else if (symbolicStack.isBottom()) {
-				this.addUnreachableJump(node);
+			if (symbolicStack.isTop() || symbolicStack.isBottom()) {
 				continue;
 			}
-
-			boolean solved = false;
 
 			try {
 				for (Long i : symbolicStack.getTop().interval) {
@@ -150,17 +112,13 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 							if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
 								cfg.addEdge(new SequentialEdge(node, jmp));
 								fixpoint = false;
-								this.addSolvedJump(node);
-								solved = true;
-								//solvedJumps++;
+								this.solvedJumps.add(node);
 							}
 						} else { // JUMPI
 							if (!cfg.containsEdge(new TrueEdge(node, jmp))) {
 								cfg.addEdge(new TrueEdge(node, jmp));
 								fixpoint = false;
-								this.addSolvedJump(node);
-								solved = true;
-								//solvedJumps++;
+								this.solvedJumps.add(node);
 							}
 						}
 					}
@@ -170,10 +128,6 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 				System.err.println("Infinite iteration detected in checker visit()");
 			} catch (NoSuchElementException e) {
 				System.err.println("NoSuchElementException during visit()");
-			} finally {
-				if (!solved) {
-					this.addUnsolvedJump(node);
-				}
 			}
 		}
 

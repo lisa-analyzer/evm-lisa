@@ -77,22 +77,19 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Print the results
 		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
 		
-		Set<Statement> validJumps = baseCfg.getAllValidPushedJUMPs();
-		System.err.println("JUMP con PUSH prima: " + validJumps.size());
-		for (Statement jump : validJumps) {
-			baseCfg.getIngoingEdges(jump).forEach(t -> {
-				System.err.println(t.getSource().getEvaluationPredecessor());
-			});
-		}
+		Set<Statement> validJUMPs = baseCfg.getAllValidPushedJUMPs();
+		Set<Statement> validJUMPIs = baseCfg.getAllValidPushedJUMPIs();
+		Set<Statement> solvedJumps = checker.getSolvedJumps();
+		
+		solvedJumps.addAll(validJUMPs);
+		solvedJumps.addAll(validJUMPIs);
 		
 		int totalOpcodes = baseCfg.getNodesCount() - 1;
-		int totalJumps = baseCfg.getAllValidPushedJUMPs().size();
+		int totalJumps = baseCfg.getAllJumps().size();
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + totalOpcodes);
 		System.err.println("Total jumps: " + totalJumps);
-		System.err.println("Solved jumps: " + checker.getSolvedJumps());
-		System.err.println("Unsolved jumps: " + checker.getUnsolvedJumps());
-		System.err.println("Unreachable jumps: " + checker.getUnreachableJumps());
+		System.err.println("Solved jumps: " + solvedJumps.size());
 		System.err.println("##############");
 	}
 
