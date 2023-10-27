@@ -1,10 +1,5 @@
 package it.unipr.checker;
 
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.SymbolicStack;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -29,11 +24,14 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.numeric.InfiniteIterationException;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JumpChecker
-implements SemanticCheck<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
-
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
@@ -46,8 +44,8 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
-			SymbolicStack, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
+					SymbolicStack, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint)
 			return;
@@ -70,8 +68,8 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
-			SymbolicStack, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
+					SymbolicStack, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		EVMCFG cfg = cfgToAnalyze = (EVMCFG) graph;
 
@@ -85,8 +83,8 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 				SymbolicStack,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(cfg)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, SymbolicStack,
-			TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
+					MonolithicHeap, SymbolicStack,
+					TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
 
 			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
 
@@ -107,7 +105,7 @@ MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 						continue;
 					}
 
-					for (Statement jmp : jmps) {	
+					for (Statement jmp : jmps) {
 						if (node instanceof Jump) { // JUMP
 							if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
 								cfg.addEdge(new SequentialEdge(node, jmp));

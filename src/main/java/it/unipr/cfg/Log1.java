@@ -35,7 +35,7 @@ public class Log1 extends Log {
 		return "LOG1";
 	}
 
-		@Override
+	@Override
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
