@@ -29,18 +29,33 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A semantic checker that aims at solving JUMP and JUMPI destinations by
+ * filtering all the possible destinations and adding the missing edges.
+ */
 public class JumpChecker
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
-	private Set<Statement> solvedJumps = new HashSet<>();
+	private final Set<Statement> solvedJumps = new HashSet<>();
 
+	/**
+	 * Getter method for the set of jump statements that have been solved.
+	 * 
+	 * @return the set of jump statements that have been solved.
+	 */
 	public Set<Statement> getSolvedJumps() {
 		return this.solvedJumps;
 	}
 
+	/**
+	 * {@inheritDoc} Checks if analysis has reached fix-point. If not, it runs
+	 * another LiSA analysis to solve the remaining jumps and reach fix-point.
+	 * 
+	 * @param tool the semantic check tool that is running this check.
+	 */
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
@@ -65,62 +80,92 @@ public class JumpChecker
 		}
 	}
 
+	/**
+	 * {@inheritDoc} Visits the CFG, focusing only on JUMP and JUMPI statements.
+	 * Tries to solve the jump destinations by inspecting the interval at the
+	 * top of the symbolic stack.
+	 * 
+	 * @param tool  the semantic check tool that is running this check.
+	 * @param graph the CFG to visit.
+	 * @param node  the current node of the CFG.
+	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
 					SymbolicStack, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
-		EVMCFG cfg = cfgToAnalyze = (EVMCFG) graph;
 
+		// Cast the graph (CFG) to EVMCFG and set it as the actual CFG to
+		// analyze.
+		this.cfgToAnalyze = (EVMCFG) graph;
+
+		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
 
-		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
+		// Retrieve all the jump destinations from the actual CFG.
+		Set<Statement> jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
 
+		// Iterate over all the analysis results, in our case there will be only
+		// one result.
 		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap,
 				SymbolicStack,
-				TypeEnvironment<InferredTypes>> result : tool.getResultOf(cfg)) {
+				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
 					MonolithicHeap, SymbolicStack,
 					TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
 
+			// Retrieve the symbolic stack from the analysis result
 			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
 
+			// If the symbolic stack is TOP or BOTTOM, we don't have useful info
+			// to solve the jump.
 			if (symbolicStack.isTop() || symbolicStack.isBottom()) {
 				continue;
 			}
 
+			// TODO: Check if exceptions are correctly handled
 			try {
+				// Iterate over the values of the interval at the top of the
+				// symbolic stack.
 				for (Long i : symbolicStack.getTop().interval) {
-					Set<Statement> jmps = jumpDestinations.stream()
+
+					// Filter the jump destinations to find the ones that match
+					// the current value of the interval.
+					Set<Statement> filteredDests = jumpDestinations.stream()
 							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
 							.filter(pc -> ((ProgramCounterLocation) pc.getLocation()).getPc() == i)
 							.collect(Collectors.toSet());
 
-					System.err.println(jmps + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
+					// TODO: Check if printing found JUMPDESTs is useful
+					System.err.println(
+							filteredDests + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
 
-					if (jmps.isEmpty()) {
+					// If there are no JUMPDESTs for this value, skip to the
+					// next one.
+					if (filteredDests.isEmpty()) {
 						continue;
 					}
 
-					for (Statement jmp : jmps) {
+					// For each JUMPDEST, add the missing edge from this node to
+					// the JUMPDEST.
+					for (Statement jmp : filteredDests) {
 						if (node instanceof Jump) { // JUMP
-							if (!cfg.containsEdge(new SequentialEdge(node, jmp))) {
-								cfg.addEdge(new SequentialEdge(node, jmp));
+							if (!this.cfgToAnalyze.containsEdge(new SequentialEdge(node, jmp))) {
+								this.cfgToAnalyze.addEdge(new SequentialEdge(node, jmp));
 								fixpoint = false;
 								this.solvedJumps.add(node);
 							}
 						} else { // JUMPI
-							if (!cfg.containsEdge(new TrueEdge(node, jmp))) {
-								cfg.addEdge(new TrueEdge(node, jmp));
+							if (!this.cfgToAnalyze.containsEdge(new TrueEdge(node, jmp))) {
+								this.cfgToAnalyze.addEdge(new TrueEdge(node, jmp));
 								fixpoint = false;
 								this.solvedJumps.add(node);
 							}
 						}
 					}
-
 				}
 			} catch (InfiniteIterationException e) {
 				System.err.println("Infinite iteration detected in checker visit()");

@@ -18,7 +18,6 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
@@ -26,9 +25,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
  * via Etherscan (@see <a href="https://etherscan.io/apis">Etherscan API</a>)
  * and the parsing of the bytecode to generate the control flow graph of the
- * contract.
- * 
- * Ehterscan API key must be stored in the environment variable:
+ * contract. Ehterscan API key must be stored in the environment variable:
  * ETHERSCAN_API_KEY.
  */
 public class EVMFrontend {
@@ -46,8 +43,8 @@ public class EVMFrontend {
 	private static String FROM_062_TO_LATEST = "a264697066735822";
 
 	/**
-	 * Verifies the syntactic correctness of the smart contract bytecode stored in
-	 * {@code filePath} and returns its {@code ProgramContext}.
+	 * Verifies the syntactic correctness of the smart contract bytecode stored
+	 * in {@code filePath} and returns its {@code ProgramContext}.
 	 * 
 	 * @param filePath the path where the smart contract bytecode is stored
 	 * 
@@ -73,11 +70,12 @@ public class EVMFrontend {
 	 * stores the result in {@code output}.
 	 * 
 	 * @param address the address of the smart contract to be parsed.
-	 * @param output  the directory where the EMV bytecode that correlates with the
-	 *                smart contract stored at {@code address} is stored.
+	 * @param output  the directory where the EMV bytecode that correlates with
+	 *                    the smart contract stored at {@code address} is
+	 *                    stored.
 	 * 
-	 * @return {@code true} if the bytecode was successfully downloaded and stored,
-	 *         false otherwise.
+	 * @return {@code true} if the bytecode was successfully downloaded and
+	 *             stored, false otherwise.
 	 * 
 	 * @throws IOException
 	 */
@@ -174,12 +172,14 @@ public class EVMFrontend {
 	}
 
 	/**
-	 * Takes the smart contract bytecode stored in {@code filePath} and generates
-	 * its control flow graph which is then returned as a LiSA {@code Program}.
+	 * Takes the smart contract bytecode stored in {@code filePath} and
+	 * generates its control flow graph which is then returned as a LiSA
+	 * {@code Program}.
 	 * 
 	 * @param filePath the path where the smart contract bytecode is stored
 	 * 
-	 * @return a LiSA {@code Program} representing the generated control flow graph
+	 * @return a LiSA {@code Program} representing the generated control flow
+	 *             graph
 	 * 
 	 * @throws IOException
 	 */
@@ -625,7 +625,8 @@ public class EVMFrontend {
 		// Get the API key from the environment variable
 		final String API_KEY = System.getenv("ETHERSCAN_API_KEY");
 
-		// Check if API key was retrieved correctly from the environment variable
+		// Check if API key was retrieved correctly from the environment
+		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
 			System.err.println("ERROR: couldn't retrieve ETHERSCAN_API_KEY environment variable from your system.");
 			return null;
