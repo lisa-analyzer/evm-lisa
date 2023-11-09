@@ -4,6 +4,14 @@
 # Ignore IntelliJ IDEA directory
 .idea
 
+# Ignore Visual Studio Code directory
+.vscode
+
+# Ignore output directories that contain generated results
+output/
+test-outputs/
+evm-testcases/bytecodeBenchmark
+
 # Ignore Gradle build output directory
 build
 
@@ -67,7 +75,3 @@ local.properties
 # Uncomment this line if you wish to ignore the project description file.
 # Typically, this file would be tracked if it contains build/dependency configurations:
 #.project
-
-/output
-/test-outputs
-/evm-testcases/bytecodeBenchmark

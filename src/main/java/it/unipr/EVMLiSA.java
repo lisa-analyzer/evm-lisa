@@ -17,16 +17,11 @@ import java.io.IOException;
 
 public class EVMLiSA {
 
-	private final static String OUTPUT_DIR = "output"; // The directory where
-														// the analysis outcome
-														// should be stored
-	private final static String CONTRACTS_DIR = "evm-testcases"; // The
-																	// directory
-																	// where the
-																	// .sol
-																	// contracts
-																	// are
-																	// stored
+	// Directory where the analysis outcome is stored
+	private final static String OUTPUT_DIR = "output";
+
+	// Directory where contracts (.sol files) are stored
+	private final static String CONTRACTS_DIR = "evm-testcases";
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
