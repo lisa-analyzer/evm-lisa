@@ -194,6 +194,15 @@ public class EVMFrontend {
 		return program;
 	}
 
+	/**
+	 * Helper method that maps the EVM opcodes to their corresponding
+	 * instruction.
+	 * 
+	 * @param opcode
+	 * @param writer
+	 * 
+	 * @throws IOException
+	 */
 	private static void addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
 		case "00":

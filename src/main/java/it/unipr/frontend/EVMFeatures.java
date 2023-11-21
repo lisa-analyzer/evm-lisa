@@ -30,7 +30,6 @@ public class EVMFeatures extends LanguageFeatures {
 	@Override
 	public ParameterAssigningStrategy getAssigningStrategy() {
 		return PythonLikeAssigningStrategy.INSTANCE;
-
 	}
 
 	@Override
