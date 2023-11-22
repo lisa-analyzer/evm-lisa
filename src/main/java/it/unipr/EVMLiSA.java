@@ -18,7 +18,7 @@ import java.io.IOException;
 public class EVMLiSA {
 
 	// Directory where the analysis outcome is stored
-	private final static String OUTPUT_DIR = "output";
+	private final static String OUTPUT_DIR = "evm-outputs";
 
 	// Directory where contracts (.sol files) are stored
 	private final static String CONTRACTS_DIR = "evm-testcases";

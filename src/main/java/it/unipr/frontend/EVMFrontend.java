@@ -155,20 +155,20 @@ public class EVMFrontend {
 	 * @throws IOException
 	 * @throws AnalysisException
 	 */
-	public static Program generateCfgFromContractAddress(String contractAddress) throws IOException, AnalysisException {
-		final String bytecodeOutputPath = "output/tmp/" + contractAddress + "_bytecode.sol";
+	public static Program generateCfgFromContraOutputctAddress(String contractAddress) throws IOException, AnalysisException {
+		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
 
 		// Get bytecode from Etherscan
-		new File(bytecodeOutputPath).getParentFile().mkdirs();
+		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
 
-		boolean parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, bytecodeOutputPath);
+		boolean parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, BYTECODE_OUTFILE_PATH);
 
 		if (!parseResult) {
 			return null;
 		}
 
 		// Parse bytecode to generate CFG
-		return EVMFrontend.generateCfgFromFile(bytecodeOutputPath);
+		return EVMFrontend.generateCfgFromFile(BYTECODE_OUTFILE_PATH);
 	}
 
 	/**
