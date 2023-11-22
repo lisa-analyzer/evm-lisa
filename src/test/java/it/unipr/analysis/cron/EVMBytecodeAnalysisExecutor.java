@@ -33,7 +33,7 @@ import java.util.Objects;
 public abstract class EVMBytecodeAnalysisExecutor {
 
 	protected static final String EXPECTED_RESULTS_DIR = "evm-testcases";
-	protected static final String ACTUAL_RESULTS_DIR = "test-outputs";
+	protected static final String ACTUAL_RESULTS_DIR = "evm-outputs";
 
 	/**
 	 * Performs a test, running an analysis. The test will fail if:
