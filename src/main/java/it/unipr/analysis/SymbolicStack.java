@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Semantic domain of the execution stack of the contract.
+ * Class representing the symbolic stack abstract domain.
  */
 public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
@@ -45,31 +45,56 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private final boolean isTop;
 
 	/**
-	 * Constructor of the SymbolicStack class.
+	 * Default constructor, builds a TOP symbolic stack.
 	 */
 	public SymbolicStack() {
 		this(true);
 	}
 
-	private SymbolicStack(boolean isTop) {
-		this.isTop = isTop;
-		this.stack = new ArrayDeque<Interval>();
-	}
-
+	/**
+	 * Builds a symbolic stack with the given stack.
+	 * The built symbolic stack is not TOP.
+	 * 
+	 * @param stack the stack to be used.
+	 */
 	public SymbolicStack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
 
+	/**
+	 * Private "helper" constructor.
+	 * Builds an empty symbolic stack and sets the isTop flag.
+	 * 
+	 * @param isTop true if the stack is TOP, false if it is BOTTOM.
+	 */
+	private SymbolicStack(boolean isTop) {
+		this.isTop = isTop;
+		this.stack = new ArrayDeque<Interval>();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * TODO: implement.
+	 */
 	@Override
 	public SymbolicStack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
+	/**
+	 * {@inheritDoc} Given an expression, modifies the symbolic stack
+	 * accordingly and returns the modified stack.
+	 *
+	 * @return the modified symbolic stack
+	 * @throws SemanticException if something goes wrong during the evaluation.
+	 */
 	@Override
 	public SymbolicStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (this.isBottom()) { // BOTTOM propagation
+		// Ensure BOTTOM propagation
+		if (this.isBottom()) {
 			return SymbolicStack.BOTTOM;
 		}
 
@@ -1273,6 +1298,13 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		return true;
 	}
 
+	/**
+	 * Helper method to convert a memory word to a BigInteger
+	 * 
+	 * @param expression the memory word to convert
+	 * 
+	 * @return the BigInteger corresponding to the memory word
+	 */
 	private BigDecimal toBigDecimal(SymbolicExpression expression) {
 		Constant c = (Constant) expression;
 		String hex = (String) c.getValue();
@@ -1285,7 +1317,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	@Override
 	public SymbolicStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
-		if (this.isBottom() || this.isTop()) { // BOTTOM and TOP propagation
+		// Ensure BOTTOM and TOP propagation
+		if (this.isBottom() || this.isTop()) {
 			return this;
 		}
 
@@ -1351,6 +1384,11 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 		return this;
 	}
 
+	/**
+	 * Getter for the Interval at the top of the stack.
+	 * 
+	 * @return the Interval at the top of the stack.
+	 */
 	public Interval getTop() {
 		return this.stack.getFirst();
 	}
