@@ -3,14 +3,14 @@
   "files" : [ "report.json", "untyped_program.evm-testcases_cfs_if_else_npbj_if_else_npbj_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "47ms",
-    "end" : "2023-10-27T17:40:19.000+02:00",
+    "duration" : "61ms",
+    "end" : "2023-11-22T12:49:34.861+01:00",
     "expressions" : "9",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2023-10-27T17:40:18.953+02:00",
+    "start" : "2023-11-22T12:49:34.800+01:00",
     "statements" : "17",
     "units" : "0",
     "version" : "0.1b8",
@@ -32,6 +32,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "test-outputs/cfs/if_else_npbj"
+    "workdir" : "evm-outputs/cfs/if_else_npbj"
   }
 }
