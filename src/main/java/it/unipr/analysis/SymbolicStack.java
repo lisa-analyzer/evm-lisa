@@ -42,6 +42,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private static final SymbolicStack BOTTOM = new SymbolicStack(null);
 
 	private final ArrayDeque<Interval> stack;
+	private Memory memory;
+	private BigDecimal mu_i; // TODO Give a better name
 	private final boolean isTop;
 
 	/**
@@ -60,6 +62,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	public SymbolicStack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
+		this.memory = new Memory(null);
+		this.mu_i = new BigDecimal(0);
 	}
 
 	/**
@@ -71,6 +75,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private SymbolicStack(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new ArrayDeque<Interval>();
+		this.memory = new Memory(null);
+		this.mu_i = new BigDecimal(0);
 	}
 
 	/**
@@ -706,22 +712,55 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					result.pop();
 
 					return new SymbolicStack(result);
+					
 				} else if (op instanceof MloadOperator) { // MLOAD
 					ArrayDeque<Interval> result = stack.clone();
 					Interval offset = result.pop();
-
-					// At the moment, we do not handle MLOAD
-					result.push(Interval.TOP);
-
+					
+					if(mu_i.intValueExact() < new BigDecimal(1).intValueExact()) {
+						// This is an error. We cannot read from memory if there is no active words saved
+						// TODO to handle this error
+					}
+						
+					if(offset.interval.isSingleton()) {
+						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
+						BigDecimal thirtyTwo = new BigDecimal(32);
+						
+						Interval state = memory.getState(offsetBigDecimal);
+						System.out.println("state= " + state);
+						result.push(state);
+						
+						mu_i = mu_i.max(offsetBigDecimal.add(thirtyTwo).divide(thirtyTwo));
+					
+					} else {
+						// TODO to handle else-condition
+						result.push(Interval.TOP);
+					}
+					
 					return new SymbolicStack(result);
+					
 				} else if (op instanceof MstoreOperator) { // MSTORE
 					ArrayDeque<Interval> result = stack.clone();
 					Interval offset = result.pop();
 					Interval value = result.pop();
-
-					// At the moment, we do not handle MSTORE
-
+					
+					if(offset.interval.isSingleton()) {
+						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
+						BigDecimal thirtyTwo = new BigDecimal(32);
+						
+						memory = memory.putState(offsetBigDecimal, value);
+						
+						mu_i = mu_i.max(offsetBigDecimal.add(thirtyTwo).divide(thirtyTwo));
+						
+						System.out.println("Memory= " + memory);
+						System.out.println("mu_i= " + mu_i);
+	
+					} else {
+						// TODO to handle else-condition
+					}
+					
 					return new SymbolicStack(result);
+					
 				} else if (op instanceof Mstore8Operator) { // MSTORE8
 					ArrayDeque<Interval> result = stack.clone();
 					Interval offset = result.pop();

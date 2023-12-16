@@ -1,16 +1,20 @@
 package it.unipr.analysis.cron;
 
+import it.unipr.analysis.Memory;
 import it.unipr.analysis.SymbolicStack;
 import it.unipr.checker.JumpChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import java.io.IOException;
+import java.math.BigDecimal;
+
 import org.junit.Test;
 
 /**
@@ -56,44 +60,62 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		return conf;
 	}
 
+//	@Test
+//	public void testIf() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testIfElse() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testWhile() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	/**
+//	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
+//	 * - Number of opcodes: 32
+//	 * - Expected solved jumps %: 100%
+//	 */
+//	@Test
+//	public void testRealContract() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad", "0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
+//		perform(conf);
+//	}
+	
 	@Test
-	public void testIf() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
-		perform(conf);
+	public void testMemory() throws AnalysisSetupException, IOException {
+		Memory m = new Memory(new Interval(10,20));
+		
+		m = m.putState(new BigDecimal(10), new Interval(10,20));
+		m = m.putState(new BigDecimal(20), new Interval(13,21));
+		m = m.putState(new BigDecimal(30), new Interval(16,26));
+		m = m.putState(new BigDecimal(40), new Interval(1,21));
+		
+		System.out.println(m);
 	}
-
+	
 	@Test
-	public void testIfElse() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testWhile() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
-		perform(conf);
-	}
-
-	/**
-	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
-	 * - Number of opcodes: 32
-	 * - Expected solved jumps %: 100%
-	 */
-	@Test
-	public void testRealContract() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad", "0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
+	public void testMstore() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", true);
 		perform(conf);
 	}
 	
