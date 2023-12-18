@@ -19,14 +19,12 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 
 	@Override
 	public Memory top() {
-		// TODO Auto-generated method stub
-		return null;
+		return isTop() ? this : new Memory(lattice.top(), null);
 	}
 
 	@Override
 	public Memory bottom() {
-		// TODO Auto-generated method stub
-		return null;
+		return isBottom() ? this : new Memory(lattice.bottom(), null);
 	}
 
 	@Override
