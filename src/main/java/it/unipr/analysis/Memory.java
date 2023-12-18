@@ -9,8 +9,13 @@ import it.unive.lisa.analysis.numeric.Interval;
 
 public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 		
+	
+	public Memory() {
+		this(new Interval());
+	}
+	
 	public Memory(Interval lattice) {
-		super(lattice, new HashMap<BigDecimal, Interval>());
+		this(lattice, new HashMap<BigDecimal, Interval>());
 	}
 	
 	public Memory(Interval lattice, Map<BigDecimal, Interval> function) {

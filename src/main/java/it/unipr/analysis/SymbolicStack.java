@@ -62,7 +62,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	public SymbolicStack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
-		this.memory = new Memory(null);
+		this.memory = new Memory();
 		this.mu_i = new BigDecimal(0);
 	}
 
@@ -75,7 +75,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private SymbolicStack(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new ArrayDeque<Interval>();
-		this.memory = new Memory(null);
+		this.memory = new Memory();
 		this.mu_i = new BigDecimal(0);
 	}
 
