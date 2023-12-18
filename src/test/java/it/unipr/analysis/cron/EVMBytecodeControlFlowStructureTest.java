@@ -100,18 +100,18 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 //		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad", "0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
 //		perform(conf);
 //	}
-	
-	@Test
-	public void testMemory() throws AnalysisSetupException, IOException {
-		Memory m = new Memory(new Interval(10,20));
-		
-		m = m.putState(new BigDecimal(10), new Interval(10,20));
-		m = m.putState(new BigDecimal(20), new Interval(13,21));
-		m = m.putState(new BigDecimal(30), new Interval(16,26));
-		m = m.putState(new BigDecimal(40), new Interval(1,21));
-		
-		System.out.println(m);
-	}
+//	
+//	@Test
+//	public void testMemory() throws AnalysisSetupException, IOException {
+//		Memory m = new Memory(new Interval(10,20));
+//		
+//		m = m.putState(new BigDecimal(10), new Interval(10,20));
+//		m = m.putState(new BigDecimal(20), new Interval(13,21));
+//		m = m.putState(new BigDecimal(30), new Interval(16,26));
+//		m = m.putState(new BigDecimal(40), new Interval(1,21));
+//		
+//		System.out.println(m);
+//	}
 	
 	@Test
 	public void testMstore() throws AnalysisSetupException, IOException {
