@@ -1308,7 +1308,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			}
 		}
 
-		return true;
+		return memory.lessOrEqual(other.memory);
 	}
 
 	@Override
