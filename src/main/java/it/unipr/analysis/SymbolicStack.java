@@ -1333,7 +1333,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(stack);
+		return Objects.hash(stack, memory);
 	}
 
 	@Override
@@ -1373,7 +1373,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				return false;
 		}
 
-		return true;
+		return memory.equals(other.memory);
 	}
 
 	/**
