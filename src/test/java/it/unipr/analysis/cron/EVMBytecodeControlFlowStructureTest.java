@@ -1,21 +1,19 @@
 package it.unipr.analysis.cron;
 
-import it.unipr.analysis.Memory;
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unipr.analysis.SymbolicStack;
 import it.unipr.checker.JumpChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import java.io.IOException;
-import java.math.BigDecimal;
-
-import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such

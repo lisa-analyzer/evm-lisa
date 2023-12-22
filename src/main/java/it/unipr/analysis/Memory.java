@@ -37,4 +37,12 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 		return new Memory(lattice, function);
 	}
 	
+	/**
+	 * Yields the lattice inside this memory.
+	 * @return the lattice inside this memory
+	 */
+	public Interval getLattice() {
+		return this.lattice;
+	}
+	
 } // ! Memory

@@ -25,6 +25,8 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.numeric.MathNumber;
 import it.unive.lisa.util.numeric.MathNumberConversionException;
+
+import java.lang.management.MemoryUsage;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
@@ -39,7 +41,7 @@ import java.util.function.Predicate;
 public class SymbolicStack implements ValueDomain<SymbolicStack> {
 
 	private static final SymbolicStack TOP = new SymbolicStack();
-	private static final SymbolicStack BOTTOM = new SymbolicStack(null);
+	private static final SymbolicStack BOTTOM = new SymbolicStack(null, null, null);
 
 	private final ArrayDeque<Interval> stack;
 	private Memory memory;
@@ -59,12 +61,12 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	 * 
 	 * @param stack the stack to be used.
 	 */
-	public SymbolicStack(ArrayDeque<Interval> stack) {
-		this.stack = stack;
-		this.isTop = false;
-		this.memory = new Memory();
-		this.mu_i = new BigDecimal(0);
-	}
+//	public SymbolicStack(ArrayDeque<Interval> stack) {
+//		this.stack = stack;
+//		this.isTop = false;
+//		this.memory = new Memory();
+//		this.mu_i = new BigDecimal(0);
+//	}
 	
 	/**
 	 * Builds a symbolic stack with the given stack, memory and mu_i.
@@ -767,9 +769,12 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					return new SymbolicStack(result, memory, mu_i);
 					
 				} else if (op instanceof MstoreOperator) { // MSTORE
-					ArrayDeque<Interval> result = stack.clone();
-					Interval offset = result.pop();
-					Interval value = result.pop();
+					ArrayDeque<Interval> stackResult = stack.clone();
+					Memory memoryResult = null;
+					BigDecimal new_mu_i = null; 
+					
+					Interval offset = stackResult.pop();
+					Interval value = stackResult.pop();
 					
 					System.out.println("\t[MSTORE] Memory (before exec) = " + memory);
 					System.out.println("\t[MSTORE] mu_i (before exec) = " + mu_i);
@@ -778,9 +783,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
 						
-						memory = memory.putState(offsetBigDecimal, value);
+						memoryResult = memory.putState(offsetBigDecimal, value);
 						
-						mu_i = mu_i.max(offsetBigDecimal.add(thirtyTwo).divide(thirtyTwo));
+						new_mu_i = mu_i.max(offsetBigDecimal.add(thirtyTwo).divide(thirtyTwo));
 	
 					} else {
 						// TODO to handle else-condition
@@ -789,7 +794,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					System.out.println("\t[MSTORE] Memory (after exec) = " + memory);
 					System.out.println("\t[MSTORE] mu_i (after exec) = " + mu_i);
 					
-					return new SymbolicStack(result, memory, mu_i);
+					return new SymbolicStack(stackResult, memoryResult, new_mu_i);
 					
 				} else if (op instanceof Mstore8Operator) { // MSTORE8
 					ArrayDeque<Interval> result = stack.clone();
@@ -817,131 +822,131 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					return new SymbolicStack(result, memory, mu_i);
 				} else if (op instanceof Dup1Operator) { // DUP1
 
-					return new SymbolicStack(dupX(1, stack.clone()));
+					return new SymbolicStack(dupX(1, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup2Operator) { // DUP2
 
-					return new SymbolicStack(dupX(2, stack.clone()));
+					return new SymbolicStack(dupX(2, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup3Operator) { // DUP3
 
-					return new SymbolicStack(dupX(3, stack.clone()));
+					return new SymbolicStack(dupX(3, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup4Operator) { // DUP4
 
-					return new SymbolicStack(dupX(4, stack.clone()));
+					return new SymbolicStack(dupX(4, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup5Operator) { // DUP5
 
-					return new SymbolicStack(dupX(5, stack.clone()));
+					return new SymbolicStack(dupX(5, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup6Operator) { // DUP6
 
-					return new SymbolicStack(dupX(6, stack.clone()));
+					return new SymbolicStack(dupX(6, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup7Operator) { // DUP7
 
-					return new SymbolicStack(dupX(7, stack.clone()));
+					return new SymbolicStack(dupX(7, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup8Operator) { // DUP8
 
-					return new SymbolicStack(dupX(8, stack.clone()));
+					return new SymbolicStack(dupX(8, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup9Operator) { // DUP9
 
-					return new SymbolicStack(dupX(9, stack.clone()));
+					return new SymbolicStack(dupX(9, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup10Operator) { // DUP10
 
-					return new SymbolicStack(dupX(10, stack.clone()));
+					return new SymbolicStack(dupX(10, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup11Operator) { // DUP11
 
-					return new SymbolicStack(dupX(11, stack.clone()));
+					return new SymbolicStack(dupX(11, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup12Operator) { // DUP12
 
-					return new SymbolicStack(dupX(12, stack.clone()));
+					return new SymbolicStack(dupX(12, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup13Operator) { // DUP13
 
-					return new SymbolicStack(dupX(13, stack.clone()));
+					return new SymbolicStack(dupX(13, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup14Operator) { // DUP14
 
-					return new SymbolicStack(dupX(14, stack.clone()));
+					return new SymbolicStack(dupX(14, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup15Operator) { // DUP15
 
-					return new SymbolicStack(dupX(15, stack.clone()));
+					return new SymbolicStack(dupX(15, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup16Operator) { // DUP16
 
-					return new SymbolicStack(dupX(16, stack.clone()));
+					return new SymbolicStack(dupX(16, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap1Operator) { // SWAP1
 
-					return new SymbolicStack(swapX(1, stack.clone()));
+					return new SymbolicStack(swapX(1, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap2Operator) { // SWAP2
 
-					return new SymbolicStack(swapX(2, stack.clone()));
+					return new SymbolicStack(swapX(2, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap3Operator) { // SWAP3
 
-					return new SymbolicStack(swapX(3, stack.clone()));
+					return new SymbolicStack(swapX(3, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap4Operator) { // SWAP4
 
-					return new SymbolicStack(swapX(4, stack.clone()));
+					return new SymbolicStack(swapX(4, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap5Operator) { // SWAP5
 
-					return new SymbolicStack(swapX(5, stack.clone()));
+					return new SymbolicStack(swapX(5, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap6Operator) { // SWAP6
 
-					return new SymbolicStack(swapX(6, stack.clone()));
+					return new SymbolicStack(swapX(6, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap7Operator) { // SWAP7
 
-					return new SymbolicStack(swapX(7, stack.clone()));
+					return new SymbolicStack(swapX(7, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap8Operator) { // SWAP8
 
-					return new SymbolicStack(swapX(8, stack.clone()));
+					return new SymbolicStack(swapX(8, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap9Operator) { // SWAP9
 
-					return new SymbolicStack(swapX(9, stack.clone()));
+					return new SymbolicStack(swapX(9, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap10Operator) { // SWAP10
 
-					return new SymbolicStack(swapX(10, stack.clone()));
+					return new SymbolicStack(swapX(10, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap11Operator) { // SWAP11
 
-					return new SymbolicStack(swapX(11, stack.clone()));
+					return new SymbolicStack(swapX(11, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap12Operator) { // SWAP12
 
-					return new SymbolicStack(swapX(12, stack.clone()));
+					return new SymbolicStack(swapX(12, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap13Operator) { // SWAP13
 
-					return new SymbolicStack(swapX(13, stack.clone()));
+					return new SymbolicStack(swapX(13, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap14Operator) { // SWAP14
 
-					return new SymbolicStack(swapX(14, stack.clone()));
+					return new SymbolicStack(swapX(14, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap15Operator) { // SWAP15
 
-					return new SymbolicStack(swapX(15, stack.clone()));
+					return new SymbolicStack(swapX(15, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap16Operator) { // SWAP16
 
-					return new SymbolicStack(swapX(16, stack.clone()));
+					return new SymbolicStack(swapX(16, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Log0Operator) { // LOG0
 					ArrayDeque<Interval> result = stack.clone();
@@ -1220,8 +1225,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 			Interval otherInterval = (Interval) otherIterator.next();
 			result.push(otherInterval);
 		}
-
-		return new SymbolicStack(result, memory, mu_i);
+		
+		// TODO: mu_i should be an interval, not a big decimal
+		return new SymbolicStack(result, memory.lub(other.memory), mu_i);
 	}
 
 	@Override
@@ -1248,7 +1254,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				widenedStack.push(otherIterator.next());
 			}
 
-			return new SymbolicStack(widenedStack);
+			// TODO: mu_i should be an interval, not a big decimal
+			return new SymbolicStack(widenedStack, memory.widening(other.memory), mu_i);
 		}
 
 		if (this.stack.size() == other.stack.size()) {
@@ -1262,7 +1269,7 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 				widenedStack.push(widenedInterval);
 			}
 
-			return new SymbolicStack(widenedStack);
+			return new SymbolicStack(widenedStack, memory.widening(other.memory), mu_i);
 		}
 
 		return this;
