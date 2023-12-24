@@ -738,7 +738,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					if(offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
-						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo).divide(thirtyTwo).setScale(0, RoundingMode.UP);
+						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
+																  .divide(thirtyTwo)
+																  .setScale(0, RoundingMode.UP);
 						
 						System.out.println("\t[MLOAD] offsetBigDecimal = " + offsetBigDecimal);
 						
@@ -749,7 +751,9 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 						result.push(state);
 						
 						// We create a new Interval singleton with the newly calculated `current_mu_i`
-						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), current_mu_i.intValueExact());
+						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), 
+																	 current_mu_i.intValueExact());
+						
 						// Then we compare the 2 mu_i and update the new value
 						if(mu_i.compareTo(intervalCurrent_mu_i) == -1)
 							new_mu_i = intervalCurrent_mu_i;
@@ -783,18 +787,20 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					if(offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
-						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo).divide(thirtyTwo).setScale(0, RoundingMode.UP); // setScale() = Ceiling function 
+						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
+																  .divide(thirtyTwo)
+																  .setScale(0, RoundingMode.UP); // setScale() = Ceiling function 
 						
 						System.out.println("\t[MSTORE] Memory (before put) = " + memory);
 						
 						memoryResult = memory.putState(offsetBigDecimal, value);
 						
 						System.out.println("\t[MSTORE] Memory (after put) = " + memoryResult);
-						
 						System.out.println("\t[MSTORE] current_mu_i = " + current_mu_i);
 						
 						// We create a new Interval singleton with the newly calculated `current_mu_i`
-						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), current_mu_i.intValueExact());
+						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), 
+																	 current_mu_i.intValueExact());
 						
 //						System.out.println("\t[MSTORE] intervalCurrent_mu_i = " + intervalCurrent_mu_i);
 //						System.out.println("\t[MSTORE] mu_i.compareTo(intervalCurrent_mu_i) = " + mu_i.compareTo(intervalCurrent_mu_i));
@@ -816,12 +822,54 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 					
 				} else if (op instanceof Mstore8Operator) { // MSTORE8
 					ArrayDeque<Interval> result = stack.clone();
+					Memory memoryResult = null;
+					Interval new_mu_i = null; 
+					
 					Interval offset = result.pop();
 					Interval value = result.pop();
 
-					// At the moment, we do not handle MSTORE8
+					if(offset.interval.isSingleton()) {
+						BigDecimal one = new BigDecimal(1);
+						BigDecimal thirtyTwo = new BigDecimal(32);
+						
+						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
+						BigDecimal current_mu_i = offsetBigDecimal.add(one)
+																  .divide(thirtyTwo)
+																  .setScale(0, RoundingMode.UP); // setScale() = Ceiling function 
+						
+						System.out.println("\t[MSTORE8] Memory (before put) = " + memory);
+						
+						if(value.interval.isSingleton()) {
+							BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
+							BigDecimal valueByteBigDecimal = valueBigDecimal.remainder(new BigDecimal(256));
+							
+							Interval valueInByte = new Interval(valueByteBigDecimal.intValueExact(), 
+																valueByteBigDecimal.intValueExact());
+							
+							memoryResult = memory.putState(offsetBigDecimal, valueInByte);
+						} else {
+							// TODO to handle else-condition
+							// If value is not singleton, how would we handle the `mod 256` operation?
+							memoryResult = memory.putState(offsetBigDecimal, new Interval());
+						}
+						
+						System.out.println("\t[MSTORE8] Memory (after put) = " + memoryResult);
+						System.out.println("\t[MSTORE8] current_mu_i = " + current_mu_i);
+						
+						// We create a new Interval singleton with the newly calculated `current_mu_i`
+						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), 
+																	 current_mu_i.intValueExact());
+						
+						if(mu_i.compareTo(intervalCurrent_mu_i) == -1)
+							new_mu_i = intervalCurrent_mu_i;
+						else 
+							new_mu_i = mu_i;
+							
+					} else {
+						// TODO to handle else-condition
+					}
 
-					return new SymbolicStack(result, memory, mu_i);
+					return new SymbolicStack(result, memoryResult, new_mu_i);
 				} else if (op instanceof SloadOperator) { // SLOAD
 					ArrayDeque<Interval> result = stack.clone();
 					Interval key = result.pop();

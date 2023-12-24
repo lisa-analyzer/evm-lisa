@@ -58,36 +58,36 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		return conf;
 	}
 
-//	@Test
-//	public void testIf() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
-//		perform(conf);
-//	}
-//
-//	@Test
-//	public void testIfElse() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
-//		perform(conf);
-//	}
-//
-//	@Test
-//	public void testWhile() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
-//		perform(conf);
-//	}
-//
-//	@Test
-//	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
-//		perform(conf);
-//	}
-//
-//	@Test
-//	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
-//		perform(conf);
-//	}
-//
+	@Test
+	public void testIf() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testIfElse() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testWhile() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
+		perform(conf);
+	}
+
 	/**
 	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
 	 * - Number of opcodes: 32
@@ -98,22 +98,16 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad", "0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
 		perform(conf);
 	}
-//	
-//	@Test
-//	public void testMemory() throws AnalysisSetupException, IOException {
-//		Memory m = new Memory(new Interval(10,20));
-//		
-//		m = m.putState(new BigDecimal(10), new Interval(10,20));
-//		m = m.putState(new BigDecimal(20), new Interval(13,21));
-//		m = m.putState(new BigDecimal(30), new Interval(16,26));
-//		m = m.putState(new BigDecimal(40), new Interval(1,21));
-//		
-//		System.out.println(m);
-//	}
 	
 	@Test
 	public void testMstore() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
+		perform(conf);
+	}
+	
+	@Test
+	public void testMstore8() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", true);
 		perform(conf);
 	}
 	
