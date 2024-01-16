@@ -45,8 +45,8 @@ public class SymbolicStack implements ValueDomain<SymbolicStack> {
 	private static final SymbolicStack BOTTOM = new SymbolicStack(null, null, null);
 
 	private final ArrayDeque<Interval> stack;
-	private Memory memory;
-	private Interval mu_i; // TODO Give a better name
+	private final Memory memory;
+	private final Interval mu_i; // TODO Give a better name
 	private final boolean isTop;
 
 	/**
