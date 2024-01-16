@@ -44,4 +44,9 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 		return this.lattice;
 	}
 	
+	@Override
+	public Memory clone() {
+		return new Memory(lattice, getMap());
+	}
+	
 } // ! Memory

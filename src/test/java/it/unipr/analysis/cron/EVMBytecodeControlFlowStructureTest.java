@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.analysis.SymbolicStack;
 import it.unipr.checker.JumpChecker;
 import it.unive.lisa.AnalysisSetupException;
@@ -48,8 +49,8 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		if (generateCfg) {
 			conf.analysisGraphs = GraphType.DOT;
 		}
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new SymbolicStack(),
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
+				new MonolithicHeap(), new EVMAbsDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();

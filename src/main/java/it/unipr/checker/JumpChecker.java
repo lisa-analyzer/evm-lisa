@@ -1,6 +1,7 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.SymbolicStack;
+import it.unipr.analysis.EVMAbsDomain;
+import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -34,8 +35,8 @@ import java.util.stream.Collectors;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpChecker
-		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
-				MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>> {
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
@@ -59,8 +60,8 @@ public class JumpChecker
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
-					SymbolicStack, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>, MonolithicHeap,
+					EVMAbsDomain, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint)
 			return;
@@ -92,8 +93,8 @@ public class JumpChecker
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>, MonolithicHeap,
-					SymbolicStack, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>, MonolithicHeap,
+					EVMAbsDomain, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		// Cast the graph (CFG) to EVMCFG and set it as the actual CFG to
@@ -109,20 +110,20 @@ public class JumpChecker
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
-		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
+		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap,
-				SymbolicStack,
+				EVMAbsDomain,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
-			AnalysisState<SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, SymbolicStack,
+			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbsDomain,
 					TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
 
 			// Retrieve the symbolic stack from the analysis result
-			SymbolicStack symbolicStack = analysisResult.getState().getValueState();
+			EVMAbsDomain evmAbsDomain = analysisResult.getState().getValueState();
 
 			// If the symbolic stack is TOP or BOTTOM, we don't have useful info
 			// to solve the jump.
-			if (symbolicStack.isTop() || symbolicStack.isBottom()) {
+			if (evmAbsDomain.isTop() || evmAbsDomain.isBottom()) {
 				continue;
 			}
 
@@ -130,7 +131,7 @@ public class JumpChecker
 			try {
 				// Iterate over the values of the interval at the top of the
 				// symbolic stack.
-				for (Long i : symbolicStack.getTop().interval) {
+				for (Long i : evmAbsDomain.getTop().interval) {
 
 					// Filter the jump destinations to find the ones that match
 					// the current value of the interval.
@@ -141,7 +142,7 @@ public class JumpChecker
 
 					// TODO: Check if printing found JUMPDESTs is useful
 					System.err.println(
-							filteredDests + " " + symbolicStack.getTop() + " " + symbolicStack.representation());
+							filteredDests + " " + evmAbsDomain.getTop() + " " + evmAbsDomain.representation());
 
 					// If there are no JUMPDESTs for this value, skip to the
 					// next one.

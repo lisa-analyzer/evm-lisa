@@ -1,5 +1,6 @@
 package it.unipr.analysis.cron;
 
+import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.analysis.SymbolicStack;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.checker.JumpChecker;
@@ -57,8 +58,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, SymbolicStack, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new SymbolicStack(),
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
+				new MonolithicHeap(), new EVMAbsDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = BYTECODE_DIR;
 		conf.callGraph = new RTACallGraph();
