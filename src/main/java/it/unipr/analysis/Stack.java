@@ -393,20 +393,41 @@ public class Stack implements ValueDomain<Stack> {
 		return new Stack(stack.clone());
 	}
 	
+	/**
+	 * Returns an iterator over the elements in the stack.
+	 *
+	 * @return an iterator over the elements in the stack.
+	 */
 	public Iterator<Interval> iterator() {
-		return stack.iterator();
+	    return stack.iterator();
 	}
-	
+
+	/**
+	 * Pushes the specified interval onto the stack.
+	 *
+	 * @param target the interval to be pushed onto the stack.
+	 */
 	public void push(Interval target) {
-		stack.push(target);
+	    stack.push(target);
 	}
-	
+
+	/**
+	 * Pops the interval from the stack.
+	 *
+	 * @return the interval at the top of the stack.
+	 */
 	public Interval pop() {
-		return stack.pop();
+	    return stack.pop();
 	}
-	
+
+	/**
+	 * Returns the number of item in the stack.
+	 *
+	 * @return the number of item in the stack.
+	 */
 	public int size() {
-		return stack.size();
+	    return stack.size();
 	}
+
 
 } // ! Stack

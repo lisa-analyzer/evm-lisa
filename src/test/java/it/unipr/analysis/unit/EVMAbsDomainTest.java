@@ -30,7 +30,7 @@ public class EVMAbsDomainTest {
 	private final EVMAbsDomain BOTTOM = new EVMAbsDomain().bottom();
 
 	/*
-	 * Helper method to build a symbolic stack from a list of values. The first
+	 * Helper method to build a EVMAbsDomain from a list of values. The first
 	 * value in the list will be the top of the stack.
 	 */
 	private EVMAbsDomain buildEVMAbsDomain(Integer... values) {
@@ -41,7 +41,7 @@ public class EVMAbsDomainTest {
 	}
 
 	/*
-	 * Helper method to build a symbolic stack from a list of intervals. The
+	 * Helper method to build a EVMAbsDomain from a list of intervals. The
 	 * first interval in the list will be the top of the stack.
 	 */
 	private EVMAbsDomain buildEVMAbsDomainIntervals(Interval... intervals) {
@@ -53,8 +53,8 @@ public class EVMAbsDomainTest {
 
 	/**
 	 * Tests the least upper bound (lub) operation of {@link EVMAbsDomain}. It
-	 * tests the lub operation between TOP and BOTTOM, TOP and another symbolic
-	 * stack, BOTTOM and another symbolic stack, and two symbolic stacks with
+	 * tests the lub operation between TOP and BOTTOM, TOP and another EVMAbsDomain,
+	 * BOTTOM and another symbolic stack, and two EVMAbsDomain with
 	 * different sizes. The method asserts that the lub operation returns the
 	 * expected result for each test case.
 	 * 
@@ -100,8 +100,8 @@ public class EVMAbsDomainTest {
 
 	/**
 	 * Tests the widening operation of {@link EVMAbsDomain}. It tests the
-	 * widening operation between TOP and BOTTOM, TOP and another symbolic
-	 * stack, BOTTOM and another symbolic stack, and two symbolic stacks with
+	 * widening operation between TOP and BOTTOM, TOP and another EVMAbsDomai,n
+	 * BOTTOM and another EVMAbsDomain, and two symbolic stacks with
 	 * different sizes. The method asserts that the widening operation returns
 	 * the expected result for each test case.
 	 * 
@@ -152,8 +152,8 @@ public class EVMAbsDomainTest {
 
 	/**
 	 * Tests the less or equal operation of {@link EVMAbsDomain}. It tests the
-	 * less or equal operation between TOP and BOTTOM, TOP and another symbolic
-	 * stack, BOTTOM and another symbolic stack, and two symbolic stacks with
+	 * less or equal operation between TOP and BOTTOM, TOP and another EVMAbsDomain,
+	 * BOTTOM and another symbolic stack, and two EVMAbsDomain with
 	 * different sizes. The method asserts that the less or equal operation
 	 * returns the expected result for each test case.
 	 * 

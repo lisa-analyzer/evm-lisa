@@ -3,7 +3,6 @@ package it.unipr.analysis;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -12,7 +11,6 @@ import java.util.function.Predicate;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
@@ -81,21 +79,39 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 	// -------------------------------------------------------- end Constructors
 	
 	// -------------------------------------------------------- Getter
+	/**
+	 * Returns a cloned copy of the stack.
+	 *
+	 * @return A cloned copy of the stack or null if the original stack is null.
+	 */
 	public Stack getStack() {
-		if(stack == null)
-			return null;
-		return stack.clone();
+	    if (stack == null)
+	        return null;
+	    return stack.clone();
 	}
+
+	/**
+	 * Returns a cloned copy of the memory.
+	 *
+	 * @return A cloned copy of the memory or null if the original memory is null.
+	 */
 	public Memory getMemory() {
-		if(memory == null)
-			return null;
-		return memory.clone();
+	    if (memory == null)
+	        return null;
+	    return memory.clone();
 	}
+
+	/**
+	 * Returns a cloned copy of the interval mu_i.
+	 *
+	 * @return A cloned copy of the interval mu_i or null if the original mu_i is null.
+	 */
 	public Interval getMu_i() {
-		if(mu_i == null)
-			return null;
-		return new Interval(mu_i.interval);
+	    if (mu_i == null)
+	        return null;
+	    return new Interval(mu_i.interval);
 	}
+
 	// -------------------------------------------------------- end Getter
 	
 	/**
