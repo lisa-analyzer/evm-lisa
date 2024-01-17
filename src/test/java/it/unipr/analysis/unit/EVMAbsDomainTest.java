@@ -2,7 +2,6 @@ package it.unipr.analysis.unit;
 
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigDecimal;
 import java.util.ArrayDeque;
 
 import org.junit.Test;
@@ -10,7 +9,6 @@ import org.junit.Test;
 import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.analysis.Memory;
 import it.unipr.analysis.Stack;
-import it.unipr.analysis.EVMAbsDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.util.numeric.MathNumber;

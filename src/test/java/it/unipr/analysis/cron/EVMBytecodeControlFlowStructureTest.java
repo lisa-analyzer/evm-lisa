@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import it.unipr.analysis.EVMAbsDomain;
-import it.unipr.analysis.SymbolicStack;
 import it.unipr.checker.JumpChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;

@@ -1,7 +1,6 @@
 package it.unipr;
 
 import it.unipr.analysis.EVMAbsDomain;
-import it.unipr.analysis.SymbolicStack;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;

@@ -26,7 +26,6 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.numeric.MathNumber;
 import it.unive.lisa.util.numeric.MathNumberConversionException;
 
-import java.lang.management.MemoryUsage;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
