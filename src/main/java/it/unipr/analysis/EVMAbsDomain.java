@@ -1176,8 +1176,15 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		return top();
 	}
 
-	/*
-	 * Duplicates the x-th element from the top of the stack.
+	/**
+	 * Duplicates the x-th element from the top of the stack and returns the
+	 * modified stack.
+	 *
+	 * @param x     The position of the element to duplicate from the top of the
+	 *                  stack.
+	 * @param stack The original stack.
+	 * 
+	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private Stack dupX(int x, Stack stack) {
 		int i = 0;
@@ -1186,7 +1193,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		Stack result = stack.clone();
 
 		for (Iterator<Interval> iterator = result.iterator(); iterator.hasNext() && i < x; ++i) {
-			target = (Interval) iterator.next();
+			target = iterator.next();
 		}
 
 		result.push(target);
@@ -1194,8 +1201,15 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		return result;
 	}
 
-	/*
-	 * Swaps the top element with the x-th element from the top of the stack.
+	/**
+	 * Swaps the top element with the x-th element from the top of the stack and
+	 * returns the modified stack.
+	 *
+	 * @param x     The position of the element to swap with the top of the
+	 *                  stack.
+	 * @param stack The original stack.
+	 * 
+	 * @return A new stack with the specified elements swapped.
 	 */
 	private Stack swapX(int x, Stack stack) {
 		Stack result = stack.clone();
