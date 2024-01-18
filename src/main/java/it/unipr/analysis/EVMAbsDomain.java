@@ -762,16 +762,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					Interval offset = result.pop();
 
-					System.out.println("\t[MLOAD] Memory (before exec) = " + memory);
-					System.out.println("\t[MLOAD] mu_i (before exec) = " + mu_i);
-
 					if (mu_i.compareTo(new Interval(1, 1)) == -1) {
 						// This is an error. We cannot read from memory if there
 						// is no active words saved
 						// TODO to handle this error
 					}
-
-//					System.out.println("\t[MLOAD] offset.interval.isSingleton() = " + offset.interval.isSingleton());
 
 					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
@@ -780,11 +775,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 								.divide(thirtyTwo)
 								.setScale(0, RoundingMode.UP);
 
-						System.out.println("\t[MLOAD] offsetBigDecimal = " + offsetBigDecimal);
-
 						Interval state = memory.getState(offsetBigDecimal);
-
-						System.out.println("\t[MLOAD] State = " + state);
 
 						result.push(state);
 
@@ -804,9 +795,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 						result.push(Interval.TOP);
 					}
 
-//					System.out.println("\t[MLOAD] Memory (after exec) = " + memory);
-//					System.out.println("\t[MLOAD] mu_i (after exec) = " + mu_i);
-
 					return new EVMAbsDomain(result, memory, new_mu_i);
 
 				} else if (op instanceof MstoreOperator) { // MSTORE
@@ -817,11 +805,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 					Interval offset = stackResult.pop();
 					Interval value = stackResult.pop();
 
-//					System.out.println("\t[MSTORE] Memory (before exec) = " + memory);
-//					System.out.println("\t[MSTORE] mu_i (before exec) = " + mu_i);
-//					
-//					System.out.println("\t[MSTORE] offset.interval.isSingleton() = " + offset.interval.isSingleton());
-
 					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
@@ -831,20 +814,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 																// Ceiling
 																// function
 
-						System.out.println("\t[MSTORE] Memory (before put) = " + memory);
-
 						memoryResult = memory.putState(offsetBigDecimal, value);
-
-						System.out.println("\t[MSTORE] Memory (after put) = " + memoryResult);
-						System.out.println("\t[MSTORE] current_mu_i = " + current_mu_i);
 
 						// We create a new Interval singleton with the newly
 						// calculated `current_mu_i`
 						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
 								current_mu_i.intValueExact());
-
-//						System.out.println("\t[MSTORE] intervalCurrent_mu_i = " + intervalCurrent_mu_i);
-//						System.out.println("\t[MSTORE] mu_i.compareTo(intervalCurrent_mu_i) = " + mu_i.compareTo(intervalCurrent_mu_i));
 
 						// Then we compare the 2 mu_i and update the new value
 						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
@@ -855,9 +830,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 					} else {
 						// TODO to handle else-condition
 					}
-
-					System.out.println("\t[MSTORE] Memory (after exec) = " + memoryResult);
-					System.out.println("\t[MSTORE] mu_i (after exec) = " + new_mu_i);
 
 					return new EVMAbsDomain(stackResult, memoryResult, new_mu_i);
 
@@ -880,8 +852,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 																// Ceiling
 																// function
 
-						System.out.println("\t[MSTORE8] Memory (before put) = " + memory);
-
 						if (value.interval.isSingleton()) {
 							BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
 							BigDecimal valueByteBigDecimal = valueBigDecimal.remainder(new BigDecimal(256));
@@ -896,9 +866,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 							// the `mod 256` operation?
 							memoryResult = memory.putState(offsetBigDecimal, new Interval());
 						}
-
-						System.out.println("\t[MSTORE8] Memory (after put) = " + memoryResult);
-						System.out.println("\t[MSTORE8] current_mu_i = " + current_mu_i);
 
 						// We create a new Interval singleton with the newly
 						// calculated `current_mu_i`
