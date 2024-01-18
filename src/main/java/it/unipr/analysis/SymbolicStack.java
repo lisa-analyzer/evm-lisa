@@ -1,5 +1,6 @@
 package it.unipr.analysis;
 
+import it.unipr.analysis.operator.*;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;

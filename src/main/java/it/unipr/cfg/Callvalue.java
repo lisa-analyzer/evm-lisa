@@ -1,6 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.CallvalueOperator;
+import it.unipr.analysis.operator.CallvalueOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

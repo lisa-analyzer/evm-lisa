@@ -1,6 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.AddmodOperator;
+import it.unipr.analysis.operator.AddmodOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

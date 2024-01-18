@@ -1,6 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.PopOperator;
+import it.unipr.analysis.operator.PopOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
