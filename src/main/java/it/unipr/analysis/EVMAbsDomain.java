@@ -120,25 +120,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		return new Interval(mu_i.interval);
 	}
 
-	// -------------------------------------------------------- end Getter
-
-	/**
-	 * {@inheritDoc} TODO: implement. Same of EVMAbsDomain
-	 */
 	@Override
 	public EVMAbsDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
-	/**
-	 * {@inheritDoc} Given an expression, modifies the symbolic stack
-	 * accordingly and returns the modified stack.
-	 *
-	 * @return the modified symbolic stack
-	 * 
-	 * @throws SemanticException if something goes wrong during the evaluation.
-	 */
 	@SuppressWarnings("unused")
 	@Override
 	public EVMAbsDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
@@ -342,7 +329,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV,
-																							// SDIV
+					// SDIV
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
@@ -358,7 +345,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD,
-																							// SMOD
+					// SMOD
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
@@ -441,7 +428,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
-																						// SLT
+					// SLT
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
@@ -452,7 +439,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT,
-																						// SGT
+					// SGT
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
@@ -567,8 +554,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 					Interval target = result.pop();
 
 					Interval resultInterval = new Interval().bottom(); // Accumulates
-																		// retrieved
-																		// bytes
+					// retrieved
+					// bytes
 
 					if (target.equals(Interval.TOP)) {
 						result.push(Interval.TOP);
@@ -811,8 +798,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
 								.divide(thirtyTwo)
 								.setScale(0, RoundingMode.UP); // setScale() =
-																// Ceiling
-																// function
+						// Ceiling
+						// function
 
 						memoryResult = memory.putState(offsetBigDecimal, value);
 
@@ -849,8 +836,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 						BigDecimal current_mu_i = offsetBigDecimal.add(one)
 								.divide(thirtyTwo)
 								.setScale(0, RoundingMode.UP); // setScale() =
-																// Ceiling
-																// function
+						// Ceiling
+						// function
 
 						if (value.interval.isSingleton()) {
 							BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
@@ -1190,7 +1177,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	}
 
 	/*
-	 * Duplicates the x-th element from the top of the stack
+	 * Duplicates the x-th element from the top of the stack.
 	 */
 	private Stack dupX(int x, Stack stack) {
 		int i = 0;
@@ -1208,7 +1195,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	}
 
 	/*
-	 * Swaps the top element with the x-th element from the top of the stack
+	 * Swaps the top element with the x-th element from the top of the stack.
 	 */
 	private Stack swapX(int x, Stack stack) {
 		Stack result = stack.clone();
@@ -1233,7 +1220,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		return result;
 	}
 
-	// Same of EVMAbsDomain
 	@Override
 	public EVMAbsDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
@@ -1277,7 +1263,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
 							Stack result = stack.clone();
 							result.pop(); // Interval destination =
-											// result.pop();
+							// result.pop();
 							Interval condition = result.pop();
 
 							if (condition.equals(Interval.ZERO)) {
@@ -1306,32 +1292,32 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 	@Override
 	public EVMAbsDomain forgetIdentifier(Identifier id) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
 	@Override
 	public EVMAbsDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// TODO Auto-generated method stub
+		// nothing to do here
 		return Satisfiability.UNKNOWN;
 	}
 
 	@Override
 	public EVMAbsDomain pushScope(ScopeToken token) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
 	@Override
 	public EVMAbsDomain popScope(ScopeToken token) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
 	@Override
@@ -1452,7 +1438,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 					mu_i.equals(other.getMu_i());
 
 		return this.isBottom() == other.isBottom(); // TODO check if it is
-													// correct
+		// correct
 	}
 
 	/**
@@ -1472,12 +1458,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	}
 
 	/**
-	 * Getter for the Interval at the top of the stack.
+	 * Getter for the interval value at the top of the stack.
 	 * 
-	 * @return the Interval at the top of the stack.
+	 * @return the interval value at the top of the stack.
 	 */
 	public Interval getTop() {
-		return this.stack.getTop();
+		return stack.getTop();
 	}
 
-} // ! EVMAbsDomain
+}
