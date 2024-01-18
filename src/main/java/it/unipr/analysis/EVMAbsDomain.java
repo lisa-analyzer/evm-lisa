@@ -1,13 +1,5 @@
 package it.unipr.analysis;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -33,41 +25,57 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.numeric.MathNumber;
 import it.unive.lisa.util.numeric.MathNumberConversionException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Predicate;
 
-public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
+public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	private static final EVMAbsDomain TOP = new EVMAbsDomain();
 	private static final EVMAbsDomain BOTTOM = new EVMAbsDomain(null, null, null);
 	private final boolean isTop;
-	
+
+	/**
+	 * The stack memory.
+	 */
 	private final Stack stack;
+
+	/**
+	 * The volatile memory.
+	 */
 	private final Memory memory;
+
 	private final Interval mu_i; // TODO Give a better name
-	
-	// -------------------------------------------------------- Constructors
+
+	/**
+	 * Builds the abstract domain.
+	 */
 	public EVMAbsDomain() {
 		this(true);
 	}
-	
+
 	/**
-	 * Private "helper" constructor.
-	 * Builds an empty EVMAbsDomain and sets the isTop flag.
+	 * Builds the abstract domain.
 	 * 
-	 * @param isTop true if the EVMAbsDomain is TOP, false if it is BOTTOM.
+	 * @param isTop whether the abstract value is top.
 	 */
 	private EVMAbsDomain(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new Stack();
 		this.memory = new Memory();
-		this.mu_i = new Interval(0,0);
+		this.mu_i = new Interval(0, 0);
 	}
-	
+
 	/**
-	 * Builds a EVMAbsDomain with the given stack, memory and mu_i.
-	 * The built EVMAbsDomain is not TOP.
+	 * Builds a EVMAbsDomain with the given stack, memory and mu_i. The built
+	 * EVMAbsDomain is not TOP.
 	 * 
-	 * @param stack the stack to be used.
+	 * @param stack  the stack to be used.
 	 * @param memory the memory to be used.
-	 * @param mu_i the mu_i to be used.
+	 * @param mu_i   the mu_i to be used.
 	 */
 	public EVMAbsDomain(Stack stack, Memory memory, Interval mu_i) {
 		this.isTop = false;
@@ -75,50 +83,46 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 		this.memory = memory;
 		this.mu_i = mu_i;
 	}
-	
-	// -------------------------------------------------------- end Constructors
-	
-	// -------------------------------------------------------- Getter
+
 	/**
 	 * Returns a cloned copy of the stack.
 	 *
 	 * @return A cloned copy of the stack or null if the original stack is null.
 	 */
 	public Stack getStack() {
-	    if (stack == null)
-	        return null;
-	    return stack.clone();
+		if (stack == null)
+			return null;
+		return stack.clone();
 	}
 
 	/**
 	 * Returns a cloned copy of the memory.
 	 *
-	 * @return A cloned copy of the memory or null if the original memory is null.
+	 * @return A cloned copy of the memory or null if the original memory is
+	 *             null.
 	 */
 	public Memory getMemory() {
-	    if (memory == null)
-	        return null;
-	    return memory.clone();
+		if (memory == null)
+			return null;
+		return memory.clone();
 	}
 
 	/**
 	 * Returns a cloned copy of the interval mu_i.
 	 *
-	 * @return A cloned copy of the interval mu_i or null if the original mu_i is null.
+	 * @return A cloned copy of the interval mu_i or null if the original mu_i
+	 *             is null.
 	 */
 	public Interval getMu_i() {
-	    if (mu_i == null)
-	        return null;
-	    return new Interval(mu_i.interval);
+		if (mu_i == null)
+			return null;
+		return new Interval(mu_i.interval);
 	}
 
 	// -------------------------------------------------------- end Getter
-	
+
 	/**
-	 * {@inheritDoc}
-	 * 
-	 * TODO: implement.
-	 * Same of EVMAbsDomain
+	 * {@inheritDoc} TODO: implement. Same of EVMAbsDomain
 	 */
 	@Override
 	public EVMAbsDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
@@ -131,6 +135,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 	 * accordingly and returns the modified stack.
 	 *
 	 * @return the modified symbolic stack
+	 * 
 	 * @throws SemanticException if something goes wrong during the evaluation.
 	 */
 	@SuppressWarnings("unused")
@@ -150,7 +155,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 
 				if (op instanceof PushOperator) { // PUSH
 					Stack result = stack.clone();
-					
+
 					// Integer valueToPush = this.toInteger(un.getExpression());
 					BigDecimal valueToPush = this.toBigDecimal(un.getExpression());
 
@@ -749,153 +754,161 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 					result.pop();
 
 					return new EVMAbsDomain(result, memory, mu_i);
-					
+
 				} else if (op instanceof MloadOperator) { // MLOAD
 					Stack result = stack.clone();
-					Interval new_mu_i = null; 
-					
+					Interval new_mu_i = null;
+
 					Interval offset = result.pop();
-					
+
 					System.out.println("\t[MLOAD] Memory (before exec) = " + memory);
 					System.out.println("\t[MLOAD] mu_i (before exec) = " + mu_i);
-					
-					if(mu_i.compareTo(new Interval(1,1)) == -1) {
-						// This is an error. We cannot read from memory if there is no active words saved
+
+					if (mu_i.compareTo(new Interval(1, 1)) == -1) {
+						// This is an error. We cannot read from memory if there
+						// is no active words saved
 						// TODO to handle this error
 					}
-						
+
 //					System.out.println("\t[MLOAD] offset.interval.isSingleton() = " + offset.interval.isSingleton());
-					
-					if(offset.interval.isSingleton()) {
+
+					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
 						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
-																  .divide(thirtyTwo)
-																  .setScale(0, RoundingMode.UP);
-						
+								.divide(thirtyTwo)
+								.setScale(0, RoundingMode.UP);
+
 						System.out.println("\t[MLOAD] offsetBigDecimal = " + offsetBigDecimal);
-						
+
 						Interval state = memory.getState(offsetBigDecimal);
-						
+
 						System.out.println("\t[MLOAD] State = " + state);
-						
+
 						result.push(state);
-						
-						// We create a new Interval singleton with the newly calculated `current_mu_i`
-						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), 
-																	 current_mu_i.intValueExact());
-						
+
+						// We create a new Interval singleton with the newly
+						// calculated `current_mu_i`
+						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
+								current_mu_i.intValueExact());
+
 						// Then we compare the 2 mu_i and update the new value
-						if(mu_i.compareTo(intervalCurrent_mu_i) == -1)
+						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
 							new_mu_i = intervalCurrent_mu_i;
-						else 
+						else
 							new_mu_i = mu_i;
-					
+
 					} else {
 						// TODO to handle else-condition
 						result.push(Interval.TOP);
 					}
-					
+
 //					System.out.println("\t[MLOAD] Memory (after exec) = " + memory);
 //					System.out.println("\t[MLOAD] mu_i (after exec) = " + mu_i);
-					
+
 					return new EVMAbsDomain(result, memory, new_mu_i);
-					
+
 				} else if (op instanceof MstoreOperator) { // MSTORE
 					Stack stackResult = stack.clone();
 					Memory memoryResult = null;
-					Interval new_mu_i = null; 
-					
+					Interval new_mu_i = null;
+
 					Interval offset = stackResult.pop();
 					Interval value = stackResult.pop();
-					
-					
+
 //					System.out.println("\t[MSTORE] Memory (before exec) = " + memory);
 //					System.out.println("\t[MSTORE] mu_i (before exec) = " + mu_i);
 //					
 //					System.out.println("\t[MSTORE] offset.interval.isSingleton() = " + offset.interval.isSingleton());
-					
-					if(offset.interval.isSingleton()) {
+
+					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
 						BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
-																  .divide(thirtyTwo)
-																  .setScale(0, RoundingMode.UP); // setScale() = Ceiling function 
-						
+								.divide(thirtyTwo)
+								.setScale(0, RoundingMode.UP); // setScale() =
+																// Ceiling
+																// function
+
 						System.out.println("\t[MSTORE] Memory (before put) = " + memory);
-						
+
 						memoryResult = memory.putState(offsetBigDecimal, value);
-						
+
 						System.out.println("\t[MSTORE] Memory (after put) = " + memoryResult);
 						System.out.println("\t[MSTORE] current_mu_i = " + current_mu_i);
-						
-						// We create a new Interval singleton with the newly calculated `current_mu_i`
-						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), 
-																	 current_mu_i.intValueExact());
-						
+
+						// We create a new Interval singleton with the newly
+						// calculated `current_mu_i`
+						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
+								current_mu_i.intValueExact());
+
 //						System.out.println("\t[MSTORE] intervalCurrent_mu_i = " + intervalCurrent_mu_i);
 //						System.out.println("\t[MSTORE] mu_i.compareTo(intervalCurrent_mu_i) = " + mu_i.compareTo(intervalCurrent_mu_i));
-						
+
 						// Then we compare the 2 mu_i and update the new value
-						if(mu_i.compareTo(intervalCurrent_mu_i) == -1)
+						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
 							new_mu_i = intervalCurrent_mu_i;
-						else 
+						else
 							new_mu_i = mu_i;
-							
+
 					} else {
 						// TODO to handle else-condition
 					}
-					
+
 					System.out.println("\t[MSTORE] Memory (after exec) = " + memoryResult);
 					System.out.println("\t[MSTORE] mu_i (after exec) = " + new_mu_i);
-					
+
 					return new EVMAbsDomain(stackResult, memoryResult, new_mu_i);
-					
+
 				} else if (op instanceof Mstore8Operator) { // MSTORE8
 					Stack result = stack.clone();
 					Memory memoryResult = null;
-					Interval new_mu_i = null; 
-					
+					Interval new_mu_i = null;
+
 					Interval offset = result.pop();
 					Interval value = result.pop();
 
-					if(offset.interval.isSingleton()) {
+					if (offset.interval.isSingleton()) {
 						BigDecimal one = new BigDecimal(1);
 						BigDecimal thirtyTwo = new BigDecimal(32);
-						
+
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal current_mu_i = offsetBigDecimal.add(one)
-																  .divide(thirtyTwo)
-																  .setScale(0, RoundingMode.UP); // setScale() = Ceiling function 
-						
+								.divide(thirtyTwo)
+								.setScale(0, RoundingMode.UP); // setScale() =
+																// Ceiling
+																// function
+
 						System.out.println("\t[MSTORE8] Memory (before put) = " + memory);
-						
-						if(value.interval.isSingleton()) {
+
+						if (value.interval.isSingleton()) {
 							BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
 							BigDecimal valueByteBigDecimal = valueBigDecimal.remainder(new BigDecimal(256));
-							
-							Interval valueInByte = new Interval(valueByteBigDecimal.intValueExact(), 
-																valueByteBigDecimal.intValueExact());
-							
+
+							Interval valueInByte = new Interval(valueByteBigDecimal.intValueExact(),
+									valueByteBigDecimal.intValueExact());
+
 							memoryResult = memory.putState(offsetBigDecimal, valueInByte);
 						} else {
 							// TODO to handle else-condition
-							// If value is not singleton, how would we handle the `mod 256` operation?
+							// If value is not singleton, how would we handle
+							// the `mod 256` operation?
 							memoryResult = memory.putState(offsetBigDecimal, new Interval());
 						}
-						
+
 						System.out.println("\t[MSTORE8] Memory (after put) = " + memoryResult);
 						System.out.println("\t[MSTORE8] current_mu_i = " + current_mu_i);
-						
-						// We create a new Interval singleton with the newly calculated `current_mu_i`
-						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(), 
-																	 current_mu_i.intValueExact());
-						
-						if(mu_i.compareTo(intervalCurrent_mu_i) == -1)
+
+						// We create a new Interval singleton with the newly
+						// calculated `current_mu_i`
+						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
+								current_mu_i.intValueExact());
+
+						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
 							new_mu_i = intervalCurrent_mu_i;
-						else 
+						else
 							new_mu_i = mu_i;
-							
+
 					} else {
 						// TODO to handle else-condition
 					}
@@ -1214,7 +1227,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 	private Stack dupX(int x, Stack stack) {
 		int i = 0;
 		Interval target = Interval.ZERO;
-		
+
 		Stack result = stack.clone();
 
 		for (Iterator<Interval> iterator = result.iterator(); iterator.hasNext() && i < x; ++i) {
@@ -1231,7 +1244,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 	 */
 	private Stack swapX(int x, Stack stack) {
 		Stack result = stack.clone();
-		
+
 		Interval target1 = result.pop();
 		Interval[] popped = new Interval[x];
 
@@ -1359,7 +1372,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 			return Lattice.bottomRepresentation();
 		else if (isTop())
 			return Lattice.topRepresentation();
-		
+
 		// TODO to create a more optimized version
 		return new StringRepresentation("{ stack: " + stack + ", memory: " + memory + ", mu_i: " + mu_i + " }");
 	}
@@ -1374,9 +1387,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 
 		if (this.isTop() || other.isBottom())
 			return false;
-		
+
 		return stack.lessOrEqual(other.getStack()) &&
-				memory.lessOrEqual(other.getMemory()) && 
+				memory.lessOrEqual(other.getMemory()) &&
 				mu_i.lessOrEqual(other.getMu_i());
 	}
 
@@ -1392,12 +1405,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 			return other;
 		else if (other.lessOrEqual(this))
 			return this;
-		
+
 		return new EVMAbsDomain(stack.lub(other.getStack()),
-								memory.lub(other.getMemory()),
-								mu_i.lub(other.getMu_i()));
+				memory.lub(other.getMemory()),
+				mu_i.lub(other.getMu_i()));
 	}
-	
+
 	@Override
 	public EVMAbsDomain widening(EVMAbsDomain other) throws SemanticException {
 		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
@@ -1407,10 +1420,10 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 		if (this.isBottom() || other.isTop()) {
 			return other;
 		}
-		
+
 		return new EVMAbsDomain(stack.widening(other.getStack()),
-								memory.widening(other.getMemory()),
-								mu_i.widening(other.getMu_i()));
+				memory.widening(other.getMemory()),
+				mu_i.widening(other.getMu_i()));
 	}
 
 	@Override
@@ -1425,8 +1438,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 
 	@Override
 	public boolean isBottom() {
-		return stack == null && 
-				memory == null && 
+		return stack == null &&
+				memory == null &&
 				mu_i == null;
 	}
 
@@ -1434,12 +1447,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 	public boolean isTop() {
 		return isTop;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(stack, memory, mu_i);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		// EVMAbsDomain check
@@ -1457,22 +1470,23 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 		// If both are top, there is no need to check the stack
 		if (this.isTop)
 			return true;
-		
-		if(stack == null && other.getStack() != null)
+
+		if (stack == null && other.getStack() != null)
 			return false;
-		if(memory == null && other.getMemory() != null)
+		if (memory == null && other.getMemory() != null)
 			return false;
-		if(mu_i == null && other.getMu_i() != null)
+		if (mu_i == null && other.getMu_i() != null)
 			return false;
-		
-		if(this.isBottom() == false && other.isBottom() == false)
+
+		if (this.isBottom() == false && other.isBottom() == false)
 			return stack.equals(other.getStack()) &&
 					memory.equals(other.getMemory()) &&
 					mu_i.equals(other.getMu_i());
-			
-		return this.isBottom() == other.isBottom(); // TODO check if it is correct
+
+		return this.isBottom() == other.isBottom(); // TODO check if it is
+													// correct
 	}
-	
+
 	/**
 	 * Helper method to convert a memory word to a BigInteger
 	 * 
@@ -1488,7 +1502,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>{
 		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
 		return bigDecimalVal;
 	}
-	
+
 	/**
 	 * Getter for the Interval at the top of the stack.
 	 * 

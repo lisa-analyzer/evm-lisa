@@ -1,7 +1,6 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.analysis.EVMAbsDomain;
-import it.unipr.analysis.SymbolicStack;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.checker.JumpChecker;
 import it.unipr.frontend.EVMFrontend;

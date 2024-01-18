@@ -2,16 +2,14 @@ package it.unipr.analysis.unit;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayDeque;
-
-import org.junit.Test;
-
 import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.analysis.Memory;
 import it.unipr.analysis.Stack;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.util.numeric.MathNumber;
+import java.util.ArrayDeque;
+import org.junit.Test;
 
 /**
  * JUnit tests for {@link EVMAbsDomain} class. Checks the implementation of
@@ -35,26 +33,26 @@ public class EVMAbsDomainTest {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = values.length - 1; i >= 0; i--)
 			stack.push(new Interval(values[i], values[i]));
-		return new EVMAbsDomain(new Stack(stack), new Memory(), new Interval(0,0));
+		return new EVMAbsDomain(new Stack(stack), new Memory(), new Interval(0, 0));
 	}
 
 	/*
-	 * Helper method to build a EVMAbsDomain from a list of intervals. The
-	 * first interval in the list will be the top of the stack.
+	 * Helper method to build a EVMAbsDomain from a list of intervals. The first
+	 * interval in the list will be the top of the stack.
 	 */
 	private EVMAbsDomain buildEVMAbsDomainIntervals(Interval... intervals) {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = intervals.length - 1; i >= 0; i--)
 			stack.push(intervals[i]);
-		return new EVMAbsDomain(new Stack(stack), new Memory(), new Interval(0,0));
+		return new EVMAbsDomain(new Stack(stack), new Memory(), new Interval(0, 0));
 	}
 
 	/**
 	 * Tests the least upper bound (lub) operation of {@link EVMAbsDomain}. It
-	 * tests the lub operation between TOP and BOTTOM, TOP and another EVMAbsDomain,
-	 * BOTTOM and another symbolic stack, and two EVMAbsDomain with
-	 * different sizes. The method asserts that the lub operation returns the
-	 * expected result for each test case.
+	 * tests the lub operation between TOP and BOTTOM, TOP and another
+	 * EVMAbsDomain, BOTTOM and another symbolic stack, and two EVMAbsDomain
+	 * with different sizes. The method asserts that the lub operation returns
+	 * the expected result for each test case.
 	 * 
 	 * @throws SemanticException if a semantic error occurs during the test.
 	 */
@@ -99,9 +97,9 @@ public class EVMAbsDomainTest {
 	/**
 	 * Tests the widening operation of {@link EVMAbsDomain}. It tests the
 	 * widening operation between TOP and BOTTOM, TOP and another EVMAbsDomai,n
-	 * BOTTOM and another EVMAbsDomain, and two symbolic stacks with
-	 * different sizes. The method asserts that the widening operation returns
-	 * the expected result for each test case.
+	 * BOTTOM and another EVMAbsDomain, and two symbolic stacks with different
+	 * sizes. The method asserts that the widening operation returns the
+	 * expected result for each test case.
 	 * 
 	 * @throws SemanticException if a semantic error occurs during the test.
 	 */
@@ -150,9 +148,9 @@ public class EVMAbsDomainTest {
 
 	/**
 	 * Tests the less or equal operation of {@link EVMAbsDomain}. It tests the
-	 * less or equal operation between TOP and BOTTOM, TOP and another EVMAbsDomain,
-	 * BOTTOM and another symbolic stack, and two EVMAbsDomain with
-	 * different sizes. The method asserts that the less or equal operation
+	 * less or equal operation between TOP and BOTTOM, TOP and another
+	 * EVMAbsDomain, BOTTOM and another symbolic stack, and two EVMAbsDomain
+	 * with different sizes. The method asserts that the less or equal operation
 	 * returns the expected result for each test case.
 	 * 
 	 * @throws SemanticException if a semantic error occurs during the test.

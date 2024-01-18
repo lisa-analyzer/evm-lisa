@@ -1,7 +1,6 @@
 package it.unipr.checker;
 
 import it.unipr.analysis.EVMAbsDomain;
-import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;

@@ -1,11 +1,5 @@
 package it.unipr.analysis;
 
-import java.util.ArrayDeque;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,43 +14,46 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class Stack implements ValueDomain<Stack> {
 	private static final Stack TOP = new Stack();
 	private static final Stack BOTTOM = new Stack(null);
 	private final boolean isTop;
-	
-	private final ArrayDeque<Interval> stack; // TODO Should it be final?
-	
+
+	private final ArrayDeque<Interval> stack;
+
 	/**
-	 * Default constructor, builds a TOP symbolic stack.
+	 * Builds a top symbolic stack.
 	 */
 	public Stack() {
 		this(true);
 	}
-	
+
+	/**
+	 * Builds a symbolic stack starting from a given stack.
+	 * 
+	 * @param stack the stack of values
+	 */
 	public Stack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
-	
+
 	/**
-	 * Private "helper" constructor.
-	 * Builds an empty symbolic stack and sets the isTop flag.
+	 * Builds an empty symbolic stack.
 	 * 
-	 * @param isTop true if the stack is TOP, false if it is BOTTOM.
+	 * @param isTop whether this stack is top.
 	 */
 	private Stack(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new ArrayDeque<Interval>();
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * TODO: implement.
-	 * Same of SymbolicStack
-	 */
+
 	@Override
 	public Stack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// nothing to do here
@@ -69,39 +66,34 @@ public class Stack implements ValueDomain<Stack> {
 		return null;
 	}
 
-	// Same of SymbolicStack
 	@Override
 	public Stack forgetIdentifier(Identifier id) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
-	// Same of SymbolicStack
 	@Override
 	public Stack forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
-	// Same of SymbolicStack
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// TODO Auto-generated method stub
+		// nothing to do here
 		return Satisfiability.UNKNOWN;
 	}
 
-	// Same of SymbolicStack
 	@Override
 	public Stack pushScope(ScopeToken token) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
-	// Same of SymbolicStack
 	@Override
 	public Stack popScope(ScopeToken token) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
 	@Override
@@ -110,13 +102,12 @@ public class Stack implements ValueDomain<Stack> {
 			return Lattice.bottomRepresentation();
 		else if (isTop())
 			return Lattice.topRepresentation();
-		
+
 		return new StringRepresentation(stack);
 	}
-	
+
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return stack.toString();
 	}
 
@@ -152,7 +143,7 @@ public class Stack implements ValueDomain<Stack> {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -195,10 +186,10 @@ public class Stack implements ValueDomain<Stack> {
 			Interval otherInterval = (Interval) otherIterator.next();
 			result.push(otherInterval);
 		}
-		
+
 		return new Stack(result);
 	}
-	
+
 	@Override
 	public Stack widening(Stack other) throws SemanticException {
 		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
@@ -252,7 +243,7 @@ public class Stack implements ValueDomain<Stack> {
 	public Stack bottom() {
 		return BOTTOM;
 	}
-	
+
 	@Override
 	public boolean isBottom() {
 		return stack == null;
@@ -307,7 +298,7 @@ public class Stack implements ValueDomain<Stack> {
 
 		return true;
 	}
-	
+
 	@Override
 	public Stack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
@@ -386,20 +377,21 @@ public class Stack implements ValueDomain<Stack> {
 	public Interval getTop() {
 		return this.stack.getFirst();
 	}
-	
+
+	@Override
 	public Stack clone() {
-		if(isBottom())
+		if (isBottom())
 			return new Stack(null);
 		return new Stack(stack.clone());
 	}
-	
+
 	/**
 	 * Returns an iterator over the elements in the stack.
 	 *
 	 * @return an iterator over the elements in the stack.
 	 */
 	public Iterator<Interval> iterator() {
-	    return stack.iterator();
+		return stack.iterator();
 	}
 
 	/**
@@ -408,7 +400,7 @@ public class Stack implements ValueDomain<Stack> {
 	 * @param target the interval to be pushed onto the stack.
 	 */
 	public void push(Interval target) {
-	    stack.push(target);
+		stack.push(target);
 	}
 
 	/**
@@ -417,7 +409,7 @@ public class Stack implements ValueDomain<Stack> {
 	 * @return the interval at the top of the stack.
 	 */
 	public Interval pop() {
-	    return stack.pop();
+		return stack.pop();
 	}
 
 	/**
@@ -426,8 +418,6 @@ public class Stack implements ValueDomain<Stack> {
 	 * @return the number of item in the stack.
 	 */
 	public int size() {
-	    return stack.size();
+		return stack.size();
 	}
-
-
-} // ! Stack
+}

@@ -2,16 +2,13 @@ package it.unipr.analysis.unit;
 
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigDecimal;
-import java.util.ArrayDeque;
-
-import org.junit.Test;
-
 import it.unipr.analysis.Memory;
 import it.unipr.analysis.SymbolicStack;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.util.numeric.MathNumber;
+import java.util.ArrayDeque;
+import org.junit.Test;
 
 /**
  * JUnit tests for {@link SymbolicStack} class. Checks the implementation of
@@ -35,7 +32,7 @@ public class SymbolicStackTest {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = values.length - 1; i >= 0; i--)
 			stack.push(new Interval(values[i], values[i]));
-		return new SymbolicStack(stack, new Memory(), new Interval(0,0));
+		return new SymbolicStack(stack, new Memory(), new Interval(0, 0));
 	}
 
 	/*
@@ -46,7 +43,7 @@ public class SymbolicStackTest {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = intervals.length - 1; i >= 0; i--)
 			stack.push(intervals[i]);
-		return new SymbolicStack(stack, new Memory(), new Interval(0,0));
+		return new SymbolicStack(stack, new Memory(), new Interval(0, 0));
 	}
 
 	/**

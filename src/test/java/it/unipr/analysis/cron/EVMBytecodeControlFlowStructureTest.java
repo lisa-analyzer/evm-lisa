@@ -1,9 +1,5 @@
 package it.unipr.analysis.cron;
 
-import java.io.IOException;
-
-import org.junit.Test;
-
 import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.checker.JumpChecker;
 import it.unive.lisa.AnalysisSetupException;
@@ -14,6 +10,8 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such
@@ -90,25 +88,25 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
-	 * - Number of opcodes: 32
-	 * - Expected solved jumps %: 100%
+	 * - Number of opcodes: 32 - Expected solved jumps %: 100%
 	 */
 	@Test
 	public void testRealContract() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad", "0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
+		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad",
+				"0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testMstore() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testMstore8() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
 		perform(conf);
 	}
-	
+
 }

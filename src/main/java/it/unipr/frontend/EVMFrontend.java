@@ -155,7 +155,8 @@ public class EVMFrontend {
 	 * @throws IOException
 	 * @throws AnalysisException
 	 */
-	public static Program generateCfgFromContraOutputctAddress(String contractAddress) throws IOException, AnalysisException {
+	public static Program generateCfgFromContraOutputctAddress(String contractAddress)
+			throws IOException, AnalysisException {
 		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
 
 		// Get bytecode from Etherscan
