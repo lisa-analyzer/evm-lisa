@@ -49,4 +49,4 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 		return new Memory(lattice, getMap());
 	}
 
-} // ! Memory
+}
