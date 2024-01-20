@@ -2,6 +2,7 @@ package it.unipr.analysis;
 
 import it.unipr.analysis.operator.*;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,7 +39,7 @@ import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
+public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMAbsDomain> {
 	private static final Logger LOG = LogManager.getLogger(EVMAbsDomain.class);
 	
 	private static final EVMAbsDomain TOP = new EVMAbsDomain();
@@ -1383,55 +1384,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	}
 
 	@Override
-	public boolean lessOrEqual(EVMAbsDomain other) throws SemanticException {
-		if (other == null)
-			return false;
-
-		if (this == other || this.isBottom() || other.isTop() || this.equals(other))
-			return true;
-
-		if (this.isTop() || other.isBottom())
-			return false;
-
-		return stack.lessOrEqual(other.getStack()) &&
-				memory.lessOrEqual(other.getMemory()) &&
-				mu_i.lessOrEqual(other.getMu_i());
-	}
-
-	@Override
-	public EVMAbsDomain lub(EVMAbsDomain other) throws SemanticException {
-		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other))
-			return this;
-
-		if (this.isBottom() || other.isTop())
-			return other;
-
-		if (lessOrEqual(other))
-			return other;
-		else if (other.lessOrEqual(this))
-			return this;
-
-		return new EVMAbsDomain(stack.lub(other.getStack()),
-				memory.lub(other.getMemory()),
-				mu_i.lub(other.getMu_i()));
-	}
-
-	@Override
-	public EVMAbsDomain widening(EVMAbsDomain other) throws SemanticException {
-		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
-			return this;
-		}
-
-		if (this.isBottom() || other.isTop()) {
-			return other;
-		}
-
-		return new EVMAbsDomain(stack.widening(other.getStack()),
-				memory.widening(other.getMemory()),
-				mu_i.widening(other.getMu_i()));
-	}
-
-	@Override
 	public EVMAbsDomain top() {
 		return TOP;
 	}
@@ -1441,17 +1393,17 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		return BOTTOM;
 	}
 
-	@Override
-	public boolean isBottom() {
-		return stack == null &&
-				memory == null &&
-				mu_i == null;
-	}
-
-	@Override
-	public boolean isTop() {
-		return isTop;
-	}
+//	@Override
+//	public boolean isBottom() {
+//		return stack == null &&
+//				memory == null &&
+//				mu_i == null;
+//	}
+//
+//	@Override
+//	public boolean isTop() {
+//		return isTop;
+//	}
 
 //	@Override
 //	public int hashCode() {
@@ -1534,6 +1486,28 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	 */
 	public Interval getTop() {
 		return stack.getTop();
+	}
+
+	@Override
+	public EVMAbsDomain wideningAux(EVMAbsDomain other) throws SemanticException {
+		return new EVMAbsDomain(stack.widening(other.getStack()),
+				memory.widening(other.getMemory()),
+				mu_i.widening(other.getMu_i()));
+	}
+	
+	@Override
+	public EVMAbsDomain lubAux(EVMAbsDomain other) throws SemanticException {
+
+		return new EVMAbsDomain(stack.lub(other.getStack()),
+				memory.lub(other.getMemory()),
+				mu_i.lub(other.getMu_i()));
+	}
+
+	@Override
+	public boolean lessOrEqualAux(EVMAbsDomain other) throws SemanticException {
+		return stack.lessOrEqual(other.getStack()) &&
+				memory.lessOrEqual(other.getMemory()) &&
+				mu_i.lessOrEqual(other.getMu_i());
 	}
 
 }
