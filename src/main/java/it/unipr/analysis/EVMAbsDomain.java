@@ -143,7 +143,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 		}
 
 		try {
-			LOG.info("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
+//			LOG.info("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
 			if (expression instanceof Constant) {
 				return this;
 			} else if (expression instanceof UnaryExpression) {
@@ -439,7 +439,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
 					// SLT
 					Stack result = stack.clone();
-//					System.out.println(stack);
 					
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
@@ -780,9 +779,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 						Interval state = memory.getState(offsetBigDecimal);
 						
-						System.out.println("[MLOAD] Memory: " + memory);
-						System.out.println("[MLOAD] Offset: " + offsetBigDecimal);
-						System.out.println("[MLOAD] State: " + state);
+//						System.out.println("[MLOAD] Memory: " + memory);
+//						System.out.println("[MLOAD] Offset: " + offsetBigDecimal);
+//						System.out.println("[MLOAD] State: " + state);
 						
 						if(state == Interval.BOTTOM) {
 							result.push(Interval.TOP);

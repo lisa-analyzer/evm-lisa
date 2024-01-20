@@ -29,6 +29,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
@@ -37,6 +40,9 @@ public class JumpChecker
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>> {
 
+	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
+
+	
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
 	private final Set<Statement> solvedJumps = new HashSet<>();
@@ -66,6 +72,7 @@ public class JumpChecker
 			return;
 		this.fixpoint = true;
 
+		LOG.info("Jump resolved: " + solvedJumps.size() + "/" + cfgToAnalyze.getAllJumps().size());
 		LiSAConfiguration conf = tool.getConfiguration();
 		LiSA lisa = new LiSA(conf);
 

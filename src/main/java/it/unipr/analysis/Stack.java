@@ -247,15 +247,15 @@ public class Stack implements ValueDomain<Stack> {
 		return BOTTOM;
 	}
 
-	@Override
-	public boolean isBottom() {
-		return stack == null;
-	}
-
-	@Override
-	public boolean isTop() {
-		return isTop;
-	}
+//	@Override
+//	public boolean isBottom() {
+//		return stack == null;
+//	}
+//
+//	@Override
+//	public boolean isTop() {
+//		return isTop;
+//	}
 
 	@Override
 	public int hashCode() {
@@ -404,7 +404,6 @@ public class Stack implements ValueDomain<Stack> {
 	 */
 	public void push(Interval target) {
 		stack.push(target);
-//		System.out.printf("Interval Pushed: %s \n\t stack: %s \n", target, stack);
 	}
 
 	/**

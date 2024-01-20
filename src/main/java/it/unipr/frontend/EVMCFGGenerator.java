@@ -3,6 +3,7 @@ package it.unipr.frontend;
 import it.unipr.cfg.*;
 import it.unipr.cfg.Byte;
 import it.unipr.cfg.Number;
+import it.unipr.cfg.push.Push;
 import it.unipr.cfg.push.Push1;
 import it.unipr.cfg.push.Push10;
 import it.unipr.cfg.push.Push11;
@@ -45,9 +46,15 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Provides methods to generate a CFG from a smart contract.
@@ -101,6 +108,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		cfg.getEntrypoints().add(st);
 		last = st;
 
+		Map<Statement, BigInteger> map = new HashMap<>();
+		
 		// For each opcode of the program, create a statement and add it to the
 		// CFG.
 		for (int i = 1; i < ctx.opcodes().size(); i++) {
@@ -115,6 +124,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			 * (FalseEdge) is created between the last statement and the actual
 			 * one. Otherwise, a sequential edge (SequentialEdge) is created.
 			 */
+			
+			if (st instanceof Jumpi && last instanceof Push)
+				map.put(st,((Push) last).getInt());
 			if (last instanceof Jumpi) {
 				cfg.addEdge(new FalseEdge(last, st));
 			} else {
@@ -124,6 +136,11 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			last = st;
 		}
 
+		for (Statement node : cfg.getNodes())
+			for (Entry<Statement, BigInteger> entry : map.entrySet())
+				if (((ProgramCounterLocation) node.getLocation()).getPc() == entry.getValue().intValue())
+					cfg.addEdge(new TrueEdge(entry.getKey(), node));
+		
 		// The last statement of the CFG is a Ret statement.
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
 		cfg.addNode(ret);
