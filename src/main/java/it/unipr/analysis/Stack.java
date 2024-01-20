@@ -15,6 +15,8 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.util.numeric.MathNumber;
+
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -402,6 +404,7 @@ public class Stack implements ValueDomain<Stack> {
 	 */
 	public void push(Interval target) {
 		stack.push(target);
+//		System.out.printf("Interval Pushed: %s \n\t stack: %s \n", target, stack);
 	}
 
 	/**

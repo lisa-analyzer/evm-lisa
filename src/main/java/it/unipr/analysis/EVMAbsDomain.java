@@ -1,6 +1,7 @@
 package it.unipr.analysis;
 
 import it.unipr.analysis.operator.*;
+import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -34,7 +35,12 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
+	private static final Logger LOG = LogManager.getLogger(EVMAbsDomain.class);
+	
 	private static final EVMAbsDomain TOP = new EVMAbsDomain();
 	private static final EVMAbsDomain BOTTOM = new EVMAbsDomain(null, null, null);
 	private final boolean isTop;
@@ -91,8 +97,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	 * @return A cloned copy of the stack or null if the original stack is null.
 	 */
 	public Stack getStack() {
-		if (stack == null)
-			return null;
+//		if (stack == null)
+//			return null;
 		return stack.clone();
 	}
 
@@ -103,8 +109,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	 *             null.
 	 */
 	public Memory getMemory() {
-		if (memory == null)
-			return null;
+//		if (memory == null)
+//			return null;
 		return memory.clone();
 	}
 
@@ -115,8 +121,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	 *             is null.
 	 */
 	public Interval getMu_i() {
-		if (mu_i == null)
-			return null;
+//		if (mu_i == null)
+//			return null;
 		return new Interval(mu_i.interval);
 	}
 
@@ -131,10 +137,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 	public EVMAbsDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// Ensure BOTTOM propagation
 		if (this.isBottom()) {
+//			LOG.warn("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
 			return EVMAbsDomain.BOTTOM;
 		}
 
 		try {
+			LOG.info("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
 			if (expression instanceof Constant) {
 				return this;
 			} else if (expression instanceof UnaryExpression) {
@@ -148,7 +156,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 					BigDecimal valueToPush = this.toBigDecimal(un.getExpression());
 
 					result.push(new Interval(new MathNumber(valueToPush), new MathNumber(valueToPush)));
-
+					
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if (op instanceof AddressOperator) { // ADDRESS
 					Stack result = stack.clone();
@@ -430,13 +438,16 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 				} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
 					// SLT
 					Stack result = stack.clone();
+//					System.out.println(stack);
+					
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
-
+					
+					
 					Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
 
 					result.push(lt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
-
+					
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT,
 					// SGT
@@ -754,6 +765,10 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 						// is no active words saved
 						// TODO to handle this error
 					}
+					
+					if(memory == null) {
+						LOG.warn("[MLOAD] memory == null");
+					}
 
 					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
@@ -763,23 +778,34 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 								.setScale(0, RoundingMode.UP);
 
 						Interval state = memory.getState(offsetBigDecimal);
-
-						result.push(state);
+						
+						System.out.println("[MLOAD] Memory: " + memory);
+						System.out.println("[MLOAD] Offset: " + offsetBigDecimal);
+						System.out.println("[MLOAD] State: " + state);
+						
+						if(state == Interval.BOTTOM) {
+							result.push(Interval.TOP);
+							LOG.warn("[MLOAD] state == Interval.BOTTOM");
+						}
+							
+						else
+							result.push(state);
 
 						// We create a new Interval singleton with the newly
 						// calculated `current_mu_i`
-						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
-								current_mu_i.intValueExact());
-
-						// Then we compare the 2 mu_i and update the new value
-						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-							new_mu_i = intervalCurrent_mu_i;
-						else
+//						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
+//								current_mu_i.intValueExact());
+//
+//						// Then we compare the 2 mu_i and update the new value
+//						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
+//							new_mu_i = intervalCurrent_mu_i;
+//						else
 							new_mu_i = mu_i;
 
 					} else {
 						// TODO to handle else-condition
 						result.push(Interval.TOP);
+						new_mu_i = mu_i;
 					}
 
 					return new EVMAbsDomain(result, memory, new_mu_i);
@@ -791,7 +817,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					Interval offset = stackResult.pop();
 					Interval value = stackResult.pop();
-
+					
+//					System.out.println("[MSTORE] Offset: " + offset);
 					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
@@ -801,7 +828,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 						// Ceiling
 						// function
 
+//						System.out.println("[MSTORE] Memory: " + memory);
+//						System.out.println("[MSTORE] Offset: " + offsetBigDecimal);
+//						System.out.println("[MSTORE] Value: " + value);
+						
 						memoryResult = memory.putState(offsetBigDecimal, value);
+						
 
 						// We create a new Interval singleton with the newly
 						// calculated `current_mu_i`
@@ -815,7 +847,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 							new_mu_i = mu_i;
 
 					} else {
-						// TODO to handle else-condition
+						new_mu_i = mu_i;
+//						LOG.warn("[MSTORE] !offset.interval.isSingleton() - offset: " + offset);
+						memoryResult = memory;
 					}
 
 					return new EVMAbsDomain(stackResult, memoryResult, new_mu_i);
@@ -866,6 +900,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 
 					} else {
 						// TODO to handle else-condition
+						new_mu_i = mu_i;
+//						LOG.warn("[MSTORE8] !offset.interval.isSingleton()");
+						memoryResult = memory;
 					}
 
 					return new EVMAbsDomain(result, memoryResult, new_mu_i);
@@ -1416,44 +1453,45 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		return isTop;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(stack, memory, mu_i);
-	}
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(stack, memory, mu_i);
+//	}
 
-	@Override
-	public boolean equals(Object obj) {
-		// EVMAbsDomain check
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-
-		EVMAbsDomain other = (EVMAbsDomain) obj;
-		// isTop check
-		if (this.isTop != other.isTop)
-			return false;
-		// If both are top, there is no need to check the stack
-		if (this.isTop)
-			return true;
-
-		if (stack == null && other.getStack() != null)
-			return false;
-		if (memory == null && other.getMemory() != null)
-			return false;
-		if (mu_i == null && other.getMu_i() != null)
-			return false;
-
-		if (this.isBottom() == false && other.isBottom() == false)
-			return stack.equals(other.getStack()) &&
-					memory.equals(other.getMemory()) &&
-					mu_i.equals(other.getMu_i());
-
-		return this.isBottom() == other.isBottom(); // TODO check if it is
-		// correct
-	}
+//	@Override
+//	public boolean equals(Object obj) {
+//		// EVMAbsDomain check
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
+//
+//		EVMAbsDomain other = (EVMAbsDomain) obj;
+//		// isTop check
+//		if (this.isTop != other.isTop)
+//			return false;
+//		// If both are top, there is no need to check the stack
+//		if (this.isTop)
+//			return true;
+//
+//		if (stack == null && other.getStack() != null)
+//			return false;
+//		if (memory == null && other.getMemory() != null)
+//			return false;
+//		if (mu_i == null && other.getMu_i() != null)
+//			return false;
+//
+//		if (this.isBottom() == false && other.isBottom() == false)
+//			return stack.equals(other.getStack()) &&
+//					memory.equals(other.getMemory()) &&
+//					mu_i.equals(other.getMu_i());
+//
+//		return this.isBottom() == other.isBottom(); // TODO check if it is
+//		// correct
+//	}
+	
 
 	/**
 	 * Helper method to convert a memory word to a BigInteger
@@ -1469,6 +1507,24 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain> {
 		BigInteger bigIntVal = new BigInteger(hexadecimal, 16);
 		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
 		return bigDecimalVal;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(isTop, memory, mu_i, stack);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EVMAbsDomain other = (EVMAbsDomain) obj;
+		return isTop == other.isTop && Objects.equals(memory, other.memory) && Objects.equals(mu_i, other.mu_i)
+				&& Objects.equals(stack, other.stack);
 	}
 
 	/**
