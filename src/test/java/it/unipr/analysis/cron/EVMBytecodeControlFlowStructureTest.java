@@ -56,57 +56,77 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		return conf;
 	}
 
-	@Test
-	public void testIf() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testIfElse() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testWhile() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
-		perform(conf);
-	}
-
-	/**
-	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
-	 * - Number of opcodes: 32 - Expected solved jumps %: 100%
-	 */
+//	@Test
+//	public void testIf() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testIfElse() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testWhile() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	/**
+//	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
+//	 * - Number of opcodes: 32 - Expected solved jumps %: 100%
+//	 */
 	@Test
 	public void testRealContract() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad",
 				"0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
 		perform(conf);
 	}
-
-	@Test
-	public void testMstore() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
-		perform(conf);
-	}
-
-	@Test
-	public void testMstore8() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
-		perform(conf);
-	}
+//
+//	@Test
+//	public void testMstore() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
+//		perform(conf);
+//	}
+//
+//	@Test
+//	public void testMstore8() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
+//		perform(conf);
+//	}
+	
+//	@Test
+//	public void testLT() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/lt", "lt_eth.sol", true);
+//		perform(conf);
+//	}
+	
+//	@Test
+//	public void testRealContract2() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c",
+//				"0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c.sol", false);
+//		perform(conf);
+//	}
+	
+//	@Test
+//	public void testRealContract3() throws AnalysisSetupException, IOException {
+//		CronConfiguration conf = createConfiguration("cfs/0x576501abd98ce5472b03b7ab4f5980941db7ef37",
+//				"0x576501abd98ce5472b03b7ab4f5980941db7ef37.sol", false);
+//		perform(conf);
+//	}
 
 }

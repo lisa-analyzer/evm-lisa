@@ -13,6 +13,8 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,7 +40,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * 0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a o. ERC20Salary:
 	 * 0xcc2ba2eac448d60e0f943ebe378f409cb7d1b58a
 	 */
-	private final static String CONTRACT_ADDR = "0x6190a479cfafcb1637f5485366bcbce418a68a4d";
+	private final static String CONTRACT_ADDR = "0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c";
 
 	// Contract bytecode output directory
 	private final static String BYTECODE_DIR = "bytecodeBenchmark/" + CONTRACT_ADDR;
@@ -46,13 +48,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final static String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/" + BYTECODE_DIR + "/" + BYTECODE_FILENAME;
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = true;
+	private final static boolean GENERATE_CFG = false;
 
 	@Test
 	public void testEVMBytecodeAnalysis() throws Exception {
 		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + BYTECODE_DIR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
+//		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
 
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
@@ -89,6 +91,59 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.err.println("Total jumps: " + totalJumps);
 		System.err.println("Solved jumps: " + solvedJumps.size());
 		System.err.println("##############");
+	}
+	
+//	@Test
+//	public void test() throws Exception {
+//		final File folder = new File("benchmark2/");
+//		listFilesForFolder(folder);
+//	}
+	
+	// In fase di sviluppo
+	public void listFilesForFolder(final File folder) throws Exception {
+	    for (final File fileEntry : folder.listFiles()) {
+	        if (fileEntry.isDirectory()) {
+	            listFilesForFolder(fileEntry);
+	        } else {
+	            System.out.println(fileEntry.getName());
+	            
+	            // Config and test run
+	    		CronConfiguration conf = new CronConfiguration();
+	    		conf.serializeResults = true;
+	    		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
+	    				new MonolithicHeap(), new EVMAbsDomain(),
+	    				new TypeEnvironment<>(new InferredTypes()));
+	    		conf.testDir = "benchmark2/";
+	    		conf.callGraph = new RTACallGraph();
+	    		JumpChecker checker = new JumpChecker();
+	    		conf.semanticChecks.add(checker);
+	    		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+	    		conf.serializeInputs = true;
+	    		if (GENERATE_CFG) {
+	    			conf.analysisGraphs = GraphType.DOT;
+	    		}
+	    		conf.programFile = fileEntry.getName();
+	    		perform(conf);
+
+	    		// Print the results
+	    		EVMCFG baseCfg = (EVMCFG) getCFGFromFile("benchmark2/");
+
+	    		Set<Statement> validJUMPs = baseCfg.getAllValidPushedJUMPs();
+	    		Set<Statement> validJUMPIs = baseCfg.getAllValidPushedJUMPIs();
+	    		Set<Statement> solvedJumps = checker.getSolvedJumps();
+
+	    		solvedJumps.addAll(validJUMPs);
+	    		solvedJumps.addAll(validJUMPIs);
+
+	    		int totalOpcodes = baseCfg.getNodesCount() - 1;
+	    		int totalJumps = baseCfg.getAllJumps().size();
+	    		System.err.println("##############");
+	    		System.err.println("Total opcodes: " + totalOpcodes);
+	    		System.err.println("Total jumps: " + totalJumps);
+	    		System.err.println("Solved jumps: " + solvedJumps.size());
+	    		System.err.println("##############");
+	        }
+	    }
 	}
 
 	private static CFG getCFGFromFile(String filename) {
