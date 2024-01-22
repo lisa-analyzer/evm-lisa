@@ -1,7 +1,6 @@
 package it.unipr.analysis;
 
 import it.unipr.analysis.operator.*;
-import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -45,7 +44,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	private static final EVMAbsDomain TOP = new EVMAbsDomain();
 	private static final EVMAbsDomain BOTTOM = new EVMAbsDomain(null, null, null);
 	private final boolean isTop;
-
+	
+	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
+	
 	/**
 	 * The stack memory.
 	 */
@@ -548,9 +549,17 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// high()
 					MathNumber low, high;
 
-					try {
-						low = new MathNumber(~opnd1.interval.getLow().toByte());
-						high = new MathNumber(~opnd1.interval.getHigh().toByte());
+					try {						
+						if(opnd1.interval.getLow().toLong() >= 0)
+							low = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getLow().toLong() + 1)));
+						else 
+							low = new MathNumber(~opnd1.interval.getLow().toLong());
+						
+						if(opnd1.interval.getHigh().toLong() >= 0)
+							high = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getHigh().toLong() + 1)));
+						else 
+							high = new MathNumber(~opnd1.interval.getHigh().toLong());
+						
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
