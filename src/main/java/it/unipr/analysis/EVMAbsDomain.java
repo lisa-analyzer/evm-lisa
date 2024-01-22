@@ -614,17 +614,27 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// SHL is not handled in Interval, so we work with low() and
 					// high()
 
-					MathNumber low, high;
-
 					try {
-						low = new MathNumber(opnd1.interval.getLow().toLong() << opnd2.interval.getLow().toLong());
-						high = new MathNumber(opnd1.interval.getHigh().toLong() << opnd2.interval.getHigh().toLong());
+						String op2LowString = opnd2.interval.getLow().toString();
+						String op2HighString = opnd2.interval.getHigh().toString();
+						
+						BigInteger op2LowBigInteger = new BigInteger(op2LowString);
+						byte[] op2LowBytes = op2LowBigInteger.toByteArray();
+						byte[] resultShiftLeftLow = shiftLeft(op2LowBytes, opnd1.interval.getLow().toInt());
+						
+						BigInteger op2HighBigInteger = new BigInteger(op2HighString);
+						byte[] op2HighBytes = op2HighBigInteger.toByteArray();
+						byte[] resultShiftLeftHigh = shiftLeft(op2HighBytes, opnd1.interval.getHigh().toInt());
+						
+						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftLow))), 
+												 new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftHigh)))));
+						
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
 					}
 
-					result.push(new Interval(low, high));
+//					result.push(new Interval(low, high));
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if (op instanceof ShrOperator) { // SHR
@@ -636,8 +646,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// high()
 
 					try {
-						String op1LowString = opnd1.interval.getLow().toString();
-						String op1HighString = opnd1.interval.getHigh().toString();
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
 						
@@ -667,17 +675,25 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// SAR is not handled in Interval, so we work with low() and
 					// high()
 
-					MathNumber low, high;
-
 					try {
-						low = new MathNumber(opnd1.interval.getLow().toByte() >> opnd2.interval.getLow().toByte());
-						high = new MathNumber(opnd1.interval.getHigh().toByte() >> opnd2.interval.getHigh().toByte());
+						String op2LowString = opnd2.interval.getLow().toString();
+						String op2HighString = opnd2.interval.getHigh().toString();
+						
+						BigInteger op2LowBigInteger = new BigInteger(op2LowString);
+						byte[] op2LowBytes = op2LowBigInteger.toByteArray();
+						byte[] resultShiftRightLow = shiftArithmeticRight(op2LowBytes, opnd1.interval.getLow().toInt());
+						
+						BigInteger op2HighBigInteger = new BigInteger(op2HighString);
+						byte[] op2HighBytes = op2HighBigInteger.toByteArray();
+						byte[] resultShiftRightHigh = shiftArithmeticRight(op2HighBytes, opnd1.interval.getHigh().toInt());
+						
+						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))), 
+												 new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
+						
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
 					}
-
-					result.push(new Interval(low, high));
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if (op instanceof Sha3Operator) { // SHA3
@@ -1538,14 +1554,13 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 * <p>This method performs a bitwise right shift on the input byte array, where each element is treated as
 	 * a single byte. The shift operation is performed in-place, and the original array is modified.</p>
 	 *
-	 * <p>If the {@code shiftBitCount} is zero, the array remains unchanged. If {@code shiftBitCount} is negative,
-	 * the method performs a left shift instead.</p>
+	 * <p>If the {@code shiftBitCount} is zero, the array remains unchanged.</p>
 	 *
 	 * <p>The method uses a circular shift approach, with consideration for byte boundaries and a carry mechanism.</p>
 	 *
 	 * @throws IllegalArgumentException If the {@code byteArray} is {@code null}.
 	 */
-	static byte[] shiftRight(byte[] byteArray, int shiftBitCount) {
+	public static byte[] shiftRight(byte[] byteArray, int shiftBitCount) {
 	    final int shiftMod = shiftBitCount % 8;
 	    final byte carryMask = (byte) (0xFF << (8 - shiftMod));
 	    final int offsetBytes = (shiftBitCount / 8);
@@ -1568,6 +1583,97 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 	
 	/**
+	 * Shifts the given byte array to the left by the specified number of bits.
+	 *
+	 * @param byteArray The byte array to be left-shifted.
+	 * @param shiftBitCount The number of bits by which to shift the byte array to the left.
+	 * @return The resulting byte array after left-shifting by the specified bit count.
+	 * 
+	 * <p>This method performs a left shift on the provided byte array, where each byte is shifted to the left
+	 * by the given number of bits. The shift operation is performed in a bitwise manner, and the bits shifted
+	 * beyond the byte boundary are wrapped around to the opposite end. The shift is done in place, and the
+	 * modified byte array is returned as the result.</p>
+	 * 
+	 * <p>The {@code shiftBitCount} parameter determines the number of bits to shift. </p>
+	 * 
+	 * @throws IllegalArgumentException If the input {@code byteArray} is {@code null}.
+	 */
+	public static byte[] shiftLeft(byte[] byteArray, int shiftBitCount) {
+	    final int shiftMod = shiftBitCount % 8;
+	    final byte carryMask = (byte) ((1 << shiftMod) - 1);
+	    final int offsetBytes = (shiftBitCount / 8);
+
+	    int start;
+	    
+	    if(byteArray.length > 32)
+	    	start = 1;
+	    else
+	    	start = 0;
+	    
+	    int sourceIndex;
+	    for (int i = start; i < byteArray.length; i++) {
+	        sourceIndex = i + offsetBytes;
+	        if (sourceIndex >= byteArray.length) {
+	            byteArray[i] = 0;
+	        } else {
+	            byte src = byteArray[sourceIndex];
+	            byte dst = (byte) (src << shiftMod);
+	            if (sourceIndex + 1 < byteArray.length) {
+	                dst |= byteArray[sourceIndex + 1] >>> (8 - shiftMod) & carryMask;
+	            }
+	            byteArray[i] = dst;
+	        }
+	    }
+	    return byteArray;
+	}
+	
+	/**
+	 * Shifts the bits of the given byte array towards the least significant bit (SAR - Shift Arithmetic Right).
+	 * The bits moved before the first one are discarded, and the new bits are set to 0 if the previous most
+	 * significant bit was 0; otherwise, the new bits are set to 1.
+	 *
+	 * @param byteArray The byte array to be right-shifted.
+	 * @param shiftBitCount The number of bits by which to shift the byte array to the right.
+	 * @return The resulting byte array after right-shifting by the specified bit count.
+	 *
+	 * <p>This method performs a right shift on the provided byte array (SAR operation), where each byte is
+	 * shifted to the right by the given number of bits. The shift operation is performed in a bitwise manner,
+	 * and the bits shifted beyond the byte boundary are discarded. The new bits introduced during the shift
+	 * are set based on the value of the previous most significant bit (0 or 1).</p>
+	 *
+	 * <p>The {@code shiftBitCount} parameter determines the number of bits to shift.</p>
+	 *
+	 * @throws IllegalArgumentException If the input {@code byteArray} is {@code null}.
+	 */
+	public static byte[] shiftArithmeticRight(byte[] byteArray, int shiftBitCount) {
+	    final int shiftMod = shiftBitCount % 8;
+	    final byte carryMask = (byte) (0xFF << (8 - shiftMod));
+	    final int offsetBytes = (shiftBitCount / 8);
+
+	    int sourceIndex;
+	    int start;
+	    
+	    if(byteArray.length > 32)
+	    	start = 1;
+	    else
+	    	start = 0;
+	    for (int i = start; i < byteArray.length; i++) {
+	        sourceIndex = i + offsetBytes;
+	        if (sourceIndex >= byteArray.length) {
+	            byteArray[i] = (byte) (byteArray[i] < 0 ? 0xFF : 0);
+	        } else {
+	            byte src = byteArray[sourceIndex];
+	            byte dst = (byte) (src >>> shiftMod);
+	            if (sourceIndex + 1 < byteArray.length) {
+	                dst |= byteArray[sourceIndex + 1] << (8 - shiftMod) & carryMask;
+	            }
+	            byteArray[i] = dst;
+	        }
+	    }
+	    return byteArray;
+	}
+	
+	/**
 	 * Prints the hexadecimal representation of a byte array to the standard output.
 	 *
 	 * @param bytes The byte array to be printed in hexadecimal format.
@@ -1578,7 +1684,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 *
 	 * @throws IllegalArgumentException If the input {@code bytes} is {@code null}.
 	 */
-	private static void printByte(byte[] bytes) {
+	public static void printByte(byte[] bytes) {
         for (byte b : bytes) {
             System.out.printf("%02X ", b);
         }
