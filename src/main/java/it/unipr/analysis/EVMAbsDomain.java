@@ -635,17 +635,27 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// SHR is not handled in Interval, so we work with low() and
 					// high()
 
-					MathNumber low, high;
-
 					try {
-						low = new MathNumber(opnd1.interval.getLow().toByte() >> opnd2.interval.getLow().toByte());
-						high = new MathNumber(opnd1.interval.getHigh().toByte() >> opnd2.interval.getHigh().toByte());
+						String op1LowString = opnd1.interval.getLow().toString();
+						String op1HighString = opnd1.interval.getHigh().toString();
+						String op2LowString = opnd2.interval.getLow().toString();
+						String op2HighString = opnd2.interval.getHigh().toString();
+						
+						BigInteger op2LowBigInteger = new BigInteger(op2LowString);
+						byte[] op2LowBytes = op2LowBigInteger.toByteArray();
+						byte[] resultShiftRightLow = shiftRight(op2LowBytes, opnd1.interval.getLow().toInt());
+						
+						BigInteger op2HighBigInteger = new BigInteger(op2HighString);
+						byte[] op2HighBytes = op2HighBigInteger.toByteArray();
+						byte[] resultShiftRightHigh = shiftRight(op2HighBytes, opnd1.interval.getHigh().toInt());
+						
+						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))), 
+												 new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
+						
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
 					}
-
-					result.push(new Interval(low, high));
 
 					return new EVMAbsDomain(result, memory, mu_i);
 
@@ -1518,8 +1528,57 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				mu_i.lessOrEqual(other.getMu_i());
 	}
 	
+	/**
+	 * Shifts the elements of a byte array to the right by a specified number of bits.
+	 *
+	 * @param byteArray      The byte array to be shifted.
+	 * @param shiftBitCount  The number of bits by which the array elements should be shifted to the right.
+	 * @return               The byte array after the right shift operation.
+	 * 
+	 * <p>This method performs a bitwise right shift on the input byte array, where each element is treated as
+	 * a single byte. The shift operation is performed in-place, and the original array is modified.</p>
+	 *
+	 * <p>If the {@code shiftBitCount} is zero, the array remains unchanged. If {@code shiftBitCount} is negative,
+	 * the method performs a left shift instead.</p>
+	 *
+	 * <p>The method uses a circular shift approach, with consideration for byte boundaries and a carry mechanism.</p>
+	 *
+	 * @throws IllegalArgumentException If the {@code byteArray} is {@code null}.
+	 */
+	static byte[] shiftRight(byte[] byteArray, int shiftBitCount) {
+	    final int shiftMod = shiftBitCount % 8;
+	    final byte carryMask = (byte) (0xFF << (8 - shiftMod));
+	    final int offsetBytes = (shiftBitCount / 8);
+
+	    int sourceIndex;
+	    for (int i = byteArray.length - 1; i >= 0; i--) {
+	        sourceIndex = i - offsetBytes;
+	        if (sourceIndex < 0) {
+	            byteArray[i] = 0;
+	        } else {
+	            byte src = byteArray[sourceIndex];
+	            byte dst = (byte) ((0xff & src) >>> shiftMod);
+	            if (sourceIndex - 1 >= 0) {
+	                dst |= byteArray[(sourceIndex - 1)] << (8 - shiftMod) & carryMask;
+	            }
+	            byteArray[i] = dst;
+	        }
+	    }
+	    return byteArray;
+	}
 	
-    private static void printByte(byte[] bytes) {
+	/**
+	 * Prints the hexadecimal representation of a byte array to the standard output.
+	 *
+	 * @param bytes The byte array to be printed in hexadecimal format.
+	 * 
+	 * <p>This method iterates through each byte in the array and prints its hexadecimal representation.
+	 * Each byte is formatted as a two-digit uppercase hexadecimal value, separated by a space.
+	 * After printing all bytes, a newline character is appended to the output.</p>
+	 *
+	 * @throws IllegalArgumentException If the input {@code bytes} is {@code null}.
+	 */
+	private static void printByte(byte[] bytes) {
         for (byte b : bytes) {
             System.out.printf("%02X ", b);
         }
