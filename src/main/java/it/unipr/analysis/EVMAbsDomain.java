@@ -617,8 +617,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					MathNumber low, high;
 
 					try {
-						low = new MathNumber(opnd1.interval.getLow().toByte() << opnd2.interval.getLow().toByte());
-						high = new MathNumber(opnd1.interval.getHigh().toByte() << opnd2.interval.getHigh().toByte());
+						low = new MathNumber(opnd1.interval.getLow().toLong() << opnd2.interval.getLow().toLong());
+						high = new MathNumber(opnd1.interval.getHigh().toLong() << opnd2.interval.getHigh().toLong());
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
@@ -1517,5 +1517,13 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				memory.lessOrEqual(other.getMemory()) &&
 				mu_i.lessOrEqual(other.getMu_i());
 	}
+	
+	
+    private static void printByte(byte[] bytes) {
+        for (byte b : bytes) {
+            System.out.printf("%02X ", b);
+        }
+        System.out.println(); 
+    }
 
 }

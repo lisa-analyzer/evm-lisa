@@ -172,5 +172,16 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/not", "not_eth.sol", false);
 		perform(conf);
 	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testShl() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", false);
+		perform(conf);
+	}
 
 }
