@@ -485,6 +485,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
+					
+					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
 
 					// AND is not handled in Interval, so we work with low() and
 					// high()
@@ -506,6 +511,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
+					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
+					
 					// OR is not handled in Interval, so we work with low() and
 					// high()
 					MathNumber low, high;
@@ -525,6 +535,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
+					
+					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
 
 					// XOR is not handled in Interval, so we work with low() and
 					// high()
@@ -545,10 +560,15 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					Stack result = stack.clone();
 					Interval opnd1 = result.pop();
 
+					if(opnd1 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
+					
 					// NOT is not handled in Interval, so we work with low() and
 					// high()
 					MathNumber low, high;
-
+					
 					try {						
 						if(opnd1.interval.getLow().toLong() >= 0)
 							low = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getLow().toLong() + 1)));
@@ -614,6 +634,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// SHL is not handled in Interval, so we work with low() and
 					// high()
 
+					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
+					
 					try {
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
@@ -634,8 +659,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						return new EVMAbsDomain(result, memory, mu_i);
 					}
 
-//					result.push(new Interval(low, high));
-
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if (op instanceof ShrOperator) { // SHR
 					Stack result = stack.clone();
@@ -644,6 +667,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 					// SHR is not handled in Interval, so we work with low() and
 					// high()
+					
+					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
 
 					try {
 						String op2LowString = opnd2.interval.getLow().toString();
@@ -675,6 +703,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// SAR is not handled in Interval, so we work with low() and
 					// high()
 
+					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						result.push(Interval.TOP);
+						return new EVMAbsDomain(result, memory, mu_i);
+					}
+					
 					try {
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
@@ -920,7 +953,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 							// TODO to handle else-condition
 							// If value is not singleton, how would we handle
 							// the `mod 256` operation?
-							memoryResult = memory.putState(offsetBigDecimal, new Interval());
+							memoryResult = memory.putState(offsetBigDecimal, Interval.TOP);
 						}
 
 						// We create a new Interval singleton with the newly

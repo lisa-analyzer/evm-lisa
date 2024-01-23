@@ -38,7 +38,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * 0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a o. ERC20Salary:
 	 * 0xcc2ba2eac448d60e0f943ebe378f409cb7d1b58a
 	 */
-	private final static String CONTRACT_ADDR = "0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c";
+//	private final static String CONTRACT_ADDR = "0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c";
+	private final static String CONTRACT_ADDR = "0x6190a479cfafcb1637f5485366bcbce418a68a4d";
 
 	// Contract bytecode output directory
 	private final static String BYTECODE_DIR = "bytecodeBenchmark/" + CONTRACT_ADDR;

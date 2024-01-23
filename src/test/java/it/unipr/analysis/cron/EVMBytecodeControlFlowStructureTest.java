@@ -115,20 +115,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		perform(conf);
 	}
 	
-//	@Test
-//	public void testRealContract2() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c",
-//				"0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c.sol", false);
-//		perform(conf);
-//	}
-	
-//	@Test
-//	public void testRealContract3() throws AnalysisSetupException, IOException {
-//		CronConfiguration conf = createConfiguration("cfs/0x576501abd98ce5472b03b7ab4f5980941db7ef37",
-//				"0x576501abd98ce5472b03b7ab4f5980941db7ef37.sol", false);
-//		perform(conf);
-//	}
-	
 	/**
 	 * All the items in the final stack must be 1
 	 * @throws AnalysisSetupException
