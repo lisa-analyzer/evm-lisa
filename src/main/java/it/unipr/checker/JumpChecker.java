@@ -72,7 +72,6 @@ public class JumpChecker
 			return;
 		this.fixpoint = true;
 
-		LOG.info("Jump resolved: " + solvedJumps.size() + "/" + cfgToAnalyze.getAllJumps().size());
 		LiSAConfiguration conf = tool.getConfiguration();
 		LiSA lisa = new LiSA(conf);
 
@@ -180,7 +179,7 @@ public class JumpChecker
 				System.err.println("NoSuchElementException during visit()");
 			}
 		}
-
+		
 		return true;
 	}
 }
