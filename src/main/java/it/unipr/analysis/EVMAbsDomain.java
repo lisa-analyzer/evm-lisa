@@ -634,12 +634,19 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// SHL is not handled in Interval, so we work with low() and
 					// high()
 
-					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+					if(opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
-					}
-					
+					} 
+						
 					try {
+						// TODO se gestiamo questo problema, l'analisi va in loop
+//						if(opnd2.interval.getLow() == MathNumber.MINUS_INFINITY || 
+//								opnd2.interval.getHigh() == MathNumber.PLUS_INFINITY) {
+//							result.push(Interval.TOP);
+//							return new EVMAbsDomain(result, memory, mu_i);
+//						} 
+							
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
 						
@@ -658,6 +665,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						result.push(Interval.TOP);
 						return new EVMAbsDomain(result, memory, mu_i);
 					}
+					
 
 					return new EVMAbsDomain(result, memory, mu_i);
 				} else if (op instanceof ShrOperator) { // SHR

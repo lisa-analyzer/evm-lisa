@@ -1,10 +1,10 @@
 package it.unipr.analysis.cron;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unipr.analysis.EVMAbsDomain;
@@ -45,106 +45,57 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
 	private final static boolean GENERATE_CFG = true;
-
-	@Ignore
-	public void testEVMBytecodeAnalysis01() throws Exception {
-		String CONTRACT_ADDR = "0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c";
-		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
-
-		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
-
-		// Config and test run
-		CronConfiguration conf = new CronConfiguration();
-		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbsDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
-		conf.callGraph = new RTACallGraph();
-		JumpChecker checker = new JumpChecker();
-		conf.semanticChecks.add(checker);
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.serializeInputs = true;
-		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.DOT;
-		}
-		conf.programFile = CONTRACT_ADDR + ".sol";
-		perform(conf);
-
-		// Print the results
-		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
-		dumpStatistics(baseCfg);
-	}
 	
-	@Ignore
-	public void testEVMBytecodeAnalysis02() throws Exception {
-		String CONTRACT_ADDR = "0x732eBfefFDF57513f167b2d3D384E13246f60034";
-		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
-
-		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
-
-		// Config and test run
-		CronConfiguration conf = new CronConfiguration();
-		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbsDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
-		conf.callGraph = new RTACallGraph();
-		JumpChecker checker = new JumpChecker();
-		conf.semanticChecks.add(checker);
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.serializeInputs = true;
-		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.DOT;
-		}
-		conf.programFile = CONTRACT_ADDR + ".sol";
-		perform(conf);
-
-		// Print the results
-		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
-		dumpStatistics(baseCfg);
-	}
+	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/stats.xls";
 	
 	@Test
-	public void testEVMBytecodeAnalysis03() throws Exception {
-		String CONTRACT_ADDR = "0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9";
-		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
-
-		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
-
-		// Config and test run
-		CronConfiguration conf = new CronConfiguration();
-		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbsDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
-		conf.callGraph = new RTACallGraph();
-		JumpChecker checker = new JumpChecker();
-		conf.semanticChecks.add(checker);
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.serializeInputs = true;
-		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.DOT;
+	public void testEVMBytecodeAnalysis() throws Exception {
+		String[] smartContracts = new String[] {
+			"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
+			"0x576501abd98ce5472b03b7ab4f5980941db7ef37",
+			"0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9",
+			"0x000000000d38df53b45c5733c7b34000de0bdf52",
+			"0x00cA62445B06a9aDc1879a44485B4eFdcB7b75F3",
+			"0x5211fEbe5d129DFA871e004C39652E8254A73ef8",
+//			"0x6176A455b7F6741c84D9E3d479DebFCe0ba8443E"
+		};
+		
+		String[] smartContractsWithLoop = new String[] {
+			"0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c",
+			"0x732eBfefFDF57513f167b2d3D384E13246f60034",
+			"0x251f752b85a9f7e1b3c42d802715b5d7a8da3165",
+			"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455",
+			"0x61CEAc48136d6782DBD83c09f51E23514D12470a"
+		};
+		
+		String stats = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
+		
+		for(int i = 0; i < smartContracts.length; i++) {
+			stats += newAnalysis(smartContracts[i]);
+			stats += " \n";
 		}
-		conf.programFile = CONTRACT_ADDR + ".sol";
-		perform(conf);
+		
+		System.err.println("\n\n\n");
+		System.err.println("##############");
+		System.err.println("##############");
+		System.err.println("##############");
+		System.err.println("##############");
+		System.err.println("[PREVIEW] Final results");
+		System.out.println(stats);
+		
+		try (FileWriter myWriter = new FileWriter(FILENAME)) {
+			
+			myWriter.write(stats);
 
-		// Print the results
-		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
-		dumpStatistics(baseCfg);
+			System.out.println("Stats successfully written in " + FILENAME);
+	    } catch (IOException e) {
+	    	System.err.println("An error occurred.");
+	    	e.printStackTrace();
+	    }
+		
 	}
 	
-	@Test
-	public void testEVMBytecodeAnalysis04() throws Exception {
-		String CONTRACT_ADDR = "0x576501abd98ce5472b03b7ab4f5980941db7ef37";
+	private String newAnalysis(String CONTRACT_ADDR) throws Exception {
 		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
 
 		// Directory setup and bytecode retrieval
@@ -164,46 +115,21 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeInputs = true;
 		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.DOT;
+			conf.analysisGraphs = GraphType.GRAPHML_WITH_SUBNODES;
 		}
 		conf.programFile = CONTRACT_ADDR + ".sol";
 		perform(conf);
 
 		// Print the results
 		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
-		dumpStatistics(baseCfg);
-	}
-	
-	@Test
-	public void testEVMBytecodeAnalysis05() throws Exception {
-		String CONTRACT_ADDR = "0x6190a479cfafcb1637f5485366bcbce418a68a4d";
-		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
-
-		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
-
-		// Config and test run
-		CronConfiguration conf = new CronConfiguration();
-		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbsDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
-		conf.callGraph = new RTACallGraph();
-		JumpChecker checker = new JumpChecker();
-		conf.semanticChecks.add(checker);
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.serializeInputs = true;
-		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.DOT;
-		}
-		conf.programFile = CONTRACT_ADDR + ".sol";
-		perform(conf);
-
-		// Print the results
-		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
-		dumpStatistics(baseCfg);
+		int solvedJumps = dumpStatistics(baseCfg);
+		
+		String stats = CONTRACT_ADDR + ", " + 
+					baseCfg.getNodesCount() + ", " +
+					baseCfg.getAllJumps().size() + ", " + 
+					solvedJumps + ", " + 
+					solvedJumps / baseCfg.getAllJumps().size() * 100 + "%";
+		return stats;
 	}
 
 	private static CFG getCFGFromFile(String filename) {
@@ -219,7 +145,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 
-	private void dumpStatistics(EVMCFG cfg) {
+	private int dumpStatistics(EVMCFG cfg) {
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getNodesCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
@@ -233,5 +159,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		System.err.println("Solved jumps: " + solvedJumps);
 		System.err.println("##############");
+		
+		return solvedJumps;
 	}
 }
