@@ -26,6 +26,8 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,7 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
-
+	
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
 		super(descriptor, entrypoints, list);
