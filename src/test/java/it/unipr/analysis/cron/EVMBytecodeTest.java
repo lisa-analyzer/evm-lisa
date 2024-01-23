@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unipr.analysis.EVMAbsDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
+import it.unipr.cfg.Jumpi;
 import it.unipr.checker.JumpChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -44,39 +46,39 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Choose whether to generate the CFG or not
 	private final static boolean GENERATE_CFG = true;
 
-//	@Test
-//	public void testEVMBytecodeAnalysis01() throws Exception {
-//		String CONTRACT_ADDR = "0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c";
-//		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
-//
-//		// Directory setup and bytecode retrieval
-//		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-//		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
-//
-//		// Config and test run
-//		CronConfiguration conf = new CronConfiguration();
-//		conf.serializeResults = true;
-//		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-//				new MonolithicHeap(), new EVMAbsDomain(),
-//				new TypeEnvironment<>(new InferredTypes()));
-//		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
-//		conf.callGraph = new RTACallGraph();
-//		JumpChecker checker = new JumpChecker();
-//		conf.semanticChecks.add(checker);
-//		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-//		conf.serializeInputs = true;
-//		if (GENERATE_CFG) {
-//			conf.analysisGraphs = GraphType.DOT;
-//		}
-//		conf.programFile = CONTRACT_ADDR + ".sol";
-//		perform(conf);
-//
-//		// Print the results
-//		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
-//		dumpStatistics(baseCfg);
-//	}
-//	
-	@Test
+	@Ignore
+	public void testEVMBytecodeAnalysis01() throws Exception {
+		String CONTRACT_ADDR = "0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c";
+		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
+
+		// Directory setup and bytecode retrieval
+		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
+		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
+
+		// Config and test run
+		CronConfiguration conf = new CronConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
+				new MonolithicHeap(), new EVMAbsDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
+		conf.callGraph = new RTACallGraph();
+		JumpChecker checker = new JumpChecker();
+		conf.semanticChecks.add(checker);
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.serializeInputs = true;
+		if (GENERATE_CFG) {
+			conf.analysisGraphs = GraphType.DOT;
+		}
+		conf.programFile = CONTRACT_ADDR + ".sol";
+		perform(conf);
+
+		// Print the results
+		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
+		dumpStatistics(baseCfg);
+	}
+	
+	@Ignore
 	public void testEVMBytecodeAnalysis02() throws Exception {
 		String CONTRACT_ADDR = "0x732eBfefFDF57513f167b2d3D384E13246f60034";
 		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
@@ -220,13 +222,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private void dumpStatistics(EVMCFG cfg) {
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getNodesCount());
-		System.err.println("Total jumps: " + cfg.getAllJumps());
+		System.err.println("Total jumps: " + cfg.getAllJumps().size());
 
 		int solvedJumps = 0;
 		for (Statement st : cfg.getNodes())
 			if (st instanceof Jump && cfg.getOutgoingEdges(st).size() == 1)
 				solvedJumps++;
-			else if (st instanceof Jump && cfg.getOutgoingEdges(st).size() == 2)
+			else if (st instanceof Jumpi && cfg.getOutgoingEdges(st).size() == 2)
 				solvedJumps++;
 
 		System.err.println("Solved jumps: " + solvedJumps);
