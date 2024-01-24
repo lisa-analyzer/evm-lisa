@@ -52,7 +52,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/stats.xls";
 
-	@Test
+	@Ignore
 	public void testSCWithProblems() throws Exception {
 		String[] smartContractsWithErrors = new String[] {
 				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
@@ -74,7 +74,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.out.println(stats);
 	}
 	
-	@Ignore
+	@Test
 	public void testEVMBytecodeAnalysis() throws Exception {
 		String[] smartContracts = new String[] {
 				"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
@@ -110,15 +110,16 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.out.println(stats);
 
 		try {
+			boolean APPEND = false;
 			File idea = new File(FILENAME);
 			if (!idea.exists()) {
-				FileWriter myWriter = new FileWriter(idea, true);
+				FileWriter myWriter = new FileWriter(idea, APPEND);
 				String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
 				myWriter.write(init + stats);
 				myWriter.close();
 
 			} else {
-				FileWriter myWriter = new FileWriter(idea, true);
+				FileWriter myWriter = new FileWriter(idea, APPEND);
 				myWriter.write(stats);
 				myWriter.close();
 			}
