@@ -129,7 +129,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 				map.put(st,((Push) last).getInt());
 			if (last instanceof Jumpi) {
 				cfg.addEdge(new FalseEdge(last, st));
-			} else {
+			} else if (!(last instanceof Revert)) {
 				cfg.addEdge(new SequentialEdge(last, st));
 			}
 
@@ -141,10 +141,15 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 				if (((ProgramCounterLocation) node.getLocation()).getPc() == entry.getValue().intValue())
 					cfg.addEdge(new TrueEdge(entry.getKey(), node));
 		
-		// The last statement of the CFG is a Ret statement.
+		// The last statement of the CFG is a return statement
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
 		cfg.addNode(ret);
 		cfg.addEdge(new SequentialEdge(st, ret));
+		
+		// REVERT nodes must be linked to return statement
+		for (Statement stmt : cfg.getNodes())
+			if (stmt instanceof Revert)
+				cfg.addEdge(new SequentialEdge(stmt, ret));
 
 		unit.addCodeMember(cfg);
 
