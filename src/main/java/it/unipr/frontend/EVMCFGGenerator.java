@@ -49,7 +49,6 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +108,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		last = st;
 
 		Map<Statement, BigInteger> map = new HashMap<>();
-		
+
 		// For each opcode of the program, create a statement and add it to the
 		// CFG.
 		for (int i = 1; i < ctx.opcodes().size(); i++) {
@@ -124,9 +123,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			 * (FalseEdge) is created between the last statement and the actual
 			 * one. Otherwise, a sequential edge (SequentialEdge) is created.
 			 */
-			
+
 			if (st instanceof Jumpi && last instanceof Push)
-				map.put(st,((Push) last).getInt());
+				map.put(st, ((Push) last).getInt());
 			if (last instanceof Jumpi) {
 				cfg.addEdge(new FalseEdge(last, st));
 			} else if (!(last instanceof Revert)) {
@@ -140,12 +139,12 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			for (Entry<Statement, BigInteger> entry : map.entrySet())
 				if (((ProgramCounterLocation) node.getLocation()).getPc() == entry.getValue().intValue())
 					cfg.addEdge(new TrueEdge(entry.getKey(), node));
-		
+
 		// The last statement of the CFG is a return statement
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
 		cfg.addNode(ret);
 		cfg.addEdge(new SequentialEdge(st, ret));
-		
+
 		// REVERT nodes must be linked to return statement
 		for (Statement stmt : cfg.getNodes())
 			if (stmt instanceof Revert)

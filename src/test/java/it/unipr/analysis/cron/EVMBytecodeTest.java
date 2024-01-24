@@ -1,15 +1,11 @@
 package it.unipr.analysis.cron;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
-import it.unipr.analysis.EVMAbsDomain;
+
+import it.unipr.analysis.EVMAbstractState;
+
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -24,6 +20,12 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.junit.Test;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	/*
@@ -47,9 +49,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
 	private final static boolean GENERATE_CFG = true;
-	
+
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/stats.xls";
-	
+
 	@Test
 	public void testSCWithProblems() throws Exception {
 		String[] smartContractsWithErrors = new String[] {
@@ -75,30 +77,30 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	@Ignore
 	public void testEVMBytecodeAnalysis() throws Exception {
 		String[] smartContracts = new String[] {
-			"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
-			"0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9",
-			"0x000000000d38df53b45c5733c7b34000de0bdf52",
-			"0x00cA62445B06a9aDc1879a44485B4eFdcB7b75F3",
-			"0x5211fEbe5d129DFA871e004C39652E8254A73ef8",
-			"0x6176A455b7F6741c84D9E3d479DebFCe0ba8443E",
-			"0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c",
-			"0x732eBfefFDF57513f167b2d3D384E13246f60034",
-			"0x251f752b85a9f7e1b3c42d802715b5d7a8da3165",
-			"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455",
-			"0x61CEAc48136d6782DBD83c09f51E23514D12470a"
+				"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
+				"0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9",
+				"0x000000000d38df53b45c5733c7b34000de0bdf52",
+				"0x00cA62445B06a9aDc1879a44485B4eFdcB7b75F3",
+				"0x5211fEbe5d129DFA871e004C39652E8254A73ef8",
+				"0x6176A455b7F6741c84D9E3d479DebFCe0ba8443E",
+				"0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c",
+				"0x732eBfefFDF57513f167b2d3D384E13246f60034",
+				"0x251f752b85a9f7e1b3c42d802715b5d7a8da3165",
+				"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455",
+				"0x61CEAc48136d6782DBD83c09f51E23514D12470a"
 		};
-		
+
 		String[] smartContractsWithErrors = new String[] {
 				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
 		};
-		
+
 		String stats = "";
-		
-		for(int i = 0; i < smartContracts.length; i++) {
+
+		for (int i = 0; i < smartContracts.length; i++) {
 			stats += newAnalysis(smartContracts[i]);
 			stats += " \n";
 		}
-		
+
 		System.err.println("\n\n\n");
 		System.err.println("##############");
 		System.err.println("##############");
@@ -106,15 +108,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.err.println("##############");
 		System.err.println("[PREVIEW] Final results");
 		System.out.println(stats);
-		
+
 		try {
 			File idea = new File(FILENAME);
-			if (!idea.exists()){
+			if (!idea.exists()) {
 				FileWriter myWriter = new FileWriter(idea, true);
 				String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
 				myWriter.write(init + stats);
 				myWriter.close();
-			    
+
 			} else {
 				FileWriter myWriter = new FileWriter(idea, true);
 				myWriter.write(stats);
@@ -122,15 +124,16 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 
 			System.out.println("Stats successfully written in " + FILENAME);
-	    } catch (IOException e) {
-	    	System.err.println("An error occurred.");
-	    	e.printStackTrace();
-	    }
-		
+		} catch (IOException e) {
+			System.err.println("An error occurred.");
+			e.printStackTrace();
+		}
+
 	}
-	
+
 	private String newAnalysis(String CONTRACT_ADDR) throws Exception {
-		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR + ".sol";
+		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
+				+ ".sol";
 
 		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
@@ -139,8 +142,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbsDomain(),
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
+				new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
 		conf.callGraph = new RTACallGraph();
@@ -157,12 +160,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Print the results
 		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
 		int solvedJumps = dumpStatistics(baseCfg);
-		
-		String stats = CONTRACT_ADDR + ", " + 
-					baseCfg.getNodesCount() + ", " +
-					baseCfg.getAllJumps().size() + ", " + 
-					solvedJumps + ", " + 
-					solvedJumps / baseCfg.getAllJumps().size() * 100 + "%";
+
+		String stats = CONTRACT_ADDR + ", " +
+				baseCfg.getNodesCount() + ", " +
+				baseCfg.getAllJumps().size() + ", " +
+				solvedJumps + ", " +
+				solvedJumps / baseCfg.getAllJumps().size() * 100 + "%";
 		return stats;
 	}
 
@@ -178,7 +181,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		return cfg;
 	}
 
-
 	private int dumpStatistics(EVMCFG cfg) {
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getNodesCount());
@@ -193,7 +195,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		System.err.println("Solved jumps: " + solvedJumps);
 		System.err.println("##############");
-		
+
 		return solvedJumps;
 	}
 }
