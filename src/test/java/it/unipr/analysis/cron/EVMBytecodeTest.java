@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unipr.analysis.EVMAbsDomain;
@@ -50,6 +51,28 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/stats.xls";
 	
 	@Test
+	public void testSCWithProblems() throws Exception {
+		String[] smartContractsWithErrors = new String[] {
+				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
+		};
+		
+		String stats = "";
+		
+		for(int i = 0; i < smartContractsWithErrors.length; i++) {
+			stats += newAnalysis(smartContractsWithErrors[i]);
+			stats += " \n";
+		}
+		
+		System.err.println("\n\n\n");
+		System.err.println("##############");
+		System.err.println("##############");
+		System.err.println("##############");
+		System.err.println("##############");
+		System.err.println("[PREVIEW] Final results");
+		System.out.println(stats);
+	}
+	
+	@Ignore
 	public void testEVMBytecodeAnalysis() throws Exception {
 		String[] smartContracts = new String[] {
 			"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
@@ -67,7 +90,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		
 		String[] smartContractsWithErrors = new String[] {
 				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
-			};
+		};
 		
 		String stats = "";
 		

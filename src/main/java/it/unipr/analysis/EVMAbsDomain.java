@@ -1278,7 +1278,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				}
 			}
 		} catch (NoSuchElementException e) {
-			System.err.println("Operation not performed: " + e);
+			LOG.error("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
+			LOG.error(stack);
+			System.err.println("Operation not performed: " + e.getMessage());
 		}
 
 		return top();
@@ -1321,6 +1323,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 */
 	private Stack swapX(int x, Stack stack) {
 		Stack result = stack.clone();
+		
+		if(stack.size() < x)
+			return result;
 
 		Interval target1 = result.pop();
 		Interval[] popped = new Interval[x];
@@ -1354,7 +1359,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 			if (expression instanceof UnaryExpression) {
 				UnaryExpression un = (UnaryExpression) expression;
 				UnaryOperator op = un.getOperator();
-
+				
 				if (op instanceof JumpiOperator) { // JUMPI
 					Stack result = stack.clone();
 					result.pop(); // Interval destination = result.pop();
@@ -1406,7 +1411,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				}
 			}
 		} catch (NoSuchElementException e) {
-			System.err.println("Operation not performed: " + e);
+			System.err.println("Operation not performed: " + e.getMessage());
+			System.out.printf("un: %s, op: %s, src: %s, dest: %s \n", (UnaryExpression) expression, ((UnaryExpression) expression).getOperator(), src, dest);
+			System.out.println(stack);
 		}
 
 		return this;
