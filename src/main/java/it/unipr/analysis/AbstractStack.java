@@ -15,17 +15,15 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import it.unive.lisa.util.numeric.MathNumber;
-
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class Stack implements ValueDomain<Stack> {
-	private static final Stack TOP = new Stack();
-	private static final Stack BOTTOM = new Stack(null);
+public class AbstractStack implements ValueDomain<AbstractStack> {
+	private static final AbstractStack TOP = new AbstractStack();
+	private static final AbstractStack BOTTOM = new AbstractStack(null);
 	private final boolean isTop;
 
 	private final ArrayDeque<Interval> stack;
@@ -33,7 +31,7 @@ public class Stack implements ValueDomain<Stack> {
 	/**
 	 * Builds a top symbolic stack.
 	 */
-	public Stack() {
+	public AbstractStack() {
 		this(true);
 	}
 
@@ -42,7 +40,7 @@ public class Stack implements ValueDomain<Stack> {
 	 * 
 	 * @param stack the stack of values
 	 */
-	public Stack(ArrayDeque<Interval> stack) {
+	public AbstractStack(ArrayDeque<Interval> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
@@ -52,31 +50,31 @@ public class Stack implements ValueDomain<Stack> {
 	 * 
 	 * @param isTop whether this stack is top.
 	 */
-	private Stack(boolean isTop) {
+	private AbstractStack(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new ArrayDeque<Interval>();
 	}
 
 	@Override
-	public Stack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public Stack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public AbstractStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Stack forgetIdentifier(Identifier id) throws SemanticException {
+	public AbstractStack forgetIdentifier(Identifier id) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public Stack forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+	public AbstractStack forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -88,13 +86,13 @@ public class Stack implements ValueDomain<Stack> {
 	}
 
 	@Override
-	public Stack pushScope(ScopeToken token) throws SemanticException {
+	public AbstractStack pushScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public Stack popScope(ScopeToken token) throws SemanticException {
+	public AbstractStack popScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -115,7 +113,7 @@ public class Stack implements ValueDomain<Stack> {
 	}
 
 	@Override
-	public boolean lessOrEqual(Stack other) throws SemanticException {
+	public boolean lessOrEqual(AbstractStack other) throws SemanticException {
 		if (other == null)
 			return false;
 
@@ -151,7 +149,7 @@ public class Stack implements ValueDomain<Stack> {
 	}
 
 	@Override
-	public Stack lub(Stack other) throws SemanticException {
+	public AbstractStack lub(AbstractStack other) throws SemanticException {
 		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other))
 			return this;
 
@@ -190,11 +188,11 @@ public class Stack implements ValueDomain<Stack> {
 			result.push(otherInterval);
 		}
 
-		return new Stack(result);
+		return new AbstractStack(result);
 	}
 
 	@Override
-	public Stack widening(Stack other) throws SemanticException {
+	public AbstractStack widening(AbstractStack other) throws SemanticException {
 		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
 			return this;
 		}
@@ -216,8 +214,8 @@ public class Stack implements ValueDomain<Stack> {
 			while (otherIterator.hasNext()) {
 				widenedStack.push(otherIterator.next());
 			}
-						
-			return new Stack(widenedStack);
+
+			return new AbstractStack(widenedStack);
 		}
 
 		if (this.size() == other.size()) {
@@ -230,20 +228,20 @@ public class Stack implements ValueDomain<Stack> {
 				Interval widenedInterval = thisIterator.next().widening(otherIterator.next());
 				widenedStack.push(widenedInterval);
 			}
-			
-			return new Stack(widenedStack);
+
+			return new AbstractStack(widenedStack);
 		}
 
 		return this;
 	}
 
 	@Override
-	public Stack top() {
+	public AbstractStack top() {
 		return TOP;
 	}
 
 	@Override
-	public Stack bottom() {
+	public AbstractStack bottom() {
 		return BOTTOM;
 	}
 
@@ -272,7 +270,7 @@ public class Stack implements ValueDomain<Stack> {
 		if (getClass() != obj.getClass())
 			return false;
 
-		Stack other = (Stack) obj;
+		AbstractStack other = (AbstractStack) obj;
 		// isTop check
 		if (this.isTop != other.isTop)
 			return false;
@@ -303,7 +301,7 @@ public class Stack implements ValueDomain<Stack> {
 	}
 
 	@Override
-	public Stack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+	public AbstractStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
 		// Ensure BOTTOM and TOP propagation
 		if (this.isBottom() || this.isTop()) {
@@ -327,11 +325,11 @@ public class Stack implements ValueDomain<Stack> {
 					} else if (condition.equals(new Interval(1, 1))) {
 						// Condition is surely true (interval [1,1])
 						// Return the result
-						return new Stack(result);
+						return new AbstractStack(result);
 					} else {
 						// Condition could be either true or false
 						// Return the result
-						return new Stack(result);
+						return new AbstractStack(result);
 					}
 
 				} else if (op instanceof LogicalNegation) {
@@ -351,7 +349,7 @@ public class Stack implements ValueDomain<Stack> {
 							if (condition.equals(Interval.ZERO)) {
 								// Condition is surely false (interval [0,0])
 								// Return the result
-								return new Stack(result);
+								return new AbstractStack(result);
 							} else if (condition.equals(new Interval(1, 1))) {
 								// Condition is surely true (interval [1,1])
 								// Return BOTTOM
@@ -359,7 +357,7 @@ public class Stack implements ValueDomain<Stack> {
 							} else {
 								// Condition could be either true or false
 								// Return the result
-								return new Stack(result);
+								return new AbstractStack(result);
 							}
 						}
 					}
@@ -382,10 +380,10 @@ public class Stack implements ValueDomain<Stack> {
 	}
 
 	@Override
-	public Stack clone() {
+	public AbstractStack clone() {
 		if (isBottom())
-			return new Stack(null);
-		return new Stack(stack.clone());
+			return new AbstractStack(null);
+		return new AbstractStack(stack.clone());
 	}
 
 	/**

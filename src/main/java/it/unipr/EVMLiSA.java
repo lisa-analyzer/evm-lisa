@@ -1,6 +1,6 @@
 package it.unipr;
 
-import it.unipr.analysis.EVMAbsDomain;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
@@ -53,7 +53,7 @@ public class EVMLiSA {
 	private static void analyzeCFG(Program program, String outputDir) throws AnalysisException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeInputs = true;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbsDomain(),
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = true;
 		conf.workdir = outputDir;

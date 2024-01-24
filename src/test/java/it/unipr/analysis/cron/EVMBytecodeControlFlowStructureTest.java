@@ -1,6 +1,6 @@
 package it.unipr.analysis.cron;
 
-import it.unipr.analysis.EVMAbsDomain;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.checker.JumpChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -46,8 +46,8 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		if (generateCfg) {
 			conf.analysisGraphs = GraphType.DOT;
 		}
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbsDomain, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbsDomain(),
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
+				new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
@@ -108,15 +108,16 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testLT() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/lt", "lt_eth.sol", true);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */
@@ -125,9 +126,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/and", "and_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */
@@ -136,9 +138,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/or", "or_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */
@@ -147,9 +150,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/xor", "xor_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */
@@ -158,9 +162,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/not", "not_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */
@@ -169,9 +174,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */
@@ -180,9 +186,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/shr", "shr_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
+	 * 
 	 * @throws AnalysisSetupException
 	 * @throws IOException
 	 */

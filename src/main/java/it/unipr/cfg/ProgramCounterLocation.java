@@ -64,9 +64,8 @@ public class ProgramCounterLocation implements CodeLocation {
 		ProgramCounterLocation other = (ProgramCounterLocation) obj;
 		return pc == other.pc;
 	}
-	
+
 	/**
-	 * 
 	 * @return the source code line
 	 */
 	public int getSourceCodeLine() {

@@ -2,9 +2,9 @@ package it.unipr.analysis.unit;
 
 import static org.junit.Assert.assertEquals;
 
-import it.unipr.analysis.EVMAbsDomain;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.Memory;
-import it.unipr.analysis.Stack;
+import it.unipr.analysis.AbstractStack;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.util.numeric.MathNumber;
@@ -12,43 +12,43 @@ import java.util.ArrayDeque;
 import org.junit.Test;
 
 /**
- * JUnit tests for {@link EVMAbsDomain} class. Checks the implementation of
- * {@link EVMAbsDomain#lub(EVMAbsDomain)},
- * {@link EVMAbsDomain#widening(EVMAbsDomain)}, and
- * {@link EVMAbsDomain#lessOrEqual(EVMAbsDomain)} methods.
+ * JUnit tests for {@link EVMAbstractState} class. Checks the implementation of
+ * {@link EVMAbstractState#lub(EVMAbstractState)},
+ * {@link EVMAbstractState#widening(EVMAbstractState)}, and
+ * {@link EVMAbstractState#lessOrEqual(EVMAbstractState)} methods.
  * 
- * @see EVMAbsDomain
+ * @see EVMAbstractState
  */
-public class EVMAbsDomainTest {
+public class EVMAbstractStateTest {
 
 	// TOP and BOTTOM elements of the lattice
-	private final EVMAbsDomain TOP = new EVMAbsDomain().top();
-	private final EVMAbsDomain BOTTOM = new EVMAbsDomain().bottom();
+	private final EVMAbstractState TOP = new EVMAbstractState().top();
+	private final EVMAbstractState BOTTOM = new EVMAbstractState().bottom();
 
 	/*
 	 * Helper method to build a EVMAbsDomain from a list of values. The first
 	 * value in the list will be the top of the stack.
 	 */
-	private EVMAbsDomain buildEVMAbsDomain(Integer... values) {
+	private EVMAbstractState buildEVMAbsDomain(Integer... values) {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = values.length - 1; i >= 0; i--)
 			stack.push(new Interval(values[i], values[i]));
-		return new EVMAbsDomain(new Stack(stack), new Memory(), new Interval(0, 0));
+		return new EVMAbstractState(new AbstractStack(stack), new Memory(), new Interval(0, 0));
 	}
 
 	/*
 	 * Helper method to build a EVMAbsDomain from a list of intervals. The first
 	 * interval in the list will be the top of the stack.
 	 */
-	private EVMAbsDomain buildEVMAbsDomainIntervals(Interval... intervals) {
+	private EVMAbstractState buildEVMAbsDomainIntervals(Interval... intervals) {
 		ArrayDeque<Interval> stack = new ArrayDeque<>();
 		for (int i = intervals.length - 1; i >= 0; i--)
 			stack.push(intervals[i]);
-		return new EVMAbsDomain(new Stack(stack), new Memory(), new Interval(0, 0));
+		return new EVMAbstractState(new AbstractStack(stack), new Memory(), new Interval(0, 0));
 	}
 
 	/**
-	 * Tests the least upper bound (lub) operation of {@link EVMAbsDomain}. It
+	 * Tests the least upper bound (lub) operation of {@link EVMAbstractState}. It
 	 * tests the lub operation between TOP and BOTTOM, TOP and another
 	 * EVMAbsDomain, BOTTOM and another symbolic stack, and two EVMAbsDomain
 	 * with different sizes. The method asserts that the lub operation returns
@@ -59,7 +59,7 @@ public class EVMAbsDomainTest {
 	@Test
 	public void testLub() throws SemanticException {
 		// Test subjects
-		EVMAbsDomain s1, s2;
+		EVMAbstractState s1, s2;
 
 		// TOP/BOTTOM against TOP/BOTTOM
 		assertEquals(TOP, TOP.lub(TOP)); // TOP against TOP
@@ -95,7 +95,7 @@ public class EVMAbsDomainTest {
 	}
 
 	/**
-	 * Tests the widening operation of {@link EVMAbsDomain}. It tests the
+	 * Tests the widening operation of {@link EVMAbstractState}. It tests the
 	 * widening operation between TOP and BOTTOM, TOP and another EVMAbsDomai,n
 	 * BOTTOM and another EVMAbsDomain, and two symbolic stacks with different
 	 * sizes. The method asserts that the widening operation returns the
@@ -106,7 +106,7 @@ public class EVMAbsDomainTest {
 	@Test
 	public void testWidening() throws SemanticException {
 		// Test subjects
-		EVMAbsDomain s1, s2;
+		EVMAbstractState s1, s2;
 
 		// TOP/BOTTOM against TOP/BOTTOM
 		assertEquals(TOP, TOP.widening(TOP)); // TOP against TOP
@@ -147,7 +147,7 @@ public class EVMAbsDomainTest {
 	}
 
 	/**
-	 * Tests the less or equal operation of {@link EVMAbsDomain}. It tests the
+	 * Tests the less or equal operation of {@link EVMAbstractState}. It tests the
 	 * less or equal operation between TOP and BOTTOM, TOP and another
 	 * EVMAbsDomain, BOTTOM and another symbolic stack, and two EVMAbsDomain
 	 * with different sizes. The method asserts that the less or equal operation
@@ -158,7 +158,7 @@ public class EVMAbsDomainTest {
 	@Test
 	public void testLessOrEqual() throws SemanticException {
 		// Test subjects
-		EVMAbsDomain s1, s2;
+		EVMAbstractState s1, s2;
 
 		// TOP/BOTTOM against TOP/BOTTOM
 		assertEquals(true, TOP.lessOrEqual(TOP)); // TOP against TOP

@@ -1,7 +1,6 @@
 package it.unipr.analysis;
 
 import it.unipr.analysis.operator.*;
-import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -35,23 +34,22 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMAbsDomain> {
-	private static final Logger LOG = LogManager.getLogger(EVMAbsDomain.class);
-	
-	private static final EVMAbsDomain TOP = new EVMAbsDomain();
-	private static final EVMAbsDomain BOTTOM = new EVMAbsDomain(null, null, null);
+public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
+	private static final Logger LOG = LogManager.getLogger(EVMAbstractState.class);
+
+	private static final EVMAbstractState TOP = new EVMAbstractState();
+	private static final EVMAbstractState BOTTOM = new EVMAbstractState(null, null, null);
 	private final boolean isTop;
-	
+
 	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
-	
+
 	/**
 	 * The stack memory.
 	 */
-	private final Stack stack;
+	private final AbstractStack stack;
 
 	/**
 	 * The volatile memory.
@@ -63,7 +61,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	/**
 	 * Builds the abstract domain.
 	 */
-	public EVMAbsDomain() {
+	public EVMAbstractState() {
 		this(true);
 	}
 
@@ -72,9 +70,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 * 
 	 * @param isTop whether the abstract value is top.
 	 */
-	private EVMAbsDomain(boolean isTop) {
+	private EVMAbstractState(boolean isTop) {
 		this.isTop = isTop;
-		this.stack = new Stack();
+		this.stack = new AbstractStack();
 		this.memory = new Memory();
 		this.mu_i = new Interval(0, 0);
 	}
@@ -87,7 +85,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 * @param memory the memory to be used.
 	 * @param mu_i   the mu_i to be used.
 	 */
-	public EVMAbsDomain(Stack stack, Memory memory, Interval mu_i) {
+	public EVMAbstractState(AbstractStack stack, Memory memory, Interval mu_i) {
 		this.isTop = false;
 		this.stack = stack;
 		this.memory = memory;
@@ -99,7 +97,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 *
 	 * @return A cloned copy of the stack or null if the original stack is null.
 	 */
-	public Stack getStack() {
+	public AbstractStack getStack() {
 		return stack.clone();
 	}
 
@@ -124,22 +122,19 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 
 	@Override
-	public EVMAbsDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@SuppressWarnings("unused")
 	@Override
-	public EVMAbsDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// Ensure BOTTOM propagation
-		if (this.isBottom()) {
-//			LOG.warn("[BOTTOM] smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
-			return EVMAbsDomain.BOTTOM;
-		}
+	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+		// bottom state is propagated
+		if (this.isBottom())
+			return EVMAbstractState.BOTTOM;
 
 		try {
-//			LOG.warn("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
 			if (expression instanceof Constant) {
 				return this;
 			} else if (expression instanceof UnaryExpression) {
@@ -147,149 +142,147 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				UnaryOperator op = un.getOperator();
 
 				if (op instanceof PushOperator) { // PUSH
-					Stack result = stack.clone();
-
-					// Integer valueToPush = this.toInteger(un.getExpression());
+					AbstractStack result = stack.clone();
 					BigDecimal valueToPush = this.toBigDecimal(un.getExpression());
 
 					result.push(new Interval(new MathNumber(valueToPush), new MathNumber(valueToPush)));
-					
-					return new EVMAbsDomain(result, memory, mu_i);
+
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof AddressOperator) { // ADDRESS
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle ADDRESS
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof OriginOperator) { // ORIGIN
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle ORIGIN
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CallerOperator) { // CALLER
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle CALLER
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CallvalueOperator) { // CALLVALUE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle CALLVALUE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CalldatasizeOperator) { // CALLDATASIZE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle CALLDATASIZE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CodesizeOperator) { // CODESIZE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle CODESIZE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof GaspriceOperator) { // GASPRICE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle GASPRICE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ReturndatasizeOperator) { // RETURNDATASIZE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle RETURNDATASIZE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CoinbaseOperator) { // COINBASE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle COINBASE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof TimestampOperator) { // TIMESTAMP
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle TIMESTAMP
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof NumberOperator) { // NUMBER
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle NUMBER
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof DifficultyOperator) { // DIFFICULTY
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle DIFFICULTY
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof GaslimitOperator) { // GASLIMIT
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle GASLIMIT
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ChainidOperator) { // CHAINID
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle CHAINID
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof SelfbalanceOperator) { // SELFBALANCE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle SELFBALANCE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof PcOperator) { // PC
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle PC
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof GasOperator) { // GAS
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle GAS
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof JumpOperator) { // JUMP
 					if ((Integer) ((Constant) un.getExpression()).getValue() > 0) {
-						Stack result = stack.clone();
+						AbstractStack result = stack.clone();
 						result.pop();
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					} else
 						return this;
 				} else if (op instanceof JumpiOperator) { // JUMPI
 					return this;
 				} else if (op instanceof MsizeOperator) { // MSIZE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					// At the moment, we do not handle MSIZE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof JumpdestOperator) { // JUMPDEST
 					return this;
 				}
@@ -300,107 +293,96 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				if (isTop())
 					return this;
 
-				// Below, operators that perform pop()
-
+				// Below, operators that perform pop operation on the stack
 				if (op instanceof AddOperator) { // ADD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
-					// Using Numeric32BitAdd as it implements AdditionOperator
 					Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
 
 					result.push(sum);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof SubOperator) { // SUB
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
 					Interval sub = opnd1.evalBinaryExpression(Numeric32BitSub.INSTANCE, opnd1, opnd2, pp);
 
 					result.push(sub);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof MulOperator) { // MUL
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
 					Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
 
 					result.push(mul);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if ((op instanceof DivOperator) || (op instanceof SdivOperator)) { // DIV,
 					// SDIV
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 					Interval div;
 
-					if (opnd2.equals(Interval.ZERO)) {
+					if (opnd2.equals(Interval.ZERO))
 						div = Interval.ZERO;
-					} else {
+					else
 						div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
-					}
 
 					result.push(div);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if ((op instanceof ModOperator) || (op instanceof SmodOperator)) { // MOD,
 					// SMOD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 					Interval mod;
 
-					if (opnd2.equals(Interval.ZERO)) {
+					if (opnd2.equals(Interval.ZERO))
 						mod = Interval.ZERO;
-					} else {
+					else
 						mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
-					}
 
 					result.push(mod);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof AddmodOperator) { // ADDMOD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 					Interval opnd3 = result.pop();
 					Interval addmod;
 
-					if (opnd3.equals(Interval.ZERO)) {
+					if (opnd3.equals(Interval.ZERO))
 						addmod = Interval.ZERO;
-					} else {
+					else {
 						Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
 						addmod = sum.evalBinaryExpression(Numeric32BitMod.INSTANCE, sum, opnd3, pp);
 					}
 
 					result.push(addmod);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof MulmodOperator) { // MULMOD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 					Interval opnd3 = result.pop();
 					Interval mulmod;
 
-					if (opnd3.equals(Interval.ZERO)) {
+					if (opnd3.equals(Interval.ZERO))
 						mulmod = Interval.ZERO;
-					} else {
+					else {
 						Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
 						mulmod = mul.evalBinaryExpression(Numeric32BitMod.INSTANCE, mul, opnd3, pp);
 					}
 
 					result.push(mulmod);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ExpOperator) { // EXP
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
@@ -419,35 +401,33 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						result.push(exp);
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof SignextendOperator) { // SIGNEXTEND
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					result.pop();
 					result.pop();
 
 					// At the moment, we do not handle SIGNEXTEND
 					result.push(Interval.TOP);
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if ((op instanceof LtOperator) || (op instanceof SltOperator)) { // LT,
 					// SLT
-					Stack result = stack.clone();
-					
+					AbstractStack result = stack.clone();
+
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
-					
-					
+
 					Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
 
 					result.push(lt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
-					
-					return new EVMAbsDomain(result, memory, mu_i);
+
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if ((op instanceof GtOperator) || (op instanceof SgtOperator)) { // GT,
 					// SGT
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
@@ -455,9 +435,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 					result.push(gt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof EqOperator) { // EQ
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
@@ -465,9 +445,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 					result.push(eq.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof IszeroOperator) { // ISZERO
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 
 					Satisfiability iszero = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1, Interval.ZERO,
@@ -475,15 +455,15 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 					result.push(iszero.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof AndOperator) { // AND
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
-					
-					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+
+					if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					// AND is not handled in Interval, so we work with low() and
@@ -495,22 +475,21 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						high = new MathNumber(opnd1.interval.getHigh().toLong() & opnd2.interval.getHigh().toLong());
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					result.push(new Interval(low, high));
-
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof OrOperator) { // OR
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
-					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+					if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
-					
+
 					// OR is not handled in Interval, so we work with low() and
 					// high()
 					MathNumber low, high;
@@ -520,20 +499,20 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						high = new MathNumber(opnd1.interval.getHigh().toLong() | opnd2.interval.getHigh().toLong());
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					result.push(new Interval(low, high));
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof XorOperator) { // XOR
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
-					
-					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+
+					if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					// XOR is not handled in Interval, so we work with low() and
@@ -545,46 +524,46 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						high = new MathNumber(opnd1.interval.getHigh().toLong() ^ opnd2.interval.getHigh().toLong());
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					result.push(new Interval(low, high));
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof NotOperator) { // NOT
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 
-					if(opnd1 == Interval.TOP) {
+					if (opnd1 == Interval.TOP) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
-					
+
 					// NOT is not handled in Interval, so we work with low() and
 					// high()
 					MathNumber low, high;
-					
-					try {						
-						if(opnd1.interval.getLow().toLong() >= 0)
+
+					try {
+						if (opnd1.interval.getLow().toLong() >= 0)
 							low = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getLow().toLong() + 1)));
-						else 
+						else
 							low = new MathNumber(~opnd1.interval.getLow().toLong());
-						
-						if(opnd1.interval.getHigh().toLong() >= 0)
+
+						if (opnd1.interval.getHigh().toLong() >= 0)
 							high = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getHigh().toLong() + 1)));
-						else 
+						else
 							high = new MathNumber(~opnd1.interval.getHigh().toLong());
-						
+
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					result.push(new Interval(low, high));
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ByteOperator) { // BYTE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval indexOfByte = result.pop();
 					Interval target = result.pop();
 
@@ -620,171 +599,164 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						result.push(resultInterval);
 					}
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ShlOperator) { // SHL
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
 					// SHL is not handled in Interval, so we work with low() and
 					// high()
 
-					if(opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
+					if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
-					} 
-						
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+
 					try {
-						// TODO se gestiamo questo problema, l'analisi va in loop
-//						if(opnd2.interval.getLow() == MathNumber.MINUS_INFINITY || 
-//								opnd2.interval.getHigh() == MathNumber.PLUS_INFINITY) {
-//							result.push(Interval.TOP);
-//							return new EVMAbsDomain(result, memory, mu_i);
-//						} 
-							
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
-						
+
 						BigInteger op2LowBigInteger = new BigInteger(op2LowString);
 						byte[] op2LowBytes = op2LowBigInteger.toByteArray();
 						byte[] resultShiftLeftLow = shiftLeft(op2LowBytes, opnd1.interval.getLow().toInt());
-						
+
 						BigInteger op2HighBigInteger = new BigInteger(op2HighString);
 						byte[] op2HighBytes = op2HighBigInteger.toByteArray();
 						byte[] resultShiftLeftHigh = shiftLeft(op2HighBytes, opnd1.interval.getHigh().toInt());
-						
-						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftLow))), 
-												 new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftHigh)))));
-						
+
+						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftLow))),
+								new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftHigh)))));
+
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
-					
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ShrOperator) { // SHR
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
 					// SHR is not handled in Interval, so we work with low() and
 					// high()
-					
-					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+
+					if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 					try {
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
-						
+
 						BigInteger op2LowBigInteger = new BigInteger(op2LowString);
 						byte[] op2LowBytes = op2LowBigInteger.toByteArray();
 						byte[] resultShiftRightLow = shiftRight(op2LowBytes, opnd1.interval.getLow().toInt());
-						
+
 						BigInteger op2HighBigInteger = new BigInteger(op2HighString);
 						byte[] op2HighBytes = op2HighBigInteger.toByteArray();
 						byte[] resultShiftRightHigh = shiftRight(op2HighBytes, opnd1.interval.getHigh().toInt());
-						
-						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))), 
-												 new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
-						
+
+						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))),
+								new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
+
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 
 				} else if (op instanceof SarOperator) { // SAR
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval opnd1 = result.pop();
 					Interval opnd2 = result.pop();
 
 					// SAR is not handled in Interval, so we work with low() and
 					// high()
 
-					if(opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+					if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
-					
+
 					try {
 						String op2LowString = opnd2.interval.getLow().toString();
 						String op2HighString = opnd2.interval.getHigh().toString();
-						
+
 						BigInteger op2LowBigInteger = new BigInteger(op2LowString);
 						byte[] op2LowBytes = op2LowBigInteger.toByteArray();
 						byte[] resultShiftRightLow = shiftArithmeticRight(op2LowBytes, opnd1.interval.getLow().toInt());
-						
+
 						BigInteger op2HighBigInteger = new BigInteger(op2HighString);
 						byte[] op2HighBytes = op2HighBigInteger.toByteArray();
-						byte[] resultShiftRightHigh = shiftArithmeticRight(op2HighBytes, opnd1.interval.getHigh().toInt());
-						
-						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))), 
-												 new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
-						
+						byte[] resultShiftRightHigh = shiftArithmeticRight(op2HighBytes,
+								opnd1.interval.getHigh().toInt());
+
+						result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))),
+								new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
+
 					} catch (MathNumberConversionException e) {
 						result.push(Interval.TOP);
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Sha3Operator) { // SHA3
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle SHA3
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof BalanceOperator) { // BALANCE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval address = result.pop();
 
 					// At the moment, we do not handle BALANCE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CalldataloadOperator) { // CALLDATALOAD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 
 					// At the moment, we do not handle CALLDATALOAD
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CalldatacopyOperator) { // CALLDATACOPY
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval memOffset = result.pop();
 					Interval dataOffset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle CALLDATACOPY
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CodecopyOperator) { // CODECOPY
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval memOffset = result.pop();
 					Interval codeOffset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle CODECOPY
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ExtcodesizeOperator) { // EXTCODESIZE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval address = result.pop();
 
 					// At the moment, we do not handle EXTCODESIZE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ExtcodecopyOperator) { // EXTCODECOPY
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval address = result.pop();
 					Interval memOffset = result.pop();
 					Interval codeOffset = result.pop();
@@ -792,41 +764,41 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 					// At the moment, we do not handle EXTCODECOPY
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ReturndatacopyOperator) { // RETURNDATACOPY
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval memOffset = result.pop();
 					Interval retOffset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle RETURNDATACOPY
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ExtcodehashOperator) { // EXTCODEHASH
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval address = result.pop();
 
 					// At the moment, we do not handle EXTCODEHASH
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof BlockhashOperator) { // BLOCKHASH
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval blockNumber = result.pop();
 
 					// At the moment, we do not handle BLOCKHASH
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof PopOperator) { // POP
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 
 					result.pop();
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 
 				} else if (op instanceof MloadOperator) { // MLOAD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval new_mu_i = null;
 
 					Interval offset = result.pop();
@@ -836,8 +808,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						// is no active words saved
 						// TODO to handle this error
 					}
-					
-					if(memory == null) {
+
+					if (memory == null) {
 						LOG.warn("[MLOAD] memory == null");
 					}
 
@@ -849,29 +821,26 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 								.setScale(0, RoundingMode.UP);
 
 						Interval state = memory.getState(offsetBigDecimal);
-						
-//						System.out.println("[MLOAD] Memory: " + memory);
-//						System.out.println("[MLOAD] Offset: " + offsetBigDecimal);
-//						System.out.println("[MLOAD] State: " + state);
-						
-						if(state == Interval.BOTTOM) {
+						if (state == Interval.BOTTOM) {
 							result.push(Interval.TOP);
 							LOG.warn("[MLOAD] state == Interval.BOTTOM");
 						}
-							
+
 						else
 							result.push(state);
 
 						// We create a new Interval singleton with the newly
 						// calculated `current_mu_i`
-//						Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
-//								current_mu_i.intValueExact());
-//
-//						// Then we compare the 2 mu_i and update the new value
-//						if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-//							new_mu_i = intervalCurrent_mu_i;
-//						else
-							new_mu_i = mu_i;
+						// Interval intervalCurrent_mu_i = new
+						// Interval(current_mu_i.intValueExact(),
+						// current_mu_i.intValueExact());
+						//
+						// // Then we compare the 2 mu_i and update the new
+						// value
+						// if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
+						// new_mu_i = intervalCurrent_mu_i;
+						// else
+						new_mu_i = mu_i;
 
 					} else {
 						// TODO to handle else-condition
@@ -879,17 +848,16 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						new_mu_i = mu_i;
 					}
 
-					return new EVMAbsDomain(result, memory, new_mu_i);
+					return new EVMAbstractState(result, memory, new_mu_i);
 
 				} else if (op instanceof MstoreOperator) { // MSTORE
-					Stack stackResult = stack.clone();
+					AbstractStack stackResult = stack.clone();
 					Memory memoryResult = null;
 					Interval new_mu_i = null;
 
 					Interval offset = stackResult.pop();
 					Interval value = stackResult.pop();
-					
-//					System.out.println("[MSTORE] Offset: " + offset);
+
 					if (offset.interval.isSingleton()) {
 						BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 						BigDecimal thirtyTwo = new BigDecimal(32);
@@ -899,12 +867,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 						// Ceiling
 						// function
 
-//						System.out.println("[MSTORE] Memory: " + memory);
-//						System.out.println("[MSTORE] Offset: " + offsetBigDecimal);
-//						System.out.println("[MSTORE] Value: " + value);
-						
 						memoryResult = memory.putState(offsetBigDecimal, value);
-						
 
 						// We create a new Interval singleton with the newly
 						// calculated `current_mu_i`
@@ -919,14 +882,15 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 					} else {
 						new_mu_i = mu_i;
-//						LOG.warn("[MSTORE] !offset.interval.isSingleton() - offset: " + offset);
+						// LOG.warn("[MSTORE] !offset.interval.isSingleton() -
+						// offset: " + offset);
 						memoryResult = memory;
 					}
 
-					return new EVMAbsDomain(stackResult, memoryResult, new_mu_i);
+					return new EVMAbstractState(stackResult, memoryResult, new_mu_i);
 
 				} else if (op instanceof Mstore8Operator) { // MSTORE8
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Memory memoryResult = null;
 					Interval new_mu_i = null;
 
@@ -972,165 +936,164 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					} else {
 						// TODO to handle else-condition
 						new_mu_i = mu_i;
-//						LOG.warn("[MSTORE8] !offset.interval.isSingleton()");
 						memoryResult = memory;
 					}
 
-					return new EVMAbsDomain(result, memoryResult, new_mu_i);
+					return new EVMAbstractState(result, memoryResult, new_mu_i);
 				} else if (op instanceof SloadOperator) { // SLOAD
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval key = result.pop();
 
 					// At the moment, we do not handle SLOAD
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof SstoreOperator) { // SSTORE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval key = result.pop();
 					Interval value = result.pop();
 
 					// At the moment, we do not handle SSTORE
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Dup1Operator) { // DUP1
 
-					return new EVMAbsDomain(dupX(1, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(1, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup2Operator) { // DUP2
 
-					return new EVMAbsDomain(dupX(2, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(2, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup3Operator) { // DUP3
 
-					return new EVMAbsDomain(dupX(3, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(3, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup4Operator) { // DUP4
 
-					return new EVMAbsDomain(dupX(4, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(4, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup5Operator) { // DUP5
 
-					return new EVMAbsDomain(dupX(5, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(5, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup6Operator) { // DUP6
 
-					return new EVMAbsDomain(dupX(6, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(6, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup7Operator) { // DUP7
 
-					return new EVMAbsDomain(dupX(7, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(7, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup8Operator) { // DUP8
 
-					return new EVMAbsDomain(dupX(8, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(8, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup9Operator) { // DUP9
 
-					return new EVMAbsDomain(dupX(9, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(9, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup10Operator) { // DUP10
 
-					return new EVMAbsDomain(dupX(10, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(10, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup11Operator) { // DUP11
 
-					return new EVMAbsDomain(dupX(11, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(11, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup12Operator) { // DUP12
 
-					return new EVMAbsDomain(dupX(12, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(12, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup13Operator) { // DUP13
 
-					return new EVMAbsDomain(dupX(13, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(13, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup14Operator) { // DUP14
 
-					return new EVMAbsDomain(dupX(14, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(14, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup15Operator) { // DUP15
 
-					return new EVMAbsDomain(dupX(15, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(15, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Dup16Operator) { // DUP16
 
-					return new EVMAbsDomain(dupX(16, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(dupX(16, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap1Operator) { // SWAP1
 
-					return new EVMAbsDomain(swapX(1, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(1, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap2Operator) { // SWAP2
 
-					return new EVMAbsDomain(swapX(2, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(2, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap3Operator) { // SWAP3
 
-					return new EVMAbsDomain(swapX(3, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(3, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap4Operator) { // SWAP4
 
-					return new EVMAbsDomain(swapX(4, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(4, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap5Operator) { // SWAP5
 
-					return new EVMAbsDomain(swapX(5, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(5, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap6Operator) { // SWAP6
 
-					return new EVMAbsDomain(swapX(6, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(6, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap7Operator) { // SWAP7
 
-					return new EVMAbsDomain(swapX(7, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(7, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap8Operator) { // SWAP8
 
-					return new EVMAbsDomain(swapX(8, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(8, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap9Operator) { // SWAP9
 
-					return new EVMAbsDomain(swapX(9, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(9, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap10Operator) { // SWAP10
 
-					return new EVMAbsDomain(swapX(10, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(10, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap11Operator) { // SWAP11
 
-					return new EVMAbsDomain(swapX(11, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(11, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap12Operator) { // SWAP12
 
-					return new EVMAbsDomain(swapX(12, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(12, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap13Operator) { // SWAP13
 
-					return new EVMAbsDomain(swapX(13, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(13, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap14Operator) { // SWAP14
 
-					return new EVMAbsDomain(swapX(14, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(14, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap15Operator) { // SWAP15
 
-					return new EVMAbsDomain(swapX(15, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(15, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Swap16Operator) { // SWAP16
 
-					return new EVMAbsDomain(swapX(16, stack.clone()), memory, mu_i);
+					return new EVMAbstractState(swapX(16, stack.clone()), memory, mu_i);
 
 				} else if (op instanceof Log0Operator) { // LOG0
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle LOG0
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Log1Operator) { // LOG1
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 					Interval topic1 = result.pop();
@@ -1138,9 +1101,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle LOG1
 					result.push(Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Log2Operator) { // LOG2
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 					Interval topic1 = result.pop();
@@ -1149,9 +1112,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle LOG2
 					result.push(Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Log3Operator) { // LOG3
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 					Interval topic1 = result.pop();
@@ -1161,9 +1124,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle LOG3
 					result.push(Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Log4Operator) { // LOG4
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 					Interval topic1 = result.pop();
@@ -1174,9 +1137,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle LOG4
 					result.push(Interval.ZERO);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CreateOperator) { // CREATE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval value = result.pop();
 					Interval offset = result.pop();
 					Interval length = result.pop();
@@ -1184,9 +1147,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle CREATE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CallOperator) { // CALL
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval gas = result.pop();
 					Interval to = result.pop();
 					Interval value = result.pop();
@@ -1198,9 +1161,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle CALL
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof CallcodeOperator) { // CALLCODE
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval gas = result.pop();
 					Interval to = result.pop();
 					Interval value = result.pop();
@@ -1212,17 +1175,17 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle CALLCODE
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof ReturnOperator) { // RETURN
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle RETURN
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof DelegatecallOperator) { // DELEGATECALL
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval gas = result.pop();
 					Interval to = result.pop();
 					Interval inOffset = result.pop();
@@ -1233,9 +1196,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle DELEGATECALL
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof Create2Operator) { // CREATE2
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval value = result.pop();
 					Interval offset = result.pop();
 					Interval length = result.pop();
@@ -1244,9 +1207,9 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle CREATE2
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof StaticcallOperator) { // STATICCALL
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval gas = result.pop();
 					Interval to = result.pop();
 					Interval inOffset = result.pop();
@@ -1257,24 +1220,24 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					// At the moment, we do not handle STATICCALL
 					result.push(Interval.TOP);
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof RevertOperator) { // REVERT
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval offset = result.pop();
 					Interval length = result.pop();
 
 					// At the moment, we do not handle REVERT
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				} else if (op instanceof InvalidOperator) { // INVALID
 					return this;
 				} else if (op instanceof SelfdestructOperator) { // SELFDESTRUCT
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					Interval recipient = result.pop();
 
 					// At the moment, we do not handle SELFDESTRUCT
 
-					return new EVMAbsDomain(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, mu_i);
 				}
 			}
 		} catch (NoSuchElementException e) {
@@ -1294,11 +1257,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 * 
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
-	private Stack dupX(int x, Stack stack) {
+	private AbstractStack dupX(int x, AbstractStack stack) {
 		int i = 0;
 		Interval target = Interval.ZERO;
 
-		Stack result = stack.clone();
+		AbstractStack result = stack.clone();
 
 		for (Iterator<Interval> iterator = result.iterator(); iterator.hasNext() && i < x; ++i) {
 			target = iterator.next();
@@ -1319,8 +1282,8 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 * 
 	 * @return A new stack with the specified elements swapped.
 	 */
-	private Stack swapX(int x, Stack stack) {
-		Stack result = stack.clone();
+	private AbstractStack swapX(int x, AbstractStack stack) {
+		AbstractStack result = stack.clone();
 
 		Interval target1 = result.pop();
 		Interval[] popped = new Interval[x];
@@ -1343,7 +1306,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 
 	@Override
-	public EVMAbsDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
 		// Ensure BOTTOM and TOP propagation
 		if (this.isBottom() || this.isTop()) {
@@ -1356,7 +1319,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 				UnaryOperator op = un.getOperator();
 
 				if (op instanceof JumpiOperator) { // JUMPI
-					Stack result = stack.clone();
+					AbstractStack result = stack.clone();
 					result.pop(); // Interval destination = result.pop();
 					Interval condition = result.pop();
 
@@ -1367,11 +1330,11 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 					} else if (condition.equals(new Interval(1, 1))) {
 						// Condition is surely true (interval [1,1])
 						// Return the result
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					} else {
 						// Condition could be either true or false
 						// Return the result
-						return new EVMAbsDomain(result, memory, mu_i);
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 
 				} else if (op instanceof LogicalNegation) {
@@ -1383,7 +1346,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 
 						// Check if LogicalNegation is wrapping a JUMPI
 						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-							Stack result = stack.clone();
+							AbstractStack result = stack.clone();
 							result.pop(); // Interval destination =
 							// result.pop();
 							Interval condition = result.pop();
@@ -1391,7 +1354,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 							if (condition.equals(Interval.ZERO)) {
 								// Condition is surely false (interval [0,0])
 								// Return the result
-								return new EVMAbsDomain(result, memory, mu_i);
+								return new EVMAbstractState(result, memory, mu_i);
 							} else if (condition.equals(new Interval(1, 1))) {
 								// Condition is surely true (interval [1,1])
 								// Return BOTTOM
@@ -1399,7 +1362,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 							} else {
 								// Condition could be either true or false
 								// Return the result
-								return new EVMAbsDomain(result, memory, mu_i);
+								return new EVMAbstractState(result, memory, mu_i);
 							}
 						}
 					}
@@ -1413,13 +1376,13 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 
 	@Override
-	public EVMAbsDomain forgetIdentifier(Identifier id) throws SemanticException {
+	public EVMAbstractState forgetIdentifier(Identifier id) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public EVMAbsDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+	public EVMAbstractState forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -1431,13 +1394,13 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 
 	@Override
-	public EVMAbsDomain pushScope(ScopeToken token) throws SemanticException {
+	public EVMAbstractState pushScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public EVMAbsDomain popScope(ScopeToken token) throws SemanticException {
+	public EVMAbstractState popScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -1454,66 +1417,14 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 
 	@Override
-	public EVMAbsDomain top() {
+	public EVMAbstractState top() {
 		return TOP;
 	}
 
 	@Override
-	public EVMAbsDomain bottom() {
+	public EVMAbstractState bottom() {
 		return BOTTOM;
 	}
-
-//	@Override
-//	public boolean isBottom() {
-//		return stack == null &&
-//				memory == null &&
-//				mu_i == null;
-//	}
-//
-//	@Override
-//	public boolean isTop() {
-//		return isTop;
-//	}
-
-//	@Override
-//	public int hashCode() {
-//		return Objects.hash(stack, memory, mu_i);
-//	}
-
-//	@Override
-//	public boolean equals(Object obj) {
-//		// EVMAbsDomain check
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//
-//		EVMAbsDomain other = (EVMAbsDomain) obj;
-//		// isTop check
-//		if (this.isTop != other.isTop)
-//			return false;
-//		// If both are top, there is no need to check the stack
-//		if (this.isTop)
-//			return true;
-//
-//		if (stack == null && other.getStack() != null)
-//			return false;
-//		if (memory == null && other.getMemory() != null)
-//			return false;
-//		if (mu_i == null && other.getMu_i() != null)
-//			return false;
-//
-//		if (this.isBottom() == false && other.isBottom() == false)
-//			return stack.equals(other.getStack()) &&
-//					memory.equals(other.getMemory()) &&
-//					mu_i.equals(other.getMu_i());
-//
-//		return this.isBottom() == other.isBottom(); // TODO check if it is
-//		// correct
-//	}
-	
 
 	/**
 	 * Helper method to convert a memory word to a BigInteger
@@ -1544,7 +1455,7 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EVMAbsDomain other = (EVMAbsDomain) obj;
+		EVMAbstractState other = (EVMAbstractState) obj;
 		return isTop == other.isTop && Objects.equals(memory, other.memory) && Objects.equals(mu_i, other.mu_i)
 				&& Objects.equals(stack, other.stack);
 	}
@@ -1559,172 +1470,208 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	}
 
 	@Override
-	public EVMAbsDomain wideningAux(EVMAbsDomain other) throws SemanticException {
-		return new EVMAbsDomain(stack.widening(other.getStack()),
+	public EVMAbstractState wideningAux(EVMAbstractState other) throws SemanticException {
+		return new EVMAbstractState(stack.widening(other.getStack()),
 				memory.widening(other.getMemory()),
 				mu_i.widening(other.getMu_i()));
 	}
-	
-	@Override
-	public EVMAbsDomain lubAux(EVMAbsDomain other) throws SemanticException {
 
-		return new EVMAbsDomain(stack.lub(other.getStack()),
+	@Override
+	public EVMAbstractState lubAux(EVMAbstractState other) throws SemanticException {
+
+		return new EVMAbstractState(stack.lub(other.getStack()),
 				memory.lub(other.getMemory()),
 				mu_i.lub(other.getMu_i()));
 	}
 
 	@Override
-	public boolean lessOrEqualAux(EVMAbsDomain other) throws SemanticException {
+	public boolean lessOrEqualAux(EVMAbstractState other) throws SemanticException {
 		return stack.lessOrEqual(other.getStack()) &&
 				memory.lessOrEqual(other.getMemory()) &&
 				mu_i.lessOrEqual(other.getMu_i());
 	}
-	
+
 	/**
-	 * Shifts the elements of a byte array to the right by a specified number of bits.
+	 * Shifts the elements of a byte array to the right by a specified number of
+	 * bits.
 	 *
-	 * @param byteArray      The byte array to be shifted.
-	 * @param shiftBitCount  The number of bits by which the array elements should be shifted to the right.
-	 * @return               The byte array after the right shift operation.
+	 * @param byteArray     The byte array to be shifted.
+	 * @param shiftBitCount The number of bits by which the array elements
+	 *                          should be shifted to the right.
 	 * 
-	 * <p>This method performs a bitwise right shift on the input byte array, where each element is treated as
-	 * a single byte. The shift operation is performed in-place, and the original array is modified.</p>
+	 * @return The byte array after the right shift operation.
+	 *             <p>
+	 *             This method performs a bitwise right shift on the input byte
+	 *             array, where each element is treated as a single byte. The
+	 *             shift operation is performed in-place, and the original array
+	 *             is modified.
+	 *             </p>
+	 *             <p>
+	 *             If the {@code shiftBitCount} is zero, the array remains
+	 *             unchanged.
+	 *             </p>
+	 *             <p>
+	 *             The method uses a circular shift approach, with consideration
+	 *             for byte boundaries and a carry mechanism.
+	 *             </p>
 	 *
-	 * <p>If the {@code shiftBitCount} is zero, the array remains unchanged.</p>
-	 *
-	 * <p>The method uses a circular shift approach, with consideration for byte boundaries and a carry mechanism.</p>
-	 *
-	 * @throws IllegalArgumentException If the {@code byteArray} is {@code null}.
+	 * @throws IllegalArgumentException If the {@code byteArray} is
+	 *                                      {@code null}.
 	 */
 	public static byte[] shiftRight(byte[] byteArray, int shiftBitCount) {
-	    final int shiftMod = shiftBitCount % 8;
-	    final byte carryMask = (byte) (0xFF << (8 - shiftMod));
-	    final int offsetBytes = (shiftBitCount / 8);
+		final int shiftMod = shiftBitCount % 8;
+		final byte carryMask = (byte) (0xFF << (8 - shiftMod));
+		final int offsetBytes = (shiftBitCount / 8);
 
-	    int sourceIndex;
-	    for (int i = byteArray.length - 1; i >= 0; i--) {
-	        sourceIndex = i - offsetBytes;
-	        if (sourceIndex < 0) {
-	            byteArray[i] = 0;
-	        } else {
-	            byte src = byteArray[sourceIndex];
-	            byte dst = (byte) ((0xff & src) >>> shiftMod);
-	            if (sourceIndex - 1 >= 0) {
-	                dst |= byteArray[(sourceIndex - 1)] << (8 - shiftMod) & carryMask;
-	            }
-	            byteArray[i] = dst;
-	        }
-	    }
-	    return byteArray;
+		int sourceIndex;
+		for (int i = byteArray.length - 1; i >= 0; i--) {
+			sourceIndex = i - offsetBytes;
+			if (sourceIndex < 0) {
+				byteArray[i] = 0;
+			} else {
+				byte src = byteArray[sourceIndex];
+				byte dst = (byte) ((0xff & src) >>> shiftMod);
+				if (sourceIndex - 1 >= 0) {
+					dst |= byteArray[(sourceIndex - 1)] << (8 - shiftMod) & carryMask;
+				}
+				byteArray[i] = dst;
+			}
+		}
+		return byteArray;
 	}
-	
+
 	/**
 	 * Shifts the given byte array to the left by the specified number of bits.
 	 *
-	 * @param byteArray The byte array to be left-shifted.
-	 * @param shiftBitCount The number of bits by which to shift the byte array to the left.
-	 * @return The resulting byte array after left-shifting by the specified bit count.
+	 * @param byteArray     The byte array to be left-shifted.
+	 * @param shiftBitCount The number of bits by which to shift the byte array
+	 *                          to the left.
 	 * 
-	 * <p>This method performs a left shift on the provided byte array, where each byte is shifted to the left
-	 * by the given number of bits. The shift operation is performed in a bitwise manner, and the bits shifted
-	 * beyond the byte boundary are wrapped around to the opposite end. The shift is done in place, and the
-	 * modified byte array is returned as the result.</p>
+	 * @return The resulting byte array after left-shifting by the specified bit
+	 *             count.
+	 *             <p>
+	 *             This method performs a left shift on the provided byte array,
+	 *             where each byte is shifted to the left by the given number of
+	 *             bits. The shift operation is performed in a bitwise manner,
+	 *             and the bits shifted beyond the byte boundary are wrapped
+	 *             around to the opposite end. The shift is done in place, and
+	 *             the modified byte array is returned as the result.
+	 *             </p>
+	 *             <p>
+	 *             The {@code shiftBitCount} parameter determines the number of
+	 *             bits to shift.
+	 *             </p>
 	 * 
-	 * <p>The {@code shiftBitCount} parameter determines the number of bits to shift. </p>
-	 * 
-	 * @throws IllegalArgumentException If the input {@code byteArray} is {@code null}.
+	 * @throws IllegalArgumentException If the input {@code byteArray} is
+	 *                                      {@code null}.
 	 */
 	public static byte[] shiftLeft(byte[] byteArray, int shiftBitCount) {
-	    final int shiftMod = shiftBitCount % 8;
-	    final byte carryMask = (byte) ((1 << shiftMod) - 1);
-	    final int offsetBytes = (shiftBitCount / 8);
+		final int shiftMod = shiftBitCount % 8;
+		final byte carryMask = (byte) ((1 << shiftMod) - 1);
+		final int offsetBytes = (shiftBitCount / 8);
 
-	    int start;
-	    
-	    if(byteArray.length > 32)
-	    	start = 1;
-	    else
-	    	start = 0;
-	    
-	    int sourceIndex;
-	    for (int i = start; i < byteArray.length; i++) {
-	        sourceIndex = i + offsetBytes;
-	        if (sourceIndex >= byteArray.length) {
-	            byteArray[i] = 0;
-	        } else {
-	            byte src = byteArray[sourceIndex];
-	            byte dst = (byte) (src << shiftMod);
-	            if (sourceIndex + 1 < byteArray.length) {
-	                dst |= byteArray[sourceIndex + 1] >>> (8 - shiftMod) & carryMask;
-	            }
-	            byteArray[i] = dst;
-	        }
-	    }
-	    return byteArray;
+		int start;
+
+		if (byteArray.length > 32)
+			start = 1;
+		else
+			start = 0;
+
+		int sourceIndex;
+		for (int i = start; i < byteArray.length; i++) {
+			sourceIndex = i + offsetBytes;
+			if (sourceIndex >= byteArray.length) {
+				byteArray[i] = 0;
+			} else {
+				byte src = byteArray[sourceIndex];
+				byte dst = (byte) (src << shiftMod);
+				if (sourceIndex + 1 < byteArray.length) {
+					dst |= byteArray[sourceIndex + 1] >>> (8 - shiftMod) & carryMask;
+				}
+				byteArray[i] = dst;
+			}
+		}
+		return byteArray;
 	}
-	
+
 	/**
-	 * Shifts the bits of the given byte array towards the least significant bit (SAR - Shift Arithmetic Right).
-	 * The bits moved before the first one are discarded, and the new bits are set to 0 if the previous most
-	 * significant bit was 0; otherwise, the new bits are set to 1.
+	 * Shifts the bits of the given byte array towards the least significant bit
+	 * (SAR - Shift Arithmetic Right). The bits moved before the first one are
+	 * discarded, and the new bits are set to 0 if the previous most significant
+	 * bit was 0; otherwise, the new bits are set to 1.
 	 *
-	 * @param byteArray The byte array to be right-shifted.
-	 * @param shiftBitCount The number of bits by which to shift the byte array to the right.
-	 * @return The resulting byte array after right-shifting by the specified bit count.
+	 * @param byteArray     The byte array to be right-shifted.
+	 * @param shiftBitCount The number of bits by which to shift the byte array
+	 *                          to the right.
+	 * 
+	 * @return The resulting byte array after right-shifting by the specified
+	 *             bit count.
+	 *             <p>
+	 *             This method performs a right shift on the provided byte array
+	 *             (SAR operation), where each byte is shifted to the right by
+	 *             the given number of bits. The shift operation is performed in
+	 *             a bitwise manner, and the bits shifted beyond the byte
+	 *             boundary are discarded. The new bits introduced during the
+	 *             shift are set based on the value of the previous most
+	 *             significant bit (0 or 1).
+	 *             </p>
+	 *             <p>
+	 *             The {@code shiftBitCount} parameter determines the number of
+	 *             bits to shift.
+	 *             </p>
 	 *
-	 * <p>This method performs a right shift on the provided byte array (SAR operation), where each byte is
-	 * shifted to the right by the given number of bits. The shift operation is performed in a bitwise manner,
-	 * and the bits shifted beyond the byte boundary are discarded. The new bits introduced during the shift
-	 * are set based on the value of the previous most significant bit (0 or 1).</p>
-	 *
-	 * <p>The {@code shiftBitCount} parameter determines the number of bits to shift.</p>
-	 *
-	 * @throws IllegalArgumentException If the input {@code byteArray} is {@code null}.
+	 * @throws IllegalArgumentException If the input {@code byteArray} is
+	 *                                      {@code null}.
 	 */
 	public static byte[] shiftArithmeticRight(byte[] byteArray, int shiftBitCount) {
-	    final int shiftMod = shiftBitCount % 8;
-	    final byte carryMask = (byte) (0xFF << (8 - shiftMod));
-	    final int offsetBytes = (shiftBitCount / 8);
+		final int shiftMod = shiftBitCount % 8;
+		final byte carryMask = (byte) (0xFF << (8 - shiftMod));
+		final int offsetBytes = (shiftBitCount / 8);
 
-	    int sourceIndex;
-	    int start;
-	    
-	    if(byteArray.length > 32)
-	    	start = 1;
-	    else
-	    	start = 0;
-	    for (int i = start; i < byteArray.length; i++) {
-	        sourceIndex = i + offsetBytes;
-	        if (sourceIndex >= byteArray.length) {
-	            byteArray[i] = (byte) (byteArray[i] < 0 ? 0xFF : 0);
-	        } else {
-	            byte src = byteArray[sourceIndex];
-	            byte dst = (byte) (src >>> shiftMod);
-	            if (sourceIndex + 1 < byteArray.length) {
-	                dst |= byteArray[sourceIndex + 1] << (8 - shiftMod) & carryMask;
-	            }
-	            byteArray[i] = dst;
-	        }
-	    }
-	    return byteArray;
+		int sourceIndex;
+		int start;
+
+		if (byteArray.length > 32)
+			start = 1;
+		else
+			start = 0;
+		for (int i = start; i < byteArray.length; i++) {
+			sourceIndex = i + offsetBytes;
+			if (sourceIndex >= byteArray.length) {
+				byteArray[i] = (byte) (byteArray[i] < 0 ? 0xFF : 0);
+			} else {
+				byte src = byteArray[sourceIndex];
+				byte dst = (byte) (src >>> shiftMod);
+				if (sourceIndex + 1 < byteArray.length) {
+					dst |= byteArray[sourceIndex + 1] << (8 - shiftMod) & carryMask;
+				}
+				byteArray[i] = dst;
+			}
+		}
+		return byteArray;
 	}
-	
+
 	/**
-	 * Prints the hexadecimal representation of a byte array to the standard output.
+	 * Prints the hexadecimal representation of a byte array to the standard
+	 * output.
 	 *
 	 * @param bytes The byte array to be printed in hexadecimal format.
-	 * 
-	 * <p>This method iterates through each byte in the array and prints its hexadecimal representation.
-	 * Each byte is formatted as a two-digit uppercase hexadecimal value, separated by a space.
-	 * After printing all bytes, a newline character is appended to the output.</p>
+	 *                  <p>
+	 *                  This method iterates through each byte in the array and
+	 *                  prints its hexadecimal representation. Each byte is
+	 *                  formatted as a two-digit uppercase hexadecimal value,
+	 *                  separated by a space. After printing all bytes, a
+	 *                  newline character is appended to the output.
+	 *                  </p>
 	 *
-	 * @throws IllegalArgumentException If the input {@code bytes} is {@code null}.
+	 * @throws IllegalArgumentException If the input {@code bytes} is
+	 *                                      {@code null}.
 	 */
 	public static void printByte(byte[] bytes) {
-        for (byte b : bytes) {
-            System.out.printf("%02X ", b);
-        }
-        System.out.println(); 
-    }
+		for (byte b : bytes) {
+			System.out.printf("%02X ", b);
+		}
+		System.out.println();
+	}
 
 }
