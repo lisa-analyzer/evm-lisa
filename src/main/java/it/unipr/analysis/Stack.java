@@ -203,7 +203,7 @@ public class Stack implements ValueDomain<Stack> {
 			return other;
 		}
 
-		if (this.stack.size() < other.stack.size()) {
+		if (this.size() < other.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 
 			Iterator<Interval> thisIterator = this.stack.descendingIterator();
@@ -216,11 +216,11 @@ public class Stack implements ValueDomain<Stack> {
 			while (otherIterator.hasNext()) {
 				widenedStack.push(otherIterator.next());
 			}
-
+						
 			return new Stack(widenedStack);
 		}
 
-		if (this.stack.size() == other.stack.size()) {
+		if (this.size() == other.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 
 			Iterator<Interval> thisIterator = this.stack.descendingIterator();
@@ -230,7 +230,7 @@ public class Stack implements ValueDomain<Stack> {
 				Interval widenedInterval = thisIterator.next().widening(otherIterator.next());
 				widenedStack.push(widenedInterval);
 			}
-
+			
 			return new Stack(widenedStack);
 		}
 

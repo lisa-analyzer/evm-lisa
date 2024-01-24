@@ -1,5 +1,6 @@
 package it.unipr.analysis.cron;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,15 +53,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	public void testEVMBytecodeAnalysis() throws Exception {
 		String[] smartContracts = new String[] {
 			"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
-			"0x576501abd98ce5472b03b7ab4f5980941db7ef37",
 			"0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9",
 			"0x000000000d38df53b45c5733c7b34000de0bdf52",
 			"0x00cA62445B06a9aDc1879a44485B4eFdcB7b75F3",
 			"0x5211fEbe5d129DFA871e004C39652E8254A73ef8",
-//			"0x6176A455b7F6741c84D9E3d479DebFCe0ba8443E"
-		};
-		
-		String[] smartContractsWithLoop = new String[] {
+			"0x6176A455b7F6741c84D9E3d479DebFCe0ba8443E",
 			"0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c",
 			"0x732eBfefFDF57513f167b2d3D384E13246f60034",
 			"0x251f752b85a9f7e1b3c42d802715b5d7a8da3165",
@@ -68,7 +65,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			"0x61CEAc48136d6782DBD83c09f51E23514D12470a"
 		};
 		
-		String stats = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
+		String[] smartContractsWithErrors = new String[] {
+				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
+			};
+		
+		String stats = "";
 		
 		for(int i = 0; i < smartContracts.length; i++) {
 			stats += newAnalysis(smartContracts[i]);
@@ -83,9 +84,19 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.err.println("[PREVIEW] Final results");
 		System.out.println(stats);
 		
-		try (FileWriter myWriter = new FileWriter(FILENAME)) {
-			
-			myWriter.write(stats);
+		try {
+			File idea = new File(FILENAME);
+			if (!idea.exists()){
+				FileWriter myWriter = new FileWriter(idea, true);
+				String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
+				myWriter.write(init + stats);
+				myWriter.close();
+			    
+			} else {
+				FileWriter myWriter = new FileWriter(idea, true);
+				myWriter.write(stats);
+				myWriter.close();
+			}
 
 			System.out.println("Stats successfully written in " + FILENAME);
 	    } catch (IOException e) {
@@ -115,7 +126,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeInputs = true;
 		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.GRAPHML_WITH_SUBNODES;
+			conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		}
 		conf.programFile = CONTRACT_ADDR + ".sol";
 		perform(conf);

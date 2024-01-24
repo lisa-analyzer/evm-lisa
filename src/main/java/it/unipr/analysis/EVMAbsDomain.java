@@ -1,6 +1,7 @@
 package it.unipr.analysis;
 
 import it.unipr.analysis.operator.*;
+import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -99,8 +100,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 * @return A cloned copy of the stack or null if the original stack is null.
 	 */
 	public Stack getStack() {
-//		if (stack == null)
-//			return null;
 		return stack.clone();
 	}
 
@@ -111,8 +110,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 *             null.
 	 */
 	public Memory getMemory() {
-//		if (memory == null)
-//			return null;
 		return memory.clone();
 	}
 
@@ -123,8 +120,6 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	 *             is null.
 	 */
 	public Interval getMu_i() {
-//		if (mu_i == null)
-//			return null;
 		return new Interval(mu_i.interval);
 	}
 
@@ -139,12 +134,12 @@ public class EVMAbsDomain implements ValueDomain<EVMAbsDomain>, BaseLattice<EVMA
 	public EVMAbsDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// Ensure BOTTOM propagation
 		if (this.isBottom()) {
-//			LOG.warn("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
+//			LOG.warn("[BOTTOM] smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
 			return EVMAbsDomain.BOTTOM;
 		}
 
 		try {
-//			LOG.info("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
+//			LOG.warn("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
 			if (expression instanceof Constant) {
 				return this;
 			} else if (expression instanceof UnaryExpression) {
