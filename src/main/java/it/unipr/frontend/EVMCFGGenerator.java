@@ -128,7 +128,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 				map.put(st, ((Push) last).getInt());
 			if (last instanceof Jumpi) {
 				cfg.addEdge(new FalseEdge(last, st));
-			} else if (!(last instanceof Revert)) {
+			} else if (!(last instanceof Revert) && !(last instanceof Return)) {
 				cfg.addEdge(new SequentialEdge(last, st));
 			}
 
