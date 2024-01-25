@@ -31,7 +31,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	/*
 	 * Some examples of contract addresses: a. SafeMath:
 	 * 0x7de33b2672efb11fde366dae96bd63b985bce186 b. ZipmexTokenP.:
-	 * 0xaa602de53347579f86b996d2add74bb6f79462b2 c. ltdFDTfactory:
+	 * 0xaa602de53347579f86b996d2add74bb6f79462b2 c. ltdFDTfactory: // unknown opcode
 	 * 0xf155152d838b7a023317ad8c1e8c02aab7e8f2a2 d. Dividend:
 	 * 0xdb6f50cf0c521a98b6852839aa5cbea4e2430052 e. DharmaKeyR.:
 	 * 0x0000000000bda2152794ac8c76b2dc86cba57cad f. DharmaT.R.:
@@ -39,8 +39,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * 0x8313675d1405f3f7aee3da9d63e0bf5c30c75832 h. SMRT16Ext:
 	 * 0xdabb0c3f9a190b6fe4df6cb412ba66c3dd3e2ad1 i. FlashFloss:
 	 * 0xfd4085e56a96787fb7acd9b49510f874c3d4afcb j. FoxInvSplit:
-	 * 0xd69015163e250a70ee4a607812afda5372132cc4 k. BCN20:
-	 * 0x1964f2f3ce45ac518b18ef4aa4265f8aadcef4ae l. OneSplit:
+	 * 0xd69015163e250a70ee4a607812afda5372132cc4 k. BCN20: // loop
+	 * 0x1964f2f3ce45ac518b18ef4aa4265f8aadcef4ae l. OneSplit: // unknown opcode
 	 * 0x3a2d9db352580eb50018fc86eae32e19070a9982 m. EthexLoto:
 	 * 0x0e26b2dc8ef577baf50891eac94f0def59b5da16 n. ManagedAccount:
 	 * 0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a o. ERC20Salary:
@@ -52,8 +52,46 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/stats.xls";
 
+	/**
+	 * 
+		TODO check these smart contracts
+		0x6736077ae034e16f7fafd2d5ed1358370fda1f88
+		0x6e08427f6f472342d0ce286c875956be232d6af4
+		0x31179edfd7ef37b16c7643407321466cd0b33b53
+		0x5cef8c37ab75fc56cd50e17692f39ac7bc189075
+		0x679131f591b4f369acb8cd8c51e68596806c3916
+		0x000000000d38df53b45c5733c7b34000de0bdf52
+		0x0122db5fba163b123ebc047d735437c6a6677e6f
+		0x66ca1f903a43942992c41d610e8a33a951914d33
+		0x22895ba3ee81ab5f12753bd13b52858f8857d518
+		0x442e735978155ed54ab19201ec834bb519f60168
+		0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9
+		0x289a7d1d22abf90595b4f8d109e7de71f03d42d4
+		0x59321ace77c8087ff8cb9f94c8384807e4fd8a3c
+		0x18fe2ed05b78fb98be7e232975529ade3ebefd57
+		0x6666fC23AE6C26e8500cCD55A870cD4eDe49202c
+		0x607B80a3498F01f87b889486f4E7f82C98CF0584
+		0xd69015163e250a70ee4a607812afda5372132cc4
+		0xfd4085e56a96787fb7acd9b49510f874c3d4afcb
+		0xA1141e48BE2E7084F05D83a7f7f9906FbF060990
+		0xc4F409B563a94Df99bcbF0CDC95CEd6B626B9130
+		0x5211fEbe5d129DFA871e004C39652E8254A73ef8
+		0x8b028e2fad2dc99999fb784ca9d7267981c90b4d
+		0x6190a479cfafcb1637f5485366bcbce418a68a4d
+		0x00cA62445B06a9aDc1879a44485B4eFdcB7b75F3
+		0x0000000000bda2152794ac8c76b2dc86cba57cad
+	 * @throws Exception
+	 */
+	
+	@Test
+	public void testSCFromEtherscan() throws Exception {
+		String SC_ADDRESS = "0x576501abd98ce5472b03b7ab4f5980941db7ef37";
+		toFile(newAnalysis(SC_ADDRESS));
+	}
+	
 	@Ignore
 	public void testSCWithProblems() throws Exception {
+		// There are a lot of INVALID
 		String[] smartContractsWithErrors = new String[] {
 				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
 		};
@@ -74,7 +112,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.out.println(stats);
 	}
 	
-	@Test
+	@Ignore
 	public void testEVMBytecodeAnalysis() throws Exception {
 		String[] smartContracts = new String[] {
 				"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
@@ -87,18 +125,24 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				"0x732eBfefFDF57513f167b2d3D384E13246f60034",
 				"0x251f752b85a9f7e1b3c42d802715b5d7a8da3165",
 				"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455",
-				"0x61CEAc48136d6782DBD83c09f51E23514D12470a"
+				"0x61CEAc48136d6782DBD83c09f51E23514D12470a",
+				"0xcc2ba2eac448d60e0f943ebe378f409cb7d1b58a",
+				"0x0f4f45f2edba03d4590bd27cf4fd62e91a2a2d6a",
+				"0x0e26b2dc8ef577baf50891eac94f0def59b5da16",
+				"0xd69015163e250a70ee4a607812afda5372132cc4",
+				"0xdb6f50cf0c521a98b6852839aa5cbea4e2430052",
+				"0x0000000000bda2152794ac8c76b2dc86cba57cad",
+				"0x8313675d1405f3f7aee3da9d63e0bf5c30c75832",
+				"0x8b028e2fad2dc99999fb784ca9d7267981c90b4d",
+				"0xdabb0c3f9a190b6fe4df6cb412ba66c3dd3e2ad1",
+				"0xfd4085e56a96787fb7acd9b49510f874c3d4afcb",
+				"0xaa602de53347579f86b996d2add74bb6f79462b2"
 		};
-
-		String[] smartContractsWithErrors = new String[] {
-				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
-		};
-
+	
 		String stats = "";
 
 		for (int i = 0; i < smartContracts.length; i++) {
 			stats += newAnalysis(smartContracts[i]);
-			stats += " \n";
 		}
 
 		System.err.println("\n\n\n");
@@ -109,12 +153,17 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.err.println("[PREVIEW] Final results");
 		System.out.println(stats);
 
+		toFile(stats);
+
+	}
+	
+	private void toFile(String stats) {
+		String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
 		try {
-			boolean APPEND = false;
+			boolean APPEND = true;
 			File idea = new File(FILENAME);
 			if (!idea.exists()) {
 				FileWriter myWriter = new FileWriter(idea, APPEND);
-				String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved \n";
 				myWriter.write(init + stats);
 				myWriter.close();
 
@@ -129,7 +178,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			System.err.println("An error occurred.");
 			e.printStackTrace();
 		}
-
 	}
 
 	private String newAnalysis(String CONTRACT_ADDR) throws Exception {
@@ -166,7 +214,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				baseCfg.getNodesCount() + ", " +
 				baseCfg.getAllJumps().size() + ", " +
 				solvedJumps + ", " +
-				solvedJumps / baseCfg.getAllJumps().size() * 100 + "%";
+				solvedJumps / baseCfg.getAllJumps().size() + " \n";
 		return stats;
 	}
 
