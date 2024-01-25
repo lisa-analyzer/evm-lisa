@@ -27,8 +27,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	/*
 	 * Some examples of contract addresses: a. SafeMath:
@@ -57,7 +55,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/statistics.xls";
 	
-	private String[] smartContracts = new String[] {
+	private final String[] smartContracts = new String[] {
 			"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
 			"0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9",
 			"0x000000000d38df53b45c5733c7b34000de0bdf52",
