@@ -54,12 +54,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
 	private final static boolean GENERATE_CFG = true;
-	
+
 	// Append statistics in file
 	private final static boolean APPEND = true;
 
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/statistics.xls";
-	
+
 	private final String[] smartContracts = new String[] {
 			"0x6190a479cfafcb1637f5485366bcbce418a68a4d",
 			"0x3af2aE62F0D3353C9F15B7fe678ccDAF2b2157C9",
@@ -92,56 +92,59 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			"0x000000000d38df53b45c5733c7b34000de0bdf52",
 			"0x0122db5fba163b123ebc047d735437c6a6677e6f"
 	};
-		
+
 	@Before
 	public void clean() {
-	        try {
-	            Files.walkFileTree(Paths.get("evm-outputs/bytecodeBenchmark"), new SimpleFileVisitor<Path>() {
-	                @Override
-	                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-	                    Files.delete(file);
-	                    return FileVisitResult.CONTINUE;
-	                }
+		Path path = Paths.get("evm-outputs/bytecodeBenchmark");
 
-	                @Override
-	                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-	                    Files.delete(dir);
-	                    return FileVisitResult.CONTINUE;
-	                }
-	            });
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+		if (Files.exists(path)) 
+			try {
+				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+						Files.delete(file);
+						return FileVisitResult.CONTINUE;
+					}
+
+					@Override
+					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+						Files.delete(dir);
+						return FileVisitResult.CONTINUE;
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
-	
+
 	@Ignore
 	public void testSCFromEtherscan() throws Exception {
 		String SC_ADDRESS = "0xc3761EB917CD790B30dAD99f6Cc5b4Ff93C4F9eA";
 		toFile(newAnalysis(SC_ADDRESS));
 	}
-	
+
 	@Ignore
 	public void testSCWithProblems() throws Exception {
 		// There are a lot of INVALID
 		String[] smartContractsWithErrors = new String[] {
-			"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
+				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
 		};
-		
+
 		String stats = "";
-		
+
 		for(int i = 0; i < smartContractsWithErrors.length; i++) {
 			stats += newAnalysis(smartContractsWithErrors[i]);
 			stats += " \n";
 		}
-		
+
 		System.err.println("\n\n\n");
 		System.err.println("[PREVIEW] Final results");
 		System.out.println(stats);
 	}
-	
+
 	@Ignore
 	public void testEVMBytecodeAnalysisSingleThread() throws Exception {
-	
+
 		String stats = "";
 
 		for (int i = 0; i < smartContracts.length; i++) {
@@ -155,39 +158,39 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		toFile(stats);
 		System.out.println("Stats successfully written in " + FILENAME);
 	}
-	
+
 	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		Object guardia = new Object();
 
 		Thread[] threads = new Thread[smartContracts.length];
-		
+
 		List<String> smartContractsTerminated = new ArrayList<String>();
-		
+
 		Runnable runnableHandler = new Runnable() {
 			private int counter = 0;
 			private Object mutex = new Object();
-			
+
 			@Override
 			public void run() {
-				
+
 				synchronized (mutex) {
 					for (int i = 0; i < smartContracts.length; i++) {
 						String address = smartContracts[i];
-						
+
 						Runnable runnable = () -> {
 							String myStats = "";
-							
+
 							try {
-								
+
 								myStats = newAnalysis(address);
-								
+
 								synchronized (mutex) {
 									toFile(myStats);
 									mutex.notifyAll();
 									smartContractsTerminated.add(address);
 								}
-								
+
 							} catch (Exception e) {
 								synchronized (mutex) {
 									toFile(address + ", , , , , , failure: " + e + " - " + Thread.currentThread().getName() + " \n");
@@ -195,52 +198,52 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								}
 							}
 						};
-						
+
 						threads[i] = new Thread(runnable);	
 						threads[i].start();
 					}
-					
+
 					try {
 						while(counter < smartContracts.length) {
 							mutex.wait();
 							counter++;
 						}
-						
+
 					} catch (InterruptedException e) {
-							e.printStackTrace();
+						e.printStackTrace();
 					}
-					
+
 					synchronized (guardia) {
 						guardia.notifyAll(); // All tests are finished
 					}
-					
+
 				}
 
 			} // ! run()
 		}; // ! Runnable
-		
+
 		synchronized (guardia) {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
-			
+
 			int timeToWait = smartContracts.length * 1500 + 10000;
-			
+
 			guardia.wait(timeToWait);
-			
+
 			for(int i = 0; i < smartContracts.length; i++)
 				threads[i].interrupt();
 		}
-		
+
 		for(int i = 0; i < smartContracts.length; i++) {
 			if(!smartContractsTerminated.contains(smartContracts[i])) {
 				toFile(smartContracts[i] + ", , , , , , failed \n");
 			}
 		}
-		
+
 		System.out.println("Stats successfully written in " + FILENAME);
 
 	}
-	
+
 	private void toFile(String stats) {
 		String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved, Time (millis), Notes \n";
 		try {
@@ -264,7 +267,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private String newAnalysis(String CONTRACT_ADDR) throws Exception {
 		long start = System.currentTimeMillis();
-		
+
 		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
 				+ ".sol";
 
@@ -294,9 +297,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
 		int solvedJumps = dumpStatistics(baseCfg);
 		double solvedJumpsPercent = ((double) solvedJumps / baseCfg.getAllJumps().size());
-		
+
 		long finish = System.currentTimeMillis();
-		
+
 		String stats = CONTRACT_ADDR + ", " +
 				baseCfg.getNodesCount() + ", " +
 				baseCfg.getAllJumps().size() + ", " +
@@ -304,7 +307,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				(double) solvedJumpsPercent + ", " +  
 				(finish - start) + ", " +
 				Thread.currentThread().getName() + " \n";
-		
+
 		return stats;
 	}
 
@@ -337,5 +340,5 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		return solvedJumps;
 	}
-	
+
 }
