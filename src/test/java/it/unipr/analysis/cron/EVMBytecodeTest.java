@@ -119,7 +119,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Ignore
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0xc3761EB917CD790B30dAD99f6Cc5b4Ff93C4F9eA";
+		String SC_ADDRESS = "0x1dd80016e3d4ae146ee2ebb484e8edd92dacc4ce";
 		toFile(newAnalysis(SC_ADDRESS));
 	}
 
@@ -177,6 +177,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				synchronized (mutex) {
 					for (int i = 0; i < smartContracts.length; i++) {
 						String address = smartContracts[i];
+						
+						if(i % 5 == 0) {
+							try {
+								Thread.sleep(1001); // I can do max 5 API request in 1 sec to Etherscan.io
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
 
 						Runnable runnable = () -> {
 							String myStats = "";
@@ -226,7 +234,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
 
-			int timeToWait = smartContracts.length * 1500 + 10000;
+			int millisPerSmartContract = 1500;
+			int extra = 10000;
+			long blocks = smartContracts.length / 5 * 250;
+			long timeToWait = smartContracts.length * millisPerSmartContract + extra + blocks;
 
 			guardia.wait(timeToWait);
 
