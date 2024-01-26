@@ -1,7 +1,6 @@
 package it.unipr.analysis;
 
 import it.unipr.analysis.operator.*;
-import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -123,7 +122,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	}
 
 	@Override
-	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp)
+			throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -141,178 +141,178 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			} else if (expression instanceof UnaryExpression) {
 				UnaryExpression un = (UnaryExpression) expression;
 				UnaryOperator op = un.getOperator();
-				
+
 				if (op != null) {
-					
-				    switch (op.getClass().getSimpleName()) {
-					    case "PushOperator": { // PUSH
-				        	AbstractStack result = stack.clone();
-							BigDecimal valueToPush = this.toBigDecimal(un.getExpression());
 
-							result.push(new Interval(new MathNumber(valueToPush), new MathNumber(valueToPush)));
+					switch (op.getClass().getSimpleName()) {
+					case "PushOperator": { // PUSH
+						AbstractStack result = stack.clone();
+						BigDecimal valueToPush = this.toBigDecimal(un.getExpression());
 
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "AddressOperator": { // ADDRESS
-					    	AbstractStack result = stack.clone();
+						result.push(new Interval(new MathNumber(valueToPush), new MathNumber(valueToPush)));
 
-							// At the moment, we do not handle ADDRESS
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "AddressOperator": { // ADDRESS
+						AbstractStack result = stack.clone();
 
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "OriginOperator": { // ORIGIN
+						// At the moment, we do not handle ADDRESS
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "OriginOperator": { // ORIGIN
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle ORIGIN
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CallerOperator": { // CALLER
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle CALLER
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CallvalueOperator": { // CALLVALUE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle CALLVALUE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CalldatasizeOperator": { // CALLDATASIZE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle CALLDATASIZE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CodesizeOperator": { // CODESIZE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle CODESIZE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "GaspriceOperator": { // GASPRICE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle GASPRICE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ReturndatasizeOperator": { // RETURNDATASIZE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle RETURNDATASIZE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CoinbaseOperator": { // COINBASE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle COINBASE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "TimestampOperator": { // TIMESTAMP
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle TIMESTAMP
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "NumberOperator": { // NUMBER
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle NUMBER
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "DifficultyOperator": { // DIFFICULTY
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle DIFFICULTY
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "GaslimitOperator": { // GASLIMIT
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle GASLIMIT
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ChainidOperator": { // CHAINID
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle CHAINID
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SelfbalanceOperator": { // SELFBALANCE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle SELFBALANCE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "PcOperator": { // PC
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle PC
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "GasOperator": { // GAS
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle GAS
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "JumpOperator": { // JUMP
+						if ((Integer) ((Constant) un.getExpression()).getValue() > 0) {
 							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle ORIGIN
-							result.push(Interval.TOP);
-
+							result.pop();
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "CallerOperator": { // CALLER
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle CALLER
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "CallvalueOperator": { // CALLVALUE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle CALLVALUE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "CalldatasizeOperator": { // CALLDATASIZE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle CALLDATASIZE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "CodesizeOperator": { // CODESIZE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle CODESIZE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "GaspriceOperator": { // GASPRICE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle GASPRICE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "ReturndatasizeOperator": { // RETURNDATASIZE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle RETURNDATASIZE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "CoinbaseOperator": { // COINBASE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle COINBASE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "TimestampOperator": { // TIMESTAMP
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle TIMESTAMP
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "NumberOperator": { // NUMBER
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle NUMBER
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "DifficultyOperator": { // DIFFICULTY
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle DIFFICULTY
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "GaslimitOperator": { // GASLIMIT
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle GASLIMIT
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "ChainidOperator": { // CHAINID
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle CHAINID
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "SelfbalanceOperator": { // SELFBALANCE
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle SELFBALANCE
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "PcOperator": { // PC
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle PC
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "GasOperator": { // GAS
-							AbstractStack result = stack.clone();
-
-							// At the moment, we do not handle GAS
-							result.push(Interval.TOP);
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "JumpOperator": { // JUMP
-							if ((Integer) ((Constant) un.getExpression()).getValue() > 0) {
-								AbstractStack result = stack.clone();
-								result.pop();
-								return new EVMAbstractState(result, memory, mu_i);
-							} else
-								return this;
-					    }
-					    case "JumpiOperator": { // JUMPI
+						} else
 							return this;
-					    }
-					    case "MsizeOperator": { // MSIZE
-							AbstractStack result = stack.clone();
+					}
+					case "JumpiOperator": { // JUMPI
+						return this;
+					}
+					case "MsizeOperator": { // MSIZE
+						AbstractStack result = stack.clone();
 
-							// At the moment, we do not handle MSIZE
-							result.push(Interval.TOP);
+						// At the moment, we do not handle MSIZE
+						result.push(Interval.TOP);
 
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-					    case "JumpdestOperator": { // JUMPDEST
-							return this;
-					    }
-				    }
-				    // Above, operators that do not perform pop()
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "JumpdestOperator": { // JUMPDEST
+						return this;
+					}
+					}
+					// Above, operators that do not perform pop()
 
 					// from here on, top is propagated
 					if (isTop())
@@ -320,1021 +320,1073 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					// Below, operators that perform pop operation on the stack
 					switch (op.getClass().getSimpleName()) {
-						
-						case "AddOperator": { // ADD
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
 
+					case "AddOperator": { // ADD
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(sum);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SubOperator": { // SUB
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Interval sub = opnd1.evalBinaryExpression(Numeric32BitSub.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(sub);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "MulOperator": { // MUL
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(mul);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "DivOperator": { // DIV
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+						Interval div;
+
+						if (opnd2.equals(Interval.ZERO))
+							div = Interval.ZERO;
+						else
+							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(div);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SdivOperator": { // SDIV
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+						Interval div;
+
+						if (opnd2.equals(Interval.ZERO))
+							div = Interval.ZERO;
+						else
+							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(div);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ModOperator": { // MOD
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+						Interval mod;
+
+						if (opnd2.equals(Interval.ZERO))
+							mod = Interval.ZERO;
+						else
+							mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(mod);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SmodOperator": { // SMOD
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+						Interval mod;
+
+						if (opnd2.equals(Interval.ZERO))
+							mod = Interval.ZERO;
+						else
+							mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
+
+						result.push(mod);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "AddmodOperator": { // ADDMOD
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+						Interval opnd3 = result.pop();
+						Interval addmod;
+
+						if (opnd3.equals(Interval.ZERO))
+							addmod = Interval.ZERO;
+						else {
 							Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
+							addmod = sum.evalBinaryExpression(Numeric32BitMod.INSTANCE, sum, opnd3, pp);
+						}
 
-							result.push(sum);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "SubOperator": { // SUB
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						result.push(addmod);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "MulmodOperator": { // MULMOD
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+						Interval opnd3 = result.pop();
+						Interval mulmod;
 
-							Interval sub = opnd1.evalBinaryExpression(Numeric32BitSub.INSTANCE, opnd1, opnd2, pp);
-
-							result.push(sub);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "MulOperator": { // MUL
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-
+						if (opnd3.equals(Interval.ZERO))
+							mulmod = Interval.ZERO;
+						else {
 							Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
+							mulmod = mul.evalBinaryExpression(Numeric32BitMod.INSTANCE, mul, opnd3, pp);
+						}
 
-							result.push(mul);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "DivOperator": { // DIV
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-							Interval div;
+						result.push(mulmod);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ExpOperator": { // EXP
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
 
-							if (opnd2.equals(Interval.ZERO))
-								div = Interval.ZERO;
-							else
-								div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
+						// EXP is not handled in Interval, so we work with low()
+						// and
+						// high()
+						MathNumber low, high;
+						Interval exp = null;
+						try {
+							low = new MathNumber(
+									Math.pow(opnd1.interval.getLow().toDouble(), opnd2.interval.getLow().toDouble()));
+							high = new MathNumber(
+									Math.pow(opnd1.interval.getLow().toDouble(), opnd2.interval.getLow().toDouble()));
 
-							result.push(div);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "SdivOperator": { // SDIV
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-							Interval div;
+							exp = new Interval(low, high);
 
-							if (opnd2.equals(Interval.ZERO))
-								div = Interval.ZERO;
-							else
-								div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
-
-							result.push(div);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "ModOperator": { // MOD
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-							Interval mod;
-
-							if (opnd2.equals(Interval.ZERO))
-								mod = Interval.ZERO;
-							else
-								mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
-
-							result.push(mod);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "SmodOperator": { // SMOD
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-							Interval mod;
-
-							if (opnd2.equals(Interval.ZERO))
-								mod = Interval.ZERO;
-							else
-								mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
-
-							result.push(mod);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "AddmodOperator": { // ADDMOD
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-							Interval opnd3 = result.pop();
-							Interval addmod;
-
-							if (opnd3.equals(Interval.ZERO))
-								addmod = Interval.ZERO;
-							else {
-								Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
-								addmod = sum.evalBinaryExpression(Numeric32BitMod.INSTANCE, sum, opnd3, pp);
-							}
-
-							result.push(addmod);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "MulmodOperator": { // MULMOD
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-							Interval opnd3 = result.pop();
-							Interval mulmod;
-
-							if (opnd3.equals(Interval.ZERO))
-								mulmod = Interval.ZERO;
-							else {
-								Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
-								mulmod = mul.evalBinaryExpression(Numeric32BitMod.INSTANCE, mul, opnd3, pp);
-							}
-
-							result.push(mulmod);
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "ExpOperator": { // EXP
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-
-							// EXP is not handled in Interval, so we work with low() and
-							// high()
-							MathNumber low, high;
-							Interval exp = null;
-							try {
-								low = new MathNumber(
-										Math.pow(opnd1.interval.getLow().toDouble(), opnd2.interval.getLow().toDouble()));
-								high = new MathNumber(
-										Math.pow(opnd1.interval.getLow().toDouble(), opnd2.interval.getLow().toDouble()));
-
-								exp = new Interval(low, high);
-
-								result.push(exp);
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "SignextendOperator": { // SIGNEXTEND
-							AbstractStack result = stack.clone();
-							result.pop();
-							result.pop();
-
-							// At the moment, we do not handle SIGNEXTEND
+							result.push(exp);
+						} catch (MathNumberConversionException e) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "LtOperator": { // LT
-							AbstractStack result = stack.clone();
+						}
 
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SignextendOperator": { // SIGNEXTEND
+						AbstractStack result = stack.clone();
+						result.pop();
+						result.pop();
 
-							Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
+						// At the moment, we do not handle SIGNEXTEND
+						result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "LtOperator": { // LT
+						AbstractStack result = stack.clone();
 
-							result.push(lt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
 
+						Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
+
+						if (lt == Satisfiability.SATISFIED)
+							result.push(new Interval(1, 1));
+						else if (lt == Satisfiability.NOT_SATISFIED)
+							result.push(Interval.ZERO);
+						else
+							result.push(new Interval(0, 1));
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SltOperator": { // SLT
+						AbstractStack result = stack.clone();
+
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
+
+						if (lt == Satisfiability.SATISFIED)
+							result.push(new Interval(1, 1));
+						else if (lt == Satisfiability.NOT_SATISFIED)
+							result.push(Interval.ZERO);
+						else
+							result.push(new Interval(0, 1));
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "GtOperator": { // GT
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
+
+						if (gt == Satisfiability.SATISFIED)
+							result.push(new Interval(1, 1));
+						else if (gt == Satisfiability.NOT_SATISFIED)
+							result.push(Interval.ZERO);
+						else
+							result.push(new Interval(0, 1));
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SgtOperator": { // SGT
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
+
+						if (gt == Satisfiability.SATISFIED)
+							result.push(new Interval(1, 1));
+						else if (gt == Satisfiability.NOT_SATISFIED)
+							result.push(Interval.ZERO);
+						else
+							result.push(new Interval(0, 1));
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "EqOperator": { // EQ
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						Satisfiability eq = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1, opnd2, pp);
+
+						if (eq == Satisfiability.SATISFIED)
+							result.push(new Interval(1, 1));
+						else if (eq == Satisfiability.NOT_SATISFIED)
+							result.push(Interval.ZERO);
+						else
+							result.push(new Interval(0, 1));
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "IszeroOperator": { // ISZERO
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+
+						Satisfiability iszero = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1,
+								Interval.ZERO,
+								pp);
+
+						if (iszero == Satisfiability.SATISFIED)
+							result.push(new Interval(1, 1));
+						else if (iszero == Satisfiability.NOT_SATISFIED)
+							result.push(Interval.ZERO);
+						else
+							result.push(new Interval(0, 1));
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "AndOperator": { // AND
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "SltOperator": { // SLT
-							AbstractStack result = stack.clone();
+						}
 
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						// AND is not handled in Interval, so we work with low()
+						// and
+						// high()
+						MathNumber low, high;
 
-							Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
-
-							result.push(lt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
-
+						try {
+							low = new MathNumber(opnd1.interval.getLow().toLong() & opnd2.interval.getLow().toLong());
+							high = new MathNumber(
+									opnd1.interval.getHigh().toLong() & opnd2.interval.getHigh().toLong());
+						} catch (MathNumberConversionException e) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "GtOperator": { // GT
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						}
 
-							Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
+						result.push(new Interval(low, high));
 
-							result.push(gt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "OrOperator": { // OR
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
 
+						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "SgtOperator": { // SGT
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						}
 
-							Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
+						// OR is not handled in Interval, so we work with low()
+						// and
+						// high()
+						MathNumber low, high;
 
-							result.push(gt.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
-
+						try {
+							low = new MathNumber(opnd1.interval.getLow().toLong() | opnd2.interval.getLow().toLong());
+							high = new MathNumber(
+									opnd1.interval.getHigh().toLong() | opnd2.interval.getHigh().toLong());
+						} catch (MathNumberConversionException e) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "EqOperator": { // EQ
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						}
 
-							Satisfiability eq = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1, opnd2, pp);
+						result.push(new Interval(low, high));
 
-							result.push(eq.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "XorOperator": { // XOR
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
 
+						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "IszeroOperator": { // ISZERO
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
+						}
 
-							Satisfiability iszero = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1, Interval.ZERO,
-									pp);
+						// XOR is not handled in Interval, so we work with low()
+						// and
+						// high()
+						MathNumber low, high;
 
-							result.push(iszero.equals(Satisfiability.SATISFIED) ? new Interval(1, 1) : Interval.ZERO);
-
+						try {
+							low = new MathNumber(opnd1.interval.getLow().toLong() ^ opnd2.interval.getLow().toLong());
+							high = new MathNumber(
+									opnd1.interval.getHigh().toLong() ^ opnd2.interval.getHigh().toLong());
+						} catch (MathNumberConversionException e) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "AndOperator": { // AND
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						}
 
-							if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+						result.push(new Interval(low, high));
 
-							// AND is not handled in Interval, so we work with low() and
-							// high()
-							MathNumber low, high;
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "NotOperator": { // NOT
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
 
-							try {
-								low = new MathNumber(opnd1.interval.getLow().toLong() & opnd2.interval.getLow().toLong());
-								high = new MathNumber(opnd1.interval.getHigh().toLong() & opnd2.interval.getHigh().toLong());
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							result.push(new Interval(low, high));
-							
+						if (opnd1 == Interval.TOP) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "OrOperator": { // OR
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						}
 
-							if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+						// NOT is not handled in Interval, so we work with low()
+						// and
+						// high()
+						MathNumber low, high;
 
-							// OR is not handled in Interval, so we work with low() and
-							// high()
-							MathNumber low, high;
+						try {
+							if (opnd1.interval.getLow().toLong() >= 0)
+								low = new MathNumber(
+										MAX.subtract(new BigDecimal(opnd1.interval.getLow().toLong() + 1)));
+							else
+								low = new MathNumber(~opnd1.interval.getLow().toLong());
 
-							try {
-								low = new MathNumber(opnd1.interval.getLow().toLong() | opnd2.interval.getLow().toLong());
-								high = new MathNumber(opnd1.interval.getHigh().toLong() | opnd2.interval.getHigh().toLong());
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+							if (opnd1.interval.getHigh().toLong() >= 0)
+								high = new MathNumber(
+										MAX.subtract(new BigDecimal(opnd1.interval.getHigh().toLong() + 1)));
+							else
+								high = new MathNumber(~opnd1.interval.getHigh().toLong());
 
-							result.push(new Interval(low, high));
-
+						} catch (MathNumberConversionException e) {
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "XorOperator": { // XOR
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
+						}
 
-							if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+						result.push(new Interval(low, high));
 
-							// XOR is not handled in Interval, so we work with low() and
-							// high()
-							MathNumber low, high;
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ByteOperator": { // BYTE
+						AbstractStack result = stack.clone();
+						Interval indexOfByte = result.pop();
+						Interval target = result.pop();
 
-							try {
-								low = new MathNumber(opnd1.interval.getLow().toLong() ^ opnd2.interval.getLow().toLong());
-								high = new MathNumber(opnd1.interval.getHigh().toLong() ^ opnd2.interval.getHigh().toLong());
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+						Interval resultInterval = new Interval().bottom(); // Accumulates
+						// retrieved
+						// bytes
 
-							result.push(new Interval(low, high));
+						if (target.equals(Interval.TOP)) {
+							result.push(Interval.TOP);
+						} else {
 
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "NotOperator": { // NOT
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
+							// Loop through all targets (each value of the
+							// target
+							// interval)
+							for (Long value : target.interval) {
+								byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
 
-							if (opnd1 == Interval.TOP) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+								// Loop through all possible indexes of byte to
+								// select
+								for (Long index : indexOfByte.interval) {
+									int intIndex = index.intValue();
 
-							// NOT is not handled in Interval, so we work with low() and
-							// high()
-							MathNumber low, high;
-
-							try {
-								if (opnd1.interval.getLow().toLong() >= 0)
-									low = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getLow().toLong() + 1)));
-								else
-									low = new MathNumber(~opnd1.interval.getLow().toLong());
-
-								if (opnd1.interval.getHigh().toLong() >= 0)
-									high = new MathNumber(MAX.subtract(new BigDecimal(opnd1.interval.getHigh().toLong() + 1)));
-								else
-									high = new MathNumber(~opnd1.interval.getHigh().toLong());
-
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							result.push(new Interval(low, high));
-
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "ByteOperator": { // BYTE
-							AbstractStack result = stack.clone();
-							Interval indexOfByte = result.pop();
-							Interval target = result.pop();
-
-							Interval resultInterval = new Interval().bottom(); // Accumulates
-							// retrieved
-							// bytes
-
-							if (target.equals(Interval.TOP)) {
-								result.push(Interval.TOP);
-							} else {
-
-								// Loop through all targets (each value of the target
-								// interval)
-								for (Long value : target.interval) {
-									byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
-
-									// Loop through all possible indexes of byte to
-									// select
-									for (Long index : indexOfByte.interval) {
-										int intIndex = index.intValue();
-
-										// Check if index is valid (>= 0 and <
-										// valueAsByteArray.length)
-										if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
-											resultInterval.lub(Interval.ZERO);
-										} else {
-											int selectedByteAsInt = valueAsByteArray[intIndex];
-											resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
-										}
+									// Check if index is valid (>= 0 and <
+									// valueAsByteArray.length)
+									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
+										resultInterval.lub(Interval.ZERO);
+									} else {
+										int selectedByteAsInt = valueAsByteArray[intIndex];
+										resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
 									}
 								}
-
-								result.push(resultInterval);
 							}
 
-							return new EVMAbstractState(result, memory, mu_i);
-					    }
-						case "ShlOperator": { // SHL
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-
-							// SHL is not handled in Interval, so we work with low() and
-							// high()
-
-							if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							try {
-								String op2LowString = opnd2.interval.getLow().toString();
-								String op2HighString = opnd2.interval.getHigh().toString();
-
-								BigInteger op2LowBigInteger = new BigInteger(op2LowString);
-								byte[] op2LowBytes = op2LowBigInteger.toByteArray();
-								byte[] resultShiftLeftLow = shiftLeft(op2LowBytes, opnd1.interval.getLow().toInt());
-
-								BigInteger op2HighBigInteger = new BigInteger(op2HighString);
-								byte[] op2HighBytes = op2HighBigInteger.toByteArray();
-								byte[] resultShiftLeftHigh = shiftLeft(op2HighBytes, opnd1.interval.getHigh().toInt());
-
-								result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftLow))),
-										new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftHigh)))));
-
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							return new EVMAbstractState(result, memory, mu_i);
+							result.push(resultInterval);
 						}
-						case "ShrOperator": { // SHR
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
 
-							// SHR is not handled in Interval, so we work with low() and
-							// high()
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ShlOperator": { // SHL
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
 
-							if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
+						// SHL is not handled in Interval, so we work with low()
+						// and
+						// high()
 
-							try {
-								String op2LowString = opnd2.interval.getLow().toString();
-								String op2HighString = opnd2.interval.getHigh().toString();
-
-								BigInteger op2LowBigInteger = new BigInteger(op2LowString);
-								byte[] op2LowBytes = op2LowBigInteger.toByteArray();
-								byte[] resultShiftRightLow = shiftRight(op2LowBytes, opnd1.interval.getLow().toInt());
-
-								BigInteger op2HighBigInteger = new BigInteger(op2HighString);
-								byte[] op2HighBytes = op2HighBigInteger.toByteArray();
-								byte[] resultShiftRightHigh = shiftRight(op2HighBytes, opnd1.interval.getHigh().toInt());
-
-								result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))),
-										new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
-
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "SarOperator": { // SAR
-							AbstractStack result = stack.clone();
-							Interval opnd1 = result.pop();
-							Interval opnd2 = result.pop();
-
-							// SAR is not handled in Interval, so we work with low() and
-							// high()
-
-							if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							try {
-								String op2LowString = opnd2.interval.getLow().toString();
-								String op2HighString = opnd2.interval.getHigh().toString();
-
-								BigInteger op2LowBigInteger = new BigInteger(op2LowString);
-								byte[] op2LowBytes = op2LowBigInteger.toByteArray();
-								byte[] resultShiftRightLow = shiftArithmeticRight(op2LowBytes, opnd1.interval.getLow().toInt());
-
-								BigInteger op2HighBigInteger = new BigInteger(op2HighString);
-								byte[] op2HighBytes = op2HighBigInteger.toByteArray();
-								byte[] resultShiftRightHigh = shiftArithmeticRight(op2HighBytes,
-										opnd1.interval.getHigh().toInt());
-
-								result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))),
-										new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
-
-							} catch (MathNumberConversionException e) {
-								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
-							}
-
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Sha3Operator": { // SHA3
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
-
-							// At the moment, we do not handle SHA3
+						if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
 							result.push(Interval.TOP);
-
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "BalanceOperator": { // BALANCE
-							AbstractStack result = stack.clone();
-							Interval address = result.pop();
 
-							// At the moment, we do not handle BALANCE
+						try {
+							String op2LowString = opnd2.interval.getLow().toString();
+							String op2HighString = opnd2.interval.getHigh().toString();
+
+							BigInteger op2LowBigInteger = new BigInteger(op2LowString);
+							byte[] op2LowBytes = op2LowBigInteger.toByteArray();
+							byte[] resultShiftLeftLow = shiftLeft(op2LowBytes, opnd1.interval.getLow().toInt());
+
+							BigInteger op2HighBigInteger = new BigInteger(op2HighString);
+							byte[] op2HighBytes = op2HighBigInteger.toByteArray();
+							byte[] resultShiftLeftHigh = shiftLeft(op2HighBytes, opnd1.interval.getHigh().toInt());
+
+							result.push(new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftLow))),
+									new MathNumber(new BigDecimal(new BigInteger(resultShiftLeftHigh)))));
+
+						} catch (MathNumberConversionException e) {
 							result.push(Interval.TOP);
-
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "CalldataloadOperator": { // CALLDATALOAD
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
 
-							// At the moment, we do not handle CALLDATALOAD
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ShrOperator": { // SHR
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
+
+						// SHR is not handled in Interval, so we work with low()
+						// and
+						// high()
+
+						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 							result.push(Interval.TOP);
-
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "CalldatacopyOperator": { // CALLDATACOPY
-							AbstractStack result = stack.clone();
-							Interval memOffset = result.pop();
-							Interval dataOffset = result.pop();
-							Interval length = result.pop();
 
-							// At the moment, we do not handle CALLDATACOPY
+						try {
+							String op2LowString = opnd2.interval.getLow().toString();
+							String op2HighString = opnd2.interval.getHigh().toString();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "CodecopyOperator": { // CODECOPY
-							AbstractStack result = stack.clone();
-							Interval memOffset = result.pop();
-							Interval codeOffset = result.pop();
-							Interval length = result.pop();
+							BigInteger op2LowBigInteger = new BigInteger(op2LowString);
+							byte[] op2LowBytes = op2LowBigInteger.toByteArray();
+							byte[] resultShiftRightLow = shiftRight(op2LowBytes, opnd1.interval.getLow().toInt());
 
-							// At the moment, we do not handle CODECOPY
+							BigInteger op2HighBigInteger = new BigInteger(op2HighString);
+							byte[] op2HighBytes = op2HighBigInteger.toByteArray();
+							byte[] resultShiftRightHigh = shiftRight(op2HighBytes, opnd1.interval.getHigh().toInt());
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "ExtcodesizeOperator": { // EXTCODESIZE
-							AbstractStack result = stack.clone();
-							Interval address = result.pop();
+							result.push(
+									new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))),
+											new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
 
-							// At the moment, we do not handle EXTCODESIZE
+						} catch (MathNumberConversionException e) {
 							result.push(Interval.TOP);
-
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "ExtcodecopyOperator": { // EXTCODECOPY
-							AbstractStack result = stack.clone();
-							Interval address = result.pop();
-							Interval memOffset = result.pop();
-							Interval codeOffset = result.pop();
-							Interval length = result.pop();
 
-							// At the moment, we do not handle EXTCODECOPY
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SarOperator": { // SAR
+						AbstractStack result = stack.clone();
+						Interval opnd1 = result.pop();
+						Interval opnd2 = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "ReturndatacopyOperator": { // RETURNDATACOPY
-							AbstractStack result = stack.clone();
-							Interval memOffset = result.pop();
-							Interval retOffset = result.pop();
-							Interval length = result.pop();
+						// SAR is not handled in Interval, so we work with low()
+						// and
+						// high()
 
-							// At the moment, we do not handle RETURNDATACOPY
-
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "ExtcodehashOperator": { // EXTCODEHASH
-							AbstractStack result = stack.clone();
-							Interval address = result.pop();
-
-							// At the moment, we do not handle EXTCODEHASH
+						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
 							result.push(Interval.TOP);
-
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "BlockhashOperator": { // BLOCKHASH
-							AbstractStack result = stack.clone();
-							Interval blockNumber = result.pop();
 
-							// At the moment, we do not handle BLOCKHASH
+						try {
+							String op2LowString = opnd2.interval.getLow().toString();
+							String op2HighString = opnd2.interval.getHigh().toString();
+
+							BigInteger op2LowBigInteger = new BigInteger(op2LowString);
+							byte[] op2LowBytes = op2LowBigInteger.toByteArray();
+							byte[] resultShiftRightLow = shiftArithmeticRight(op2LowBytes,
+									opnd1.interval.getLow().toInt());
+
+							BigInteger op2HighBigInteger = new BigInteger(op2HighString);
+							byte[] op2HighBytes = op2HighBigInteger.toByteArray();
+							byte[] resultShiftRightHigh = shiftArithmeticRight(op2HighBytes,
+									opnd1.interval.getHigh().toInt());
+
+							result.push(
+									new Interval(new MathNumber(new BigDecimal(new BigInteger(resultShiftRightLow))),
+											new MathNumber(new BigDecimal(new BigInteger(resultShiftRightHigh)))));
+
+						} catch (MathNumberConversionException e) {
 							result.push(Interval.TOP);
-
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "PopOperator": { // POP
-							AbstractStack result = stack.clone();
 
-							result.pop();
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Sha3Operator": { // SHA3
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
 
+						// At the moment, we do not handle SHA3
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "BalanceOperator": { // BALANCE
+						AbstractStack result = stack.clone();
+						Interval address = result.pop();
+
+						// At the moment, we do not handle BALANCE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CalldataloadOperator": { // CALLDATALOAD
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+
+						// At the moment, we do not handle CALLDATALOAD
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CalldatacopyOperator": { // CALLDATACOPY
+						AbstractStack result = stack.clone();
+						Interval memOffset = result.pop();
+						Interval dataOffset = result.pop();
+						Interval length = result.pop();
+
+						// At the moment, we do not handle CALLDATACOPY
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CodecopyOperator": { // CODECOPY
+						AbstractStack result = stack.clone();
+						Interval memOffset = result.pop();
+						Interval codeOffset = result.pop();
+						Interval length = result.pop();
+
+						// At the moment, we do not handle CODECOPY
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ExtcodesizeOperator": { // EXTCODESIZE
+						AbstractStack result = stack.clone();
+						Interval address = result.pop();
+
+						// At the moment, we do not handle EXTCODESIZE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ExtcodecopyOperator": { // EXTCODECOPY
+						AbstractStack result = stack.clone();
+						Interval address = result.pop();
+						Interval memOffset = result.pop();
+						Interval codeOffset = result.pop();
+						Interval length = result.pop();
+
+						// At the moment, we do not handle EXTCODECOPY
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ReturndatacopyOperator": { // RETURNDATACOPY
+						AbstractStack result = stack.clone();
+						Interval memOffset = result.pop();
+						Interval retOffset = result.pop();
+						Interval length = result.pop();
+
+						// At the moment, we do not handle RETURNDATACOPY
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ExtcodehashOperator": { // EXTCODEHASH
+						AbstractStack result = stack.clone();
+						Interval address = result.pop();
+
+						// At the moment, we do not handle EXTCODEHASH
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "BlockhashOperator": { // BLOCKHASH
+						AbstractStack result = stack.clone();
+						Interval blockNumber = result.pop();
+
+						// At the moment, we do not handle BLOCKHASH
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "PopOperator": { // POP
+						AbstractStack result = stack.clone();
+
+						result.pop();
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "MloadOperator": { // MLOAD
+						AbstractStack result = stack.clone();
+						Interval new_mu_i = null;
+
+						Interval offset = result.pop();
+
+						if (mu_i.compareTo(new Interval(1, 1)) == -1) {
+							// This is an error. We cannot read from memory if
+							// there
+							// is no active words saved
+							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
-						case "MloadOperator": { // MLOAD
-							AbstractStack result = stack.clone();
-							Interval new_mu_i = null;
 
-							Interval offset = result.pop();
+						if (memory == null) {
+							LOG.warn("[MLOAD] memory == null");
+						}
 
-							if (mu_i.compareTo(new Interval(1, 1)) == -1) {
-								// This is an error. We cannot read from memory if there
-								// is no active words saved
+						if (offset.interval.isSingleton()) {
+							BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
+							BigDecimal thirtyTwo = new BigDecimal(32);
+							BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
+									.divide(thirtyTwo)
+									.setScale(0, RoundingMode.UP);
+
+							Interval state = memory.getState(offsetBigDecimal);
+							if (state == Interval.BOTTOM) {
 								result.push(Interval.TOP);
-								return new EVMAbstractState(result, memory, mu_i);
+								LOG.warn("[MLOAD] state == Interval.BOTTOM");
 							}
 
-							if (memory == null) {
-								LOG.warn("[MLOAD] memory == null");
-							}
+							else
+								result.push(state);
 
-							if (offset.interval.isSingleton()) {
-								BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
-								BigDecimal thirtyTwo = new BigDecimal(32);
-								BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
-										.divide(thirtyTwo)
-										.setScale(0, RoundingMode.UP);
+							// We create a new Interval singleton with the newly
+							// calculated `current_mu_i`
+							// Interval intervalCurrent_mu_i = new
+							// Interval(current_mu_i.intValueExact(),
+							// current_mu_i.intValueExact());
+							//
+							// // Then we compare the 2 mu_i and update the new
+							// value
+							// if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
+							// new_mu_i = intervalCurrent_mu_i;
+							// else
+							new_mu_i = mu_i;
 
-								Interval state = memory.getState(offsetBigDecimal);
-								if (state == Interval.BOTTOM) {
-									result.push(Interval.TOP);
-									LOG.warn("[MLOAD] state == Interval.BOTTOM");
-								}
+						} else {
+							result.push(Interval.TOP);
+							new_mu_i = mu_i;
+						}
 
-								else
-									result.push(state);
+						return new EVMAbstractState(result, memory, new_mu_i);
+					}
+					case "MstoreOperator": { // MSTORE
+						AbstractStack stackResult = stack.clone();
+						Memory memoryResult = null;
+						Interval new_mu_i = null;
 
-								// We create a new Interval singleton with the newly
-								// calculated `current_mu_i`
-								// Interval intervalCurrent_mu_i = new
-								// Interval(current_mu_i.intValueExact(),
-								// current_mu_i.intValueExact());
-								//
-								// // Then we compare the 2 mu_i and update the new
-								// value
-								// if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-								// new_mu_i = intervalCurrent_mu_i;
-								// else
+						Interval offset = stackResult.pop();
+						Interval value = stackResult.pop();
+
+						if (offset.interval.isSingleton()) {
+							BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
+							BigDecimal thirtyTwo = new BigDecimal(32);
+							BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
+									.divide(thirtyTwo)
+									.setScale(0, RoundingMode.UP); // setScale()
+																	// =
+							// Ceiling
+							// function
+
+							memoryResult = memory.putState(offsetBigDecimal, value);
+
+							// We create a new Interval singleton with the newly
+							// calculated `current_mu_i`
+							Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
+									current_mu_i.intValueExact());
+
+							// Then we compare the 2 mu_i and update the new
+							// value
+							if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
+								new_mu_i = intervalCurrent_mu_i;
+							else
 								new_mu_i = mu_i;
 
-							} else {
-								result.push(Interval.TOP);
-								new_mu_i = mu_i;
-							}
-
-							return new EVMAbstractState(result, memory, new_mu_i);
+						} else {
+							new_mu_i = mu_i;
+							// LOG.warn("[MSTORE] !offset.interval.isSingleton()
+							// -
+							// offset: " + offset);
+							memoryResult = memory;
 						}
-						case "MstoreOperator": { // MSTORE
-							AbstractStack stackResult = stack.clone();
-							Memory memoryResult = null;
-							Interval new_mu_i = null;
 
-							Interval offset = stackResult.pop();
-							Interval value = stackResult.pop();
+						return new EVMAbstractState(stackResult, memoryResult, new_mu_i);
+					}
+					case "Mstore8Operator": { // MSTORE8
+						AbstractStack result = stack.clone();
+						Memory memoryResult = null;
+						Interval new_mu_i = null;
 
-							if (offset.interval.isSingleton()) {
-								BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
-								BigDecimal thirtyTwo = new BigDecimal(32);
-								BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
-										.divide(thirtyTwo)
-										.setScale(0, RoundingMode.UP); // setScale() =
-								// Ceiling
-								// function
+						Interval offset = result.pop();
+						Interval value = result.pop();
 
-								memoryResult = memory.putState(offsetBigDecimal, value);
+						if (offset.interval.isSingleton()) {
+							BigDecimal one = new BigDecimal(1);
+							BigDecimal thirtyTwo = new BigDecimal(32);
 
-								// We create a new Interval singleton with the newly
-								// calculated `current_mu_i`
-								Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
-										current_mu_i.intValueExact());
+							BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
+							BigDecimal current_mu_i = offsetBigDecimal.add(one)
+									.divide(thirtyTwo)
+									.setScale(0, RoundingMode.UP); // setScale()
+																	// =
+							// Ceiling
+							// function
 
-								// Then we compare the 2 mu_i and update the new value
-								if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-									new_mu_i = intervalCurrent_mu_i;
-								else
-									new_mu_i = mu_i;
+							if (value.interval.isSingleton()) {
+								BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
+								BigDecimal valueByteBigDecimal = valueBigDecimal.remainder(new BigDecimal(256));
 
-							} else {
-								new_mu_i = mu_i;
-								// LOG.warn("[MSTORE] !offset.interval.isSingleton() -
-								// offset: " + offset);
-								memoryResult = memory;
-							}
+								Interval valueInByte = new Interval(valueByteBigDecimal.intValueExact(),
+										valueByteBigDecimal.intValueExact());
 
-							return new EVMAbstractState(stackResult, memoryResult, new_mu_i);
-						}
-						case "Mstore8Operator": { // MSTORE8
-							AbstractStack result = stack.clone();
-							Memory memoryResult = null;
-							Interval new_mu_i = null;
-
-							Interval offset = result.pop();
-							Interval value = result.pop();
-
-							if (offset.interval.isSingleton()) {
-								BigDecimal one = new BigDecimal(1);
-								BigDecimal thirtyTwo = new BigDecimal(32);
-
-								BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
-								BigDecimal current_mu_i = offsetBigDecimal.add(one)
-										.divide(thirtyTwo)
-										.setScale(0, RoundingMode.UP); // setScale() =
-								// Ceiling
-								// function
-
-								if (value.interval.isSingleton()) {
-									BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
-									BigDecimal valueByteBigDecimal = valueBigDecimal.remainder(new BigDecimal(256));
-
-									Interval valueInByte = new Interval(valueByteBigDecimal.intValueExact(),
-											valueByteBigDecimal.intValueExact());
-
-									memoryResult = memory.putState(offsetBigDecimal, valueInByte);
-								} else {
-									// TODO to handle else-condition
-									// If value is not singleton, how would we handle
-									// the `mod 256` operation?
-									memoryResult = memory.putState(offsetBigDecimal, Interval.TOP);
-								}
-
-								// We create a new Interval singleton with the newly
-								// calculated `current_mu_i`
-								Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
-										current_mu_i.intValueExact());
-
-								if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-									new_mu_i = intervalCurrent_mu_i;
-								else
-									new_mu_i = mu_i;
-
+								memoryResult = memory.putState(offsetBigDecimal, valueInByte);
 							} else {
 								// TODO to handle else-condition
-								new_mu_i = mu_i;
-								memoryResult = memory;
+								// If value is not singleton, how would we
+								// handle
+								// the `mod 256` operation?
+								memoryResult = memory.putState(offsetBigDecimal, Interval.TOP);
 							}
 
-							return new EVMAbstractState(result, memoryResult, new_mu_i);
-						}
-						case "SloadOperator": { // SLOAD
-							AbstractStack result = stack.clone();
-							Interval key = result.pop();
+							// We create a new Interval singleton with the newly
+							// calculated `current_mu_i`
+							Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
+									current_mu_i.intValueExact());
 
-							// At the moment, we do not handle SLOAD
-							result.push(Interval.TOP);
+							if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
+								new_mu_i = intervalCurrent_mu_i;
+							else
+								new_mu_i = mu_i;
 
-							return new EVMAbstractState(result, memory, mu_i);
+						} else {
+							// TODO to handle else-condition
+							new_mu_i = mu_i;
+							memoryResult = memory;
 						}
-						case "SstoreOperator": { // SSTORE
-							AbstractStack result = stack.clone();
-							Interval key = result.pop();
-							Interval value = result.pop();
 
-							// At the moment, we do not handle SSTORE
+						return new EVMAbstractState(result, memoryResult, new_mu_i);
+					}
+					case "SloadOperator": { // SLOAD
+						AbstractStack result = stack.clone();
+						Interval key = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Dup1Operator": { // DUP1
-							return new EVMAbstractState(dupX(1, stack.clone()), memory, mu_i);
-						}
-						case "Dup2Operator": { // DUP2
-							return new EVMAbstractState(dupX(2, stack.clone()), memory, mu_i);
-						}
-						case "Dup3Operator": { // DUP3
-							return new EVMAbstractState(dupX(3, stack.clone()), memory, mu_i);
-						}
-						case "Dup4Operator": { // DUP4
-							return new EVMAbstractState(dupX(4, stack.clone()), memory, mu_i);
-						}
-						case "Dup5Operator": { // DUP5
-							return new EVMAbstractState(dupX(5, stack.clone()), memory, mu_i);
-						}
-						case "Dup6Operator": { // DUP6
-							return new EVMAbstractState(dupX(6, stack.clone()), memory, mu_i);
-						}
-						case "Dup7Operator": { // DUP7
-							return new EVMAbstractState(dupX(7, stack.clone()), memory, mu_i);
-						}
-						case "Dup8Operator": { // DUP8
-							return new EVMAbstractState(dupX(8, stack.clone()), memory, mu_i);
-						}
-						case "Dup9Operator": { // DUP9
-							return new EVMAbstractState(dupX(9, stack.clone()), memory, mu_i);
-						}
-						case "Dup10Operator": { // DUP10
-							return new EVMAbstractState(dupX(10, stack.clone()), memory, mu_i);
-						}
-						case "Dup11Operator": { // DUP11
-							return new EVMAbstractState(dupX(11, stack.clone()), memory, mu_i);
-						}
-						case "Dup12Operator": { // DUP12
-							return new EVMAbstractState(dupX(12, stack.clone()), memory, mu_i);
-						}
-						case "Dup13Operator": { // DUP13
-							return new EVMAbstractState(dupX(13, stack.clone()), memory, mu_i);
-						}
-						case "Dup14Operator": { // DUP14
-							return new EVMAbstractState(dupX(14, stack.clone()), memory, mu_i);
-						}
-						case "Dup15Operator": { // DUP15
-							return new EVMAbstractState(dupX(15, stack.clone()), memory, mu_i);
-						}
-						case "Dup16Operator": { // DUP16
-							return new EVMAbstractState(dupX(16, stack.clone()), memory, mu_i);
-						}
-						case "Swap1Operator": { // SWAP1
-							return new EVMAbstractState(swapX(1, stack.clone()), memory, mu_i);
-						}
-						case "Swap2Operator": { // SWAP2
-							return new EVMAbstractState(swapX(2, stack.clone()), memory, mu_i);
-						}
-						case "Swap3Operator": { // SWAP3
-							return new EVMAbstractState(swapX(3, stack.clone()), memory, mu_i);
-						}
-						case "Swap4Operator": { // SWAP4
-							return new EVMAbstractState(swapX(4, stack.clone()), memory, mu_i);
-						}
-						case "Swap5Operator": { // SWAP5
-							return new EVMAbstractState(swapX(5, stack.clone()), memory, mu_i);
-						}
-						case "Swap6Operator": { // SWAP6
-							return new EVMAbstractState(swapX(6, stack.clone()), memory, mu_i);
-						}
-						case "Swap7Operator": { // SWAP7
-							return new EVMAbstractState(swapX(7, stack.clone()), memory, mu_i);
-						}
-						case "Swap8Operator": { // SWAP8
-							return new EVMAbstractState(swapX(8, stack.clone()), memory, mu_i);
-						}
-						case "Swap9Operator": { // SWAP9
-							return new EVMAbstractState(swapX(9, stack.clone()), memory, mu_i);
-						}
-						case "Swap10Operator": { // SWAP10
-							return new EVMAbstractState(swapX(10, stack.clone()), memory, mu_i);
-						}
-						case "Swap11Operator": { // SWAP11
-							return new EVMAbstractState(swapX(11, stack.clone()), memory, mu_i);
-						}
-						case "Swap12Operator": { // SWAP12
-							return new EVMAbstractState(swapX(12, stack.clone()), memory, mu_i);
-						}
-						case "Swap13Operator": { // SWAP13
-							return new EVMAbstractState(swapX(13, stack.clone()), memory, mu_i);
-						}
-						case "Swap14Operator": { // SWAP14
-							return new EVMAbstractState(swapX(14, stack.clone()), memory, mu_i);
-						}
-						case "Swap15Operator": { // SWAP15
-							return new EVMAbstractState(swapX(15, stack.clone()), memory, mu_i);
-						}
-						case "Swap16Operator": { // SWAP16
-							return new EVMAbstractState(swapX(16, stack.clone()), memory, mu_i);
-						}
-						case "Log0Operator": { // LOG0
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
+						// At the moment, we do not handle SLOAD
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle LOG0
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "SstoreOperator": { // SSTORE
+						AbstractStack result = stack.clone();
+						Interval key = result.pop();
+						Interval value = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Log1Operator": { // LOG1
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
-							Interval topic1 = result.pop();
+						// At the moment, we do not handle SSTORE
 
-							// At the moment, we do not handle LOG1
-							result.push(Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Dup1Operator": { // DUP1
+						return new EVMAbstractState(dupX(1, stack.clone()), memory, mu_i);
+					}
+					case "Dup2Operator": { // DUP2
+						return new EVMAbstractState(dupX(2, stack.clone()), memory, mu_i);
+					}
+					case "Dup3Operator": { // DUP3
+						return new EVMAbstractState(dupX(3, stack.clone()), memory, mu_i);
+					}
+					case "Dup4Operator": { // DUP4
+						return new EVMAbstractState(dupX(4, stack.clone()), memory, mu_i);
+					}
+					case "Dup5Operator": { // DUP5
+						return new EVMAbstractState(dupX(5, stack.clone()), memory, mu_i);
+					}
+					case "Dup6Operator": { // DUP6
+						return new EVMAbstractState(dupX(6, stack.clone()), memory, mu_i);
+					}
+					case "Dup7Operator": { // DUP7
+						return new EVMAbstractState(dupX(7, stack.clone()), memory, mu_i);
+					}
+					case "Dup8Operator": { // DUP8
+						return new EVMAbstractState(dupX(8, stack.clone()), memory, mu_i);
+					}
+					case "Dup9Operator": { // DUP9
+						return new EVMAbstractState(dupX(9, stack.clone()), memory, mu_i);
+					}
+					case "Dup10Operator": { // DUP10
+						return new EVMAbstractState(dupX(10, stack.clone()), memory, mu_i);
+					}
+					case "Dup11Operator": { // DUP11
+						return new EVMAbstractState(dupX(11, stack.clone()), memory, mu_i);
+					}
+					case "Dup12Operator": { // DUP12
+						return new EVMAbstractState(dupX(12, stack.clone()), memory, mu_i);
+					}
+					case "Dup13Operator": { // DUP13
+						return new EVMAbstractState(dupX(13, stack.clone()), memory, mu_i);
+					}
+					case "Dup14Operator": { // DUP14
+						return new EVMAbstractState(dupX(14, stack.clone()), memory, mu_i);
+					}
+					case "Dup15Operator": { // DUP15
+						return new EVMAbstractState(dupX(15, stack.clone()), memory, mu_i);
+					}
+					case "Dup16Operator": { // DUP16
+						return new EVMAbstractState(dupX(16, stack.clone()), memory, mu_i);
+					}
+					case "Swap1Operator": { // SWAP1
+						return new EVMAbstractState(swapX(1, stack.clone()), memory, mu_i);
+					}
+					case "Swap2Operator": { // SWAP2
+						return new EVMAbstractState(swapX(2, stack.clone()), memory, mu_i);
+					}
+					case "Swap3Operator": { // SWAP3
+						return new EVMAbstractState(swapX(3, stack.clone()), memory, mu_i);
+					}
+					case "Swap4Operator": { // SWAP4
+						return new EVMAbstractState(swapX(4, stack.clone()), memory, mu_i);
+					}
+					case "Swap5Operator": { // SWAP5
+						return new EVMAbstractState(swapX(5, stack.clone()), memory, mu_i);
+					}
+					case "Swap6Operator": { // SWAP6
+						return new EVMAbstractState(swapX(6, stack.clone()), memory, mu_i);
+					}
+					case "Swap7Operator": { // SWAP7
+						return new EVMAbstractState(swapX(7, stack.clone()), memory, mu_i);
+					}
+					case "Swap8Operator": { // SWAP8
+						return new EVMAbstractState(swapX(8, stack.clone()), memory, mu_i);
+					}
+					case "Swap9Operator": { // SWAP9
+						return new EVMAbstractState(swapX(9, stack.clone()), memory, mu_i);
+					}
+					case "Swap10Operator": { // SWAP10
+						return new EVMAbstractState(swapX(10, stack.clone()), memory, mu_i);
+					}
+					case "Swap11Operator": { // SWAP11
+						return new EVMAbstractState(swapX(11, stack.clone()), memory, mu_i);
+					}
+					case "Swap12Operator": { // SWAP12
+						return new EVMAbstractState(swapX(12, stack.clone()), memory, mu_i);
+					}
+					case "Swap13Operator": { // SWAP13
+						return new EVMAbstractState(swapX(13, stack.clone()), memory, mu_i);
+					}
+					case "Swap14Operator": { // SWAP14
+						return new EVMAbstractState(swapX(14, stack.clone()), memory, mu_i);
+					}
+					case "Swap15Operator": { // SWAP15
+						return new EVMAbstractState(swapX(15, stack.clone()), memory, mu_i);
+					}
+					case "Swap16Operator": { // SWAP16
+						return new EVMAbstractState(swapX(16, stack.clone()), memory, mu_i);
+					}
+					case "Log0Operator": { // LOG0
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Log2Operator": { // LOG2
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
-							Interval topic1 = result.pop();
-							Interval topic2 = result.pop();
+						// At the moment, we do not handle LOG0
 
-							// At the moment, we do not handle LOG2
-							result.push(Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Log1Operator": { // LOG1
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
+						Interval topic1 = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Log3Operator": { // LOG3
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
-							Interval topic1 = result.pop();
-							Interval topic2 = result.pop();
-							Interval topic3 = result.pop();
+						// At the moment, we do not handle LOG1
+						result.push(Interval.ZERO);
 
-							// At the moment, we do not handle LOG3
-							result.push(Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Log2Operator": { // LOG2
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
+						Interval topic1 = result.pop();
+						Interval topic2 = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Log4Operator": { // LOG4
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
-							Interval topic1 = result.pop();
-							Interval topic2 = result.pop();
-							Interval topic3 = result.pop();
-							Interval topic4 = result.pop();
+						// At the moment, we do not handle LOG2
+						result.push(Interval.ZERO);
 
-							// At the moment, we do not handle LOG4
-							result.push(Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Log3Operator": { // LOG3
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
+						Interval topic1 = result.pop();
+						Interval topic2 = result.pop();
+						Interval topic3 = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "CreateOperator": { // CREATE
-							AbstractStack result = stack.clone();
-							Interval value = result.pop();
-							Interval offset = result.pop();
-							Interval length = result.pop();
+						// At the moment, we do not handle LOG3
+						result.push(Interval.ZERO);
 
-							// At the moment, we do not handle CREATE
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Log4Operator": { // LOG4
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
+						Interval topic1 = result.pop();
+						Interval topic2 = result.pop();
+						Interval topic3 = result.pop();
+						Interval topic4 = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "Create2Operator": { // CREATE2
-							AbstractStack result = stack.clone();
-							Interval value = result.pop();
-							Interval offset = result.pop();
-							Interval length = result.pop();
-							Interval salt = result.pop();
+						// At the moment, we do not handle LOG4
+						result.push(Interval.ZERO);
 
-							// At the moment, we do not handle CREATE2
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CreateOperator": { // CREATE
+						AbstractStack result = stack.clone();
+						Interval value = result.pop();
+						Interval offset = result.pop();
+						Interval length = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "CallOperator": { // CALL
-							AbstractStack result = stack.clone();
-							Interval gas = result.pop();
-							Interval to = result.pop();
-							Interval value = result.pop();
-							Interval inOffset = result.pop();
-							Interval inLength = result.pop();
-							Interval outOffset = result.pop();
-							Interval outLength = result.pop();
+						// At the moment, we do not handle CREATE
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle CALL
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "Create2Operator": { // CREATE2
+						AbstractStack result = stack.clone();
+						Interval value = result.pop();
+						Interval offset = result.pop();
+						Interval length = result.pop();
+						Interval salt = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "CallcodeOperator": { // CALLCODE
-							AbstractStack result = stack.clone();
-							Interval gas = result.pop();
-							Interval to = result.pop();
-							Interval value = result.pop();
-							Interval inOffset = result.pop();
-							Interval inLength = result.pop();
-							Interval outOffset = result.pop();
-							Interval outLength = result.pop();
+						// At the moment, we do not handle CREATE2
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle CALLCODE
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CallOperator": { // CALL
+						AbstractStack result = stack.clone();
+						Interval gas = result.pop();
+						Interval to = result.pop();
+						Interval value = result.pop();
+						Interval inOffset = result.pop();
+						Interval inLength = result.pop();
+						Interval outOffset = result.pop();
+						Interval outLength = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "ReturnOperator": { // RETURN
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
+						// At the moment, we do not handle CALL
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle RETURN
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "CallcodeOperator": { // CALLCODE
+						AbstractStack result = stack.clone();
+						Interval gas = result.pop();
+						Interval to = result.pop();
+						Interval value = result.pop();
+						Interval inOffset = result.pop();
+						Interval inLength = result.pop();
+						Interval outOffset = result.pop();
+						Interval outLength = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "DelegatecallOperator": { // DELEGATECALL
-							AbstractStack result = stack.clone();
-							Interval gas = result.pop();
-							Interval to = result.pop();
-							Interval inOffset = result.pop();
-							Interval inLength = result.pop();
-							Interval outOffset = result.pop();
-							Interval outLength = result.pop();
+						// At the moment, we do not handle CALLCODE
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle DELEGATECALL
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "ReturnOperator": { // RETURN
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "StaticcallOperator": { // STATICCALL
-							AbstractStack result = stack.clone();
-							Interval gas = result.pop();
-							Interval to = result.pop();
-							Interval inOffset = result.pop();
-							Interval inLength = result.pop();
-							Interval outOffset = result.pop();
-							Interval outLength = result.pop();
+						// At the moment, we do not handle RETURN
 
-							// At the moment, we do not handle STATICCALL
-							result.push(Interval.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "DelegatecallOperator": { // DELEGATECALL
+						AbstractStack result = stack.clone();
+						Interval gas = result.pop();
+						Interval to = result.pop();
+						Interval inOffset = result.pop();
+						Interval inLength = result.pop();
+						Interval outOffset = result.pop();
+						Interval outLength = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "RevertOperator": { // REVERT
-							AbstractStack result = stack.clone();
-							Interval offset = result.pop();
-							Interval length = result.pop();
+						// At the moment, we do not handle DELEGATECALL
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle REVERT
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "StaticcallOperator": { // STATICCALL
+						AbstractStack result = stack.clone();
+						Interval gas = result.pop();
+						Interval to = result.pop();
+						Interval inOffset = result.pop();
+						Interval inLength = result.pop();
+						Interval outOffset = result.pop();
+						Interval outLength = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-						case "InvalidOperator": { // INVALID
-							return this;
-						}
-						case "SelfdestructOperator": { // SELFDESTRUCT
-							AbstractStack result = stack.clone();
-							Interval recipient = result.pop();
+						// At the moment, we do not handle STATICCALL
+						result.push(Interval.TOP);
 
-							// At the moment, we do not handle SELFDESTRUCT
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "RevertOperator": { // REVERT
+						AbstractStack result = stack.clone();
+						Interval offset = result.pop();
+						Interval length = result.pop();
 
-							return new EVMAbstractState(result, memory, mu_i);
-						}
+						// At the moment, we do not handle REVERT
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
+					case "InvalidOperator": { // INVALID
+						return this;
+					}
+					case "SelfdestructOperator": { // SELFDESTRUCT
+						AbstractStack result = stack.clone();
+						Interval recipient = result.pop();
+
+						// At the moment, we do not handle SELFDESTRUCT
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
 					}
 				}
 			}
 		} catch (NoSuchElementException e) {
-//			LOG.error("smallStepSemantics of " + expression + " at " + ((ProgramCounterLocation) expression.getCodeLocation()).getSourceCodeLine());
-//			LOG.error(stack);
 			System.err.println("[SSS] Operation not performed: " + e.getMessage() + " " + e);
 		}
 
@@ -1378,8 +1430,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
 		AbstractStack result = stack.clone();
-		
-		if(result.size() < x)
+
+		if (result.size() < x)
 			return result;
 
 		Interval target1 = result.pop();
@@ -1414,7 +1466,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			if (expression instanceof UnaryExpression) {
 				UnaryExpression un = (UnaryExpression) expression;
 				UnaryOperator op = un.getOperator();
-				
+
 				if (op instanceof JumpiOperator) { // JUMPI
 					AbstractStack result = stack.clone();
 					result.pop(); // Interval destination = result.pop();
@@ -1463,12 +1515,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							}
 						}
 					}
-				}
-			}
+				} 
+			} 
 		} catch (NoSuchElementException e) {
 			System.err.println("[ASSUME] Operation not performed: " + e.getMessage() + " " + e);
-//			System.out.printf("un: %s, op: %s, src: %s, dest: %s \n", (UnaryExpression) expression, ((UnaryExpression) expression).getOperator(), src, dest);
-//			System.out.println(stack);
 		}
 
 		return this;
