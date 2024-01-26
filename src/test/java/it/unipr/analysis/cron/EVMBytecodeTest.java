@@ -44,10 +44,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/statistics.xls";
 	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
+	
+	// Statistics
+	private int numberOfAPIEtherscanRequest = 0;
+	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 
 	@Ignore
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x1dd80016e3d4ae146ee2ebb484e8edd92dacc4ce";
+		String SC_ADDRESS = "0xeC31e65e1cBdc22B1dfBC3F04a53db5505F6A9C0";
 		toFile(newAnalysis(SC_ADDRESS));
 	}
 
@@ -70,7 +74,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					for (int i = 0; i < smartContracts.size(); i++) {
 						String address = smartContracts.get(i);
 						
-						if(i % 5 == 0) {
+						if(i % 4 == 0) {
 							try {
 								Thread.sleep(1001); // I can do max 5 API request in 1 sec to Etherscan.io
 							} catch (InterruptedException e) {
@@ -149,14 +153,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			if(!smartContractsTerminated.contains(smartContracts.get(i))) {
 				String msg = MyLogger.newLogger()
 						.address(smartContracts.get(i))
-						.notes("Killed: loop detected")
+						.notes("Killed: timeout")
 						.build().toString();
 				toFile(msg);
 			}
 		}
 
 		System.out.println("Stats successfully written in " + FILENAME);
-
+		System.out.printf("API Etherscan Request: %s, succesfully: %s \n", numberOfAPIEtherscanRequest, numberOfAPIEtherscanRequestOnSuccess);
 	}
 	
 	/**
@@ -247,8 +251,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
-
+		
+		// If the file does not exists, we will do an API request to Etherscan
+		File file = new File(BYTECODE_FULLPATH);
+        if(!file.exists()) {
+        	numberOfAPIEtherscanRequest++;
+        	if(EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
+        		numberOfAPIEtherscanRequestOnSuccess++;
+        }
+        
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
