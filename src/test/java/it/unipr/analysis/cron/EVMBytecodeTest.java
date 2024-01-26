@@ -37,7 +37,7 @@ import java.util.Scanner;
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = true;
+	private final static boolean GENERATE_CFG = false;
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
@@ -49,42 +49,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	public void testSCFromEtherscan() throws Exception {
 		String SC_ADDRESS = "0x1dd80016e3d4ae146ee2ebb484e8edd92dacc4ce";
 		toFile(newAnalysis(SC_ADDRESS));
-	}
-
-	@Ignore
-	public void testSCWithProblems() throws Exception {
-		// There are a lot of INVALID
-		String[] smartContractsWithErrors = new String[] {
-				"0x576501abd98ce5472b03b7ab4f5980941db7ef37"
-		};
-
-		String stats = "";
-
-		for(int i = 0; i < smartContractsWithErrors.length; i++) {
-			stats += newAnalysis(smartContractsWithErrors[i]);
-			stats += " \n";
-		}
-
-		System.err.println("\n\n\n");
-		System.err.println("[PREVIEW] Final results");
-		System.out.println(stats);
-	}
-
-	@Ignore
-	public void testEVMBytecodeAnalysisSingleThread() throws Exception {
-		String stats = "";
-		List<String> smartContracts = readSmartContractsFromFile();
-		
-		for (int i = 0; i < smartContracts.size(); i++) {
-			stats += newAnalysis(smartContracts.get(i));
-		}
-
-		System.err.println("\n\n\n");
-		System.err.println("[PREVIEW] Final results");
-		System.out.println(stats);
-
-		toFile(stats);
-		System.out.println("Stats successfully written in " + FILENAME);
 	}
 
 	@Test
@@ -123,8 +87,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 								synchronized (mutex) {
 									toFile(myStats);
-									mutex.notifyAll();
 									smartContractsTerminated.add(address);
+									counter++;
+									
+									System.out.printf("SC: %s, SC ended: %s, in progress: %s \n", smartContracts.size(), smartContractsTerminated.size(), (smartContracts.size() - counter));
+									
+									mutex.notifyAll();
 								}
 
 							} catch (Exception e) {
@@ -147,7 +115,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					try {
 						while(counter < smartContracts.size()) {
 							mutex.wait();
-							counter++;
 						}
 
 					} catch (InterruptedException e) {
