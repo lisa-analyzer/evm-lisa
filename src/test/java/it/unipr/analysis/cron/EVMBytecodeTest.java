@@ -1,5 +1,6 @@
 package it.unipr.analysis.cron;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -22,8 +23,12 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +92,27 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			"0x000000000d38df53b45c5733c7b34000de0bdf52",
 			"0x0122db5fba163b123ebc047d735437c6a6677e6f"
 	};
+		
+	@Before
+	public void clean() {
+	        try {
+	            Files.walkFileTree(Paths.get("evm-outputs/bytecodeBenchmark"), new SimpleFileVisitor<Path>() {
+	                @Override
+	                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+	                    Files.delete(file);
+	                    return FileVisitResult.CONTINUE;
+	                }
+
+	                @Override
+	                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+	                    Files.delete(dir);
+	                    return FileVisitResult.CONTINUE;
+	                }
+	            });
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	}
 	
 	@Ignore
 	public void testSCFromEtherscan() throws Exception {
