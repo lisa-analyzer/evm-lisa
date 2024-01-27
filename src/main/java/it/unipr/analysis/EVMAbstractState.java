@@ -744,7 +744,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// and
 						// high()
 
-						if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
+//						if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
+//							result.push(Interval.TOP);
+//							return new EVMAbstractState(result, memory, mu_i);
+//						}
+
+						if (!opnd1.interval.isSingleton() || !opnd2.interval.isSingleton()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -780,7 +785,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// and
 						// high()
 
-						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+//						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+//							result.push(Interval.TOP);
+//							return new EVMAbstractState(result, memory, mu_i);
+//						}
+						if (!opnd1.interval.isSingleton() || !opnd2.interval.isSingleton()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -817,7 +826,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// and
 						// high()
 
-						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+//						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+//							result.push(Interval.TOP);
+//							return new EVMAbstractState(result, memory, mu_i);
+//						}
+						if (!opnd1.interval.isSingleton() || !opnd2.interval.isSingleton()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -1515,8 +1528,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							}
 						}
 					}
-				} 
-			} 
+				}
+			}
 		} catch (NoSuchElementException e) {
 			System.err.println("[ASSUME] Operation not performed: " + e.getMessage() + " " + e);
 		}

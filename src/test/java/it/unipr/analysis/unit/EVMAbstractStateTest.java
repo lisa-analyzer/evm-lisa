@@ -2,9 +2,9 @@ package it.unipr.analysis.unit;
 
 import static org.junit.Assert.assertEquals;
 
+import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.Memory;
-import it.unipr.analysis.AbstractStack;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.util.numeric.MathNumber;
@@ -48,8 +48,8 @@ public class EVMAbstractStateTest {
 	}
 
 	/**
-	 * Tests the least upper bound (lub) operation of {@link EVMAbstractState}. It
-	 * tests the lub operation between TOP and BOTTOM, TOP and another
+	 * Tests the least upper bound (lub) operation of {@link EVMAbstractState}.
+	 * It tests the lub operation between TOP and BOTTOM, TOP and another
 	 * EVMAbsDomain, BOTTOM and another symbolic stack, and two EVMAbsDomain
 	 * with different sizes. The method asserts that the lub operation returns
 	 * the expected result for each test case.
@@ -147,8 +147,8 @@ public class EVMAbstractStateTest {
 	}
 
 	/**
-	 * Tests the less or equal operation of {@link EVMAbstractState}. It tests the
-	 * less or equal operation between TOP and BOTTOM, TOP and another
+	 * Tests the less or equal operation of {@link EVMAbstractState}. It tests
+	 * the less or equal operation between TOP and BOTTOM, TOP and another
 	 * EVMAbsDomain, BOTTOM and another symbolic stack, and two EVMAbsDomain
 	 * with different sizes. The method asserts that the less or equal operation
 	 * returns the expected result for each test case.

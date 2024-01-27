@@ -1,11 +1,6 @@
 package it.unipr.analysis.cron;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import it.unipr.analysis.EVMAbstractState;
-
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -33,6 +28,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
@@ -44,14 +42,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/statistics.xls";
 	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
-	
+
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 
 	@Ignore
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0xeC31e65e1cBdc22B1dfBC3F04a53db5505F6A9C0";
+		String SC_ADDRESS = "0x5211fEbe5d129DFA871e004C39652E8254A73ef8";
 		toFile(newAnalysis(SC_ADDRESS));
 	}
 
@@ -61,7 +59,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		List<String> smartContracts = readSmartContractsFromFile();
 		List<String> smartContractsTerminated = new ArrayList<String>();
-		
+
 		Thread[] threads = new Thread[smartContracts.size()];
 
 		Runnable runnableHandler = new Runnable() {
@@ -73,10 +71,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				synchronized (mutex) {
 					for (int i = 0; i < smartContracts.size(); i++) {
 						String address = smartContracts.get(i);
-						
-						if(i % 4 == 0) {
+
+						if (i % 4 == 0) {
 							try {
-								Thread.sleep(1001); // I can do max 5 API request in 1 sec to Etherscan.io
+								Thread.sleep(1001); // I can do max 5 API
+													// request in 1 sec to
+													// Etherscan.io
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -93,9 +93,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 									toFile(myStats);
 									smartContractsTerminated.add(address);
 									counter++;
-									
-									System.out.printf("SC: %s, SC ended: %s, in progress: %s \n", smartContracts.size(), smartContractsTerminated.size(), (smartContracts.size() - counter));
-									
+
+									System.out.printf("SC: %s, SC ended: %s, in progress: %s \n", smartContracts.size(),
+											smartContractsTerminated.size(), (smartContracts.size() - counter));
+
 									mutex.notifyAll();
 								}
 
@@ -106,18 +107,18 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 											.notes("failure: " + e)
 											.build().toString();
 									toFile(msg);
-									
+
 									mutex.notifyAll();
 								}
 							}
 						};
 
-						threads[i] = new Thread(runnable);	
+						threads[i] = new Thread(runnable);
 						threads[i].start();
 					}
 
 					try {
-						while(counter < smartContracts.size()) {
+						while (counter < smartContracts.size()) {
 							mutex.wait();
 						}
 
@@ -143,14 +144,16 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			long blocks = smartContracts.size() / 5 * 250;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
 
+			System.out.printf("[TIMER] Setted: %s millis = %s seconds = %s minutes \n", timeToWait, (timeToWait / 1000),
+					((float) (timeToWait / 1000) / 60));
 			guardia.wait(timeToWait);
 
-			for(int i = 0; i < smartContracts.size(); i++)
+			for (int i = 0; i < smartContracts.size(); i++)
 				threads[i].interrupt();
 		}
 
-		for(int i = 0; i < smartContracts.size(); i++) {
-			if(!smartContractsTerminated.contains(smartContracts.get(i))) {
+		for (int i = 0; i < smartContracts.size(); i++) {
+			if (!smartContractsTerminated.contains(smartContracts.get(i))) {
 				String msg = MyLogger.newLogger()
 						.address(smartContracts.get(i))
 						.notes("Killed: timeout")
@@ -159,10 +162,27 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 		}
 
+		// Print statistics to standard output
+		System.out.printf("Total analysis: %s, succesfully: %s, failed: %s \n", smartContracts.size(),
+				smartContractsTerminated.size(), (smartContracts.size() - smartContractsTerminated.size()));
+		System.out.printf("API Etherscan Request: %s, succesfully: %s \n", numberOfAPIEtherscanRequest,
+				numberOfAPIEtherscanRequestOnSuccess);
+
+		// Save statistics to file
+		toFile(MyLogger.newLogger()
+				.address("Total analysis: " + smartContracts.size() +
+						" - succesfully: " + smartContractsTerminated.size() +
+						" - failed: " + (smartContracts.size() - smartContractsTerminated.size()))
+				.build().toString());
+
+		toFile(MyLogger.newLogger()
+				.address("API Etherscan Request: " + numberOfAPIEtherscanRequest +
+						" - succesfully: " + numberOfAPIEtherscanRequestOnSuccess)
+				.build().toString());
+
 		System.out.println("Stats successfully written in " + FILENAME);
-		System.out.printf("API Etherscan Request: %s, succesfully: %s \n", numberOfAPIEtherscanRequest, numberOfAPIEtherscanRequestOnSuccess);
 	}
-	
+
 	/**
 	 * Cleans up the directory used for bytecode benchmark outputs.
 	 */
@@ -170,7 +190,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	public void clean() {
 		Path path = Paths.get("evm-outputs/bytecodeBenchmark");
 
-		if (Files.exists(path)) 
+		if (Files.exists(path))
 			try {
 				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 					@Override
@@ -189,31 +209,33 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				e.printStackTrace();
 			}
 	}
-	
+
 	/**
 	 * Reads smart contracts from a file and returns a list of strings.
 	 *
-	 * @return A list of strings containing the smart contracts read from the file.
+	 * @return A list of strings containing the smart contracts read from the
+	 *             file.
+	 * 
 	 * @throws Exception If an error occurs while reading the file.
 	 */
 	public ArrayList<String> readSmartContractsFromFile() throws Exception {
 		ArrayList<String> smartContractsRead = new ArrayList<String>();
-		
+
 		try {
 			File myObj = new File(SMARTCONTRACTS_FULLPATH);
 			Scanner myReader = new Scanner(myObj);
-			
+
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
 				smartContractsRead.add(data);
 			}
 			myReader.close();
-		
+
 		} catch (FileNotFoundException e) {
 			System.err.println("[ERROR] " + SMARTCONTRACTS_FULLPATH + " not found");
 			e.printStackTrace();
 		}
-		
+
 		return smartContractsRead;
 	}
 
@@ -223,23 +245,25 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * @param stats The statistics to be written to the file.
 	 */
 	private void toFile(String stats) {
-		String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved, Time (millis), Thread, Notes \n";
-		try {
-			File idea = new File(FILENAME);
-			if (!idea.exists()) {
-				FileWriter myWriter = new FileWriter(idea, APPEND);
-				myWriter.write(init + stats);
-				myWriter.close();
+		synchronized (FILENAME) {
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved, Time (millis), Thread, Notes \n";
+			try {
+				File idea = new File(FILENAME);
+				if (!idea.exists()) {
+					FileWriter myWriter = new FileWriter(idea, APPEND);
+					myWriter.write(init + stats);
+					myWriter.close();
 
-			} else {
-				FileWriter myWriter = new FileWriter(idea, APPEND);
-				myWriter.write(stats);
-				myWriter.close();
+				} else {
+					FileWriter myWriter = new FileWriter(idea, APPEND);
+					myWriter.write(stats);
+					myWriter.close();
+				}
+
+			} catch (IOException e) {
+				System.err.println("An error occurred.");
+				e.printStackTrace();
 			}
-
-		} catch (IOException e) {
-			System.err.println("An error occurred.");
-			e.printStackTrace();
 		}
 	}
 
@@ -251,15 +275,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
-		
+
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-        if(!file.exists()) {
-        	numberOfAPIEtherscanRequest++;
-        	if(EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
-        		numberOfAPIEtherscanRequestOnSuccess++;
-        }
-        
+		if (!file.exists()) {
+			numberOfAPIEtherscanRequest++;
+			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
+				numberOfAPIEtherscanRequestOnSuccess++;
+		}
+
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
@@ -290,7 +314,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.jumpsSolved(solvedJumps)
 				.time(finish - start)
 				.build().toString();
-		
+
 		return stats;
 	}
 
@@ -323,7 +347,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		return solvedJumps;
 	}
-	
+
 	private static class MyLogger {
 		private static String divider = ", ";
 		private String address;
@@ -334,7 +358,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		private long time;
 		private String notes;
 		private String currentThread;
-		
+
 		private MyLogger() {
 			this.address = null;
 			this.opcodes = 0;
@@ -345,63 +369,69 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.notes = "";
 			this.currentThread = null;
 		}
-		
+
 		private MyLogger(String address, int opcodes, int jumps, int jumpsSolved, long time, String notes) {
 			this.address = address;
 			this.opcodes = opcodes;
 			this.jumps = jumps;
 			this.jumpsSolved = jumpsSolved;
-			
-			if(jumps != 0) {
-				this.solvedJumpsPercent = ((double)jumpsSolved / jumps);
-				this.notes = notes;
-			}
-			else {
+
+			if (jumps != 0) {
+				this.solvedJumpsPercent = ((double) jumpsSolved / jumps);
+			} else {
 				this.solvedJumpsPercent = -1;
-				this.notes = "Division by 0 " + notes;
 			}
+			this.notes = notes;
 			this.time = time;
 			this.currentThread = Thread.currentThread().getName();
 		}
-		
+
 		public static MyLogger newLogger() {
 			return new MyLogger();
 		}
+
 		public MyLogger address(String address) {
 			this.address = address;
 			return this;
 		}
+
 		public MyLogger opcodes(int opcodes) {
 			this.opcodes = opcodes;
 			return this;
 		}
+
 		public MyLogger jumps(int jumps) {
 			this.jumps = jumps;
 			return this;
 		}
+
 		public MyLogger jumpsSolved(int jumpsSolved) {
 			this.jumpsSolved = jumpsSolved;
 			return this;
 		}
+
 		public MyLogger time(long time) {
 			this.time = time;
 			return this;
 		}
+
 		public MyLogger notes(String notes) {
 			this.notes = notes;
 			return this;
 		}
+
 		public MyLogger build() {
 			return new MyLogger(address, opcodes, jumps, jumpsSolved, time, notes);
 		}
+
 		@Override
 		public String toString() {
-			return address + divider + 
-					opcodes + divider + 
-					jumps + divider + 
-					jumpsSolved + divider + 
-					solvedJumpsPercent + divider + 
-					time + divider + 
+			return address + divider +
+					opcodes + divider +
+					jumps + divider +
+					jumpsSolved + divider +
+					solvedJumpsPercent + divider +
+					time + divider +
 					currentThread + divider +
 					notes + " \n";
 		}
