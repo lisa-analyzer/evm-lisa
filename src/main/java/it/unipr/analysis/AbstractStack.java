@@ -200,7 +200,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		if (this.isBottom() || other.isTop()) {
 			return other;
 		}
-
+		
 		if (this.size() < other.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 
@@ -420,5 +420,9 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public int size() {
 		return stack.size();
+	}
+	
+	public ArrayDeque<Interval> getStack() {
+		return stack;
 	}
 }

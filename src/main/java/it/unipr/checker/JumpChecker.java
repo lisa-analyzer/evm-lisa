@@ -1,5 +1,13 @@
 package it.unipr.checker;
 
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -11,6 +19,7 @@ import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
+import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
@@ -24,12 +33,6 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.numeric.InfiniteIterationException;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -41,7 +44,7 @@ public class JumpChecker
 
 	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
 
-	private EVMCFG cfgToAnalyze;
+	public EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
 	private final Set<Statement> solvedJumps = new HashSet<>();
 
@@ -75,6 +78,14 @@ public class JumpChecker
 		LiSA lisa = new LiSA(conf);
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		
+		Set<Statement> set = new HashSet<>();
+		for (Statement node : cfgToAnalyze.getEntrypoints())
+			if (cfgToAnalyze.getIngoingEdges(node).size() > 0)
+				set.add(node);
+		
+		cfgToAnalyze.getEntrypoints().removeAll(set);
+		
 		program.addCodeMember(cfgToAnalyze);
 
 		try {
@@ -119,16 +130,22 @@ public class JumpChecker
 				MonolithicHeap,
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
-			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState,
-					TypeEnvironment<InferredTypes>> analysisResult = result.getAnalysisStateAfter(node);
+			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>, MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+
+				try {
+					analysisResult = result.getAnalysisStateBefore(node);
+				} catch (SemanticException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 
 			// Retrieve the symbolic stack from the analysis result
-			EVMAbstractState evmAbsDomain = analysisResult.getState().getValueState();
+			EVMAbstractState valueState = analysisResult.getState().getValueState();
 
 			// If the symbolic stack is TOP or BOTTOM, we don't have useful info
 			// to solve the jump.
-			if (evmAbsDomain.isTop() || evmAbsDomain.isBottom()) {
+			if (valueState.isTop() || valueState.isBottom()) {
 				continue;
 			}
 
@@ -136,7 +153,7 @@ public class JumpChecker
 			try {
 				// Iterate over the values of the interval at the top of the
 				// symbolic stack.
-				for (Long i : evmAbsDomain.getTop().interval) {
+				for (Long i : valueState.getTop().interval) {
 
 					// Filter the jump destinations to find the ones that match
 					// the current value of the interval.
@@ -147,7 +164,7 @@ public class JumpChecker
 
 					// TODO: Check if printing found JUMPDESTs is useful
 					System.err.println(
-							filteredDests + " " + evmAbsDomain.getTop() + " " + evmAbsDomain.representation());
+							filteredDests + " " + valueState.getTop() + " " + valueState.representation());
 
 					// If there are no JUMPDESTs for this value, skip to the
 					// next one.

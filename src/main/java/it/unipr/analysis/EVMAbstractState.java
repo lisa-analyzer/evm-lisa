@@ -290,12 +290,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "JumpOperator": { // JUMP
-						if ((Integer) ((Constant) un.getExpression()).getValue() > 0) {
-							AbstractStack result = stack.clone();
-							result.pop();
-							return new EVMAbstractState(result, memory, mu_i);
-						} else
-							return this;
+						AbstractStack result = stack.clone();
+						result.pop();
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "JumpiOperator": { // JUMPI
 						return this;
@@ -744,10 +741,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// and
 						// high()
 
-//						if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
-//							result.push(Interval.TOP);
-//							return new EVMAbstractState(result, memory, mu_i);
-//						}
+						//						if (opnd1.equals(Interval.TOP) || opnd2.equals(Interval.TOP)) {
+						//							result.push(Interval.TOP);
+						//							return new EVMAbstractState(result, memory, mu_i);
+						//						}
 
 						if (!opnd1.interval.isSingleton() || !opnd2.interval.isSingleton()) {
 							result.push(Interval.TOP);
@@ -785,10 +782,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// and
 						// high()
 
-//						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-//							result.push(Interval.TOP);
-//							return new EVMAbstractState(result, memory, mu_i);
-//						}
+						//						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						//							result.push(Interval.TOP);
+						//							return new EVMAbstractState(result, memory, mu_i);
+						//						}
 						if (!opnd1.interval.isSingleton() || !opnd2.interval.isSingleton()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
@@ -826,10 +823,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// and
 						// high()
 
-//						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
-//							result.push(Interval.TOP);
-//							return new EVMAbstractState(result, memory, mu_i);
-//						}
+						//						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						//							result.push(Interval.TOP);
+						//							return new EVMAbstractState(result, memory, mu_i);
+						//						}
 						if (!opnd1.interval.isSingleton() || !opnd2.interval.isSingleton()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
@@ -1031,7 +1028,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
 									.divide(thirtyTwo)
 									.setScale(0, RoundingMode.UP); // setScale()
-																	// =
+							// =
 							// Ceiling
 							// function
 
@@ -1039,8 +1036,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 							// We create a new Interval singleton with the newly
 							// calculated `current_mu_i`
-							Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
-									current_mu_i.intValueExact());
+							Interval intervalCurrent_mu_i = new Interval(new MathNumber(current_mu_i),
+									new MathNumber(current_mu_i));
 
 							// Then we compare the 2 mu_i and update the new
 							// value
@@ -1075,7 +1072,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							BigDecimal current_mu_i = offsetBigDecimal.add(one)
 									.divide(thirtyTwo)
 									.setScale(0, RoundingMode.UP); // setScale()
-																	// =
+							// =
 							// Ceiling
 							// function
 
@@ -1418,7 +1415,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
 		int i = 0;
-		Interval target = Interval.ZERO;
+		Interval target = null;
 
 		AbstractStack result = stack.clone();
 
@@ -1426,8 +1423,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			target = iterator.next();
 		}
 
-		result.push(target);
-
+		if (target != null)
+			result.push(target);
+		else
+			return new AbstractStack();
 		return result;
 	}
 
@@ -1445,7 +1444,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		AbstractStack result = stack.clone();
 
 		if (result.size() < x)
-			return result;
+			return new AbstractStack();
 
 		Interval target1 = result.pop();
 		Interval[] popped = new Interval[x];
@@ -1467,6 +1466,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		return result;
 	}
 
+
+
 	@Override
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
@@ -1482,7 +1483,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 				if (op instanceof JumpiOperator) { // JUMPI
 					AbstractStack result = stack.clone();
-					result.pop(); // Interval destination = result.pop();
+					result.pop();
 					Interval condition = result.pop();
 
 					if (condition.equals(Interval.ZERO)) {
@@ -1509,8 +1510,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// Check if LogicalNegation is wrapping a JUMPI
 						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
 							AbstractStack result = stack.clone();
-							result.pop(); // Interval destination =
-							// result.pop();
+							result.pop();
 							Interval condition = result.pop();
 
 							if (condition.equals(Interval.ZERO)) {

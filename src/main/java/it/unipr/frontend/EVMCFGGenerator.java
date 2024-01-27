@@ -126,15 +126,21 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 			if (st instanceof Jumpi && last instanceof Push)
 				map.put(st, ((Push) last).getInt());
-			if (last instanceof Jumpi) {
+			
+			if (st instanceof Jump && last instanceof Push)
+				map.put(st, ((Push) last).getInt());
+			
+			if (last instanceof Jumpi) 
 				cfg.addEdge(new FalseEdge(last, st));
-			} else if (!(last instanceof Revert)
+			 
+			if (!(last instanceof Revert)
 					&& !(last instanceof Return)
 					&& !(last instanceof Stop)
 					&& !(last instanceof Selfdestruct)
-					&& !(last instanceof Invalid)) {
+					&& !(last instanceof Invalid)
+					&& !(last instanceof Jump)
+					&& !(last instanceof Jumpi)) 
 				cfg.addEdge(new SequentialEdge(last, st));
-			}
 
 			last = st;
 		}
@@ -142,7 +148,12 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		for (Statement node : cfg.getNodes())
 			for (Entry<Statement, BigInteger> entry : map.entrySet())
 				if (((ProgramCounterLocation) node.getLocation()).getPc() == entry.getValue().intValue())
-					cfg.addEdge(new TrueEdge(entry.getKey(), node));
+					if (entry.getKey() instanceof Jumpi)
+						cfg.addEdge(new TrueEdge(entry.getKey(), node));
+					else
+						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
+
+
 
 		// The last statement of the CFG is a return statement
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
@@ -150,9 +161,16 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		cfg.addEdge(new SequentialEdge(st, ret));
 
 		// REVERT nodes must be linked to return statement
-		for (Statement stmt : cfg.getNodes())
-			if (stmt instanceof Revert)
+		for (Statement stmt : cfg.getNodes()) {
+			if (stmt instanceof Revert 
+					|| stmt instanceof Return 
+					|| stmt instanceof Stop 
+					|| stmt instanceof Selfdestruct 
+					|| stmt instanceof Invalid)
 				cfg.addEdge(new SequentialEdge(stmt, ret));
+			if (cfg.getIngoingEdges(stmt).size() == 0)
+				cfg.getEntrypoints().add(stmt);
+		}
 
 		unit.addCodeMember(cfg);
 

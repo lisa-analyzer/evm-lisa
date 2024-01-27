@@ -4,6 +4,7 @@ import it.unipr.analysis.EVMAbstractState;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
+import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.JumpChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -35,7 +36,7 @@ import org.junit.Test;
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = false;
+	private final static boolean GENERATE_CFG = true;
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
@@ -47,9 +48,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 
-	@Ignore
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x5211fEbe5d129DFA871e004C39652E8254A73ef8";
+		String SC_ADDRESS = "0x1d5ad987b743eb624662fe5c62b8f6015554203a";
 		toFile(newAnalysis(SC_ADDRESS));
 	}
 
@@ -303,7 +303,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		perform(conf);
 
 		// Print the results
-		EVMCFG baseCfg = (EVMCFG) getCFGFromFile(BYTECODE_FULLPATH);
+		EVMCFG baseCfg = checker.cfgToAnalyze;
+
 		int solvedJumps = dumpStatistics(baseCfg);
 		long finish = System.currentTimeMillis();
 
@@ -341,7 +342,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				solvedJumps++;
 			else if (st instanceof Jumpi && cfg.getOutgoingEdges(st).size() == 2)
 				solvedJumps++;
-
+		
 		System.err.println("Solved jumps: " + solvedJumps);
 		System.err.println("##############");
 
