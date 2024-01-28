@@ -36,13 +36,15 @@ import org.junit.Test;
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = true;
+	private final static boolean GENERATE_CFG = false;
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
 
-	private final String FILENAME = ACTUAL_RESULTS_DIR + "/bytecodeBenchmark/statistics.xls";
+	private final String STATISTICS = ACTUAL_RESULTS_DIR + "/statistics.xls";
 	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
+//	private final String SMARTCONTRACTS_FULLPATH = "benchmark/failed.txt";
+//	private final String SMARTCONTRACTS_FULLPATH = "benchmark/failed-small.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -143,10 +145,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			int extra = 60000;
 			long blocks = smartContracts.size() / 5 * 250;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
-
-			System.out.printf("[TIMER] Setted: %s millis = %s seconds = %s minutes \n", timeToWait, (timeToWait / 1000),
-					((float) (timeToWait / 1000) / 60));
-			guardia.wait(timeToWait);
+			
+			// Statistics
+			long minutes = (timeToWait / 1000) / 60;
+			long seconds = (timeToWait / 1000) % 60;			
+			System.out.printf("[TIMER] Setted: %s millis = %s minutes and %s seconds \n", timeToWait, minutes,
+					seconds);
+			
+//			guardia.wait(timeToWait);
+			guardia.wait(10 * 60 * 1000);
 
 			for (int i = 0; i < smartContracts.size(); i++)
 				threads[i].interrupt();
@@ -180,7 +187,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 						" - succesfully: " + numberOfAPIEtherscanRequestOnSuccess)
 				.build().toString());
 
-		System.out.println("Stats successfully written in " + FILENAME);
+		System.out.println("Stats successfully written in " + STATISTICS);
 	}
 
 	/**
@@ -208,6 +215,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		
+		File f = new File(STATISTICS);
+		f.delete();
 	}
 
 	/**
@@ -245,10 +255,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * @param stats The statistics to be written to the file.
 	 */
 	private void toFile(String stats) {
-		synchronized (FILENAME) {
+		synchronized (STATISTICS) {
 			String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, % Solved, Time (millis), Thread, Notes \n";
 			try {
-				File idea = new File(FILENAME);
+				File idea = new File(STATISTICS);
 				if (!idea.exists()) {
 					FileWriter myWriter = new FileWriter(idea, APPEND);
 					myWriter.write(init + stats);
@@ -283,7 +293,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
 				numberOfAPIEtherscanRequestOnSuccess++;
 		}
-
+		
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;

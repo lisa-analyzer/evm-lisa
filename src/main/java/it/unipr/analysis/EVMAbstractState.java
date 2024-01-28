@@ -30,6 +30,7 @@ import it.unive.lisa.util.numeric.MathNumberConversionException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -1414,24 +1415,27 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
-		int i = 0;
-		Interval target = null;
-
-		AbstractStack result = stack.clone();
-
-		for (Iterator<Interval> iterator = result.iterator(); iterator.hasNext() && i < x; ++i) {
-			target = iterator.next();
-		}
-
-		if (target != null)
-			result.push(target);
-		else
-			return new AbstractStack();
-		return result;
+		ArrayDeque<Interval> clone = stack.clone().getStack();
+	    
+	    if(clone.size() < x || x < 1)
+	    	return stack.clone();
+	    
+	    Object[] obj = clone.toArray();
+	    
+	    Interval tmp = (Interval) obj[x - 1];
+	    
+	    ArrayDeque<Interval> result = new ArrayDeque<Interval>();
+	    
+	    result.add(tmp);
+	    
+	    for(int i = 0; i < clone.size(); i++)
+	    	result.add((Interval) obj[i]);
+	    
+	    return new AbstractStack(result);
 	}
 
 	/**
-	 * Swaps the top element with the x-th element from the top of the stack and
+	 * Swaps the 1st with the (x + 1)-th element from the top of the stack and
 	 * returns the modified stack.
 	 *
 	 * @param x     The position of the element to swap with the top of the
@@ -1441,32 +1445,24 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-		AbstractStack result = stack.clone();
-
-		if (result.size() < x)
-			return new AbstractStack();
-
-		Interval target1 = result.pop();
-		Interval[] popped = new Interval[x];
-
-		// Swap target1 with popped[x - 1]
-
-		for (int i = 0; i < x; ++i) {
-			popped[i] = result.pop();
-		}
-
-		result.push(target1);
-
-		for (int i = x - 2; i >= 0; --i) {
-			result.push(popped[i]);
-		}
-
-		result.push(popped[x - 1]);
-
-		return result;
+	    ArrayDeque<Interval> clone = stack.clone().getStack();
+	    
+	    if(clone.size() < x + 1 || x < 1)
+	    	return stack.clone();
+	    
+	    Object[] obj = clone.toArray();
+	    
+	    Object tmp = obj[0];
+	    obj[0] = obj[x];
+	    obj[x] = tmp;
+	    
+	    ArrayDeque<Interval> result = new ArrayDeque<Interval>();
+	    
+	    for(int i = 0; i < clone.size(); i++)
+	    	result.add((Interval) obj[i]);
+	    
+	    return new AbstractStack(result);
 	}
-
-
 
 	@Override
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
