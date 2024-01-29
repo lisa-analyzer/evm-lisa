@@ -51,10 +51,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x1d5ad987b743eb624662fe5c62b8f6015554203a";
+		String SC_ADDRESS = "0x000000000d38df53b45c5733c7b34000de0bdf52";
 		toFile(newAnalysis(SC_ADDRESS));
 	}
-
+	
 	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		Object guardia = new Object();

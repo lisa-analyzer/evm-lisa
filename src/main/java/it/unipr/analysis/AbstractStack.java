@@ -244,16 +244,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	public AbstractStack bottom() {
 		return BOTTOM;
 	}
-
-//	@Override
-//	public boolean isBottom() {
-//		return stack == null;
-//	}
-//
-//	@Override
-//	public boolean isTop() {
-//		return isTop;
-//	}
+	
+	public boolean isEmpty() {
+		return stack.isEmpty();
+	}
 
 	@Override
 	public int hashCode() {
