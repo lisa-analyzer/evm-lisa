@@ -163,7 +163,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 			// TODO: Check if printing found JUMPDESTs is useful
 			System.err.println(
-					filteredDests + " " + valueState.getTop() + " " + valueState.representation());
+					filteredDests + " " + valueState.getTop());
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.

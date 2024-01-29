@@ -1232,7 +1232,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval length = result.pop();
 
 						// At the moment, we do not handle LOG0
-
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "Log1Operator": { // LOG1
@@ -1240,10 +1239,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval offset = result.pop();
 						Interval length = result.pop();
 						Interval topic1 = result.pop();
-
+						
 						// At the moment, we do not handle LOG1
-						result.push(Interval.ZERO);
-
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "Log2Operator": { // LOG2
@@ -1254,8 +1251,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval topic2 = result.pop();
 
 						// At the moment, we do not handle LOG2
-						result.push(Interval.ZERO);
-
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "Log3Operator": { // LOG3
@@ -1267,8 +1262,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval topic3 = result.pop();
 
 						// At the moment, we do not handle LOG3
-						result.push(Interval.ZERO);
-
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "Log4Operator": { // LOG4
@@ -1281,8 +1274,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval topic4 = result.pop();
 
 						// At the moment, we do not handle LOG4
-						result.push(Interval.ZERO);
-
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "CreateOperator": { // CREATE
