@@ -1,21 +1,5 @@
 package it.unipr.analysis.cron;
 
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
-import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.checker.JumpChecker;
-import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
-import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,9 +13,25 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.Jump;
+import it.unipr.cfg.Jumpi;
+import it.unipr.checker.JumpChecker;
+import it.unipr.frontend.EVMFrontend;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Statement;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
@@ -313,7 +313,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		perform(conf);
 
 		// Print the results
-		EVMCFG baseCfg = checker.cfgToAnalyze;
+		EVMCFG baseCfg = checker.getComputedCFG();
 
 		int solvedJumps = dumpStatistics(baseCfg);
 		long finish = System.currentTimeMillis();

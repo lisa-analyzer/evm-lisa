@@ -44,7 +44,7 @@ public class JumpChecker
 
 	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
 
-	public EVMCFG cfgToAnalyze;
+	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
 	private final Set<Statement> solvedJumps = new HashSet<>();
 
@@ -57,6 +57,11 @@ public class JumpChecker
 		return this.solvedJumps;
 	}
 
+	
+	public EVMCFG getComputedCFG() {
+		return cfgToAnalyze;
+	}
+	
 	/**
 	 * {@inheritDoc} Checks if analysis has reached fix-point. If not, it runs
 	 * another LiSA analysis to solve the remaining jumps and reach fix-point.
