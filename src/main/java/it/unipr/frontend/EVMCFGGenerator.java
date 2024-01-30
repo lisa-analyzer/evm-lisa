@@ -168,9 +168,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 					|| stmt instanceof Selfdestruct 
 					|| stmt instanceof Invalid)
 				cfg.addEdge(new SequentialEdge(stmt, ret));
-			// If a node has no incoming edges, we set it has entry point
-			if (cfg.getIngoingEdges(stmt).size() == 0)
-				cfg.getEntrypoints().add(stmt);
+//			// If a node has no incoming edges, we set it has entry point
+//			if (cfg.getIngoingEdges(stmt).size() == 0)
+//				cfg.getEntrypoints().add(stmt);
 		}
 
 		unit.addCodeMember(cfg);

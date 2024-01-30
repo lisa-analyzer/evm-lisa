@@ -32,6 +32,7 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.numeric.IntInterval;
+import it.unive.lisa.util.numeric.MathNumberConversionException;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -83,12 +84,12 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 
-		Set<Statement> set = new HashSet<>();
-		for (Statement node : cfgToAnalyze.getEntrypoints())
-			if (cfgToAnalyze.getIngoingEdges(node).size() > 0)
-				set.add(node);
-
-		cfgToAnalyze.getEntrypoints().removeAll(set);
+		//		Set<Statement> set = new HashSet<>();
+		//		for (Statement node : cfgToAnalyze.getEntrypoints())
+		//			if (cfgToAnalyze.getIngoingEdges(node).size() > 0)
+		//				set.add(node);
+		//
+		//		cfgToAnalyze.getEntrypoints().removeAll(set);
 
 		program.addCodeMember(cfgToAnalyze);
 
@@ -151,15 +152,28 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 			// to solve the jump.
 			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) 
 				continue;
-			
+
 			IntInterval topStack = valueState.getTop().interval;
 			if (!topStack.isFinite())
 				continue;
 
-			Set<Statement> filteredDests = jumpDestinations.stream()
+			Set<Statement> filteredDests;
+			//			if (topStack.isSingleton())
+			filteredDests = jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
 					.filter(pc -> topStack.includes(new IntInterval(((ProgramCounterLocation) pc.getLocation()).getPc(), ((ProgramCounterLocation) pc.getLocation()).getPc())))
 					.collect(Collectors.toSet());
+			//			else 
+			//				filteredDests = jumpDestinations.stream()
+			//						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+			//						.filter(pc -> {
+			//							try {
+			//								return topStack.getHigh().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc()) || topStack.getLow().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc());
+			//							} catch (MathNumberConversionException e) {
+			//								return false;
+			//							}
+			//						})
+			//						.collect(Collectors.toSet());
 
 			// TODO: Check if printing found JUMPDESTs is useful
 			System.err.println(
@@ -167,9 +181,8 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
-			if (filteredDests.isEmpty()) {
+			if (filteredDests.isEmpty()) 
 				continue;
-			}
 
 			// For each JUMPDEST, add the missing edge from this node to
 			// the JUMPDEST.
