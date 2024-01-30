@@ -171,8 +171,8 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 		// Merge the intervals and push them onto the result
 		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			Interval thisInterval = (Interval) thisIterator.next();
-			Interval otherInterval = (Interval) otherIterator.next();
+			Interval thisInterval = thisIterator.next();
+			Interval otherInterval = otherIterator.next();
 			result.push(thisInterval.lub(otherInterval));
 		}
 
@@ -192,6 +192,37 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	}
 
 	@Override
+	public AbstractStack glb(AbstractStack other) throws SemanticException {
+		if (other == null || this.isBottom() || other.isTop() || this == other || this.equals(other))
+			return this;
+
+		if (other.isBottom() || this.isTop())
+			return other;
+
+		if (lessOrEqual(other))
+			return this;
+		else if (other.lessOrEqual(this))
+			return other;
+
+		// Otherwise, let's build a new SymbolicStack
+		ArrayDeque<Interval> result = new ArrayDeque<Interval>();
+
+		// Get the iterators of the two stacks
+		// Order is descending as we start from the bottom of the stack
+		Iterator<Interval> thisIterator = this.stack.descendingIterator();
+		Iterator<Interval> otherIterator = other.stack.descendingIterator();
+
+		// Merge the intervals and push them onto the result
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			Interval thisInterval = thisIterator.next();
+			Interval otherInterval = otherIterator.next();
+			result.push(thisInterval.glb(otherInterval));
+		}
+
+		return new AbstractStack(result);	
+	}
+
+	@Override
 	public AbstractStack widening(AbstractStack other) throws SemanticException {
 		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
 			return this;
@@ -200,7 +231,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		if (this.isBottom() || other.isTop()) {
 			return other;
 		}
-		
+
 		if (this.size() < other.size()) {
 			ArrayDeque<Interval> widenedStack = new ArrayDeque<>();
 
@@ -244,7 +275,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	public AbstractStack bottom() {
 		return BOTTOM;
 	}
-	
+
 	public boolean isEmpty() {
 		return stack.isEmpty();
 	}
@@ -337,7 +368,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
 							ArrayDeque<Interval> result = stack.clone();
 							result.pop(); // Interval destination =
-											// result.pop();
+							// result.pop();
 							Interval condition = result.pop();
 
 							if (condition.equals(Interval.ZERO)) {
@@ -415,7 +446,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	public int size() {
 		return stack.size();
 	}
-	
+
 	public ArrayDeque<Interval> getStack() {
 		return stack;
 	}
