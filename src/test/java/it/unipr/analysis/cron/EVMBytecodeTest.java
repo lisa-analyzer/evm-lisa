@@ -55,6 +55,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		toFile(newAnalysis(SC_ADDRESS));
 	}
 	
+	public void saveSmartContract() throws Exception {
+		List<String> smartContracts = readSmartContractsFromFile();
+		for (int i = 0; i < smartContracts.size(); i++) {
+	}
+	
 	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		Object guardia = new Object();
