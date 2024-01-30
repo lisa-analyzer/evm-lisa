@@ -129,6 +129,24 @@ task spotlessErrorMessage {
         logger.error('To automatically fix all the problems, execute \'./gradlew spotlessApply\'')
     }
 }
+// Imposta la classe con il metodo main
+mainClassName = 'it.unipr.analysis.cron.EVMBytecodeTest'
+
+// Task per copiare le classi di test nell'output di produzione
+task copyTestClasses(type: Copy) {
+    from sourceSets.test.output.classesDirs
+    into "$buildDir/classes/java/main"
+}
+
+distZip {
+    dependsOn copyTestClasses
+    from (sourceSets.main.output + sourceSets.test.output)
+}
+
+// Aggiungi le classi di test al classpath
+run {
+    classpath += sourceSets.test.runtimeClasspath
+}
 
 tasks.register('checkCodeStyle') {
     group = 'verification'

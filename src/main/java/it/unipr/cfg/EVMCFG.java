@@ -192,20 +192,20 @@ public class EVMCFG extends CFG {
 	}
 
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalyzedCFG<A, H, V, T> fixpoint(
-					AnalysisState<A, H, V, T> singleton, Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
-					InterproceduralAnalysis<A, H, V, T> interprocedural, WorkingSet<Statement> ws,
-					FixpointConfiguration conf,
-					ScopeId id) throws FixpointException {
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalyzedCFG<A, H, V, T> fixpoint(
+			AnalysisState<A, H, V, T> singleton, Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
+			InterproceduralAnalysis<A, H, V, T> interprocedural, WorkingSet<Statement> ws,
+			FixpointConfiguration conf,
+			ScopeId id) throws FixpointException {
 		// we disable optimizations for ascending phases if there is a
 		// descending one: the latter will need full results to start applying
 		// glbs/narrowings from a post-fixpoint
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A, H, V, T>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-				: new Fixpoint<>(this, false);
+						: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A, H, V, T> asc = new EVMAscendingFixpoint<A, H, V, T>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -240,13 +240,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-			T extends TypeDomain<T>,
-			A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>> AnalyzedCFG<A, H, V, T> flatten(
-					boolean isOptimized, AnalysisState<A, H, V, T> singleton,
-					Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
-					InterproceduralAnalysis<A, H, V, T> interprocedural, ScopeId id,
-					Map<Statement, CompoundState<A, H, V, T>> fixpointResults) {
+	T extends TypeDomain<T>,
+	A extends AbstractState<A, H, V, T>,
+	H extends HeapDomain<H>> AnalyzedCFG<A, H, V, T> flatten(
+			boolean isOptimized, AnalysisState<A, H, V, T> singleton,
+			Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
+			InterproceduralAnalysis<A, H, V, T> interprocedural, ScopeId id,
+			Map<Statement, CompoundState<A, H, V, T>> fixpointResults) {
 		Map<Statement, AnalysisState<A, H, V, T>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A, H, V, T>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -257,7 +257,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A, H, V, T>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override
@@ -265,7 +265,9 @@ public class EVMCFG extends CFG {
 		try {
 			list.validate(entrypoints);
 		} catch (ProgramValidationException e) {
-			throw new ProgramValidationException("The matrix behind " + this + " is invalid", e);
+			// we allow having nodes without incoming edges to not be entry points
+			if (!e.getMessage().contains("Unreachable node that is not marked as entrypoint:"))
+				throw new ProgramValidationException("The matrix behind " + this + " is invalid", e);
 		}
 
 		// all entrypoints should be within the cfg
@@ -273,5 +275,28 @@ public class EVMCFG extends CFG {
 			throw new ProgramValidationException(this + " has entrypoints that are not part of the graph: "
 					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
 	}
+	
+	public boolean reachableFrom(Statement start, Statement target) {
+        return dfs(start, target, new HashSet<>());
+    }
+
+    private boolean dfs(Statement current, Statement target, Set<Statement> visited) {
+        // If the current node is the target, return true
+        if (current.equals(target))
+            return true;
+        
+        // Mark the current node as visited
+        visited.add(current);
+
+        // Recur for all the vertices adjacent to this vertex
+        for (Edge edge : list.getOutgoingEdges(current)) {
+            Statement next = edge.getDestination();
+            if (!visited.contains(next) && dfs(next, target, visited)) 
+                return true;
+        }
+
+        // If the target is not reachable from the current node, return false
+        return false;
+    }
 
 }
