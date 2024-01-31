@@ -13,6 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Date;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -42,62 +43,27 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Append statistics in file
 	private final static boolean APPEND = true;
 
-	private final String STATISTICS = ACTUAL_RESULTS_DIR + "/statistics.xls";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/mega-benchmark.txt";
+	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.xls";
+	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/failed.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
+	
+	private final int CORES = Runtime.getRuntime().availableProcessors();
 
 	public void testSCFromEtherscan() throws Exception {
 		String SC_ADDRESS = "0x6190a479cfafcb1637f5485366bcbce418a68a4d";
-		toFile(newAnalysis(SC_ADDRESS));
+		toFileStatistics(newAnalysis(SC_ADDRESS));
 	}
 
 	public static void main(String[] args) throws Exception {
 		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
 	}
 	
-	@Test
-	public void saveSmartContractsFromEtherscan() throws Exception {
-		List<String> smartContracts = readSmartContractsFromFile();
-		
-		for (int i = 0; i < smartContracts.size(); i++) {
-			String address = smartContracts.get(i);
-			
-			String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + address + "/" + address
-					+ ".sol";
-			
-			if (i % 5 == 0) {
-				try {
-					Thread.sleep(1001); // I can do max 5 API
-										// request in 1 sec to
-										// Etherscan.io
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-	
-			// Directory setup and bytecode retrieval
-			try {
-				Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + address));
-	
-				// If the file does not exists, we will do an API request to Etherscan
-				File file = new File(BYTECODE_FULLPATH);
-				if (!file.exists()) {
-					numberOfAPIEtherscanRequest++;
-					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
-						numberOfAPIEtherscanRequestOnSuccess++;
-					
-					System.out.printf("Downloading %s, remaining: %s \n", address, (smartContracts.size() - numberOfAPIEtherscanRequest));
-				}
-			} catch (Exception e) {
-				continue;
-			}
-		}
-	}
-	
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
+		clean();
 		Object guardia = new Object();
 
 		List<String> smartContracts = readSmartContractsFromFile();
@@ -115,11 +81,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					for (int i = 0; i < smartContracts.size(); i++) {
 						String address = smartContracts.get(i);
 
-						if (i % 4 == 0) {
+						if (i % CORES == 0) {
 							try {
-								Thread.sleep(1001); // I can do max 5 API
-													// request in 1 sec to
-													// Etherscan.io
+								// We optimize parallelism by launching n analyzes at a time with n = CORES
+								Thread.sleep(10000); 
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -133,12 +98,16 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								myStats = newAnalysis(address);
 
 								synchronized (mutex) {
-									toFile(myStats);
+									toFileStatistics(myStats);
 									smartContractsTerminated.add(address);
 									counter++;
-
-									System.out.printf("SC: %s, SC ended: %s, in progress: %s \n", smartContracts.size(),
-											smartContractsTerminated.size(), (smartContracts.size() - counter));
+									
+									String msg = "SC: " + smartContracts.size() + ", " + 
+											"SC ended: " + smartContractsTerminated.size() + ", " +
+											"in progress: " + (smartContracts.size() - counter) + " \n";
+									
+									System.out.println(msg);
+									toFileLogs(msg);
 
 									mutex.notifyAll();
 								}
@@ -149,7 +118,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 											.address(address)
 											.notes("failure: " + e)
 											.build().toString();
-									toFile(msg);
+									toFileStatistics(msg);
 
 									mutex.notifyAll();
 								}
@@ -184,16 +153,21 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 			int millisPerSmartContract = 2000;
 			int extra = 60000;
-			long blocks = smartContracts.size() / 5 * 250;
+			long blocks = smartContracts.size() / CORES * 10000;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
 			
 			// Statistics
 			long minutes = (timeToWait / 1000) / 60;
 			long seconds = (timeToWait / 1000) % 60;			
-			System.out.printf("[TIMER] Setted: %s millis = %s minutes and %s seconds \n", timeToWait, minutes,
-					seconds);
 			
-			guardia.wait(10 * 60 * 1000);
+			String msg = "[TIMER] Setted: " + timeToWait + " millis " + 
+					"(" + minutes + " minutes and " + seconds + " seconds) \n";
+			msg += "Finish expected at " + new Date((new Date().getTime() + timeToWait)) + " \n";
+			
+			System.out.println(msg);
+			toFileLogs(msg);
+			
+			guardia.wait(timeToWait);
 
 			for (int i = 0; i < smartContracts.size(); i++)
 				threads[i].interrupt();
@@ -205,29 +179,27 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 						.address(smartContracts.get(i))
 						.notes("Killed: timeout")
 						.build().toString();
-				toFile(msg);
+				toFileStatistics(msg);
 			}
 		}
 
-		// Print statistics to standard output
-		System.out.printf("Total analysis: %s, succesfully: %s, failed: %s \n", smartContracts.size(),
-				smartContractsTerminated.size(), (smartContracts.size() - smartContractsTerminated.size()));
-		System.out.printf("API Etherscan Request: %s, succesfully: %s \n", numberOfAPIEtherscanRequest,
-				numberOfAPIEtherscanRequestOnSuccess);
+		// Print statistics to standard output and log file		
+		String msg = "Total analysis: " + smartContracts.size() + ", " + 
+				"succesfully: " + smartContractsTerminated.size() + ", " +
+				"failed: " + (smartContracts.size() - smartContractsTerminated.size()) + " \n";
+		
+		System.out.println(msg);
+		toFileLogs(msg);
+		
+		msg = "API Etherscan Request: " + numberOfAPIEtherscanRequest + ", " + 
+				"succesfully: " + numberOfAPIEtherscanRequestOnSuccess + " \n";
+		
+		System.out.println(msg);
+		toFileLogs(msg);
 
-		// Save statistics to file
-		toFile(MyLogger.newLogger()
-				.address("Total analysis: " + smartContracts.size() +
-						" - succesfully: " + smartContractsTerminated.size() +
-						" - failed: " + (smartContracts.size() - smartContractsTerminated.size()))
-				.build().toString());
-
-		toFile(MyLogger.newLogger()
-				.address("API Etherscan Request: " + numberOfAPIEtherscanRequest +
-						" - succesfully: " + numberOfAPIEtherscanRequestOnSuccess)
-				.build().toString());
-
-		System.out.println("Stats successfully written in " + STATISTICS);
+		System.out.println("Stats successfully written in " + STATISTICS_FULLPATH);
+		
+		return;
 	}
 
 	/**
@@ -256,65 +228,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				e.printStackTrace();
 			}
 		
-		File f = new File(STATISTICS);
+		File f = new File(STATISTICS_FULLPATH);
 		f.delete();
-	}
-
-	/**
-	 * Reads smart contracts from a file and returns a list of strings.
-	 *
-	 * @return A list of strings containing the smart contracts read from the
-	 *             file.
-	 * 
-	 * @throws Exception If an error occurs while reading the file.
-	 */
-	public ArrayList<String> readSmartContractsFromFile() throws Exception {
-		ArrayList<String> smartContractsRead = new ArrayList<String>();
-
-		try {
-			File myObj = new File(SMARTCONTRACTS_FULLPATH);
-			Scanner myReader = new Scanner(myObj);
-
-			while (myReader.hasNextLine()) {
-				String data = myReader.nextLine();
-				smartContractsRead.add(data);
-			}
-			myReader.close();
-
-		} catch (FileNotFoundException e) {
-			System.err.println("[ERROR] " + SMARTCONTRACTS_FULLPATH + " not found");
-			e.printStackTrace();
-		}
-
-		return smartContractsRead;
-	}
-
-	/**
-	 * Writes the given statistics to a file.
-	 *
-	 * @param stats The statistics to be written to the file.
-	 */
-	private void toFile(String stats) {
-		synchronized (STATISTICS) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Unreachable jumps, % Solved, Time (millis), Thread, Notes \n";
-			try {
-				File idea = new File(STATISTICS);
-				if (!idea.exists()) {
-					FileWriter myWriter = new FileWriter(idea, APPEND);
-					myWriter.write(init + stats);
-					myWriter.close();
-
-				} else {
-					FileWriter myWriter = new FileWriter(idea, APPEND);
-					myWriter.write(stats);
-					myWriter.close();
-				}
-
-			} catch (IOException e) {
-				System.err.println("An error occurred.");
-				e.printStackTrace();
-			}
-		}
+		File f2 = new File(LOGS_FULLPATH);
+		f2.delete();
 	}
 
 	private String newAnalysis(String CONTRACT_ADDR) throws Exception {
@@ -330,6 +247,17 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		File file = new File(BYTECODE_FULLPATH);
 		if (!file.exists()) {
 			numberOfAPIEtherscanRequest++;
+			
+			if(numberOfAPIEtherscanRequest % 5 == 0) {
+				try {
+					Thread.sleep(1001); // I can do max 5 API
+										// request in 1 sec to
+										// Etherscan.io
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
 				numberOfAPIEtherscanRequestOnSuccess++;
 		}
@@ -369,17 +297,34 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		return stats;
 	}
+	
+	/**
+	 * Reads smart contracts from a file and returns a list of strings.
+	 *
+	 * @return A list of strings containing the smart contracts read from the
+	 *             file.
+	 * 
+	 * @throws Exception If an error occurs while reading the file.
+	 */
+	public ArrayList<String> readSmartContractsFromFile() throws Exception {
+		ArrayList<String> smartContractsRead = new ArrayList<String>();
 
-	private static CFG getCFGFromFile(String filename) {
-		CFG cfg = null;
 		try {
-			for (CFG c : EVMFrontend.generateCfgFromFile(filename).getAllCFGs()) {
-				cfg = c;
+			File myObj = new File(SMARTCONTRACTS_FULLPATH);
+			Scanner myReader = new Scanner(myObj);
+
+			while (myReader.hasNextLine()) {
+				String data = myReader.nextLine();
+				smartContractsRead.add(data);
 			}
-		} catch (IOException e) {
-			System.err.println("Incorrect contract filename");
+			myReader.close();
+
+		} catch (FileNotFoundException e) {
+			System.err.println("[ERROR] " + SMARTCONTRACTS_FULLPATH + " not found");
+			e.printStackTrace();
 		}
-		return cfg;
+
+		return smartContractsRead;
 	}
 
 	private Pair<Integer, Integer> dumpStatistics(EVMCFG cfg) {
@@ -410,6 +355,103 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.err.println("##############");
 
 		return Pair.of(solvedJumps, unreachableJumps);
+	}
+	
+	/**
+	 * Writes the given statistics to a file.
+	 *
+	 * @param stats The statistics to be written to the file.
+	 */
+	private void toFileStatistics(String stats) {
+		synchronized (STATISTICS_FULLPATH) {
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Unreachable jumps, % Solved, Time (millis), Thread, Notes \n";
+			try {
+				File idea = new File(STATISTICS_FULLPATH);
+				if (!idea.exists()) {
+					FileWriter myWriter = new FileWriter(idea, APPEND);
+					myWriter.write(init + stats);
+					myWriter.close();
+
+				} else {
+					FileWriter myWriter = new FileWriter(idea, APPEND);
+					myWriter.write(stats);
+					myWriter.close();
+				}
+
+			} catch (IOException e) {
+				System.err.println("An error occurred.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Writes the given message to a file.
+	 *
+	 * @param msg The logs to be written to the file.
+	 */
+	private void toFileLogs(String msg) {
+		synchronized (LOGS_FULLPATH) {
+			try {
+				File idea = new File(LOGS_FULLPATH);
+				
+				FileWriter myWriter = new FileWriter(idea, APPEND);
+				myWriter.write(msg);
+				myWriter.close();
+				
+			} catch (IOException e) {
+				System.err.println("An error occurred.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Saves smart contracts bytecode from Etherscan.
+	 * <p>
+	 * This method reads a list of smart contract addresses from a file, then for each address,
+	 * it retrieves the bytecode of the corresponding smart contract from Etherscan.io and saves it to a file.
+	 * The method also limits the API requests to Etherscan.io to a maximum of 5 per second.
+	 * </p>
+	 *
+	 * @throws Exception if an error occurs during the process.
+	 */
+	private void saveSmartContractsFromEtherscan() throws Exception {
+		List<String> smartContracts = readSmartContractsFromFile();
+		
+		for (int i = 0; i < smartContracts.size(); i++) {
+			String address = smartContracts.get(i);
+			
+			String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + address + "/" + address
+					+ ".sol";
+			
+			if (i % 5 == 0) {
+				try {
+					Thread.sleep(1001); // I can do max 5 API
+										// request in 1 sec to
+										// Etherscan.io
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+	
+			// Directory setup and bytecode retrieval
+			try {
+				Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + address));
+	
+				// If the file does not exists, we will do an API request to Etherscan
+				File file = new File(BYTECODE_FULLPATH);
+				if (!file.exists()) {
+					numberOfAPIEtherscanRequest++;
+					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
+						numberOfAPIEtherscanRequestOnSuccess++;
+					
+					System.out.printf("Downloading %s, remaining: %s \n", address, (smartContracts.size() - numberOfAPIEtherscanRequest));
+				}
+			} catch (Exception e) {
+				continue;
+			}
+		}
 	}
 
 	private static class MyLogger {
@@ -508,5 +550,17 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					currentThread + divider +
 					notes + " \n";
 		}
+	}
+	
+	private static CFG getCFGFromFile(String filename) {
+		CFG cfg = null;
+		try {
+			for (CFG c : EVMFrontend.generateCfgFromFile(filename).getAllCFGs()) {
+				cfg = c;
+			}
+		} catch (IOException e) {
+			System.err.println("Incorrect contract filename");
+		}
+		return cfg;
 	}
 }
