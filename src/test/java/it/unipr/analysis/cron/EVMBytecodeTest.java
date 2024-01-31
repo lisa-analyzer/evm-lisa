@@ -43,7 +43,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final static boolean APPEND = true;
 
 	private final String STATISTICS = ACTUAL_RESULTS_DIR + "/statistics.xls";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/mega-benchmark.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -59,6 +59,44 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 	
 	@Test
+	public void saveSmartContractsFromEtherscan() throws Exception {
+		List<String> smartContracts = readSmartContractsFromFile();
+		
+		for (int i = 0; i < smartContracts.size(); i++) {
+			String address = smartContracts.get(i);
+			
+			String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + address + "/" + address
+					+ ".sol";
+			
+			if (i % 5 == 0) {
+				try {
+					Thread.sleep(1001); // I can do max 5 API
+										// request in 1 sec to
+										// Etherscan.io
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+	
+			// Directory setup and bytecode retrieval
+			try {
+				Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + address));
+	
+				// If the file does not exists, we will do an API request to Etherscan
+				File file = new File(BYTECODE_FULLPATH);
+				if (!file.exists()) {
+					numberOfAPIEtherscanRequest++;
+					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
+						numberOfAPIEtherscanRequestOnSuccess++;
+					
+					System.out.printf("Downloading %s, remaining: %s \n", address, (smartContracts.size() - numberOfAPIEtherscanRequest));
+				}
+			} catch (Exception e) {
+				continue;
+			}
+		}
+	}
+	
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		Object guardia = new Object();
 
