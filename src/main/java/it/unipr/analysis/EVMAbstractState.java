@@ -147,6 +147,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				if (op != null) {
 
 					switch (op.getClass().getSimpleName()) {
+					case "Push0Operator": { // PUSH0
+						AbstractStack result = stack.clone();
+						result.push(Interval.ZERO);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
 					case "PushOperator": { // PUSH
 						AbstractStack result = stack.clone();
 						BigDecimal valueToPush = this.toBigDecimal(un.getExpression());

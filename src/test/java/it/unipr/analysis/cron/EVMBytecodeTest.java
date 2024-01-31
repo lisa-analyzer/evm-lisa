@@ -367,7 +367,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					unreachableJumps++;
 			}
 
-		
 		System.err.println("Solved jumps: " + solvedJumps);
 		System.err.println("Unreachable jumps: " + unreachableJumps);
 		System.err.println("##############");

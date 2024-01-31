@@ -4,6 +4,7 @@ import it.unipr.cfg.*;
 import it.unipr.cfg.Byte;
 import it.unipr.cfg.Number;
 import it.unipr.cfg.push.Push;
+import it.unipr.cfg.push.Push0;
 import it.unipr.cfg.push.Push1;
 import it.unipr.cfg.push.Push10;
 import it.unipr.cfg.push.Push11;
@@ -449,8 +450,10 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		else if (ctx.INVALID() != null)
 			return new Invalid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		else if (ctx.SELFDESTRUCT() != null)
-			return new Selfdestruct(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
-
+			return new Selfdestruct(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));	
+		
+		else if (ctx.PUSH0() != null)
+				return new Push0(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		else if (ctx.PUSH1() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc, getLine(ctx)),
 					ctx.PUSH1().getText().substring(ctx.PUSH1().getText().indexOf("0x")));

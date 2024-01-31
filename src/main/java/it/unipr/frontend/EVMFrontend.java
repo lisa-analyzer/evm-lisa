@@ -402,6 +402,9 @@ public class EVMFrontend {
 		case "5b":
 			writer.write("JUMPDEST\n");
 			break;
+		case "5f":
+			writer.write("PUSH0\n");
+			break;
 		case "80":
 			writer.write("DUP1\n");
 			break;
