@@ -648,6 +648,6 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return st;
 		}
 
-		throw new UnsupportedOperationException(ctx.getText());
+		return new Invalid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 	}
 }
