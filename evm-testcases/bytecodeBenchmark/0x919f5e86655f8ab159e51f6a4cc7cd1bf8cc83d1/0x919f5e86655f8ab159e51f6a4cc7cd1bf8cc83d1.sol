@@ -1,7 +1,0 @@
-PUSH1 0x80
-PUSH1 0x40
-MSTORE
-'5f'(Unknown Opcode)
-DUP1
-REVERT
-INVALID
