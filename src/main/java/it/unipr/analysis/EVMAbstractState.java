@@ -1392,6 +1392,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
+					case "BasefeeOperator": { // BASEFEE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle BASEFEE
+						result.push(Interval.TOP);
+
+						return new EVMAbstractState(result, memory, mu_i);
+					}
 					}
 				}
 			}
