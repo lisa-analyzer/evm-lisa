@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Date;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +32,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
@@ -54,8 +53,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	
 	private final int CORES = Runtime.getRuntime().availableProcessors();
 
+	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x6190a479cfafcb1637f5485366bcbce418a68a4d";
+		String SC_ADDRESS = "0xed04a060050cc289d91779a8bb3942c3a6589254";
 		toFileStatistics(newAnalysis(SC_ADDRESS));
 	}
 
@@ -63,6 +63,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
 	}
 	
+	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		Object guardia = new Object();
@@ -285,14 +286,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Print the results
 		EVMCFG baseCfg = checker.getComputedCFG();
 
-		Pair<Integer, Integer> pair = dumpStatistics(baseCfg);
+		Triple<Integer, Integer, Integer> pair = dumpStatistics(baseCfg);
 		long finish = System.currentTimeMillis();
 
 		String stats = MyLogger.newLogger()
 				.address(CONTRACT_ADDR)
 				.opcodes(baseCfg.getNodesCount())
 				.jumps(baseCfg.getAllJumps().size())
-				.jumpsSolved(pair.getLeft())
+				.preciselyResolvedJumps(pair.getLeft())
+				.soundResolvedJumps(pair.getMiddle())
 				.unreachableJumps(pair.getRight())
 				.time(finish - start)
 				.build().toString();
@@ -329,12 +331,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		return smartContractsRead;
 	}
 
-	private Pair<Integer, Integer> dumpStatistics(EVMCFG cfg) {
+	private Triple<Integer, Integer, Integer> dumpStatistics(EVMCFG cfg) {
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getNodesCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
 
-		int solvedJumps = 0;
+		int preciselyResolvedJumps = 0;
+		int soundResolvedJumps = 0;
 		int unreachableJumps = 0;
 		
 		// we are safe supposing that we have a single entry point
@@ -342,21 +345,26 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		for (Statement jumpNode : cfg.getAllJumps())
 			if (jumpNode instanceof Jump) {
 				if (cfg.getOutgoingEdges(jumpNode).size() == 1)
-					solvedJumps++;
+					preciselyResolvedJumps++;
+				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
+					soundResolvedJumps++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					unreachableJumps++;
 			} else if (jumpNode instanceof Jumpi) {
 				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
-					solvedJumps++;
+					preciselyResolvedJumps++;
+				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
+					soundResolvedJumps++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					unreachableJumps++;
 			}
 
-		System.err.println("Solved jumps: " + solvedJumps);
+		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);
+		System.err.println("Sound solved jumps: " + soundResolvedJumps);
 		System.err.println("Unreachable jumps: " + unreachableJumps);
 		System.err.println("##############");
 
-		return Pair.of(solvedJumps, unreachableJumps);
+		return Triple.of(preciselyResolvedJumps, soundResolvedJumps ,unreachableJumps);
 	}
 	
 	/**
@@ -366,7 +374,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	private void toFileStatistics(String stats) {
 		synchronized (STATISTICS_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Unreachable jumps, % Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable jumps, % Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICS_FULLPATH);
 				if (!idea.exists()) {
@@ -461,7 +469,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		private String address;
 		private int opcodes;
 		private int jumps;
-		private int jumpsSolved;
+		private int preciselyResolvedJumps;
+		private int soundResolvedJumps;
 		private int unreachableJumps;
 		private double solvedJumpsPercent;
 		private long time;
@@ -472,7 +481,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.address = null;
 			this.opcodes = 0;
 			this.jumps = 0;
-			this.jumpsSolved = 0;
+			this.preciselyResolvedJumps = 0;
+			this.soundResolvedJumps = 0;
 			this.unreachableJumps = 0;
 			this.solvedJumpsPercent = 0;
 			this.time = 0;
@@ -480,15 +490,16 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.currentThread = null;
 		}
 
-		private MyLogger(String address, int opcodes, int jumps, int jumpsSolved, int unreachableJumps, long time, String notes) {
+		private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,int unreachableJumps, long time, String notes) {
 			this.address = address;
 			this.opcodes = opcodes;
 			this.jumps = jumps;
-			this.jumpsSolved = jumpsSolved;
+			this.preciselyResolvedJumps = preciselyResolvedJumps;
+			this.soundResolvedJumps = soundResolvedJumps;
 			this.unreachableJumps = unreachableJumps;
 ;
 			if (jumps != 0) {
-				this.solvedJumpsPercent = ((double) jumpsSolved / jumps);
+				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps) / jumps);
 			} else {
 				this.solvedJumpsPercent = -1;
 			}
@@ -516,8 +527,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			return this;
 		}
 
-		public MyLogger jumpsSolved(int jumpsSolved) {
-			this.jumpsSolved = jumpsSolved;
+		public MyLogger preciselyResolvedJumps(int preciselyResolvedJumps) {
+			this.preciselyResolvedJumps = preciselyResolvedJumps;
+			return this;
+		}
+		
+		public MyLogger soundResolvedJumps(int soundResolvedJumps) {
+			this.soundResolvedJumps = soundResolvedJumps;
 			return this;
 		}
 		
@@ -537,7 +553,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 
 		public MyLogger build() {
-			return new MyLogger(address, opcodes, jumps, jumpsSolved, unreachableJumps, time, notes);
+			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps, unreachableJumps, time, notes);
 		}
 
 		@Override
@@ -545,24 +561,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			return address + divider +
 					opcodes + divider +
 					jumps + divider +
-					jumpsSolved + divider +
+					preciselyResolvedJumps + divider +
+					soundResolvedJumps + divider +
 					unreachableJumps + divider +
 					solvedJumpsPercent + divider +
 					time + divider +
 					currentThread + divider +
 					notes + " \n";
 		}
-	}
-	
-	private static CFG getCFGFromFile(String filename) {
-		CFG cfg = null;
-		try {
-			for (CFG c : EVMFrontend.generateCfgFromFile(filename).getAllCFGs()) {
-				cfg = c;
-			}
-		} catch (IOException e) {
-			System.err.println("Incorrect contract filename");
-		}
-		return cfg;
 	}
 }

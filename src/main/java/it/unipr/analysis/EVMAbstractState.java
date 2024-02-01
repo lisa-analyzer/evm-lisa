@@ -333,7 +333,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
 
 						result.push(sum);
@@ -346,7 +346,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Interval sub = opnd1.evalBinaryExpression(Numeric32BitSub.INSTANCE, opnd1, opnd2, pp);
 
 						result.push(sub);
@@ -359,7 +359,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
 
 						result.push(mul);
@@ -475,7 +475,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-	
+
 						MathNumber low, high;
 						Interval exp = null;
 						try {
@@ -511,7 +511,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
 
 						if (lt == Satisfiability.SATISFIED)
@@ -531,7 +531,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
 
 						if (lt == Satisfiability.SATISFIED)
@@ -550,7 +550,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
 
 						if (gt == Satisfiability.SATISFIED)
@@ -569,7 +569,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
 
 						if (gt == Satisfiability.SATISFIED)
@@ -588,7 +588,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
-						
+
 						Satisfiability eq = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1, opnd2, pp);
 
 						if (eq == Satisfiability.SATISFIED)
@@ -606,7 +606,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom())
 							return top();
-						
+
 						Satisfiability iszero = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1,
 								Interval.ZERO,
 								pp);
@@ -1026,7 +1026,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							LOG.warn("[MLOAD] memory == null");
 						}
 
-						if (offset.interval.isSingleton()) {
+						if (offset.isTop() || offset.isBottom() || !offset.interval.isSingleton()) {
+							result.push(Interval.TOP);
+							new_mu_i = mu_i;
+						} else  {
 							BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 							BigDecimal thirtyTwo = new BigDecimal(32);
 							BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
@@ -1054,11 +1057,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							// new_mu_i = intervalCurrent_mu_i;
 							// else
 							new_mu_i = mu_i;
-
-						} else {
-							result.push(Interval.TOP);
-							new_mu_i = mu_i;
-						}
+						} 
 
 						return new EVMAbstractState(result, memory, new_mu_i);
 					}
@@ -1070,7 +1069,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval offset = stackResult.pop();
 						Interval value = stackResult.pop();
 
-						if (offset.interval.isSingleton()) {
+						if (offset.isTop() || offset.isBottom() || !offset.interval.isSingleton()) {
+							new_mu_i = mu_i;
+							memoryResult = memory;
+						} else {
 							BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
 							BigDecimal thirtyTwo = new BigDecimal(32);
 							BigDecimal current_mu_i = offsetBigDecimal.add(thirtyTwo)
@@ -1094,13 +1096,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							else
 								new_mu_i = mu_i;
 
-						} else {
-							new_mu_i = mu_i;
-							// LOG.warn("[MSTORE] !offset.interval.isSingleton()
-							// -
-							// offset: " + offset);
-							memoryResult = memory;
-						}
+						} 
 
 						return new EVMAbstractState(stackResult, memoryResult, new_mu_i);
 					}
@@ -1285,7 +1281,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval offset = result.pop();
 						Interval length = result.pop();
 						Interval topic1 = result.pop();
-						
+
 						// At the moment, we do not handle LOG1
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -1443,7 +1439,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					}
 				}
 			}
-		} catch (NoSuchElementException | NullPointerException e) {
+		} catch (NoSuchElementException e) {
 			System.err.println("[SSS] Operation not performed: " + e.getMessage() + " " + e);
 		}
 
@@ -1462,29 +1458,29 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
 		List<Interval> clone = stack.clone().getStack();
-	    
-	    if(stack.size() < x || x < 1)
-	    	return stack.clone();
-	    
-	    Object[] obj = clone.toArray();
-	    
-	    int first;
-	    if(stack.size() < 32)
-	    	first = 32;
-	    else
-	    	first = clone.size();
-	    
-	    Interval tmp = (Interval) obj[first - x];
-	    
-	    LinkedList<Interval> result = new LinkedList<>();
-	    
-	    for(int i = 0; i < clone.size(); i++)
-	    	result.add((Interval) obj[i]);
-	    
-	    result.add(tmp);
-	    result.remove(0);
-	    
-	    return new AbstractStack(result);
+
+		if(stack.size() < x || x < 1)
+			return stack.clone();
+
+		Object[] obj = clone.toArray();
+
+		int first;
+		if(stack.size() < AbstractStack.K)
+			first = AbstractStack.K;
+		else
+			first = clone.size();
+
+		Interval tmp = (Interval) obj[first - x];
+
+		LinkedList<Interval> result = new LinkedList<>();
+
+		for(int i = 0; i < clone.size(); i++)
+			result.add((Interval) obj[i]);
+
+		result.add(tmp);
+		result.remove(0);
+
+		return new AbstractStack(result);
 	}
 
 	/**
@@ -1498,29 +1494,29 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-	    List<Interval> clone = stack.clone().getStack();
-	    
-	    if(stack.size() < x + 1 || x < 1)
-	    	return stack.clone();
-	    
-	    Object[] obj = clone.toArray();
-	    int first;
-	    
-	    if(stack.size() < 32)
-	    	first = 32 - 1;
-	    else
-	    	first = clone.size() - 1;
-	    
-	    Object tmp = obj[first];
-	    obj[first] = obj[first - x];
-	    obj[first - x] = tmp;
-	    
-	    LinkedList<Interval> result = new LinkedList<>();
-	    
-	    for(int i = 0; i < clone.size(); i++)
-	    	result.add((Interval) obj[i]);
-	    
-	    return new AbstractStack(result);
+		List<Interval> clone = stack.clone().getStack();
+
+		if(stack.size() < x + 1 || x < 1)
+			return stack.clone();
+
+		Object[] obj = clone.toArray();
+		int first;
+
+		if(stack.size() < AbstractStack.K)
+			first = AbstractStack.K - 1;
+		else
+			first = clone.size() - 1;
+
+		Object tmp = obj[first];
+		obj[first] = obj[first - x];
+		obj[first - x] = tmp;
+
+		LinkedList<Interval> result = new LinkedList<>();
+
+		for(int i = 0; i < clone.size(); i++)
+			result.add((Interval) obj[i]);
+
+		return new AbstractStack(result);
 	}
 
 	@Override
@@ -1685,7 +1681,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public Interval getTop() {
 		return stack.getTop();
 	}
-	
+
 	public boolean isEmpty() {
 		return stack.isEmpty();
 	}
@@ -1703,7 +1699,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				memory.lub(other.getMemory()),
 				mu_i.lub(other.getMu_i()));
 	}
-	
+
 	@Override
 	public EVMAbstractState glbAux(EVMAbstractState other) throws SemanticException {
 		return new EVMAbstractState(stack.glb(other.getStack()),
