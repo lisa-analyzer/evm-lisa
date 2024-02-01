@@ -958,7 +958,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval address = result.pop();
 
 						// At the moment, we do not handle EXTCODESIZE
-						result.push(Interval.TOP);
+						result.push(new Interval(MathNumber.ZERO, MathNumber.PLUS_INFINITY));
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
