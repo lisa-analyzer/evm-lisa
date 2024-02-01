@@ -382,7 +382,12 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 * @return the number of item in the stack.
 	 */
 	public int size() {
-		return stack.size();
+		int bottomCounter = 0;
+		Iterator<Interval> it = stack.iterator();
+		while(it.hasNext() && it.next().isBottom()) 
+				bottomCounter++;
+			
+		return stack.size() - bottomCounter;
 	}
 
 	public List<Interval> getStack() {

@@ -1415,19 +1415,26 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private AbstractStack dupX(int x, AbstractStack stack) {
 		List<Interval> clone = stack.clone().getStack();
 	    
-	    if(clone.size() < x || x < 1)
+	    if(stack.size() < x || x < 1)
 	    	return stack.clone();
 	    
 	    Object[] obj = clone.toArray();
 	    
-	    Interval tmp = (Interval) obj[x - 1];
+	    int first;
+	    if(stack.size() < 32)
+	    	first = 32;
+	    else
+	    	first = clone.size();
+	    
+	    Interval tmp = (Interval) obj[first - x];
 	    
 	    LinkedList<Interval> result = new LinkedList<>();
 	    
-	    result.add(tmp);
-	    
 	    for(int i = 0; i < clone.size(); i++)
 	    	result.add((Interval) obj[i]);
+	    
+	    result.add(tmp);
+	    result.remove(0);
 	    
 	    return new AbstractStack(result);
 	}
@@ -1445,14 +1452,20 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private AbstractStack swapX(int x, AbstractStack stack) {
 	    List<Interval> clone = stack.clone().getStack();
 	    
-	    if(clone.size() < x + 1 || x < 1)
+	    if(stack.size() < x + 1 || x < 1)
 	    	return stack.clone();
 	    
 	    Object[] obj = clone.toArray();
+	    int first;
 	    
-	    Object tmp = obj[0];
-	    obj[0] = obj[x];
-	    obj[x] = tmp;
+	    if(stack.size() < 32)
+	    	first = 32 - 1;
+	    else
+	    	first = clone.size() - 1;
+	    
+	    Object tmp = obj[first];
+	    obj[first] = obj[first - x];
+	    obj[first - x] = tmp;
 	    
 	    LinkedList<Interval> result = new LinkedList<>();
 	    
