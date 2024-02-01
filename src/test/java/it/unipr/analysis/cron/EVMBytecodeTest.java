@@ -45,7 +45,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.xls";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "smartContracts.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
 
 
 	// Statistics
@@ -167,6 +167,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			
 			System.out.println(msg);
 			toFileLogs(msg);
+			toFileLogs("Number of cores: " + CORES);
 			
 			guardia.wait(timeToWait);
 
