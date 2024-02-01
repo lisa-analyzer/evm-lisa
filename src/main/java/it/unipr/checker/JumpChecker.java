@@ -1,6 +1,5 @@
 package it.unipr.checker;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.numeric.IntInterval;
-import it.unive.lisa.util.numeric.MathNumberConversionException;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -46,17 +44,6 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private EVMCFG cfgToAnalyze;
 	private boolean fixpoint = true;
-	private final Set<Statement> solvedJumps = new HashSet<>();
-
-	/**
-	 * Getter method for the set of jump statements that have been solved.
-	 * 
-	 * @return the set of jump statements that have been solved.
-	 */
-	public Set<Statement> getSolvedJumps() {
-		return this.solvedJumps;
-	}
-
 
 	public EVMCFG getComputedCFG() {
 		return cfgToAnalyze;
@@ -191,13 +178,11 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 					if (!this.cfgToAnalyze.containsEdge(new SequentialEdge(node, jmp))) {
 						this.cfgToAnalyze.addEdge(new SequentialEdge(node, jmp));
 						fixpoint = false;
-						this.solvedJumps.add(node);
 					}
 				} else { // JUMPI
 					if (!this.cfgToAnalyze.containsEdge(new TrueEdge(node, jmp))) {
 						this.cfgToAnalyze.addEdge(new TrueEdge(node, jmp));
 						fixpoint = false;
-						this.solvedJumps.add(node);
 					}
 				}
 			}
