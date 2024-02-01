@@ -2,14 +2,16 @@ package it.unipr.analysis.unit;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.LinkedList;
+
+import org.junit.Test;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.Memory;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.util.numeric.MathNumber;
-import java.util.ArrayDeque;
-import org.junit.Test;
 
 /**
  * JUnit tests for {@link EVMAbstractState} class. Checks the implementation of
@@ -30,9 +32,9 @@ public class EVMAbstractStateTest {
 	 * value in the list will be the top of the stack.
 	 */
 	private EVMAbstractState buildEVMAbsDomain(Integer... values) {
-		ArrayDeque<Interval> stack = new ArrayDeque<>();
+		LinkedList<Interval> stack = new LinkedList<>();
 		for (int i = values.length - 1; i >= 0; i--)
-			stack.push(new Interval(values[i], values[i]));
+			stack.addLast(new Interval(values[i], values[i]));
 		return new EVMAbstractState(new AbstractStack(stack), new Memory(), new Interval(0, 0));
 	}
 
@@ -41,9 +43,9 @@ public class EVMAbstractStateTest {
 	 * interval in the list will be the top of the stack.
 	 */
 	private EVMAbstractState buildEVMAbsDomainIntervals(Interval... intervals) {
-		ArrayDeque<Interval> stack = new ArrayDeque<>();
+		LinkedList<Interval> stack = new LinkedList<>();
 		for (int i = intervals.length - 1; i >= 0; i--)
-			stack.push(intervals[i]);
+			stack.addLast(intervals[i]);
 		return new EVMAbstractState(new AbstractStack(stack), new Memory(), new Interval(0, 0));
 	}
 

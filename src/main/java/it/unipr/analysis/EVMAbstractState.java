@@ -3,7 +3,8 @@ package it.unipr.analysis;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayDeque;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -1394,7 +1395,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					}
 				}
 			}
-		} catch (NoSuchElementException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			System.err.println("[SSS] Operation not performed: " + e.getMessage() + " " + e);
 		}
 
@@ -1412,7 +1413,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
-		ArrayDeque<Interval> clone = stack.clone().getStack();
+		List<Interval> clone = stack.clone().getStack();
 	    
 	    if(clone.size() < x || x < 1)
 	    	return stack.clone();
@@ -1421,7 +1422,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	    
 	    Interval tmp = (Interval) obj[x - 1];
 	    
-	    ArrayDeque<Interval> result = new ArrayDeque<Interval>();
+	    LinkedList<Interval> result = new LinkedList<>();
 	    
 	    result.add(tmp);
 	    
@@ -1442,7 +1443,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-	    ArrayDeque<Interval> clone = stack.clone().getStack();
+	    List<Interval> clone = stack.clone().getStack();
 	    
 	    if(clone.size() < x + 1 || x < 1)
 	    	return stack.clone();
@@ -1453,7 +1454,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	    obj[0] = obj[x];
 	    obj[x] = tmp;
 	    
-	    ArrayDeque<Interval> result = new ArrayDeque<Interval>();
+	    LinkedList<Interval> result = new LinkedList<>();
 	    
 	    for(int i = 0; i < clone.size(); i++)
 	    	result.add((Interval) obj[i]);
