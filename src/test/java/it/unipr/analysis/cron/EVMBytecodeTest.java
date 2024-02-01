@@ -167,7 +167,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			
 			System.out.println(msg);
 			toFileLogs(msg);
-			toFileLogs("Number of cores: " + CORES);
+			toFileLogs("Number of cores: " + CORES + " \n");
 			
 			guardia.wait(timeToWait);
 
