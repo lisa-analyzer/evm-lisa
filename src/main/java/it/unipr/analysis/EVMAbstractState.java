@@ -460,7 +460,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							low = new MathNumber(
 									Math.pow(opnd1.interval.getLow().toDouble(), opnd2.interval.getLow().toDouble()));
 							high = new MathNumber(
-									Math.pow(opnd1.interval.getLow().toDouble(), opnd2.interval.getLow().toDouble()));
+									Math.pow(opnd1.interval.getHigh().toDouble(), opnd2.interval.getHigh().toDouble()));
 
 							exp = new Interval(low, high);
 
