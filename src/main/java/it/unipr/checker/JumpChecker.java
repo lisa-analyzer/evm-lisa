@@ -21,6 +21,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -140,15 +141,15 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) 
 				continue;
 
-			IntInterval topStack = valueState.getTop().interval;
-			if (!topStack.isFinite())
+			Interval topStack = valueState.getTop();
+			if (topStack.isTop() || topStack.isBottom() || topStack.interval.isInfinite())
 				continue;
 
 			Set<Statement> filteredDests;
 			//			if (topStack.isSingleton())
 			filteredDests = jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-					.filter(pc -> topStack.includes(new IntInterval(((ProgramCounterLocation) pc.getLocation()).getPc(), ((ProgramCounterLocation) pc.getLocation()).getPc())))
+					.filter(pc -> topStack.interval.includes(new IntInterval(((ProgramCounterLocation) pc.getLocation()).getPc(), ((ProgramCounterLocation) pc.getLocation()).getPc())))
 					.collect(Collectors.toSet());
 			//			else 
 			//				filteredDests = jumpDestinations.stream()

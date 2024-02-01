@@ -1,6 +1,5 @@
 package it.unipr.cfg.push;
 
-import it.unipr.analysis.operator.AddOperator;
 import it.unipr.analysis.operator.Push0Operator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;

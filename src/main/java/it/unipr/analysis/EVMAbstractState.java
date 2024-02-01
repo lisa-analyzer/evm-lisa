@@ -331,6 +331,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
 
 						result.push(sum);
@@ -341,6 +344,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Interval sub = opnd1.evalBinaryExpression(Numeric32BitSub.INSTANCE, opnd1, opnd2, pp);
 
 						result.push(sub);
@@ -351,6 +357,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
 
 						result.push(mul);
@@ -362,7 +371,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd2 = result.pop();
 						Interval div;
 
-						if (opnd2.equals(Interval.ZERO))
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						else if (opnd2.equals(Interval.ZERO))
 							div = Interval.ZERO;
 						else
 							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
@@ -376,7 +387,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd2 = result.pop();
 						Interval div;
 
-						if (opnd2.equals(Interval.ZERO))
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						else if (opnd2.equals(Interval.ZERO))
 							div = Interval.ZERO;
 						else
 							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
@@ -390,7 +403,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd2 = result.pop();
 						Interval mod;
 
-						if (opnd2.equals(Interval.ZERO))
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						else if (opnd2.equals(Interval.ZERO))
 							mod = Interval.ZERO;
 						else
 							mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
@@ -404,7 +419,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd2 = result.pop();
 						Interval mod;
 
-						if (opnd2.equals(Interval.ZERO))
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						else if (opnd2.equals(Interval.ZERO))
 							mod = Interval.ZERO;
 						else
 							mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
@@ -419,7 +436,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd3 = result.pop();
 						Interval addmod;
 
-						if (opnd3.equals(Interval.ZERO))
+
+						if (opnd1.isBottom() || opnd2.isBottom() || opnd3.isBottom())
+							return top();
+						else if (opnd3.equals(Interval.ZERO))
 							addmod = Interval.ZERO;
 						else {
 							Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
@@ -436,7 +456,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd3 = result.pop();
 						Interval mulmod;
 
-						if (opnd3.equals(Interval.ZERO))
+						if (opnd1.isBottom() || opnd2.isBottom() || opnd3.isBottom())
+							return top();
+						else if (opnd3.equals(Interval.ZERO))
 							mulmod = Interval.ZERO;
 						else {
 							Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
@@ -451,9 +473,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
-						// EXP is not handled in Interval, so we work with low()
-						// and
-						// high()
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+	
 						MathNumber low, high;
 						Interval exp = null;
 						try {
@@ -487,6 +509,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
 
 						if (lt == Satisfiability.SATISFIED)
@@ -504,6 +529,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Satisfiability lt = opnd1.satisfiesBinaryExpression(ComparisonLt.INSTANCE, opnd1, opnd2, pp);
 
 						if (lt == Satisfiability.SATISFIED)
@@ -520,6 +548,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
 
 						if (gt == Satisfiability.SATISFIED)
@@ -536,6 +567,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Satisfiability gt = opnd1.satisfiesBinaryExpression(ComparisonGt.INSTANCE, opnd1, opnd2, pp);
 
 						if (gt == Satisfiability.SATISFIED)
@@ -552,6 +586,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
+						if (opnd1.isBottom() || opnd2.isBottom())
+							return top();
+						
 						Satisfiability eq = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1, opnd2, pp);
 
 						if (eq == Satisfiability.SATISFIED)
@@ -567,6 +604,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						Interval opnd1 = result.pop();
 
+						if (opnd1.isBottom())
+							return top();
+						
 						Satisfiability iszero = opnd1.satisfiesBinaryExpression(ComparisonEq.INSTANCE, opnd1,
 								Interval.ZERO,
 								pp);
@@ -585,7 +625,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
-						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						if (opnd1.isTop() || opnd2.isTop() || opnd1.isBottom() || opnd2.isBottom()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -613,7 +653,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
-						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						if (opnd1.isTop() || opnd2.isTop() || opnd1.isBottom() || opnd2.isBottom()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -641,7 +681,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						Interval opnd1 = result.pop();
 						Interval opnd2 = result.pop();
 
-						if (opnd1 == Interval.TOP || opnd2 == Interval.TOP) {
+						if (opnd1.isTop() || opnd2.isTop() || opnd1.isBottom() || opnd2.isBottom()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -668,7 +708,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						Interval opnd1 = result.pop();
 
-						if (opnd1 == Interval.TOP) {
+						if (opnd1.isTop() || opnd1.isBottom()) {
 							result.push(Interval.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -709,7 +749,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// retrieved
 						// bytes
 
-						if (target.equals(Interval.TOP)) {
+						if (target.isBottom() || target.isTop()) {
 							result.push(Interval.TOP);
 						} else {
 
