@@ -79,71 +79,71 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 			@Override
 			public void run() {
-				synchronized (mutex) {
-					for (int i = 0; i < smartContracts.size(); i++) {
-						String address = smartContracts.get(i);
+				
+				for (int i = 0; i < smartContracts.size(); i++) {
+					String address = smartContracts.get(i);
 
-						if (i % CORES == 0) {
-							try {
-								// We optimize parallelism by launching n analyzes at a time with n = CORES
-								Thread.sleep(20000); 
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
+					if (i % CORES == 0) {
+						try {
+							// We optimize parallelism by launching n analyzes at a time with n = CORES
+							Thread.sleep(20000); 
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
-
-						Runnable runnable = () -> {
-							String myStats = "";
-
-							try {
-
-								myStats = newAnalysis(address);
-
-								synchronized (mutex) {
-									toFileStatistics(myStats);
-									smartContractsTerminated.add(address);
-									counter++;
-									
-									String msg = "SC: " + smartContracts.size() + ", " + 
-											"SC ended: " + smartContractsTerminated.size() + ", " +
-											"in progress: " + (smartContracts.size() - counter) + " \n";
-									
-									System.out.println(msg);
-									toFileLogs(msg);
-
-									mutex.notifyAll();
-								}
-
-							} catch (Exception e) {
-								synchronized (mutex) {
-									String msg = MyLogger.newLogger()
-											.address(address)
-											.notes("failure: " + e)
-											.build().toString();
-									toFileStatistics(msg);
-
-									mutex.notifyAll();
-								}
-							}
-						};
-
-						threads[i] = new Thread(runnable);
-						threads[i].start();
 					}
 
-					try {
+					Runnable runnable = () -> {
+						String myStats = "";
+
+						try {
+
+							myStats = newAnalysis(address);
+
+							synchronized (mutex) {
+								toFileStatistics(myStats);
+								smartContractsTerminated.add(address);
+								counter++;
+								
+								String msg = "SC: " + address + " finished at " + new Date() + ", " + 
+										"ended: " + smartContractsTerminated.size() + ", " +
+										"in progress: " + (smartContracts.size() - counter) + " \n";
+								
+								System.out.println(msg);
+								toFileLogs(msg);
+
+								mutex.notifyAll();
+							}
+
+						} catch (Exception e) {
+							synchronized (mutex) {
+								String msg = MyLogger.newLogger()
+										.address(address)
+										.notes("failure: " + e)
+										.build().toString();
+								toFileStatistics(msg);
+
+								mutex.notifyAll();
+							}
+						}
+					};
+
+					threads[i] = new Thread(runnable);
+					threads[i].start();
+				}
+
+				try {
+					synchronized (mutex) {
 						while (counter < smartContracts.size()) {
 							mutex.wait();
 						}
-
-					} catch (InterruptedException e) {
-						e.printStackTrace();
 					}
 
-					synchronized (guardia) {
-						guardia.notifyAll(); // All tests are finished
-					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 
+				synchronized (guardia) {
+					guardia.notifyAll(); // All tests are finished
 				}
 
 			} // ! run()
@@ -374,7 +374,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	private void toFileStatistics(String stats) {
 		synchronized (STATISTICS_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable jumps, % Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICS_FULLPATH);
 				if (!idea.exists()) {
@@ -472,6 +472,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		private int preciselyResolvedJumps;
 		private int soundResolvedJumps;
 		private int unreachableJumps;
+		private int totalResolvedJumps;
+		private double preciselySolvedJumpsPercent;
 		private double solvedJumpsPercent;
 		private long time;
 		private String notes;
@@ -490,19 +492,21 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.currentThread = null;
 		}
 
-		private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,int unreachableJumps, long time, String notes) {
+		private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps, int unreachableJumps, int totalResolvedJumps, long time, String notes) {
 			this.address = address;
 			this.opcodes = opcodes;
 			this.jumps = jumps;
 			this.preciselyResolvedJumps = preciselyResolvedJumps;
 			this.soundResolvedJumps = soundResolvedJumps;
 			this.unreachableJumps = unreachableJumps;
-;
 			if (jumps != 0) {
 				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps) / jumps);
+				this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
 			} else {
 				this.solvedJumpsPercent = -1;
+				this.preciselySolvedJumpsPercent = -1;
 			}
+			this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps;
 			this.notes = notes;
 			this.time = time;
 			this.currentThread = Thread.currentThread().getName();
@@ -553,7 +557,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 
 		public MyLogger build() {
-			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps, unreachableJumps, time, notes);
+			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps, unreachableJumps, totalResolvedJumps, time, notes);
 		}
 
 		@Override
@@ -564,6 +568,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					preciselyResolvedJumps + divider +
 					soundResolvedJumps + divider +
 					unreachableJumps + divider +
+					totalResolvedJumps + divider +
+					preciselySolvedJumpsPercent + divider +
 					solvedJumpsPercent + divider +
 					time + divider +
 					currentThread + divider +
