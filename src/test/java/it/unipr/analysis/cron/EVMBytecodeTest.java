@@ -44,7 +44,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.xls";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/diff1.txt";
 
 
 	// Statistics
@@ -55,7 +55,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x7e2a22a39bdcf6188d5c06f156d2b377ab925eb6";
+		String SC_ADDRESS = "0x22895ba3ee81ab5f12753bd13b52858f8857d518";
 		toFileStatistics(newAnalysis(SC_ADDRESS));
 	}
 
@@ -506,7 +506,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.soundResolvedJumps = soundResolvedJumps;
 			this.unreachableJumps = unreachableJumps;
 			if (jumps != 0) {
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps) / jumps);
+				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + unreachableJumps) / jumps);
 				this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
 			} else {
 				this.solvedJumpsPercent = -1;
