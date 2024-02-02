@@ -333,25 +333,32 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
+						
+						try {
 
-						BigDecimal opnd1Low = opnd1.interval.getLow().getNumber();
-						BigDecimal opnd1High = opnd1.interval.getHigh().getNumber();
-						BigDecimal opnd2Low = opnd2.interval.getLow().getNumber();
-						BigDecimal opnd2High = opnd2.interval.getHigh().getNumber();
-						
-						BigDecimal sumLow = opnd1Low.add(opnd2Low);
-						BigDecimal sumHigh = opnd1High.add(opnd2High);
-						
-						if(sumLow.compareTo(MAX) == 0 || sumLow.compareTo(MAX) > 0)
-							sumLow = sumLow.subtract(MAX);
-						if(sumHigh.compareTo(MAX) == 0 || sumHigh.compareTo(MAX) > 0)
-							sumHigh = sumHigh.subtract(MAX);
-						
-						Interval sum = new Interval(new MathNumber(sumLow), 
-													new MathNumber(sumHigh));
-
-						result.push(sum);
-						return new EVMAbstractState(result, memory, mu_i);
+							BigDecimal opnd1Low = opnd1.interval.getLow().getNumber();
+							BigDecimal opnd1High = opnd1.interval.getHigh().getNumber();
+							BigDecimal opnd2Low = opnd2.interval.getLow().getNumber();
+							BigDecimal opnd2High = opnd2.interval.getHigh().getNumber();
+							
+							BigDecimal sumLow = opnd1Low.add(opnd2Low);
+							BigDecimal sumHigh = opnd1High.add(opnd2High);
+							
+							if(sumLow.compareTo(MAX) == 0 || sumLow.compareTo(MAX) > 0)
+								sumLow = sumLow.subtract(MAX);
+							if(sumHigh.compareTo(MAX) == 0 || sumHigh.compareTo(MAX) > 0)
+								sumHigh = sumHigh.subtract(MAX);
+							
+							Interval sum = new Interval(new MathNumber(sumLow), 
+														new MathNumber(sumHigh));
+	
+							result.push(sum);
+							return new EVMAbstractState(result, memory, mu_i);
+							
+						} catch (Exception e) {
+							result.push(Interval.TOP);
+							return new EVMAbstractState(result, memory, mu_i);
+						}
 					}
 					case "SubOperator": { // SUB
 						AbstractStack result = stack.clone();
@@ -391,11 +398,16 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							div = Interval.ZERO;
 						else {
 							MathNumber low, high;
-
-							low = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
-							high = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
 							
-							div = new Interval(low, high);
+							try {
+								low = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
+								high = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
+								
+								div = new Interval(low, high);
+							} catch (Exception e) {
+								result.push(Interval.TOP);
+								return new EVMAbstractState(result, memory, mu_i);
+							}
 						}
 							
 						result.push(div);
@@ -427,16 +439,22 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							return top();
 						else if (opnd2.equals(Interval.ZERO))
 							mod = Interval.ZERO;
-						else{
+						else {
 							MathNumber low, high, lowDiv, highDiv;
 							
-							lowDiv = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
-							low = opnd1.interval.getLow().subtract(opnd2.interval.getLow().multiply(lowDiv));
+							try {
+								lowDiv = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
+								low = opnd1.interval.getLow().subtract(opnd2.interval.getLow().multiply(lowDiv));
+								
+								highDiv = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
+								high = opnd1.interval.getHigh().subtract(opnd2.interval.getHigh().multiply(highDiv));
+								
+								mod = new Interval(low, high);
 							
-							highDiv = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
-							high = opnd1.interval.getHigh().subtract(opnd2.interval.getHigh().multiply(highDiv));
-							
-							mod = new Interval(low, high);
+							} catch (Exception e) {
+								result.push(Interval.TOP);
+								return new EVMAbstractState(result, memory, mu_i);
+							}
 						}
 						
 						result.push(mod);
@@ -473,15 +491,21 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						else {
 							MathNumber low, high, sumLow, sumHigh, divLow, divHigh;
 							
-							sumLow = opnd1.interval.getLow().add(opnd2.interval.getLow());
-							divLow = sumLow.divide(opnd3.interval.getLow()).roundDown();
-							low = sumLow.subtract(opnd3.interval.getLow().multiply(divLow));
+							try {
+								sumLow = opnd1.interval.getLow().add(opnd2.interval.getLow());
+								divLow = sumLow.divide(opnd3.interval.getLow()).roundDown();
+								low = sumLow.subtract(opnd3.interval.getLow().multiply(divLow));
+								
+								sumHigh = opnd1.interval.getHigh().add(opnd2.interval.getHigh());
+								divHigh = sumLow.divide(opnd3.interval.getHigh()).roundDown();
+								high = sumLow.subtract(opnd3.interval.getHigh().multiply(divHigh));
+								
+								addmod = new Interval(low, high);
 							
-							sumHigh = opnd1.interval.getHigh().add(opnd2.interval.getHigh());
-							divHigh = sumLow.divide(opnd3.interval.getHigh()).roundDown();
-							high = sumLow.subtract(opnd3.interval.getHigh().multiply(divHigh));
-							
-							addmod = new Interval(low, high);
+							} catch (Exception e) {
+								result.push(Interval.TOP);
+								return new EVMAbstractState(result, memory, mu_i);
+							}
 						}
 
 						result.push(addmod);
@@ -501,15 +525,21 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						else {
 							MathNumber low, high, sumLow, sumHigh, divLow, divHigh;
 							
-							sumLow = opnd1.interval.getLow().multiply(opnd2.interval.getLow());
-							divLow = sumLow.divide(opnd3.interval.getLow()).roundDown();
-							low = sumLow.subtract(opnd3.interval.getLow().multiply(divLow));
-							
-							sumHigh = opnd1.interval.getHigh().multiply(opnd2.interval.getHigh());
-							divHigh = sumLow.divide(opnd3.interval.getHigh()).roundDown();
-							high = sumLow.subtract(opnd3.interval.getHigh().multiply(divHigh));
-							
-							mulmod = new Interval(low, high);
+							try {
+								sumLow = opnd1.interval.getLow().multiply(opnd2.interval.getLow());
+								divLow = sumLow.divide(opnd3.interval.getLow()).roundDown();
+								low = sumLow.subtract(opnd3.interval.getLow().multiply(divLow));
+								
+								sumHigh = opnd1.interval.getHigh().multiply(opnd2.interval.getHigh());
+								divHigh = sumLow.divide(opnd3.interval.getHigh()).roundDown();
+								high = sumLow.subtract(opnd3.interval.getHigh().multiply(divHigh));
+								
+								mulmod = new Interval(low, high);
+								
+							} catch (Exception e) {
+								result.push(Interval.TOP);
+								return new EVMAbstractState(result, memory, mu_i);
+							}
 						}
 
 						result.push(mulmod);

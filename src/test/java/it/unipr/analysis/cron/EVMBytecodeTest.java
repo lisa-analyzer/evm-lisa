@@ -86,7 +86,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 						if (i % CORES == 0) {
 							try {
 								// We optimize parallelism by launching n analyzes at a time with n = CORES
-								Thread.sleep(10000); 
+								Thread.sleep(20000); 
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -153,9 +153,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
 
-			int millisPerSmartContract = 2000;
-			int extra = 60000;
-			long blocks = smartContracts.size() / CORES * 10000;
+			int millisPerSmartContract = 4000;
+			int extra = 120000;
+			long blocks = smartContracts.size() / CORES * 20000;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
 			
 			// Statistics
