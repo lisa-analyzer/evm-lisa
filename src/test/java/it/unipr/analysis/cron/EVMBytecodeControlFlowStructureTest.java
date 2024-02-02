@@ -207,7 +207,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testDiv() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/div", "div_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/div", "div_eth.sol", false);
 		perform(conf);
 	}
 	
@@ -220,6 +220,54 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	@Test
 	public void testSdiv() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", true);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testMod() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/mod", "mod_eth.sol", false);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testSmod() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", true);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testAddmod() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/addmod", "addmod_eth.sol", false);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testMulmod() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/mulmod", "mulmod_eth.sol", false);
 		perform(conf);
 	}
 

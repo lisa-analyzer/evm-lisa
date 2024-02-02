@@ -375,8 +375,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							return top();
 						else if (opnd2.equals(Interval.ZERO))
 							div = Interval.ZERO;
-						else
-							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
+						else {
+//							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
+							MathNumber low, high;
+							low = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
+							high = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
+							div = new Interval(low, high);
+						}
+							
 
 						result.push(div);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -407,9 +413,18 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							return top();
 						else if (opnd2.equals(Interval.ZERO))
 							mod = Interval.ZERO;
-						else
-							mod = opnd1.evalBinaryExpression(Numeric32BitMod.INSTANCE, opnd1, opnd2, pp);
-
+						else{
+							MathNumber low, high, lowDiv, highDiv;
+							
+							lowDiv = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
+							low = opnd1.interval.getLow().subtract(opnd2.interval.getLow().multiply(lowDiv));
+							
+							highDiv = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
+							high = opnd1.interval.getHigh().subtract(opnd2.interval.getHigh().multiply(highDiv));
+							
+							mod = new Interval(low, high);
+						}
+						
 						result.push(mod);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -442,8 +457,17 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						else if (opnd3.equals(Interval.ZERO))
 							addmod = Interval.ZERO;
 						else {
-							Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
-							addmod = sum.evalBinaryExpression(Numeric32BitMod.INSTANCE, sum, opnd3, pp);
+							MathNumber low, high, sumLow, sumHigh, divLow, divHigh;
+							
+							sumLow = opnd1.interval.getLow().add(opnd2.interval.getLow());
+							divLow = sumLow.divide(opnd3.interval.getLow()).roundDown();
+							low = sumLow.subtract(opnd3.interval.getLow().multiply(divLow));
+							
+							sumHigh = opnd1.interval.getHigh().add(opnd2.interval.getHigh());
+							divHigh = sumLow.divide(opnd3.interval.getHigh()).roundDown();
+							high = sumLow.subtract(opnd3.interval.getHigh().multiply(divHigh));
+							
+							addmod = new Interval(low, high);
 						}
 
 						result.push(addmod);
@@ -461,8 +485,20 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						else if (opnd3.equals(Interval.ZERO))
 							mulmod = Interval.ZERO;
 						else {
-							Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
-							mulmod = mul.evalBinaryExpression(Numeric32BitMod.INSTANCE, mul, opnd3, pp);
+//							Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
+//							mulmod = mul.evalBinaryExpression(Numeric32BitMod.INSTANCE, mul, opnd3, pp);
+							
+							MathNumber low, high, sumLow, sumHigh, divLow, divHigh;
+							
+							sumLow = opnd1.interval.getLow().multiply(opnd2.interval.getLow());
+							divLow = sumLow.divide(opnd3.interval.getLow()).roundDown();
+							low = sumLow.subtract(opnd3.interval.getLow().multiply(divLow));
+							
+							sumHigh = opnd1.interval.getHigh().multiply(opnd2.interval.getHigh());
+							divHigh = sumLow.divide(opnd3.interval.getHigh()).roundDown();
+							high = sumLow.subtract(opnd3.interval.getHigh().multiply(divHigh));
+							
+							mulmod = new Interval(low, high);
 						}
 
 						result.push(mulmod);
