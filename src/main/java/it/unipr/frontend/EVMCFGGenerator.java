@@ -127,13 +127,13 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 			if (st instanceof Jumpi && last instanceof Push)
 				map.put(st, ((Push) last).getInt());
-			
+
 			if (st instanceof Jump && last instanceof Push)
 				map.put(st, ((Push) last).getInt());
-			
+
 			if (last instanceof Jumpi) 
 				cfg.addEdge(new FalseEdge(last, st));
-			 
+
 			if (!(last instanceof Revert)
 					&& !(last instanceof Return)
 					&& !(last instanceof Stop)
@@ -169,9 +169,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 					|| stmt instanceof Selfdestruct 
 					|| stmt instanceof Invalid)
 				cfg.addEdge(new SequentialEdge(stmt, ret));
-//			// If a node has no incoming edges, we set it has entry point
-//			if (cfg.getIngoingEdges(stmt).size() == 0)
-//				cfg.getEntrypoints().add(stmt);
+			//			// If a node has no incoming edges, we set it has entry point
+			//			if (cfg.getIngoingEdges(stmt).size() == 0)
+			//				cfg.getEntrypoints().add(stmt);
 		}
 
 		unit.addCodeMember(cfg);
@@ -451,9 +451,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return new Invalid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		else if (ctx.SELFDESTRUCT() != null)
 			return new Selfdestruct(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));	
-		
+
 		else if (ctx.PUSH0() != null)
-				return new Push0(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+			return new Push0(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		else if (ctx.PUSH1() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc, getLine(ctx)),
 					ctx.PUSH1().getText().substring(ctx.PUSH1().getText().indexOf("0x")));

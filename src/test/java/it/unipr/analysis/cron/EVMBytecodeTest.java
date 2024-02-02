@@ -55,7 +55,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0xed04a060050cc289d91779a8bb3942c3a6589254";
+		String SC_ADDRESS = "0x7e2a22a39bdcf6188d5c06f156d2b377ab925eb6";
 		toFileStatistics(newAnalysis(SC_ADDRESS));
 	}
 
@@ -159,7 +159,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
 
-			int millisPerSmartContract = 10000;
+			int millisPerSmartContract = 25000;
 			int extra = 120000;
 			long blocks = smartContracts.size() / CORES * 20000;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
@@ -350,19 +350,19 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		for (Statement jumpNode : cfg.getAllJumps())
 			if (jumpNode instanceof Jump) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 1)
+				if (!cfg.reachableFrom(entryPoint, jumpNode))
+					unreachableJumps++;
+				else if (cfg.getOutgoingEdges(jumpNode).size() == 1)
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
 					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
-					unreachableJumps++;
 			} else if (jumpNode instanceof Jumpi) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
+				if (!cfg.reachableFrom(entryPoint, jumpNode))
+					unreachableJumps++;
+				else if (cfg.getOutgoingEdges(jumpNode).size() == 2)
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
 					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
-					unreachableJumps++;
 			}
 
 		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);

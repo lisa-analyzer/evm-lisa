@@ -113,6 +113,12 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
+		
+		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
+			return true;
+		
+		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
+			return true;
 
 		// Retrieve all the jump destinations from the actual CFG.
 		Set<Statement> jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
@@ -138,12 +144,16 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 			// If the abstract stack is top or bottom or it is empty, we do not have enough information
 			// to solve the jump.
-			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) 
+			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) {
+				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " " + valueState.representation());
 				continue;
+			}
 
 			Interval topStack = valueState.getTop();
-			if (topStack.isTop() || topStack.isBottom() || topStack.interval.isInfinite())
+			if (topStack.isTop() || topStack.isBottom() || topStack.interval.isInfinite()) {
+				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " " + valueState.getStack());
 				continue;
+			}
 
 			Set<Statement> filteredDests;
 			//			if (topStack.isSingleton())
@@ -162,10 +172,6 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 			//							}
 			//						})
 			//						.collect(Collectors.toSet());
-
-			// TODO: Check if printing found JUMPDESTs is useful
-			System.err.println(
-					filteredDests + " " + valueState.getTop());
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
