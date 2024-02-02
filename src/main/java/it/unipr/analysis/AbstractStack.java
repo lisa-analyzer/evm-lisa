@@ -11,7 +11,6 @@ import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -29,7 +28,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 	private final boolean isTop;
 
-	private final LinkedList<Interval> stack;
+	private final LinkedList<KIntegerSet> stack;
 
 	
 	/**
@@ -44,7 +43,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 * 
 	 * @param stack the stack of values
 	 */
-	public AbstractStack(LinkedList<Interval> stack) {
+	public AbstractStack(LinkedList<KIntegerSet> stack) {
 		this.stack = stack;
 		this.isTop = false;
 	}
@@ -56,10 +55,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	private AbstractStack(boolean isTop) {
 		this.isTop = isTop;
-		this.stack = new LinkedList<Interval>();
+		this.stack = new LinkedList<KIntegerSet>();
 		
 		for (int i = 0; i < K; i++)
-			stack.add(Interval.BOTTOM);
+			stack.add(KIntegerSet.BOTTOM);
 		
 	}
 
@@ -152,7 +151,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 			return this;
 
 		// Otherwise, let's build a new SymbolicStack
-		LinkedList<Interval> result = new LinkedList<>();
+		LinkedList<KIntegerSet> result = new LinkedList<>();
 		
 		for (int i = 0; i < K; i++)
 			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
@@ -173,7 +172,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		else if (other.lessOrEqual(this))
 			return other;
 
-		LinkedList<Interval> result = new LinkedList<>();
+		LinkedList<KIntegerSet> result = new LinkedList<>();
 		
 		for (int i = 0; i < K; i++)
 			result.addLast(this.stack.get(i).glb(other.stack.get(i)));
@@ -191,7 +190,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 			return other;
 		}
 
-		LinkedList<Interval> result = new LinkedList<>();
+		LinkedList<KIntegerSet> result = new LinkedList<>();
 
 		for (int i = 0; i < K; i++)
 			result.addLast(this.stack.get(i).widening(other.stack.get(i)));
@@ -264,13 +263,13 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 				if (op instanceof JumpiOperator) { // JUMPI
 					AbstractStack result = new AbstractStack(clone(stack));
 					result.pop(); // Interval destination = result.pop();
-					Interval condition = result.pop();
+					KIntegerSet condition = result.pop();
 
-					if (condition.equals(Interval.ZERO)) {
+					if (condition.equals(KIntegerSet.ZERO)) {
 						// Condition is surely false (interval [0,0])
 						// Return BOTTOM
 						return bottom();
-					} else if (condition.equals(new Interval(1, 1))) {
+					} else if (condition.equals(KIntegerSet.ONE)) {
 						// Condition is surely true (interval [1,1])
 						// Return the result
 						return result;
@@ -292,13 +291,13 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 							AbstractStack result = new AbstractStack(clone(stack));
 							result.pop(); // Interval destination =
 							// result.pop();
-							Interval condition = result.pop();
+							KIntegerSet condition = result.pop();
 
-							if (condition.equals(Interval.ZERO)) {
+							if (condition.equals(KIntegerSet.ZERO)) {
 								// Condition is surely false (interval [0,0])
 								// Return the result
 								return result;
-							} else if (condition.equals(new Interval(1, 1))) {
+							} else if (condition.equals(KIntegerSet.ONE)) {
 								// Condition is surely true (interval [1,1])
 								// Return BOTTOM
 								return bottom();
@@ -318,10 +317,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		return this;
 	}
 
-	public static LinkedList<Interval> clone(LinkedList<Interval> originalList) {
-        LinkedList<Interval> clonedList = new LinkedList<>();
+	public static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> originalList) {
+        LinkedList<KIntegerSet> clonedList = new LinkedList<>();
         for (int i = 0; i < originalList.size(); i++)
-                clonedList.add(new Interval(originalList.get(i).interval));
+                clonedList.add(originalList.get(i));
 
         return clonedList;
     }
@@ -331,8 +330,8 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 * 
 	 * @return the Interval at the top of the stack.
 	 */
-	public Interval getTop() {
-		return ((LinkedList<Interval>) this.stack).getLast();
+	public KIntegerSet getTop() {
+		return this.stack.getLast();
 	}
 
 	@Override
@@ -347,7 +346,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 *
 	 * @return an iterator over the elements in the stack.
 	 */
-	public Iterator<Interval> iterator() {
+	public Iterator<KIntegerSet> iterator() {
 		return stack.iterator();
 	}
 
@@ -356,7 +355,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 *
 	 * @param target the interval to be pushed onto the stack.
 	 */
-	public void push(Interval target) {
+	public void push(KIntegerSet target) {
 		stack.addLast(target);
 		stack.remove(0);
 	}
@@ -366,12 +365,12 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 *
 	 * @return the interval at the top of the stack.
 	 */
-	public Interval pop() {
-		Interval result = stack.removeLast();
+	public KIntegerSet pop() {
+		KIntegerSet result = stack.removeLast();
 		if (stack.get(0).isBottom())
-			stack.addFirst(Interval.BOTTOM);
+			stack.addFirst(KIntegerSet.BOTTOM);
 		else
-			stack.addFirst(Interval.TOP);
+			stack.addFirst(KIntegerSet.TOP);
 		return result;
 
 	}
@@ -383,14 +382,14 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public int size() {
 		int bottomCounter = 0;
-		Iterator<Interval> it = stack.iterator();
+		Iterator<KIntegerSet> it = stack.iterator();
 		while(it.hasNext() && it.next().isBottom()) 
 				bottomCounter++;
 			
 		return stack.size() - bottomCounter;
 	}
 
-	public List<Interval> getStack() {
+	public List<KIntegerSet> getStack() {
 		return stack;
 	}
 }
