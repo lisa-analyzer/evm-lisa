@@ -1,5 +1,6 @@
 package it.unipr.checker;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -21,7 +23,6 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -31,7 +32,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.util.numeric.IntInterval;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -113,10 +113,10 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
-		
+
 		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
 			return true;
-		
+
 		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
 			return true;
 
@@ -149,29 +149,29 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				continue;
 			}
 
-			Interval topStack = valueState.getTop();
-			if (topStack.isTop() || topStack.isBottom() || topStack.interval.isInfinite()) {
+			KIntegerSet topStack = valueState.getTop();
+			if (topStack.isTop() || topStack.isBottom()) {
 				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " " + valueState.getStack());
 				continue;
 			}
 
 			Set<Statement> filteredDests;
-			//			if (topStack.isSingleton())
+			//			if (topStack.interval.isSingleton())
 			filteredDests = jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-					.filter(pc -> topStack.interval.includes(new IntInterval(((ProgramCounterLocation) pc.getLocation()).getPc(), ((ProgramCounterLocation) pc.getLocation()).getPc())))
+					.filter(pc -> topStack.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 					.collect(Collectors.toSet());
 			//			else 
 			//				filteredDests = jumpDestinations.stream()
-			//						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-			//						.filter(pc -> {
-			//							try {
-			//								return topStack.getHigh().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc()) || topStack.getLow().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc());
-			//							} catch (MathNumberConversionException e) {
-			//								return false;
-			//							}
-			//						})
-			//						.collect(Collectors.toSet());
+			//				.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+			//				.filter(pc -> {
+			//					try {
+			//						return topStack.interval.getHigh().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc()) || topStack.interval.getLow().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc());
+			//					} catch (MathNumberConversionException e) {
+			//						return false;
+			//					}
+			//				})
+			//				.collect(Collectors.toSet());
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.

@@ -1,12 +1,12 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.analysis.lattices.FunctionalLattice;
-import it.unive.lisa.analysis.numeric.Interval;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
+import it.unive.lisa.analysis.lattices.FunctionalLattice;
+
+public class Memory extends FunctionalLattice<Memory, BigDecimal, KIntegerSet> {
 
 	/**
 	 * Default constructor for Memory. Initializes the Memory with a default
@@ -14,7 +14,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 	 * the entire range of possible values (TOP).
 	 */
 	public Memory() {
-		this(new Interval());
+		this(new KIntegerSet());
 	}
 
 	/**
@@ -22,7 +22,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 	 *
 	 * @param lattice The initial lattice (Interval) for the Memory.
 	 */
-	public Memory(Interval lattice) {
+	public Memory(KIntegerSet lattice) {
 		this(lattice, new HashMap<>());
 	}
 
@@ -34,7 +34,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 	 * @param function The initial function (mapping of addresses to Intervals)
 	 *                     for the Memory.
 	 */
-	public Memory(Interval lattice, Map<BigDecimal, Interval> function) {
+	public Memory(KIntegerSet lattice, Map<BigDecimal, KIntegerSet> function) {
 		super(lattice, function);
 	}
 
@@ -49,7 +49,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 	}
 
 	@Override
-	public Memory mk(Interval lattice, Map<BigDecimal, Interval> function) {
+	public Memory mk(KIntegerSet lattice, Map<BigDecimal, KIntegerSet> function) {
 		return new Memory(lattice, function);
 	}
 
@@ -58,7 +58,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 	 * 
 	 * @return the lattice inside this memory
 	 */
-	public Interval getLattice() {
+	public KIntegerSet getLattice() {
 		return this.lattice;
 	}
 

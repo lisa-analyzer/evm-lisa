@@ -44,7 +44,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.xls";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/diff1.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
 
 
 	// Statistics
