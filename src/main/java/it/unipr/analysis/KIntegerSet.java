@@ -129,7 +129,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements) {
 				BigDecimal add = i.add(j);
-				if (add.compareTo(MAX) == 0)
+				if (add.compareTo(MAX) >= 0)
 					add = add.subtract(MAX);
 				elements.add(add);
 			}
@@ -171,7 +171,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 				if (j.equals(new BigDecimal(0)))
 					elements.add(new BigDecimal(0));
 				else 
-					elements.add(i.divide(j).setScale(0, RoundingMode.FLOOR));
+					elements.add(i.divide(j, RoundingMode.FLOOR));
 
 		return new KIntegerSet(elements);
 	}
@@ -182,9 +182,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(i.subtract(j).multiply(i.divide(j).setScale(0, RoundingMode.FLOOR)));
-
+			for (BigDecimal j : other.elements) {
+				
+				if (j.equals(new BigDecimal(0)))
+					elements.add(i);
+				else 
+					elements.add(i.subtract(j.multiply(i.divide(j, RoundingMode.FLOOR))));
+			}
+		
 		return new KIntegerSet(elements);
 	}
 
@@ -194,12 +199,12 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
+			for (BigDecimal j : that.elements)
 				for (BigDecimal k : other.elements)
 					if (k.equals(new BigDecimal(0)))
 						elements.add(new BigDecimal(0));
 					else 
-						elements.add(i.add(j).subtract(k.multiply(i.add(j).divide(k).setScale(0, RoundingMode.FLOOR))));
+						elements.add(i.add(j).subtract(k.multiply(i.add(j).divide(k, RoundingMode.FLOOR))));
 
 		return new KIntegerSet(elements);
 	}
@@ -210,13 +215,13 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
+			for (BigDecimal j : that.elements)
 				for (BigDecimal k : other.elements)
 					if (k.equals(new BigDecimal(0)))
 						elements.add(new BigDecimal(0));
 					else 
-						elements.add(i.multiply(j).subtract(k.multiply(i.multiply(j).divide(k).setScale(0, RoundingMode.FLOOR))));
-
+						elements.add(i.multiply(j).subtract(k.multiply(i.multiply(j).divide(k, RoundingMode.FLOOR))));
+		
 		return new KIntegerSet(elements);
 	}
 

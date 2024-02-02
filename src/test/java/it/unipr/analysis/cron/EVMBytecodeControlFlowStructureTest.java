@@ -105,7 +105,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	@Test
 	public void testMstore8() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", true);
 		perform(conf);
 	}
 
@@ -171,7 +171,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testShl() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", true);
 		perform(conf);
 	}
 
@@ -183,7 +183,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testShr() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/shr", "shr_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs/shr", "shr_eth.sol", true);
 		perform(conf);
 	}
 
@@ -195,7 +195,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testSar() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sar", "sar_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs/sar", "sar_eth.sol", true);
 		perform(conf);
 	}
 	
