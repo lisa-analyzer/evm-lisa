@@ -76,19 +76,22 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		Runnable runnableHandler = new Runnable() {
 			private int counter = 0;
 			private Object mutex = new Object();
+			int threadsStarted = 0;
 
 			@Override
 			public void run() {
 				
 				for (int i = 0; i < smartContracts.size(); i++) {
 					String address = smartContracts.get(i);
-
-					if (i % CORES == 0) {
-						try {
-							// We optimize parallelism by launching n analyzes at a time with n = CORES
-							Thread.sleep(20000); 
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+					
+					synchronized (mutex) {
+						// We optimize parallelism by running n analyzes at a time with n = CORES
+						while ((threadsStarted - smartContractsTerminated.size()) > CORES) {
+							try {
+								mutex.wait();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 
@@ -106,7 +109,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								
 								String msg = "SC: " + address + " finished at " + new Date() + ", " + 
 										"ended: " + smartContractsTerminated.size() + ", " +
-										"in progress: " + (smartContracts.size() - counter) + " \n";
+										"in progress: " + (smartContracts.size() - counter) + ", " +
+										"active threads: " + (threadsStarted - smartContractsTerminated.size()) + ", " +
+										"not started yet: " + ((smartContracts.size() - counter) - (threadsStarted - smartContractsTerminated.size())) + " \n";
 								
 								System.out.println(msg);
 								toFileLogs(msg);
@@ -129,6 +134,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 					threads[i] = new Thread(runnable);
 					threads[i].start();
+					threadsStarted++;
 				}
 
 				try {
@@ -153,7 +159,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
 
-			int millisPerSmartContract = 4000;
+			int millisPerSmartContract = 10000;
 			int extra = 120000;
 			long blocks = smartContracts.size() / CORES * 20000;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
