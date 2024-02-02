@@ -334,7 +334,21 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return top();
 
-						Interval sum = opnd1.evalBinaryExpression(Numeric32BitAdd.INSTANCE, opnd1, opnd2, pp);
+						BigDecimal opnd1Low = opnd1.interval.getLow().getNumber();
+						BigDecimal opnd1High = opnd1.interval.getHigh().getNumber();
+						BigDecimal opnd2Low = opnd2.interval.getLow().getNumber();
+						BigDecimal opnd2High = opnd2.interval.getHigh().getNumber();
+						
+						BigDecimal sumLow = opnd1Low.add(opnd2Low);
+						BigDecimal sumHigh = opnd1High.add(opnd2High);
+						
+						if(sumLow.compareTo(MAX) == 0 || sumLow.compareTo(MAX) > 0)
+							sumLow = sumLow.subtract(MAX);
+						if(sumHigh.compareTo(MAX) == 0 || sumHigh.compareTo(MAX) > 0)
+							sumHigh = sumHigh.subtract(MAX);
+						
+						Interval sum = new Interval(new MathNumber(sumLow), 
+													new MathNumber(sumHigh));
 
 						result.push(sum);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -376,14 +390,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						else if (opnd2.equals(Interval.ZERO))
 							div = Interval.ZERO;
 						else {
-//							div = opnd1.evalBinaryExpression(Numeric32BitDiv.INSTANCE, opnd1, opnd2, pp);
 							MathNumber low, high;
+
 							low = opnd1.interval.getLow().divide(opnd2.interval.getLow()).roundDown();
 							high = opnd1.interval.getHigh().divide(opnd2.interval.getHigh()).roundDown();
+							
 							div = new Interval(low, high);
 						}
 							
-
 						result.push(div);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -485,9 +499,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						else if (opnd3.equals(Interval.ZERO))
 							mulmod = Interval.ZERO;
 						else {
-//							Interval mul = opnd1.evalBinaryExpression(Numeric32BitMul.INSTANCE, opnd1, opnd2, pp);
-//							mulmod = mul.evalBinaryExpression(Numeric32BitMod.INSTANCE, mul, opnd3, pp);
-							
 							MathNumber low, high, sumLow, sumHigh, divLow, divHigh;
 							
 							sumLow = opnd1.interval.getLow().multiply(opnd2.interval.getLow());
