@@ -42,9 +42,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Append statistics in file
 	private final static boolean APPEND = true;
 
-	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.xls";
+	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/EtherScan1000.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -62,6 +62,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	public static void main(String[] args) throws Exception {
 		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
+//		new EVMBytecodeTest().saveSmartContractsFromEtherscan(); // Save sc from etherscan
 	}
 	
 	@Test
