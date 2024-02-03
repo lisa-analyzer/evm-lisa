@@ -88,7 +88,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					
 					synchronized (mutex) {
 						// We optimize parallelism by running n analyzes at a time with n = CORES
-						while ((threadsStarted - smartContractsTerminated.size()) > CORES) {
+						while ((threadsStarted - counter) > CORES) {
 							try {
 								mutex.wait();
 							} catch (InterruptedException e) {
@@ -125,10 +125,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 							synchronized (mutex) {
 								String msg = MyLogger.newLogger()
 										.address(address)
-										.notes("failure: " + e)
+										.notes("failure: " + e + ", details: " + e.getMessage())
 										.build().toString();
 								toFileStatistics(msg);
-
+								counter++;
+								
 								mutex.notifyAll();
 							}
 						}
