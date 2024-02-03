@@ -171,7 +171,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testShl() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", false);
 		perform(conf);
 	}
 
@@ -183,7 +183,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testShr() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/shr", "shr_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/shr", "shr_eth.sol", false);
 		perform(conf);
 	}
 
@@ -195,7 +195,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testSar() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sar", "sar_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/sar", "sar_eth.sol", false);
 		perform(conf);
 	}
 	
@@ -280,6 +280,18 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	@Test
 	public void testAdd() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/add", "add_eth.sol", false);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testSub() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/sub", "sub_eth.sol", false);
 		perform(conf);
 	}
 

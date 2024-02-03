@@ -143,8 +143,12 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(i.subtract(j));
+			for (BigDecimal j : other.elements) {
+				BigDecimal sub = i.subtract(j);
+				if(sub.compareTo(new BigDecimal(0)) < 0)
+					sub = sub.add(MAX);
+				elements.add(sub);
+			}
 
 		return new KIntegerSet(elements);
 	}
@@ -155,8 +159,15 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(i.multiply(j));
+			for (BigDecimal j : other.elements) {
+				BigDecimal mul = i.multiply(j);
+				if(mul.compareTo(new BigDecimal(0)) < 0)
+					mul = mul.add(MAX);
+				if (mul.compareTo(MAX) > 0)
+					mul = mul.subtract(MAX);
+				
+				elements.add(mul);
+			}
 
 		return new KIntegerSet(elements);
 	}
@@ -252,6 +263,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 		else if (r.contains(true))
 			return KIntegerSet.ONE;
+		
 		return KIntegerSet.ZERO;
 	}
 
@@ -269,6 +281,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 		else if (r.contains(true))
 			return KIntegerSet.ONE;
+		
 		return KIntegerSet.ZERO;
 	}
 
@@ -286,6 +299,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 		else if (r.contains(true))
 			return KIntegerSet.ONE;
+		
 		return KIntegerSet.ZERO;
 	}
 
@@ -339,6 +353,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 				elements.add(MAX.subtract(i.add(new BigDecimal(1))));
 			else
 				elements.add(new BigDecimal(~i.longValue()));
+		
 		return new KIntegerSet(elements);
 	}
 
@@ -349,8 +364,9 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(new BigInteger(shiftLeft(i.toBigInteger().toByteArray(), j.intValue()))));	
-		return new KIntegerSet(elements);
+				elements.add(new BigDecimal(new BigInteger(shiftLeft(j.toBigInteger().toByteArray(), i.intValue()))));	
+		
+		return new KIntegerSet(elements);		
 	}
 
 	public KIntegerSet shr(KIntegerSet other) {
@@ -360,7 +376,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(new BigInteger(shiftRight(i.toBigInteger().toByteArray(), j.intValue()))));	
+				elements.add(new BigDecimal(new BigInteger(shiftRight(j.toBigInteger().toByteArray(), i.intValue()))));	
+		
 		return new KIntegerSet(elements);
 	}
 
@@ -372,7 +389,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(new BigInteger(shiftRight(i.toBigInteger().toByteArray(), j.intValue()))));	
+				elements.add(new BigDecimal(new BigInteger(shiftArithmeticRight(j.toBigInteger().toByteArray(), i.intValue()))));	
+		
 		return new KIntegerSet(elements);
 	}
 
@@ -391,9 +409,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			else
 				r = r.lub(state);
 		}
-
-
-
 		return r;
 	}
 

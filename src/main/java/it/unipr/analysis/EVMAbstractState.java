@@ -770,6 +770,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							memoryResult = memory;
 						} else {
 							KIntegerSet current_mu_i_lub = KIntegerSet.BOTTOM;
+							
 							for (BigDecimal os : offset) {
 								BigDecimal thirtyTwo = new BigDecimal(32);
 								BigDecimal current_mu_i = os.add(thirtyTwo)
@@ -782,7 +783,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 								// calculated `current_mu_i`
 								current_mu_i_lub = current_mu_i_lub.lub(new KIntegerSet(current_mu_i));
 							}
-							
 
 //							// Then we compare the 2 mu_i and update the new
 //							// value
