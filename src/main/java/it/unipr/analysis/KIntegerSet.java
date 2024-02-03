@@ -398,11 +398,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		KIntegerSet r = KIntegerSet.BOTTOM;
 
 		for (BigDecimal i : this.elements) {
-			BigDecimal thirtyTwo = new BigDecimal(32);
-			BigDecimal current_mu_i = i.add(thirtyTwo)
-					.divide(thirtyTwo)
-					.setScale(0, RoundingMode.UP);
-
 			KIntegerSet state = memory.getState(i);
 			if (state.isBottom()) 
 				r = r.lub(KIntegerSet.TOP);

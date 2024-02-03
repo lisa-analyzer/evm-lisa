@@ -725,8 +725,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (mu_i.equals(KIntegerSet.MINUS_ONE)) {
 							// This is an error. We cannot read from memory if
-							// there
-							// is no active words saved
+							// there is no active words saved
 							result.push(KIntegerSet.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
 						}
@@ -740,18 +739,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							new_mu_i = mu_i;
 						} else  {
 							result.push(offset.mload(memory));
-
-							// We create a new Interval singleton with the newly
-							// calculated `current_mu_i`
-							// Interval intervalCurrent_mu_i = new
-							// Interval(current_mu_i.intValueExact(),
-							// current_mu_i.intValueExact());
-							//
-							// // Then we compare the 2 mu_i and update the new
-							// value
-							// if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-							// new_mu_i = intervalCurrent_mu_i;
-							// else
 							new_mu_i = mu_i;
 						} 
 
@@ -774,81 +761,45 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							for (BigDecimal os : offset) {
 								BigDecimal thirtyTwo = new BigDecimal(32);
 								BigDecimal current_mu_i = os.add(thirtyTwo)
-										.divide(thirtyTwo)
-										.setScale(0, RoundingMode.UP); 
+										.divide(thirtyTwo, RoundingMode.UP);
 
 								memoryResult = memory.putState(os, value);
 
-								// We create a new Interval singleton with the newly
-								// calculated `current_mu_i`
 								current_mu_i_lub = current_mu_i_lub.lub(new KIntegerSet(current_mu_i));
 							}
 
-//							// Then we compare the 2 mu_i and update the new
-//							// value
-//							if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-//								new_mu_i = intervalCurrent_mu_i;
-//							else
-//								new_mu_i = mu_i;
-							new_mu_i = current_mu_i_lub; // TODO: check
-
+							new_mu_i = current_mu_i_lub; 
 						} 
 
 						return new EVMAbstractState(stackResult, memoryResult, new_mu_i);
 					}
 					case "Mstore8Operator": { // MSTORE8
-						AbstractStack result = stack.clone();
-//						Memory memoryResult = null;
-//						Interval new_mu_i = null;
+						AbstractStack stackResult = stack.clone();
+						Memory memoryResult = null;
+						KIntegerSet new_mu_i = null;
 
-						KIntegerSet offset = result.pop();
-						KIntegerSet value = result.pop();
+						KIntegerSet offset = stackResult.pop();
+						KIntegerSet value = stackResult.pop();
 
-//						if (offset.interval.isSingleton()) {
-//							BigDecimal one = new BigDecimal(1);
-//							BigDecimal thirtyTwo = new BigDecimal(32);
-//
-//							BigDecimal offsetBigDecimal = offset.interval.getHigh().getNumber();
-//							BigDecimal current_mu_i = offsetBigDecimal.add(one)
-//									.divide(thirtyTwo)
-//									.setScale(0, RoundingMode.UP); // setScale()
-//							// =
-//							// Ceiling
-//							// function
-//
-//							if (value.interval.isSingleton()) {
-//								BigDecimal valueBigDecimal = offset.interval.getHigh().getNumber();
-//								BigDecimal valueByteBigDecimal = valueBigDecimal.remainder(new BigDecimal(256));
-//
-//								Interval valueInByte = new Interval(valueByteBigDecimal.intValueExact(),
-//										valueByteBigDecimal.intValueExact());
-//
-//								memoryResult = memory.putState(offsetBigDecimal, valueInByte);
-//							} else {
-//								// TODO to handle else-condition
-//								// If value is not singleton, how would we
-//								// handle
-//								// the `mod 256` operation?
-//								memoryResult = memory.putState(offsetBigDecimal, Interval.TOP);
-//							}
-//
-//							// We create a new Interval singleton with the newly
-//							// calculated `current_mu_i`
-//							Interval intervalCurrent_mu_i = new Interval(current_mu_i.intValueExact(),
-//									current_mu_i.intValueExact());
-//
-//							if (mu_i.compareTo(intervalCurrent_mu_i) == -1)
-//								new_mu_i = intervalCurrent_mu_i;
-//							else
-//								new_mu_i = mu_i;
-//
-//						} else {
-//							// TODO to handle else-condition
-//							new_mu_i = mu_i;
-//							memoryResult = memory;
-//						}
+						if (offset.isTop() || offset.isBottom() ) {
+							new_mu_i = mu_i;
+							memoryResult = memory;
+						} else {
+							KIntegerSet current_mu_i_lub = KIntegerSet.BOTTOM;
+							
+							for (BigDecimal os : offset) {	
+								BigDecimal current_mu_i = os.add(new BigDecimal(1))
+										.divide(new BigDecimal(32), RoundingMode.UP);
 
-						return new EVMAbstractState(result, memory, mu_i);
+								memoryResult = memory.putState(os, value.mod(new KIntegerSet(new BigDecimal(256))));
+
+								current_mu_i_lub = current_mu_i_lub.lub(new KIntegerSet(current_mu_i));
+							}
+
+							new_mu_i = current_mu_i_lub; 
+						} 
+						
+						return new EVMAbstractState(stackResult, memoryResult, new_mu_i);
 					}
 					case "SloadOperator": { // SLOAD
 						AbstractStack result = stack.clone();

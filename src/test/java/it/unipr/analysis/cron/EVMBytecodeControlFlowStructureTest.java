@@ -105,13 +105,13 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	@Test
 	public void testMstore8() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testLT() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/lt", "lt_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/lt", "lt_eth.sol", false);
 		perform(conf);
 	}
 
