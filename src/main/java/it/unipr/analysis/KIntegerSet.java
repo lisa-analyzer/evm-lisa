@@ -21,7 +21,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
 
-
 	public static int K = 3;
 
 	public KIntegerSet() {

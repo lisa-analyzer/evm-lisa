@@ -10,10 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Date;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
@@ -42,6 +42,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Append statistics in file
 	private final static boolean APPEND = true;
 
+	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
 	private final String SMARTCONTRACTS_FULLPATH = "benchmark/EtherScan1000.txt";
@@ -49,10 +50,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
-	
+	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
 	private final int CORES = Runtime.getRuntime().availableProcessors();
 	
-	private double sumSolvedJumpPercent = 0;
+	// Future using
+	private double sumSolvedJumpPercent = 0.0d;
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
@@ -109,7 +111,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								smartContractsTerminated.add(address);
 								counter++;
 								
-								String msg = "SC: " + address + " finished at " + new Date() + ", " + 
+								String msg = address + " finished at " + now() + ", " + 
 										"ended: " + smartContractsTerminated.size() + ", " +
 										"in progress: " + (smartContracts.size() - counter) + ", " +
 										"active threads: " + (threadsStarted - smartContractsTerminated.size()) + ", " +
@@ -123,12 +125,15 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 						} catch (Exception e) {
 							synchronized (mutex) {
+								counter++;
+								
 								String msg = MyLogger.newLogger()
 										.address(address)
 										.notes("failure: " + e + ", details: " + e.getMessage())
 										.build().toString();
+								
+								System.err.println(msg);
 								toFileStatistics(msg);
-								counter++;
 								
 								mutex.notifyAll();
 							}
@@ -173,11 +178,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			
 			String msg = "[TIMER] Setted: " + timeToWait + " millis " + 
 					"(" + minutes + " minutes and " + seconds + " seconds) \n";
-			msg += "Finish expected at " + new Date((new Date().getTime() + timeToWait)) + " \n";
+			msg += "Started at " + now() + " \n";
+			msg += "Finish expected at " + DATE_FORMAT.format(System.currentTimeMillis() +  timeToWait) + " \n";
+			msg += "Number of cores: " + CORES + " \n";
+			msg += "\n"; // Blank line
 			
 			System.out.println(msg);
 			toFileLogs(msg);
-			toFileLogs("Number of cores: " + CORES + " \n");
 			
 			guardia.wait(timeToWait);
 
@@ -198,7 +205,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// TODO not working
 		String msg = MyLogger.newLogger()
 				.address("Total")
-				.solvedJumpsPercent(((double) sumSolvedJumpPercent / smartContractsTerminated.size()))
+				.solvedJumpsPercent((double) (sumSolvedJumpPercent / smartContractsTerminated.size()))
 				.build().toString();
 //		toFileStatistics(msg);
 //		System.out.println(msg);
@@ -270,9 +277,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			
 			if(numberOfAPIEtherscanRequest % 5 == 0) {
 				try {
-					Thread.sleep(1001); // I can do max 5 API
-										// request in 1 sec to
-										// Etherscan.io
+					Thread.sleep(1001); // I can do max 5 API request in 1 sec to Etherscan.io
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -316,10 +321,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.time(finish - start)
 				.build().toString();
 		
-		sumSolvedJumpPercent += ((double) (pair.getLeft() + pair.getMiddle() + pair.getRight()) / baseCfg.getAllJumps().size());
+		sumSolvedJumpPercent += (double) ((pair.getLeft() + pair.getMiddle() + pair.getRight()) / baseCfg.getAllJumps().size());
 		
 		return stats;
 	}
+	
+	private String now() { return DATE_FORMAT.format(System.currentTimeMillis()); }
 	
 	/**
 	 * Reads smart contracts from a file and returns a list of strings.
@@ -351,10 +358,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 	private Triple<Integer, Integer, Integer> dumpStatistics(EVMCFG cfg) {
-		System.err.println("##############");
-		System.err.println("Total opcodes: " + cfg.getNodesCount());
-		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-
 		int preciselyResolvedJumps = 0;
 		int soundResolvedJumps = 0;
 		int unreachableJumps = 0;
@@ -378,6 +381,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					soundResolvedJumps++;
 			}
 
+		System.err.println("##############");
+		System.err.println("Total opcodes: " + cfg.getNodesCount());
+		System.err.println("Total jumps: " + cfg.getAllJumps().size());
 		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);
 		System.err.println("Sound solved jumps: " + soundResolvedJumps);
 		System.err.println("Unreachable jumps: " + unreachableJumps);
