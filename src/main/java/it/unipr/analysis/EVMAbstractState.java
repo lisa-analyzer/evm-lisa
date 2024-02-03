@@ -536,6 +536,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "ByteOperator": { // BYTE
+						// TODO to implement
 						AbstractStack result = stack.clone();
 						KIntegerSet indexOfByte = result.pop();
 						KIntegerSet target = result.pop();

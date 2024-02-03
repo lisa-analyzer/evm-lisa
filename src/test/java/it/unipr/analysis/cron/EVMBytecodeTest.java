@@ -46,12 +46,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
 	private final String SMARTCONTRACTS_FULLPATH = "benchmark/smartContracts.txt";
 
-
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 	
 	private final int CORES = Runtime.getRuntime().availableProcessors();
+	
+	private double sumSolvedJumpPercent = 0;
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
@@ -191,9 +192,17 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				toFileStatistics(msg);
 			}
 		}
+		
+		// TODO not working
+		String msg = MyLogger.newLogger()
+				.address("Total")
+				.solvedJumpsPercent(((double) sumSolvedJumpPercent / smartContractsTerminated.size()))
+				.build().toString();
+//		toFileStatistics(msg);
+//		System.out.println(msg);
 
 		// Print statistics to standard output and log file		
-		String msg = "Total analysis: " + smartContracts.size() + ", " + 
+		msg = "Total analysis: " + smartContracts.size() + ", " + 
 				"succesfully: " + smartContractsTerminated.size() + ", " +
 				"failed: " + (smartContracts.size() - smartContractsTerminated.size()) + " \n";
 		
@@ -304,7 +313,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.unreachableJumps(pair.getRight())
 				.time(finish - start)
 				.build().toString();
-
+		
+		sumSolvedJumpPercent += ((double) (pair.getLeft() + pair.getMiddle() + pair.getRight()) / baseCfg.getAllJumps().size());
+		
 		return stats;
 	}
 	
@@ -498,7 +509,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.currentThread = null;
 		}
 
-		private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps, int unreachableJumps, int totalResolvedJumps, long time, String notes) {
+		private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps, 
+				int unreachableJumps, int totalResolvedJumps, double solvedJumpsPercent, long time, String notes) {
 			this.address = address;
 			this.opcodes = opcodes;
 			this.jumps = jumps;
@@ -506,10 +518,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.soundResolvedJumps = soundResolvedJumps;
 			this.unreachableJumps = unreachableJumps;
 			if (jumps != 0) {
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + unreachableJumps) / jumps);
+				if(solvedJumpsPercent == 0)
+					this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + unreachableJumps) / jumps);
 				this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
 			} else {
-				this.solvedJumpsPercent = -1;
+				if(solvedJumpsPercent == 0)
+					this.solvedJumpsPercent = -1;
 				this.preciselySolvedJumpsPercent = -1;
 			}
 			this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps;
@@ -551,7 +565,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			this.unreachableJumps = unreachableJumps;
 			return this;
 		}
-
+		public MyLogger solvedJumpsPercent(double solvedJumpsPercent) {
+			this.solvedJumpsPercent = solvedJumpsPercent;
+			return this;
+		}
 		public MyLogger time(long time) {
 			this.time = time;
 			return this;
@@ -563,7 +580,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 
 		public MyLogger build() {
-			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps, unreachableJumps, totalResolvedJumps, time, notes);
+			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps, 
+					unreachableJumps, totalResolvedJumps, solvedJumpsPercent, time, notes);
 		}
 
 		@Override
