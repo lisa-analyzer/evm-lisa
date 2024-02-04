@@ -58,7 +58,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x22895ba3ee81ab5f12753bd13b52858f8857d518";
+		String SC_ADDRESS = "0x670577feb18576c10f632b2e26976e659d1e5e33";
 		toFileStatistics(newAnalysis(SC_ADDRESS));
 	}
 
@@ -305,7 +305,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
-		conf.serializeResults = true;
+		conf.serializeResults = false;
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
 				new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
@@ -314,7 +314,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		JumpChecker checker = new JumpChecker();
 		conf.semanticChecks.add(checker);
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.serializeInputs = true;
+		conf.serializeInputs = false;
 		if (GENERATE_CFG) {
 			conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		}
@@ -382,19 +382,19 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		for (Statement jumpNode : cfg.getAllJumps())
 			if (jumpNode instanceof Jump) {
-				if (!cfg.reachableFrom(entryPoint, jumpNode))
-					unreachableJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() == 1)
+				if (cfg.getOutgoingEdges(jumpNode).size() == 1)
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
 					soundResolvedJumps++;
-			} else if (jumpNode instanceof Jumpi) {
-				if (!cfg.reachableFrom(entryPoint, jumpNode))
+				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					unreachableJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() == 2)
+			} else if (jumpNode instanceof Jumpi) {
+				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
 					soundResolvedJumps++;
+				else if (!cfg.reachableFrom(entryPoint, jumpNode))
+					unreachableJumps++;
 			}
 
 		System.err.println("##############");
