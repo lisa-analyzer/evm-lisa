@@ -45,7 +45,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/failed.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/EtherScan1000.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
