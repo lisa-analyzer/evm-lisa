@@ -45,7 +45,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/EtherScan1000.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/failed.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -54,12 +54,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final int CORES = Runtime.getRuntime().availableProcessors();
 	private long startOfExecutionTime = 0; 
 	
-	// Future using
-	private double sumSolvedJumpPercent = 0.0d;
-
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x670577feb18576c10f632b2e26976e659d1e5e33";
+		String SC_ADDRESS = "0x72b692ff1A154a27d9d35b396Ff94200828C46b4";
 		toFileStatistics(newAnalysis(SC_ADDRESS));
 	}
 
@@ -218,14 +215,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				toFileStatistics(msg);
 			}
 		}
-		
-		// TODO not working
-//		String msg = MyLogger.newLogger()
-//				.address("Total")
-//				.solvedJumpsPercent((double) (sumSolvedJumpPercent / smartContractsTerminated.size()))
-//				.build().toString();
-//		toFileStatistics(msg);
-//		System.out.println(msg);
 
 		// Print statistics to standard output and log file
 		long executionTime = System.currentTimeMillis() - startOfExecutionTime;
@@ -340,8 +329,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.unreachableJumps(pair.getRight())
 				.time(finish - start)
 				.build().toString();
-		
-		sumSolvedJumpPercent += (double) ((pair.getLeft() + pair.getMiddle() + pair.getRight()) / baseCfg.getAllJumps().size());
 		
 		return stats;
 	}
