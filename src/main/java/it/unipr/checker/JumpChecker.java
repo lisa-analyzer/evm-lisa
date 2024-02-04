@@ -89,20 +89,11 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 		LiSA lisa = new LiSA(conf);
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
-
-		//		Set<Statement> set = new HashSet<>();
-		//		for (Statement node : cfgToAnalyze.getEntrypoints())
-		//			if (cfgToAnalyze.getIngoingEdges(node).size() > 0)
-		//				set.add(node);
-		//
-		//		cfgToAnalyze.getEntrypoints().removeAll(set);
-
 		program.addCodeMember(cfgToAnalyze);
 
 		try {
 			lisa.run(program);
 		} catch (AnalysisException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
