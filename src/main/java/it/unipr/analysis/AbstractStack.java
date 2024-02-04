@@ -1,12 +1,5 @@
 package it.unipr.analysis;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -21,6 +14,12 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack> {
 	public static final int K = 72;
@@ -30,7 +29,6 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	private final LinkedList<KIntegerSet> stack;
 
-	
 	/**
 	 * Builds a top symbolic stack.
 	 */
@@ -56,10 +54,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	private AbstractStack(boolean isTop) {
 		this.isTop = isTop;
 		this.stack = new LinkedList<KIntegerSet>();
-		
+
 		for (int i = 0; i < K; i++)
 			stack.add(KIntegerSet.BOTTOM);
-		
+
 	}
 
 	@Override
@@ -133,7 +131,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		for (int i = 0; i < K; i++)
 			if (!this.stack.get(i).lessOrEqual(other.stack.get(i)))
 				return false;
-		
+
 		return true;
 	}
 
@@ -152,10 +150,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 		// Otherwise, let's build a new SymbolicStack
 		LinkedList<KIntegerSet> result = new LinkedList<>();
-		
+
 		for (int i = 0; i < K; i++)
 			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
-		
+
 		return new AbstractStack(result);
 	}
 
@@ -173,10 +171,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 			return other;
 
 		LinkedList<KIntegerSet> result = new LinkedList<>();
-		
+
 		for (int i = 0; i < K; i++)
 			result.addLast(this.stack.get(i).glb(other.stack.get(i)));
-		
+
 		return new AbstractStack(result);
 	}
 
@@ -194,7 +192,6 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 		for (int i = 0; i < K; i++)
 			result.addLast(this.stack.get(i).widening(other.stack.get(i)));
-		
 
 		return new AbstractStack(result);
 	}
@@ -318,13 +315,13 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	}
 
 	public static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> originalList) {
-        LinkedList<KIntegerSet> clonedList = new LinkedList<>();
-        for (int i = 0; i < originalList.size(); i++)
-                clonedList.add(originalList.get(i));
+		LinkedList<KIntegerSet> clonedList = new LinkedList<>();
+		for (int i = 0; i < originalList.size(); i++)
+			clonedList.add(originalList.get(i));
 
-        return clonedList;
-    }
-	
+		return clonedList;
+	}
+
 	/**
 	 * Getter for the Interval at the top of the stack.
 	 * 
@@ -383,9 +380,9 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	public int size() {
 		int bottomCounter = 0;
 		Iterator<KIntegerSet> it = stack.iterator();
-		while(it.hasNext() && it.next().isBottom()) 
-				bottomCounter++;
-			
+		while (it.hasNext() && it.next().isBottom())
+			bottomCounter++;
+
 		return stack.size() - bottomCounter;
 	}
 

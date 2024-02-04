@@ -198,7 +198,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/sar", "sar_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -210,7 +210,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/div", "div_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -222,7 +222,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", true);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -234,7 +234,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/mod", "mod_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -246,7 +246,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", true);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -258,7 +258,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/addmod", "addmod_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -270,7 +270,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/mulmod", "mulmod_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 
@@ -282,7 +282,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/add", "add_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 

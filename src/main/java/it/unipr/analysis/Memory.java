@@ -1,10 +1,9 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.lattices.FunctionalLattice;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-
-import it.unive.lisa.analysis.lattices.FunctionalLattice;
 
 public class Memory extends FunctionalLattice<Memory, BigDecimal, KIntegerSet> {
 
