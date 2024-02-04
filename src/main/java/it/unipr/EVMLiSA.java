@@ -1,6 +1,6 @@
 package it.unipr;
 
-import it.unipr.analysis.SymbolicStack;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
@@ -15,31 +15,27 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.IOException;
 
-/**
- * Analyze an Ethereum Smart Contract from Etherscan and then generate its CFG.
- */
 public class EVMLiSA {
 
-	private final static String OUTPUT_DIR = "output";
+	// Directory where the analysis outcome is stored
+	private final static String OUTPUT_DIR = "evm-outputs";
+
+	// Directory where contracts (.sol files) are stored
 	private final static String CONTRACTS_DIR = "evm-testcases";
 
 	/**
-	 * Takes a smart contract stored in {@code args} and makes its control flow
-	 * graph.
+	 * Generates a control flow graph (represented as a LiSA {@code Program})
+	 * from a Solidity contract and runs the analysis on it. TODO: store
+	 * contract filename in {@code args}
 	 * 
 	 * @param args
 	 * 
-	 * @throws AnalysisException when Lisa is not able to analyze the contract
-	 * @throws IOException       when {@code args} is not a valid file path
+	 * @throws AnalysisException
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws AnalysisException, IOException {
-		// Generate CFG from a file
-		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("cfs/while/while_eth.sol"));
+		Program cfg = EVMFrontend.generateCfgFromFile(getContractPath("dummy.sol"));
 
-//		// Generate CFG from contract address
-//		Program cfg = EVMFrontend.generateCfgFromContractAddress("0x000000000d38df53b45c5733c7b34000de0bdf52");
-
-		// Run the analysis
 		EVMLiSA.analyzeCFG(cfg, EVMLiSA.OUTPUT_DIR);
 	}
 
@@ -48,16 +44,16 @@ public class EVMLiSA {
 	 * stores the outcome in the chosen {@code outputDir}.
 	 * 
 	 * @param program   the control flow graph represented as a LiSA
-	 *                      {@code Program} to be analyzed
+	 *                      {@code Program} to be analyzed.
 	 * @param outputDir the directory where the analysis outcome should be
-	 *                      stored
+	 *                      stored.
 	 * 
 	 * @throws AnalysisException
 	 */
 	private static void analyzeCFG(Program program, String outputDir) throws AnalysisException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeInputs = true;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new SymbolicStack(),
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = true;
 		conf.workdir = outputDir;
@@ -66,12 +62,19 @@ public class EVMLiSA {
 		conf.serializeResults = true;
 		conf.analysisGraphs = GraphType.DOT;
 		conf.optimize = false;
-		conf.wideningThreshold = -1;
 
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 	}
 
+	/**
+	 * Returns the path of the contract file based on its name appended to the
+	 * {@code CONTRACTS_DIR} path.
+	 * 
+	 * @param contractFilename the name of the contract file
+	 * 
+	 * @return the path of the contract file
+	 */
 	private static String getContractPath(String contractFilename) {
 		return EVMLiSA.CONTRACTS_DIR + "/" + contractFilename;
 	}

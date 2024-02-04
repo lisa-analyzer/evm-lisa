@@ -1,6 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.AndOperator;
+import it.unipr.analysis.operator.AndOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -55,7 +55,6 @@ public class And extends Statement {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		// TODO too coarse
 		Constant dummy = new Constant(Untyped.INSTANCE, 1, getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
 				AndOperator.INSTANCE, getLocation()), this);

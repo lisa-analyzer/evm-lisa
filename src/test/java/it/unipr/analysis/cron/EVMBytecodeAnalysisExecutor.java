@@ -33,7 +33,7 @@ import java.util.Objects;
 public abstract class EVMBytecodeAnalysisExecutor {
 
 	protected static final String EXPECTED_RESULTS_DIR = "evm-testcases";
-	protected static final String ACTUAL_RESULTS_DIR = "test-outputs";
+	protected static final String ACTUAL_RESULTS_DIR = "evm-outputs";
 
 	/**
 	 * Performs a test, running an analysis. The test will fail if:
@@ -47,7 +47,7 @@ public abstract class EVMBytecodeAnalysisExecutor {
 	 * execution or the one used as baseline) cannot be found or cannot be
 	 * opened</li>
 	 * <li>The two json reports are different</li>
-	 * <li>The external files mentioned in the reports are different</li>
+	 * <li>The external files mentioned in the reports are difzzferent</li>
 	 * </ul>
 	 * 
 	 * @param conf the configuration of the test to run (note that the workdir

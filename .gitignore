@@ -1,6 +1,15 @@
 # Ignore Gradle project-specific cache directory
 .gradle
 
+# Ignore IntelliJ IDEA directory
+.idea
+
+# Ignore Visual Studio Code directory
+.vscode
+
+# Ignore output directories that contain generated results
+evm-outputs/
+
 # Ignore Gradle build output directory
 build
 
@@ -15,6 +24,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.DS_Store
 
 # External tool builders
 .externalToolBuilders/
@@ -64,6 +74,3 @@ local.properties
 # Uncomment this line if you wish to ignore the project description file.
 # Typically, this file would be tracked if it contains build/dependency configurations:
 #.project
-
-/output
-/test-outputs

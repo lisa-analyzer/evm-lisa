@@ -34,6 +34,10 @@ public class ProgramCounterLocation implements CodeLocation {
 			return -1;
 	}
 
+	public int getPc() {
+		return pc;
+	}
+
 	@Override
 	public String getCodeLocation() {
 		return toString();
@@ -59,6 +63,13 @@ public class ProgramCounterLocation implements CodeLocation {
 			return false;
 		ProgramCounterLocation other = (ProgramCounterLocation) obj;
 		return pc == other.pc;
+	}
+
+	/**
+	 * @return the source code line
+	 */
+	public int getSourceCodeLine() {
+		return sourceCodeLine;
 	}
 
 }

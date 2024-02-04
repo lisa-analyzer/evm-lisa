@@ -1,6 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.SignextendOperator;
+import it.unipr.analysis.operator.SignextendOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

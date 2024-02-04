@@ -1,5 +1,6 @@
 package it.unipr.cfg;
 
+import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -12,6 +13,7 @@ import it.unive.lisa.conf.FixpointConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.DescendingPhaseType;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.interprocedural.ScopeId;
+import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -24,12 +26,14 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
@@ -58,6 +62,133 @@ public class EVMCFG extends CFG {
 		}
 
 		return jumpdestStatements;
+	}
+
+	/**
+	 * Returns a set of all the JUMP and JUMPI statements in the CFG.
+	 * 
+	 * @return a set of all the JUMP and JUMPI statements in the CFG
+	 */
+	public Set<Statement> getAllJumps() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> jumpStatements = new HashSet<>(); // to return
+
+		for (Statement statement : cfgNodeList.getNodes()) {
+			if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
+				jumpStatements.add(statement);
+			}
+		}
+
+		return jumpStatements;
+	}
+
+	/**
+	 * Returns a set of all the JUMP statements preceded by a PUSH statement in
+	 * the CFG.
+	 * 
+	 * @return a set of all the JUMP statements preceded by a PUSH statement in
+	 *             the CFG
+	 */
+	public Set<Statement> getAllPushedJUMPs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumps = new HashSet<>(); // to return
+
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jump && (edge.getSource() instanceof Push)) {
+				pushedJumps.add(edge.getDestination());
+			}
+		}
+
+		return pushedJumps;
+	}
+
+	/**
+	 * Returns a set of all the valid JUMP statements preceded by a PUSH
+	 * statement in the CFG, meaning that the destination address corresponds to
+	 * a JUMPDEST statement.
+	 * 
+	 * @return a set of all the valid JUMP statements preceded by a PUSH
+	 *             statement in the CFG
+	 */
+	public Set<Statement> getAllValidPushedJUMPs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumps = new HashSet<>(); // to return
+
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jump && (edge.getSource() instanceof Push)) {
+				if (isValidJumpDestination(edge.getSource())) {
+					pushedJumps.add(edge.getDestination());
+				}
+			}
+		}
+
+		return pushedJumps;
+	}
+
+	/**
+	 * Returns a set of all the JUMPI statements preceded by a PUSH statement in
+	 * the CFG.
+	 * 
+	 * @return a set of all the JUMPI statements preceded by a PUSH statement in
+	 *             the CFG
+	 */
+	public Set<Statement> getAllPushedJUMPIs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumpis = new HashSet<>(); // to return
+
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jumpi && (edge.getSource() instanceof Push)) {
+				pushedJumpis.add(edge.getDestination());
+			}
+		}
+
+		return pushedJumpis;
+	}
+
+	/**
+	 * Returns a set of all the valid JUMPI statements preceded by a PUSH
+	 * statement in the CFG, meaning that the destination address corresponds to
+	 * a JUMPDEST statement.
+	 * 
+	 * @return a set of all the valid JUMPI statements preceded by a PUSH
+	 *             statement in the CFG
+	 */
+	public Set<Statement> getAllValidPushedJUMPIs() {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		Set<Statement> pushedJumpis = new HashSet<>(); // to return
+
+		for (Edge edge : cfgNodeList.getEdges()) {
+			if (edge.getDestination() instanceof Jumpi && (edge.getSource() instanceof Push)) {
+				if (isValidJumpDestination(edge.getSource())) {
+					pushedJumpis.add(edge.getDestination());
+				}
+			}
+		}
+
+		return pushedJumpis;
+	}
+
+	/**
+	 * Checks if the PUSH statement's value is a valid JUMP destination.
+	 * 
+	 * @param pushStatement the PUSH statement to check
+	 * 
+	 * @return true if the PUSH statement's value is a valid JUMP destination,
+	 *             false otherwise
+	 */
+	private boolean isValidJumpDestination(Statement pushStatement) {
+		Set<Statement> jumpDestintations = this.getAllJumpdest();
+
+		String hex = (String) pushStatement.getEvaluationPredecessor().toString();
+		String hexadecimal = hex.substring(2);
+		Long jumpAddress = new BigInteger(hexadecimal, 16).longValue();
+
+		Set<Statement> validDests = jumpDestintations.stream()
+				.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+				.filter(pc -> ((ProgramCounterLocation) pc.getLocation()).getPc() == jumpAddress)
+				.collect(Collectors.toSet());
+
+		return !validDests.isEmpty();
 	}
 
 	public <A extends AbstractState<A, H, V, T>,
@@ -127,6 +258,46 @@ public class EVMCFG extends CFG {
 				? new OptimizedAnalyzedCFG<A, H, V, T>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
 				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+	}
+
+	@Override
+	public void validate() throws ProgramValidationException {
+		try {
+			list.validate(entrypoints);
+		} catch (ProgramValidationException e) {
+			// we allow having nodes without incoming edges to not be entry
+			// points
+			if (!e.getMessage().contains("Unreachable node that is not marked as entrypoint:"))
+				throw new ProgramValidationException("The matrix behind " + this + " is invalid", e);
+		}
+
+		// all entrypoints should be within the cfg
+		if (!list.getNodes().containsAll(entrypoints))
+			throw new ProgramValidationException(this + " has entrypoints that are not part of the graph: "
+					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
+	}
+
+	public boolean reachableFrom(Statement start, Statement target) {
+		return dfs(start, target, new HashSet<>());
+	}
+
+	private boolean dfs(Statement current, Statement target, Set<Statement> visited) {
+		// If the current node is the target, return true
+		if (current.equals(target))
+			return true;
+
+		// Mark the current node as visited
+		visited.add(current);
+
+		// Recur for all the vertices adjacent to this vertex
+		for (Edge edge : list.getOutgoingEdges(current)) {
+			Statement next = edge.getDestination();
+			if (!visited.contains(next) && dfs(next, target, visited))
+				return true;
+		}
+
+		// If the target is not reachable from the current node, return false
+		return false;
 	}
 
 }

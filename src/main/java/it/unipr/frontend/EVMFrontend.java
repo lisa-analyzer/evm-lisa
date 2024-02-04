@@ -23,12 +23,16 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
- * via Etherscan and generating a control flow graph
+ * via Etherscan (@see <a href="https://etherscan.io/apis">Etherscan API</a>)
+ * and the parsing of the bytecode to generate the control flow graph of the
+ * contract. Ehterscan API key must be stored in the environment variable:
+ * ETHERSCAN_API_KEY.
  */
 public class EVMFrontend {
 
-	private final static String API_KEY = "V1JWVWVCKP23DVXI1I2TX8V19XICS3TIJ6";
-
+	/**
+	 * TODO: Refactor these strings and understand if they are still needed.
+	 */
 	private static String FROM_0417_TO_058 = "a165627a7a72305820";
 	private static String FROM_0417_TO_058_EXPERIMENTAL = "a265627a7a72305820";
 	private static String FROM_059_TO_0511 = "a265627a7a72305820";
@@ -65,14 +69,24 @@ public class EVMFrontend {
 	 * Yields the EVM bytecode of a smart contract stored at {@code address} and
 	 * stores the result in {@code output}.
 	 * 
-	 * @param address the address of the smart contract to be parsed
+	 * @param address the address of the smart contract to be parsed.
 	 * @param output  the directory where the EMV bytecode that correlates with
-	 *                    the smart contract stored at {@code address} is stored
+	 *                    the smart contract stored at {@code address} is
+	 *                    stored.
+	 * 
+	 * @return {@code true} if the bytecode was successfully downloaded and
+	 *             stored, false otherwise.
 	 * 
 	 * @throws IOException
 	 */
-	public static void parseContractFromEtherscan(String address, String output) throws IOException {
+	public static boolean parseContractFromEtherscan(String address, String output) throws IOException {
 		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
+
+		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
+			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
+			return false;
+		}
+
 		String[] test = bytecodeRequest.split("\"");
 		String bytecode = test[9];
 
@@ -90,7 +104,7 @@ public class EVMFrontend {
 					|| bytecode.substring(i, (i + 16)).equals(FROM_062_TO_LATEST)) {
 
 				writer.close();
-				return;
+				return true;
 			}
 
 			String opcode = bytecode.substring(i, i + 2);
@@ -112,7 +126,7 @@ public class EVMFrontend {
 							|| bytecode.substring(j, (j + 16)).equals(FROM_062_TO_LATEST)) {
 
 						writer.close();
-						return;
+						return true;
 					}
 				}
 
@@ -126,6 +140,8 @@ public class EVMFrontend {
 		}
 
 		writer.close();
+
+		return true;
 	}
 
 	/**
@@ -139,15 +155,21 @@ public class EVMFrontend {
 	 * @throws IOException
 	 * @throws AnalysisException
 	 */
-	public static Program generateCfgFromContractAddress(String contractAddress) throws IOException, AnalysisException {
-		final String bytecodeOutputPath = "output/tmp/" + contractAddress + "_bytecode.sol";
+	public static Program generateCfgFromContraOutputctAddress(String contractAddress)
+			throws IOException, AnalysisException {
+		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
 
 		// Get bytecode from Etherscan
-		new File(bytecodeOutputPath).getParentFile().mkdirs();
-		EVMFrontend.parseContractFromEtherscan(contractAddress, bytecodeOutputPath);
+		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
+
+		boolean parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, BYTECODE_OUTFILE_PATH);
+
+		if (!parseResult) {
+			return null;
+		}
 
 		// Parse bytecode to generate CFG
-		return EVMFrontend.generateCfgFromFile(bytecodeOutputPath);
+		return EVMFrontend.generateCfgFromFile(BYTECODE_OUTFILE_PATH);
 	}
 
 	/**
@@ -173,6 +195,15 @@ public class EVMFrontend {
 		return program;
 	}
 
+	/**
+	 * Helper method that maps the EVM opcodes to their corresponding
+	 * instruction.
+	 * 
+	 * @param opcode
+	 * @param writer
+	 * 
+	 * @throws IOException
+	 */
 	private static void addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
 		case "00":
@@ -331,6 +362,10 @@ public class EVMFrontend {
 		case "48":
 			writer.write("BASEFEE\n");
 			break;
+		case "49":
+		case "4f":
+			writer.write("INVALID\n");
+			break;
 		case "50":
 			writer.write("POP\n");
 			break;
@@ -366,6 +401,9 @@ public class EVMFrontend {
 			break;
 		case "5b":
 			writer.write("JUMPDEST\n");
+			break;
+		case "5f":
+			writer.write("PUSH0\n");
 			break;
 		case "80":
 			writer.write("DUP1\n");
@@ -597,6 +635,17 @@ public class EVMFrontend {
 	}
 
 	private static String etherscanRequest(String module, String action, String address) throws IOException {
+		// Get the API key from the environment variable
+		final String API_KEY = System.getenv("ETHERSCAN_API_KEY");
+
+		// Check if API key was retrieved correctly from the environment
+		// variable
+		if (API_KEY == null || API_KEY.isEmpty()) {
+			System.err.println("ERROR: couldn't retrieve ETHERSCAN_API_KEY environment variable from your system.");
+			return null;
+		}
+
+		// Send request to Etherscan
 		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s", module,
 				action, address, API_KEY);
 
@@ -615,11 +664,33 @@ public class EVMFrontend {
 			}
 
 			in.close();
+			String result = sb.toString();
 
-			return sb.toString();
-
+			// Check for error
+			if (errorInResponse(result)) {
+				return null;
+			} else {
+				return result;
+			}
 		} else {
 			return null;
+		}
+	}
+
+	private static boolean errorInResponse(String content) {
+		final String EtherscanGenericErrorMsg = "\"message\":\"NOTOK\"";
+		final String EtherscanInvalidAPIKeyErrorMsg = "\"result\":\"Invalid API Key\"";
+
+		if (content.contains(EtherscanGenericErrorMsg)) {
+			if (content.contains(EtherscanInvalidAPIKeyErrorMsg)) {
+				System.err.println("ERROR: invalid Etherscan API key.");
+			} else {
+				System.err.println("ERROR: generic Etherscan API error.");
+			}
+
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

@@ -7,22 +7,26 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
 public class EVMFrontendOpcodeCompilation {
 
-	private final String path = "evm-testcases/opcode-compilation/";
-	private final String output = "evm-output/opcode-compilation/";
+	private final String OUTPUT_DIR = "evm-outputs/opcode-compilation/";
+	private final String CONTRACT_ADDRESS = "0x251f752b85a9f7e1b3c42d802715b5d7a8da3165";
+	private final String OUTPUT_FILE = OUTPUT_DIR + CONTRACT_ADDRESS + "/compiled.sol";
 
 	@Test
 	public void sm001() throws IOException {
-		String address = "0x251f752b85a9f7e1b3c42d802715b5d7a8da3165";
-		EVMFrontend.parseContractFromEtherscan(address, output + "/" + address + "/compiled.op");
+		Files.createDirectories(Paths.get(OUTPUT_DIR + CONTRACT_ADDRESS));
+
+		EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDRESS, OUTPUT_FILE);
 
 		List<String> expected = new ArrayList<>();
-		BufferedReader isExp = new BufferedReader(new FileReader(new File(path + address + "/compiled.op")));
+		BufferedReader isExp = new BufferedReader(new FileReader(new File(OUTPUT_FILE)));
 
 		String line = isExp.readLine();
 		while (line != null) {
@@ -32,7 +36,7 @@ public class EVMFrontendOpcodeCompilation {
 
 		List<String> actual = new ArrayList<>();
 
-		BufferedReader isAct = new BufferedReader(new FileReader(new File(output + address + "/compiled.op")));
+		BufferedReader isAct = new BufferedReader(new FileReader(new File(OUTPUT_FILE)));
 		line = isAct.readLine();
 		while (line != null) {
 			actual.add(line);
