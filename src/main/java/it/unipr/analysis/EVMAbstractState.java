@@ -268,10 +268,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					}
 					case "PcOperator": { // PC
 						AbstractStack result = stack.clone();
-
-						// At the moment, we do not handle PC
-						result.push(KIntegerSet.TOP);
-
+						Integer i = (Integer) ((Constant) un.getExpression()).getValue();
+						result.push(new KIntegerSet(new BigDecimal(i)));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "GasOperator": { // GAS
