@@ -42,10 +42,28 @@ implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, T
 MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
-
+	
+	/**
+	 * The CFG to be analyzed.
+	 */
 	private EVMCFG cfgToAnalyze;
+	
+	/**
+	 * Yields if the fixpoint has been reached.
+	 */
 	private boolean fixpoint = true;
 
+	
+	/**
+	 * The set of jump destinations.
+	 */
+	private Set<Statement> jumpDestinations;
+	
+	
+	/**
+	 * Yields the computed CFG.
+	 * @return the computed CFG
+	 */
 	public EVMCFG getComputedCFG() {
 		return cfgToAnalyze;
 	}
@@ -106,22 +124,22 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
-		// Cast the graph (CFG) to EVMCFG and set it as the actual CFG to
-		// analyze.
 		this.cfgToAnalyze = (EVMCFG) graph;
 
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
 
+		// If the jump has been already solved, we skip it
 		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
 			return true;
 
 		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
 			return true;
 
-		// Retrieve all the jump destinations from the actual CFG.
-		Set<Statement> jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
+		// We compute the set of jump destination, if not already computed, 
+		if (this.jumpDestinations == null)
+			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
@@ -156,22 +174,10 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 			}
 
 			Set<Statement> filteredDests;
-			//			if (topStack.interval.isSingleton())
-			filteredDests = jumpDestinations.stream()
+			filteredDests = this.jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
 					.filter(pc -> topStack.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 					.collect(Collectors.toSet());
-			//			else 
-			//				filteredDests = jumpDestinations.stream()
-			//				.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-			//				.filter(pc -> {
-			//					try {
-			//						return topStack.interval.getHigh().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc()) || topStack.interval.getLow().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc());
-			//					} catch (MathNumberConversionException e) {
-			//						return false;
-			//					}
-			//				})
-			//				.collect(Collectors.toSet());
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
