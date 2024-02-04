@@ -26,6 +26,7 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +57,9 @@ public class JumpChecker
 	 */
 	private Set<Statement> jumpDestinations;
 
+	
+	private Set<Statement> unreachableJumps;
+	
 	/**
 	 * Yields the computed CFG.
 	 * 
@@ -63,6 +67,10 @@ public class JumpChecker
 	 */
 	public EVMCFG getComputedCFG() {
 		return cfgToAnalyze;
+	}
+	
+	public Set<Statement> getUnreachableJumps() {
+		return unreachableJumps;
 	}
 
 	/**
@@ -88,6 +96,9 @@ public class JumpChecker
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
 
+		// resets the unreachable jumps set
+		this.unreachableJumps = new HashSet<>();
+		
 		try {
 			lisa.run(program);
 		} catch (AnalysisException e) {
@@ -125,9 +136,13 @@ public class JumpChecker
 		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
 			return true;
 
-		// We compute the set of jump destination, if not already computed,
+		// We compute the set of jump destination, if not already computed
 		if (this.jumpDestinations == null)
 			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
+		
+		// We initialize the set of unreachable jumps, if not already initialized
+		if (this.unreachableJumps == null)
+			this.unreachableJumps = new HashSet<>();
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
@@ -151,7 +166,10 @@ public class JumpChecker
 			// If the abstract stack is top or bottom or it is empty, we do not
 			// have enough information
 			// to solve the jump.
-			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) {
+			if (valueState.isBottom()) {
+				this.unreachableJumps.add(node);
+				continue;
+			} else if (valueState.isTop() || valueState.isEmpty()) {
 				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
 						+ valueState.representation());
 				continue;

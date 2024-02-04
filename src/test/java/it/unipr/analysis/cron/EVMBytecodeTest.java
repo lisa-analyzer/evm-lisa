@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +47,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/failed.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/EtherScan1000.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -56,7 +58,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x72b692ff1A154a27d9d35b396Ff94200828C46b4";
+		String SC_ADDRESS = "0x50e55af101c777ba7a1d560a774a82ef002ced9f";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -288,7 +290,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Print the results
 		EVMCFG baseCfg = checker.getComputedCFG();
 
-		Triple<Integer, Integer, Integer> pair = dumpStatistics(baseCfg);
+		Triple<Integer, Integer, Integer> pair = dumpStatistics(checker);
 		long finish = System.currentTimeMillis();
 
 		return MyLogger.newLogger()
@@ -370,10 +372,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	/**
 	 * Calculates and prints statistics about the control flow graph (CFG) of the provided EVMCFG object.
 	 *
-	 * @param cfg The control flow graph (CFG) of the Ethereum Virtual Machine (EVM) bytecode.
+	 * @param checker The control flow graph (CFG) of the Ethereum Virtual Machine (EVM) bytecode.
 	 * @return A Triple containing the counts of precisely resolved jumps, sound resolved jumps, and unreachable jumps.
 	 */
-	private Triple<Integer, Integer, Integer> dumpStatistics(EVMCFG cfg) {
+	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
+		EVMCFG cfg = checker.getComputedCFG();
+		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;
 		int soundResolvedJumps = 0;
 		int unreachableJumps = 0;
@@ -386,14 +390,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
 					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
+				else if (!cfg.reachableFrom(entryPoint, jumpNode) || unreachableJumpNodes.contains(jumpNode))
 					unreachableJumps++;
 			} else if (jumpNode instanceof Jumpi) {
 				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
 					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
+				else if (!cfg.reachableFrom(entryPoint, jumpNode)|| unreachableJumpNodes.contains(jumpNode))
 					unreachableJumps++;
 			}
 
