@@ -1,6 +1,6 @@
 package it.unipr.cfg.push;
 
-import it.unipr.analysis.PushOperator;
+import it.unipr.analysis.operator.PushOperator;
 import it.unipr.cfg.HexDecimalLiteral;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;

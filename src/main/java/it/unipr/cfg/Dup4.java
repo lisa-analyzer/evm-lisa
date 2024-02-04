@@ -1,6 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.Dup4Operator;
+import it.unipr.analysis.operator.Dup4Operator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

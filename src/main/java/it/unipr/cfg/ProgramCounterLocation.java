@@ -65,4 +65,11 @@ public class ProgramCounterLocation implements CodeLocation {
 		return pc == other.pc;
 	}
 
+	/**
+	 * @return the source code line
+	 */
+	public int getSourceCodeLine() {
+		return sourceCodeLine;
+	}
+
 }

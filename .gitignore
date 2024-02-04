@@ -9,7 +9,6 @@
 
 # Ignore output directories that contain generated results
 evm-outputs/
-evm-testcases/bytecodeBenchmark
 
 # Ignore Gradle build output directory
 build
@@ -25,6 +24,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.DS_Store
 
 # External tool builders
 .externalToolBuilders/
