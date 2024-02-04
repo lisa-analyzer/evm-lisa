@@ -260,6 +260,10 @@ JUMPDEST
    : 'JUMPDEST'
    ;
 
+PUSH0
+   : 'PUSH0'
+   ;
+
 PUSH1
    : 'PUSH1' Head Hexs
    ;

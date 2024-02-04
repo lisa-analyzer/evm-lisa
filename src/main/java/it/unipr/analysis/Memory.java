@@ -1,23 +1,39 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.lattices.FunctionalLattice;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unive.lisa.analysis.lattices.FunctionalLattice;
-import it.unive.lisa.analysis.numeric.Interval;
+public class Memory extends FunctionalLattice<Memory, BigDecimal, KIntegerSet> {
 
-public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
-		
+	/**
+	 * Default constructor for Memory. Initializes the Memory with a default
+	 * lattice (Interval). The default lattice is a single Interval representing
+	 * the entire range of possible values (TOP).
+	 */
 	public Memory() {
-		this(new Interval());
+		this(new KIntegerSet());
 	}
-	
-	public Memory(Interval lattice) {
-		this(lattice, new HashMap<BigDecimal, Interval>());
+
+	/**
+	 * Constructor for Memory that allows specifying an initial lattice.
+	 *
+	 * @param lattice The initial lattice (Interval) for the Memory.
+	 */
+	public Memory(KIntegerSet lattice) {
+		this(lattice, new HashMap<>());
 	}
-	
-	public Memory(Interval lattice, Map<BigDecimal, Interval> function) {
+
+	/**
+	 * Constructor for Memory that allows specifying both an initial lattice and
+	 * an initial function.
+	 *
+	 * @param lattice  The initial lattice (Interval) for the Memory.
+	 * @param function The initial function (mapping of addresses to Intervals)
+	 *                     for the Memory.
+	 */
+	public Memory(KIntegerSet lattice, Map<BigDecimal, KIntegerSet> function) {
 		super(lattice, function);
 	}
 
@@ -32,16 +48,22 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, Interval> {
 	}
 
 	@Override
-	public Memory mk(Interval lattice, Map<BigDecimal, Interval> function) {
+	public Memory mk(KIntegerSet lattice, Map<BigDecimal, KIntegerSet> function) {
 		return new Memory(lattice, function);
 	}
-	
+
 	/**
 	 * Yields the lattice inside this memory.
+	 * 
 	 * @return the lattice inside this memory
 	 */
-	public Interval getLattice() {
+	public KIntegerSet getLattice() {
 		return this.lattice;
 	}
-	
-} // ! Memory
+
+	@Override
+	public Memory clone() {
+		return new Memory(lattice, getMap());
+	}
+
+}

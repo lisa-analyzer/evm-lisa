@@ -3,6 +3,8 @@ package it.unipr.frontend;
 import it.unipr.cfg.*;
 import it.unipr.cfg.Byte;
 import it.unipr.cfg.Number;
+import it.unipr.cfg.push.Push;
+import it.unipr.cfg.push.Push0;
 import it.unipr.cfg.push.Push1;
 import it.unipr.cfg.push.Push10;
 import it.unipr.cfg.push.Push11;
@@ -45,9 +47,14 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Provides methods to generate a CFG from a smart contract.
@@ -101,6 +108,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		cfg.getEntrypoints().add(st);
 		last = st;
 
+		Map<Statement, BigInteger> map = new HashMap<>();
+
 		// For each opcode of the program, create a statement and add it to the
 		// CFG.
 		for (int i = 1; i < ctx.opcodes().size(); i++) {
@@ -115,19 +124,53 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			 * (FalseEdge) is created between the last statement and the actual
 			 * one. Otherwise, a sequential edge (SequentialEdge) is created.
 			 */
-			if (last instanceof Jumpi) {
+
+			if (st instanceof Jumpi && last instanceof Push)
+				map.put(st, ((Push) last).getInt());
+
+			if (st instanceof Jump && last instanceof Push)
+				map.put(st, ((Push) last).getInt());
+
+			if (last instanceof Jumpi)
 				cfg.addEdge(new FalseEdge(last, st));
-			} else {
+
+			if (!(last instanceof Revert)
+					&& !(last instanceof Return)
+					&& !(last instanceof Stop)
+					&& !(last instanceof Selfdestruct)
+					&& !(last instanceof Invalid)
+					&& !(last instanceof Jump)
+					&& !(last instanceof Jumpi))
 				cfg.addEdge(new SequentialEdge(last, st));
-			}
 
 			last = st;
 		}
 
-		// The last statement of the CFG is a Ret statement.
+		for (Statement node : cfg.getNodes())
+			for (Entry<Statement, BigInteger> entry : map.entrySet())
+				if (((ProgramCounterLocation) node.getLocation()).getPc() == entry.getValue().intValue())
+					if (entry.getKey() instanceof Jumpi)
+						cfg.addEdge(new TrueEdge(entry.getKey(), node));
+					else
+						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
+
+		// The last statement of the CFG is a return statement
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
 		cfg.addNode(ret);
 		cfg.addEdge(new SequentialEdge(st, ret));
+
+		// REVERT nodes must be linked to return statement
+		for (Statement stmt : cfg.getNodes()) {
+			if (stmt instanceof Revert
+					|| stmt instanceof Return
+					|| stmt instanceof Stop
+					|| stmt instanceof Selfdestruct
+					|| stmt instanceof Invalid)
+				cfg.addEdge(new SequentialEdge(stmt, ret));
+			// // If a node has no incoming edges, we set it has entry point
+			// if (cfg.getIngoingEdges(stmt).size() == 0)
+			// cfg.getEntrypoints().add(stmt);
+		}
 
 		unit.addCodeMember(cfg);
 
@@ -407,6 +450,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		else if (ctx.SELFDESTRUCT() != null)
 			return new Selfdestruct(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 
+		else if (ctx.PUSH0() != null)
+			return new Push0(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		else if (ctx.PUSH1() != null) {
 			HexDecimalLiteral hex = new HexDecimalLiteral(cfg, new ProgramCounterLocation(pc, getLine(ctx)),
 					ctx.PUSH1().getText().substring(ctx.PUSH1().getText().indexOf("0x")));
@@ -601,6 +646,6 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return st;
 		}
 
-		throw new UnsupportedOperationException(ctx.getText());
+		return new Invalid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 	}
 }
