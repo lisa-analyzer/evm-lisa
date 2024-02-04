@@ -52,6 +52,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
 	private final int CORES = Runtime.getRuntime().availableProcessors();
+	private long startOfExecutionTime = 0; 
 	
 	// Future using
 	private double sumSolvedJumpPercent = 0.0d;
@@ -70,6 +71,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
+		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
 
 		List<String> smartContracts = readSmartContractsFromFile();
@@ -117,7 +119,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 										"analyses ended: " + (smartContractsTerminated.size() + failed) + ", " +
 										"analyses remaining: " + (smartContracts.size() - counter) + ", " +
 										"analyses not started yet: " + ((smartContracts.size() - counter) - (threadsStarted - smartContractsTerminated.size()) + failed) + ", " +
-										"active threads: " + (threadsStarted - smartContractsTerminated.size() - failed) + " \n";
+										"analysis in progress (active threads): " + (threadsStarted - smartContractsTerminated.size() - failed) + " \n";
 								
 								System.out.println(msg);
 								toFileLogs(msg);
@@ -143,7 +145,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 										"analyses ended: " + (smartContractsTerminated.size() + failed) + ", " +
 										"analyses remaining: " + (smartContracts.size() - counter) + ", " +
 										"analyses not started yet: " + ((smartContracts.size() - counter) - (threadsStarted - smartContractsTerminated.size()) + failed) + ", " +
-										"active threads: " + (threadsStarted - smartContractsTerminated.size() - failed) + " \n";
+										"analysis in progress (active threads): " + (threadsStarted - smartContractsTerminated.size() - failed) + " \n";
 								
 								System.out.println(msg);
 								toFileLogs(msg);
@@ -226,6 +228,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 //		System.out.println(msg);
 
 		// Print statistics to standard output and log file
+		long executionTime = System.currentTimeMillis() - startOfExecutionTime;
 		String msg = "";
 		msg += "\n"; // Blank line
 		
@@ -234,7 +237,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				"failed: " + (smartContracts.size() - smartContractsTerminated.size()) + " \n";
 		
 		msg += "API Etherscan Request: " + numberOfAPIEtherscanRequest + ", " + 
-				"succesfully: " + numberOfAPIEtherscanRequestOnSuccess + " \n";
+				"succesfully: " + numberOfAPIEtherscanRequestOnSuccess + " \n" +
+				"Total duration: " + ((executionTime / 1000) / 60) + " minutes and " + ((executionTime / 1000) % 60) + " seconds \n";
 		
 		System.out.println(msg);
 		toFileLogs(msg);
