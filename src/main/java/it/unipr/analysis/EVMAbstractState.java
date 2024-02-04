@@ -315,16 +315,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
-
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.sum(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						
+						result.push(opnd1.sum(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SubOperator": { // SUB
@@ -332,15 +324,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.sub(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "MulOperator": { // MUL
@@ -348,15 +332,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.mul(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.mul(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "DivOperator": { // DIV
@@ -364,15 +340,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.div(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.div(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SdivOperator": { // SDIV
@@ -380,12 +348,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						try {
-							result.push(opnd1.div(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "ModOperator": { // MOD
@@ -393,15 +356,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.mod(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.mod(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SmodOperator": { // SMOD
@@ -409,15 +364,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.mod(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.mod(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "AddmodOperator": { // ADDMOD
@@ -426,12 +373,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						KIntegerSet opnd3 = result.pop();
 
-						try {
-							result.push(opnd1.addmod(opnd2, opnd3));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.addmod(opnd2, opnd3));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "MulmodOperator": { // MULMOD
@@ -440,14 +382,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						KIntegerSet opnd3 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom() || opnd3.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.mulmod(opnd2, opnd3));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
+						result.push(opnd1.mulmod(opnd2, opnd3));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "ExpOperator": { // EXP
@@ -455,15 +390,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.exp(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.exp(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SignextendOperator": { // SIGNEXTEND
@@ -480,15 +407,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.lt(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.lt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SltOperator": { // SLT
@@ -496,15 +415,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.lt(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.lt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "GtOperator": { // GT
@@ -512,14 +423,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.gt(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
+						result.push(opnd1.gt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SgtOperator": { // SGT
@@ -527,15 +431,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.gt(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.gt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "EqOperator": { // EQ
@@ -543,30 +439,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.eq(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.eq(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "IszeroOperator": { // ISZERO
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
-
-						if (opnd1.isBottom())
-							return top();
-
-						try {
-							result.push(opnd1.isZero());
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						
+						result.push(opnd1.isZero());
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "AndOperator": { // AND
@@ -574,17 +454,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom()) {
-							result.push(KIntegerSet.TOP);
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-
-						try {
-							result.push(opnd1.and(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.and(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "OrOperator": { // OR
@@ -592,17 +462,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						if (opnd1.isBottom() || opnd2.isBottom()) {
-							result.push(KIntegerSet.TOP);
-							return new EVMAbstractState(result, memory, mu_i);
-						}
-
-						try {
-							result.push(opnd1.or(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.or(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "XorOperator": { // XOR
@@ -610,24 +470,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						try {
-							result.push(opnd1.xor(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(KIntegerSet.TOP);			
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "NotOperator": { // NOT
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
 
-						try {
-							result.push(opnd1.not());
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.not());
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "ByteOperator": { // BYTE
@@ -636,38 +486,38 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet indexOfByte = result.pop();
 						KIntegerSet target = result.pop();
 
-//						Interval resultInterval = new Interval().bottom(); // Accumulates
-//						// retrieved
-//						// bytes
-//
-//						if (target.isBottom() || target.isTop()) {
-//							result.push(Interval.TOP);
-//						} else {
-//
-//							// Loop through all targets (each value of the
-//							// target
-//							// interval)
-//							for (Long value : target.interval) {
-//								byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
-//
-//								// Loop through all possible indexes of byte to
-//								// select
-//								for (Long index : indexOfByte.interval) {
-//									int intIndex = index.intValue();
-//
-//									// Check if index is valid (>= 0 and <
-//									// valueAsByteArray.length)
-//									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
-//										resultInterval.lub(Interval.ZERO);
-//									} else {
-//										int selectedByteAsInt = valueAsByteArray[intIndex];
-//										resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
-//									}
-//								}
-//							}
+						//						Interval resultInterval = new Interval().bottom(); // Accumulates
+						//						// retrieved
+						//						// bytes
+						//
+						//						if (target.isBottom() || target.isTop()) {
+						//							result.push(Interval.TOP);
+						//						} else {
+						//
+						//							// Loop through all targets (each value of the
+						//							// target
+						//							// interval)
+						//							for (Long value : target.interval) {
+						//								byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
+						//
+						//								// Loop through all possible indexes of byte to
+						//								// select
+						//								for (Long index : indexOfByte.interval) {
+						//									int intIndex = index.intValue();
+						//
+						//									// Check if index is valid (>= 0 and <
+						//									// valueAsByteArray.length)
+						//									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
+						//										resultInterval.lub(Interval.ZERO);
+						//									} else {
+						//										int selectedByteAsInt = valueAsByteArray[intIndex];
+						//										resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
+						//									}
+						//								}
+						//							}
 
 						result.push(KIntegerSet.TOP);
-//						}
+						//						}
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -676,12 +526,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						try {
-							result.push(opnd1.shl(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.shl(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "ShrOperator": { // SHR
@@ -689,12 +534,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						try {
-							result.push(opnd1.shr(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.shr(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "SarOperator": { // SAR
@@ -702,12 +542,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 
-						try {
-							result.push(opnd1.sar(opnd2));
-						} catch (Exception e) {
-							result.push(KIntegerSet.TOP);
-						}
-
+						result.push(opnd1.sar(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "Sha3Operator": { // SHA3
