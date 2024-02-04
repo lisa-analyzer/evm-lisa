@@ -74,11 +74,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		List<String> smartContracts = readSmartContractsFromFile();
 		List<String> smartContractsTerminated = new ArrayList<String>();
+		List<String> smartContractsFailed = new ArrayList<String>();
 
 		Thread[] threads = new Thread[smartContracts.size()];
 
 		Runnable runnableHandler = new Runnable() {
 			private int counter = 0;
+			private int failed = 0;
 			private Object mutex = new Object();
 			int threadsStarted = 0;
 
@@ -111,11 +113,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								smartContractsTerminated.add(address);
 								counter++;
 								
-								String msg = address + " finished at " + now() + ", " + 
-										"ended: " + smartContractsTerminated.size() + ", " +
-										"in progress: " + (smartContracts.size() - counter) + ", " +
-										"active threads: " + (threadsStarted - smartContractsTerminated.size()) + ", " +
-										"not started yet: " + ((smartContracts.size() - counter) - (threadsStarted - smartContractsTerminated.size())) + " \n";
+								String msg = "[" + now() + " - " + Thread.currentThread().getName() + "] \t [SUCCESS] " + address + ", " + 
+										"analyses ended: " + (smartContractsTerminated.size() + failed) + ", " +
+										"analyses remaining: " + (smartContracts.size() - counter) + ", " +
+										"analyses not started yet: " + ((smartContracts.size() - counter) - (threadsStarted - smartContractsTerminated.size()) + failed) + ", " +
+										"active threads: " + (threadsStarted - smartContractsTerminated.size() - failed) + " \n";
 								
 								System.out.println(msg);
 								toFileLogs(msg);
@@ -126,14 +128,25 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 						} catch (Exception e) {
 							synchronized (mutex) {
 								counter++;
+								failed++;
+								smartContractsFailed.add(address);
 								
 								String msg = MyLogger.newLogger()
 										.address(address)
-										.notes("failure: " + e + ", details: " + e.getMessage())
+										.notes("failure: " + e + "; details: " + e.getMessage())
 										.build().toString();
 								
 								System.err.println(msg);
 								toFileStatistics(msg);
+								
+								msg = "[" + now() + " - " + Thread.currentThread().getName() + "] \t [FAILURE] " + address + ", " + 
+										"analyses ended: " + (smartContractsTerminated.size() + failed) + ", " +
+										"analyses remaining: " + (smartContracts.size() - counter) + ", " +
+										"analyses not started yet: " + ((smartContracts.size() - counter) - (threadsStarted - smartContractsTerminated.size()) + failed) + ", " +
+										"active threads: " + (threadsStarted - smartContractsTerminated.size() - failed) + " \n";
+								
+								System.out.println(msg);
+								toFileLogs(msg);
 								
 								mutex.notifyAll();
 							}
@@ -176,11 +189,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			long minutes = (timeToWait / 1000) / 60;
 			long seconds = (timeToWait / 1000) % 60;			
 			
-			String msg = "[TIMER] Setted: " + timeToWait + " millis " + 
+			String msg = "Timeout setted: " + timeToWait + " millis " + 
 					"(" + minutes + " minutes and " + seconds + " seconds) \n";
 			msg += "Started at " + now() + " \n";
-			msg += "Finish expected at " + DATE_FORMAT.format(System.currentTimeMillis() +  timeToWait) + " \n";
+			msg += "Finish (brute) expected at " + DATE_FORMAT.format(System.currentTimeMillis() +  timeToWait) + " \n";
 			msg += "Number of cores: " + CORES + " \n";
+			msg += "Number of analyses: " + smartContracts.size() + " \n";
 			msg += "\n"; // Blank line
 			
 			System.out.println(msg);
@@ -193,7 +207,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 
 		for (int i = 0; i < smartContracts.size(); i++) {
-			if (!smartContractsTerminated.contains(smartContracts.get(i))) {
+			if (!smartContractsTerminated.contains(smartContracts.get(i)) && 
+					!smartContractsFailed.contains(smartContracts.get(i))) {
 				String msg = MyLogger.newLogger()
 						.address(smartContracts.get(i))
 						.notes("Killed: timeout")
@@ -203,28 +218,29 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		}
 		
 		// TODO not working
-		String msg = MyLogger.newLogger()
-				.address("Total")
-				.solvedJumpsPercent((double) (sumSolvedJumpPercent / smartContractsTerminated.size()))
-				.build().toString();
+//		String msg = MyLogger.newLogger()
+//				.address("Total")
+//				.solvedJumpsPercent((double) (sumSolvedJumpPercent / smartContractsTerminated.size()))
+//				.build().toString();
 //		toFileStatistics(msg);
 //		System.out.println(msg);
 
-		// Print statistics to standard output and log file		
-		msg = "Total analysis: " + smartContracts.size() + ", " + 
+		// Print statistics to standard output and log file
+		String msg = "";
+		msg += "\n"; // Blank line
+		
+		msg += "Total analysis: " + smartContracts.size() + ", " + 
 				"succesfully: " + smartContractsTerminated.size() + ", " +
 				"failed: " + (smartContracts.size() - smartContractsTerminated.size()) + " \n";
 		
-		System.out.println(msg);
-		toFileLogs(msg);
-		
-		msg = "API Etherscan Request: " + numberOfAPIEtherscanRequest + ", " + 
+		msg += "API Etherscan Request: " + numberOfAPIEtherscanRequest + ", " + 
 				"succesfully: " + numberOfAPIEtherscanRequestOnSuccess + " \n";
 		
 		System.out.println(msg);
 		toFileLogs(msg);
 
-		System.out.println("Stats successfully written in " + STATISTICS_FULLPATH);
+		System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
+		System.out.println("Logs successfully written in " + LOGS_FULLPATH);
 		
 		return;
 	}
