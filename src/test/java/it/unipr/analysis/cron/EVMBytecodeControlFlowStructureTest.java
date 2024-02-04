@@ -219,7 +219,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testSdiv() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", false);
 		perform(conf);
 	}
 
@@ -243,7 +243,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testSmod() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", false);
 		perform(conf);
 	}
 
@@ -292,6 +292,18 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	@Test
 	public void testSub() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/sub", "sub_eth.sol", false);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testByte() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/byte", "byte_eth.sol", false);
 		perform(conf);
 	}
 

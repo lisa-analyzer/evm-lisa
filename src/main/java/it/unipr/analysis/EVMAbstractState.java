@@ -292,7 +292,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 
 						// At the moment, we do not handle MSIZE
-						result.push(KIntegerSet.TOP);
+						result.push(mu_i.mul(new KIntegerSet(new BigDecimal(32))));
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -479,45 +479,33 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "ByteOperator": { // BYTE
-						// TODO to implement
-						AbstractStack result = stack.clone();
-						KIntegerSet indexOfByte = result.pop();
-						KIntegerSet target = result.pop();
+						AbstractStack resultStack = stack.clone();
+						KIntegerSet indexOfByte = resultStack.pop();
+						KIntegerSet target = resultStack.pop();
 
-						//						Interval resultInterval = new Interval().bottom(); // Accumulates
-						//						// retrieved
-						//						// bytes
-						//
-						//						if (target.isBottom() || target.isTop()) {
-						//							result.push(Interval.TOP);
-						//						} else {
-						//
-						//							// Loop through all targets (each value of the
-						//							// target
-						//							// interval)
-						//							for (Long value : target.interval) {
-						//								byte[] valueAsByteArray = BigInteger.valueOf(value).toByteArray();
-						//
-						//								// Loop through all possible indexes of byte to
-						//								// select
-						//								for (Long index : indexOfByte.interval) {
-						//									int intIndex = index.intValue();
-						//
-						//									// Check if index is valid (>= 0 and <
-						//									// valueAsByteArray.length)
-						//									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
-						//										resultInterval.lub(Interval.ZERO);
-						//									} else {
-						//										int selectedByteAsInt = valueAsByteArray[intIndex];
-						//										resultInterval.lub(new Interval(selectedByteAsInt, selectedByteAsInt));
-						//									}
-						//								}
-						//							}
+						KIntegerSet resultKIntegerSet = KIntegerSet.ZERO;
+						
+						if (target.isBottom() || target.isTop() || indexOfByte.isBottom() || indexOfByte.isTop()) {
+							resultStack.push(KIntegerSet.TOP);
+						} else {
+							for (BigDecimal value : target) {
+								byte[] valueAsByteArray = value.unscaledValue().toByteArray();
+								
+								for(BigDecimal index : indexOfByte) {
+									int intIndex = index.intValue();
+									
+									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
+										resultKIntegerSet.lub(KIntegerSet.ZERO);
+									} else {
+										int selectedByteAsInt = valueAsByteArray[intIndex];
+										resultKIntegerSet.lub(new KIntegerSet(selectedByteAsInt));
+									}
+								}
+							}
+						}
 
-						result.push(KIntegerSet.TOP);
-						//						}
-
-						return new EVMAbstractState(result, memory, mu_i);
+						resultStack.push(resultKIntegerSet.isBottom() ? KIntegerSet.TOP : resultKIntegerSet);
+						return new EVMAbstractState(resultStack, memory, mu_i);
 					}
 					case "ShlOperator": { // SHL
 						AbstractStack result = stack.clone();
