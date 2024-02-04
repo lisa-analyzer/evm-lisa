@@ -1,12 +1,7 @@
 package it.unipr.checker;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -21,7 +16,6 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -31,21 +25,42 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.util.numeric.IntInterval;
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpChecker
-implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
 
+	/**
+	 * The CFG to be analyzed.
+	 */
 	private EVMCFG cfgToAnalyze;
+
+	/**
+	 * Yields if the fixpoint has been reached.
+	 */
 	private boolean fixpoint = true;
 
+	/**
+	 * The set of jump destinations.
+	 */
+	private Set<Statement> jumpDestinations;
+
+	/**
+	 * Yields the computed CFG.
+	 * 
+	 * @return the computed CFG
+	 */
 	public EVMCFG getComputedCFG() {
 		return cfgToAnalyze;
 	}
@@ -59,9 +74,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint)
 			return;
@@ -71,20 +86,11 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 		LiSA lisa = new LiSA(conf);
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
-
-		//		Set<Statement> set = new HashSet<>();
-		//		for (Statement node : cfgToAnalyze.getEntrypoints())
-		//			if (cfgToAnalyze.getIngoingEdges(node).size() > 0)
-		//				set.add(node);
-		//
-		//		cfgToAnalyze.getEntrypoints().removeAll(set);
-
 		program.addCodeMember(cfgToAnalyze);
 
 		try {
 			lisa.run(program);
 		} catch (AnalysisException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -101,27 +107,27 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
-		// Cast the graph (CFG) to EVMCFG and set it as the actual CFG to
-		// analyze.
 		this.cfgToAnalyze = (EVMCFG) graph;
 
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
-		
+
+		// If the jump has been already solved, we skip it
 		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
 			return true;
-		
+
 		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
 			return true;
 
-		// Retrieve all the jump destinations from the actual CFG.
-		Set<Statement> jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
+		// We compute the set of jump destination, if not already computed,
+		if (this.jumpDestinations == null)
+			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
@@ -129,7 +135,8 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				MonolithicHeap,
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
-			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>, MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -138,44 +145,35 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				e1.printStackTrace();
 			}
 
-
 			// Retrieve the symbolic stack from the analysis result
 			EVMAbstractState valueState = analysisResult.getState().getValueState();
 
-			// If the abstract stack is top or bottom or it is empty, we do not have enough information
+			// If the abstract stack is top or bottom or it is empty, we do not
+			// have enough information
 			// to solve the jump.
 			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) {
-				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " " + valueState.representation());
+				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
+						+ valueState.representation());
 				continue;
 			}
 
-			Interval topStack = valueState.getTop();
-			if (topStack.isTop() || topStack.isBottom() || topStack.interval.isInfinite()) {
-				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " " + valueState.getStack());
+			KIntegerSet topStack = valueState.getTop();
+			if (topStack.isTop() || topStack.isBottom()) {
+				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
+						+ valueState.getStack());
 				continue;
 			}
 
 			Set<Statement> filteredDests;
-			//			if (topStack.isSingleton())
-			filteredDests = jumpDestinations.stream()
+			filteredDests = this.jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-					.filter(pc -> topStack.interval.includes(new IntInterval(((ProgramCounterLocation) pc.getLocation()).getPc(), ((ProgramCounterLocation) pc.getLocation()).getPc())))
+					.filter(pc -> topStack
+							.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 					.collect(Collectors.toSet());
-			//			else 
-			//				filteredDests = jumpDestinations.stream()
-			//						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-			//						.filter(pc -> {
-			//							try {
-			//								return topStack.getHigh().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc()) || topStack.getLow().toInt() == (((ProgramCounterLocation) pc.getLocation()).getPc());
-			//							} catch (MathNumberConversionException e) {
-			//								return false;
-			//							}
-			//						})
-			//						.collect(Collectors.toSet());
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
-			if (filteredDests.isEmpty()) 
+			if (filteredDests.isEmpty())
 				continue;
 
 			// For each JUMPDEST, add the missing edge from this node to

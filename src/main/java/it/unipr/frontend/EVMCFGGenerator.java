@@ -131,7 +131,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			if (st instanceof Jump && last instanceof Push)
 				map.put(st, ((Push) last).getInt());
 
-			if (last instanceof Jumpi) 
+			if (last instanceof Jumpi)
 				cfg.addEdge(new FalseEdge(last, st));
 
 			if (!(last instanceof Revert)
@@ -140,7 +140,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 					&& !(last instanceof Selfdestruct)
 					&& !(last instanceof Invalid)
 					&& !(last instanceof Jump)
-					&& !(last instanceof Jumpi)) 
+					&& !(last instanceof Jumpi))
 				cfg.addEdge(new SequentialEdge(last, st));
 
 			last = st;
@@ -154,8 +154,6 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 					else
 						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
 
-
-
 		// The last statement of the CFG is a return statement
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
 		cfg.addNode(ret);
@@ -163,15 +161,15 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 		// REVERT nodes must be linked to return statement
 		for (Statement stmt : cfg.getNodes()) {
-			if (stmt instanceof Revert 
-					|| stmt instanceof Return 
-					|| stmt instanceof Stop 
-					|| stmt instanceof Selfdestruct 
+			if (stmt instanceof Revert
+					|| stmt instanceof Return
+					|| stmt instanceof Stop
+					|| stmt instanceof Selfdestruct
 					|| stmt instanceof Invalid)
 				cfg.addEdge(new SequentialEdge(stmt, ret));
-			//			// If a node has no incoming edges, we set it has entry point
-			//			if (cfg.getIngoingEdges(stmt).size() == 0)
-			//				cfg.getEntrypoints().add(stmt);
+			// // If a node has no incoming edges, we set it has entry point
+			// if (cfg.getIngoingEdges(stmt).size() == 0)
+			// cfg.getEntrypoints().add(stmt);
 		}
 
 		unit.addCodeMember(cfg);
@@ -450,7 +448,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		else if (ctx.INVALID() != null)
 			return new Invalid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		else if (ctx.SELFDESTRUCT() != null)
-			return new Selfdestruct(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));	
+			return new Selfdestruct(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 
 		else if (ctx.PUSH0() != null)
 			return new Push0(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
