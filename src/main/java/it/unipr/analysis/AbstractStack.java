@@ -212,36 +212,19 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(stack);
+		return Objects.hash(isTop, stack);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		// SymbolicStack check
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
 		AbstractStack other = (AbstractStack) obj;
-		// isTop check
-		if (this.isTop != other.isTop)
-			return false;
-		// If both are top, there is no need to check the stack
-		if (this.isTop)
-			return true;
-
-		// Stack check
-		if (this.stack == other.stack)
-			return true;
-		if (this.stack == null || other.stack == null)
-			return false;
-		if (this.stack.size() != other.stack.size())
-			return false;
-
-		return this.stack.equals(other.stack);
+		return isTop == other.isTop && Objects.equals(stack, other.stack);
 	}
 
 	@Override
