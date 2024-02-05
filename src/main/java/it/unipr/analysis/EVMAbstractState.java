@@ -279,11 +279,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
-					case "JumpOperator": { // JUMP
-						AbstractStack result = stack.clone();
-						result.pop();
-						return new EVMAbstractState(result, memory, mu_i);
-					}
 					case "JumpiOperator": { // JUMPI
 						return this;
 					}
@@ -310,13 +305,19 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					// Below, operators that perform pop operation on the stack
 					switch (op.getClass().getSimpleName()) {
 
+					case "JumpOperator": { // JUMP
+						AbstractStack result = stack.clone();
+						if (result.pop().isBottom())
+							return bottom();
+						return new EVMAbstractState(result, memory, mu_i);
+					}
 					case "AddOperator": { // ADD
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.sum(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -326,7 +327,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -336,7 +337,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.mul(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -346,7 +347,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.div(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -356,7 +357,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -366,7 +367,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.mod(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -376,7 +377,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.mod(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -387,7 +388,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd3 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.addmod(opnd2, opnd3));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -398,7 +399,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd3 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom() || opnd3.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.mulmod(opnd2, opnd3));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -408,7 +409,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.exp(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -429,7 +430,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.lt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -439,7 +440,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.lt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -449,7 +450,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.gt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -459,7 +460,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.gt(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -469,7 +470,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.eq(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -478,7 +479,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						if (opnd1.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.isZero());
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -488,7 +489,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.and(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -498,7 +499,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.or(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -508,7 +509,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(KIntegerSet.TOP);			
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -517,7 +518,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = result.pop();
 						if (opnd1.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.not());
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -526,8 +527,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet indexOfByte = resultStack.pop();
 						KIntegerSet target = resultStack.pop();
 
-						KIntegerSet resultKIntegerSet = KIntegerSet.ZERO;
-						
+						KIntegerSet resultKIntegerSet = KIntegerSet.BOTTOM;
+
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.TOP);
 						} else if (target.isBottom() || indexOfByte.isBottom()) {
@@ -535,10 +536,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						} else {
 							for (BigDecimal value : target) {
 								byte[] valueAsByteArray = value.unscaledValue().toByteArray();
-								
+
 								for(BigDecimal index : indexOfByte) {
 									int intIndex = index.intValue();
-									
+
 									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
 										resultKIntegerSet.lub(KIntegerSet.ZERO);
 									} else {
@@ -558,7 +559,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.shl(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -568,7 +569,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.shr(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -578,7 +579,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd2 = result.pop();
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
-						
+
 						result.push(opnd1.sar(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -588,7 +589,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (offset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle SHA3
 						result.push(KIntegerSet.TOP);
 
@@ -599,7 +600,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet address = result.pop();
 						if (address.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle BALANCE
 						result.push(KIntegerSet.TOP);
 
@@ -610,7 +611,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = result.pop();
 						if (offset.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle CALLDATALOAD
 						result.push(KIntegerSet.TOP);
 
@@ -623,7 +624,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (memOffset.isBottom() || dataOffset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle CALLDATACOPY
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -634,7 +635,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (memOffset.isBottom() || codeOffset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle CODECOPY
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -643,7 +644,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet address = result.pop();
 						if (address.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle EXTCODESIZE
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -656,7 +657,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (address.isBottom() || memOffset.isBottom() || codeOffset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle EXTCODECOPY
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -667,7 +668,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (memOffset.isBottom() || retOffset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle RETURNDATACOPY
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -676,7 +677,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet address = result.pop();
 						if (address.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle EXTCODEHASH
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -686,14 +687,16 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet blockNumber = result.pop();
 						if (blockNumber.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle BLOCKHASH
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "PopOperator": { // POP
 						AbstractStack result = stack.clone();
-						result.pop();
+						if (result.pop().isBottom())
+							return bottom();
+
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "MloadOperator": { // MLOAD
@@ -704,7 +707,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (offset.isBottom())
 							return bottom();
-						
+
 						if (mu_i.equals(KIntegerSet.MINUS_ONE)) {
 							// This is an error. We cannot read from memory if
 							// there is no active words saved
@@ -735,7 +738,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet value = stackResult.pop();
 						if (offset.isBottom() || value.isBottom())
 							return bottom();
-						
+
 						if (offset.isTop()) {
 							new_mu_i = mu_i;
 							memoryResult = memory;
@@ -766,7 +769,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet value = stackResult.pop();
 						if (offset.isBottom() || value.isBottom())
 							return bottom();
-						
+
 						if (offset.isTop()) {
 							new_mu_i = mu_i;
 							memoryResult = memory;
@@ -792,7 +795,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet key = result.pop();
 						if (key.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle SLOAD
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -803,7 +806,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet value = result.pop();
 						if (key.isBottom() || value.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle SSTORE
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -909,7 +912,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (offset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle LOG0
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -920,7 +923,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet topic1 = result.pop();
 						if (offset.isBottom() || length.isBottom() || topic1.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle LOG1
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -970,7 +973,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (offset.isBottom() || length.isBottom() || value.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle CREATE
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -983,7 +986,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet salt = result.pop();
 						if (offset.isBottom() || length.isBottom() || value.isBottom() || salt.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle CREATE2
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -999,7 +1002,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outLength = result.pop();
 						if (gas.isBottom() || to.isBottom() || value.isBottom() || inOffset.isBottom() || inLength.isBottom() || outOffset.isBottom() || outLength.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle CALL
 						result.push(KIntegerSet.TOP);
 
@@ -1027,7 +1030,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (offset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle RETURN
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -1041,7 +1044,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outLength = result.pop();
 						if (gas.isBottom() || to.isBottom() || inOffset.isBottom() || inLength.isBottom() || outOffset.isBottom() || outLength.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle DELEGATECALL
 						result.push(KIntegerSet.TOP);
 
@@ -1057,7 +1060,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outLength = result.pop();
 						if (gas.isBottom() || to.isBottom() || inOffset.isBottom() || inLength.isBottom() || outOffset.isBottom() || outLength.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle STATICCALL
 						result.push(KIntegerSet.TOP);
 
@@ -1069,7 +1072,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = result.pop();
 						if (offset.isBottom() || length.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle REVERT
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -1081,7 +1084,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet recipient = result.pop();
 						if (recipient.isBottom())
 							return bottom();
-						
+
 						// At the moment, we do not handle SELFDESTRUCT
 						return new EVMAbstractState(result, memory, mu_i);
 					}
