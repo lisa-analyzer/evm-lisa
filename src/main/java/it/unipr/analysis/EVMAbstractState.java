@@ -310,8 +310,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					case "JumpOperator": { // JUMP
 						AbstractStack result = stack.clone();
-						if (result.pop().isBottom())
-							return bottom();
+						result.pop();
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "AddOperator": { // ADD
@@ -418,11 +417,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					}
 					case "SignextendOperator": { // SIGNEXTEND
 						AbstractStack result = stack.clone();
-						if (result.pop().isBottom())
-							return bottom();
-						if (result.pop().isBottom())
-							return bottom();
-
+						result.pop();
+						result.pop();
+						
 						// At the moment, we do not handle SIGNEXTEND
 						result.push(KIntegerSet.TOP);
 						return new EVMAbstractState(result, memory, mu_i);
@@ -701,8 +698,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					}
 					case "PopOperator": { // POP
 						AbstractStack result = stack.clone();
-						if (result.pop().isBottom())
-							return bottom();
+						result.pop();
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
@@ -1199,12 +1195,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// Condition is surely true (interval [1,1])
 						// Return the result
 						return new EVMAbstractState(result, memory, mu_i);
-					} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
+					} else {
 						// Condition could be either true or false
 						// Return the result
 						return new EVMAbstractState(result, memory, mu_i);
-					} else if (condition.isBottom())
-						return bottom();
+					}
 
 				} else if (op instanceof LogicalNegation) {
 					// Get the expression wrapped by LogicalNegation
@@ -1227,12 +1222,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 								// Condition is surely true (interval [1,1])
 								// Return BOTTOM
 								return bottom();
-							} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)){
+							} else {
 								// Condition could be either true or false
 								// Return the result
 								return new EVMAbstractState(result, memory, mu_i);
-							} else if (condition.isBottom())
-								return bottom();
+							}
 						}
 					}
 				}
