@@ -1,6 +1,11 @@
 package it.unipr.analysis;
 
-import it.unipr.analysis.operator.JumpiOperator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -8,21 +13,11 @@ import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
-import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack> {
-	public static final int K = 32;
+	public static final int K = 128;
 	private static final AbstractStack TOP = new AbstractStack();
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 	private final boolean isTop;
@@ -240,71 +235,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	@Override
 	public AbstractStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
-		// Ensure BOTTOM and TOP propagation
-		if (this.isBottom() || this.isTop()) {
-			return this;
-		}
-
-		try {
-			if (expression instanceof UnaryExpression) {
-				UnaryExpression un = (UnaryExpression) expression;
-				UnaryOperator op = un.getOperator();
-
-				if (op instanceof JumpiOperator) { // JUMPI
-					AbstractStack result = new AbstractStack(clone(stack));
-					result.pop(); // Interval destination = result.pop();
-					KIntegerSet condition = result.pop();
-
-					if (condition.equals(KIntegerSet.ZERO)) {
-						// Condition is surely false (interval [0,0])
-						// Return BOTTOM
-						return bottom();
-					} else if (condition.equals(KIntegerSet.ONE)) {
-						// Condition is surely true (interval [1,1])
-						// Return the result
-						return result;
-					} else {
-						// Condition could be either true or false
-						// Return the result
-						return result;
-					}
-
-				} else if (op instanceof LogicalNegation) {
-					// Get the expression wrapped by LogicalNegation
-					SymbolicExpression wrappedExpr = un.getExpression();
-
-					if (wrappedExpr instanceof UnaryExpression) {
-						UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
-
-						// Check if LogicalNegation is wrapping a JUMPI
-						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-							AbstractStack result = new AbstractStack(clone(stack));
-							result.pop(); // Interval destination =
-							// result.pop();
-							KIntegerSet condition = result.pop();
-
-							if (condition.equals(KIntegerSet.ZERO)) {
-								// Condition is surely false (interval [0,0])
-								// Return the result
-								return result;
-							} else if (condition.equals(KIntegerSet.ONE)) {
-								// Condition is surely true (interval [1,1])
-								// Return BOTTOM
-								return bottom();
-							} else {
-								// Condition could be either true or false
-								// Return the result
-								return result;
-							}
-						}
-					}
-				}
-			}
-		} catch (NoSuchElementException e) {
-			System.err.println("Operation not performed: " + e);
-		}
-
-		return this;
+		throw new RuntimeException("assume method in abstract stack should never be called.");
 	}
 
 	public static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> originalList) {

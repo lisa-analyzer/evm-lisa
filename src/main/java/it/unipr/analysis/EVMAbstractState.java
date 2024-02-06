@@ -1177,9 +1177,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
 		// Ensure BOTTOM and TOP propagation
-		if (this.isBottom() || this.isTop()) {
+		if (this.isBottom() || this.isTop()) 
 			return this;
-		}
 
 		try {
 			if (expression instanceof UnaryExpression) {
@@ -1199,11 +1198,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// Condition is surely true (interval [1,1])
 						// Return the result
 						return new EVMAbstractState(result, memory, mu_i);
-					} else {
+					} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
 						// Condition could be either true or false
 						// Return the result
 						return new EVMAbstractState(result, memory, mu_i);
-					}
+					} else if (condition.isBottom())
+						return bottom();
 
 				} else if (op instanceof LogicalNegation) {
 					// Get the expression wrapped by LogicalNegation
@@ -1226,11 +1226,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 								// Condition is surely true (interval [1,1])
 								// Return BOTTOM
 								return bottom();
-							} else {
+							} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)){
 								// Condition could be either true or false
 								// Return the result
 								return new EVMAbstractState(result, memory, mu_i);
-							}
+							} else if (condition.isBottom())
+								return bottom();
 						}
 					}
 				}
@@ -1292,15 +1293,15 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState bottom() {
 		return BOTTOM;
 	}
-	
+
 	@Override
 	public boolean isTop() {
 		return stack.isTop() && memory.isTop() && mu_i.isTop();
 	}
-	
+
 	@Override
 	public boolean isBottom() {
-		return stack.isBottom() || memory.isBottom() || mu_i.isBottom();
+		return stack.isBottom();
 	}
 
 	/**
