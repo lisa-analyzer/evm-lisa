@@ -17,7 +17,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class AbstractStack implements ValueDomain<AbstractStack> {
-	public static final int K = 72;
+	public static final int K = 100;
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	private final LinkedList<KIntegerSet> stack;
