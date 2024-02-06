@@ -288,7 +288,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public KIntegerSet pop() {
 		KIntegerSet result = stack.removeLast();
-		if (stack.get(0).isBottom())
+		if (stack.getFirst().isBottom())
 			stack.addFirst(KIntegerSet.BOTTOM);
 		else
 			stack.addFirst(KIntegerSet.TOP);
