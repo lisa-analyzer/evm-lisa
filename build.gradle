@@ -132,21 +132,6 @@ task spotlessErrorMessage {
 // class containing main method
 mainClassName = 'it.unipr.EVMLiSA'
 
-task copyTestClasses(type: Copy) {
-    from sourceSets.test.output.classesDirs
-    into "$buildDir/classes/java/main"
-}
-
-distZip {
-    dependsOn copyTestClasses
-    from (sourceSets.main.output + sourceSets.test.output)
-}
-
-// add test classes to classpath
-run {
-    classpath += sourceSets.test.runtimeClasspath
-}
-
 tasks.register('checkCodeStyle') {
     group = 'verification'
     description = 'Execute spotless and checkstyle to ensure code and javadoc formatting'
