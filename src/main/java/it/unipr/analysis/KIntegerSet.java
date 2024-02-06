@@ -15,12 +15,12 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public static final KIntegerSet ONE = new KIntegerSet(1);
 	public static final KIntegerSet MINUS_ONE = new KIntegerSet(-1);
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
-	public static final KIntegerSet TOP = new KIntegerSet(true);
+	public static final KIntegerSet TOP = new KIntegerSet();
 	public static final KIntegerSet BOTTOM = new KIntegerSet(null, false);
 
 	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
 
-	public static int K = 3;
+	public static int K = 7;
 
 	public KIntegerSet() {
 		this(Collections.emptySet(), true);
@@ -53,10 +53,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		this(set.size() > K ? Collections.emptySet() : set, set.size() > K);
 	}
 
-	private KIntegerSet(boolean isTop) {
-		this(Collections.emptySet(), isTop);
-	}
-
 	public KIntegerSet(Set<BigDecimal> elements, boolean isTop) {
 		super(elements, isTop);
 	}
@@ -68,7 +64,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	
 	@Override
 	public boolean isTop() {
-		return this.isTop;
+		return isTop;
 	}
 	
 	@Override
@@ -78,7 +74,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	@Override
 	public KIntegerSet bottom() {
-		return new KIntegerSet(null, false);
+		return BOTTOM;
 	}
 
 	@Override

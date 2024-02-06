@@ -1,5 +1,13 @@
 package it.unipr.checker;
 
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
@@ -25,20 +33,14 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpChecker
-		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
 
@@ -57,9 +59,9 @@ public class JumpChecker
 	 */
 	private Set<Statement> jumpDestinations;
 
-	
+
 	private Set<Statement> unreachableJumps;
-	
+
 	/**
 	 * Yields the computed CFG.
 	 * 
@@ -68,9 +70,16 @@ public class JumpChecker
 	public EVMCFG getComputedCFG() {
 		return cfgToAnalyze;
 	}
-	
+
 	public Set<Statement> getUnreachableJumps() {
 		return unreachableJumps;
+	}
+
+	@Override
+	public void beforeExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>, MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+		// resets the unreachable jumps set
+		this.unreachableJumps = new HashSet<>();
 	}
 
 	/**
@@ -82,9 +91,9 @@ public class JumpChecker
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap,
+			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint)
 			return;
@@ -95,10 +104,10 @@ public class JumpChecker
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
-
-		// resets the unreachable jumps set
-		this.unreachableJumps = new HashSet<>();
 		
+		// We initialize the set of unreachable jumps, if not already initialized
+		this.unreachableJumps = new HashSet<>();
+
 		try {
 			lisa.run(program);
 		} catch (AnalysisException e) {
@@ -118,13 +127,17 @@ public class JumpChecker
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap,
+			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
 
+		// We compute the set of jump destination, if not already computed
+		if (this.jumpDestinations == null)
+			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
+		
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
@@ -136,14 +149,6 @@ public class JumpChecker
 		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
 			return true;
 
-		// We compute the set of jump destination, if not already computed
-		if (this.jumpDestinations == null)
-			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
-		
-		// We initialize the set of unreachable jumps, if not already initialized
-		if (this.unreachableJumps == null)
-			this.unreachableJumps = new HashSet<>();
-
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
 		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
@@ -151,7 +156,7 @@ public class JumpChecker
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -169,9 +174,12 @@ public class JumpChecker
 			if (valueState.isBottom()) {
 				this.unreachableJumps.add(node);
 				continue;
-			} else if (valueState.isTop() || valueState.isEmpty()) {
+			} else if (valueState.isTop()) {
 				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
 						+ valueState.representation());
+				continue;
+			} else if (valueState.isEmpty()) {
+				this.unreachableJumps.add(node);
 				continue;
 			}
 
@@ -191,8 +199,10 @@ public class JumpChecker
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
-			if (filteredDests.isEmpty())
+			if (filteredDests.isEmpty()) {
+				this.unreachableJumps.add(node);
 				continue;
+			}
 
 			// For each JUMPDEST, add the missing edge from this node to
 			// the JUMPDEST.

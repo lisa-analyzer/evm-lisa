@@ -17,18 +17,19 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class AbstractStack implements ValueDomain<AbstractStack> {
-	public static final int K = 128;
-	private static final AbstractStack TOP = new AbstractStack();
+	public static final int K = 72;
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
-	private final boolean isTop;
 
 	private final LinkedList<KIntegerSet> stack;
 
 	/**
-	 * Builds a top symbolic stack.
+	 * Builds a initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this(true);
+		this.stack = new LinkedList<KIntegerSet>();
+
+		for (int i = 0; i < K; i++)
+			stack.add(KIntegerSet.BOTTOM);
 	}
 
 	/**
@@ -38,21 +39,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public AbstractStack(LinkedList<KIntegerSet> stack) {
 		this.stack = stack;
-		this.isTop = false;
 	}
-
-	/**
-	 * Builds an empty symbolic stack.
-	 * 
-	 * @param isTop whether this stack is top.
-	 */
-	private AbstractStack(boolean isTop) {
-		this.isTop = isTop;
-		this.stack = new LinkedList<KIntegerSet>();
-
-		for (int i = 0; i < K; i++)
-			stack.add(KIntegerSet.BOTTOM);
-
+	
+	public AbstractStack(LinkedList<KIntegerSet> stack, boolean isTop) {
+		this.stack = stack;
 	}
 
 	@Override
@@ -193,7 +183,12 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	@Override
 	public AbstractStack top() {
-		return TOP;
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+
+		for (int i = 0; i < K; i++)
+			result.addLast(KIntegerSet.TOP);
+
+		return new AbstractStack(result);
 	}
 
 	@Override
@@ -203,12 +198,17 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	
 	@Override
 	public boolean isTop() {
-		return isTop;
+		if (stack == null)
+			return false;
+		for (int i = 0; i < K; i++)
+			if (!this.stack.get(0).isTop())
+				return false;
+		return true;
 	}
 	
 	@Override
 	public boolean isBottom() {
-		return !isTop && stack == null;
+		return stack == null;
 	}
 
 	public boolean isEmpty() {
@@ -217,7 +217,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(isTop, stack);
+		return Objects.hash(stack);
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractStack other = (AbstractStack) obj;
-		return isTop == other.isTop && Objects.equals(stack, other.stack);
+		return Objects.equals(stack, other.stack);
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	@Override
 	public AbstractStack clone() {
 		if (isBottom())
-			return new AbstractStack(null);
+			return BOTTOM;
 		return new AbstractStack(clone(stack));
 	}
 

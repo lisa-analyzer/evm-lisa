@@ -1,5 +1,17 @@
 package it.unipr.analysis;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -16,16 +28,6 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Predicate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 	private static final Logger LOG = LogManager.getLogger(EVMAbstractState.class);
@@ -119,7 +121,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	@Override
 	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// bottom state is propagated
-		if (this.isBottom() || this.stack.isBottom())
+		if (this.isBottom())
 			return EVMAbstractState.BOTTOM;
 
 		try {
@@ -290,6 +292,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						return new EVMAbstractState(result, memory, mu_i);
 					}
+					case "BasefeeOperator": { // BASEFEE
+						AbstractStack result = stack.clone();
+
+						// At the moment, we do not handle BASEFEE
+						result.push(KIntegerSet.TOP);
+						return new EVMAbstractState(result, memory, mu_i);
+					}
 					case "JumpdestOperator": { // JUMPDEST
 						return this;
 					}
@@ -299,8 +308,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					// from here on, top is propagated
 					if (isTop())
 						return this;
-					else if (stack.isBottom())
-						return bottom();
 
 					// Below, operators that perform pop operation on the stack
 					switch (op.getClass().getSimpleName()) {
@@ -510,7 +517,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						if (opnd1.isBottom() || opnd2.isBottom())
 							return bottom();
 
-						result.push(KIntegerSet.TOP);			
+						result.push(opnd1.xor(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "NotOperator": { // NOT
@@ -551,7 +558,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							}
 						}
 
-						resultStack.push(resultKIntegerSet.isBottom() ? KIntegerSet.TOP : resultKIntegerSet);
+						if (resultKIntegerSet.isBottom())
+							return bottom();
+						
+						resultStack.push(resultKIntegerSet);
 						return new EVMAbstractState(resultStack, memory, mu_i);
 					}
 					case "ShlOperator": { // SHL
@@ -1082,13 +1092,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						// At the moment, we do not handle SELFDESTRUCT
 						return new EVMAbstractState(result, memory, mu_i);
 					}
-					case "BasefeeOperator": { // BASEFEE
-						AbstractStack result = stack.clone();
 
-						// At the moment, we do not handle BASEFEE
-						result.push(KIntegerSet.TOP);
-						return new EVMAbstractState(result, memory, mu_i);
-					}
 					}
 				}
 			}
@@ -1296,7 +1300,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public boolean isTop() {
-		return stack.isTop() && memory.isTop() && mu_i.isTop();
+		return isTop;
 	}
 
 	@Override
