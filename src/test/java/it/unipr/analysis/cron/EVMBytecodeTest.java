@@ -61,7 +61,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x33d19f9e3e3f083ec5c2425401cc53d96e79ac3a";
+		String SC_ADDRESS = "0x8b028e2fad2dc99999fb784ca9d7267981c90b4d";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 

@@ -9,9 +9,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -30,7 +27,6 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
-	private static final Logger LOG = LogManager.getLogger(EVMAbstractState.class);
 
 	private static final EVMAbstractState TOP = new EVMAbstractState();
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStack().bottom(), new Memory().bottom(), KIntegerSet.BOTTOM);
@@ -740,6 +736,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						KIntegerSet offset = stackResult.pop();
 						KIntegerSet value = stackResult.pop();
+						
 						if (offset.isBottom() || value.isBottom())
 							return bottom();
 
@@ -1300,7 +1297,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public boolean isTop() {
-		return isTop;
+		return stack.isTop();
 	}
 
 	@Override

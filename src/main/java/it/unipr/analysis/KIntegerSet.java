@@ -10,14 +10,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
-	public static final int K = 7;
+	public static final int K = 3;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
 	public static final KIntegerSet ONE = new KIntegerSet(1);
 	public static final KIntegerSet MINUS_ONE = new KIntegerSet(-1);
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
 	public static final KIntegerSet TOP = new KIntegerSet();
-	public static final KIntegerSet BOTTOM = new KIntegerSet(null, false);
+	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
 
 	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
 
@@ -59,16 +59,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	@Override
 	public KIntegerSet top() {
 		return TOP;
-	}
-	
-	@Override
-	public boolean isTop() {
-		return isTop;
-	}
-	
-	@Override
-	public boolean isBottom() {
-		return !isTop && elements == null;
 	}
 
 	@Override
@@ -154,6 +144,20 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			}
 
 		return new KIntegerSet(elements);
+	}
+
+	public KIntegerSet copy() {
+		if (isBottom())
+			return BOTTOM;
+		else if (isTop())
+			return TOP;
+		else {
+			Set<BigDecimal> set = new HashSet<BigDecimal>();
+			for (BigDecimal e : this.elements())
+				set.add(e);
+			return new KIntegerSet(set);
+
+		}
 	}
 
 	public KIntegerSet mul(KIntegerSet other) {

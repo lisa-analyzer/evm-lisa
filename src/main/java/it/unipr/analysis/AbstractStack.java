@@ -41,9 +41,6 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		this.stack = stack;
 	}
 	
-	public AbstractStack(LinkedList<KIntegerSet> stack, boolean isTop) {
-		this.stack = stack;
-	}
 
 	@Override
 	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
@@ -241,7 +238,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	public static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> originalList) {
 		LinkedList<KIntegerSet> clonedList = new LinkedList<>();
 		for (int i = 0; i < originalList.size(); i++)
-			clonedList.add(originalList.get(i));
+			clonedList.add(originalList.get(i).copy());
 
 		return clonedList;
 	}
@@ -259,6 +256,8 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	public AbstractStack clone() {
 		if (isBottom())
 			return BOTTOM;
+		else if (isTop())
+			return top();
 		return new AbstractStack(clone(stack));
 	}
 

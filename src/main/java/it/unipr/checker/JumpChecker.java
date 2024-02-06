@@ -178,9 +178,6 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
 						+ valueState.representation());
 				continue;
-			} else if (valueState.isEmpty()) {
-				this.unreachableJumps.add(node);
-				continue;
 			}
 
 			KIntegerSet topStack = valueState.getTop();
@@ -189,7 +186,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 						+ valueState.getStack());
 				continue;
 			}
-
+			
 			Set<Statement> filteredDests;
 			filteredDests = this.jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
