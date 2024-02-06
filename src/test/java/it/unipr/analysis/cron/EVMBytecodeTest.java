@@ -41,6 +41,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
+	
+	// Regenerates the smart contracts source code in the case
+	private final static boolean REGENERATE = false;
 
 	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
@@ -58,7 +61,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x50e55af101c777ba7a1d560a774a82ef002ced9f";
+		String SC_ADDRESS = "0x33d19f9e3e3f083ec5c2425401cc53d96e79ac3a";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -253,7 +256,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists()) {
+		if (!file.exists() || REGENERATE) {
 			numberOfAPIEtherscanRequest++;
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
