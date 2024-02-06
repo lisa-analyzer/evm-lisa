@@ -198,7 +198,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		if (stack == null)
 			return false;
 		for (int i = 0; i < K; i++)
-			if (!this.stack.get(0).isTop())
+			if (!this.stack.get(i).isTop())
 				return false;
 		return true;
 	}
