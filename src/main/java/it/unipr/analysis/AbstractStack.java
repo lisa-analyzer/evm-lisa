@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack> {
-	public static final int K = 73;
+	public static final int K = 200;
 	private static final AbstractStack TOP = new AbstractStack();
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 	private final boolean isTop;
@@ -204,6 +204,11 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	@Override
 	public AbstractStack bottom() {
 		return BOTTOM;
+	}
+	
+	@Override
+	public boolean isTop() {
+		return isTop;
 	}
 	
 	@Override

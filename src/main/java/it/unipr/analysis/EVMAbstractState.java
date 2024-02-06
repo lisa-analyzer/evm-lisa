@@ -31,7 +31,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private static final Logger LOG = LogManager.getLogger(EVMAbstractState.class);
 
 	private static final EVMAbstractState TOP = new EVMAbstractState();
-	private static final EVMAbstractState BOTTOM = new EVMAbstractState(null, null, null);
+	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStack().bottom(), new Memory().bottom(), KIntegerSet.BOTTOM);
 	private final boolean isTop;
 
 	/**
@@ -531,6 +531,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.TOP);
+							return new EVMAbstractState(resultStack, memory, mu_i);
 						} else if (target.isBottom() || indexOfByte.isBottom()) {
 							return bottom();
 						} else {
@@ -707,19 +708,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (offset.isBottom())
 							return bottom();
-
-						if (mu_i.equals(KIntegerSet.MINUS_ONE)) {
+						else if (mu_i.equals(KIntegerSet.MINUS_ONE)) {
 							// This is an error. We cannot read from memory if
 							// there is no active words saved
 							result.push(KIntegerSet.TOP);
 							return new EVMAbstractState(result, memory, mu_i);
-						}
-
-						if (memory == null) {
-							LOG.warn("[MLOAD] memory == null");
-						}
-
-						if (offset.isTop() || offset.isBottom()) {
+						} else if (offset.isTop()) {
 							result.push(KIntegerSet.TOP);
 							new_mu_i = mu_i;
 						} else {
@@ -1297,6 +1291,16 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	@Override
 	public EVMAbstractState bottom() {
 		return BOTTOM;
+	}
+	
+	@Override
+	public boolean isTop() {
+		return stack.isTop() && memory.isTop() && mu_i.isTop();
+	}
+	
+	@Override
+	public boolean isBottom() {
+		return stack.isBottom() || memory.isBottom() || mu_i.isBottom();
 	}
 
 	/**
