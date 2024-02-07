@@ -571,8 +571,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return bottom();
+//						if (opnd1.isBottom() || opnd2.isBottom())
+//							return bottom();
 
 						result.push(opnd1.shr(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
@@ -581,8 +581,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return bottom();
+//						if (opnd1.isBottom() || opnd2.isBottom())
+//							return bottom();
 
 						result.push(opnd1.sar(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
@@ -591,8 +591,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						KIntegerSet offset = result.pop();
 						KIntegerSet length = result.pop();
-						if (offset.isBottom() || length.isBottom())
-							return bottom();
+//						if (offset.isBottom() || length.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle SHA3
 						result.push(KIntegerSet.TOP);
@@ -602,8 +602,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					case "BalanceOperator": { // BALANCE
 						AbstractStack result = stack.clone();
 						KIntegerSet address = result.pop();
-						if (address.isBottom())
-							return bottom();
+//						if (address.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle BALANCE
 						result.push(KIntegerSet.TOP);
@@ -613,8 +613,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					case "CalldataloadOperator": { // CALLDATALOAD
 						AbstractStack result = stack.clone();
 						KIntegerSet offset = result.pop();
-						if (offset.isBottom())
-							return bottom();
+//						if (offset.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle CALLDATALOAD
 						result.push(KIntegerSet.TOP);
@@ -626,8 +626,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet memOffset = result.pop();
 						KIntegerSet dataOffset = result.pop();
 						KIntegerSet length = result.pop();
-						if (memOffset.isBottom() || dataOffset.isBottom() || length.isBottom())
-							return bottom();
+//						if (memOffset.isBottom() || dataOffset.isBottom() || length.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle CALLDATACOPY
 						return new EVMAbstractState(result, memory, mu_i);
@@ -637,8 +637,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet memOffset = result.pop();
 						KIntegerSet codeOffset = result.pop();
 						KIntegerSet length = result.pop();
-						if (memOffset.isBottom() || codeOffset.isBottom() || length.isBottom())
-							return bottom();
+//						if (memOffset.isBottom() || codeOffset.isBottom() || length.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle CODECOPY
 						return new EVMAbstractState(result, memory, mu_i);
@@ -670,8 +670,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet memOffset = result.pop();
 						KIntegerSet retOffset = result.pop();
 						KIntegerSet length = result.pop();
-						if (memOffset.isBottom() || retOffset.isBottom() || length.isBottom())
-							return bottom();
+//						if (memOffset.isBottom() || retOffset.isBottom() || length.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle RETURNDATACOPY
 						return new EVMAbstractState(result, memory, mu_i);
@@ -708,9 +708,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						KIntegerSet offset = result.pop();
 
-						if (offset.isBottom())
-							return bottom();
-						else if (mu_i.equals(KIntegerSet.MINUS_ONE)) {
+//						if (offset.isBottom())
+//							return bottom();
+//						else 
+							if (mu_i.equals(KIntegerSet.MINUS_ONE)) {
 							// This is an error. We cannot read from memory if
 							// there is no active words saved
 							result.push(KIntegerSet.TOP);
@@ -733,8 +734,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = stackResult.pop();
 						KIntegerSet value = stackResult.pop();
 						
-						if (offset.isBottom() || value.isBottom())
-							return bottom();
+//						if (offset.isBottom() || value.isBottom())
+//							return bottom();
 
 						if (offset.isTop()) {
 							new_mu_i = mu_i;
@@ -1033,8 +1034,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet inLength = result.pop();
 						KIntegerSet outOffset = result.pop();
 						KIntegerSet outLength = result.pop();
-						if (gas.isBottom() || to.isBottom() || inOffset.isBottom() || inLength.isBottom() || outOffset.isBottom() || outLength.isBottom())
-							return bottom();
+//						if (gas.isBottom() || to.isBottom() || inOffset.isBottom() || inLength.isBottom() || outOffset.isBottom() || outLength.isBottom())
+//							return bottom();
 
 						// At the moment, we do not handle DELEGATECALL
 						result.push(KIntegerSet.TOP);
