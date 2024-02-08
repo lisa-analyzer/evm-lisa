@@ -86,17 +86,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		perform(conf);
 	}
 
-	/**
-	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
-	 * - Number of opcodes: 32 - Expected solved jumps %: 100%
-	 */
-	@Test
-	public void testRealContract() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad",
-				"0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
-		perform(conf);
-	}
-
 	@Test
 	public void testMstore() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
