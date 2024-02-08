@@ -48,3 +48,13 @@ Run EVMLiSA:
 Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 
 This command will initiate the analysis process for the specified smart contract, providing insights and results based on the Ethereum Virtual Machine (EVM) bytecode of the contract.
+
+```bash
+Options:
+-a, --address <arg>        address of smart contract
+-c, --dumpcfg              dump the CFG
+-d, --dumpanalysis <arg>   dump the analysis (html, dot)
+-f, --filepath <arg>       filepath of smart contract
+-o, --output <arg>         output directory path
+-s, --dumpStatistics       dump statistics
+```
