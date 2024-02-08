@@ -3323,3 +3323,389 @@ ISZERO
 PUSH2 0x1d16
 JUMPI
 INVALID
+JUMPDEST
+DUP2
+DUP4
+SUB
+SWAP1
+POP
+SWAP3
+SWAP2
+POP
+POP
+JUMP
+JUMPDEST
+PUSH1 0x00
+DUP1
+DUP3
+DUP5
+ADD
+SWAP1
+POP
+DUP4
+DUP2
+LT
+ISZERO
+PUSH2 0x1d33
+JUMPI
+INVALID
+JUMPDEST
+DUP1
+SWAP2
+POP
+POP
+SWAP3
+SWAP2
+POP
+POP
+JUMP
+JUMPDEST
+DUP1
+PUSH1 0x08
+PUSH1 0x00
+DUP5
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+DUP2
+SWAP1
+SSTORE
+POP
+POP
+POP
+JUMP
+JUMPDEST
+PUSH1 0x00
+DUP1
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP4
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+EQ
+ISZERO
+PUSH2 0x1dc0
+JUMPI
+PUSH1 0x00
+DUP1
+REVERT
+JUMPDEST
+PUSH2 0x1dc9
+CALLER
+PUSH2 0x0d76
+JUMP
+JUMPDEST
+DUP3
+GT
+ISZERO
+PUSH2 0x1dd5
+JUMPI
+PUSH1 0x00
+DUP1
+REVERT
+JUMPDEST
+PUSH2 0x1e27
+DUP3
+PUSH1 0x02
+PUSH1 0x00
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+SLOAD
+PUSH2 0x1d0a
+SWAP1
+SWAP2
+SWAP1
+PUSH4 0xffffffff
+AND
+JUMP
+JUMPDEST
+PUSH1 0x02
+PUSH1 0x00
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+DUP2
+SWAP1
+SSTORE
+POP
+PUSH2 0x1ebc
+DUP3
+PUSH1 0x02
+PUSH1 0x00
+DUP7
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+SLOAD
+PUSH2 0x1d21
+SWAP1
+SWAP2
+SWAP1
+PUSH4 0xffffffff
+AND
+JUMP
+JUMPDEST
+PUSH1 0x02
+PUSH1 0x00
+DUP6
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+DUP2
+SWAP1
+SSTORE
+POP
+DUP3
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH32 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+DUP5
+PUSH1 0x40
+MLOAD
+DUP1
+DUP3
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP2
+POP
+POP
+PUSH1 0x40
+MLOAD
+DUP1
+SWAP2
+SUB
+SWAP1
+LOG3
+PUSH1 0x01
+SWAP1
+POP
+SWAP3
+SWAP2
+POP
+POP
+JUMP
+JUMPDEST
+PUSH1 0x00
+PUSH2 0x1fff
+DUP3
+PUSH1 0x03
+PUSH1 0x00
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+PUSH1 0x00
+DUP7
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+SLOAD
+PUSH2 0x1d21
+SWAP1
+SWAP2
+SWAP1
+PUSH4 0xffffffff
+AND
+JUMP
+JUMPDEST
+PUSH1 0x03
+PUSH1 0x00
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+PUSH1 0x00
+DUP6
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+DUP2
+SWAP1
+SSTORE
+POP
+DUP3
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH32 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
+PUSH1 0x03
+PUSH1 0x00
+CALLER
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+PUSH1 0x00
+DUP8
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+PUSH20 0xffffffffffffffffffffffffffffffffffffffff
+AND
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP1
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+PUSH1 0x00
+SHA3
+SLOAD
+PUSH1 0x40
+MLOAD
+DUP1
+DUP3
+DUP2
+MSTORE
+PUSH1 0x20
+ADD
+SWAP2
+POP
+POP
+PUSH1 0x40
+MLOAD
+DUP1
+SWAP2
+SUB
+SWAP1
+LOG3
+PUSH1 0x01
+SWAP1
+POP
+SWAP3
+SWAP2
+POP
+POP
+JUMP
+INVALID

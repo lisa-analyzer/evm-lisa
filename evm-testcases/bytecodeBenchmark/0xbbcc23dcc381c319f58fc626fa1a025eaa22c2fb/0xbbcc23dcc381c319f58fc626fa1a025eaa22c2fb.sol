@@ -3830,3 +3830,9 @@ POP
 POP
 JUMP
 INVALID
+DUP13
+JUMPDEST
+'e1'(Unknown Opcode)
+'e5'(Unknown Opcode)
+'eb'(Unknown Opcode)
+'ec'(Unknown Opcode)
