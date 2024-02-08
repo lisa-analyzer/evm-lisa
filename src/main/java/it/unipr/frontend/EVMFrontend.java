@@ -140,7 +140,7 @@ public class EVMFrontend {
 		}
 
 		writer.close();
-		
+
 		System.out.println(writer);
 
 		return true;
@@ -551,7 +551,7 @@ public class EVMFrontend {
 		default:
 			writer.write("'" + opcode + "'" + "(Unknown Opcode)\n");
 			break;
-		}		
+		}
 	}
 
 	private static int pushTest(String opcode) {

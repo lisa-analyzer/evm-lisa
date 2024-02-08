@@ -294,7 +294,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		CronConfiguration conf = createConfiguration("cfs/sub", "sub_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	/**
 	 * All the items in the final stack must be 1
 	 * 

@@ -1,11 +1,5 @@
 package it.unipr.analysis;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -16,6 +10,11 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 	public static final int STACK_LIMIT = 64;
@@ -41,7 +40,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack(LinkedList<KIntegerSet> stack) {
 		this.stack = stack;
 	}
-
 
 	@Override
 	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
@@ -194,7 +192,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return top();
 		return new AbstractStack(clone(stack));
 	}
-	
+
 	private static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> list) {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 		for (int i = 0; i < list.size(); i++)

@@ -1,10 +1,5 @@
 package it.unipr;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Set;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -23,7 +18,10 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
-
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Set;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -34,7 +32,7 @@ public class EVMLiSA {
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
-	 * from a Solidity contract and runs the analysis on it. 
+	 * from a Solidity contract and runs the analysis on it.
 	 * 
 	 * @param args
 	 * 
@@ -44,7 +42,7 @@ public class EVMLiSA {
 	public static void main(String[] args) throws AnalysisException, IOException, Exception {
 		new EVMLiSA().go(args);
 	}
-	
+
 	private void go(String[] args) throws Exception {
 		Options options = new Options();
 
@@ -56,36 +54,35 @@ public class EVMLiSA {
 		Option outputOption = new Option("o", "output", true, "output directory path");
 		outputOption.setRequired(false);
 		options.addOption(outputOption);
-		
+
 //		Option dumpCFGOption = new Option("c", "dumpcfg", true, "dump the CFG (html, dot)");
 //		dumpCFGOption.setRequired(false);
 //		options.addOption(dumpCFGOption);
-		
+
 		Option dumpAnalysisOption = new Option("d", "dumpanalysis", true, "dump the analysis (html, dot)");
 		dumpAnalysisOption.setRequired(false);
 		options.addOption(dumpAnalysisOption);
-		
+
 		Option filePathOption = new Option("f", "filepath", true, "filepath of smart contract");
 		filePathOption.setRequired(false);
 		options.addOption(filePathOption);
-		
+
 		// Boolean
 		Option dumpStatisticsOption = Option.builder("s")
-			    .longOpt("dumpStatistics")
-			    .desc("dump statistics")
-			    .required(false)
-			    .hasArg(false)
-			    .build();
+				.longOpt("dumpStatistics")
+				.desc("dump statistics")
+				.required(false)
+				.hasArg(false)
+				.build();
 		options.addOption(dumpStatisticsOption);
 		Option dumpCFGOption = Option.builder("c")
-			    .longOpt("dumpcfg")
-			    .desc("dump the CFG")
-			    .required(false)
-			    .hasArg(false)
-			    .build();
+				.longOpt("dumpcfg")
+				.desc("dump the CFG")
+				.required(false)
+				.hasArg(false)
+				.build();
 		options.addOption(dumpCFGOption);
-		
-		
+
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -98,39 +95,39 @@ public class EVMLiSA {
 
 			System.exit(1);
 		}
-		
+
 		String addressSC = cmd.getOptionValue("address");
 		String outputDir = cmd.getOptionValue("output");
 		Boolean dumpCFG = cmd.hasOption("dumpcfg");
 		String dumpAnalysis = cmd.getOptionValue("dumpanalysis");
 		boolean dumpStatistics = cmd.hasOption("dumpStatistics");
 		String filepath = cmd.getOptionValue("filePathOption");
-		
-		if(addressSC == null && filepath == null) {
+
+		if (addressSC == null && filepath == null) {
 			// Error: no address and no filepath
 			System.out.println("address or filepath required");
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
-		
-		if(outputDir == null)
+
+		if (outputDir == null)
 			outputDir = "OUTPUT_" + addressSC;
-		
+
 		STATISTICS_FULLPATH = "STATISTICS_" + addressSC + ".csv";
 		FAILURE_FULLPATH = "FAILURE_" + addressSC + ".csv";
 
 		String BYTECODE_FULLPATH = "";
-		if(filepath == null) {
+		if (filepath == null) {
 			BYTECODE_FULLPATH = addressSC + ".sol";
 			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
 		} else
 			BYTECODE_FULLPATH = filepath;
-		
+
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
-		
+
 		long start = System.currentTimeMillis();
 		long finish;
-		
+
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeInputs = dumpCFG;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
@@ -144,23 +141,23 @@ public class EVMLiSA {
 		conf.serializeResults = true;
 		conf.optimize = false;
 
-		if(dumpAnalysis != null) {
-			if(dumpAnalysis.equals("dot"))
+		if (dumpAnalysis != null) {
+			if (dumpAnalysis.equals("dot"))
 				conf.analysisGraphs = GraphType.DOT;
-			else if(dumpAnalysis.equals("html"))
+			else if (dumpAnalysis.equals("html"))
 				conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		}
 
 		try {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
-			
+
 			EVMCFG baseCfg = checker.getComputedCFG();
 
 			Triple<Integer, Integer, Integer> pair;
-			
+
 			pair = dumpStatistics(checker);
-			
+
 			finish = System.currentTimeMillis();
 
 			String msg = MyLogger.newLogger()
@@ -172,15 +169,15 @@ public class EVMLiSA {
 					.unreachableJumps(pair.getRight())
 					.time(finish - start)
 					.build().toString();
-			
+
 			System.out.println(msg);
-			
-			if(dumpStatistics)
+
+			if (dumpStatistics)
 				toFileStatistics(msg);
-			
+
 		} catch (Throwable e) {
 			finish = System.currentTimeMillis();
-			
+
 			String msg = MyLogger.newLogger()
 					.address(addressSC)
 					.notes("failure: " + e + " - details: " + e.getMessage())
@@ -188,17 +185,21 @@ public class EVMLiSA {
 					.build().toString();
 
 			System.err.println(msg);
-			
-			if(dumpStatistics)
+
+			if (dumpStatistics)
 				toFileFailure(msg);
 		}
 	}
-	
+
 	/**
-	 * Calculates and prints statistics about the control flow graph (CFG) of the provided EVMCFG object.
+	 * Calculates and prints statistics about the control flow graph (CFG) of
+	 * the provided EVMCFG object.
 	 *
-	 * @param checker The control flow graph (CFG) of the Ethereum Virtual Machine (EVM) bytecode.
-	 * @return A Triple containing the counts of precisely resolved jumps, sound resolved jumps, and unreachable jumps.
+	 * @param checker The control flow graph (CFG) of the Ethereum Virtual
+	 *                    Machine (EVM) bytecode.
+	 * 
+	 * @return A Triple containing the counts of precisely resolved jumps, sound
+	 *             resolved jumps, and unreachable jumps.
 	 */
 	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
 		EVMCFG cfg = checker.getComputedCFG();
@@ -222,7 +223,7 @@ public class EVMLiSA {
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
 					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode)|| unreachableJumpNodes.contains(jumpNode))
+				else if (!cfg.reachableFrom(entryPoint, jumpNode) || unreachableJumpNodes.contains(jumpNode))
 					unreachableJumps++;
 			}
 
@@ -236,7 +237,7 @@ public class EVMLiSA {
 
 		return Triple.of(preciselyResolvedJumps, soundResolvedJumps, unreachableJumps);
 	}
-	
+
 	/**
 	 * Writes the given statistics to a file.
 	 *
@@ -264,7 +265,7 @@ public class EVMLiSA {
 			}
 		}
 	}
-	
+
 	/**
 	 * Writes the given failures to a file.
 	 *
@@ -292,9 +293,10 @@ public class EVMLiSA {
 			}
 		}
 	}
-	
+
 	/**
-	 * Represents a logger object for recording statistical data related to Ethereum smart contracts.
+	 * Represents a logger object for recording statistical data related to
+	 * Ethereum smart contracts.
 	 */
 	private static class MyLogger {
 		private static String divider = ", ";
@@ -401,9 +403,9 @@ public class EVMLiSA {
 			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 					unreachableJumps, totalResolvedJumps, solvedJumpsPercent, time, notes);
 		}
-		
-		public int jumpSize() { 
-			return jumps; 
+
+		public int jumpSize() {
+			return jumps;
 		}
 
 		@Override

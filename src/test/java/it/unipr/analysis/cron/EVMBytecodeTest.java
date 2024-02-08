@@ -1,5 +1,19 @@
 package it.unipr.analysis.cron;
 
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.Jump;
+import it.unipr.cfg.Jumpi;
+import it.unipr.checker.JumpChecker;
+import it.unipr.frontend.EVMFrontend;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -15,25 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Test;
-
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
-import it.unipr.checker.JumpChecker;
-import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
-import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.cfg.statement.Statement;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
@@ -42,7 +40,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
-	
+
 	// Regenerates the smart contracts source code in the case
 	private final static boolean REGENERATE = false;
 
@@ -62,7 +60,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x40f941E48A552bF496B154Af6bf55725f18D77c3";
+		String SC_ADDRESS = "0x88fa999e81b62989fdeeb4a9426433c67caca1fd";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -115,14 +113,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 							synchronized (mutex) {
 								analysesTerminated++;
 								smartContractsTerminatedSuccesfully.add(address);
-								
-								if(myStats.jumpSize() == 0)
+
+								if (myStats.jumpSize() == 0)
 									toFileStatisticsWithZeroJumps(myStats.toString());
 								else
 									toFileStatistics(myStats.toString());
-								
-								String msg = buildMessage("SUCCESS", address, smartContracts.size(), 
-										smartContractsTerminatedSuccesfully.size(), analysesTerminated, 
+
+								String msg = buildMessage("SUCCESS", address, smartContracts.size(),
+										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
 										analysesFailed, threadsStarted);
 
 								System.out.println(msg);
@@ -145,8 +143,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								System.err.println(msg);
 								toFileFailure(msg);
 
-								msg = buildMessage("FAILURE", address, smartContracts.size(), 
-										smartContractsTerminatedSuccesfully.size(), analysesTerminated, 
+								msg = buildMessage("FAILURE", address, smartContracts.size(),
+										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
 										analysesFailed, threadsStarted);
 
 								System.out.println(msg);
@@ -242,7 +240,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		System.out.println("Logs successfully written in " + LOGS_FULLPATH);
 		System.out.println("Statistics with zero jumps successfully written in " + STATISTICSZEROJUMP_FULLPATH);
 		System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
-		
+
 		return;
 	}
 
@@ -308,7 +306,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.time(finish - start)
 				.build();
 	}
-	
+
 	/**
 	 * Cleans up the directory used for bytecode benchmark outputs.
 	 */
@@ -375,10 +373,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 	/**
-	 * Calculates and prints statistics about the control flow graph (CFG) of the provided EVMCFG object.
+	 * Calculates and prints statistics about the control flow graph (CFG) of
+	 * the provided EVMCFG object.
 	 *
-	 * @param checker The control flow graph (CFG) of the Ethereum Virtual Machine (EVM) bytecode.
-	 * @return A Triple containing the counts of precisely resolved jumps, sound resolved jumps, and unreachable jumps.
+	 * @param checker The control flow graph (CFG) of the Ethereum Virtual
+	 *                    Machine (EVM) bytecode.
+	 * 
+	 * @return A Triple containing the counts of precisely resolved jumps, sound
+	 *             resolved jumps, and unreachable jumps.
 	 */
 	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
 		EVMCFG cfg = checker.getComputedCFG();
@@ -402,7 +404,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
 					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode)|| unreachableJumpNodes.contains(jumpNode))
+				else if (!cfg.reachableFrom(entryPoint, jumpNode) || unreachableJumpNodes.contains(jumpNode))
 					unreachableJumps++;
 			}
 
@@ -444,7 +446,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 		}
 	}
-	
+
 	/**
 	 * Writes the given statistics to a file.
 	 *
@@ -472,7 +474,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 		}
 	}
-	
+
 	/**
 	 * Writes the given failures to a file.
 	 *
@@ -500,7 +502,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 		}
 	}
-	
+
 	/**
 	 * Writes the given message to a file.
 	 *
@@ -521,21 +523,34 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 		}
 	}
-	
+
 	/**
 	 * Constructs a log message providing information about the analysis status.
 	 *
-	 * @param type                                The type of analysis (e.g., "SUCCESS", "FAILURE").
-	 * @param address                             The address of the analyzed smart contract.
-	 * @param smartContractsSize                  The total number of smart contracts to be analyzed.
-	 * @param smartContractsTerminatedSuccesfullySize The number of smart contracts successfully terminated.
-	 * @param analysesTerminated                  The total number of analyses terminated.
-	 * @param analysesFailed                      The total number of failed analyses.
-	 * @param threadsStarted                      The total number of threads started for the analysis.
-	 * @return                                    The constructed log message.
+	 * @param type                                    The type of analysis
+	 *                                                    (e.g., "SUCCESS",
+	 *                                                    "FAILURE").
+	 * @param address                                 The address of the
+	 *                                                    analyzed smart
+	 *                                                    contract.
+	 * @param smartContractsSize                      The total number of smart
+	 *                                                    contracts to be
+	 *                                                    analyzed.
+	 * @param smartContractsTerminatedSuccesfullySize The number of smart
+	 *                                                    contracts successfully
+	 *                                                    terminated.
+	 * @param analysesTerminated                      The total number of
+	 *                                                    analyses terminated.
+	 * @param analysesFailed                          The total number of failed
+	 *                                                    analyses.
+	 * @param threadsStarted                          The total number of
+	 *                                                    threads started for
+	 *                                                    the analysis.
+	 * 
+	 * @return The constructed log message.
 	 */
-	private String buildMessage(String type, String address, int smartContractsSize, 
-			int smartContractsTerminatedSuccesfullySize, int analysesTerminated, 
+	private String buildMessage(String type, String address, int smartContractsSize,
+			int smartContractsTerminatedSuccesfullySize, int analysesTerminated,
 			int analysesFailed, int threadsStarted) {
 		return "[" + now() + " - " + Thread.currentThread().getName() + "] \t [" + type + "] "
 				+ address + ", " +
@@ -543,7 +558,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				"analyses remaining: " + (smartContractsSize - analysesTerminated) + ", " +
 				"analyses not started yet: "
 				+ ((smartContractsSize - analysesTerminated)
-						- (threadsStarted - smartContractsTerminatedSuccesfullySize) + analysesFailed) + ", " +
+						- (threadsStarted - smartContractsTerminatedSuccesfullySize) + analysesFailed)
+				+ ", " +
 				"analysis in progress (active threads): "
 				+ (threadsStarted - smartContractsTerminatedSuccesfullySize - analysesFailed) + " \n";
 	}
@@ -598,9 +614,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			}
 		}
 	}
-	
+
 	/**
-	 * Retrieves the current timestamp formatted according to the DATE_FORMAT constant.
+	 * Retrieves the current timestamp formatted according to the DATE_FORMAT
+	 * constant.
 	 *
 	 * @return A string representation of the current timestamp.
 	 */
@@ -609,7 +626,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 	/**
-	 * Represents a logger object for recording statistical data related to Ethereum smart contracts.
+	 * Represents a logger object for recording statistical data related to
+	 * Ethereum smart contracts.
 	 */
 	private static class MyLogger {
 		private static String divider = ", ";
@@ -716,9 +734,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 					unreachableJumps, totalResolvedJumps, solvedJumpsPercent, time, notes);
 		}
-		
-		public int jumpSize() { 
-			return jumps; 
+
+		public int jumpSize() {
+			return jumps;
 		}
 
 		@Override

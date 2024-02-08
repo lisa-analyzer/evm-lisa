@@ -1,13 +1,5 @@
 package it.unipr.checker;
 
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
@@ -33,14 +25,20 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpChecker
-implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
 
@@ -59,7 +57,6 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	 */
 	private Set<Statement> jumpDestinations;
 
-
 	private Set<Statement> unreachableJumps;
 
 	/**
@@ -77,7 +74,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>, MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 		// resets the unreachable jumps set
 		this.unreachableJumps = new HashSet<>();
 	}
@@ -91,9 +90,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint)
 			return;
@@ -104,8 +103,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
-		
-		// We initialize the set of unreachable jumps, if not already initialized
+
+		// We initialize the set of unreachable jumps, if not already
+		// initialized
 		this.unreachableJumps = new HashSet<>();
 
 		try {
@@ -127,9 +127,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -137,7 +137,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 		// We compute the set of jump destination, if not already computed
 		if (this.jumpDestinations == null)
 			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
-		
+
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
@@ -156,7 +156,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -186,7 +186,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 						+ valueState.getStack());
 				continue;
 			}
-			
+
 			Set<Statement> filteredDests;
 			filteredDests = this.jumpDestinations.stream()
 					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)

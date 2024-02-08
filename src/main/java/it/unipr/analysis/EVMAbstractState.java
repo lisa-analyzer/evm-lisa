@@ -1,13 +1,5 @@
 package it.unipr.analysis;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -24,11 +16,19 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true);
-	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStack().bottom(), new Memory().bottom(), KIntegerSet.BOTTOM);
+	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStack().bottom(),
+			new Memory().bottom(), KIntegerSet.BOTTOM);
 	private final boolean isTop;
 
 	/**
@@ -439,7 +439,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					KIntegerSet opnd1 = result.pop();
 					KIntegerSet opnd2 = result.pop();
 
-
 					result.push(opnd1.eq(opnd2));
 					return new EVMAbstractState(result, memory, mu_i);
 				}
@@ -497,7 +496,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						for (BigDecimal value : target) {
 							byte[] valueAsByteArray = value.unscaledValue().toByteArray();
 
-							for(BigDecimal index : indexOfByte) {
+							for (BigDecimal index : indexOfByte) {
 								int intIndex = index.intValue();
 
 								if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
@@ -1068,7 +1067,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
 		// Ensure BOTTOM and TOP propagation
-		if (this.isBottom() || this.isTop()) 
+		if (this.isBottom() || this.isTop())
 			return this;
 
 		if (expression instanceof UnaryExpression) {
