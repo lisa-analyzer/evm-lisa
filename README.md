@@ -23,14 +23,28 @@ You need to:
 - Set an Environment Variable in *Run / Run Configurations* called `ETHERSCAN_API_KEY` with your Etherscan API key.
 
 # ⚙️ Running EVMLiSA
-You can add the addresses of the smart contracts you want to analyze in the `benchmark/smartContracts.txt` file.  
-Finally, you can start the analysis with:
-```bash
-./gradlew test --tests it.unipr.analysis.cron.EVMBytecodeTest
-```
-Once the analysis is finished, you will find the statistics result in `evm-output/statistics.xls`.
+To execute the analysis of an Ethereum smart contract using EVMLiSA, follow these steps:
 
-You can run other gradle task with
+Build the Project:
 ```bash
-./evm-lisa/gradlew -q :tasks --all
+./gradlew build
 ```
+
+Create Distribution Zip:
+```bash
+./gradlew distZip
+```
+
+Unzip the Distribution:
+```bash
+unzip build/distributions/evm-lisa.zip -d execution
+cd execution/evm-lisa/bin
+```
+
+Run EVMLiSA:
+```bash
+./evm-lisa -a <smart_contract_address> [options]
+```
+Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
+
+This command will initiate the analysis process for the specified smart contract, providing insights and results based on the Ethereum Virtual Machine (EVM) bytecode of the contract.

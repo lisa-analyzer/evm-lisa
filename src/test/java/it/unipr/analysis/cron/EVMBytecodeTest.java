@@ -71,7 +71,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 //		new EVMBytecodeTest().saveSmartContractsFromEtherscan(); // Save sc from etherscan
 	}
 
-	@Test
+	
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
