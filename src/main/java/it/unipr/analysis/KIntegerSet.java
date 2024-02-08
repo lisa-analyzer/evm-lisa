@@ -17,6 +17,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public static final KIntegerSet ONE = new KIntegerSet(1);
 	public static final KIntegerSet MINUS_ONE = new KIntegerSet(-1);
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
+	
 	public static final KIntegerSet TOP = new KIntegerSet(Collections.emptySet(), true);
 	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
 
@@ -142,15 +143,15 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	public KIntegerSet copy() {
 		if (isBottom())
-			return BOTTOM;
+			return bottom();
 		else if (isTop())
-			return TOP;
+			return top();
 		return new KIntegerSet(this.elements());
 	}
 
 	public KIntegerSet mul(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
-			return BOTTOM;
+			return bottom();
 		else if (this.equals(ZERO) || other.equals(ZERO))
 			return ZERO;
 		else if (isTop() || other.isTop())
@@ -275,7 +276,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		Set<Boolean> r = new HashSet<Boolean>();
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
-				r.add(i.compareTo(j) == -1);
+				r.add(i.compareTo(j) < 0);
 
 		if (r.size() == 2)
 			return KIntegerSet.ZERO_OR_ONE;
@@ -294,7 +295,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		Set<Boolean> r = new HashSet<Boolean>();
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
-				r.add(i.compareTo(j) == 1);
+				r.add(i.compareTo(j) > 0);
 
 		if (r.size() == 2)
 			return KIntegerSet.ZERO_OR_ONE;

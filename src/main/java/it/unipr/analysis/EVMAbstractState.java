@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -104,7 +103,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 *             is null.
 	 */
 	public KIntegerSet getMu_i() {
-		return mu_i; // TODO to be cloned
+		return mu_i;
 	}
 
 	@Override
@@ -118,7 +117,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// bottom state is propagated
 		if (this.isBottom())
-			return EVMAbstractState.BOTTOM;
+			return this;
 
 		if (expression instanceof Constant) {
 			return this;
