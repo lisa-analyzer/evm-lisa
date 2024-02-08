@@ -3,8 +3,6 @@ package it.unipr;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Set;
 
 import it.unipr.analysis.EVMAbstractState;
@@ -31,16 +29,12 @@ import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 
-	// Directory where the analysis outcome is stored
-	private final static String OUTPUT_DIR = "evm-outputs";
-
-	// Directory where contracts (.sol files) are stored
-	private final static String CONTRACTS_DIR = "evm-testcases";
+	private String STATISTICS_FULLPATH = "";
+	private String FAILURE_FULLPATH = "";
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
-	 * from a Solidity contract and runs the analysis on it. TODO: store
-	 * contract filename in {@code args}
+	 * from a Solidity contract and runs the analysis on it. 
 	 * 
 	 * @param args
 	 * 
@@ -55,30 +49,42 @@ public class EVMLiSA {
 		Options options = new Options();
 
 		// String
-		Option input = new Option("i", "input", true, "input file path");
-		input.setRequired(false);
-		options.addOption(input);
-		
-		Option address = new Option("a", "address", true, "address of smart contract");
-		address.setRequired(true);
-		options.addOption(address);
+		Option addressOption = new Option("a", "address", true, "address of smart contract");
+		addressOption.setRequired(false);
+		options.addOption(addressOption);
 
-		Option output = new Option("o", "output", true, "output file path");
-		output.setRequired(true);
-		options.addOption(output);
+		Option outputOption = new Option("o", "output", true, "output directory path");
+		outputOption.setRequired(false);
+		options.addOption(outputOption);
 		
-		Option statistics = new Option("s", "statistics", true, "statistics file path");
-		statistics.setRequired(false);
-		options.addOption(statistics);
+//		Option dumpCFGOption = new Option("c", "dumpcfg", true, "dump the CFG (html, dot)");
+//		dumpCFGOption.setRequired(false);
+//		options.addOption(dumpCFGOption);
+		
+		Option dumpAnalysisOption = new Option("d", "dumpanalysis", true, "dump the analysis (html, dot)");
+		dumpAnalysisOption.setRequired(false);
+		options.addOption(dumpAnalysisOption);
+		
+		Option filePathOption = new Option("f", "filepath", true, "filepath of smart contract");
+		filePathOption.setRequired(false);
+		options.addOption(filePathOption);
 		
 		// Boolean
-		Option dumpOpt = Option.builder("d")
-			    .longOpt("dumpCFG")
+		Option dumpStatisticsOption = Option.builder("s")
+			    .longOpt("dumpStatistics")
+			    .desc("dump statistics")
+			    .required(false)
+			    .hasArg(false)
+			    .build();
+		options.addOption(dumpStatisticsOption);
+		Option dumpCFGOption = Option.builder("c")
+			    .longOpt("dumpcfg")
 			    .desc("dump the CFG")
 			    .required(false)
 			    .hasArg(false)
 			    .build();
-			options.addOption(dumpOpt);
+		options.addOption(dumpCFGOption);
+		
 		
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -93,56 +99,40 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 		
-		String filePath = cmd.getOptionValue("input");
 		String addressSC = cmd.getOptionValue("address");
-		String statisticsDir = cmd.getOptionValue("statistics");
-
 		String outputDir = cmd.getOptionValue("output");
-
-		String analysis = cmd.getOptionValue("analysis");
-		boolean dumpCFG = cmd.hasOption("dumpCFG");
+		Boolean dumpCFG = cmd.hasOption("dumpcfg");
+		String dumpAnalysis = cmd.getOptionValue("dumpanalysis");
+		boolean dumpStatistics = cmd.hasOption("dumpStatistics");
+		String filepath = cmd.getOptionValue("filePathOption");
 		
-		System.out.println("input " + filePath);
-		System.out.println("address " + addressSC);
-		System.out.println("statistics " + statisticsDir);
-		System.out.println("output " + outputDir);
-		System.out.println("analysis " + analysis);
-		System.out.println("dumpCFG " + dumpCFG);
-		
-		String BYTECODE_FULLPATH = "/" + addressSC + "/" + addressSC + ".sol";
-
-		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(addressSC));
-
-		// If the file does not exists, we will do an API request to Etherscan
-		File file = new File(BYTECODE_FULLPATH);
-//		if (!file.exists()) {
-		if (!file.exists()) {
-			FileWriter myWriter = new FileWriter(file);
-			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
+		if(addressSC == null && filepath == null) {
+			// Error: no address and no filepath
+			System.out.println("address or filepath required");
+			formatter.printHelp("help", options);
+			System.exit(1);
 		}
-
-		Program cfg = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
-
-		EVMLiSA.analyzeCFG(cfg, outputDir);
 		
-	}
+		if(outputDir == null)
+			outputDir = "OUTPUT_" + addressSC;
+		
+		STATISTICS_FULLPATH = "STATISTICS_" + addressSC + ".csv";
+		FAILURE_FULLPATH = "FAILURE_" + addressSC + ".csv";
 
-	/**
-	 * Analyzes a control flow graph (represented as a LiSA {@code Program}) and
-	 * stores the outcome in the chosen {@code outputDir}.
-	 * 
-	 * @param program   the control flow graph represented as a LiSA
-	 *                      {@code Program} to be analyzed.
-	 * @param outputDir the directory where the analysis outcome should be
-	 *                      stored.
-	 * 
-	 * @throws AnalysisException
-	 */
-	private static void analyzeCFG(Program program, String outputDir) throws AnalysisException {
+		String BYTECODE_FULLPATH = "";
+		if(filepath == null) {
+			BYTECODE_FULLPATH = addressSC + ".sol";
+			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
+		} else
+			BYTECODE_FULLPATH = filepath;
+		
+		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+		
 		long start = System.currentTimeMillis();
+		long finish;
+		
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.serializeInputs = true;
+		conf.serializeInputs = dumpCFG;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = true;
@@ -152,43 +142,56 @@ public class EVMLiSA {
 		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.optimize = false;
 
-		LiSA lisa = new LiSA(conf);
-		lisa.run(program);
-		
-		EVMCFG baseCfg = checker.getComputedCFG();
+		if(dumpAnalysis != null) {
+			if(dumpAnalysis.equals("dot"))
+				conf.analysisGraphs = GraphType.DOT;
+			else if(dumpAnalysis.equals("html"))
+				conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+		}
 
-		Triple<Integer, Integer, Integer> pair;
-		
-		pair = dumpStatistics(checker);
-		
-		long finish = System.currentTimeMillis();
+		try {
+			LiSA lisa = new LiSA(conf);
+			lisa.run(program);
+			
+			EVMCFG baseCfg = checker.getComputedCFG();
 
-		String msg = MyLogger.newLogger()
-//				.address(address)
-				.opcodes(baseCfg.getNodesCount())
-				.jumps(baseCfg.getAllJumps().size())
-				.preciselyResolvedJumps(pair.getLeft())
-				.soundResolvedJumps(pair.getMiddle())
-				.unreachableJumps(pair.getRight())
-				.time(finish - start)
-				.build().toString();
-		System.out.println(msg);
-		
-	}
+			Triple<Integer, Integer, Integer> pair;
+			
+			pair = dumpStatistics(checker);
+			
+			finish = System.currentTimeMillis();
 
-	/**
-	 * Returns the path of the contract file based on its name appended to the
-	 * {@code CONTRACTS_DIR} path.
-	 * 
-	 * @param contractFilename the name of the contract file
-	 * 
-	 * @return the path of the contract file
-	 */
-	private static String getContractPath(String contractFilename) {
-		return EVMLiSA.CONTRACTS_DIR + "/" + contractFilename;
+			String msg = MyLogger.newLogger()
+					.address(addressSC)
+					.opcodes(baseCfg.getNodesCount())
+					.jumps(baseCfg.getAllJumps().size())
+					.preciselyResolvedJumps(pair.getLeft())
+					.soundResolvedJumps(pair.getMiddle())
+					.unreachableJumps(pair.getRight())
+					.time(finish - start)
+					.build().toString();
+			
+			System.out.println(msg);
+			
+			if(dumpStatistics)
+				toFileStatistics(msg);
+			
+		} catch (Throwable e) {
+			finish = System.currentTimeMillis();
+			
+			String msg = MyLogger.newLogger()
+					.address(addressSC)
+					.notes("failure: " + e + " - details: " + e.getMessage())
+					.time(finish - start)
+					.build().toString();
+
+			System.err.println(msg);
+			
+			if(dumpStatistics)
+				toFileFailure(msg);
+		}
 	}
 	
 	/**
@@ -197,7 +200,7 @@ public class EVMLiSA {
 	 * @param checker The control flow graph (CFG) of the Ethereum Virtual Machine (EVM) bytecode.
 	 * @return A Triple containing the counts of precisely resolved jumps, sound resolved jumps, and unreachable jumps.
 	 */
-	private static Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
+	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;
@@ -232,6 +235,62 @@ public class EVMLiSA {
 		System.err.println("##############");
 
 		return Triple.of(preciselyResolvedJumps, soundResolvedJumps, unreachableJumps);
+	}
+	
+	/**
+	 * Writes the given statistics to a file.
+	 *
+	 * @param stats The statistics to be written to the file.
+	 */
+	private void toFileStatistics(String stats) {
+		synchronized (STATISTICS_FULLPATH) {
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			try {
+				File idea = new File(STATISTICS_FULLPATH);
+				if (!idea.exists()) {
+					FileWriter myWriter = new FileWriter(idea, true);
+					myWriter.write(init + stats);
+					myWriter.close();
+
+				} else {
+					FileWriter myWriter = new FileWriter(idea, true);
+					myWriter.write(stats);
+					myWriter.close();
+				}
+
+			} catch (IOException e) {
+				System.err.println("An error occurred.");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Writes the given failures to a file.
+	 *
+	 * @param stats The failures to be written to the file.
+	 */
+	private void toFileFailure(String stats) {
+		synchronized (FAILURE_FULLPATH) {
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			try {
+				File idea = new File(FAILURE_FULLPATH);
+				if (!idea.exists()) {
+					FileWriter myWriter = new FileWriter(idea, true);
+					myWriter.write(init + stats);
+					myWriter.close();
+
+				} else {
+					FileWriter myWriter = new FileWriter(idea, true);
+					myWriter.write(stats);
+					myWriter.close();
+				}
+
+			} catch (IOException e) {
+				System.err.println("An error occurred.");
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**

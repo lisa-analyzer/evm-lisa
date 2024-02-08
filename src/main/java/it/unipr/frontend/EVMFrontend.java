@@ -80,7 +80,6 @@ public class EVMFrontend {
 	 * @throws IOException
 	 */
 	public static boolean parseContractFromEtherscan(String address, String output) throws IOException {
-		System.out.println("Im in");
 		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 
 		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
