@@ -38,7 +38,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = true;
+	private final static boolean GENERATE_CFG = false;
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
@@ -71,6 +71,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 //		new EVMBytecodeTest().saveSmartContractsFromEtherscan(); // Save sc from etherscan
 	}
 
+	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
