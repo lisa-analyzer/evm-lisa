@@ -1,6 +1,7 @@
+<img src="logo/emv-lisa-logo-no-background.png">
+
 # EVMLiSA: an abstract interpretation-based static analyzer for EVM bytecode built upon [LiSA](https://unive-ssv.github.io/lisa/) (Library for Static Analysis)
 
-<img src="logo/emv-lisa-logo-no-background.png">
 
 [![GitHub license](https://img.shields.io/github/license/lisa-analyzer/evm-lisa)](https://github.com/lisa-analyzer/evm-lisa/blob/master/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/lisa-analyzer/evm-lisa)
