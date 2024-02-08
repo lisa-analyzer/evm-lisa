@@ -1,16 +1,16 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_mod_mod_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_sdiv_sdiv_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "4ms",
-    "end" : "2024-02-08T10:17:06.522+01:00",
+    "duration" : "3ms",
+    "end" : "2024-02-08T10:17:06.738+01:00",
     "expressions" : "6",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-02-08T10:17:06.518+01:00",
+    "start" : "2024-02-08T10:17:06.735+01:00",
     "statements" : "11",
     "units" : "0",
     "version" : "0.1b8",
@@ -32,6 +32,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "evm-outputs/cfs/mod"
+    "workdir" : "evm-outputs/cfs/sdiv"
   }
 }
