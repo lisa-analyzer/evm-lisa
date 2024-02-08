@@ -28,7 +28,7 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
-	private static final EVMAbstractState TOP = new EVMAbstractState();
+	private static final EVMAbstractState TOP = new EVMAbstractState(true);
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStack().bottom(), new Memory().bottom(), KIntegerSet.BOTTOM);
 	private final boolean isTop;
 
@@ -48,7 +48,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * Builds the abstract domain.
 	 */
 	public EVMAbstractState() {
-		this(true);
+		this(false);
 	}
 
 	/**
