@@ -136,7 +136,10 @@ public class EVMFrontend {
 			}
 
 			else {
-				addOpcode(opcode, writer);
+				if (addOpcode(opcode, writer)) {
+					writer.close();
+					return true;
+				}
 			}
 		}
 
@@ -207,7 +210,7 @@ public class EVMFrontend {
 	 * 
 	 * @throws IOException
 	 */
-	private static void addOpcode(String opcode, Writer writer) throws IOException {
+	private static boolean addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
 		case "00":
 			writer.write("STOP\n");
@@ -545,7 +548,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-			break;
+			return true;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;
@@ -553,6 +556,8 @@ public class EVMFrontend {
 			writer.write("'" + opcode + "'" + "(Unknown Opcode)\n");
 			break;
 		}
+		
+		return false;
 	}
 
 	private static int pushTest(String opcode) {

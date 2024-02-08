@@ -10,24 +10,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
+	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
+	public static final int K = 10;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
 	public static final KIntegerSet ONE = new KIntegerSet(1);
 	public static final KIntegerSet MINUS_ONE = new KIntegerSet(-1);
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
-	public static final KIntegerSet TOP = new KIntegerSet(true);
-	public static final KIntegerSet BOTTOM = new KIntegerSet();
-
-	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
-
-	public static int K = 3;
-
-	public KIntegerSet() {
-		this(Collections.emptySet(), false);
-	}
-
+	public static final KIntegerSet TOP = new KIntegerSet(Collections.emptySet(), true);
+	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
+	
 	public KIntegerSet(BigDecimal i) {
 		this(Collections.singleton(i), false);
+	}
+
+	public KIntegerSet(Integer i) {
+		this(new Integer[]{i});
 	}
 
 	public KIntegerSet(Integer... ints) {
@@ -38,23 +36,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 				this.elements.add(new BigDecimal(i));
 	}
 
-	public KIntegerSet(BigDecimal... ints) {
-		super(Collections.emptySet(), ints.length > K);
-		if (ints.length <= K)
-			for (BigDecimal i : ints)
-				this.elements.add(i);
-	}
-
-	public KIntegerSet(Integer i) {
-		this(Collections.singleton(new BigDecimal(i)), false);
-	}
-
 	public KIntegerSet(Set<BigDecimal> set) {
 		this(set.size() > K ? Collections.emptySet() : set, set.size() > K);
-	}
-
-	private KIntegerSet(boolean isTop) {
-		this(Collections.emptySet(), isTop);
 	}
 
 	public KIntegerSet(Set<BigDecimal> elements, boolean isTop) {
@@ -68,7 +51,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	@Override
 	public KIntegerSet bottom() {
-		return new KIntegerSet();
+		return BOTTOM;
 	}
 
 	@Override
@@ -110,8 +93,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet isZero() {
-		if (isTop() || isBottom())
+		if (isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if(isBottom())
+			return bottom();
 		else if (equals(ZERO))
 			return KIntegerSet.ONE;
 		else if (!contains(new BigDecimal(0)))
@@ -120,8 +105,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet sum(KIntegerSet other) {
-		if (isTop() || isBottom() || other.isTop() || other.isBottom())
+		if (isTop() || other.isTop())
 			return top();
+		else if (isBottom() ||other.isBottom())
+			return bottom();
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
@@ -136,8 +123,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet sub(KIntegerSet other) {
-		if (isTop() || isBottom() || other.isTop() || other.isBottom())
+		if (isTop() || other.isTop())		
 			return top();
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
@@ -151,8 +140,26 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		return new KIntegerSet(elements);
 	}
 
+	public KIntegerSet copy() {
+		if (isBottom())
+			return BOTTOM;
+		else if (isTop())
+			return TOP;
+		else {
+			Set<BigDecimal> set = new HashSet<BigDecimal>();
+			for (BigDecimal e : this.elements())
+				set.add(e);
+			return new KIntegerSet(set);
+
+		}
+	}
+
 	public KIntegerSet mul(KIntegerSet other) {
-		if (isTop() || isBottom() || other.isTop() || other.isBottom())
+		if (isBottom() || other.isBottom())
+			return BOTTOM;
+		else if (this.equals(ZERO) || other.equals(ZERO))
+			return ZERO;
+		if (isTop() || other.isTop())
 			return top();
 
 		Set<BigDecimal> elements = new HashSet<>();
@@ -171,8 +178,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet div(KIntegerSet other) {
-		if (isTop() || isBottom() || other.isTop() || other.isBottom())
+		if (isTop() || other.isTop())
 			return top();
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
@@ -235,14 +244,24 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet exp(KIntegerSet other) {
-		Set<BigDecimal> elements = new HashSet<>();
-
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isTop() || other.isTop())
 			return top();
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(Math.pow(i.doubleValue(), j.doubleValue())));
+		Set<BigDecimal> elements = new HashSet<>();
+		for (BigDecimal i : this.elements) {
+			for (BigDecimal j : other.elements) {
+				BigDecimal r = i;
+
+				for (int k = 0; j.compareTo(new BigDecimal(k)) > 0; k++)
+					if (r.compareTo(MAX) > 0)
+						return TOP;
+					else
+						r = r.multiply(i);
+				elements.add(r);
+			}
+		}
 
 		return new KIntegerSet(elements);
 	}
@@ -250,8 +269,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public KIntegerSet lt(KIntegerSet other) {
 		Set<Boolean> r = new HashSet<Boolean>();
 
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isTop() || other.isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if (isBottom() || other.isBottom())
+			return KIntegerSet.BOTTOM;
 
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
@@ -268,8 +289,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public KIntegerSet gt(KIntegerSet other) {
 		Set<Boolean> r = new HashSet<Boolean>();
 
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isTop() || other.isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
@@ -286,8 +309,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public KIntegerSet eq(KIntegerSet other) {
 		Set<Boolean> r = new HashSet<Boolean>();
 
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isTop() || other.isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
@@ -303,13 +328,17 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	public KIntegerSet and(KIntegerSet other) {
 		Set<BigDecimal> elements = new HashSet<>();
-
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isBottom() || other.isBottom())
+			return BOTTOM;
+		else if (this.equals(ZERO) || other.equals(ZERO))
+			return ZERO;
+		if (isTop() || other.isTop())
 			return TOP;
+		else 
 
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(i.longValue() & j.longValue()));
+			for (BigDecimal i : this.elements)
+				for (BigDecimal j : other.elements)
+					elements.add(new BigDecimal(i.longValue() & j.longValue()));
 
 		return new KIntegerSet(elements);
 	}
@@ -317,8 +346,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public KIntegerSet or(KIntegerSet other) {
 		Set<BigDecimal> elements = new HashSet<>();
 
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isTop() || other.isTop())
 			return top();
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
 		for (BigDecimal i : this.elements)
 			for (BigDecimal j : other.elements)
@@ -342,8 +373,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	public KIntegerSet not() {
 
-		if (isTop() || isBottom())
+		if (isTop())
 			return top();
+		else if (isBottom())
+			return bottom();
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
@@ -368,8 +401,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet shr(KIntegerSet other) {
-		if (isTop() || other.isTop() || isBottom() || other.isBottom())
+		if (isTop() || other.isTop())
 			return top();
+		else if (isBottom() || other.isBottom())
+			return bottom();
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
@@ -393,6 +428,11 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet mload(Memory memory) throws SemanticException {
+		if (isTop())
+			return top();
+		else if (isBottom())
+			return bottom();
+
 		KIntegerSet r = KIntegerSet.BOTTOM;
 
 		for (BigDecimal i : this.elements) {

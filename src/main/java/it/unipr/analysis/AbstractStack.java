@@ -1,6 +1,12 @@
 package it.unipr.analysis;
 
-import it.unipr.analysis.operator.JumpiOperator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -8,32 +14,23 @@ import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
-import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Predicate;
 
-public class AbstractStack implements ValueDomain<AbstractStack> {
-	public static final int K = 32;
-	private static final AbstractStack TOP = new AbstractStack();
+public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
+	public static final int K = 64;
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
-	private final boolean isTop;
 
 	private final LinkedList<KIntegerSet> stack;
 
 	/**
-	 * Builds a top symbolic stack.
+	 * Builds a initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this(true);
+		this.stack = new LinkedList<KIntegerSet>();
+
+		for (int i = 0; i < K; i++)
+			stack.add(KIntegerSet.BOTTOM);
 	}
 
 	/**
@@ -43,22 +40,8 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public AbstractStack(LinkedList<KIntegerSet> stack) {
 		this.stack = stack;
-		this.isTop = false;
 	}
 
-	/**
-	 * Builds an empty symbolic stack.
-	 * 
-	 * @param isTop whether this stack is top.
-	 */
-	private AbstractStack(boolean isTop) {
-		this.isTop = isTop;
-		this.stack = new LinkedList<KIntegerSet>();
-
-		for (int i = 0; i < K; i++)
-			stack.add(KIntegerSet.BOTTOM);
-
-	}
 
 	@Override
 	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
@@ -118,58 +101,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	}
 
 	@Override
-	public boolean lessOrEqual(AbstractStack other) throws SemanticException {
-		if (other == null)
-			return false;
-
-		if (this == other || this.isBottom() || other.isTop() || this.equals(other))
-			return true;
-
-		if (this.isTop() || other.isBottom())
-			return false;
-
-		for (int i = 0; i < K; i++)
-			if (!this.stack.get(i).lessOrEqual(other.stack.get(i)))
-				return false;
-	
-		return true;
-	}
-
-	@Override
-	public AbstractStack lub(AbstractStack other) throws SemanticException {
-		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other))
-			return this;
-
-		if (this.isBottom() || other.isTop())
-			return other;
-
-		if (lessOrEqual(other))
-			return other;
-		else if (other.lessOrEqual(this))
-			return this;
-
-		// Otherwise, let's build a new SymbolicStack
-		LinkedList<KIntegerSet> result = new LinkedList<>();
-
-		for (int i = 0; i < K; i++)
-			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
-
-		return new AbstractStack(result);
-	}
-
-	@Override
-	public AbstractStack glb(AbstractStack other) throws SemanticException {
-		if (other == null || this.isBottom() || other.isTop() || this == other || this.equals(other))
-			return this;
-
-		if (other.isBottom() || this.isTop())
-			return other;
-
-		if (lessOrEqual(other))
-			return this;
-		else if (other.lessOrEqual(this))
-			return other;
-
+	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
 		for (int i = 0; i < K; i++)
@@ -179,15 +111,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	}
 
 	@Override
-	public AbstractStack widening(AbstractStack other) throws SemanticException {
-		if (other == null || other.isBottom() || this.isTop() || this == other || this.equals(other)) {
-			return this;
-		}
-
-		if (this.isBottom() || other.isTop()) {
-			return other;
-		}
-
+	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
 		for (int i = 0; i < K; i++)
@@ -198,22 +122,32 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	@Override
 	public AbstractStack top() {
-		return TOP;
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+
+		for (int i = 0; i < K; i++)
+			result.addLast(KIntegerSet.TOP);
+
+		return new AbstractStack(result);
 	}
 
 	@Override
 	public AbstractStack bottom() {
 		return BOTTOM;
 	}
-	
+
 	@Override
 	public boolean isTop() {
-		return isTop;
+		if (isBottom())
+			return false;
+		for (int i = 0; i < K; i++)
+			if (!this.stack.get(i).isTop())
+				return false;
+		return true;
 	}
-	
+
 	@Override
 	public boolean isBottom() {
-		return !isTop && stack == null;
+		return stack == null;
 	}
 
 	public boolean isEmpty() {
@@ -222,7 +156,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(isTop, stack);
+		return Objects.hash(stack);
 	}
 
 	@Override
@@ -234,83 +168,19 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractStack other = (AbstractStack) obj;
-		return isTop == other.isTop && Objects.equals(stack, other.stack);
+		return Objects.equals(stack, other.stack);
 	}
 
 	@Override
 	public AbstractStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
-		// Ensure BOTTOM and TOP propagation
-		if (this.isBottom() || this.isTop()) {
-			return this;
-		}
-
-		try {
-			if (expression instanceof UnaryExpression) {
-				UnaryExpression un = (UnaryExpression) expression;
-				UnaryOperator op = un.getOperator();
-
-				if (op instanceof JumpiOperator) { // JUMPI
-					AbstractStack result = new AbstractStack(clone(stack));
-					result.pop(); // Interval destination = result.pop();
-					KIntegerSet condition = result.pop();
-
-					if (condition.equals(KIntegerSet.ZERO)) {
-						// Condition is surely false (interval [0,0])
-						// Return BOTTOM
-						return bottom();
-					} else if (condition.equals(KIntegerSet.ONE)) {
-						// Condition is surely true (interval [1,1])
-						// Return the result
-						return result;
-					} else {
-						// Condition could be either true or false
-						// Return the result
-						return result;
-					}
-
-				} else if (op instanceof LogicalNegation) {
-					// Get the expression wrapped by LogicalNegation
-					SymbolicExpression wrappedExpr = un.getExpression();
-
-					if (wrappedExpr instanceof UnaryExpression) {
-						UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
-
-						// Check if LogicalNegation is wrapping a JUMPI
-						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-							AbstractStack result = new AbstractStack(clone(stack));
-							result.pop(); // Interval destination =
-							// result.pop();
-							KIntegerSet condition = result.pop();
-
-							if (condition.equals(KIntegerSet.ZERO)) {
-								// Condition is surely false (interval [0,0])
-								// Return the result
-								return result;
-							} else if (condition.equals(KIntegerSet.ONE)) {
-								// Condition is surely true (interval [1,1])
-								// Return BOTTOM
-								return bottom();
-							} else {
-								// Condition could be either true or false
-								// Return the result
-								return result;
-							}
-						}
-					}
-				}
-			}
-		} catch (NoSuchElementException e) {
-			System.err.println("Operation not performed: " + e);
-		}
-
-		return this;
+		throw new RuntimeException("assume method in abstract stack should never be called.");
 	}
 
 	public static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> originalList) {
 		LinkedList<KIntegerSet> clonedList = new LinkedList<>();
 		for (int i = 0; i < originalList.size(); i++)
-			clonedList.add(originalList.get(i));
+			clonedList.add(originalList.get(i).copy());
 
 		return clonedList;
 	}
@@ -327,17 +197,10 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	@Override
 	public AbstractStack clone() {
 		if (isBottom())
-			return new AbstractStack(null);
+			return BOTTOM;
+		else if (isTop())
+			return top();
 		return new AbstractStack(clone(stack));
-	}
-
-	/**
-	 * Returns an iterator over the elements in the stack.
-	 *
-	 * @return an iterator over the elements in the stack.
-	 */
-	public Iterator<KIntegerSet> iterator() {
-		return stack.iterator();
 	}
 
 	/**
@@ -347,7 +210,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public void push(KIntegerSet target) {
 		stack.addLast(target);
-		stack.remove(0);
+		stack.removeFirst();
 	}
 
 	/**
@@ -357,7 +220,7 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 	 */
 	public KIntegerSet pop() {
 		KIntegerSet result = stack.removeLast();
-		if (stack.get(0).isBottom())
+		if (stack.getFirst().isBottom())
 			stack.addFirst(KIntegerSet.BOTTOM);
 		else
 			stack.addFirst(KIntegerSet.TOP);
@@ -381,5 +244,25 @@ public class AbstractStack implements ValueDomain<AbstractStack> {
 
 	public List<KIntegerSet> getStack() {
 		return stack;
+	}
+
+	@Override
+	public AbstractStack lubAux(AbstractStack other) throws SemanticException {
+		// Otherwise, let's build a new SymbolicStack
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+
+		for (int i = 0; i < K; i++)
+			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
+
+		return new AbstractStack(result);
+	}
+
+	@Override
+	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
+		for (int i = 0; i < K; i++)
+			if (!this.stack.get(i).lessOrEqual(other.stack.get(i)))
+				return false;
+
+		return true;
 	}
 }

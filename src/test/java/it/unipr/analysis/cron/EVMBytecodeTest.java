@@ -1,19 +1,5 @@
 package it.unipr.analysis.cron;
 
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
-import it.unipr.checker.JumpChecker;
-import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
-import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -34,13 +20,31 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Test;
 
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.Jump;
+import it.unipr.cfg.Jumpi;
+import it.unipr.checker.JumpChecker;
+import it.unipr.frontend.EVMFrontend;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.program.cfg.statement.Statement;
+
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = false;
+	private final static boolean GENERATE_CFG = true;
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
+	
+	// Regenerates the smart contracts source code in the case
+	private final static boolean REGENERATE = false;
 
 	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
@@ -58,7 +62,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x50e55af101c777ba7a1d560a774a82ef002ced9f";
+		String SC_ADDRESS = "0x40f941E48A552bF496B154Af6bf55725f18D77c3";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -126,7 +130,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 								mutex.notifyAll();
 							}
 
-						} catch (Exception e) {
+						} catch (Throwable e) {
 							synchronized (mutex) {
 								analysesTerminated++;
 								analysesFailed++;
@@ -252,7 +256,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists()) {
+		if (!file.exists() || REGENERATE) {
 			numberOfAPIEtherscanRequest++;
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
@@ -280,8 +284,9 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		conf.semanticChecks.add(checker);
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeInputs = false;
+
 		if (GENERATE_CFG) {
-			conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+			conf.analysisGraphs = GraphType.DOT;
 		}
 		conf.programFile = CONTRACT_ADDR + ".sol";
 		perform(conf);
