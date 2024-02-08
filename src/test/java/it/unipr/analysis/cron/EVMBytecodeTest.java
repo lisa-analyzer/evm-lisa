@@ -49,7 +49,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/EtherScan1000.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-comparison.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -69,7 +69,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 //		new EVMBytecodeTest().saveSmartContractsFromEtherscan(); // Save sc from etherscan
 	}
 
-	
+	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
@@ -247,11 +247,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private MyLogger newAnalysis(String CONTRACT_ADDR) throws Exception {
 		long start = System.currentTimeMillis();
 
-		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
+		String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/benchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
 				+ ".sol";
 
 		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + CONTRACT_ADDR));
+		Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "benchmark/" + CONTRACT_ADDR));
 
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
@@ -277,7 +277,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
 				new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.testDir = "bytecodeBenchmark/" + CONTRACT_ADDR;
+		conf.testDir = "benchmark/" + CONTRACT_ADDR;
 		conf.callGraph = new RTACallGraph();
 		JumpChecker checker = new JumpChecker();
 		conf.semanticChecks.add(checker);
@@ -312,7 +312,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Before
 	public void clean() {
-		Path path = Paths.get("evm-outputs/bytecodeBenchmark");
+		Path path = Paths.get("evm-outputs/benchmark");
 
 		if (Files.exists(path))
 			try {
@@ -581,7 +581,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		for (int i = 0; i < smartContracts.size(); i++) {
 			String address = smartContracts.get(i);
 
-			String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/bytecodeBenchmark/" + address + "/" + address
+			String BYTECODE_FULLPATH = EXPECTED_RESULTS_DIR + "/benchmark/" + address + "/" + address
 					+ ".sol";
 
 			if (i % 5 == 0) {
@@ -596,7 +596,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 			// Directory setup and bytecode retrieval
 			try {
-				Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "bytecodeBenchmark/" + address));
+				Files.createDirectories(Paths.get(EXPECTED_RESULTS_DIR + "/" + "benchmark/" + address));
 
 				// If the file does not exists, we will do an API request to
 				// Etherscan
