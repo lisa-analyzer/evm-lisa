@@ -1011,8 +1011,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		Object[] obj = clone.toArray();
 
 		int first;
-		if (stack.size() < AbstractStack.K)
-			first = AbstractStack.K;
+		if (stack.size() < AbstractStack.STACK_LIMIT)
+			first = AbstractStack.STACK_LIMIT;
 		else
 			first = clone.size();
 
@@ -1048,8 +1048,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		Object[] obj = clone.toArray();
 		int first;
 
-		if (stack.size() < AbstractStack.K)
-			first = AbstractStack.K - 1;
+		if (stack.size() < AbstractStack.STACK_LIMIT)
+			first = AbstractStack.STACK_LIMIT - 1;
 		else
 			first = clone.size() - 1;
 
@@ -1072,64 +1072,60 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		if (this.isBottom() || this.isTop()) 
 			return this;
 
-		try {
-			if (expression instanceof UnaryExpression) {
-				UnaryExpression un = (UnaryExpression) expression;
-				UnaryOperator op = un.getOperator();
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression un = (UnaryExpression) expression;
+			UnaryOperator op = un.getOperator();
 
-				if (op instanceof JumpiOperator) { // JUMPI
-					AbstractStack result = stack.clone();
-					result.pop();
-					KIntegerSet condition = result.pop();
+			if (op instanceof JumpiOperator) { // JUMPI
+				AbstractStack result = stack.clone();
+				result.pop();
+				KIntegerSet condition = result.pop();
 
-					if (condition.equals(KIntegerSet.ZERO)) {
-						// Condition is surely false (interval [0,0])
-						// Return BOTTOM
-						return bottom();
-					} else if (condition.equals(KIntegerSet.ONE)) {
-						// Condition is surely true (interval [1,1])
-						// Return the result
-						return new EVMAbstractState(result, memory, mu_i);
-					} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
-						// Condition could be either true or false
-						// Return the result
-						return new EVMAbstractState(result, memory, mu_i);
-					} else
-						return bottom();
+				if (condition.equals(KIntegerSet.ZERO)) {
+					// Condition is surely false (interval [0,0])
+					// Return BOTTOM
+					return bottom();
+				} else if (condition.equals(KIntegerSet.ONE)) {
+					// Condition is surely true (interval [1,1])
+					// Return the result
+					return new EVMAbstractState(result, memory, mu_i);
+				} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
+					// Condition could be either true or false
+					// Return the result
+					return new EVMAbstractState(result, memory, mu_i);
+				} else
+					return bottom();
 
-				} else if (op instanceof LogicalNegation) {
-					// Get the expression wrapped by LogicalNegation
-					SymbolicExpression wrappedExpr = un.getExpression();
+			} else if (op instanceof LogicalNegation) {
+				// Get the expression wrapped by LogicalNegation
+				SymbolicExpression wrappedExpr = un.getExpression();
 
-					if (wrappedExpr instanceof UnaryExpression) {
-						UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
+				if (wrappedExpr instanceof UnaryExpression) {
+					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
 
-						// Check if LogicalNegation is wrapping a JUMPI
-						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-							AbstractStack result = stack.clone();
-							result.pop();
-							KIntegerSet condition = result.pop();
+					// Check if LogicalNegation is wrapping a JUMPI
+					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
+						AbstractStack result = stack.clone();
+						result.pop();
+						KIntegerSet condition = result.pop();
 
-							if (condition.equals(KIntegerSet.ZERO)) {
-								// Condition is surely false (interval [0,0])
-								// Return the result
-								return new EVMAbstractState(result, memory, mu_i);
-							} else if (condition.equals(KIntegerSet.ONE)) {
-								// Condition is surely true (interval [1,1])
-								// Return BOTTOM
-								return bottom();
-							} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
-								// Condition could be either true or false
-								// Return the result
-								return new EVMAbstractState(result, memory, mu_i);
-							} else
-								return bottom();
-						}
+						if (condition.equals(KIntegerSet.ZERO)) {
+							// Condition is surely false (interval [0,0])
+							// Return the result
+							return new EVMAbstractState(result, memory, mu_i);
+						} else if (condition.equals(KIntegerSet.ONE)) {
+							// Condition is surely true (interval [1,1])
+							// Return BOTTOM
+							return bottom();
+						} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
+							// Condition could be either true or false
+							// Return the result
+							return new EVMAbstractState(result, memory, mu_i);
+						} else
+							return bottom();
 					}
 				}
 			}
-		} catch (NoSuchElementException e) {
-			System.err.println("[ASSUME] Operation not performed: " + e.getMessage() + " " + e);
 		}
 
 		return this;

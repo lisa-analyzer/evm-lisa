@@ -18,7 +18,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
-	public static final int K = 64;
+	public static final int STACK_LIMIT = 64;
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	private final LinkedList<KIntegerSet> stack;
@@ -29,7 +29,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack() {
 		this.stack = new LinkedList<KIntegerSet>();
 
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			stack.add(KIntegerSet.BOTTOM);
 	}
 
@@ -104,7 +104,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			result.addLast(this.stack.get(i).glb(other.stack.get(i)));
 
 		return new AbstractStack(result);
@@ -114,7 +114,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			result.addLast(this.stack.get(i).widening(other.stack.get(i)));
 
 		return new AbstractStack(result);
@@ -124,7 +124,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack top() {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			result.addLast(KIntegerSet.TOP);
 
 		return new AbstractStack(result);
@@ -139,7 +139,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public boolean isTop() {
 		if (isBottom())
 			return false;
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			if (!this.stack.get(i).isTop())
 				return false;
 		return true;
@@ -177,14 +177,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		throw new RuntimeException("assume method in abstract stack should never be called.");
 	}
 
-	public static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> originalList) {
-		LinkedList<KIntegerSet> clonedList = new LinkedList<>();
-		for (int i = 0; i < originalList.size(); i++)
-			clonedList.add(originalList.get(i).copy());
-
-		return clonedList;
-	}
-
 	/**
 	 * Getter for the Interval at the top of the stack.
 	 * 
@@ -201,6 +193,14 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		else if (isTop())
 			return top();
 		return new AbstractStack(clone(stack));
+	}
+	
+	private static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> list) {
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+		for (int i = 0; i < list.size(); i++)
+			result.add(list.get(i).copy());
+
+		return result;
 	}
 
 	/**
@@ -251,7 +251,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		// Otherwise, let's build a new SymbolicStack
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
 
 		return new AbstractStack(result);
@@ -259,7 +259,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		for (int i = 0; i < K; i++)
+		for (int i = 0; i < STACK_LIMIT; i++)
 			if (!this.stack.get(i).lessOrEqual(other.stack.get(i)))
 				return false;
 
