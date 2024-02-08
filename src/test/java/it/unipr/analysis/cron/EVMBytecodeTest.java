@@ -49,7 +49,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-comparison.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-benchmark.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -60,7 +60,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x88fa999e81b62989fdeeb4a9426433c67caca1fd";
+		String SC_ADDRESS = "0xed04a060050cc289d91779a8bb3942c3a6589254";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
