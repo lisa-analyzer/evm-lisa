@@ -24,19 +24,22 @@ repositories {
 }
 
 dependencies {
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:29.0-jre'
-
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.13'
-    
-   	antlr 'org.antlr:antlr4:4.11.1'
-   	
-    implementation 'io.github.lisa-analyzer:lisa-program:0.1b8'
-    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8'
+ 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
+ 	implementation 'com.google.guava:guava:29.0-jre'
+ 	
+ 	// Use JUnit test framework
+ 	testImplementation 'junit:junit:4.13'
+ 	antlr 'org.antlr:antlr4:4.11.1'
+  
+ 	// Apache Commons CLI
+ 	implementation 'commons-cli:commons-cli:1.4'
+  
+ 	implementation 'io.github.lisa-analyzer:lisa-program:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8'
 }
+
 
 generateGrammarSource {
     maxHeapSize = "64m"
@@ -131,21 +134,6 @@ task spotlessErrorMessage {
 }
 // class containing main method
 mainClassName = 'it.unipr.EVMLiSA'
-
-task copyTestClasses(type: Copy) {
-    from sourceSets.test.output.classesDirs
-    into "$buildDir/classes/java/main"
-}
-
-distZip {
-    dependsOn copyTestClasses
-    from (sourceSets.main.output + sourceSets.test.output)
-}
-
-// add test classes to classpath
-run {
-    classpath += sourceSets.test.runtimeClasspath
-}
 
 tasks.register('checkCodeStyle') {
     group = 'verification'
