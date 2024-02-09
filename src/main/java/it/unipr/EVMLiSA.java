@@ -1,5 +1,19 @@
 package it.unipr;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Set;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -18,14 +32,6 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Set;
-import org.apache.commons.cli.*;
-import org.apache.commons.lang3.tuple.Triple;
-
-import io.github.cdimascio.dotenv.Dotenv;
 
 public class EVMLiSA {
 
@@ -48,8 +54,8 @@ public class EVMLiSA {
 	private void go(String[] args) throws Exception {
 		Options options = new Options();
 
-		// String
-		Option addressOption = new Option("a", "address", true, "address of smart contract");
+		// String parameters
+		Option addressOption = new Option("a", "address", true, "address of an Ethereum smart contract");
 		addressOption.setRequired(false);
 		options.addOption(addressOption);
 
@@ -57,28 +63,24 @@ public class EVMLiSA {
 		outputOption.setRequired(false);
 		options.addOption(outputOption);
 
-//		Option dumpCFGOption = new Option("c", "dumpcfg", true, "dump the CFG (html, dot)");
-//		dumpCFGOption.setRequired(false);
-//		options.addOption(dumpCFGOption);
-
-		Option dumpAnalysisOption = new Option("d", "dumpanalysis", true, "dump the analysis (html, dot)");
+		Option dumpAnalysisOption = new Option("d", "dump-analysis", true, "dump the analysis (html, dot)");
 		dumpAnalysisOption.setRequired(false);
 		options.addOption(dumpAnalysisOption);
 
-		Option filePathOption = new Option("f", "filepath", true, "filepath of smart contract");
+		Option filePathOption = new Option("f", "filepath", true, "filepath of the Etherem smart contract");
 		filePathOption.setRequired(false);
 		options.addOption(filePathOption);
 
-		// Boolean
+		// Boolean parameters
 		Option dumpStatisticsOption = Option.builder("s")
-				.longOpt("dumpStatistics")
+				.longOpt("dump-stats")
 				.desc("dump statistics")
 				.required(false)
 				.hasArg(false)
 				.build();
 		options.addOption(dumpStatisticsOption);
 		Option dumpCFGOption = Option.builder("c")
-				.longOpt("dumpcfg")
+				.longOpt("dump-cfg")
 				.desc("dump the CFG")
 				.required(false)
 				.hasArg(false)
@@ -101,9 +103,9 @@ public class EVMLiSA {
 		String addressSC = cmd.getOptionValue("address");
 		String outputDir = cmd.getOptionValue("output");
 		Boolean dumpCFG = cmd.hasOption("dumpcfg");
-		String dumpAnalysis = cmd.getOptionValue("dumpanalysis");
-		boolean dumpStatistics = cmd.hasOption("dumpStatistics");
-		String filepath = cmd.getOptionValue("filePathOption");
+		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
+		boolean dumpStatistics = cmd.hasOption("dump-stats");
+		String filepath = cmd.getOptionValue("filepath");
 
 		if (addressSC == null && filepath == null) {
 			// Error: no address and no filepath

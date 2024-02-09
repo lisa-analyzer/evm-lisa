@@ -70,9 +70,9 @@ This command will initiate the analysis process for the specified smart contract
 ```bash
 Options:
 -a, --address <arg>        address of smart contract
--c, --dumpcfg              dump the CFG
--d, --dumpanalysis <arg>   dump the analysis (html, dot)
+-c, --dump-cfg              dump the CFG
+-d, --dump-analysis <arg>   dump the analysis (html, dot)
 -f, --filepath <arg>       filepath of smart contract
 -o, --output <arg>         output directory path
--s, --dumpStatistics       dump statistics
+-s, --dump-stats       dump statistics
 ```
