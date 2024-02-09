@@ -40,7 +40,7 @@ public class EVMLiSA {
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
-	 * from a Solidity contract and runs the analysis on it.
+	 * from a EVM bytecode smart contract and runs the analysis on it.
 	 * 
 	 * @param args
 	 * 
