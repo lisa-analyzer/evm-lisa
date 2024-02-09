@@ -17,16 +17,28 @@ Compiling EVMLiSA requires:
 
 Development is done in [Eclipse](https://www.eclipse.org/downloads/).
 You need to:
+- Clone the repository:
+  ```bash
+  https://github.com/lisa-analyzer/evm-lisa.git
+  cd evm-lisa
+  ```
 - Install the Gradle IDE Pack plugin through the Eclipse Marketplace; from the eclipse menu bar:
   - *Help*
   - *Eclipse Marketplace...*
   - *Search* for *Gradle IDE Pack 3.8*
   - *Install Gradle IDE Pack 3.8*
 - Import the project into the eclipse workspace as a Gradle project.
-- Set an Environment Variable in *Run / Run Configurations* called `ETHERSCAN_API_KEY` with your Etherscan API key.
 
 # ⚙️ Running EVMLiSA
-To execute the analysis of an Ethereum smart contract using EVMLiSA, follow these steps:
+Before running EVMLiSA, ensure you have set up an Environment Variable with your Etherscan API Key. Follow the steps below to set up the environment variable:
+
+1. Navigate in Eclipse to *Run > Run Configurations > Java Application > EVMLiSA > Environment*.
+2. Create a new environment variable named `ETHERSCAN_API_KEY`.
+3. Set the value of the environment variable to your Etherscan API key.
+
+> Here how to generate an [Etherscan API key](https://etherscan.io/myapikey).
+
+Once you have set up the environment variable, follow these steps to run EVMLiSA:
 
 Build the Project:
 ```bash
