@@ -32,9 +32,12 @@ You need to:
 # ⚙️ Running EVMLiSA
 Before running EVMLiSA, ensure you have set up an Environment Variable with your Etherscan API Key. Follow the steps below to set up the environment variable:
 
-1. Navigate in Eclipse to *Run > Run Configurations > Java Application > EVMLiSA > Environment*.
-2. Create a new environment variable named `ETHERSCAN_API_KEY`.
-3. Set the value of the environment variable to your Etherscan API key.
+1. Begin by creating a file named `.env` in the EVMLiSA project.
+2. Inside the `.env` file, add the following line:
+```
+ETHERSCAN_API_KEY=<your_etherscan_api_key>
+```
+3. Replace `<your_etherscan_api_key>` with your Etherscan API key.
 
 > Here how to generate an [Etherscan API key](https://etherscan.io/myapikey).
 
