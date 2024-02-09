@@ -25,6 +25,8 @@ import java.util.Set;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.tuple.Triple;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class EVMLiSA {
 
 	private String STATISTICS_FULLPATH = "";

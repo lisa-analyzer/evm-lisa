@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
  * via Etherscan (@see <a href="https://etherscan.io/apis">Etherscan API</a>)
@@ -638,8 +640,9 @@ public class EVMFrontend {
 
 	private static String etherscanRequest(String module, String action, String address) throws IOException {
 		// Get the API key from the environment variable
-		final String API_KEY = System.getenv("ETHERSCAN_API_KEY");
-
+		Dotenv dotenv = Dotenv.load();
+		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
+		
 		// Check if API key was retrieved correctly from the environment
 		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
