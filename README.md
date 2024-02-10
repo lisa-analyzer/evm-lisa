@@ -56,12 +56,11 @@ Create Distribution Zip:
 Unzip the Distribution:
 ```bash
 unzip build/distributions/evm-lisa.zip -d execution
-cd execution/evm-lisa/bin
 ```
 
 Run EVMLiSA:
 ```bash
-./evm-lisa -a <smart_contract_address> [options]
+./execution/evm-lisa/bin/evm-lisa -a <smart_contract_address> [options]
 ```
 Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 

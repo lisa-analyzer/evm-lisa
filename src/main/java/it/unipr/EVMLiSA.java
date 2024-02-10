@@ -3,6 +3,8 @@ package it.unipr;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
@@ -15,6 +17,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.tuple.Triple;
 
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -34,7 +37,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
 
 public class EVMLiSA {
-
+	private final static String OUTPUT_DIR = "execution/results/";
 	private String STATISTICS_FULLPATH = "";
 	private String FAILURE_FULLPATH = "";
 
@@ -113,16 +116,18 @@ public class EVMLiSA {
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
-
+		
+		Files.createDirectories(Paths.get(OUTPUT_DIR));
+		
 		if (outputDir == null)
-			outputDir = "OUTPUT_" + addressSC;
+			outputDir = OUTPUT_DIR + addressSC + "_REPORT";
 
-		STATISTICS_FULLPATH = "STATISTICS_" + addressSC + ".csv";
-		FAILURE_FULLPATH = "FAILURE_" + addressSC + ".csv";
+		STATISTICS_FULLPATH = OUTPUT_DIR + addressSC + "_STATISTICS" + ".csv";
+		FAILURE_FULLPATH = OUTPUT_DIR + addressSC + "_FAILURE" + ".csv";
 
 		String BYTECODE_FULLPATH = "";
 		if (filepath == null) {
-			BYTECODE_FULLPATH = addressSC + ".sol";
+			BYTECODE_FULLPATH = OUTPUT_DIR + addressSC + ".sol";
 			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
 		} else
 			BYTECODE_FULLPATH = filepath;
@@ -298,134 +303,4 @@ public class EVMLiSA {
 		}
 	}
 
-	/**
-	 * Represents a logger object for recording statistical data related to
-	 * Ethereum smart contracts.
-	 */
-	private static class MyLogger {
-		private static String divider = ", ";
-		private String address;
-		private int opcodes;
-		private int jumps;
-		private int preciselyResolvedJumps;
-		private int soundResolvedJumps;
-		private int unreachableJumps;
-		private int totalResolvedJumps;
-		private double preciselySolvedJumpsPercent;
-		private double solvedJumpsPercent;
-		private long time;
-		private String notes;
-		private String currentThread;
-
-		private MyLogger() {
-			this.address = null;
-			this.opcodes = 0;
-			this.jumps = 0;
-			this.preciselyResolvedJumps = 0;
-			this.soundResolvedJumps = 0;
-			this.unreachableJumps = 0;
-			this.solvedJumpsPercent = 0;
-			this.time = 0;
-			this.notes = "";
-			this.currentThread = null;
-		}
-
-		private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
-				int unreachableJumps, int totalResolvedJumps, double solvedJumpsPercent, long time, String notes) {
-			this.address = address;
-			this.opcodes = opcodes;
-			this.jumps = jumps;
-			this.preciselyResolvedJumps = preciselyResolvedJumps;
-			this.soundResolvedJumps = soundResolvedJumps;
-			this.unreachableJumps = unreachableJumps;
-			if (jumps != 0) {
-				if (solvedJumpsPercent == 0)
-					this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + unreachableJumps)
-							/ jumps);
-				this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
-			} else {
-				if (solvedJumpsPercent == 0)
-					this.solvedJumpsPercent = -1;
-				this.preciselySolvedJumpsPercent = -1;
-			}
-			this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps;
-			this.notes = notes;
-			this.time = time;
-			this.currentThread = Thread.currentThread().getName();
-		}
-
-		public static MyLogger newLogger() {
-			return new MyLogger();
-		}
-
-		public MyLogger address(String address) {
-			this.address = address;
-			return this;
-		}
-
-		public MyLogger opcodes(int opcodes) {
-			this.opcodes = opcodes;
-			return this;
-		}
-
-		public MyLogger jumps(int jumps) {
-			this.jumps = jumps;
-			return this;
-		}
-
-		public MyLogger preciselyResolvedJumps(int preciselyResolvedJumps) {
-			this.preciselyResolvedJumps = preciselyResolvedJumps;
-			return this;
-		}
-
-		public MyLogger soundResolvedJumps(int soundResolvedJumps) {
-			this.soundResolvedJumps = soundResolvedJumps;
-			return this;
-		}
-
-		public MyLogger unreachableJumps(int unreachableJumps) {
-			this.unreachableJumps = unreachableJumps;
-			return this;
-		}
-
-		public MyLogger solvedJumpsPercent(double solvedJumpsPercent) {
-			this.solvedJumpsPercent = solvedJumpsPercent;
-			return this;
-		}
-
-		public MyLogger time(long time) {
-			this.time = time;
-			return this;
-		}
-
-		public MyLogger notes(String notes) {
-			this.notes = notes;
-			return this;
-		}
-
-		public MyLogger build() {
-			return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
-					unreachableJumps, totalResolvedJumps, solvedJumpsPercent, time, notes);
-		}
-
-		public int jumpSize() {
-			return jumps;
-		}
-
-		@Override
-		public String toString() {
-			return address + divider +
-					opcodes + divider +
-					jumps + divider +
-					preciselyResolvedJumps + divider +
-					soundResolvedJumps + divider +
-					unreachableJumps + divider +
-					totalResolvedJumps + divider +
-					preciselySolvedJumpsPercent + divider +
-					solvedJumpsPercent + divider +
-					time + divider +
-					currentThread + divider +
-					notes + " \n";
-		}
-	}
 }
