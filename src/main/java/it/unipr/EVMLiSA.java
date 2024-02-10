@@ -169,21 +169,32 @@ public class EVMLiSA {
 
 			finish = System.currentTimeMillis();
 
-			String msg = MyLogger.newLogger()
-					.address(addressSC)
-					.opcodes(baseCfg.getNodesCount())
-					.jumps(baseCfg.getAllJumps().size())
-					.preciselyResolvedJumps(pair.getLeft())
-					.soundResolvedJumps(pair.getMiddle())
-					.unreachableJumps(pair.getRight())
-					.time(finish - start)
-					.build().toString();
+			String msg2 = "\nResults \n" + 
+					"Address: " + addressSC + "\n" + 
+					"Opcodes: " + baseCfg.getNodesCount() + "\n" + 
+					"Jumps: " + baseCfg.getAllJumps().size() + "\n" + 
+					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" + 
+					"SoundResolvedJumps: " + pair.getMiddle() + "\n" + 
+					"UnreachableJumps: " + pair.getRight() + "\n" + 
+					"Time (in millis): " + (finish - start) + "\n";
 
-			System.out.println(msg);
+			System.out.println(msg2);
 
-			if (dumpStatistics)
+			if (dumpStatistics) {
+				String msg = MyLogger.newLogger()
+						.address(addressSC)
+						.opcodes(baseCfg.getNodesCount())
+						.jumps(baseCfg.getAllJumps().size())
+						.preciselyResolvedJumps(pair.getLeft())
+						.soundResolvedJumps(pair.getMiddle())
+						.unreachableJumps(pair.getRight())
+						.time(finish - start)
+						.build().toString();
+				
 				toFileStatistics(msg);
-
+				System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
+			}
+			
 		} catch (Throwable e) {
 			finish = System.currentTimeMillis();
 
@@ -195,8 +206,10 @@ public class EVMLiSA {
 
 			System.err.println(msg);
 
-			if (dumpStatistics)
+			if (dumpStatistics) {
 				toFileFailure(msg);
+				System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
+			}
 		}
 	}
 
