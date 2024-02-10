@@ -1,13 +1,13 @@
 <img src="logo/emv-lisa-logo-no-background.png">
 
-# EVMLiSA: an abstract interpretation-based static analyzer for EVM bytecode built upon [LiSA](https://unive-ssv.github.io/lisa/)
+# EVMLiSA: an abstract interpretation-based static analyzer for EVM bytecode
 
 
 [![GitHub license](https://img.shields.io/github/license/lisa-analyzer/evm-lisa)](https://github.com/lisa-analyzer/evm-lisa/blob/master/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/lisa-analyzer/evm-lisa)
 ![GitHub issues](https://img.shields.io/github/issues-raw/lisa-analyzer/evm-lisa)
 
-EVMLiSA is a static analyzer based on abstract interpretation for [EVM bytecode](https://www.ethervm.io/) of smart contracts deployed on Ethereum blockchain. 
+EVMLiSA is a static analyzer based on abstract interpretation for [EVM bytecode](https://www.ethervm.io/) of smart contracts deployed on Ethereum blockchain and built upon [LiSA](https://unive-ssv.github.io/lisa/). 
 
 # 🛠 Building EVMLiSA
 Compiling EVMLiSA requires:
