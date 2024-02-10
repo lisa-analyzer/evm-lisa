@@ -65,11 +65,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
-	public static void main(String[] args) throws Exception {
-		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
-//		new EVMBytecodeTest().saveSmartContractsFromEtherscan(); // Save sc from etherscan
-	}
-
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
@@ -575,6 +570,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 *
 	 * @throws Exception if an error occurs during the process.
 	 */
+	@SuppressWarnings("unused")
 	private void saveSmartContractsFromEtherscan() throws Exception {
 		List<String> smartContracts = readSmartContractsFromFile();
 
