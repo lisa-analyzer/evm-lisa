@@ -68,10 +68,10 @@ This command will initiate the analysis process for the specified smart contract
 
 ```bash
 Options:
--a, --address <arg>        address of smart contract
--c, --dump-cfg              dump the CFG
--d, --dump-analysis <arg>   dump the analysis (html, dot)
--f, --filepath <arg>       filepath of smart contract
--o, --output <arg>         output directory path
--s, --dump-stats       dump statistics
+ -a,--address <arg>         address of an Ethereum smart contract
+ -c,--dump-cfg              dump the CFG
+ -d,--dump-analysis <arg>   dump the analysis (html, dot)
+ -f,--filepath <arg>        filepath of the Etherem smart contract
+ -o,--output <arg>          output directory path
+ -s,--dump-stats            dump statistics
 ```
