@@ -29,18 +29,14 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
-public class JumpChecker
+public class JumpSolver
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
-
-	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
 
 	/**
 	 * The CFG to be analyzed.
@@ -161,7 +157,6 @@ public class JumpChecker
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
 			} catch (SemanticException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 

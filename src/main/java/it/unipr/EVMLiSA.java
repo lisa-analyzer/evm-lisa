@@ -1,27 +1,11 @@
 package it.unipr;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Set;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
-import it.unipr.checker.JumpChecker;
+import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
@@ -35,6 +19,20 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Set;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 	private final static String OUTPUT_DIR = "execution/results/";
@@ -116,9 +114,9 @@ public class EVMLiSA {
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
-		
+
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
-		
+
 		if (outputDir == null)
 			outputDir = OUTPUT_DIR + addressSC + "_REPORT";
 
@@ -144,7 +142,7 @@ public class EVMLiSA {
 		conf.jsonOutput = true;
 		conf.workdir = outputDir;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		JumpChecker checker = new JumpChecker();
+		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = true;
@@ -169,13 +167,13 @@ public class EVMLiSA {
 
 			finish = System.currentTimeMillis();
 
-			String msg2 = "\nResults \n" + 
-					"Address: " + addressSC + "\n" + 
-					"Opcodes: " + baseCfg.getNodesCount() + "\n" + 
-					"Jumps: " + baseCfg.getAllJumps().size() + "\n" + 
-					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" + 
-					"SoundResolvedJumps: " + pair.getMiddle() + "\n" + 
-					"UnreachableJumps: " + pair.getRight() + "\n" + 
+			String msg2 = "\nResults \n" +
+					"Address: " + addressSC + "\n" +
+					"Opcodes: " + baseCfg.getNodesCount() + "\n" +
+					"Jumps: " + baseCfg.getAllJumps().size() + "\n" +
+					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" +
+					"SoundResolvedJumps: " + pair.getMiddle() + "\n" +
+					"UnreachableJumps: " + pair.getRight() + "\n" +
 					"Time (in millis): " + (finish - start) + "\n";
 
 			System.out.println(msg2);
@@ -190,11 +188,11 @@ public class EVMLiSA {
 						.unreachableJumps(pair.getRight())
 						.time(finish - start)
 						.build().toString();
-				
+
 				toFileStatistics(msg);
 				System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
 			}
-			
+
 		} catch (Throwable e) {
 			finish = System.currentTimeMillis();
 
@@ -223,7 +221,7 @@ public class EVMLiSA {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
+	private Triple<Integer, Integer, Integer> dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;

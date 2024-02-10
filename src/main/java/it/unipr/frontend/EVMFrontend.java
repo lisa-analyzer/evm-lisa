@@ -1,5 +1,6 @@
 package it.unipr.frontend;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import it.unipr.evm.antlr.EVMBLexer;
 import it.unipr.evm.antlr.EVMBParser;
 import it.unipr.evm.antlr.EVMBParser.ProgramContext;
@@ -20,8 +21,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-
-import io.github.cdimascio.dotenv.Dotenv;
 
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
@@ -642,7 +641,7 @@ public class EVMFrontend {
 		// Get the API key from the environment variable
 		Dotenv dotenv = Dotenv.load();
 		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
-		
+
 		// Check if API key was retrieved correctly from the environment
 		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
