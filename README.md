@@ -19,7 +19,7 @@ Development is done in [Eclipse](https://www.eclipse.org/downloads/).
 You need to:
 - Clone the repository:
   ```bash
-  https://github.com/lisa-analyzer/evm-lisa.git
+  git clone https://github.com/lisa-analyzer/evm-lisa.git
   cd evm-lisa
   ```
 - Install the Gradle IDE Pack plugin through the Eclipse Marketplace; from the eclipse menu bar:
