@@ -27,7 +27,7 @@
     "openCallPolicy" : "WorstCasePolicy",
     "optimize" : "false",
     "recursionWideningThreshold" : "5",
-    "semanticChecks" : "JumpChecker",
+    "semanticChecks" : "JumpSolver",
     "serializeInputs" : "false",
     "serializeResults" : "true",
     "syntacticChecks" : "",
