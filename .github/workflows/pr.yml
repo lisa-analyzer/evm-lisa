@@ -1,0 +1,20 @@
+name: 'Pull request on master: compile, build and spotless check'
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  compile-test-codestyle:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+    - name: 'Set up JDK 11'
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: 'Grant execute permission for gradlew'
+      run: chmod +x evm-lisa/gradlew
+    - name: 'Gradle: full build, run all tests and check code style'
+      run: cd evm-lisa && ./gradlew test && ./gradlew spotlessCheck
