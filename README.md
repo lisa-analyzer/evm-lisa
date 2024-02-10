@@ -39,7 +39,7 @@ ETHERSCAN_API_KEY=<your_etherscan_api_key>
 ```
 3. Replace `<your_etherscan_api_key>` with your Etherscan API key.
 
-> Here how to generate an [Etherscan API key](https://etherscan.io/myapikey).
+> Here you can find how to generate an [Etherscan API key](https://etherscan.io/myapikey).
 
 Once you have set up the environment variable, follow these steps to run EVMLiSA:
 
