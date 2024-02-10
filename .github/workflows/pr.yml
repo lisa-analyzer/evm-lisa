@@ -15,6 +15,6 @@ jobs:
       with:
         java-version: 11
     - name: 'Grant execute permission for gradlew'
-      run: chmod +x evm-lisa/gradlew
+      run: chmod +x gradlew
     - name: 'Gradle: full build, run all tests and check code style'
-      run: cd evm-lisa && ./gradlew test && ./gradlew spotlessCheck
+      run: ./gradlew test && ./gradlew spotlessCheck
