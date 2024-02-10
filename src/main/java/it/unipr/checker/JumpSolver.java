@@ -36,11 +36,11 @@ import org.apache.logging.log4j.Logger;
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
-public class JumpChecker
+public class JumpSolver
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
-	private static final Logger LOG = LogManager.getLogger(JumpChecker.class);
+	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
 	/**
 	 * The CFG to be analyzed.

@@ -5,7 +5,7 @@ import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
-import it.unipr.checker.JumpChecker;
+import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -279,7 +279,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "benchmark/" + CONTRACT_ADDR;
 		conf.callGraph = new RTACallGraph();
-		JumpChecker checker = new JumpChecker();
+		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeInputs = false;
@@ -382,7 +382,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
+	private Triple<Integer, Integer, Integer> dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;

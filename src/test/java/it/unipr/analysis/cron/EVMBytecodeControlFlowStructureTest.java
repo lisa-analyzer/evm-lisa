@@ -1,7 +1,7 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.checker.JumpChecker;
+import it.unipr.checker.JumpSolver;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -51,7 +51,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.semanticChecks.add(new JumpChecker());
+		conf.semanticChecks.add(new JumpSolver());
 
 		return conf;
 	}

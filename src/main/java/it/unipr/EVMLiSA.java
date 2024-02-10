@@ -21,7 +21,7 @@ import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
-import it.unipr.checker.JumpChecker;
+import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
@@ -144,7 +144,7 @@ public class EVMLiSA {
 		conf.jsonOutput = true;
 		conf.workdir = outputDir;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		JumpChecker checker = new JumpChecker();
+		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = true;
@@ -223,7 +223,7 @@ public class EVMLiSA {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-	private Triple<Integer, Integer, Integer> dumpStatistics(JumpChecker checker) {
+	private Triple<Integer, Integer, Integer> dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;
