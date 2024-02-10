@@ -26,6 +26,7 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +57,8 @@ public class JumpChecker
 	 */
 	private Set<Statement> jumpDestinations;
 
+	private Set<Statement> unreachableJumps;
+
 	/**
 	 * Yields the computed CFG.
 	 * 
@@ -63,6 +66,19 @@ public class JumpChecker
 	 */
 	public EVMCFG getComputedCFG() {
 		return cfgToAnalyze;
+	}
+
+	public Set<Statement> getUnreachableJumps() {
+		return unreachableJumps;
+	}
+
+	@Override
+	public void beforeExecution(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+		// resets the unreachable jumps set
+		this.unreachableJumps = new HashSet<>();
 	}
 
 	/**
@@ -87,6 +103,10 @@ public class JumpChecker
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
+
+		// We initialize the set of unreachable jumps, if not already
+		// initialized
+		this.unreachableJumps = new HashSet<>();
 
 		try {
 			lisa.run(program);
@@ -114,6 +134,10 @@ public class JumpChecker
 
 		this.cfgToAnalyze = (EVMCFG) graph;
 
+		// We compute the set of jump destination, if not already computed
+		if (this.jumpDestinations == null)
+			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
+
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
@@ -124,10 +148,6 @@ public class JumpChecker
 
 		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
 			return true;
-
-		// We compute the set of jump destination, if not already computed,
-		if (this.jumpDestinations == null)
-			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
@@ -151,7 +171,10 @@ public class JumpChecker
 			// If the abstract stack is top or bottom or it is empty, we do not
 			// have enough information
 			// to solve the jump.
-			if (valueState.isTop() || valueState.isBottom() || valueState.isEmpty()) {
+			if (valueState.isBottom()) {
+				this.unreachableJumps.add(node);
+				continue;
+			} else if (valueState.isTop()) {
 				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
 						+ valueState.representation());
 				continue;
@@ -173,8 +196,10 @@ public class JumpChecker
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
-			if (filteredDests.isEmpty())
+			if (filteredDests.isEmpty()) {
+				this.unreachableJumps.add(node);
 				continue;
+			}
 
 			// For each JUMPDEST, add the missing edge from this node to
 			// the JUMPDEST.

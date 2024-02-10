@@ -24,19 +24,24 @@ repositories {
 }
 
 dependencies {
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:29.0-jre'
-
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.13'
-    
-   	antlr 'org.antlr:antlr4:4.11.1'
-   	
-    implementation 'io.github.lisa-analyzer:lisa-program:0.1b8'
-    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8'
+ 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
+ 	implementation 'com.google.guava:guava:29.0-jre'
+ 	
+ 	// Use JUnit test framework
+ 	testImplementation 'junit:junit:4.13'
+ 	antlr 'org.antlr:antlr4:4.11.1'
+  
+ 	// Apache Commons CLI
+ 	implementation 'commons-cli:commons-cli:1.4'
+  
+ 	implementation 'io.github.lisa-analyzer:lisa-program:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8'
+ 	implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
+ 	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 }
+
 
 generateGrammarSource {
     maxHeapSize = "64m"
@@ -129,24 +134,8 @@ task spotlessErrorMessage {
         logger.error('To automatically fix all the problems, execute \'./gradlew spotlessApply\'')
     }
 }
-// Imposta la classe con il metodo main
-mainClassName = 'it.unipr.analysis.cron.EVMBytecodeTest'
-
-// Task per copiare le classi di test nell'output di produzione
-task copyTestClasses(type: Copy) {
-    from sourceSets.test.output.classesDirs
-    into "$buildDir/classes/java/main"
-}
-
-distZip {
-    dependsOn copyTestClasses
-    from (sourceSets.main.output + sourceSets.test.output)
-}
-
-// Aggiungi le classi di test al classpath
-run {
-    classpath += sourceSets.test.runtimeClasspath
-}
+// class containing main method
+mainClassName = 'it.unipr.EVMLiSA'
 
 tasks.register('checkCodeStyle') {
     group = 'verification'

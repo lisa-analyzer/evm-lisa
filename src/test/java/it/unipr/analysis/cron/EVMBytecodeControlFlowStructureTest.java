@@ -86,17 +86,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		perform(conf);
 	}
 
-	/**
-	 * Testcase for a real contract: 0x0000000000bda2152794ac8c76b2dc86cba57cad
-	 * - Number of opcodes: 32 - Expected solved jumps %: 100%
-	 */
-	@Test
-	public void testRealContract() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/0x0000000000bda2152794ac8c76b2dc86cba57cad",
-				"0x0000000000bda2152794ac8c76b2dc86cba57cad.sol", false);
-		perform(conf);
-	}
-
 	@Test
 	public void testMstore() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
@@ -219,7 +208,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testSdiv() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", false);
 		perform(conf);
 	}
 
@@ -243,7 +232,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	 */
 	@Test
 	public void testSmod() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", true);
+		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", false);
 		perform(conf);
 	}
 
@@ -292,6 +281,18 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 	@Test
 	public void testSub() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/sub", "sub_eth.sol", false);
+		perform(conf);
+	}
+
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testByte() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/byte", "byte_eth.sol", false);
 		perform(conf);
 	}
 

@@ -55,9 +55,14 @@ public class Pc extends Statement {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		// TODO too coarse
-		Constant dummy = new Constant(Untyped.INSTANCE, 1, getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
+
+		// we can safely suppose that there exists just one node incoming to
+		// this node
+		Statement incomingNode = getCFG().getIngoingEdges(this).stream().map(t -> t.getSource()).findAny().get();
+
+		Constant pc = new Constant(Untyped.INSTANCE, ((ProgramCounterLocation) incomingNode.getLocation()).getPc(),
+				getLocation());
+		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, pc,
 				PcOperator.INSTANCE, getLocation()), this);
 	}
 }
