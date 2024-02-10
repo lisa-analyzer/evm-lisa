@@ -3,7 +3,7 @@
 # EVMLiSA: an abstract interpretation-based static analyzer for EVM bytecode
 
 
-[![GitHub license](https://img.shields.io/github/license/lisa-analyzer/evm-lisa)](https://github.com/lisa-analyzer/evm-lisa/blob/master/LICENSE)
+![GitHub License](https://img.shields.io/github/license/lisa-analyzer/evm-lisa)
 ![GitHub last commit](https://img.shields.io/github/last-commit/lisa-analyzer/evm-lisa)
 ![GitHub issues](https://img.shields.io/github/issues-raw/lisa-analyzer/evm-lisa)
 
