@@ -1,8 +1,8 @@
 package it.unipr.analysis;
 
 /**
- * Represents a logger object for recording statistical data related to
- * Ethereum smart contracts.
+ * Represents a logger object for recording statistical data related to Ethereum
+ * smart contracts.
  */
 public class MyLogger {
 	private static String divider = ", ";

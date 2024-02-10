@@ -29,8 +29,6 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by

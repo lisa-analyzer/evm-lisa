@@ -220,7 +220,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		KIntegerSet result = stack.removeLast();
 		if (result.isBottom())
 			throw new RuntimeException();
-		
+
 		if (stack.getFirst().isBottom())
 			stack.addFirst(KIntegerSet.BOTTOM);
 		else
