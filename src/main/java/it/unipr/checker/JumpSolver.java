@@ -40,8 +40,6 @@ public class JumpSolver
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
-	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
-
 	/**
 	 * The CFG to be analyzed.
 	 */
