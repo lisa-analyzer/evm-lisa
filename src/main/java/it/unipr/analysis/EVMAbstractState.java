@@ -1083,15 +1083,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					result.pop();
 					KIntegerSet condition = result.pop();
 
-					if (condition.equals(KIntegerSet.ZERO)) {
-						// Condition is surely false (interval [0,0])
-						// Return BOTTOM
+					if (condition.isDefinitelyFalse()) {
+						// if condition is surely false, return bottom
 						return bottom();
-					} else if (condition.equals(KIntegerSet.ONE)) {
-						// Condition is surely true (interval [1,1])
-						// Return the result
+					} else if (condition.isDefinitelyTrue()) {
+						// if condition is surely true, return the result
 						return new EVMAbstractState(result, memory, mu_i);
-					} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
+					} else if (condition.isUnknown()) {
 						// Condition could be either true or false
 						// Return the result
 						return new EVMAbstractState(result, memory, mu_i);
@@ -1111,15 +1109,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							result.pop();
 							KIntegerSet condition = result.pop();
 
-							if (condition.equals(KIntegerSet.ZERO)) {
-								// Condition is surely false (interval [0,0])
-								// Return the result
+							if (condition.isDefinitelyFalse()) {
+								// if condition is surely false, return the result
 								return new EVMAbstractState(result, memory, mu_i);
-							} else if (condition.equals(KIntegerSet.ONE)) {
-								// Condition is surely true (interval [1,1])
-								// Return BOTTOM
+							} else if (condition.isDefinitelyTrue()) {
+								// if condition is surely true, return the bottom
 								return bottom();
-							} else if (condition.equals(KIntegerSet.ZERO_OR_ONE)) {
+							} else if (condition.isUnknown()) {
 								// Condition could be either true or false
 								// Return the result
 								return new EVMAbstractState(result, memory, mu_i);

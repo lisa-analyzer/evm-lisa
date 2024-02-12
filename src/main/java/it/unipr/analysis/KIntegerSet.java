@@ -15,7 +15,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
 	public static final KIntegerSet ONE = new KIntegerSet(1);
-	public static final KIntegerSet MINUS_ONE = new KIntegerSet(-1);
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
 
 	public static final KIntegerSet TOP = new KIntegerSet(Collections.emptySet(), true);
@@ -603,5 +602,40 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			}
 		}
 		return byteArray;
+	}
+
+	/**
+	 * Checks whether this set it is definitely evaluated to {@code true}, i.e.,
+	 * if it does not contains zero.
+	 * 
+	 * @return {@code true} if this set does not contains zero, {@code false}
+	 *             otherwise.
+	 */
+	public boolean isDefinitelyTrue() {
+		if (isTop() || isBottom())
+			return false;
+		return !this.elements().contains(new BigDecimal(0));
+	}
+
+	/**
+	 * Checks whether this set it is definitely evaluated to {@code false},
+	 * i.e., if it is equal to zero.
+	 * 
+	 * @return {@code true} if this set is zero, {@code false} otherwise.
+	 */
+	public boolean isDefinitelyFalse() {
+		if (isTop() || isBottom())
+			return false;
+		return this.equals(ZERO);
+	}
+
+	/**
+	 * Checks whether the Boolean value of this set cannot be determined.
+	 * 
+	 * @return {@code true} if the Boolean value of this set cannot be
+	 *             determined, {@code false} otherwise
+	 */
+	public boolean isUnknown() {
+		return isTop() || (!isBottom() && !isDefinitelyFalse() && !isDefinitelyTrue());
 	}
 }
