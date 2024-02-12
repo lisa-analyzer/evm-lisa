@@ -1110,10 +1110,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							KIntegerSet condition = result.pop();
 
 							if (condition.isDefinitelyFalse()) {
-								// if condition is surely false, return the result
+								// if condition is surely false, return the
+								// result
 								return new EVMAbstractState(result, memory, mu_i);
 							} else if (condition.isDefinitelyTrue()) {
-								// if condition is surely true, return the bottom
+								// if condition is surely true, return the
+								// bottom
 								return bottom();
 							} else if (condition.isUnknown()) {
 								// Condition could be either true or false
