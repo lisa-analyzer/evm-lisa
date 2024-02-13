@@ -50,7 +50,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-benchmark.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-comparison.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -61,10 +61,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0xed04a060050cc289d91779a8bb3942c3a6589254";
+		String SC_ADDRESS = "0x860a8c64cbc7f9aac11428ef8df989f5770cda60";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
+	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
@@ -269,6 +270,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = false;
+		conf.jsonOutput = false;
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
 				new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
