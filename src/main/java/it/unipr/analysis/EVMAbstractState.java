@@ -305,8 +305,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					// Above, operators that do not perform pop()
 
 					// from here on, top is propagated
-					if (isTop())
-						return this;
+//					if (isTop())
+//						return this;
 
 					// Below, operators that perform pop operation on the stack
 					switch (op.getClass().getSimpleName()) {
@@ -985,7 +985,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 		if (!(expression instanceof Skip))
 			throw new SemanticException("Reachable just with the skip node");
-		return this;
+		
+		return top();
 	}
 
 	/**

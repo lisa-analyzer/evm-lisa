@@ -176,7 +176,10 @@ public class JumpSolver
 			}
 
 			KIntegerSet topStack = valueState.getTop();
-			if (topStack.isTop() || topStack.isBottom()) {
+			if (topStack.isBottom()) {
+				this.unreachableJumps.add(node);
+				continue;
+			} else if (topStack.isTop()) {
 				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
 						+ valueState.getStack());
 				continue;
