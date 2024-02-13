@@ -1,5 +1,13 @@
 package it.unipr.analysis;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -12,17 +20,11 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
@@ -127,7 +129,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 			if (op != null) {
 
-				try {
 					switch (op.getClass().getSimpleName()) {
 					case "Push0Operator": { // PUSH0
 						AbstractStack result = stack.clone();
@@ -277,7 +278,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "JumpiOperator": { // JUMPI
-						return this;
+						AbstractStack result = stack.clone();
+						result.pop();
+						result.pop();
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "MsizeOperator": { // MSIZE
 						AbstractStack result = stack.clone();
@@ -491,8 +495,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.TOP);
 							return new EVMAbstractState(resultStack, memory, mu_i);
-						} else if (target.isBottom() || indexOfByte.isBottom()) {
-							return bottom();
 						} else {
 							for (BigDecimal value : target) {
 								byte[] valueAsByteArray = value.unscaledValue().toByteArray();
@@ -510,9 +512,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							}
 						}
 
-						if (resultKIntegerSet.isBottom())
-							return bottom();
-
 						resultStack.push(resultKIntegerSet);
 						return new EVMAbstractState(resultStack, memory, mu_i);
 					}
@@ -520,8 +519,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack result = stack.clone();
 						KIntegerSet opnd1 = result.pop();
 						KIntegerSet opnd2 = result.pop();
-						if (opnd1.isBottom() || opnd2.isBottom())
-							return bottom();
 
 						result.push(opnd1.shl(opnd2));
 						return new EVMAbstractState(result, memory, mu_i);
@@ -694,8 +691,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						KIntegerSet offset = stackResult.pop();
 						KIntegerSet value = stackResult.pop();
-						if (offset.isBottom() || value.isBottom())
-							return bottom();
 
 						if (offset.isTop()) {
 							new_mu_i = mu_i;
@@ -985,13 +980,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					}
-				} catch (RuntimeException e) {
-					return bottom();
-				}
 			}
 		}
 
-		return top();
+		if (!(expression instanceof Skip))
+			throw new SemanticException("Reachable just with the skip node");
+		return this;
 	}
 
 	/**
@@ -1071,64 +1065,58 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
 		// Ensure BOTTOM and TOP propagation
+
 		if (this.isBottom() || this.isTop())
 			return this;
-		try {
-			if (expression instanceof UnaryExpression) {
-				UnaryExpression un = (UnaryExpression) expression;
-				UnaryOperator op = un.getOperator();
 
-				if (op instanceof JumpiOperator) { // JUMPI
-					AbstractStack result = stack.clone();
-					result.pop();
-					KIntegerSet condition = result.pop();
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression un = (UnaryExpression) expression;
+			UnaryOperator op = un.getOperator();
 
-					if (condition.isDefinitelyFalse()) {
-						// if condition is surely false, return bottom
-						return bottom();
-					} else if (condition.isDefinitelyTrue()) {
-						// if condition is surely true, return the result
-						return new EVMAbstractState(result, memory, mu_i);
-					} else if (condition.isUnknown()) {
-						// Condition could be either true or false
-						// Return the result
-						return new EVMAbstractState(result, memory, mu_i);
-					} else
-						return bottom();
+			if (op instanceof JumpiOperator) { // JUMPI
+				KIntegerSet condition = ((KIntegerSet) ((Constant) un.getExpression()).getValue());
 
-				} else if (op instanceof LogicalNegation) {
-					// Get the expression wrapped by LogicalNegation
-					SymbolicExpression wrappedExpr = un.getExpression();
+				if (condition.isDefinitelyFalse()) {
+					// if condition is surely false, return bottom
+					return bottom();
+				} else if (condition.isDefinitelyTrue()) {
+					// if condition is surely true, return the result
+					return new EVMAbstractState(stack.clone(), memory, mu_i);
+				} else if (condition.isUnknown()) {
+					// Condition could be either true or false
+					// Return the result
+					return new EVMAbstractState(stack.clone(), memory, mu_i);
+				} else
+					return bottom();
 
-					if (wrappedExpr instanceof UnaryExpression) {
-						UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
+			} else if (op instanceof LogicalNegation) {
+				// Get the expression wrapped by LogicalNegation
+				SymbolicExpression wrappedExpr = un.getExpression();
 
-						// Check if LogicalNegation is wrapping a JUMPI
-						if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-							AbstractStack result = stack.clone();
-							result.pop();
-							KIntegerSet condition = result.pop();
+				if (wrappedExpr instanceof UnaryExpression) {
+					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
 
-							if (condition.isDefinitelyFalse()) {
-								// if condition is surely false, return the
-								// result
-								return new EVMAbstractState(result, memory, mu_i);
-							} else if (condition.isDefinitelyTrue()) {
-								// if condition is surely true, return the
-								// bottom
-								return bottom();
-							} else if (condition.isUnknown()) {
-								// Condition could be either true or false
-								// Return the result
-								return new EVMAbstractState(result, memory, mu_i);
-							} else
-								return bottom();
-						}
+					// Check if LogicalNegation is wrapping a JUMPI
+					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
+						KIntegerSet condition = ((KIntegerSet) ((Constant) ((UnaryExpression) wrappedExpr).getExpression()).getValue());
+
+						if (condition.isDefinitelyFalse()) {
+							// if condition is surely false, return the
+							// result
+							return new EVMAbstractState(stack.clone(), memory, mu_i);
+						} else if (condition.isDefinitelyTrue()) {
+							// if condition is surely true, return the
+							// bottom
+							return bottom();
+						} else if (condition.isUnknown()) {
+							// Condition could be either true or false
+							// Return the result
+							return new EVMAbstractState(stack.clone(), memory, mu_i);
+						} else
+							return bottom();
 					}
 				}
 			}
-		} catch (RuntimeException e) {
-			return bottom();
 		}
 
 		return this;
@@ -1296,6 +1284,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			System.out.printf("%02X ", b);
 		}
 		System.out.println();
+	}
+
+	public KIntegerSet getSecondElement() {
+		return this.stack.getSecondElement();
 	}
 
 }

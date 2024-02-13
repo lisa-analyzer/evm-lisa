@@ -1,5 +1,7 @@
 package it.unipr.cfg;
 
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -56,7 +58,9 @@ public class Jumpi extends Statement {
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// TODO too coarse
-		Constant dummy = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
+		
+		KIntegerSet b = ((EVMAbstractState) entryState.getState().getValueState()).getSecondElement();
+		Constant dummy = new Constant(Untyped.INSTANCE, b, getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
 				JumpiOperator.INSTANCE, getLocation()), this);
 	}

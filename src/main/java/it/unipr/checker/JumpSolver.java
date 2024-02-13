@@ -138,12 +138,12 @@ public class JumpSolver
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
 
-		// If the jump has been already solved, we skip it
-		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
-			return true;
-
-		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
-			return true;
+//		// If the jump has been already solved, we skip it
+//		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
+//			return true;
+//
+//		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
+//			return true;
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
