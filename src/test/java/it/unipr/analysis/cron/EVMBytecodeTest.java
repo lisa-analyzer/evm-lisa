@@ -43,14 +43,14 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final static boolean APPEND = true;
 
 	// Regenerates the smart contracts source code in the case
-	private final static boolean REGENERATE = false;
+	private final static boolean REGENERATE = true;
 
 	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-comparison.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/new-bench100.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -59,12 +59,12 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final int CORES = Runtime.getRuntime().availableProcessors();
 	private long startOfExecutionTime = 0;
 
-	@Test
 	public void testSCFromEtherscan() throws Exception {
 		String SC_ADDRESS = "0xD4Abd907Bfead0825FE21631A4dC5B99C6fA8875";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
+	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
