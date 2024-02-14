@@ -50,7 +50,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/new-bench100.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/soap-benchmark.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
