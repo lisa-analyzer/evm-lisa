@@ -11,7 +11,8 @@ public class MyLogger {
 	private int jumps;
 	private int preciselyResolvedJumps;
 	private int soundResolvedJumps;
-	private int unreachableJumps;
+	private int definitelyUnreachableJumps;
+	private int maybeUnreachableJumps;
 	private int totalResolvedJumps;
 	private double preciselySolvedJumpsPercent;
 	private double solvedJumpsPercent;
@@ -25,7 +26,8 @@ public class MyLogger {
 		this.jumps = 0;
 		this.preciselyResolvedJumps = 0;
 		this.soundResolvedJumps = 0;
-		this.unreachableJumps = 0;
+		this.definitelyUnreachableJumps = 0;
+		this.maybeUnreachableJumps = 0;
 		this.solvedJumpsPercent = 0;
 		this.time = 0;
 		this.notes = "";
@@ -33,16 +35,17 @@ public class MyLogger {
 	}
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
-			int unreachableJumps, int totalResolvedJumps, double solvedJumpsPercent, long time, String notes) {
+			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps, double solvedJumpsPercent, long time, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
 		this.preciselyResolvedJumps = preciselyResolvedJumps;
 		this.soundResolvedJumps = soundResolvedJumps;
-		this.unreachableJumps = unreachableJumps;
+		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
+		this.maybeUnreachableJumps = maybeUnreachableJumps;	
 		if (jumps != 0) {
 			if (solvedJumpsPercent == 0)
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + unreachableJumps)
+				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps)
 						/ jumps);
 			this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
 		} else {
@@ -85,8 +88,13 @@ public class MyLogger {
 		return this;
 	}
 
-	public MyLogger unreachableJumps(int unreachableJumps) {
-		this.unreachableJumps = unreachableJumps;
+	public MyLogger maybeUnreachableJumps(int maybeUnreachableJumps) {
+		this.maybeUnreachableJumps = maybeUnreachableJumps;
+		return this;
+	}
+	
+	public MyLogger definitelyUnreachableJumps(int definitelyUnreachableJumps) {
+		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
 		return this;
 	}
 
@@ -107,7 +115,7 @@ public class MyLogger {
 
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
-				unreachableJumps, totalResolvedJumps, solvedJumpsPercent, time, notes);
+				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, solvedJumpsPercent, time, notes);
 	}
 
 	public int jumpSize() {
@@ -121,7 +129,8 @@ public class MyLogger {
 				jumps + divider +
 				preciselyResolvedJumps + divider +
 				soundResolvedJumps + divider +
-				unreachableJumps + divider +
+				definitelyUnreachableJumps + divider +
+				maybeUnreachableJumps + divider +
 				totalResolvedJumps + divider +
 				preciselySolvedJumpsPercent + divider +
 				solvedJumpsPercent + divider +

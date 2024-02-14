@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
-	public static final int K = 15;
+	public static final int K = 20;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
 	public static final KIntegerSet ONE = new KIntegerSet(1);
