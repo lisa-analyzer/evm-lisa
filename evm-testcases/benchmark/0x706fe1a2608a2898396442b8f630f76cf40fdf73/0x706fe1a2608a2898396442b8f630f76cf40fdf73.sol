@@ -7489,3 +7489,34 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP5
+ADDMOD
+ORIGIN
+SHR
+SWAP13
+'af'(Unknown Opcode)
+'b7'(Unknown Opcode)
+CODESIZE
+'2d'(Unknown Opcode)
+SWAP11
+BLOCKHASH
+'b4'(Unknown Opcode)
+JUMPDEST
+EXP
+RETURN
+'ec'(Unknown Opcode)
+'c5'(Unknown Opcode)
+CREATE
+'ef'(Unknown Opcode)
+'bd'(Unknown Opcode)
+DUP12
+'c0'(Unknown Opcode)
+CODECOPY
+JUMPDEST
+PUSH26 0x9b1d5ad3ab641364736f6c63430008130033

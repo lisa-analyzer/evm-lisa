@@ -2934,3 +2934,27 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DIFFICULTY
+'fc'(Unknown Opcode)
+'db'(Unknown Opcode)
+'bd'(Unknown Opcode)
+'c0'(Unknown Opcode)
+'d2'(Unknown Opcode)
+SLT
+'29'(Unknown Opcode)
+GASLIMIT
+
+SUB
+SWAP2
+STOP
+'ba'(Unknown Opcode)
+'4e'(Unknown Opcode)
+'23'(Unknown Opcode)
+DUP9
+PUSH31 0x64484fd045fb3f9884abcaa627f564736f6c63430008160033

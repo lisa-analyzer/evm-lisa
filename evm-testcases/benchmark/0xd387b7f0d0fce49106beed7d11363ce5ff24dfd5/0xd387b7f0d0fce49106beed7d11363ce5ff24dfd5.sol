@@ -1559,6 +1559,7 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -1571,3 +1572,42 @@ PUSH20 0x2062616c616e636545524332303a207472616e73
 PUSH7 0x657220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+MSTORE8
+'5d'(Unknown Opcode)
+EQ
+'c4'(Unknown Opcode)
+DUP16
+SWAP12
+'cf'(Unknown Opcode)
+'d4'(Unknown Opcode)
+ADD
+'b1'(Unknown Opcode)
+STOP
+STOP
+PUSH4 0xf917b7c7
+'a8'(Unknown Opcode)
+'5c'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'2e'(Unknown Opcode)
+EXTCODEHASH
+SWAP12
+AND
+'ab'(Unknown Opcode)
+'fc'(Unknown Opcode)
+CALLVALUE
+'ad'(Unknown Opcode)
+CODECOPY
+CALLCODE
+EQ
+'fb'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

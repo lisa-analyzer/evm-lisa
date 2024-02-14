@@ -4775,3 +4775,24 @@ PUSH2 0x0946
 PUSH2 0x1c05
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+LOG3
+PUSH16 0xa1213f53338776d2c9565e9a8b348229
+SWAP11
+'2c'(Unknown Opcode)
+SGT
+
+GAS
+'c6'(Unknown Opcode)
+'aa'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'bf'(Unknown Opcode)
+STOP
+PC
+MSTORE
+PUSH20 0xff64736f6c63430008110033

@@ -1860,3 +1860,30 @@ PUSH2 0x02dd
 PUSH2 0x08ee
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'af'(Unknown Opcode)
+'ad'(Unknown Opcode)
+EQ
+CALLVALUE
+SWAP13
+COINBASE
+ISZERO
+ADD
+'23'(Unknown Opcode)
+'ec'(Unknown Opcode)
+CREATE2
+'e5'(Unknown Opcode)
+'4b'(Unknown Opcode)
+DUP11
+'0f'(Unknown Opcode)
+DUP10
+CHAINID
+'f7'(Unknown Opcode)
+'26'(Unknown Opcode)
+'e9'(Unknown Opcode)
+PUSH27 0x08cb432bff807be329a93764736f6c63430008170033

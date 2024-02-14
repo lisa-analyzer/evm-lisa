@@ -1,0 +1,21 @@
+PUSH1 0x80
+PUSH1 0x40
+MSTORE
+PUSH0
+DUP1
+REVERT
+INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP8
+'f9'(Unknown Opcode)
+'28'(Unknown Opcode)
+PUSH9 0x7d68fd85c33350aa13
+'fc'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'2c'(Unknown Opcode)
+PUSH28 0xbb73e9f60a2035fe6b102c09b09b6264736f6c63430008160033

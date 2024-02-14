@@ -4398,6 +4398,7 @@ DIV
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -4406,3 +4407,31 @@ ADDRESS
 GASPRICE
 SHA3
 PUSH21 0x72616e7366657220616d6f756e7420657863656564
+PUSH20 0x20616c6c6f77616e6365a2646970667358221220
+SUB
+PUSH5 0x639944f0ff
+CODECOPY
+BYTE
+'21'(Unknown Opcode)
+'bc'(Unknown Opcode)
+RETURNDATASIZE
+'be'(Unknown Opcode)
+SGT
+'cd'(Unknown Opcode)
+SAR
+COINBASE
+SWAP1
+'21'(Unknown Opcode)
+SWAP7
+'2f'(Unknown Opcode)
+JUMP
+'ed'(Unknown Opcode)
+'29'(Unknown Opcode)
+'cc'(Unknown Opcode)
+CREATE2
+'2e'(Unknown Opcode)
+'ec'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'b7'(Unknown Opcode)
+'ce'(Unknown Opcode)
+PUSH15 0x64736f6c63430008140033

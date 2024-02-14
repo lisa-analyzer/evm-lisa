@@ -5878,10 +5878,12 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+SELFDESTRUCT
 SWAP16
 '2d'(Unknown Opcode)
 CREATE
 INVALID
+SELFDESTRUCT
 'd2'(Unknown Opcode)
 'c7'(Unknown Opcode)
 PUSH23 0x48de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c89
@@ -5911,3 +5913,22 @@ JUMPDEST
 'e5'(Unknown Opcode)
 'eb'(Unknown Opcode)
 'ec'(Unknown Opcode)
+PUSH30 0x5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925a264697066
+PUSH20 0x582212201ba70062873b6a23c8cabeb6f17e1d0d
+'e2'(Unknown Opcode)
+'b3'(Unknown Opcode)
+'a5'(Unknown Opcode)
+BASEFEE
+'de'(Unknown Opcode)
+LOG4
+'4c'(Unknown Opcode)
+BASEFEE
+PUSH5 0x0c363f3706
+'b4'(Unknown Opcode)
+SWAP8
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

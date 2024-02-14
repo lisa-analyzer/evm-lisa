@@ -2648,3 +2648,28 @@ ADD
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+EQ
+'e8'(Unknown Opcode)
+'cc'(Unknown Opcode)
+'c2'(Unknown Opcode)
+SWAP10
+DUP2
+'2a'(Unknown Opcode)
+ADDMOD
+'ae'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'cc'(Unknown Opcode)
+'ea'(Unknown Opcode)
+LOG4
+EQ
+'a5'(Unknown Opcode)
+PUSH24 0x20fe88f12865d0d50bd1d5c30650c0ca64736f6c63430008
+SGT
+STOP
+CALLER

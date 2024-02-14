@@ -4781,3 +4781,22 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MOD
+'ed'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'b8'(Unknown Opcode)
+'28'(Unknown Opcode)
+CODECOPY
+LOG3
+PUSH8 0xa3bbfef57fdf7585
+SDIV
+DUP8
+'ef'(Unknown Opcode)
+LT
+PUSH26 0xec56b24d81a42a5d7f3b7364736f6c63430008130033

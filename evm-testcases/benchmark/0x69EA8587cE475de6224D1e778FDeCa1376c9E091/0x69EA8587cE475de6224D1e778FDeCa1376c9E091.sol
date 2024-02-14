@@ -2934,3 +2934,38 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SLOAD
+'e4'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'4a'(Unknown Opcode)
+'22'(Unknown Opcode)
+MUL
+'c6'(Unknown Opcode)
+DUP2
+'ec'(Unknown Opcode)
+'27'(Unknown Opcode)
+SWAP8
+'ca'(Unknown Opcode)
+'e9'(Unknown Opcode)
+PUSH9 0x9e1dafc18607bc0e0f
+NUMBER
+NOT
+JUMPI
+'0f'(Unknown Opcode)
+'ba'(Unknown Opcode)
+POP
+SGT
+SIGNEXTEND
+DELEGATECALL
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

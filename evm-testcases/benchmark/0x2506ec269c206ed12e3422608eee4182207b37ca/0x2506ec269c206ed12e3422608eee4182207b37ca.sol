@@ -4393,7 +4393,33 @@ DIV
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
 PUSH21 0x6865207472616e7366657220616d6f756e74206578
 PUSH4 0x65656473
 SHA3
 PUSH2 0x6c6c
+PUSH16 0x77616e6365a2646970667358221220e0
+'2b'(Unknown Opcode)
+'4a'(Unknown Opcode)
+'b6'(Unknown Opcode)
+GASLIMIT
+'a5'(Unknown Opcode)
+'cd'(Unknown Opcode)
+SELFDESTRUCT
+SWAP11
+SGT
+'ce'(Unknown Opcode)
+PUSH13 0x00d3cec0686c4d18ecd2c596f4
+'e7'(Unknown Opcode)
+GT
+'c8'(Unknown Opcode)
+CALLVALUE
+'d2'(Unknown Opcode)
+'df'(Unknown Opcode)
+CALLDATASIZE
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

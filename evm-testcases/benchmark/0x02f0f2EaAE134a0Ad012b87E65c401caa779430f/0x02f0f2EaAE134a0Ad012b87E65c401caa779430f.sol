@@ -6242,3 +6242,16 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e7'(Unknown Opcode)
+'4d'(Unknown Opcode)
+'e6'(Unknown Opcode)
+ADDRESS
+'c1'(Unknown Opcode)
+PUSH29 0xc0cc7b997f8d716c8316c6d2bf1ba39a1db4b42adf808fda35fc64736f
+PUSH13 0x63430008170033

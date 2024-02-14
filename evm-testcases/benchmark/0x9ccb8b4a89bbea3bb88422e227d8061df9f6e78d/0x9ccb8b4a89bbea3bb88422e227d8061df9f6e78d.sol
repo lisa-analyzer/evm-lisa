@@ -4018,3 +4018,41 @@ DIV
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b1'(Unknown Opcode)
+'4e'(Unknown Opcode)
+DUP9
+SWAP1
+ORIGIN
+CODESIZE
+'b3'(Unknown Opcode)
+'29'(Unknown Opcode)
+DIFFICULTY
+'28'(Unknown Opcode)
+'ae'(Unknown Opcode)
+OR
+SLT
+'ac'(Unknown Opcode)
+RETURNDATACOPY
+'cf'(Unknown Opcode)
+SELFBALANCE
+'1e'(Unknown Opcode)
+'5d'(Unknown Opcode)
+'d5'(Unknown Opcode)
+'a8'(Unknown Opcode)
+DELEGATECALL
+'a6'(Unknown Opcode)
+'d0'(Unknown Opcode)
+DUP4
+RETURNDATASIZE
+'f9'(Unknown Opcode)
+'28'(Unknown Opcode)
+CREATE2
+'fb'(Unknown Opcode)
+SHR
+PUSH14 0x64736f6c63430008160033

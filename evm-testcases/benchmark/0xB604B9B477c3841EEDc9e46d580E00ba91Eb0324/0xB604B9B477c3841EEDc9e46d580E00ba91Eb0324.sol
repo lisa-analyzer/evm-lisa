@@ -5726,6 +5726,7 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+SELFDESTRUCT
 'dd'(Unknown Opcode)
 CALLCODE
 MSTORE
@@ -5744,3 +5745,24 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MULMOD
+MULMOD
+RETURNDATACOPY
+ADDMOD
+'4a'(Unknown Opcode)
+PUSH22 0x60a3fb1d662397aee169adfb6c09b22853a5010567e5
+'bb'(Unknown Opcode)
+SWAP2
+'b9'(Unknown Opcode)
+'cf'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+DIV
+STOP
+CALLER
