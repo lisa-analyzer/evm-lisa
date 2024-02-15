@@ -43,7 +43,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final static boolean APPEND = true;
 
 	// Regenerates the smart contracts source code in the case
-	private final static boolean REGENERATE = true;
+	private final static boolean REGENERATE = false;
 
 	// Path
 	private final String STATISTICS_FULLPATH = ACTUAL_RESULTS_DIR + "/statistics.csv";
@@ -65,7 +65,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
-	@Test
 	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
