@@ -372,9 +372,7 @@ public class EVMFrontend {
 			break;
 		case "49":
 		case "4f":
-			writer.write(""
-					+ ""
-					+ "\n");
+			writer.write("INVALID\n");
 			break;
 		case "50":
 			writer.write("POP\n");

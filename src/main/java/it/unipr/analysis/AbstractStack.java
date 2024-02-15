@@ -218,7 +218,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public KIntegerSet pop() {
 		KIntegerSet result = stack.removeLast();
-		if (stack.getFirst().isBottom())
+		if (!stack.getFirst().isTop())
 			stack.addFirst(KIntegerSet.BOTTOM);
 		else
 			stack.addFirst(KIntegerSet.TOP);
@@ -251,7 +251,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 		for (int i = 0; i < STACK_LIMIT; i++)
 			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
-
+		
 		return new AbstractStack(result);
 	}
 
