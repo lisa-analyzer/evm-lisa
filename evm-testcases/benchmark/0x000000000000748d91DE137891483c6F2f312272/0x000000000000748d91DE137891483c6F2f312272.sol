@@ -404,3 +404,25 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'bc'(Unknown Opcode)
+SWAP9
+'dc'(Unknown Opcode)
+CALLDATASIZE
+GAS
+'fb'(Unknown Opcode)
+'e1'(Unknown Opcode)
+PC
+'cb'(Unknown Opcode)
+PUSH22 0x274860f8e2e5374541d70eba87df7e5659698740a7a7
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

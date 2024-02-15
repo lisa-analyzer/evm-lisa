@@ -1860,3 +1860,45 @@ PUSH2 0x030f
 PUSH2 0x08df
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+ADDRESS
+DUP8
+'dd'(Unknown Opcode)
+INVALID
+SELFDESTRUCT
+BLOCKHASH
+'d2'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'df'(Unknown Opcode)
+'b4'(Unknown Opcode)
+SGT
+'b3'(Unknown Opcode)
+'28'(Unknown Opcode)
+OR
+'e6'(Unknown Opcode)
+'21'(Unknown Opcode)
+ISZERO
+SDIV
+'df'(Unknown Opcode)
+BLOCKHASH
+'dc'(Unknown Opcode)
+DIV
+'ac'(Unknown Opcode)
+'c1'(Unknown Opcode)
+PUSH3 0x4d65a2
+SWAP16
+'2f'(Unknown Opcode)
+'5e'(Unknown Opcode)
+OR
+CHAINID
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

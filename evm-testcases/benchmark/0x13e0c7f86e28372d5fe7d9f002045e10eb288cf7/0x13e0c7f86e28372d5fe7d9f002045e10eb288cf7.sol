@@ -1212,3 +1212,30 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+LOG4
+'d0'(Unknown Opcode)
+PC
+DUP11
+'d9'(Unknown Opcode)
+'2d'(Unknown Opcode)
+OR
+SLT
+DIV
+'b0'(Unknown Opcode)
+PUSH17 0x64406ae7680dda3a5b9da9ddf5e21f60b0
+'e5'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'c0'(Unknown Opcode)
+'eb'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

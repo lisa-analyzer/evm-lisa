@@ -3021,3 +3021,21 @@ PUSH2 0x03f8
 PUSH2 0x0dff
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e4'(Unknown Opcode)
+'e5'(Unknown Opcode)
+PUSH10 0x6331f6744bd46cc18df9
+'a7'(Unknown Opcode)
+'b8'(Unknown Opcode)
+'e2'(Unknown Opcode)
+'be'(Unknown Opcode)
+'d1'(Unknown Opcode)
+BLOCKHASH
+SLOAD
+PUSH14 0x9ecf6cb461f3ef7194dacf64736f
+PUSH13 0x63430008120033

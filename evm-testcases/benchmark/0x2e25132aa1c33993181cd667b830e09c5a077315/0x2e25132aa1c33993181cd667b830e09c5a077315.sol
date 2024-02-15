@@ -4122,3 +4122,35 @@ DIV
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP6
+'aa'(Unknown Opcode)
+CALL
+DUP1
+'bd'(Unknown Opcode)
+'28'(Unknown Opcode)
+'2a'(Unknown Opcode)
+STOP
+'fb'(Unknown Opcode)
+CALLVALUE
+'aa'(Unknown Opcode)
+'2f'(Unknown Opcode)
+'eb'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'d9'(Unknown Opcode)
+NUMBER
+RETURNDATACOPY
+EXP
+REVERT
+PUSH17 0x57e61cd1fe6b2a5f6e7f814964736f6c63
+NUMBER
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

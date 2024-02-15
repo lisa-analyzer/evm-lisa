@@ -7174,3 +7174,26 @@ PUSH1 0x20
 PUSH1 0x00
 RETURN
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+ADDMOD
+SLOAD
+CALLCODE
+DUP15
+'2e'(Unknown Opcode)
+'f7'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'23'(Unknown Opcode)
+SHR
+CALL
+'27'(Unknown Opcode)
+PUSH26 0xd3528348b63422c5a0ac5c1a174e3fe8871da12164736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

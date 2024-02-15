@@ -1587,6 +1587,7 @@ PUSH2 0x029e
 PUSH2 0x0a10
 JUMP
 INVALID
+SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -1599,3 +1600,36 @@ PUSH20 0x2062616c616e636545524332303a207472616e73
 PUSH7 0x657220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP12
+'e3'(Unknown Opcode)
+CODECOPY
+DUP16
+'bf'(Unknown Opcode)
+CHAINID
+MSTORE
+DUP14
+SAR
+DUP10
+'2c'(Unknown Opcode)
+GAS
+'da'(Unknown Opcode)
+LOG1
+'e9'(Unknown Opcode)
+'4c'(Unknown Opcode)
+'d1'(Unknown Opcode)
+PUSH4 0xb598ff68
+'b5'(Unknown Opcode)
+'b5'(Unknown Opcode)
+DUP14
+GT
+NUMBER
+'ba'(Unknown Opcode)
+'b7'(Unknown Opcode)
+LOG3
+'ed'(Unknown Opcode)
+PUSH23 0x64736f6c63430008140033

@@ -6478,3 +6478,31 @@ POP
 SWAP3
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'0e'(Unknown Opcode)
+INVALID
+SELFDESTRUCT
+'b1'(Unknown Opcode)
+TIMESTAMP
+SWAP1
+'5d'(Unknown Opcode)
+SLOAD
+'4d'(Unknown Opcode)
+'e7'(Unknown Opcode)
+BALANCE
+MSTORE8
+'4a'(Unknown Opcode)
+PUSH1 0x23
+SDIV
+'e5'(Unknown Opcode)
+'f6'(Unknown Opcode)
+CALLDATALOAD
+SHA3
+EXTCODEHASH
+'21'(Unknown Opcode)
+PUSH21 0xd134d1f3353b076d4d8264736f6c63430008150033

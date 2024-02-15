@@ -5328,3 +5328,23 @@ PUSH2 0x0639
 PUSH2 0x1b85
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e2'(Unknown Opcode)
+DUP12
+'d3'(Unknown Opcode)
+'4a'(Unknown Opcode)
+'4e'(Unknown Opcode)
+ADDRESS
+'e1'(Unknown Opcode)
+SMOD
+PUSH29 0x610ddc7a36bd8c0bb83d628c623d3c41dd9a6b5c459fb364736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

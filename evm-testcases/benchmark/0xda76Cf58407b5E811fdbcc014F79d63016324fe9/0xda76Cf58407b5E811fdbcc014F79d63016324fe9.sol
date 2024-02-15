@@ -12739,3 +12739,24 @@ SWAP2
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b8'(Unknown Opcode)
+DUP12
+PUSH13 0x8dfa40b43fa7c0d8344d746129
+'c9'(Unknown Opcode)
+'b4'(Unknown Opcode)
+'f7'(Unknown Opcode)
+REVERT
+NOT
+BALANCE
+DUP11
+DIFFICULTY
+'ce'(Unknown Opcode)
+CALLCODE
+'ae'(Unknown Opcode)
+PUSH30 0x12ef357f64736f6c63430008170033

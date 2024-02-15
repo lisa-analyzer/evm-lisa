@@ -8059,6 +8059,7 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
 MSIZE
 'ef'(Unknown Opcode)
 'ce'(Unknown Opcode)
@@ -8097,3 +8098,21 @@ PUSH9 0x0cff592b805c2deb80
 'b1'(Unknown Opcode)
 'db'(Unknown Opcode)
 RETURN
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e8'(Unknown Opcode)
+PC
+'d3'(Unknown Opcode)
+'1f'(Unknown Opcode)
+DUP11
+PUSH17 0xdea6c6ebbf1dd5d88f6ea8247ec4d1d67b
+CODECOPY
+STATICCALL
+DUP10
+PUSH9 0xf76d77632464736f6c
+PUSH4 0x43000812
+STOP
+CALLER

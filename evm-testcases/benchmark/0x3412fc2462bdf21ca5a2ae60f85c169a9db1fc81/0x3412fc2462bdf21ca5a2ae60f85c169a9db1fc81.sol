@@ -1860,3 +1860,23 @@ PUSH2 0x02cb
 PUSH2 0x08dc
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'be'(Unknown Opcode)
+'2f'(Unknown Opcode)
+SDIV
+MLOAD
+'fb'(Unknown Opcode)
+'d3'(Unknown Opcode)
+'ae'(Unknown Opcode)
+MSTORE8
+SWAP12
+SWAP3
+'de'(Unknown Opcode)
+'e7'(Unknown Opcode)
+EXTCODEHASH
+PUSH30 0x0b69eb56898bcc7f14fc4ab50778e113f7c764736f6c63430008170033

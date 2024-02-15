@@ -6936,3 +6936,27 @@ POP
 SWAP3
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+NOT
+COINBASE
+'af'(Unknown Opcode)
+'da'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'f9'(Unknown Opcode)
+PUSH0
+'d4'(Unknown Opcode)
+RETURNDATASIZE
+'26'(Unknown Opcode)
+'b7'(Unknown Opcode)
+PUSH25 0x5f647f8aa8c20f1f2c9f76842373d8575d221e5164736f6c63
+NUMBER
+STOP
+ADDMOD
+LT
+STOP
+CALLER

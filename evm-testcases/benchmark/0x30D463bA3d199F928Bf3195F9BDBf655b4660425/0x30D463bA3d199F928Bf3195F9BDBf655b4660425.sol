@@ -5263,6 +5263,7 @@ ADD
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
 PUSH1 0x80
 PUSH1 0x40
 MSTORE
@@ -5454,6 +5455,7 @@ CODECOPY
 PUSH1 0x00
 RETURN
 INVALID
+SELFDESTRUCT
 PUSH1 0x80
 PUSH1 0x40
 MSTORE
@@ -5461,3 +5463,70 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b4'(Unknown Opcode)
+'b2'(Unknown Opcode)
+DUP5
+PUSH14 0xfb69f749936fb9524f525c25d12a
+'29'(Unknown Opcode)
+'f7'(Unknown Opcode)
+'be'(Unknown Opcode)
+JUMP
+'c7'(Unknown Opcode)
+BYTE
+'c3'(Unknown Opcode)
+MSTORE8
+'25'(Unknown Opcode)
+'a9'(Unknown Opcode)
+SUB
+DUP16
+'c3'(Unknown Opcode)
+'ba'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER
+'24'(Unknown Opcode)
+'1e'(Unknown Opcode)
+'cf'(Unknown Opcode)
+AND
+'d7'(Unknown Opcode)
+SWAP14
+'0f'(Unknown Opcode)
+DUP14
+'bf'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'2c'(Unknown Opcode)
+'bc'(Unknown Opcode)
+SMOD
+INVALID
+SELFDESTRUCT
+OR
+DUP5
+DIV
+'25'(Unknown Opcode)
+SWAP8
+PUSH13 0xf0667f022fe9877caa831b08a2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+RETURNDATACOPY
+'fb'(Unknown Opcode)
+'bc'(Unknown Opcode)
+SLT
+PUSH8 0x2e7b5971ab1d32b6
+CALLDATACOPY
+PUSH23 0xba5ba670fb6317ac555141cb30f8ca61cd64736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

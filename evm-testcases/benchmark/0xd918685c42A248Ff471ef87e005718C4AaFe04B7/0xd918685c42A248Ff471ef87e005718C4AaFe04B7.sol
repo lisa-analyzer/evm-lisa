@@ -1737,3 +1737,35 @@ DUP4
 PUSH2 0x0ab9
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP2
+MSIZE
+'b7'(Unknown Opcode)
+BYTE
+SWAP6
+DIFFICULTY
+CALLDATALOAD
+'2a'(Unknown Opcode)
+MSTORE
+SWAP4
+'a9'(Unknown Opcode)
+
+'b3'(Unknown Opcode)
+'d2'(Unknown Opcode)
+PUSH0
+'eb'(Unknown Opcode)
+SWAP3
+SHR
+SWAP7
+'ae'(Unknown Opcode)
+SHL
+'2b'(Unknown Opcode)
+ORIGIN
+'e4'(Unknown Opcode)
+'ac'(Unknown Opcode)
+PUSH24 0xabc8938acc0664736f6c63430008110033

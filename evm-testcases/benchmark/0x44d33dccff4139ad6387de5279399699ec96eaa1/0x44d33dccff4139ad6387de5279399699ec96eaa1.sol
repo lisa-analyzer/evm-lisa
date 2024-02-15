@@ -6688,6 +6688,7 @@ SWAP1
 POP
 JUMP
 INVALID
+SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -6696,3 +6697,25 @@ ADDRESS
 GASPRICE
 SHA3
 PUSH21 0x72616e7366657220616d6f756e7420657863656564
+PUSH20 0x20616c6c6f77616e6365a2646970667358221220
+'4c'(Unknown Opcode)
+RETURN
+'b8'(Unknown Opcode)
+BLOCKHASH
+CALLDATACOPY
+'2c'(Unknown Opcode)
+'e5'(Unknown Opcode)
+SHR
+'e6'(Unknown Opcode)
+'db'(Unknown Opcode)
+JUMPI
+'d9'(Unknown Opcode)
+SWAP3
+'a6'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'ee'(Unknown Opcode)
+PUSH18 0xbfb153aacce292e621fbc45af00e64736f6c
+PUSH4 0x43000817
+STOP
+CALLER

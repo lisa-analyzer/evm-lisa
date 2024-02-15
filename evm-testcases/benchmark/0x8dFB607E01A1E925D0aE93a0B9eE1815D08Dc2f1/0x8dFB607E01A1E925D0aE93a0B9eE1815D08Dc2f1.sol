@@ -2942,3 +2942,30 @@ POP
 SWAP3
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALLDATASIZE
+REVERT
+'5d'(Unknown Opcode)
+'cf'(Unknown Opcode)
+DUP15
+INVALID
+GASPRICE
+'22'(Unknown Opcode)
+'e4'(Unknown Opcode)
+PUSH17 0x4dc2ece692fb7e981e510281debf5376ac
+'ef'(Unknown Opcode)
+DUP15
+ADDMOD
+BYTE
+'b0'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

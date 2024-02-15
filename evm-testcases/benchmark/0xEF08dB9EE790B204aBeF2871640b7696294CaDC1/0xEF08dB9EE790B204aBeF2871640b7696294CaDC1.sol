@@ -634,3 +634,21 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e3'(Unknown Opcode)
+'4a'(Unknown Opcode)
+'0f'(Unknown Opcode)
+PUSH10 0x2044cb32d2b3082b87d1
+'f9'(Unknown Opcode)
+'0d'(Unknown Opcode)
+'e2'(Unknown Opcode)
+'f9'(Unknown Opcode)
+GASPRICE
+BASEFEE
+'e1'(Unknown Opcode)
+PUSH30 0x60f465f33cf74391aa3464736f6c63430008160033

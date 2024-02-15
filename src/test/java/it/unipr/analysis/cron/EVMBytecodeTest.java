@@ -1,10 +1,9 @@
 package it.unipr.analysis.cron;
 
+import it.unipr.EVMLiSA;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
 import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -14,7 +13,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +48,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/ethersolve-benchmark.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/fair-benchmark.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -61,7 +59,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0xed04a060050cc289d91779a8bb3942c3a6589254";
+		String SC_ADDRESS = "0xb0b14701a4bbAD3Ac093621008E11247e67B8368";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -269,6 +267,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Config and test run
 		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = false;
+		conf.jsonOutput = false;
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
 				new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
@@ -288,7 +287,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Print the results
 		EVMCFG baseCfg = checker.getComputedCFG();
 
-		Triple<Integer, Integer, Integer> pair = dumpStatistics(checker);
+		Triple<Integer, Integer, Pair<Integer, Integer>> pair = EVMLiSA.dumpStatistics(checker);
 		long finish = System.currentTimeMillis();
 
 		return MyLogger.newLogger()
@@ -297,7 +296,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.jumps(baseCfg.getAllJumps().size())
 				.preciselyResolvedJumps(pair.getLeft())
 				.soundResolvedJumps(pair.getMiddle())
-				.unreachableJumps(pair.getRight())
+				.definitelyUnreachableJumps(pair.getRight().getLeft())
+				.maybeUnreachableJumps(pair.getRight().getRight())
 				.time(finish - start)
 				.build();
 	}
@@ -368,60 +368,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 	/**
-	 * Calculates and prints statistics about the control flow graph (CFG) of
-	 * the provided EVMCFG object.
-	 *
-	 * @param checker The control flow graph (CFG) of the Ethereum Virtual
-	 *                    Machine (EVM) bytecode.
-	 * 
-	 * @return A Triple containing the counts of precisely resolved jumps, sound
-	 *             resolved jumps, and unreachable jumps.
-	 */
-	private Triple<Integer, Integer, Integer> dumpStatistics(JumpSolver checker) {
-		EVMCFG cfg = checker.getComputedCFG();
-		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
-		int preciselyResolvedJumps = 0;
-		int soundResolvedJumps = 0;
-		int unreachableJumps = 0;
-
-		// we are safe supposing that we have a single entry point
-		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
-		for (Statement jumpNode : cfg.getAllJumps())
-			if (jumpNode instanceof Jump) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 1)
-					preciselyResolvedJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
-					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode) || unreachableJumpNodes.contains(jumpNode))
-					unreachableJumps++;
-			} else if (jumpNode instanceof Jumpi) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
-					preciselyResolvedJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
-					soundResolvedJumps++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode) || unreachableJumpNodes.contains(jumpNode))
-					unreachableJumps++;
-			}
-
-		System.err.println("##############");
-		System.err.println("Total opcodes: " + cfg.getNodesCount());
-		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);
-		System.err.println("Sound solved jumps: " + soundResolvedJumps);
-		System.err.println("Unreachable jumps: " + unreachableJumps);
-		System.err.println("##############");
-
-		return Triple.of(preciselyResolvedJumps, soundResolvedJumps, unreachableJumps);
-	}
-
-	/**
 	 * Writes the given statistics to a file.
 	 *
 	 * @param stats The statistics to be written to the file.
 	 */
 	private void toFileStatistics(String stats) {
 		synchronized (STATISTICS_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICS_FULLPATH);
 				if (!idea.exists()) {
@@ -449,7 +402,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	private void toFileStatisticsWithZeroJumps(String stats) {
 		synchronized (STATISTICSZEROJUMP_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICSZEROJUMP_FULLPATH);
 				if (!idea.exists()) {

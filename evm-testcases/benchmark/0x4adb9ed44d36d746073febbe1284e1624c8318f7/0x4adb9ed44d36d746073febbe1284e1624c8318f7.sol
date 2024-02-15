@@ -2474,3 +2474,28 @@ PUSH2 0x10e4
 PUSH2 0x10bd
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5e'(Unknown Opcode)
+PUSH12 0x58bd87c774600417017df19f
+'c9'(Unknown Opcode)
+'bb'(Unknown Opcode)
+DUP16
+'e9'(Unknown Opcode)
+SHA3
+'c0'(Unknown Opcode)
+'0c'(Unknown Opcode)
+BASEFEE
+'b1'(Unknown Opcode)
+LOG4
+SWAP1
+ISZERO
+'c8'(Unknown Opcode)
+LOG0
+'f7'(Unknown Opcode)
+PUSH4 0x7d796473
+PUSH16 0x6c63430008170033

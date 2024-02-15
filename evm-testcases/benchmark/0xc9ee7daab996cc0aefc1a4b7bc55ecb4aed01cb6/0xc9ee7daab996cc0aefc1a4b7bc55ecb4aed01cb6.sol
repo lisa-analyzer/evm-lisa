@@ -2220,6 +2220,7 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+SELFDESTRUCT
 'dd'(Unknown Opcode)
 CALLCODE
 MSTORE
@@ -2238,3 +2239,25 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ad'(Unknown Opcode)
+'23'(Unknown Opcode)
+SWAP12
+'f9'(Unknown Opcode)
+'2e'(Unknown Opcode)
+'0d'(Unknown Opcode)
+CALLDATALOAD
+AND
+'f9'(Unknown Opcode)
+'28'(Unknown Opcode)
+'e3'(Unknown Opcode)
+'2d'(Unknown Opcode)
+CALLCODE
+PUSH26 0x9f50a472462561312c5cbf2394d52c2eed6164736f6c63430008
+AND
+STOP
+CALLER

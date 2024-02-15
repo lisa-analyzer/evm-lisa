@@ -6153,3 +6153,27 @@ DUP2
 PUSH2 0x1d94
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'f6'(Unknown Opcode)
+'e1'(Unknown Opcode)
+SSTORE
+'e2'(Unknown Opcode)
+SWAP7
+'29'(Unknown Opcode)
+SUB
+PUSH20 0x2476550b8b8c55cee2fef21e8a6ddb4e12739674
+'0d'(Unknown Opcode)
+'d0'(Unknown Opcode)
+DUP15
+'25'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER
