@@ -90,7 +90,7 @@ public class JumpSolver
 					MonolithicHeap,
 					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
-		if (fixpoint)
+		if (fixpoint) 
 			return;
 		this.fixpoint = true;
 
@@ -138,13 +138,6 @@ public class JumpSolver
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
 
-//		// If the jump has been already solved, we skip it
-//		if (node instanceof Jump && cfgToAnalyze.getOutgoingEdges(node).size() >= 1)
-//			return true;
-//
-//		if (node instanceof Jumpi && cfgToAnalyze.getOutgoingEdges(node).size() >= 2)
-//			return true;
-
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
 		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
@@ -170,8 +163,7 @@ public class JumpSolver
 				this.unreachableJumps.add(node);
 				continue;
 			} else if (valueState.isTop()) {
-				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
-						+ valueState.representation());
+				System.err.println("Not solved jump (state is top): " + node + "[" + ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 				continue;
 			}
 
@@ -180,8 +172,7 @@ public class JumpSolver
 				this.unreachableJumps.add(node);
 				continue;
 			} else if (topStack.isTop()) {
-				System.err.println(((ProgramCounterLocation) node.getLocation()).getSourceCodeLine() + " "
-						+ valueState.getStack());
+				System.err.println("Not solved jump (top of the stack is top): " + node + "[" + ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 				continue;
 			}
 
