@@ -4442,3 +4442,36 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'df'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'c8'(Unknown Opcode)
+NOT
+SWAP15
+'dc'(Unknown Opcode)
+'bb'(Unknown Opcode)
+'cf'(Unknown Opcode)
+MUL
+'d0'(Unknown Opcode)
+RETURNDATASIZE
+'bc'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'23'(Unknown Opcode)
+BASEFEE
+SWAP2
+'d4'(Unknown Opcode)
+BLOCKHASH
+ADD
+SWAP9
+'cb'(Unknown Opcode)
+PUSH16 0xd8fee799240fe9167db564736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

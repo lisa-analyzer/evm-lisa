@@ -679,3 +679,32 @@ SWAP1
 SSTORE
 JUMP
 STOP
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+LOG4
+'e4'(Unknown Opcode)
+'4a'(Unknown Opcode)
+'dc'(Unknown Opcode)
+SWAP16
+'5d'(Unknown Opcode)
+RETURNDATASIZE
+SWAP5
+'da'(Unknown Opcode)
+DUP16
+SLOAD
+'f8'(Unknown Opcode)
+DUP9
+PUSH5 0x6a9f6a128a
+'b0'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'db'(Unknown Opcode)
+'a9'(Unknown Opcode)
+'d6'(Unknown Opcode)
+SSTORE
+'5d'(Unknown Opcode)
+CALLVALUE
+DUP14
+'c3'(Unknown Opcode)
+'d1'(Unknown Opcode)
+PUSH27 0x250029

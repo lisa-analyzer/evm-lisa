@@ -8743,3 +8743,32 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'0d'(Unknown Opcode)
+CALLER
+MOD
+SWAP1
+SUB
+'26'(Unknown Opcode)
+EXTCODESIZE
+'bc'(Unknown Opcode)
+MSTORE8
+CALLDATALOAD
+'bd'(Unknown Opcode)
+'a6'(Unknown Opcode)
+DUP8
+BASEFEE
+'b3'(Unknown Opcode)
+ADD
+'b7'(Unknown Opcode)
+'c3'(Unknown Opcode)
+SWAP8
+PUSH16 0x6941d16843b1c8c308a7eda664736f6c
+PUSH4 0x43000817
+STOP
+CALLER

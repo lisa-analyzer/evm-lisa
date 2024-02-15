@@ -1878,6 +1878,7 @@ ISZERO
 PUSH2 0x0d6e
 JUMPI
 INVALID
+SELFDESTRUCT
 JUMPDEST
 DIV
 SWAP1
@@ -1910,6 +1911,7 @@ ISZERO
 PUSH2 0x0d94
 JUMPI
 INVALID
+SELFDESTRUCT
 JUMPDEST
 DIV
 EQ
@@ -1997,3 +1999,28 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+'d1'(Unknown Opcode)
+'26'(Unknown Opcode)
+CALLER
+'d3'(Unknown Opcode)
+SDIV
+'fb'(Unknown Opcode)
+'a9'(Unknown Opcode)
+SWAP9
+SWAP8
+'d6'(Unknown Opcode)
+ADD
+'1f'(Unknown Opcode)
+'b1'(Unknown Opcode)
+'e0'(Unknown Opcode)
+CODECOPY
+'ae'(Unknown Opcode)
+COINBASE
+'4c'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'db'(Unknown Opcode)
+PUSH13 0x06e490a454aab1dd60ea5a0029

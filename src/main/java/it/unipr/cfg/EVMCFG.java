@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
+	public Set<Statement> jumpDests;
+
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
 		super(descriptor, entrypoints, list);
@@ -52,16 +54,20 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMPDEST statements in the CFG
 	 */
 	public Set<Statement> getAllJumpdest() {
-		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-		Set<Statement> jumpdestStatements = new HashSet<>(); // to return
+		if (jumpDests == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> jumpdestStatements = new HashSet<>();
 
-		for (Statement statement : cfgNodeList.getNodes()) {
-			if (statement instanceof Jumpdest) {
-				jumpdestStatements.add(statement);
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Jumpdest) {
+					jumpdestStatements.add(statement);
+				}
 			}
+
+			return this.jumpDests = jumpdestStatements;
 		}
 
-		return jumpdestStatements;
+		return jumpDests;
 	}
 
 	/**

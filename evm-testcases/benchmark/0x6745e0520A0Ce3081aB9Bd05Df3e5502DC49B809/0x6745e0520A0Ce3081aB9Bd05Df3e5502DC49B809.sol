@@ -10077,6 +10077,7 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
 PUSH1 0xdc
 COINBASE
 STATICCALL
@@ -10091,3 +10092,40 @@ ADDRESS
 CALLCODE
 PUSH14 0x96d71e98ec8e21e4a340921d94df
 'e4'(Unknown Opcode)
+PUSH4 0x07dca264
+PUSH10 0x70667358221220c8332a
+'cd'(Unknown Opcode)
+GASLIMIT
+'e8'(Unknown Opcode)
+DUP4
+'fc'(Unknown Opcode)
+'2f'(Unknown Opcode)
+'b0'(Unknown Opcode)
+'e8'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'bd'(Unknown Opcode)
+LOG2
+DUP13
+RETURNDATASIZE
+'e4'(Unknown Opcode)
+'bc'(Unknown Opcode)
+SWAP4
+CALLDATASIZE
+SWAP4
+MSIZE
+'4d'(Unknown Opcode)
+DUP12
+DUP15
+SHR
+'e2'(Unknown Opcode)
+STATICCALL
+SAR
+DUP6
+'2d'(Unknown Opcode)
+NOT
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

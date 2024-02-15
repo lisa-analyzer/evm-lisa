@@ -527,3 +527,38 @@ SUB
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SLOAD
+'bb'(Unknown Opcode)
+'e2'(Unknown Opcode)
+CODESIZE
+SWAP1
+'2a'(Unknown Opcode)
+'e9'(Unknown Opcode)
+'bf'(Unknown Opcode)
+SWAP1
+NUMBER
+LOG1
+'d5'(Unknown Opcode)
+BLOCKHASH
+SHA3
+'ab'(Unknown Opcode)
+REVERT
+DELEGATECALL
+RETURNDATACOPY
+SHR
+DUP16
+SWAP11
+'5d'(Unknown Opcode)
+SWAP9
+'f8'(Unknown Opcode)
+'23'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'25'(Unknown Opcode)
+PUSH7 0xce3c542364736f
+PUSH13 0x63430008070033

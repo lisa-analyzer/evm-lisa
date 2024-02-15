@@ -424,6 +424,7 @@ DUP2
 PUSH2 0x09e0
 JUMPI
 INVALID
+SELFDESTRUCT
 JUMPDEST
 MOD
 SWAP4
@@ -433,3 +434,32 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'4a'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'ba'(Unknown Opcode)
+'29'(Unknown Opcode)
+ISZERO
+'d0'(Unknown Opcode)
+PC
+PUSH7 0x7bce174b7836fc
+'f8'(Unknown Opcode)
+COINBASE
+'dd'(Unknown Opcode)
+DUP5
+GASLIMIT
+MOD
+'cd'(Unknown Opcode)
+DUP11
+EXTCODEHASH
+CREATE2
+CALLCODE
+'b3'(Unknown Opcode)
+SWAP9
+PUSH20 0x290664736f6c634300060c0033

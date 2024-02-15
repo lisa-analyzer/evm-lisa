@@ -969,3 +969,28 @@ ADD
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DIV
+DUP7
+PUSH18 0x10a6d4ded06baf4a6e72df6b654be3b42826
+CALLDATASIZE
+PUSH1 0x60
+'e2'(Unknown Opcode)
+'2d'(Unknown Opcode)
+CALLDATACOPY
+DIV
+POP
+'e7'(Unknown Opcode)
+'d3'(Unknown Opcode)
+'4e'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

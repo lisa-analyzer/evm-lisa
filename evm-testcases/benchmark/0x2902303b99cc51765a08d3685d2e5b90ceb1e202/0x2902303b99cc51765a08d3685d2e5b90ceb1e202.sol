@@ -1202,3 +1202,30 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ab'(Unknown Opcode)
+'be'(Unknown Opcode)
+PUSH17 0x1c6c44f394fcccb509ed13190f8bdc6cc7
+'d2'(Unknown Opcode)
+'db'(Unknown Opcode)
+DUP14
+'d2'(Unknown Opcode)
+RETURNDATASIZE
+'23'(Unknown Opcode)
+'c2'(Unknown Opcode)
+'ae'(Unknown Opcode)
+NOT
+'ef'(Unknown Opcode)
+'eb'(Unknown Opcode)
+'e1'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

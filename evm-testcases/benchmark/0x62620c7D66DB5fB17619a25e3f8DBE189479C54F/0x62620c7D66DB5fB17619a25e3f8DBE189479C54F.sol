@@ -6604,3 +6604,25 @@ DUP3
 PUSH2 0x2166
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MUL
+PUSH14 0x7dab1f96a8b68cc8b8be91a5f900
+'f8'(Unknown Opcode)
+'e8'(Unknown Opcode)
+CREATE
+SWAP13
+'fc'(Unknown Opcode)
+PUSH1 0xac
+'e1'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'29'(Unknown Opcode)
+'5e'(Unknown Opcode)
+SWAP5
+DUP9
+'28'(Unknown Opcode)
+PUSH22 0xd964736f6c63430008150033

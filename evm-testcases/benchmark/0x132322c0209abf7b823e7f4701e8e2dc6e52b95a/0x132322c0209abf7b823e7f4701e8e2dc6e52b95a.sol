@@ -2048,3 +2048,30 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SDIV
+CREATE
+DUP12
+SAR
+'4d'(Unknown Opcode)
+'4e'(Unknown Opcode)
+'ae'(Unknown Opcode)
+DUP16
+PUSH10 0x4870adf768c7bdde473a
+EQ
+DUP16
+'b4'(Unknown Opcode)
+'fb'(Unknown Opcode)
+LOG0
+'c7'(Unknown Opcode)
+'21'(Unknown Opcode)
+'e5'(Unknown Opcode)
+'bc'(Unknown Opcode)
+MUL
+PUSH3 0xfb4d64
+PUSH20 0x6f6c63430008000033

@@ -1198,3 +1198,34 @@ SWAP1
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALLCODE
+SWAP9
+'e7'(Unknown Opcode)
+CALLCODE
+'d6'(Unknown Opcode)
+SELFDESTRUCT
+'c1'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'28'(Unknown Opcode)
+CALLDATALOAD
+REVERT
+'0c'(Unknown Opcode)
+ISZERO
+DUP4
+SMOD
+'27'(Unknown Opcode)
+SWAP9
+'d2'(Unknown Opcode)
+BYTE
+'e6'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'2f'(Unknown Opcode)
+DUP6
+PUSH11 0x14cf602230bde49164736f
+PUSH13 0x63430008120033

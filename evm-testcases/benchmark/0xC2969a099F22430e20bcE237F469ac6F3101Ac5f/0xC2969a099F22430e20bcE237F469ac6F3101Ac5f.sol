@@ -120,6 +120,7 @@ DUP2
 PUSH2 0x01b8
 JUMPI
 INVALID
+SELFDESTRUCT
 JUMPDEST
 MOD
 SWAP4
@@ -129,3 +130,31 @@ POP
 POP
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SSTORE
+DIV
+'f6'(Unknown Opcode)
+'d6'(Unknown Opcode)
+SIGNEXTEND
+'b3'(Unknown Opcode)
+'f6'(Unknown Opcode)
+DUP1
+'bc'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'e2'(Unknown Opcode)
+'ba'(Unknown Opcode)
+DUP9
+'0e'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'c4'(Unknown Opcode)
+CHAINID
+'b0'(Unknown Opcode)
+PUSH17 0xd37c737a45594e899e2bf99d6964736f6c
+PUSH4 0x4300060c
+STOP
+CALLER

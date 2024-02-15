@@ -527,3 +527,22 @@ SUB
 SWAP1
 JUMP
 INVALID
+SELFDESTRUCT
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'de'(Unknown Opcode)
+'0d'(Unknown Opcode)
+'2f'(Unknown Opcode)
+SIGNEXTEND
+SWAP12
+SWAP4
+'b3'(Unknown Opcode)
+'cf'(Unknown Opcode)
+JUMP
+'be'(Unknown Opcode)
+PUSH11 0x6726a80f1b91435e227fd2
+DELEGATECALL
+PUSH19 0x68c789cdd05a8de864736f6c63430008070033
