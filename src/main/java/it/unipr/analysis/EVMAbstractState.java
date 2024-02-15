@@ -277,7 +277,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "JumpiOperator": { // JUMPI
-						return this;
+						AbstractStack result = stack.clone();
+						KIntegerSet opnd1 = result.pop();
+						KIntegerSet opnd2 = result.pop();
+
+						return new EVMAbstractState(result, memory, mu_i);
 					}
 					case "MsizeOperator": { // MSIZE
 						AbstractStack result = stack.clone();
