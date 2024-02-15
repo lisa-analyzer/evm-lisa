@@ -239,7 +239,7 @@ public class EVMLiSA {
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
 					soundResolvedJumps++;
-				else if (unreachableJumpNodes.contains(jumpNode))
+				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
@@ -248,7 +248,7 @@ public class EVMLiSA {
 					preciselyResolvedJumps++;
 				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
 					soundResolvedJumps++;
-				else if (unreachableJumpNodes.contains(jumpNode))
+				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
