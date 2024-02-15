@@ -35,17 +35,19 @@ public class MyLogger {
 	}
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
-			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps, double solvedJumpsPercent, long time, String notes) {
+			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
+			double solvedJumpsPercent, long time, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
 		this.preciselyResolvedJumps = preciselyResolvedJumps;
 		this.soundResolvedJumps = soundResolvedJumps;
 		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
-		this.maybeUnreachableJumps = maybeUnreachableJumps;	
+		this.maybeUnreachableJumps = maybeUnreachableJumps;
 		if (jumps != 0) {
 			if (solvedJumpsPercent == 0)
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps)
+				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps
+						+ definitelyUnreachableJumps)
 						/ jumps);
 			this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
 		} else {
@@ -92,7 +94,7 @@ public class MyLogger {
 		this.maybeUnreachableJumps = maybeUnreachableJumps;
 		return this;
 	}
-	
+
 	public MyLogger definitelyUnreachableJumps(int definitelyUnreachableJumps) {
 		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
 		return this;

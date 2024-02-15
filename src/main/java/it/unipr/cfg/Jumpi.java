@@ -1,9 +1,5 @@
 package it.unipr.cfg;
 
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.operator.JumpiOperator;
@@ -23,6 +19,9 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Jumpi opcode of the program to analyze.
@@ -65,7 +64,7 @@ public class Jumpi extends Statement {
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
 		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-		
+
 		// If the abstract stack is top or bottom or it is empty, we do not
 		// have enough information
 		// to solve the jump.
@@ -84,13 +83,11 @@ public class Jumpi extends Statement {
 				for (Statement jmp : filteredDests) {
 					if (!cfg.containsEdge(new TrueEdge(this, jmp))) {
 						cfg.addEdge(new TrueEdge(this, jmp));
-					}				
+					}
 				}
 			}
 		}
 
-	
-		
 		KIntegerSet b = ((EVMAbstractState) entryState.getState().getValueState()).getSecondElement();
 		Constant dummy = new Constant(Untyped.INSTANCE, b, getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,

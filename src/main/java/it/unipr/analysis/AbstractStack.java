@@ -251,7 +251,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 		for (int i = 0; i < STACK_LIMIT; i++)
 			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
-		
+
 		return new AbstractStack(result);
 	}
 

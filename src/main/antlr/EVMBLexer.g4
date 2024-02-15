@@ -269,19 +269,19 @@ PUSH1
    ;
 
 PUSH2
-   : 'PUSH2' Head Hexs 
+   : 'PUSH2' Head Hexs
    ;
 
 PUSH3
-   : 'PUSH3' Head Hexs 
+   : 'PUSH3' Head Hexs
    ;
 
 PUSH4
-   : 'PUSH4' Head Hexs 
+   : 'PUSH4' Head Hexs
    ;
 
 PUSH5
-   : 'PUSH5' Head Hexs 
+   : 'PUSH5' Head Hexs
    ;
 
 PUSH6
@@ -293,51 +293,51 @@ PUSH7
    ;
 
 PUSH8
-   : 'PUSH8' Head Hexs 
+   : 'PUSH8' Head Hexs
    ;
 
 PUSH9
-   : 'PUSH9' Head Hexs 
+   : 'PUSH9' Head Hexs
    ;
 
 PUSH10
-   : 'PUSH10' Head Hexs 
+   : 'PUSH10' Head Hexs
    ;
 
 PUSH11
-   : 'PUSH11' Head Hexs 
+   : 'PUSH11' Head Hexs
    ;
 
 PUSH12
-   : 'PUSH12' Head Hexs 
+   : 'PUSH12' Head Hexs
    ;
 
 PUSH13
-   : 'PUSH13' Head Hexs 
+   : 'PUSH13' Head Hexs
    ;
 
 PUSH14
-   : 'PUSH14' Head Hexs 
+   : 'PUSH14' Head Hexs
    ;
 
 PUSH15
-   : 'PUSH15' Head Hexs 
+   : 'PUSH15' Head Hexs
    ;
 
 PUSH16
-   : 'PUSH16' Head Hexs 
+   : 'PUSH16' Head Hexs
    ;
 
 PUSH17
-   : 'PUSH17' Head Hexs 
+   : 'PUSH17' Head Hexs
    ;
 
 PUSH18
-   : 'PUSH18' Head Hexs 
+   : 'PUSH18' Head Hexs
    ;
 
 PUSH19
-   : 'PUSH19' Head Hexs 
+   : 'PUSH19' Head Hexs
    ;
 
 PUSH20
@@ -345,19 +345,19 @@ PUSH20
    ;
 
 PUSH21
-   : 'PUSH21' Head Hexs 
+   : 'PUSH21' Head Hexs
    ;
 
 PUSH22
-   : 'PUSH22' Head Hexs 
+   : 'PUSH22' Head Hexs
    ;
 
 PUSH23
-   : 'PUSH23' Head Hexs 
+   : 'PUSH23' Head Hexs
    ;
 
 PUSH24
-   : 'PUSH24' Head Hexs 
+   : 'PUSH24' Head Hexs
    ;
 
 PUSH25
@@ -365,33 +365,33 @@ PUSH25
    ;
 
 PUSH26
-   : 'PUSH26' Head Hexs 
+   : 'PUSH26' Head Hexs
    ;
 
 PUSH27
-   : 'PUSH27' Head Hexs 
+   : 'PUSH27' Head Hexs
    ;
 
 PUSH28
-   : 'PUSH28' Head Hexs 
+   : 'PUSH28' Head Hexs
    ;
-   
+
 PUSH29
    : 'PUSH29' Head Hexs
    ;
 
 PUSH30
-   : 'PUSH30' Head Hexs 
+   : 'PUSH30' Head Hexs
    ;
 
 PUSH31
-   : 'PUSH31' Head Hexs 
+   : 'PUSH31' Head Hexs
    ;
 
 PUSH32
-   : 'PUSH32' Head Hexs 
+   : 'PUSH32' Head Hexs
    ;
-   
+
 DUP1
    : 'DUP1'
    ;
@@ -659,3 +659,4 @@ fragment Hexs
 WS
    : [ \n\t\r] -> skip
    ;
+

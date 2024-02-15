@@ -1,9 +1,5 @@
 package it.unipr.cfg;
 
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.operator.JumpOperator;
@@ -23,6 +19,9 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Jump opcode of the program to analyze.
@@ -66,7 +65,7 @@ public class Jump extends Statement {
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
 		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-		
+
 		// If the abstract stack is top or bottom or it is empty, we do not
 		// have enough information
 		// to solve the jump.
@@ -83,14 +82,13 @@ public class Jump extends Statement {
 				// For each JUMPDEST, add the missing edge from this node to
 				// the JUMPDEST.
 				for (Statement jmp : filteredDests) {
-						if (!cfg.containsEdge(new SequentialEdge(this, jmp))) {
-							cfg.addEdge(new SequentialEdge(this, jmp));
-						}					
+					if (!cfg.containsEdge(new SequentialEdge(this, jmp))) {
+						cfg.addEdge(new SequentialEdge(this, jmp));
+					}
 				}
 			}
 		}
 
-	
 		Constant dummy = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
 				JumpOperator.INSTANCE, getLocation()), this);

@@ -90,7 +90,7 @@ public class JumpSolver
 					MonolithicHeap,
 					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
-		if (fixpoint) 
+		if (fixpoint)
 			return;
 		this.fixpoint = true;
 
@@ -163,7 +163,8 @@ public class JumpSolver
 				this.unreachableJumps.add(node);
 				continue;
 			} else if (valueState.isTop()) {
-				System.err.println("Not solved jump (state is top): " + node + "[" + ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
+				System.err.println("Not solved jump (state is top): " + node + "["
+						+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 				continue;
 			}
 
@@ -172,7 +173,8 @@ public class JumpSolver
 				this.unreachableJumps.add(node);
 				continue;
 			} else if (topStack.isTop()) {
-				System.err.println("Not solved jump (top of the stack is top): " + node + "[" + ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
+				System.err.println("Not solved jump (top of the stack is top): " + node + "["
+						+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 				continue;
 			}
 

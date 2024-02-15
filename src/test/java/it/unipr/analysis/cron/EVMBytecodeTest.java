@@ -1,5 +1,18 @@
 package it.unipr.analysis.cron;
 
+import it.unipr.EVMLiSA;
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.MyLogger;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.checker.JumpSolver;
+import it.unipr.frontend.EVMFrontend;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -14,25 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.junit.Test;
-
-import it.unipr.EVMLiSA;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyLogger;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.checker.JumpSolver;
-import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
-import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
@@ -368,8 +366,6 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 		return smartContractsRead;
 	}
-
-	
 
 	/**
 	 * Writes the given statistics to a file.
