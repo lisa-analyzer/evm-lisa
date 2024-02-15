@@ -4776,7 +4776,7 @@ DUP16
 PUSH5 0x0bcde4b61e
 ADDMOD
 DUP4
-
+INVALID
 'ac'(Unknown Opcode)
 'f8'(Unknown Opcode)
 SIGNEXTEND

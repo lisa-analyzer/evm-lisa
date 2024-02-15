@@ -3243,7 +3243,7 @@ DUP8
 '2a'(Unknown Opcode)
 'cf'(Unknown Opcode)
 BYTE
-
+INVALID
 '5c'(Unknown Opcode)
 'c1'(Unknown Opcode)
 '4c'(Unknown Opcode)

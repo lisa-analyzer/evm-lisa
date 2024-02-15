@@ -6708,7 +6708,7 @@ DUP9
 'e6'(Unknown Opcode)
 '0f'(Unknown Opcode)
 'e8'(Unknown Opcode)
-
+INVALID
 MULMOD
 SWAP12
 XOR

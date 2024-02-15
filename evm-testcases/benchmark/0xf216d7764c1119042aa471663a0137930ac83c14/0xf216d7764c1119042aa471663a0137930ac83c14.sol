@@ -4102,7 +4102,7 @@ CODESIZE
 XOR
 MULMOD
 'be'(Unknown Opcode)
-
+INVALID
 PUSH3 0x06618d
 SHR
 'f8'(Unknown Opcode)

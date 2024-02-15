@@ -6793,7 +6793,7 @@ DUP10
 SLT
 'b4'(Unknown Opcode)
 SWAP11
-
+INVALID
 '5d'(Unknown Opcode)
 '2e'(Unknown Opcode)
 EQ

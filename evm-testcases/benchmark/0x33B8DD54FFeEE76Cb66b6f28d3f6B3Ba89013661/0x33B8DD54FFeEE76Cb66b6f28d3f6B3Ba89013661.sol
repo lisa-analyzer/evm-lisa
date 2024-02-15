@@ -3222,7 +3222,7 @@ CREATE
 '1f'(Unknown Opcode)
 SWAP1
 'db'(Unknown Opcode)
-
+INVALID
 '24'(Unknown Opcode)
 'd2'(Unknown Opcode)
 '1f'(Unknown Opcode)

@@ -1100,7 +1100,7 @@ SLT
 SHA3
 SHL
 '5c'(Unknown Opcode)
-
+INVALID
 'eb'(Unknown Opcode)
 '1f'(Unknown Opcode)
 ADDRESS

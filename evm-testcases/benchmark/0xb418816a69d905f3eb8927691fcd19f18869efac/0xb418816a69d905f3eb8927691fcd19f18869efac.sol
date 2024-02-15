@@ -11261,7 +11261,7 @@ SWAP10
 JUMP
 '0d'(Unknown Opcode)
 '25'(Unknown Opcode)
-
+INVALID
 'b9'(Unknown Opcode)
 'c5'(Unknown Opcode)
 'c4'(Unknown Opcode)

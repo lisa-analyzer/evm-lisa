@@ -4786,7 +4786,7 @@ PUSH16 0xa1213f53338776d2c9565e9a8b348229
 SWAP11
 '2c'(Unknown Opcode)
 SGT
-
+INVALID
 GAS
 'c6'(Unknown Opcode)
 'aa'(Unknown Opcode)

@@ -2101,7 +2101,7 @@ LOG2
 'e1'(Unknown Opcode)
 DUP12
 XOR
-
+INVALID
 SMOD
 'b8'(Unknown Opcode)
 'e6'(Unknown Opcode)

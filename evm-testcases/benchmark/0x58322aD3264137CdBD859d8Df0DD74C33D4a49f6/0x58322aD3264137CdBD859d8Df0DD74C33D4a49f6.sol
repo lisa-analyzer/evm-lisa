@@ -166,7 +166,7 @@ CALLVALUE
 PUSH1 0x82
 'fb'(Unknown Opcode)
 PUSH13 0x17799daa17ef106263ff99c592
-
+INVALID
 'b1'(Unknown Opcode)
 CALLCODE
 'c6'(Unknown Opcode)

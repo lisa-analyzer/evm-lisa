@@ -8695,7 +8695,7 @@ SHA3
 PUSH7 0x61696c6564a264
 PUSH10 0x7066735822122051bfd2
 STATICCALL
-
+INVALID
 '1e'(Unknown Opcode)
 'bf'(Unknown Opcode)
 'a9'(Unknown Opcode)
@@ -8707,7 +8707,7 @@ DUP2
 AND
 PUSH13 0x43bfc9cfe038196d2c93ae9fa7
 '2a'(Unknown Opcode)
-
+INVALID
 'e7'(Unknown Opcode)
 BLOCKHASH
 PUSH5 0x736f6c6343

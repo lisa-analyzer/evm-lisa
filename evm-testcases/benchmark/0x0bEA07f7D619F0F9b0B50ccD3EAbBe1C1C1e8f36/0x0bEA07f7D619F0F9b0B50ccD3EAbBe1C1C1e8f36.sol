@@ -170,7 +170,7 @@ GAS
 DUP7
 'cc'(Unknown Opcode)
 'aa'(Unknown Opcode)
-
+INVALID
 'a9'(Unknown Opcode)
 'bf'(Unknown Opcode)
 MSIZE

@@ -6589,7 +6589,7 @@ CALLDATALOAD
 DIV
 'fb'(Unknown Opcode)
 MUL
-
+INVALID
 'b6'(Unknown Opcode)
 '5c'(Unknown Opcode)
 PUSH27 0x3333c5e8fdb4fcb4abac2dad1f06d6c06a21c264736f6c63430008

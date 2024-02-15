@@ -2953,7 +2953,7 @@ REVERT
 '5d'(Unknown Opcode)
 'cf'(Unknown Opcode)
 DUP15
-
+INVALID
 GASPRICE
 '22'(Unknown Opcode)
 'e4'(Unknown Opcode)

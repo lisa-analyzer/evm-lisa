@@ -5306,7 +5306,7 @@ DUP4
 'c5'(Unknown Opcode)
 'bd'(Unknown Opcode)
 '4d'(Unknown Opcode)
-
+INVALID
 'b1'(Unknown Opcode)
 CALLVALUE
 CALLCODE

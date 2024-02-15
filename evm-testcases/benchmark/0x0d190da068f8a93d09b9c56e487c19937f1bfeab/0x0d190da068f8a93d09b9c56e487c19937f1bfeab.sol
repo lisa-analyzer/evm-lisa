@@ -6253,7 +6253,7 @@ JUMPI
 '4b'(Unknown Opcode)
 'ba'(Unknown Opcode)
 SWAP4
-
+INVALID
 PUSH5 0xac2e1dad50
 'c6'(Unknown Opcode)
 EXTCODEHASH

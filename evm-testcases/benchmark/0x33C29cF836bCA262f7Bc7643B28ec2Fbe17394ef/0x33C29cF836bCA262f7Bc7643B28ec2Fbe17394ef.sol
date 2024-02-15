@@ -162,7 +162,7 @@ SHA3
 'b6'(Unknown Opcode)
 'd8'(Unknown Opcode)
 'de'(Unknown Opcode)
-
+INVALID
 DUP1
 MLOAD
 TIMESTAMP

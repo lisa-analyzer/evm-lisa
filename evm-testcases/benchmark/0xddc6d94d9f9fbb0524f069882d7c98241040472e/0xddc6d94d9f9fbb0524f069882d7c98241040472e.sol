@@ -662,7 +662,7 @@ STOP
 COINBASE
 'd6'(Unknown Opcode)
 'd0'(Unknown Opcode)
-
+INVALID
 PUSH22 0x7b9f04eb8e0cb938023e047e7a69b05bbe64736f6c63
 NUMBER
 STOP

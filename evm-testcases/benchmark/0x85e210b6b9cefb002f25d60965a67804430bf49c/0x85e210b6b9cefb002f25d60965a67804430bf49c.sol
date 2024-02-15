@@ -3878,7 +3878,7 @@ DUP1
 SLT
 SWAP9
 'b3'(Unknown Opcode)
-
+INVALID
 'b3'(Unknown Opcode)
 CALLCODE
 'bf'(Unknown Opcode)

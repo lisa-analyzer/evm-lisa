@@ -2964,7 +2964,7 @@ SWAP3
 'c2'(Unknown Opcode)
 PUSH2 0x425f
 'b5'(Unknown Opcode)
-
+INVALID
 '0f'(Unknown Opcode)
 LOG0
 PUSH10 0x65e30c1b70ed5d48c383

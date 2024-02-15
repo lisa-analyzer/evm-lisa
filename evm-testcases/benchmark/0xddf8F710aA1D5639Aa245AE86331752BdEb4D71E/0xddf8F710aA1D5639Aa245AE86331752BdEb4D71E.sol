@@ -2424,7 +2424,7 @@ MUL
 '5d'(Unknown Opcode)
 EXTCODEHASH
 'c4'(Unknown Opcode)
-
+INVALID
 PUSH5 0x736f6c6343
 STOP
 ADDMOD

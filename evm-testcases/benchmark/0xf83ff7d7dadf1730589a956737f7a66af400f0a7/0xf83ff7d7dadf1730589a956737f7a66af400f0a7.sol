@@ -3703,7 +3703,7 @@ CALLDATACOPY
 SWAP7
 '0d'(Unknown Opcode)
 AND
-
+INVALID
 'd2'(Unknown Opcode)
 'e7'(Unknown Opcode)
 CALLER

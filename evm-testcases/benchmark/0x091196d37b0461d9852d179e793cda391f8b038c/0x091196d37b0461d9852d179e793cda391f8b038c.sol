@@ -1160,7 +1160,7 @@ SWAP13
 '1e'(Unknown Opcode)
 EQ
 'df'(Unknown Opcode)
-
+INVALID
 POP
 '2c'(Unknown Opcode)
 PUSH6 0x456bd633fc4f
