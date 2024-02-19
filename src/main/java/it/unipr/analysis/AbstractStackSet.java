@@ -1,23 +1,25 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
-public class AbstractStackSet implements Iterable<AbstractStack>, BaseLattice<AbstractStackSet> {
+public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack>
+		implements Iterable<AbstractStack> {
 
 	private Set<AbstractStack> stacks;
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null);
 
 	public AbstractStackSet() {
+		super(new HashSet<AbstractStack>(), true);
 		this.stacks = new HashSet<AbstractStack>();
 	}
 
 	public AbstractStackSet(AbstractStack other) {
-		this.stacks = new HashSet<AbstractStack>();
+		this();
 		this.stacks.add(other);
 	}
 
@@ -46,15 +48,15 @@ public class AbstractStackSet implements Iterable<AbstractStack>, BaseLattice<Ab
 		return stacks.iterator();
 	}
 
-	@Override
-	public String toString() {
-		String str = "{";
-		for (AbstractStack stack : stacks) {
-			str += stack.toString() + ", ";
-		}
-		str += "}";
-		return str;
-	}
+//	@Override
+//	public String toString() {
+//		String str = "{";
+//		for (AbstractStack stack : stacks) {
+//			str += stack.toString() + ", ";
+//		}
+//		str += "}";
+//		return str;
+//	}
 
 	@Override
 	public int hashCode() {
@@ -134,6 +136,12 @@ public class AbstractStackSet implements Iterable<AbstractStack>, BaseLattice<Ab
 		}
 
 		return true;
+	}
+
+	@Override
+	public AbstractStackSet mk(Set<AbstractStack> set) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

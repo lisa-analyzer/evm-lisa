@@ -116,6 +116,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		return this;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// bottom state is propagated
