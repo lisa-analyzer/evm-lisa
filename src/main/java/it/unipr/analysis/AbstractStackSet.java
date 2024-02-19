@@ -1,12 +1,12 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+
+import it.unive.lisa.analysis.lattices.SetLattice;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack>
 		implements Iterable<AbstractStack> {
@@ -71,32 +71,24 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(stacks);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(stacks);
+		return result;
 	}
 
+	
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
 		AbstractStackSet other = (AbstractStackSet) obj;
-
-		if (this.size() != other.size())
-			return false;
-
-		Iterator<AbstractStack> itThis = this.iterator();
-		Iterator<AbstractStack> itOther = other.iterator();
-
-		while (itThis.hasNext() && itOther.hasNext()) {
-			if (!Objects.equals(itThis.next(), itOther.next()))
-				return false;
-		}
-
-		return true;
+		return Objects.equals(stacks, other.stacks);
 	}
 
 //	// TODO check
@@ -124,24 +116,24 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 //		return result;
 //	}
 
-	// TODO check
-	@Override
-	public boolean lessOrEqualAux(AbstractStackSet other) throws SemanticException {
-		if (this.size() < other.size())
-			return true;
-		else if (this.size() > other.size())
-			return false;
-
-		Iterator<AbstractStack> itThis = this.iterator();
-		Iterator<AbstractStack> itOther = other.iterator();
-
-		while (itThis.hasNext() && itOther.hasNext()) {
-			if (!itThis.next().lessOrEqualAux(itOther.next()))
-				return false;
-		}
-
-		return true;
-	}
+//	// TODO check
+//	@Override
+//	public boolean lessOrEqualAux(AbstractStackSet other) throws SemanticException {
+//		if (this.size() < other.size())
+//			return true;
+//		else if (this.size() > other.size())
+//			return false;
+//
+//		Iterator<AbstractStack> itThis = this.iterator();
+//		Iterator<AbstractStack> itOther = other.iterator();
+//
+//		while (itThis.hasNext() && itOther.hasNext()) {
+//			if (!itThis.next().lessOrEqualAux(itOther.next()))
+//				return false;
+//		}
+//
+//		return true;
+//	}
 
 	@Override
 	public AbstractStackSet mk(Set<AbstractStack> set) {
