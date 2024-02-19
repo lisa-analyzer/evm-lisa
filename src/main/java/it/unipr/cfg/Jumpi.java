@@ -69,17 +69,17 @@ public class Jumpi extends Statement {
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
 
 		KIntegerSet secondForDummy = null;
-		
+
 		// If the abstract stack is top or bottom or it is empty, we do not
 		// have enough information
 		// to solve the jump.
 		if (!valueState.isBottom() && !valueState.isTop()) {
 			AbstractStackSet stacks = valueState.getStacks();
 			Set<Statement> filteredDests = new HashSet<Statement>();
-			
-			for(AbstractStack a : stacks) {
+
+			for (AbstractStack a : stacks) {
 				secondForDummy = a.getSecondElement(); // TODO remove
-				
+
 				KIntegerSet stack = a.getTop();
 				if (!stack.isBottom() && !stack.isTop()) {
 					filteredDests = jumpDestinations.stream()

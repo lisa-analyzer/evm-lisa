@@ -16,7 +16,6 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
@@ -76,8 +75,8 @@ public class Jump extends Statement {
 		if (!valueState.isBottom() && !valueState.isTop()) {
 			AbstractStackSet stacks = valueState.getStacks();
 			Set<Statement> filteredDests = new HashSet<Statement>();
-			
-			for(AbstractStack a : stacks) {
+
+			for (AbstractStack a : stacks) {
 				KIntegerSet stack = a.getTop();
 				if (!stack.isBottom() && !stack.isTop()) {
 					filteredDests = jumpDestinations.stream()

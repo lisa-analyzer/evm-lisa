@@ -1,6 +1,5 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
@@ -170,7 +169,7 @@ public class JumpSolver
 			}
 
 			Set<Statement> filteredDests = new HashSet<Statement>();
-			for(KIntegerSet topStack : valueState.getTop()) {
+			for (KIntegerSet topStack : valueState.getTop()) {
 				if (topStack.isBottom()) {
 					this.unreachableJumps.add(node);
 					continue;
@@ -180,14 +179,12 @@ public class JumpSolver
 					continue;
 				}
 
-				
 				filteredDests = this.jumpDestinations.stream()
 						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
 						.filter(pc -> topStack
 								.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
 			}
-			
 
 			// If there are no JUMPDESTs for this value, skip to the
 			// next one.
