@@ -168,10 +168,9 @@ public class JumpSolver
 				continue;
 			}
 
-			Set<Statement> filteredDests = new HashSet<Statement>();
 			for (KIntegerSet topStack : valueState.getTop()) {
 				if (topStack.isBottom()) {
-					this.unreachableJumps.add(node);
+					this.unreachableJumps.add(node); // FIXME: this is wrong: a jump is unreachable if all the top of the stacks are bottom or do not contain jump dest
 					continue;
 				} else if (topStack.isTop()) {
 					System.err.println("Not solved jump (top of the stack is top): " + node + "["
@@ -179,32 +178,32 @@ public class JumpSolver
 					continue;
 				}
 
-				filteredDests = this.jumpDestinations.stream()
+				Set<Statement> filteredDests = this.jumpDestinations.stream()
 						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
 						.filter(pc -> topStack
 								.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
-			}
+				
+				// If there are no JUMPDESTs for this value, skip to the
+				// next one.
+				if (filteredDests.isEmpty()) {
+					this.unreachableJumps.add(node); // FIXME: this is wrong: a jump is unreachable if all the top of the stacks do not contains jump dests or are bottom
+					continue;
+				}
 
-			// If there are no JUMPDESTs for this value, skip to the
-			// next one.
-			if (filteredDests.isEmpty()) {
-				this.unreachableJumps.add(node);
-				continue;
-			}
-
-			// For each JUMPDEST, add the missing edge from this node to
-			// the JUMPDEST.
-			for (Statement jmp : filteredDests) {
-				if (node instanceof Jump) { // JUMP
-					if (!this.cfgToAnalyze.containsEdge(new SequentialEdge(node, jmp))) {
-						this.cfgToAnalyze.addEdge(new SequentialEdge(node, jmp));
-						fixpoint = false;
-					}
-				} else { // JUMPI
-					if (!this.cfgToAnalyze.containsEdge(new TrueEdge(node, jmp))) {
-						this.cfgToAnalyze.addEdge(new TrueEdge(node, jmp));
-						fixpoint = false;
+				// For each JUMPDEST, add the missing edge from this node to
+				// the JUMPDEST.
+				for (Statement jmp : filteredDests) {
+					if (node instanceof Jump) { // JUMP
+						if (!this.cfgToAnalyze.containsEdge(new SequentialEdge(node, jmp))) {
+							this.cfgToAnalyze.addEdge(new SequentialEdge(node, jmp));
+							fixpoint = false;
+						}
+					} else { // JUMPI
+						if (!this.cfgToAnalyze.containsEdge(new TrueEdge(node, jmp))) {
+							this.cfgToAnalyze.addEdge(new TrueEdge(node, jmp));
+							fixpoint = false;
+						}
 					}
 				}
 			}
