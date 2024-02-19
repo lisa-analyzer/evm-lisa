@@ -16,6 +16,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	public AbstractStackSet() {
 		super(new HashSet<AbstractStack>(), true);
 		this.stacks = new HashSet<AbstractStack>();
+		this.stacks.add(new AbstractStack());
 	}
 
 	public AbstractStackSet(AbstractStack other) {
@@ -88,21 +89,21 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		return true;
 	}
 
-	// TODO check
-	public AbstractStackSet widening(AbstractStackSet other) throws SemanticException {
-		AbstractStackSet result = this.clone();
-		for (AbstractStack stack : other)
-			result.add(stack);
-		return result;
-	}
-
-	// TODO check
-	public AbstractStackSet glb(AbstractStackSet other) throws SemanticException {
-		AbstractStackSet result = this.clone();
-		for (AbstractStack stack : other)
-			result.add(stack);
-		return result;
-	}
+//	// TODO check
+//	public AbstractStackSet widening(AbstractStackSet other) throws SemanticException {
+//		AbstractStackSet result = this.clone();
+//		for (AbstractStack stack : other)
+//			result.add(stack);
+//		return result;
+//	}
+//
+//	// TODO check
+//	public AbstractStackSet glb(AbstractStackSet other) throws SemanticException {
+//		AbstractStackSet result = this.clone();
+//		for (AbstractStack stack : other)
+//			result.add(stack);
+//		return result;
+//	}
 
 	@Override
 	public AbstractStackSet top() {
@@ -110,14 +111,14 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		return null;
 	}
 
-	// TODO check
-	@Override
-	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
-		AbstractStackSet result = this.clone();
-		for (AbstractStack stack : other)
-			result.add(stack);
-		return result;
-	}
+//	// TODO check
+//	@Override
+//	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
+//		AbstractStackSet result = this.clone();
+//		for (AbstractStack stack : other)
+//			result.add(stack);
+//		return result;
+//	}
 
 	// TODO check
 	@Override
