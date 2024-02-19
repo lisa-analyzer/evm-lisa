@@ -2,6 +2,7 @@ package it.unipr.analysis;
 
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.SetLattice;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
@@ -12,9 +13,10 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 
 	private Set<AbstractStack> stacks;
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null);
+	private static final AbstractStackSet TOP = new AbstractStackSet(Collections.emptySet(), true);
 
 	public AbstractStackSet() {
-		super(new HashSet<AbstractStack>(), true);
+		super(new HashSet<AbstractStack>(), false);
 		this.stacks = new HashSet<AbstractStack>();
 		this.stacks.add(new AbstractStack());
 	}
@@ -24,8 +26,16 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		this.stacks.add(other);
 	}
 
+	public AbstractStackSet(Set<AbstractStack> elements, boolean isTop) {
+		super(elements, isTop);
+	}
+
 	public void add(AbstractStack other) {
 		stacks.add(other);
+	}
+
+	public AbstractStackSet top() {
+		return TOP;
 	}
 
 	public AbstractStackSet bottom() {
@@ -104,12 +114,6 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 //			result.add(stack);
 //		return result;
 //	}
-
-	@Override
-	public AbstractStackSet top() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 //	// TODO check
 //	@Override

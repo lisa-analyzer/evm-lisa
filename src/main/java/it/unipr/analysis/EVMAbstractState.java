@@ -1822,22 +1822,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public boolean isTop() {
-		boolean top = true;
-		for (AbstractStack stack : stacks) {
-			if (stack == null || !stack.isTop())
-				return false;
-		}
-		return top;
+		return stacks.isTop();
 	}
 
 	@Override
 	public boolean isBottom() {
-		boolean bottom = true;
-		for (AbstractStack stack : stacks) {
-			if (stack != null && !stack.isBottom())
-				return false;
-		}
-		return bottom;
+		return stacks.isBottom();
 	}
 
 	/**

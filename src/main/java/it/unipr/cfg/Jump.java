@@ -1,9 +1,5 @@
 package it.unipr.cfg;
 
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -25,6 +21,9 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Jump opcode of the program to analyze.
@@ -59,11 +58,11 @@ public class Jump extends Statement {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
 		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
@@ -83,7 +82,7 @@ public class Jump extends Statement {
 							.filter(pc -> stack
 									.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 							.collect(Collectors.toSet());
-					
+
 					// For each JUMPDEST, add the missing edge from this node to
 					// the JUMPDEST.
 					for (Statement jmp : filteredDests) {
