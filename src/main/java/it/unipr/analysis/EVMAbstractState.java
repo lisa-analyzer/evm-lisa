@@ -1916,14 +1916,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public EVMAbstractState lubAux(EVMAbstractState other) throws SemanticException {
-		return new EVMAbstractState(stacks.lub(other.getStacks()),
+		return new EVMAbstractState(stacks.lubAux(other.getStacks()),
 				memory.lub(other.getMemory()),
 				mu_i.lub(other.getMu_i()));
 	}
 
 	@Override
 	public EVMAbstractState glbAux(EVMAbstractState other) throws SemanticException {
-		return new EVMAbstractState(stacks.glb(other.getStacks()),
+		return new EVMAbstractState(stacks.glbAux(other.getStacks()),
 				memory.glb(other.getMemory()),
 				mu_i.glb(other.getMu_i()));
 	}

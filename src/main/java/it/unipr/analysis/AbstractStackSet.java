@@ -1,12 +1,13 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
-public class AbstractStackSet implements Iterable<AbstractStack> {
+public class AbstractStackSet implements Iterable<AbstractStack>, BaseLattice<AbstractStackSet> {
 
 	private Set<AbstractStack> stacks;
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null);
@@ -94,14 +95,6 @@ public class AbstractStackSet implements Iterable<AbstractStack> {
 	}
 
 	// TODO check
-	public AbstractStackSet lub(AbstractStackSet other) throws SemanticException {
-		AbstractStackSet result = this.clone();
-		for (AbstractStack stack : other)
-			result.add(stack);
-		return result;
-	}
-
-	// TODO check
 	public AbstractStackSet glb(AbstractStackSet other) throws SemanticException {
 		AbstractStackSet result = this.clone();
 		for (AbstractStack stack : other)
@@ -109,8 +102,24 @@ public class AbstractStackSet implements Iterable<AbstractStack> {
 		return result;
 	}
 
+	@Override
+	public AbstractStackSet top() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	// TODO check
-	public boolean lessOrEqual(AbstractStackSet other) throws SemanticException {
+	@Override
+	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
+		AbstractStackSet result = this.clone();
+		for (AbstractStack stack : other)
+			result.add(stack);
+		return result;
+	}
+
+	// TODO check
+	@Override
+	public boolean lessOrEqualAux(AbstractStackSet other) throws SemanticException {
 		if (this.size() < other.size())
 			return true;
 		else if (this.size() > other.size())
