@@ -64,35 +64,35 @@ public class Jumpi extends Statement {
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
-		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
-		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-
-		// If the abstract stack is top or bottom or it is empty, we do not
-		// have enough information
-		// to solve the jump.
-		if (!valueState.isBottom() && !valueState.isTop()) {
-			AbstractStackSet stacks = valueState.getStacks();
-
-			for (AbstractStack a : stacks) {
-
-				KIntegerSet stack = a.getTop();
-				if (!stack.isBottom() && !stack.isTop()) {
-					Set<Statement> filteredDests = jumpDestinations.stream()
-							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-							.filter(pc -> stack
-									.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
-							.collect(Collectors.toSet());
-
-					// For each JUMPDEST, add the missing edge from this node to
-					// the JUMPDEST.
-					for (Statement jmp : filteredDests) {
-						if (!cfg.containsEdge(new TrueEdge(this, jmp))) {
-							cfg.addEdge(new TrueEdge(this, jmp));
-						}
-					}
-				}
-			}
-		}
+//		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
+//		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
+//
+//		// If the abstract stack is top or bottom or it is empty, we do not
+//		// have enough information
+//		// to solve the jump.
+//		if (!valueState.isBottom() && !valueState.isTop()) {
+//			AbstractStackSet stacks = valueState.getStacks();
+//
+//			for (AbstractStack a : stacks) {
+//
+//				KIntegerSet stack = a.getTop();
+//				if (!stack.isBottom() && !stack.isTop()) {
+//					Set<Statement> filteredDests = jumpDestinations.stream()
+//							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+//							.filter(pc -> stack
+//									.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
+//							.collect(Collectors.toSet());
+//
+//					// For each JUMPDEST, add the missing edge from this node to
+//					// the JUMPDEST.
+//					for (Statement jmp : filteredDests) {
+//						if (!cfg.containsEdge(new TrueEdge(this, jmp))) {
+//							cfg.addEdge(new TrueEdge(this, jmp));
+//						}
+//					}
+//				}
+//			}
+//		}
 
 		KIntegerSet b = KIntegerSet.BOTTOM;
 		if (!valueState.isBottom() && !valueState.isTop())
