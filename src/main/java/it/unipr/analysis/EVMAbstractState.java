@@ -1005,6 +1005,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 							new_mu_i = current_mu_i_lub;
 						}
+						result.add(stackResult);
 					}
 
 					return new EVMAbstractState(result, memoryResult, new_mu_i);
@@ -1037,6 +1038,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 							new_mu_i = current_mu_i_lub;
 						}
+						result.add(stackResult);
 					}
 
 					return new EVMAbstractState(result, memoryResult, new_mu_i);
