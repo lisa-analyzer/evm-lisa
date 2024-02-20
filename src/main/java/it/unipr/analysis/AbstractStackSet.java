@@ -2,28 +2,18 @@ package it.unipr.analysis;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 
 import it.unive.lisa.analysis.lattices.SetLattice;
 
-public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack>
-		implements Iterable<AbstractStack> {
+public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
-	private Set<AbstractStack> stacks;
-	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null);
+	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null, false);
 	private static final AbstractStackSet TOP = new AbstractStackSet(Collections.emptySet(), true);
 
 	public AbstractStackSet() {
 		super(new HashSet<AbstractStack>(), false);
-		this.stacks = new HashSet<AbstractStack>();
-		this.stacks.add(new AbstractStack());
-	}
-
-	public AbstractStackSet(AbstractStack other) {
-		this();
-		this.stacks.add(other);
+		this.elements.add(new AbstractStack());
 	}
 
 	public AbstractStackSet(Set<AbstractStack> elements, boolean isTop) {
@@ -31,7 +21,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	}
 
 	public void add(AbstractStack other) {
-		stacks.add(other);
+		this.elements.add(other);
 	}
 
 	public AbstractStackSet top() {
@@ -41,23 +31,40 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	public AbstractStackSet bottom() {
 		return BOTTOM;
 	}
+	
+	@Override
+	public boolean isTop() {
+		return !isBottom() && this.elements().isEmpty() && this.isTop == true;
+	}
+	
+	@Override
+	public boolean isBottom() {
+		return this.elements == null;
+	}
 
 	public int size() {
-		return stacks.size();
+		return this.elements().size();
 	}
 
 	@Override
 	public AbstractStackSet clone() {
+		if (isTop())
+			return TOP;
+		else if (isBottom())
+			return BOTTOM;
 		AbstractStackSet result = new AbstractStackSet();
-		for (AbstractStack stack : stacks)
+		for (AbstractStack stack : elements())
 			result.add(stack.clone());
 		return result;
 	}
+	
+	
+	
 
-	@Override
-	public Iterator<AbstractStack> iterator() {
-		return stacks.iterator();
-	}
+//	@Override
+//	public Iterator<AbstractStack> iterator() {
+//		return stacks.iterator();
+//	}
 
 //	@Override
 //	public String toString() {
@@ -69,27 +76,6 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 //		return str;
 //	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(stacks);
-		return result;
-	}
-
-	
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		AbstractStackSet other = (AbstractStackSet) obj;
-		return Objects.equals(stacks, other.stacks);
-	}
 
 //	// TODO check
 //	public AbstractStackSet widening(AbstractStackSet other) throws SemanticException {
@@ -134,6 +120,22 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 //
 //		return true;
 //	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		return true;
+	}
 
 	@Override
 	public AbstractStackSet mk(Set<AbstractStack> set) {
