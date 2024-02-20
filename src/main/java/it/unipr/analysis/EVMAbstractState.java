@@ -954,9 +954,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet new_mu_i = null;
-
+						
 						KIntegerSet offset = resultStack.pop();
-
+						
 						if (mu_i.equals(KIntegerSet.ZERO)) {
 							// This is an error. We cannot read from memory if
 							// there is no active words saved

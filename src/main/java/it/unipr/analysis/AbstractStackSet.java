@@ -22,7 +22,8 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	}
 
 	public void add(AbstractStack other) {
-		this.elements.add(other);
+		if (!other.isBottom())
+			this.elements.add(other);
 	}
 
 	public AbstractStackSet top() {
@@ -32,12 +33,12 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	public AbstractStackSet bottom() {
 		return BOTTOM;
 	}
-	
+
 	@Override
 	public boolean isTop() {
 		return !isBottom() && this.elements().isEmpty() && this.isTop == true;
 	}
-	
+
 	@Override
 	public boolean isBottom() {
 		return this.elements == null;
@@ -58,7 +59,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 			result.add(stack.clone());
 		return result;
 	}
-	
+
 	@Override
 	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
 		AbstractStackSet lubAux = super.lubAux(other);
@@ -66,12 +67,12 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 			return TOP;
 		return lubAux;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
