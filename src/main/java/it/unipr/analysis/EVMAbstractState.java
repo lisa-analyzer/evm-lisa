@@ -943,8 +943,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						resultStack.pop();
-
-						resultStack.push(KIntegerSet.TOP);
 						result.add(resultStack);
 					}
 

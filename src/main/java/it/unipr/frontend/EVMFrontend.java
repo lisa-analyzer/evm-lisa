@@ -560,6 +560,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
+			break;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;

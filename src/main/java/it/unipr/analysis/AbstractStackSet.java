@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.SetLattice;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
@@ -59,10 +60,18 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	}
 	
 	@Override
+	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
+		AbstractStackSet lubAux = super.lubAux(other);
+		if (lubAux.size() > 10)
+			return TOP;
+		return lubAux;
+	}
+	
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
