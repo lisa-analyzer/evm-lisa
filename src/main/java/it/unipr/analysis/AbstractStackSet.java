@@ -58,69 +58,6 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		return result;
 	}
 	
-	
-	
-
-//	@Override
-//	public Iterator<AbstractStack> iterator() {
-//		return stacks.iterator();
-//	}
-
-//	@Override
-//	public String toString() {
-//		String str = "{";
-//		for (AbstractStack stack : stacks) {
-//			str += stack.toString() + ", ";
-//		}
-//		str += "}";
-//		return str;
-//	}
-
-
-//	// TODO check
-//	public AbstractStackSet widening(AbstractStackSet other) throws SemanticException {
-//		AbstractStackSet result = this.clone();
-//		for (AbstractStack stack : other)
-//			result.add(stack);
-//		return result;
-//	}
-//
-//	// TODO check
-//	public AbstractStackSet glb(AbstractStackSet other) throws SemanticException {
-//		AbstractStackSet result = this.clone();
-//		for (AbstractStack stack : other)
-//			result.add(stack);
-//		return result;
-//	}
-
-//	// TODO check
-//	@Override
-//	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
-//		AbstractStackSet result = this.clone();
-//		for (AbstractStack stack : other)
-//			result.add(stack);
-//		return result;
-//	}
-
-//	// TODO check
-//	@Override
-//	public boolean lessOrEqualAux(AbstractStackSet other) throws SemanticException {
-//		if (this.size() < other.size())
-//			return true;
-//		else if (this.size() > other.size())
-//			return false;
-//
-//		Iterator<AbstractStack> itThis = this.iterator();
-//		Iterator<AbstractStack> itOther = other.iterator();
-//
-//		while (itThis.hasNext() && itOther.hasNext()) {
-//			if (!itThis.next().lessOrEqualAux(itOther.next()))
-//				return false;
-//		}
-//
-//		return true;
-//	}
-
 	@Override
 	public int hashCode() {
 		return super.hashCode();
