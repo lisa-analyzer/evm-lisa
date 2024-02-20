@@ -52,7 +52,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 			return TOP;
 		else if (isBottom())
 			return BOTTOM;
-		AbstractStackSet result = new AbstractStackSet();
+		AbstractStackSet result = new AbstractStackSet(new HashSet<AbstractStack>(), false);
 		for (AbstractStack stack : elements())
 			result.add(stack.clone());
 		return result;
@@ -76,8 +76,6 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 
 	@Override
 	public AbstractStackSet mk(Set<AbstractStack> set) {
-		// TODO Auto-generated method stub
-		return null;
+		return new AbstractStackSet(set, false);
 	}
-
 }
