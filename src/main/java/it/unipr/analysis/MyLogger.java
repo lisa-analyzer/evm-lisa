@@ -46,8 +46,7 @@ public class MyLogger {
 		this.maybeUnreachableJumps = maybeUnreachableJumps;
 		if (jumps != 0) {
 			if (solvedJumpsPercent == 0)
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps
-						+ definitelyUnreachableJumps)
+				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps)
 						/ jumps);
 			this.preciselySolvedJumpsPercent = ((double) (preciselyResolvedJumps) / jumps);
 		} else {
