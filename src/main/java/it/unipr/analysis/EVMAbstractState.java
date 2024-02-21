@@ -741,7 +741,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 									}
 								}
 							}
-							if(resultKIntegerSet == KIntegerSet.BOTTOM)
+							if(resultKIntegerSet.isBottom())
 								resultStack.push(KIntegerSet.TOP);
 							else
 								resultStack.push(resultKIntegerSet);
