@@ -8551,7 +8551,6 @@ ADD
 SWAP1
 JUMP
 INVALID
-SELFDESTRUCT
 '4a'(Unknown Opcode)
 CODECOPY
 'dc'(Unknown Opcode)

@@ -8059,7 +8059,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 MSIZE
 'ef'(Unknown Opcode)
 'ce'(Unknown Opcode)

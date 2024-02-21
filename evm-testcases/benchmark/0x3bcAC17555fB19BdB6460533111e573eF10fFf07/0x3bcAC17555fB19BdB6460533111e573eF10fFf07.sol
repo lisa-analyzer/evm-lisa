@@ -1134,7 +1134,6 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -1146,7 +1145,6 @@ CHAINID
 'df'(Unknown Opcode)
 'f9'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 '5c'(Unknown Opcode)
 BYTE
 XOR

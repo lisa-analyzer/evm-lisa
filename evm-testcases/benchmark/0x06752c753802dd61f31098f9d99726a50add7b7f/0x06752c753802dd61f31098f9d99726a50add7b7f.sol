@@ -1577,7 +1577,6 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -1588,7 +1587,6 @@ SWAP3
 'cc'(Unknown Opcode)
 'fc'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 'df'(Unknown Opcode)
 LT
 '0f'(Unknown Opcode)

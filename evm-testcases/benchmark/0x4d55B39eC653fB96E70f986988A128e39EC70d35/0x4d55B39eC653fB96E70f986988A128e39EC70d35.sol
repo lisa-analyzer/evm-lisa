@@ -3002,7 +3002,6 @@ POP
 SWAP3
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -3014,7 +3013,6 @@ ORIGIN
 'b1'(Unknown Opcode)
 'ac'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 'af'(Unknown Opcode)
 SHR
 'f7'(Unknown Opcode)
