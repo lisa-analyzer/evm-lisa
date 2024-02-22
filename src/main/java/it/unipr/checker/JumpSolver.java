@@ -170,7 +170,12 @@ public class JumpSolver
 
 			for (KIntegerSet topStack : valueState.getTop()) {
 				if (topStack.isBottom()) {
-					this.unreachableJumps.add(node); // FIXME: this is wrong: a jump is unreachable if all the top of the stacks are bottom or do not contain jump dest
+					this.unreachableJumps.add(node); // FIXME: this is wrong: a
+														// jump is unreachable
+														// if all the top of the
+														// stacks are bottom or
+														// do not contain jump
+														// dest
 					continue;
 				} else if (topStack.isTop()) {
 					System.err.println("Not solved jump (top of the stack is top): " + node + "["
@@ -183,11 +188,16 @@ public class JumpSolver
 						.filter(pc -> topStack
 								.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
-				
+
 				// If there are no JUMPDESTs for this value, skip to the
 				// next one.
 				if (filteredDests.isEmpty()) {
-					this.unreachableJumps.add(node); // FIXME: this is wrong: a jump is unreachable if all the top of the stacks do not contains jump dests or are bottom
+					this.unreachableJumps.add(node); // FIXME: this is wrong: a
+														// jump is unreachable
+														// if all the top of the
+														// stacks do not
+														// contains jump dests
+														// or are bottom
 					continue;
 				}
 

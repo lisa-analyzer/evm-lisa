@@ -954,9 +954,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet new_mu_i = null;
-						
+
 						KIntegerSet offset = resultStack.pop();
-						
+
 						if (mu_i.equals(KIntegerSet.ZERO)) {
 							// This is an error. We cannot read from memory if
 							// there is no active words saved
@@ -1807,7 +1807,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			return Lattice.topRepresentation();
 
 		// TODO to create a more optimized version
-		return new StringRepresentation("{ stacks: " + stacks + ", memory: " + memory + ", mu_i: " + mu_i + " }");
+		return new StringRepresentation(
+				"{ stacks: " + stacks.toString2() + ", memory: " + memory + ", mu_i: " + mu_i + " }");
 	}
 
 	@Override

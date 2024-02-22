@@ -62,7 +62,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		String SC_ADDRESS = "0xb0b14701a4bbAD3Ac093621008E11247e67B8368";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
 	}

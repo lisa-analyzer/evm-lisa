@@ -70,7 +70,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	@Test
 	public void testWhile() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", true);
 		perform(conf);
 	}
 

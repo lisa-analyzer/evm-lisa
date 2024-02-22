@@ -1,7 +1,6 @@
 package it.unipr.cfg;
 
 import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.operator.JumpiOperator;
@@ -16,14 +15,10 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Jumpi opcode of the program to analyze.
