@@ -722,7 +722,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet indexOfByte = resultStack.pop();
 						KIntegerSet target = resultStack.pop();
-						KIntegerSet resultKIntegerSet = KIntegerSet.BOTTOM;
+						KIntegerSet resultKIntegerSet = KIntegerSet.ZERO;
 
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.TOP);
@@ -741,10 +741,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 									}
 								}
 							}
-							if(resultKIntegerSet.isBottom())
-								resultStack.push(KIntegerSet.TOP);
-							else
-								resultStack.push(resultKIntegerSet);
+							resultStack.push(resultKIntegerSet);
 						}
 
 						result.add(resultStack);
