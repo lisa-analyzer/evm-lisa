@@ -399,16 +399,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				case "JumpdestOperator": { // JUMPDEST
 					return this;
 				}
-				}
+				
 				// Above, operators that do not perform pop()
-
-				// from here on, top is propagated
-//					if (isTop())
-//						return this;
-
 				// Below, operators that perform pop operation on the stack
-				switch (op.getClass().getSimpleName()) {
-
+		
 				case "JumpOperator": { // JUMP
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(), false);
 
