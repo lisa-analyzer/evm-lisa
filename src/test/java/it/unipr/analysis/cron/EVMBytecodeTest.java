@@ -35,7 +35,7 @@ import org.junit.Test;
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	// Choose whether to generate the CFG or not
-	private final static boolean GENERATE_CFG = false;
+	private final static boolean GENERATE_CFG = true;
 
 	// Append statistics in file
 	private final static boolean APPEND = true;
@@ -379,7 +379,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	private void toFileStatistics(String stats) {
 		synchronized (STATISTICS_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICS_FULLPATH);
 				if (!idea.exists()) {
@@ -435,7 +435,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	private void toFileFailure(String stats) {
 		synchronized (FAILURE_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(FAILURE_FULLPATH);
 				if (!idea.exists()) {

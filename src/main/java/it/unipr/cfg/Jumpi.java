@@ -59,11 +59,11 @@ public class Jumpi extends Statement {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions) throws SemanticException {
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
 		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
 		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
@@ -87,9 +87,8 @@ public class Jumpi extends Statement {
 					// For each JUMPDEST, add the missing edge from this node to
 					// the JUMPDEST.
 					for (Statement jmp : filteredDests) {
-						if (!cfg.containsEdge(new TrueEdge(this, jmp))) {
+						if (!cfg.containsEdge(new TrueEdge(this, jmp))) 
 							cfg.addEdge(new TrueEdge(this, jmp));
-						}
 					}
 				}
 			}
