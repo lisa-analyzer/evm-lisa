@@ -16,6 +16,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.tuple.Triple;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
@@ -73,6 +75,14 @@ public class EVMLiSA {
 		Option filePathOption = new Option("f", "filepath", true, "filepath of the Etherem smart contract");
 		filePathOption.setRequired(false);
 		options.addOption(filePathOption);
+		
+		Option stackSizeOption = new Option("q", "stack-size", true, "dimension of stack");
+		stackSizeOption.setRequired(false);
+		options.addOption(stackSizeOption);
+		
+		Option stackSetSizeOption = new Option("w", "stack-set-size", true, "dimension of stack-set");
+		stackSetSizeOption.setRequired(false);
+		options.addOption(stackSetSizeOption);
 
 		// Boolean parameters
 		Option dumpStatisticsOption = Option.builder("s")
@@ -109,10 +119,26 @@ public class EVMLiSA {
 		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
 		String filepath = cmd.getOptionValue("filepath");
+		String stackSize = cmd.getOptionValue("stack-size");
+		String stackSetSize = cmd.getOptionValue("stack-set-size");
+		
+		try {
+			if(stackSize != null && Integer.parseInt(stackSize) > 0)
+				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
+			
+			if(stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
+				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
+			
+		} catch(NumberFormatException e) {
+			System.out.println("Size must be an integer");
+			formatter.printHelp("help", options);
+
+			System.exit(1);
+		}
 
 		if (addressSC == null && filepath == null) {
 			// Error: no address and no filepath
-			System.out.println("address or filepath required");
+			System.out.println("Address or filepath required");
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
@@ -175,7 +201,9 @@ public class EVMLiSA {
 					"Jumps: " + baseCfg.getAllJumps().size() + "\n" +
 					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" +
 					"SoundResolvedJumps: " + pair.getMiddle() + "\n" +
-					"UnreachableJumps: " + pair.getRight() + "\n" +
+					"DefinitelyUnreachableJumps: " + pair.getRight().getLeft() + "\n" +
+					"MaybeUnreachableJumps: " + pair.getRight().getMiddle() + "\n" +
+					"NotUnreachableJumps: " + pair.getRight().getRight() + "\n" +
 					"Time (in millis): " + (finish - start) + "\n";
 
 			System.out.println(msg2);
@@ -188,9 +216,10 @@ public class EVMLiSA {
 						.preciselyResolvedJumps(pair.getLeft())
 						.soundResolvedJumps(pair.getMiddle())
 						.definitelyUnreachableJumps(pair.getRight().getLeft())
-						.definitelyUnreachableJumps(pair.getRight().getMiddle())
+						.maybeUnreachableJumps(pair.getRight().getMiddle())
 						.notSolvedJumps(pair.getRight().getRight())
 						.time(finish - start)
+						.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: " + AbstractStackSet.getStackSetLimit())
 						.build().toString();
 
 				toFileStatistics(msg);
@@ -282,7 +311,7 @@ public class EVMLiSA {
 	 */
 	private void toFileStatistics(String stats) {
 		synchronized (STATISTICS_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICS_FULLPATH);
 				if (!idea.exists()) {
@@ -310,7 +339,7 @@ public class EVMLiSA {
 	 */
 	private void toFileFailure(String stats) {
 		synchronized (FAILURE_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Unreachable Jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(FAILURE_FULLPATH);
 				if (!idea.exists()) {
