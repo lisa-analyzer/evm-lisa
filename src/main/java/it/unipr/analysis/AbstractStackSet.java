@@ -104,11 +104,11 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 
 		return result;
 	}
-	
+
 	public static void setStackSetSize(int n) {
 		SIZE = n;
 	}
-	
+
 	public static int getStackSetLimit() {
 		return SIZE;
 	}

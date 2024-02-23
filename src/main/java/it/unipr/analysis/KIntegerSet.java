@@ -419,8 +419,9 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		Set<BigDecimal> elements = new HashSet<>();
 		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements) 
-					elements.add(new BigDecimal(new BigInteger(shiftArithmeticRight(j.toBigInteger().toByteArray(), i.intValue()))));
+			for (BigDecimal j : other.elements)
+				elements.add(new BigDecimal(
+						new BigInteger(shiftArithmeticRight(j.toBigInteger().toByteArray(), i.intValue()))));
 
 		return new KIntegerSet(elements);
 	}

@@ -305,7 +305,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.maybeUnreachableJumps(pair.getRight().getMiddle())
 				.notSolvedJumps(pair.getRight().getRight())
 				.time(finish - start)
-				.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: " + AbstractStackSet.getStackSetLimit())
+				.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
+						+ AbstractStackSet.getStackSetLimit())
 				.build();
 	}
 

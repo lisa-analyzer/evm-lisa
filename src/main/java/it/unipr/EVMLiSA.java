@@ -1,21 +1,5 @@
 package it.unipr;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Set;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -37,6 +21,20 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Set;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 	private final static String OUTPUT_DIR = "execution/results/";
@@ -75,11 +73,11 @@ public class EVMLiSA {
 		Option filePathOption = new Option("f", "filepath", true, "filepath of the Etherem smart contract");
 		filePathOption.setRequired(false);
 		options.addOption(filePathOption);
-		
+
 		Option stackSizeOption = new Option("q", "stack-size", true, "dimension of stack");
 		stackSizeOption.setRequired(false);
 		options.addOption(stackSizeOption);
-		
+
 		Option stackSetSizeOption = new Option("w", "stack-set-size", true, "dimension of stack-set");
 		stackSetSizeOption.setRequired(false);
 		options.addOption(stackSetSizeOption);
@@ -121,15 +119,15 @@ public class EVMLiSA {
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
-		
+
 		try {
-			if(stackSize != null && Integer.parseInt(stackSize) > 0)
+			if (stackSize != null && Integer.parseInt(stackSize) > 0)
 				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
-			
-			if(stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
+
+			if (stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
 				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
-			
-		} catch(NumberFormatException e) {
+
+		} catch (NumberFormatException e) {
 			System.out.println("Size must be an integer");
 			formatter.printHelp("help", options);
 
@@ -219,7 +217,8 @@ public class EVMLiSA {
 						.maybeUnreachableJumps(pair.getRight().getMiddle())
 						.notSolvedJumps(pair.getRight().getRight())
 						.time(finish - start)
-						.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: " + AbstractStackSet.getStackSetLimit())
+						.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
+								+ AbstractStackSet.getStackSetLimit())
 						.build().toString();
 
 				toFileStatistics(msg);
@@ -259,7 +258,7 @@ public class EVMLiSA {
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;
 		int soundResolvedJumps = 0;
-		
+
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int notSolvedJumps = 0;
@@ -276,7 +275,7 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
-				else 
+				else
 					notSolvedJumps++;
 			} else if (jumpNode instanceof Jumpi) {
 				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
@@ -287,7 +286,7 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
-				else 
+				else
 					notSolvedJumps++;
 			}
 
@@ -301,7 +300,8 @@ public class EVMLiSA {
 		System.err.println("Not solved jumps: " + notSolvedJumps);
 		System.err.println("##############");
 
-		return Triple.of(preciselyResolvedJumps, soundResolvedJumps, Triple.of(definitelyUnreachable, maybeUnreachable, notSolvedJumps));
+		return Triple.of(preciselyResolvedJumps, soundResolvedJumps,
+				Triple.of(definitelyUnreachable, maybeUnreachable, notSolvedJumps));
 	}
 
 	/**

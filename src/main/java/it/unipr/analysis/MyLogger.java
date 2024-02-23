@@ -46,7 +46,8 @@ public class MyLogger {
 		this.maybeUnreachableJumps = maybeUnreachableJumps;
 		if (jumps != 0) {
 			if (solvedJumpsPercent == 0)
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps + maybeUnreachableJumps)
+				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps
+						+ definitelyUnreachableJumps + maybeUnreachableJumps)
 						/ jumps);
 		} else {
 			if (solvedJumpsPercent == 0)
@@ -97,7 +98,7 @@ public class MyLogger {
 		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
 		return this;
 	}
-	
+
 	public MyLogger notSolvedJumps(int notSolvedJumps) {
 		this.notSolvedJumps = notSolvedJumps;
 		return this;
@@ -120,7 +121,8 @@ public class MyLogger {
 
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
-				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps, solvedJumpsPercent, time, notes);
+				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps,
+				solvedJumpsPercent, time, notes);
 	}
 
 	public int jumpSize() {
