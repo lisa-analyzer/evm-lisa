@@ -9,6 +9,8 @@ import java.util.Set;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
+	
+	private static int SIZE = 50;
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null, false);
 	private static final AbstractStackSet TOP = new AbstractStackSet(Collections.emptySet(), true);
 
@@ -63,7 +65,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	@Override
 	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
 		AbstractStackSet lubAux = super.lubAux(other);
-		if (lubAux.size() > 50)
+		if (lubAux.size() > SIZE)
 			return TOP;
 		return lubAux;
 	}
@@ -102,5 +104,9 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		result += "}";
 
 		return result;
+	}
+	
+	public static void setStackSetSize(int n) {
+		SIZE = n;
 	}
 }

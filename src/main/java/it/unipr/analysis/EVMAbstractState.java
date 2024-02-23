@@ -1653,8 +1653,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		Object[] obj = clone.toArray();
 
 		int first;
-		if (stack.size() < AbstractStack.STACK_LIMIT)
-			first = AbstractStack.STACK_LIMIT;
+		if (stack.size() < AbstractStack.getStackLimit())
+			first = AbstractStack.getStackLimit();
 		else
 			first = clone.size();
 
@@ -1690,8 +1690,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		Object[] obj = clone.toArray();
 		int first;
 
-		if (stack.size() < AbstractStack.STACK_LIMIT)
-			first = AbstractStack.STACK_LIMIT - 1;
+		if (stack.size() < AbstractStack.getStackLimit())
+			first = AbstractStack.getStackLimit() - 1;
 		else
 			first = clone.size() - 1;
 
