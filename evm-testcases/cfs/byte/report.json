@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_mulmod_mulmod_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_byte_byte_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
     "duration" : "3ms",
-    "end" : "2024-02-23T10:20:51.182+01:00",
-    "expressions" : "8",
+    "end" : "2024-02-23T10:20:51.081+01:00",
+    "expressions" : "9",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-02-23T10:20:51.179+01:00",
-    "statements" : "13",
+    "start" : "2024-02-23T10:20:51.078+01:00",
+    "statements" : "16",
     "units" : "0",
     "version" : "0.1b8",
     "warnings" : "0"
@@ -32,6 +32,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "evm-outputs/cfs/mulmod"
+    "workdir" : "evm-outputs/cfs/byte"
   }
 }

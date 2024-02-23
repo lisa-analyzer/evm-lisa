@@ -1,6 +1,8 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.EVMLiSA;
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
@@ -58,7 +60,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0x148557763bC4e0566C93Ddb6869E823cd531Ba91";
+		String SC_ADDRESS = "0xdfDAc3b2F608cF8B1E78D424D94AfA8aC980639b";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -303,6 +305,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.maybeUnreachableJumps(pair.getRight().getMiddle())
 				.notSolvedJumps(pair.getRight().getRight())
 				.time(finish - start)
+				.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: " + AbstractStackSet.getStackSetLimit())
 				.build();
 	}
 
