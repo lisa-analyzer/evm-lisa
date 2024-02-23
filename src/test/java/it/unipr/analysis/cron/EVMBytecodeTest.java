@@ -48,7 +48,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private final String STATISTICSZEROJUMP_FULLPATH = ACTUAL_RESULTS_DIR + "/statisticsZeroJumps.csv";
 	private final String FAILURE_FULLPATH = ACTUAL_RESULTS_DIR + "/failure.csv";
 	private final String LOGS_FULLPATH = ACTUAL_RESULTS_DIR + "/logs.txt";
-	private final String SMARTCONTRACTS_FULLPATH = "benchmark/tiny-benchmark.txt";
+	private final String SMARTCONTRACTS_FULLPATH = "benchmark/tiny-fair-benchmark.txt";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -59,7 +59,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testSCFromEtherscan() throws Exception {
-		String SC_ADDRESS = "0xb0b14701a4bbAD3Ac093621008E11247e67B8368";
+		String SC_ADDRESS = "0x148557763bC4e0566C93Ddb6869E823cd531Ba91";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
@@ -291,7 +291,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		// Print the results
 		EVMCFG baseCfg = checker.getComputedCFG();
 
-		Triple<Integer, Integer, Pair<Integer, Integer>> pair = EVMLiSA.dumpStatistics(checker);
+		Triple<Integer, Integer, Triple<Integer, Integer, Integer>> pair = EVMLiSA.dumpStatistics(checker);
 		long finish = System.currentTimeMillis();
 
 		return MyLogger.newLogger()
@@ -301,7 +301,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 				.preciselyResolvedJumps(pair.getLeft())
 				.soundResolvedJumps(pair.getMiddle())
 				.definitelyUnreachableJumps(pair.getRight().getLeft())
-				.maybeUnreachableJumps(pair.getRight().getRight())
+				.maybeUnreachableJumps(pair.getRight().getMiddle())
+				.notSolvedJumps(pair.getRight().getRight())
 				.time(finish - start)
 				.build();
 	}

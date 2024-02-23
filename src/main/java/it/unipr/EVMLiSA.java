@@ -1,5 +1,21 @@
 package it.unipr;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Set;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
@@ -19,21 +35,6 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Set;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 	private final static String OUTPUT_DIR = "execution/results/";
@@ -162,7 +163,7 @@ public class EVMLiSA {
 
 			EVMCFG baseCfg = checker.getComputedCFG();
 
-			Triple<Integer, Integer, Pair<Integer, Integer>> pair;
+			Triple<Integer, Integer, Triple<Integer, Integer, Integer>> pair;
 
 			pair = dumpStatistics(checker);
 
@@ -187,7 +188,8 @@ public class EVMLiSA {
 						.preciselyResolvedJumps(pair.getLeft())
 						.soundResolvedJumps(pair.getMiddle())
 						.definitelyUnreachableJumps(pair.getRight().getLeft())
-						.definitelyUnreachableJumps(pair.getRight().getRight())
+						.definitelyUnreachableJumps(pair.getRight().getMiddle())
+						.notSolvedJumps(pair.getRight().getRight())
 						.time(finish - start)
 						.build().toString();
 
@@ -223,13 +225,15 @@ public class EVMLiSA {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-	public static Triple<Integer, Integer, Pair<Integer, Integer>> dumpStatistics(JumpSolver checker) {
+	public static Triple<Integer, Integer, Triple<Integer, Integer, Integer>> dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		int preciselyResolvedJumps = 0;
 		int soundResolvedJumps = 0;
+		
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
+		int notSolvedJumps = 0;
 
 		// we are safe supposing that we have a single entry point
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
@@ -243,6 +247,8 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
+				else 
+					notSolvedJumps++;
 			} else if (jumpNode instanceof Jumpi) {
 				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
 					preciselyResolvedJumps++;
@@ -252,6 +258,8 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
+				else 
+					notSolvedJumps++;
 			}
 
 		System.err.println("##############");
@@ -261,9 +269,10 @@ public class EVMLiSA {
 		System.err.println("Sound solved jumps: " + soundResolvedJumps);
 		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
+		System.err.println("Not solved jumps: " + notSolvedJumps);
 		System.err.println("##############");
 
-		return Triple.of(preciselyResolvedJumps, soundResolvedJumps, Pair.of(definitelyUnreachable, maybeUnreachable));
+		return Triple.of(preciselyResolvedJumps, soundResolvedJumps, Triple.of(definitelyUnreachable, maybeUnreachable, notSolvedJumps));
 	}
 
 	/**

@@ -49,8 +49,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// nothing to do here
+		return this;
 	}
 
 	@Override
