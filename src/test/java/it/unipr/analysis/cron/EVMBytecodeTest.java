@@ -55,7 +55,8 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
-	private final int CORES = Runtime.getRuntime().availableProcessors();
+	private final int CORES = 1;
+//	private final int CORES = Runtime.getRuntime().availableProcessors();
 	private long startOfExecutionTime = 0;
 
 	@Test
@@ -65,6 +66,11 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// Stack size
+		AbstractStack.setStackLimit(128);
+		// Stack set size
+		AbstractStackSet.setStackSetSize(256);
+		
 		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
 	}
 
@@ -180,7 +186,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
 
-			int millisPerSmartContract = 25000;
+			int millisPerSmartContract = 25000 * 10;
 			int extra = 120000;
 			long blocks = smartContracts.size() / CORES * 20000;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
@@ -195,6 +201,10 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			msg += "Finish (brute) expected at " + DATE_FORMAT.format(System.currentTimeMillis() + timeToWait) + " \n";
 			msg += "Number of cores: " + CORES + " \n";
 			msg += "Number of analyses: " + smartContracts.size() + " \n";
+			msg += "\n"; // Blank line
+			
+			msg += "Stack size = " + AbstractStack.getStackLimit() + "\n";
+			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + "\n";
 			msg += "\n"; // Blank line
 
 			System.out.println(msg);
