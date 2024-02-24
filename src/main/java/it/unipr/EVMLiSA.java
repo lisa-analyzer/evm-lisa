@@ -37,7 +37,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
-	private final static String OUTPUT_DIR = "execution/results/";
+	private static String OUTPUT_DIR = "execution/results/";
 	private String STATISTICS_FULLPATH = "";
 	private String FAILURE_FULLPATH = "";
 
@@ -119,7 +119,7 @@ public class EVMLiSA {
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
-
+		
 		try {
 			if (stackSize != null && Integer.parseInt(stackSize) > 0)
 				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
@@ -140,7 +140,8 @@ public class EVMLiSA {
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
-
+		
+		OUTPUT_DIR += addressSC + "/";
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 
 		if (outputDir == null)
