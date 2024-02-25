@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Scanner;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
-import org.junit.Test;
 
 public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 
@@ -59,22 +58,20 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 //	private final int CORES = Runtime.getRuntime().availableProcessors();
 	private long startOfExecutionTime = 0;
 
-	@Test
-	public void testSCFromEtherscan() throws Exception {
+	private void testSCFromEtherscan() throws Exception {
 		String SC_ADDRESS = "0xdfDAc3b2F608cF8B1E78D424D94AfA8aC980639b";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
 
-	public static void main(String[] args) throws Exception {
-		// Stack size
-		AbstractStack.setStackLimit(128);
-		// Stack set size
-		AbstractStackSet.setStackSetSize(256);
-		
-		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
-	}
+//	public static void main(String[] args) throws Exception {
+//		
+//		AbstractStack.setStackLimit(128); // Stack size
+//		AbstractStackSet.setStackSetSize(256); // Stack set size
+//		
+//		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
+//	}
 
-	public void testEVMBytecodeAnalysisMultiThread() throws Exception {
+	private void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();
 		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
@@ -202,7 +199,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 			msg += "Number of cores: " + CORES + " \n";
 			msg += "Number of analyses: " + smartContracts.size() + " \n";
 			msg += "\n"; // Blank line
-			
+
 			msg += "Stack size = " + AbstractStack.getStackLimit() + "\n";
 			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + "\n";
 			msg += "\n"; // Blank line

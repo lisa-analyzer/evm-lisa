@@ -119,7 +119,7 @@ public class EVMLiSA {
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
-		
+
 		try {
 			if (stackSize != null && Integer.parseInt(stackSize) > 0)
 				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
@@ -140,7 +140,7 @@ public class EVMLiSA {
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
-		
+
 		OUTPUT_DIR += addressSC + "/";
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 

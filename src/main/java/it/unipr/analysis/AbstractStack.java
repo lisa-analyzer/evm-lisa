@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
-	private static int STACK_LIMIT = 200;
+	private static int STACK_LIMIT = 128;
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	private final LinkedList<KIntegerSet> stack;

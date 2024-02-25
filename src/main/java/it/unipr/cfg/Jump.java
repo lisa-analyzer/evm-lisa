@@ -1,9 +1,6 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.operator.JumpOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -16,14 +13,10 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Jump opcode of the program to analyze.
@@ -66,32 +59,33 @@ public class Jump extends Statement {
 
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
 		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
-		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-
-		// If the abstract stack is top or bottom or it is empty, we do not
-		// have enough information
-		// to solve the jump.
-		if (!valueState.isBottom() && !valueState.isTop()) {
-			AbstractStackSet stacks = valueState.getStacks();
-
-			for (AbstractStack a : stacks) {
-				KIntegerSet stack = a.getTop();
-				if (!stack.isBottom() && !stack.isTop()) {
-					Set<Statement> filteredDests = jumpDestinations.stream()
-							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-							.filter(pc -> stack
-									.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
-							.collect(Collectors.toSet());
-
-					// For each JUMPDEST, add the missing edge from this node to
-					// the JUMPDEST.
-					for (Statement jmp : filteredDests) {
-						if (!cfg.containsEdge(new SequentialEdge(this, jmp)))
-							cfg.addEdge(new SequentialEdge(this, jmp));
-					}
-				}
-			}
-		}
+//		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
+//
+//		// If the abstract stack is top or bottom or it is empty, we do not
+//		// have enough information
+//		// to solve the jump.
+//		if (!valueState.isBottom() && !valueState.isTop()) {
+//			AbstractStackSet stacks = valueState.getStacks();
+//
+//			for (AbstractStack a : stacks) {
+//				KIntegerSet stack = a.getTop();
+//				if (!stack.isBottom() && !stack.isTop()) {
+//					Set<Statement> filteredDests = jumpDestinations.stream()
+//							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
+//							.filter(pc -> stack
+//									.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
+//							.collect(Collectors.toSet());
+//
+//					// For each JUMPDEST, add the missing edge from this node to
+//					// the JUMPDEST.
+//					for (Statement jmp : filteredDests) {
+//						if (!cfg.containsEdge(new TrueEdge(this, jmp))) {
+//							cfg.addEdge(new TrueEdge(this, jmp));
+//						}
+//					}
+//				}
+//			}
+//		}
 
 		Constant dummy = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
