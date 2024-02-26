@@ -196,7 +196,7 @@ public class EVMLiSA {
 
 			String msg2 = "\nResults \n" +
 					"Address: " + addressSC + "\n" +
-					"Opcodes: " + baseCfg.getNodesCount() + "\n" +
+					"Opcodes: " + baseCfg.getOpcodeCount() + "\n" +
 					"Jumps: " + baseCfg.getAllJumps().size() + "\n" +
 					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" +
 					"SoundResolvedJumps: " + pair.getMiddle() + "\n" +
@@ -210,7 +210,7 @@ public class EVMLiSA {
 			if (dumpStatistics) {
 				String msg = MyLogger.newLogger()
 						.address(addressSC)
-						.opcodes(baseCfg.getNodesCount())
+						.opcodes(baseCfg.getOpcodeCount())
 						.jumps(baseCfg.getAllJumps().size())
 						.preciselyResolvedJumps(pair.getLeft())
 						.soundResolvedJumps(pair.getMiddle())
@@ -292,7 +292,7 @@ public class EVMLiSA {
 			}
 
 		System.err.println("##############");
-		System.err.println("Total opcodes: " + cfg.getNodesCount());
+		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
 		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);
 		System.err.println("Sound solved jumps: " + soundResolvedJumps);

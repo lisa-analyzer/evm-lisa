@@ -88,6 +88,11 @@ public class EVMCFG extends CFG {
 
 		return jumpNodes;
 	}
+	
+	public int getOpcodeCount() {
+		// -1 for the return statement
+		return this.getNodesCount() - 1;
+	}
 
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
