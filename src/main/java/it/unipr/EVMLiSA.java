@@ -61,7 +61,7 @@ public class EVMLiSA {
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
 	private int CORES;
 	private long startOfExecutionTime = 0;
-
+	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Notes \n";
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
 	 * from a EVM bytecode smart contract and runs the analysis on it.
@@ -669,7 +669,6 @@ public class EVMLiSA {
 	 */
 	private void toFileStatistics(String stats) {
 		synchronized (STATISTICS_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICS_FULLPATH);
 				if (!idea.exists()) {
@@ -697,7 +696,6 @@ public class EVMLiSA {
 	 */
 	private void toFileStatisticsWithZeroJumps(String stats) {
 		synchronized (STATISTICSZEROJUMP_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(STATISTICSZEROJUMP_FULLPATH);
 				if (!idea.exists()) {
@@ -725,7 +723,6 @@ public class EVMLiSA {
 	 */
 	private void toFileFailure(String stats) {
 		synchronized (FAILURE_FULLPATH) {
-			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Thread, Notes \n";
 			try {
 				File idea = new File(FAILURE_FULLPATH);
 				if (!idea.exists()) {
@@ -815,6 +812,58 @@ public class EVMLiSA {
 	 */
 	private String now() {
 		return DATE_FORMAT.format(System.currentTimeMillis());
+	}
+	
+	/**
+	 * Saves smart contracts bytecode from Etherscan.
+	 * <p>
+	 * This method reads a list of smart contract addresses from a file, then
+	 * for each address, it retrieves the bytecode of the corresponding smart
+	 * contract from Etherscan.io and saves it to a file. The method also limits
+	 * the API requests to Etherscan.io to a maximum of 5 per second.
+	 * </p>
+	 *
+	 * @throws Exception if an error occurs during the process.
+	 */
+	@SuppressWarnings("unused")
+	private void saveSmartContractsFromEtherscan() throws Exception {
+		List<String> smartContracts = readSmartContractsFromFile();
+
+		for (int i = 0; i < smartContracts.size(); i++) {
+			String address = smartContracts.get(i);
+
+			String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + address + "/" + address
+					+ ".sol";
+
+			if (i % 5 == 0) {
+				try {
+					Thread.sleep(1001); // I can do max 5 API
+										// request in 1 sec to
+										// Etherscan.io
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+			// Directory setup and bytecode retrieval
+			try {
+				Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + address));
+
+				// If the file does not exists, we will do an API request to
+				// Etherscan
+				File file = new File(BYTECODE_FULLPATH);
+				if (!file.exists()) {
+					numberOfAPIEtherscanRequest++;
+					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
+						numberOfAPIEtherscanRequestOnSuccess++;
+
+					System.out.printf("Downloading %s, remaining: %s \n", address,
+							(smartContracts.size() - numberOfAPIEtherscanRequest));
+				}
+			} catch (Exception e) {
+				continue;
+			}
+		}
 	}
 
 }

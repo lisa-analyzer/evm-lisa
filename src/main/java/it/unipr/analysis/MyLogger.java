@@ -134,15 +134,16 @@ public class MyLogger {
 		return address + divider +
 				opcodes + divider +
 				jumps + divider +
-				preciselyResolvedJumps + divider +
-				soundResolvedJumps + divider +
+//				preciselyResolvedJumps + divider +
+//				soundResolvedJumps + divider +
+				(soundResolvedJumps + preciselyResolvedJumps) + divider +
 				definitelyUnreachableJumps + divider +
 				maybeUnreachableJumps + divider +
 				totalResolvedJumps + divider +
 				notSolvedJumps + divider +
 				solvedJumpsPercent + divider +
 				time + divider +
-				currentThread + divider +
+//				currentThread + divider +
 				notes + " \n";
 	}
 }
