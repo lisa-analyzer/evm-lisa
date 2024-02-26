@@ -32,21 +32,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 public class EVMFrontend {
 
 	/**
-	 * TODO: Refactor these strings and understand if they are still needed.
-	 */
-	// private static String FROM_0417_TO_058 = "a165627a7a72305820";
-	// private static String FROM_0417_TO_058_EXPERIMENTAL =
-	// "a265627a7a72305820";
-	// private static String FROM_059_TO_0511 = "a265627a7a72305820";
-	// private static String FROM_059_TO_0511_EXPERIMENTAL =
-	// "a365627a7a72305820";
-	// private static String FROM_0512_TO_0515 = "a265627a7a72315820";
-	// private static String FROM_0512_TO_0515_EXPERIMENTAL =
-	// "a365627a7a72315820";
-	// private static String FROM_060_TO_061 = "a264697066735822";
-	// private static String FROM_062_TO_LATEST = "a264697066735822";
-
-	/**
 	 * Verifies the syntactic correctness of the smart contract bytecode stored
 	 * in {@code filePath} and returns its {@code ProgramContext}.
 	 * 
@@ -97,54 +82,16 @@ public class EVMFrontend {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 
 		for (int i = 2; i < bytecode.length(); i += 2) {
-
-			// if (bytecode.substring(i, (i + 18)).equals(FROM_0417_TO_058)
-			// || bytecode.substring(i, (i +
-			// 18)).equals(FROM_0417_TO_058_EXPERIMENTAL)
-			// || bytecode.substring(i, (i + 18)).equals(FROM_059_TO_0511)
-			// || bytecode.substring(i, (i +
-			// 18)).equals(FROM_059_TO_0511_EXPERIMENTAL)
-			// || bytecode.substring(i, (i + 18)).equals(FROM_0512_TO_0515)
-			// || bytecode.substring(i, (i +
-			// 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL)
-			// || bytecode.substring(i, (i + 16)).equals(FROM_060_TO_061)
-			// || bytecode.substring(i, (i + 16)).equals(FROM_062_TO_LATEST)) {
-			//
-			// writer.close();
-			// return true;
-			// }
-
 			String opcode = bytecode.substring(i, i + 2);
-
 			int t = pushTest(opcode);
 
 			if (t != 0) {
 				String push;
 				int offset = (i + 2 + 2 * t);
-				if (offset > bytecode.length()) {
+				if (offset > bytecode.length())
 					push = bytecode.substring(i + 2);
-				} else
+				else
 					push = bytecode.substring(i + 2, (i + 2 + 2 * t));
-
-				// for (int j = i + 2; j < (i + 2 + 2 * t); j += 2) {
-				//
-				// if (bytecode.substring(j, (j + 18)).equals(FROM_0417_TO_058)
-				// || bytecode.substring(j, (j +
-				// 18)).equals(FROM_0417_TO_058_EXPERIMENTAL)
-				// || bytecode.substring(j, (j + 18)).equals(FROM_059_TO_0511)
-				// || bytecode.substring(j, (j +
-				// 18)).equals(FROM_059_TO_0511_EXPERIMENTAL)
-				// || bytecode.substring(j, (j + 18)).equals(FROM_0512_TO_0515)
-				// || bytecode.substring(j, (j +
-				// 18)).equals(FROM_0512_TO_0515_EXPERIMENTAL)
-				// || bytecode.substring(j, (j + 16)).equals(FROM_060_TO_061)
-				// || bytecode.substring(j, (j +
-				// 16)).equals(FROM_062_TO_LATEST)) {
-				//
-				// writer.close();
-				// return true;
-				// }
-				// }
 
 				addPush(push, t, writer);
 				i += 2 * t;
