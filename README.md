@@ -70,6 +70,7 @@ This command will initiate the analysis process for the specified smart contract
 Options:
  -a,--address <arg>          address of an Ethereum smart contract
  -b,--benchmark <arg>        filepath of the benchmark
+ -C,--cores <arg>            number of cores used
  -c,--dump-cfg               dump the CFG
  -d,--dump-analysis <arg>    dump the analysis (html, dot)
  -f,--filepath <arg>         filepath of the Etherem smart contract

@@ -59,7 +59,7 @@ public class EVMLiSA {
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
-	private final int CORES = 1; // Runtime.getRuntime().availableProcessors();
+	private int CORES;
 	private long startOfExecutionTime = 0;
 
 	/**
@@ -106,6 +106,10 @@ public class EVMLiSA {
 		Option benchmarkOption = new Option("b", "benchmark", true, "filepath of the benchmark");
 		benchmarkOption.setRequired(false);
 		options.addOption(benchmarkOption);
+		
+		Option coresOption = new Option("C", "cores", true, "number of cores used");
+		coresOption.setRequired(false);
+		options.addOption(coresOption);
 
 		// Boolean parameters
 		Option dumpStatisticsOption = Option.builder("s")
@@ -145,7 +149,27 @@ public class EVMLiSA {
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
+		String coresOpt = cmd.getOptionValue("cores");
+		
+		if (coresOpt != null && Integer.parseInt(coresOpt) > 0)
+			CORES = Integer.parseInt(coresOpt);
+		else
+			CORES = 1;
 
+		try {
+			if (stackSize != null && Integer.parseInt(stackSize) > 0)
+				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
+
+			if (stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
+				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
+			
+		} catch (NumberFormatException e) {
+			System.out.println("Size must be an integer");
+			formatter.printHelp("help", options);
+
+			System.exit(1);
+		}
+		
 		if (benchmark != null) {
 			Files.createDirectories(Paths.get(OUTPUT_DIR));
 			SMARTCONTRACTS_FULLPATH = benchmark;
@@ -155,20 +179,6 @@ public class EVMLiSA {
 				System.err.println("File " + benchmark + " not found.");
 			}
 			return;
-		}
-
-		try {
-			if (stackSize != null && Integer.parseInt(stackSize) > 0)
-				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
-
-			if (stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
-				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
-
-		} catch (NumberFormatException e) {
-			System.out.println("Size must be an integer");
-			formatter.printHelp("help", options);
-
-			System.exit(1);
 		}
 
 		if (addressSC == null && filepath == null) {
