@@ -288,10 +288,21 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return this.stack.get(STACK_LIMIT - 2);
 	}
 
+	/**
+	 * Set the stack limit
+	 * 
+	 * @param n the new stack limit
+	 */
 	public static void setStackLimit(int n) {
-		STACK_LIMIT = n;
+		if (n > 0)
+			STACK_LIMIT = n;
 	}
 
+	/**
+	 * Yields the stack limit
+	 * 
+	 * @return the stack limit
+	 */
 	public static int getStackLimit() {
 		return STACK_LIMIT;
 	}

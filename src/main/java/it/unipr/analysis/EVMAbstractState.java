@@ -44,7 +44,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 */
 	private final Memory memory;
 
-	private final KIntegerSet mu_i; // TODO Give a better name
+	private final KIntegerSet mu_i;
 
 	/**
 	 * Builds the abstract domain.
@@ -1800,7 +1800,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		else if (isTop())
 			return Lattice.topRepresentation();
 
-		// TODO to create a more optimized version
 		return new StringRepresentation(
 				"{ stacks: " + stacks.toString2() + ", memory: " + memory + ", mu_i: " + mu_i + " }");
 	}

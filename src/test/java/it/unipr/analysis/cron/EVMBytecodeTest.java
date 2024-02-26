@@ -54,22 +54,13 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
-	private final int CORES = 1;
-//	private final int CORES = Runtime.getRuntime().availableProcessors();
+	private final int CORES = Runtime.getRuntime().availableProcessors();
 	private long startOfExecutionTime = 0;
 
 	private void testSCFromEtherscan() throws Exception {
 		String SC_ADDRESS = "0xdfDAc3b2F608cF8B1E78D424D94AfA8aC980639b";
 		toFileStatistics(newAnalysis(SC_ADDRESS).toString());
 	}
-
-//	public static void main(String[] args) throws Exception {
-//		
-//		AbstractStack.setStackLimit(128); // Stack size
-//		AbstractStackSet.setStackSetSize(256); // Stack set size
-//		
-//		new EVMBytecodeTest().testEVMBytecodeAnalysisMultiThread();
-//	}
 
 	private void testEVMBytecodeAnalysisMultiThread() throws Exception {
 		clean();

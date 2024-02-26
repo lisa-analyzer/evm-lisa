@@ -88,7 +88,7 @@ public class EVMCFG extends CFG {
 
 		return jumpNodes;
 	}
-	
+
 	public int getOpcodeCount() {
 		// -1 for the return statement
 		return this.getNodesCount() - 1;

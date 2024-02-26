@@ -22,6 +22,11 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		super(elements, isTop);
 	}
 
+	/**
+	 * Add a new AbstractStack to the set if it is not bottom
+	 * 
+	 * @param other AbstractStack
+	 */
 	public void add(AbstractStack other) {
 		if (!other.isBottom())
 			this.elements.add(other);
@@ -45,6 +50,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		return this.elements == null;
 	}
 
+	@Override
 	public int size() {
 		return this.elements().size();
 	}
@@ -105,10 +111,21 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		return result;
 	}
 
+	/**
+	 * Set the stack set limit
+	 * 
+	 * @param n the new stack set limit
+	 */
 	public static void setStackSetSize(int n) {
-		SIZE = n;
+		if (n > 0)
+			SIZE = n;
 	}
 
+	/**
+	 * Yields the stack set limit
+	 * 
+	 * @return the stack set limit
+	 */
 	public static int getStackSetLimit() {
 		return SIZE;
 	}
