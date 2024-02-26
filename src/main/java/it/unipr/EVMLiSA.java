@@ -22,10 +22,19 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -38,8 +47,20 @@ import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 	private static String OUTPUT_DIR = "execution/results/";
-	private String STATISTICS_FULLPATH = "";
-	private String FAILURE_FULLPATH = "";
+
+	// Path
+	private String STATISTICS_FULLPATH = OUTPUT_DIR + "statistics.csv";
+	private final String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "statisticsZeroJumps.csv";
+	private String FAILURE_FULLPATH = OUTPUT_DIR + "failure.csv";
+	private final String LOGS_FULLPATH = OUTPUT_DIR + "logs.txt";
+	private String SMARTCONTRACTS_FULLPATH = "";
+
+	// Statistics
+	private int numberOfAPIEtherscanRequest = 0;
+	private int numberOfAPIEtherscanRequestOnSuccess = 0;
+	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
+	private final int CORES = 1; // Runtime.getRuntime().availableProcessors();
+	private long startOfExecutionTime = 0;
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -82,6 +103,10 @@ public class EVMLiSA {
 		stackSetSizeOption.setRequired(false);
 		options.addOption(stackSetSizeOption);
 
+		Option benchmarkOption = new Option("b", "benchmark", true, "filepath of the benchmark");
+		benchmarkOption.setRequired(false);
+		options.addOption(benchmarkOption);
+
 		// Boolean parameters
 		Option dumpStatisticsOption = Option.builder("s")
 				.longOpt("dump-stats")
@@ -119,6 +144,18 @@ public class EVMLiSA {
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
+		String benchmark = cmd.getOptionValue("benchmark");
+
+		if (benchmark != null) {
+			Files.createDirectories(Paths.get(OUTPUT_DIR));
+			SMARTCONTRACTS_FULLPATH = benchmark;
+			try {
+				runBenchmark();
+			} catch (FileNotFoundException e) {
+				System.err.println("File " + benchmark + " not found.");
+			}
+			return;
+		}
 
 		try {
 			if (stackSize != null && Integer.parseInt(stackSize) > 0)
@@ -244,6 +281,252 @@ public class EVMLiSA {
 		}
 	}
 
+	private MyLogger newAnalysis(String CONTRACT_ADDR) throws Exception {
+
+		String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
+				+ ".sol";
+
+		// Directory setup and bytecode retrieval
+		Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + CONTRACT_ADDR));
+
+		// If the file does not exists, we will do an API request to Etherscan
+		File file = new File(BYTECODE_FULLPATH);
+		if (!file.exists()) {
+			numberOfAPIEtherscanRequest++;
+
+			if (numberOfAPIEtherscanRequest % 5 == 0) {
+				try {
+					Thread.sleep(1001); // I can do max 5 API request in 1 sec
+										// to Etherscan.io
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
+				numberOfAPIEtherscanRequestOnSuccess++;
+		}
+
+		// Config and test run
+		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+
+		long start = System.currentTimeMillis();
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeInputs = false;
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.jsonOutput = true;
+		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = true;
+		conf.optimize = false;
+
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		// Print the results
+		EVMCFG baseCfg = checker.getComputedCFG();
+
+		Triple<Integer, Integer, Triple<Integer, Integer, Integer>> pair = EVMLiSA.dumpStatistics(checker);
+		long finish = System.currentTimeMillis();
+
+		return MyLogger.newLogger()
+				.address(CONTRACT_ADDR)
+				.opcodes(baseCfg.getNodesCount())
+				.jumps(baseCfg.getAllJumps().size())
+				.preciselyResolvedJumps(pair.getLeft())
+				.soundResolvedJumps(pair.getMiddle())
+				.definitelyUnreachableJumps(pair.getRight().getLeft())
+				.maybeUnreachableJumps(pair.getRight().getMiddle())
+				.notSolvedJumps(pair.getRight().getRight())
+				.time(finish - start)
+				.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
+						+ AbstractStackSet.getStackSetLimit())
+				.build();
+	}
+
+	private void runBenchmark() throws Exception {
+		clean();
+		startOfExecutionTime = System.currentTimeMillis();
+		Object guardia = new Object();
+
+		List<String> smartContracts = readSmartContractsFromFile();
+		List<String> smartContractsTerminatedSuccesfully = new ArrayList<String>();
+		List<String> smartContractsFailed = new ArrayList<String>();
+
+		Thread[] threads = new Thread[smartContracts.size()];
+
+		Runnable runnableHandler = new Runnable() {
+			private int analysesTerminated = 0;
+			private int analysesFailed = 0;
+			private Object mutex = new Object();
+			int threadsStarted = 0;
+
+			@Override
+			public void run() {
+
+				for (int i = 0; i < smartContracts.size(); i++) {
+					String address = smartContracts.get(i);
+
+					synchronized (mutex) {
+						// We optimize parallelism by running n analyzes at a
+						// time with n = CORES
+						while ((threadsStarted - analysesTerminated) > CORES) {
+							try {
+								mutex.wait();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+
+					Runnable runnable = () -> {
+						try {
+
+							MyLogger myStats = newAnalysis(address);
+
+							synchronized (mutex) {
+								analysesTerminated++;
+								smartContractsTerminatedSuccesfully.add(address);
+
+								if (myStats.jumpSize() == 0)
+									toFileStatisticsWithZeroJumps(myStats.toString());
+								else
+									toFileStatistics(myStats.toString());
+
+								String msg = buildMessage("SUCCESS", address, smartContracts.size(),
+										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
+										analysesFailed, threadsStarted);
+
+								System.out.println(msg);
+								toFileLogs(msg);
+
+								mutex.notifyAll();
+							}
+
+						} catch (Throwable e) {
+							synchronized (mutex) {
+								analysesTerminated++;
+								analysesFailed++;
+								smartContractsFailed.add(address);
+
+								String msg = MyLogger.newLogger()
+										.address(address)
+										.notes("failure: " + e + " - details: " + e.getMessage())
+										.build().toString();
+
+								System.err.println(msg);
+								toFileFailure(msg);
+
+								msg = buildMessage("FAILURE", address, smartContracts.size(),
+										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
+										analysesFailed, threadsStarted);
+
+								System.out.println(msg);
+								toFileLogs(msg);
+
+								mutex.notifyAll();
+							}
+						}
+					};
+
+					threads[i] = new Thread(runnable);
+					threads[i].start();
+					threadsStarted++;
+				}
+
+				try {
+					synchronized (mutex) {
+						while (analysesTerminated < smartContracts.size()) {
+							mutex.wait();
+						}
+					}
+
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				synchronized (guardia) {
+					guardia.notifyAll(); // All tests are finished
+				}
+
+			} // ! run()
+		}; // ! Runnable
+
+		synchronized (guardia) {
+			Thread handler = new Thread(runnableHandler);
+			handler.start();
+
+			int millisPerSmartContract = 25000 * 10;
+			int extra = 120000;
+			long blocks = smartContracts.size() / CORES * 20000;
+			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
+
+			// Statistics
+			long minutes = (timeToWait / 1000) / 60;
+			long seconds = (timeToWait / 1000) % 60;
+
+			String msg = "Timeout setted: " + timeToWait + " millis " +
+					"(" + minutes + " minutes and " + seconds + " seconds) \n";
+			msg += "Started at " + now() + " \n";
+			msg += "Finish (brute) expected at " + DATE_FORMAT.format(System.currentTimeMillis() + timeToWait) + " \n";
+			msg += "Number of cores: " + CORES + " \n";
+			msg += "Number of analyses: " + smartContracts.size() + " \n";
+			msg += "\n"; // Blank line
+
+			msg += "Stack size = " + AbstractStack.getStackLimit() + "\n";
+			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + "\n";
+			msg += "\n"; // Blank line
+
+			System.out.println(msg);
+			toFileLogs(msg);
+
+			guardia.wait(timeToWait);
+
+			for (int i = 0; i < smartContracts.size(); i++)
+				threads[i].interrupt();
+		}
+
+		for (int i = 0; i < smartContracts.size(); i++) {
+			if (!smartContractsTerminatedSuccesfully.contains(smartContracts.get(i)) &&
+					!smartContractsFailed.contains(smartContracts.get(i))) {
+				String msg = MyLogger.newLogger()
+						.address(smartContracts.get(i))
+						.notes("Killed: timeout")
+						.build().toString();
+				toFileFailure(msg);
+			}
+		}
+
+		// Print statistics to standard output and log file
+		long executionTime = System.currentTimeMillis() - startOfExecutionTime;
+		String msg = "";
+		msg += "\n"; // Blank line
+
+		msg += "Total analysis: " + smartContracts.size() + ", " +
+				"succesfully: " + smartContractsTerminatedSuccesfully.size() + ", " +
+				"failed: " + (smartContracts.size() - smartContractsTerminatedSuccesfully.size()) + " \n";
+
+		msg += "API Etherscan Request: " + numberOfAPIEtherscanRequest + ", " +
+				"succesfully: " + numberOfAPIEtherscanRequestOnSuccess + " \n" +
+				"Total duration: " + ((executionTime / 1000) / 60) + " minutes and " + ((executionTime / 1000) % 60)
+				+ " seconds \n";
+
+		System.out.println(msg);
+		toFileLogs(msg);
+
+		System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
+		System.out.println("Logs successfully written in " + LOGS_FULLPATH);
+		System.out.println("Statistics with zero jumps successfully written in " + STATISTICSZEROJUMP_FULLPATH);
+		System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
+
+		return;
+	}
+
 	/**
 	 * Calculates and prints statistics about the control flow graph (CFG) of
 	 * the provided EVMCFG object.
@@ -306,6 +589,70 @@ public class EVMLiSA {
 	}
 
 	/**
+	 * Cleans up the directory used for bytecode benchmark outputs.
+	 */
+	public void clean() {
+		Path path = Paths.get("evm-outputs/benchmark");
+
+		if (Files.exists(path))
+			try {
+				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+						Files.delete(file);
+						return FileVisitResult.CONTINUE;
+					}
+
+					@Override
+					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+						Files.delete(dir);
+						return FileVisitResult.CONTINUE;
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		File f = new File(STATISTICS_FULLPATH);
+		f.delete();
+		f = new File(LOGS_FULLPATH);
+		f.delete();
+		f = new File(STATISTICSZEROJUMP_FULLPATH);
+		f.delete();
+		f = new File(FAILURE_FULLPATH);
+		f.delete();
+	}
+
+	/**
+	 * Reads smart contracts from a file and returns a list of strings.
+	 *
+	 * @return A list of strings containing the smart contracts read from the
+	 *             file.
+	 * 
+	 * @throws Exception If an error occurs while reading the file.
+	 */
+	public ArrayList<String> readSmartContractsFromFile() throws Exception {
+		ArrayList<String> smartContractsRead = new ArrayList<String>();
+
+		try {
+			File myObj = new File(SMARTCONTRACTS_FULLPATH);
+			Scanner myReader = new Scanner(myObj);
+
+			while (myReader.hasNextLine()) {
+				String data = myReader.nextLine();
+				smartContractsRead.add(data);
+			}
+			myReader.close();
+
+		} catch (FileNotFoundException e) {
+			System.err.println("[ERROR] " + SMARTCONTRACTS_FULLPATH + " not found");
+			throw e;
+		}
+
+		return smartContractsRead;
+	}
+
+	/**
 	 * Writes the given statistics to a file.
 	 *
 	 * @param stats The statistics to be written to the file.
@@ -327,7 +674,35 @@ public class EVMLiSA {
 				}
 
 			} catch (IOException e) {
-				System.err.println("An error occurred.");
+				System.err.println("An error occurred. (toFileStatistics)");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Writes the given statistics to a file.
+	 *
+	 * @param stats The statistics to be written to the file.
+	 */
+	private void toFileStatisticsWithZeroJumps(String stats) {
+		synchronized (STATISTICSZEROJUMP_FULLPATH) {
+			String init = "Smart Contract, Total Opcodes, Total Jumps, Precisely solved Jumps, Sound solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, % Precisely Solved, % Total Solved, Time (millis), Thread, Notes \n";
+			try {
+				File idea = new File(STATISTICSZEROJUMP_FULLPATH);
+				if (!idea.exists()) {
+					FileWriter myWriter = new FileWriter(idea, true);
+					myWriter.write(init + stats);
+					myWriter.close();
+
+				} else {
+					FileWriter myWriter = new FileWriter(idea, true);
+					myWriter.write(stats);
+					myWriter.close();
+				}
+
+			} catch (IOException e) {
+				System.err.println("An error occurred. (toFileStatisticsWithZeroJumps)");
 				e.printStackTrace();
 			}
 		}
@@ -355,10 +730,81 @@ public class EVMLiSA {
 				}
 
 			} catch (IOException e) {
-				System.err.println("An error occurred.");
+				System.err.println("An error occurred. (toFileFailure)");
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Writes the given message to a file.
+	 *
+	 * @param msg The logs to be written to the file.
+	 */
+	private void toFileLogs(String msg) {
+		synchronized (LOGS_FULLPATH) {
+			try {
+				File idea = new File(LOGS_FULLPATH);
+
+				FileWriter myWriter = new FileWriter(idea, true);
+				myWriter.write(msg);
+				myWriter.close();
+
+			} catch (IOException e) {
+				System.err.println("An error occurred. (toFileLogs)");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Constructs a log message providing information about the analysis status.
+	 *
+	 * @param type                                    The type of analysis
+	 *                                                    (e.g., "SUCCESS",
+	 *                                                    "FAILURE").
+	 * @param address                                 The address of the
+	 *                                                    analyzed smart
+	 *                                                    contract.
+	 * @param smartContractsSize                      The total number of smart
+	 *                                                    contracts to be
+	 *                                                    analyzed.
+	 * @param smartContractsTerminatedSuccesfullySize The number of smart
+	 *                                                    contracts successfully
+	 *                                                    terminated.
+	 * @param analysesTerminated                      The total number of
+	 *                                                    analyses terminated.
+	 * @param analysesFailed                          The total number of failed
+	 *                                                    analyses.
+	 * @param threadsStarted                          The total number of
+	 *                                                    threads started for
+	 *                                                    the analysis.
+	 * 
+	 * @return The constructed log message.
+	 */
+	private String buildMessage(String type, String address, int smartContractsSize,
+			int smartContractsTerminatedSuccesfullySize, int analysesTerminated,
+			int analysesFailed, int threadsStarted) {
+		return "[" + now() + " - " + Thread.currentThread().getName() + "] \t [" + type + "] "
+				+ address + ", " +
+				"analyses ended: " + (smartContractsTerminatedSuccesfullySize + analysesFailed) + ", " +
+				"analyses remaining: " + (smartContractsSize - analysesTerminated) + ", " +
+				"analyses not started yet: "
+				+ ((smartContractsSize - analysesTerminated)
+						- (threadsStarted - smartContractsTerminatedSuccesfullySize) + analysesFailed)
+				+ ", " +
+				"analysis in progress (active threads): "
+				+ (threadsStarted - smartContractsTerminatedSuccesfullySize - analysesFailed) + " \n";
+	}
+
+	/**
+	 * Retrieves the current timestamp formatted according to the DATE_FORMAT
+	 * constant.
+	 *
+	 * @return A string representation of the current timestamp.
+	 */
+	private String now() {
+		return DATE_FORMAT.format(System.currentTimeMillis());
 	}
 
 }
