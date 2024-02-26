@@ -327,7 +327,7 @@ public class EVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = true;
-		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;
+		conf.workdir = OUTPUT_DIR + "benchmark/" + CONTRACT_ADDR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
