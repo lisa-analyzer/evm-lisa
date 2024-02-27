@@ -1,11 +1,12 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.analysis.lattices.FunctionalLattice;
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Memory extends FunctionalLattice<Memory, BigDecimal, KIntegerSet> {
+import it.unive.lisa.analysis.lattices.FunctionalLattice;
+
+public class Memory extends FunctionalLattice<Memory, BigInteger, KIntegerSet> {
 
 	/**
 	 * Default constructor for Memory. Initializes the Memory with a default
@@ -33,7 +34,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, KIntegerSet> {
 	 * @param function The initial function (mapping of addresses to Intervals)
 	 *                     for the Memory.
 	 */
-	public Memory(KIntegerSet lattice, Map<BigDecimal, KIntegerSet> function) {
+	public Memory(KIntegerSet lattice, Map<BigInteger, KIntegerSet> function) {
 		super(lattice, function);
 	}
 
@@ -48,7 +49,7 @@ public class Memory extends FunctionalLattice<Memory, BigDecimal, KIntegerSet> {
 	}
 
 	@Override
-	public Memory mk(KIntegerSet lattice, Map<BigDecimal, KIntegerSet> function) {
+	public Memory mk(KIntegerSet lattice, Map<BigInteger, KIntegerSet> function) {
 		return new Memory(lattice, function);
 	}
 

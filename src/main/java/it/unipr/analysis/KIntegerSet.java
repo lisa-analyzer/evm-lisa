@@ -1,16 +1,18 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
-	private static final BigDecimal MAX = new BigDecimal(Math.pow(2, 256));
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
+
+public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
+	private static final BigInteger ZERO_INT = BigInteger.valueOf(0);
+	private static final BigInteger ONE_INT = BigInteger.valueOf(1);	
+	private static final BigInteger MAX = BigInteger.valueOf((long) Math.pow(2, 256));
+	
 	public static final int K = 2;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
@@ -20,7 +22,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public static final KIntegerSet TOP = new KIntegerSet(Collections.emptySet(), true);
 	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
 
-	public KIntegerSet(BigDecimal i) {
+	
+	public KIntegerSet(BigInteger i) {
 		this(Collections.singleton(i), false);
 	}
 
@@ -33,14 +36,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		if (ints.length <= K)
 			for (Integer i : ints)
-				this.elements.add(new BigDecimal(i));
+				this.elements.add(BigInteger.valueOf(i));
 	}
 
-	public KIntegerSet(Set<BigDecimal> set) {
+	public KIntegerSet(Set<BigInteger> set) {
 		this(set.size() > K ? Collections.emptySet() : set, set.size() > K);
 	}
 
-	public KIntegerSet(Set<BigDecimal> elements, boolean isTop) {
+	public KIntegerSet(Set<BigInteger> elements, boolean isTop) {
 		super(elements, isTop);
 	}
 
@@ -72,7 +75,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	@Override
-	public KIntegerSet mk(Set<BigDecimal> set) {
+	public KIntegerSet mk(Set<BigInteger> set) {
 		return new KIntegerSet(set);
 	}
 
@@ -99,7 +102,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 		else if (equals(ZERO))
 			return KIntegerSet.ONE;
-		else if (!contains(new BigDecimal(0)))
+		else if (!contains(ZERO_INT))
 			return KIntegerSet.ZERO;
 		return KIntegerSet.ZERO_OR_ONE;
 	}
@@ -110,10 +113,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements) {
-				BigDecimal add = i.add(j);
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements) {
+				BigInteger add = i.add(j);
 				if (add.compareTo(MAX) >= 0)
 					add = add.subtract(MAX);
 				elements.add(add);
@@ -128,11 +131,11 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements) {
-				BigDecimal sub = i.subtract(j);
-				if (sub.compareTo(new BigDecimal(0)) < 0)
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements) {
+				BigInteger sub = i.subtract(j);
+				if (sub.compareTo(ZERO_INT) < 0)
 					sub = sub.add(MAX);
 				elements.add(sub);
 			}
@@ -145,7 +148,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return bottom();
 		else if (isTop())
 			return top();
-		return new KIntegerSet(this.elements());
+		return this; //new KIntegerSet(this.elements());
 	}
 
 	public KIntegerSet mul(KIntegerSet other) {
@@ -156,11 +159,11 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements) {
-				BigDecimal mul = i.multiply(j);
-				if (mul.compareTo(new BigDecimal(0)) < 0)
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements) {
+				BigInteger mul = i.multiply(j);
+				if (mul.compareTo(ZERO_INT) < 0)
 					mul = mul.add(MAX);
 				if (mul.compareTo(MAX) > 0)
 					mul = mul.subtract(MAX);
@@ -177,13 +180,15 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				if (j.equals(new BigDecimal(0)))
-					elements.add(new BigDecimal(0));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				if (j.equals(ZERO_INT))
+					elements.add(ZERO_INT);
 				else
-					elements.add(i.divide(j, RoundingMode.FLOOR));
+					elements.add(i.divide(j));
+
+//					elements.add(i.divide(j, RoundingMode.FLOOR));
 
 		return new KIntegerSet(elements);
 	}
@@ -194,14 +199,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements) {
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements) {
 
-				if (j.equals(new BigDecimal(0)))
+				if (j.equals(ZERO_INT))
 					elements.add(i);
 				else
-					elements.add(i.subtract(j.multiply(i.divide(j, RoundingMode.FLOOR))));
+					elements.add(i.subtract(j.multiply(i.divide(j))));
 			}
 
 		return new KIntegerSet(elements);
@@ -213,14 +218,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : that.elements)
-				for (BigDecimal k : other.elements)
-					if (k.equals(new BigDecimal(0)))
-						elements.add(new BigDecimal(0));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : that.elements)
+				for (BigInteger k : other.elements)
+					if (k.equals(ZERO_INT))
+						elements.add(ZERO_INT);
 					else
-						elements.add(i.add(j).subtract(k.multiply(i.add(j).divide(k, RoundingMode.FLOOR))));
+						elements.add(i.add(j).subtract(k.multiply(i.add(j).divide(k))));
 
 		return new KIntegerSet(elements);
 	}
@@ -231,14 +236,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : that.elements)
-				for (BigDecimal k : other.elements)
-					if (k.equals(new BigDecimal(0)))
-						elements.add(new BigDecimal(0));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : that.elements)
+				for (BigInteger k : other.elements)
+					if (k.equals(ZERO_INT))
+						elements.add(ZERO_INT);
 					else
-						elements.add(i.multiply(j).subtract(k.multiply(i.multiply(j).divide(k, RoundingMode.FLOOR))));
+						elements.add(i.multiply(j).subtract(k.multiply(i.multiply(j).divide(k))));
 
 		return new KIntegerSet(elements);
 	}
@@ -249,12 +254,12 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements) {
-			for (BigDecimal j : other.elements) {
-				BigDecimal r = i;
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements) {
+			for (BigInteger j : other.elements) {
+				BigInteger r = i;
 
-				for (int k = 0; j.compareTo(new BigDecimal(k)) > 0; k++)
+				for (int k = 0; j.compareTo(BigInteger.valueOf(k)) > 0; k++)
 					if (r.compareTo(MAX) > 0)
 						return TOP;
 					else
@@ -273,8 +278,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 
 		Set<Boolean> r = new HashSet<Boolean>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
 				r.add(i.compareTo(j) < 0);
 
 		if (r.size() == 2)
@@ -292,8 +297,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 
 		Set<Boolean> r = new HashSet<Boolean>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
 				r.add(i.compareTo(j) > 0);
 
 		if (r.size() == 2)
@@ -311,8 +316,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 			return KIntegerSet.ZERO_OR_ONE;
 
 		Set<Boolean> r = new HashSet<Boolean>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
 				r.add(i.compareTo(j) == 0);
 
 		if (r.size() == 2)
@@ -331,10 +336,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(i.toBigInteger().and(j.toBigInteger())));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				elements.add(i.and(j));
 
 		return new KIntegerSet(elements);
 	}
@@ -345,10 +350,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(i.toBigInteger().or(j.toBigInteger())));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				elements.add(i.or(j));
 
 		return new KIntegerSet(elements);
 	}
@@ -359,10 +364,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(i.toBigInteger().xor(j.toBigInteger())));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				elements.add(i.xor(j));
 
 		return new KIntegerSet(elements);
 	}
@@ -373,12 +378,12 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			if (i.compareTo(new BigDecimal(0)) >= 0)
-				elements.add(MAX.subtract(i.add(new BigDecimal(1))));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			if (i.compareTo(ZERO_INT) >= 0)
+				elements.add(MAX.subtract(i.add(ONE_INT)));
 			else
-				elements.add(new BigDecimal(i.toBigInteger().not()));
+				elements.add(i.not());
 
 		return new KIntegerSet(elements);
 	}
@@ -389,10 +394,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(new BigInteger(shiftLeft(j.toBigInteger().toByteArray(), i.intValue()))));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				elements.add(new BigInteger(shiftLeft(j.toByteArray(), i.intValue())));
 
 		return new KIntegerSet(elements);
 	}
@@ -403,10 +408,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(j.toBigInteger().shiftRight(i.intValue())));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				elements.add(j.shiftRight(i.intValue()));
 
 		return new KIntegerSet(elements);
 	}
@@ -417,11 +422,11 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigDecimal> elements = new HashSet<>();
-		for (BigDecimal i : this.elements)
-			for (BigDecimal j : other.elements)
-				elements.add(new BigDecimal(
-						new BigInteger(shiftArithmeticRight(j.toBigInteger().toByteArray(), i.intValue()))));
+		Set<BigInteger> elements = new HashSet<>();
+		for (BigInteger i : this.elements)
+			for (BigInteger j : other.elements)
+				elements.add(
+						new BigInteger(shiftArithmeticRight(j.toByteArray(), i.intValue())));
 
 		return new KIntegerSet(elements);
 	}
@@ -434,7 +439,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 
 		KIntegerSet r = KIntegerSet.BOTTOM;
 
-		for (BigDecimal i : this.elements) {
+		for (BigInteger i : this.elements) {
 			KIntegerSet state = memory.getState(i);
 			if (state.isBottom())
 				r = r.lub(KIntegerSet.TOP);
@@ -614,7 +619,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	public boolean isDefinitelyTrue() {
 		if (isTop() || isBottom())
 			return false;
-		return !this.elements().contains(new BigDecimal(0));
+		return !this.elements().contains(ZERO_INT);
 	}
 
 	/**

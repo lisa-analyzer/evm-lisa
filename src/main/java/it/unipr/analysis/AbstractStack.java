@@ -31,8 +31,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack() {
 		this.stack = new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.BOTTOM));
 
-//		for (int i = 0; i < STACK_LIMIT; i++)
-//			stack.add(KIntegerSet.BOTTOM);
+		//		for (int i = 0; i < STACK_LIMIT; i++)
+		//			stack.add(KIntegerSet.BOTTOM);
 	}
 
 	/**
@@ -138,11 +138,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack top() {
-//		LinkedList<KIntegerSet> result = new LinkedList<>();
-//
-//		for (int i = 0; i < STACK_LIMIT; i++)
-//			result.addLast(KIntegerSet.TOP);
-		LinkedList<KIntegerSet> result = new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.TOP));
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+
+		for (int i = 0; i < STACK_LIMIT; i++)
+			result.addLast(KIntegerSet.TOP);
+		//		LinkedList<KIntegerSet> result = new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.TOP));
 
 		return new AbstractStack(result);
 	}
@@ -157,7 +157,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (isBottom())
 			return false;
 		else if (this.stack.stream()
-                .anyMatch(element -> !element.isTop())) 
+				.anyMatch(element -> !element.isTop())) 
 			return false;
 		else return true;	
 	}
@@ -214,8 +214,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	private static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> list) {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
-		for (int i = 0; i < list.size(); i++)
-			result.add(list.get(i).copy());
+		for (KIntegerSet item : list) 
+			result.add(item.copy());
 
 		return result;
 	}
@@ -265,20 +265,30 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack lubAux(AbstractStack other) throws SemanticException {
-		// Otherwise, let's build a new SymbolicStack
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
-		for (int i = 0; i < STACK_LIMIT; i++)
-			result.addLast(this.stack.get(i).lub(other.stack.get(i)));
+		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
+		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			KIntegerSet thisElement = thisIterator.next();
+			KIntegerSet otherElement = otherIterator.next();
+			result.addLast(thisElement.lub(otherElement));
+		}
 
 		return new AbstractStack(result);
 	}
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		for (int i = 0; i < STACK_LIMIT; i++)
-			if (!this.stack.get(i).lessOrEqual(other.stack.get(i)))
+		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
+		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			if (!thisIterator.next().lessOrEqual(otherIterator.next())) {
 				return false;
+			}
+		}
 
 		return true;
 	}

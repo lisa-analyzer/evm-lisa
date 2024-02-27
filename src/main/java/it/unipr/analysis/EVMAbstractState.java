@@ -148,7 +148,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						BigDecimal valueToPush = this.toBigDecimal(un.getExpression());
+						BigInteger valueToPush = this.toBigDecimal(un.getExpression());
 
 						resultStack.push(new KIntegerSet(valueToPush));
 						result.add(resultStack);
@@ -342,7 +342,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						Integer i = (Integer) ((Constant) un.getExpression()).getValue();
-						resultStack.push(new KIntegerSet(new BigDecimal(i)));
+						resultStack.push(new KIntegerSet(BigInteger.valueOf(i)));
 						result.add(resultStack);
 					}
 
@@ -721,10 +721,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.TOP);
 						} else {
-							for (BigDecimal value : target) {
-								byte[] valueAsByteArray = value.unscaledValue().toByteArray();
+							for (BigInteger value : target) {
+								byte[] valueAsByteArray = value.toByteArray();
 
-								for (BigDecimal index : indexOfByte) {
+								for (BigInteger index : indexOfByte) {
 									int intIndex = index.intValue();
 
 									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
@@ -985,10 +985,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						} else {
 							KIntegerSet current_mu_i_lub = KIntegerSet.BOTTOM;
 
-							for (BigDecimal os : offset) {
-								BigDecimal thirtyTwo = new BigDecimal(32);
-								BigDecimal current_mu_i = os.add(thirtyTwo)
-										.divide(thirtyTwo, RoundingMode.UP);
+							for (BigInteger os : offset) {
+								BigInteger thirtyTwo = BigInteger.valueOf(32);
+								BigInteger current_mu_i = os.add(thirtyTwo)
+										.divide(thirtyTwo);
 
 								memoryResult = memory.putState(os, value);
 
@@ -1019,11 +1019,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						} else {
 							KIntegerSet current_mu_i_lub = KIntegerSet.BOTTOM;
 
-							for (BigDecimal os : offset) {
-								BigDecimal current_mu_i = os.add(new BigDecimal(1))
-										.divide(new BigDecimal(32), RoundingMode.UP);
+							for (BigInteger os : offset) {
+								BigInteger current_mu_i = os.add(BigInteger.valueOf(1))
+										.divide(BigInteger.valueOf(32));
 
-								memoryResult = memory.putState(os, value.mod(new KIntegerSet(new BigDecimal(256))));
+								memoryResult = memory.putState(os, value.mod(new KIntegerSet(BigInteger.valueOf(256))));
 
 								current_mu_i_lub = current_mu_i_lub.lub(new KIntegerSet(current_mu_i));
 							}
@@ -1831,13 +1831,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * 
 	 * @return the BigInteger corresponding to the memory word
 	 */
-	private BigDecimal toBigDecimal(SymbolicExpression expression) {
+	private BigInteger toBigDecimal(SymbolicExpression expression) {
 		Constant c = (Constant) expression;
 		String hex = (String) c.getValue();
 		String hexadecimal = hex.substring(2);
 		BigInteger bigIntVal = new BigInteger(hexadecimal, 16);
-		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
-		return bigDecimalVal;
+//		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
+		return bigIntVal;
 	}
 
 	@Override
