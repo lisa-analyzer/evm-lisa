@@ -1,18 +1,17 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
-
 public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 	private static final BigInteger ZERO_INT = BigInteger.valueOf(0);
-	private static final BigInteger ONE_INT = BigInteger.valueOf(1);	
+	private static final BigInteger ONE_INT = BigInteger.valueOf(1);
 	private static final BigInteger MAX = BigInteger.valueOf((long) Math.pow(2, 256));
-	
+
 	public static final int K = 2;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
@@ -22,7 +21,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 	public static final KIntegerSet TOP = new KIntegerSet(Collections.emptySet(), true);
 	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
 
-	
 	public KIntegerSet(BigInteger i) {
 		this(Collections.singleton(i), false);
 	}
@@ -148,7 +146,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 			return bottom();
 		else if (isTop())
 			return top();
-		return this; //new KIntegerSet(this.elements());
+		return this; // new KIntegerSet(this.elements());
 	}
 
 	public KIntegerSet mul(KIntegerSet other) {

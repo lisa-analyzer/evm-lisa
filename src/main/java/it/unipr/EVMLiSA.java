@@ -46,13 +46,13 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
-	private static String OUTPUT_DIR = "execution/results/";
+	private String OUTPUT_DIR = "execution/results";
 
 	// Path
-	private String STATISTICS_FULLPATH = OUTPUT_DIR + "statistics.csv";
-	private final String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "statisticsZeroJumps.csv";
-	private String FAILURE_FULLPATH = OUTPUT_DIR + "failure.csv";
-	private final String LOGS_FULLPATH = OUTPUT_DIR + "logs.txt";
+	private String STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
+	private String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
+	private String FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
+	private String LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
 	private String SMARTCONTRACTS_FULLPATH = "";
 
 	// Statistics
@@ -62,6 +62,7 @@ public class EVMLiSA {
 	private int CORES;
 	private long startOfExecutionTime = 0;
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, % Total Solved, Time (millis), Notes \n";
+
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
 	 * from a EVM bytecode smart contract and runs the analysis on it.
@@ -106,7 +107,7 @@ public class EVMLiSA {
 		Option benchmarkOption = new Option("b", "benchmark", true, "filepath of the benchmark");
 		benchmarkOption.setRequired(false);
 		options.addOption(benchmarkOption);
-		
+
 		Option coresOption = new Option("C", "cores", true, "number of cores used");
 		coresOption.setRequired(false);
 		options.addOption(coresOption);
@@ -150,26 +151,38 @@ public class EVMLiSA {
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
-		
+
+		// --cores
 		if (coresOpt != null && Integer.parseInt(coresOpt) > 0)
 			CORES = Integer.parseInt(coresOpt);
 		else
 			CORES = 1;
 
+		// --stack-size & --stack-set-size
 		try {
 			if (stackSize != null && Integer.parseInt(stackSize) > 0)
 				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
 
 			if (stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
 				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
-			
+
 		} catch (NumberFormatException e) {
 			System.out.println("Size must be an integer");
 			formatter.printHelp("help", options);
 
 			System.exit(1);
 		}
-		
+
+		// --output
+		if (outputDir != null) {
+			OUTPUT_DIR = outputDir;
+			STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
+			STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
+			FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
+			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
+		}
+
+		// --benchmark
 		if (benchmark != null) {
 			Files.createDirectories(Paths.get(OUTPUT_DIR));
 			SMARTCONTRACTS_FULLPATH = benchmark;
@@ -192,7 +205,7 @@ public class EVMLiSA {
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 
 		if (outputDir == null)
-			outputDir = OUTPUT_DIR + addressSC + "_REPORT";
+			outputDir = OUTPUT_DIR + "/" + addressSC + "_REPORT";
 
 		STATISTICS_FULLPATH = OUTPUT_DIR + addressSC + "_STATISTICS" + ".csv";
 		FAILURE_FULLPATH = OUTPUT_DIR + addressSC + "_FAILURE" + ".csv";
@@ -327,7 +340,7 @@ public class EVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = true;
-		conf.workdir = OUTPUT_DIR + "benchmark/" + CONTRACT_ADDR;
+		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
@@ -447,6 +460,7 @@ public class EVMLiSA {
 					threads[i] = new Thread(runnable);
 					threads[i].start();
 					threadsStarted++;
+					Runtime.getRuntime().gc(); // Force Java Garbage Collection
 				}
 
 				try {
@@ -491,11 +505,11 @@ public class EVMLiSA {
 			msg += "Stack size = " + AbstractStack.getStackLimit() + "\n";
 			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + "\n";
 			msg += "\n"; // Blank line
-			
+
 			msg += "Heap size: " + new Converter().getSize(Runtime.getRuntime().totalMemory()) + "\n";
 			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + "\n";
 			msg += "\n"; // Blank line
-					
+
 			System.out.println(msg);
 			toFileLogs(msg);
 
@@ -817,7 +831,7 @@ public class EVMLiSA {
 	private String now() {
 		return DATE_FORMAT.format(System.currentTimeMillis());
 	}
-	
+
 	/**
 	 * Saves smart contracts bytecode from Etherscan.
 	 * <p>
@@ -869,13 +883,13 @@ public class EVMLiSA {
 			}
 		}
 	}
-	
-	public class Converter{
-	    long kilo = 1024;
-	    long mega = kilo * kilo;
-	    long giga = mega * kilo;
-	    long tera = giga * kilo;
-	    
+
+	public class Converter {
+		long kilo = 1024;
+		long mega = kilo * kilo;
+		long giga = mega * kilo;
+		long tera = giga * kilo;
+
 //	    public static void main(String[] args) {
 //	        for (String arg: args) {
 //	            try {
@@ -885,26 +899,26 @@ public class EVMLiSA {
 //	            }
 //	        }
 //	    }
-	    
-	    public String getSize(long size) {
-	        String s = "";
-	        double kb = (double)size / kilo;
-	        double mb = kb / kilo;
-	        double gb = mb / kilo;
-	        double tb = gb / kilo;
-	        if(size < kilo) {
-	            s = size + " Bytes";
-	        } else if(size >= kilo && size < mega) {
-	            s =  String.format("%.2f", kb) + " KB";
-	        } else if(size >= mega && size < giga) {
-	            s = String.format("%.2f", mb) + " MB";
-	        } else if(size >= giga && size < tera) {
-	            s = String.format("%.2f", gb) + " GB";
-	        } else if(size >= tera) {
-	            s = String.format("%.2f", tb) + " TB";
-	        }
-	        return s;
-	    }
+
+		public String getSize(long size) {
+			String s = "";
+			double kb = (double) size / kilo;
+			double mb = kb / kilo;
+			double gb = mb / kilo;
+			double tb = gb / kilo;
+			if (size < kilo) {
+				s = size + " Bytes";
+			} else if (size >= kilo && size < mega) {
+				s = String.format("%.2f", kb) + " KB";
+			} else if (size >= mega && size < giga) {
+				s = String.format("%.2f", mb) + " MB";
+			} else if (size >= giga && size < tera) {
+				s = String.format("%.2f", gb) + " GB";
+			} else if (size >= tera) {
+				s = String.format("%.2f", tb) + " TB";
+			}
+			return s;
+		}
 	}
 
 }

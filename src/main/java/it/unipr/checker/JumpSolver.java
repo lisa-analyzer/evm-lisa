@@ -1,10 +1,5 @@
 package it.unipr.checker;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
@@ -30,6 +25,10 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by

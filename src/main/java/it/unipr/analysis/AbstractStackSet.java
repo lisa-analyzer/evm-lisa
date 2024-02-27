@@ -61,7 +61,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 			return TOP;
 		else if (isBottom())
 			return BOTTOM;
-	    return new AbstractStackSet(new HashSet<>(this.elements), false);
+		return new AbstractStackSet(new HashSet<>(this.elements), false);
 
 //		AbstractStackSet result = new AbstractStackSet(new HashSet<AbstractStack>(), false);
 //		for (AbstractStack stack : elements())
