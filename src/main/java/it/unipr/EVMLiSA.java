@@ -491,7 +491,11 @@ public class EVMLiSA {
 			msg += "Stack size = " + AbstractStack.getStackLimit() + "\n";
 			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + "\n";
 			msg += "\n"; // Blank line
-
+			
+			msg += "Heap size: " + new Converter().getSize(Runtime.getRuntime().totalMemory()) + "\n";
+			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + "\n";
+			msg += "\n"; // Blank line
+					
 			System.out.println(msg);
 			toFileLogs(msg);
 
@@ -864,6 +868,43 @@ public class EVMLiSA {
 				continue;
 			}
 		}
+	}
+	
+	public class Converter{
+	    long kilo = 1024;
+	    long mega = kilo * kilo;
+	    long giga = mega * kilo;
+	    long tera = giga * kilo;
+	    
+//	    public static void main(String[] args) {
+//	        for (String arg: args) {
+//	            try {
+//	                System.out.println(getSize(Long.parseLong(arg)));
+//	            } catch(NumberFormatException e) {
+//	                System.out.println(arg + " is not a long");
+//	            }
+//	        }
+//	    }
+	    
+	    public String getSize(long size) {
+	        String s = "";
+	        double kb = (double)size / kilo;
+	        double mb = kb / kilo;
+	        double gb = mb / kilo;
+	        double tb = gb / kilo;
+	        if(size < kilo) {
+	            s = size + " Bytes";
+	        } else if(size >= kilo && size < mega) {
+	            s =  String.format("%.2f", kb) + " KB";
+	        } else if(size >= mega && size < giga) {
+	            s = String.format("%.2f", mb) + " MB";
+	        } else if(size >= giga && size < tera) {
+	            s = String.format("%.2f", gb) + " GB";
+	        } else if(size >= tera) {
+	            s = String.format("%.2f", tb) + " TB";
+	        }
+	        return s;
+	    }
 	}
 
 }
