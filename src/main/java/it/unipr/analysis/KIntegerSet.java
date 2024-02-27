@@ -29,7 +29,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigDecimal> {
 	}
 
 	public KIntegerSet(Integer... ints) {
-		super(new HashSet<>(), ints.length > K);
+		super(new HashSet<>(2), ints.length > K);
 
 		if (ints.length <= K)
 			for (Integer i : ints)

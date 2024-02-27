@@ -10,6 +10,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,10 +29,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * Builds a initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this.stack = new LinkedList<KIntegerSet>();
+		this.stack = new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.BOTTOM));
 
-		for (int i = 0; i < STACK_LIMIT; i++)
-			stack.add(KIntegerSet.BOTTOM);
+//		for (int i = 0; i < STACK_LIMIT; i++)
+//			stack.add(KIntegerSet.BOTTOM);
 	}
 
 	/**
@@ -136,10 +138,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack top() {
-		LinkedList<KIntegerSet> result = new LinkedList<>();
-
-		for (int i = 0; i < STACK_LIMIT; i++)
-			result.addLast(KIntegerSet.TOP);
+//		LinkedList<KIntegerSet> result = new LinkedList<>();
+//
+//		for (int i = 0; i < STACK_LIMIT; i++)
+//			result.addLast(KIntegerSet.TOP);
+		LinkedList<KIntegerSet> result = new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.TOP));
 
 		return new AbstractStack(result);
 	}
@@ -153,10 +156,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public boolean isTop() {
 		if (isBottom())
 			return false;
-		for (int i = 0; i < STACK_LIMIT; i++)
-			if (!this.stack.get(i).isTop())
-				return false;
-		return true;
+		else if (this.stack.stream()
+                .anyMatch(element -> !element.isTop())) 
+			return false;
+		else return true;	
 	}
 
 	@Override
