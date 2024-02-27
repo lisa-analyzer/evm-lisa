@@ -16,6 +16,7 @@ public class MyLogger {
 	private int totalResolvedJumps;
 	private int notSolvedJumps;
 	private double solvedJumpsPercent;
+	private int unsoundJumps;
 	private long time;
 	private String notes;
 	private String currentThread;
@@ -29,6 +30,7 @@ public class MyLogger {
 		this.definitelyUnreachableJumps = 0;
 		this.maybeUnreachableJumps = 0;
 		this.solvedJumpsPercent = 0;
+		this.unsoundJumps = 0;
 		this.time = 0;
 		this.notes = "";
 		this.currentThread = null;
@@ -36,7 +38,7 @@ public class MyLogger {
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
-			int notSolvedJumps, double solvedJumpsPercent, long time, String notes) {
+			int notSolvedJumps, int unsoundJumps, double solvedJumpsPercent, long time, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
@@ -55,6 +57,7 @@ public class MyLogger {
 		}
 		this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps;
 		this.notSolvedJumps = notSolvedJumps;
+		this.unsoundJumps = unsoundJumps;
 		this.notes = notes;
 		this.time = time;
 		this.currentThread = Thread.currentThread().getName();
@@ -103,6 +106,11 @@ public class MyLogger {
 		this.notSolvedJumps = notSolvedJumps;
 		return this;
 	}
+	
+	public MyLogger unsoundJumps(int unsoundJumps) {
+		this.unsoundJumps = unsoundJumps;
+		return this;
+	}
 
 	public MyLogger solvedJumpsPercent(double solvedJumpsPercent) {
 		this.solvedJumpsPercent = solvedJumpsPercent;
@@ -122,7 +130,7 @@ public class MyLogger {
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps,
-				solvedJumpsPercent, time, notes);
+				unsoundJumps, solvedJumpsPercent, time, notes);
 	}
 
 	public int jumpSize() {
@@ -141,6 +149,7 @@ public class MyLogger {
 				maybeUnreachableJumps + divider +
 				totalResolvedJumps + divider +
 				notSolvedJumps + divider +
+				unsoundJumps + divider +
 				solvedJumpsPercent + divider +
 				time + divider +
 //				currentThread + divider +

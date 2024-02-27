@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver
-		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	/**
 	 * The CFG to be analyzed.
@@ -55,6 +55,8 @@ public class JumpSolver
 
 	private Set<Statement> unreachableJumps;
 
+	private Set<Statement> unsoundJumps;
+
 	/**
 	 * Yields the computed CFG.
 	 * 
@@ -67,12 +69,16 @@ public class JumpSolver
 	public Set<Statement> getUnreachableJumps() {
 		return unreachableJumps;
 	}
+	
+	public Set<Statement> getUnsoundJumps() {
+		return unsoundJumps;
+	}
 
 	@Override
 	public void beforeExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 		// resets the unreachable jumps set
 		this.unreachableJumps = new HashSet<>();
 	}
@@ -86,12 +92,62 @@ public class JumpSolver
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap,
+			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
-		if (fixpoint)
+		if (fixpoint) {
+			Statement entryPoint = cfgToAnalyze.getEntrypoints().stream().findAny().get();
+
+			this.unsoundJumps = new HashSet<>();
+			this.unreachableJumps = new HashSet<>();
+
+			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
+				if (cfgToAnalyze.getAllPushedJumps().contains(node))
+					continue;
+
+				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+						MonolithicHeap,
+						EVMAbstractState,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
+					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+
+					try {
+						analysisResult = result.getAnalysisStateBefore(node);
+					} catch (SemanticException e1) {
+						e1.printStackTrace();
+					}
+
+					// Retrieve the symbolic stack from the analysis result
+					EVMAbstractState valueState = analysisResult.getState().getValueState();
+
+					// If the abstract stack is top or bottom or it is empty, we do not
+					// have enough information
+					// to solve the jump.
+					if (valueState.isBottom()) {
+						this.unreachableJumps.add(node);
+						continue;
+					} else if (valueState.isTop()) {
+						System.err.println("Reachable: " + this.cfgToAnalyze.reachableFrom(entryPoint, node));
+						this.unsoundJumps.add(node);
+						continue;
+					} else {
+						for (KIntegerSet topStack : valueState.getTop())
+							if (topStack.isBottom()) {
+								this.unreachableJumps.add(node); 
+								continue;
+							} else if (topStack.isTop()) {
+								System.err.println("Reachable: " + this.cfgToAnalyze.reachableFrom(entryPoint, node));
+								this.unsoundJumps.add(node);
+							}
+					}
+				}
+			}
+
 			return;
+		}
+
 		this.fixpoint = true;
 
 		LiSAConfiguration conf = tool.getConfiguration();
@@ -123,9 +179,9 @@ public class JumpSolver
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap,
+			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -147,7 +203,7 @@ public class JumpSolver
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -173,11 +229,11 @@ public class JumpSolver
 			for (KIntegerSet topStack : valueState.getTop()) {
 				if (topStack.isBottom()) {
 					this.unreachableJumps.add(node); // FIXME: this is wrong: a
-														// jump is unreachable
-														// if all the top of the
-														// stacks are bottom or
-														// do not contain jump
-														// dest
+					// jump is unreachable
+					// if all the top of the
+					// stacks are bottom or
+					// do not contain jump
+					// dest
 					continue;
 				} else if (topStack.isTop()) {
 					System.err.println("Not solved jump (top of the stack is top): " + node + "["
@@ -195,11 +251,11 @@ public class JumpSolver
 				// next one.
 				if (filteredDests.isEmpty()) {
 					this.unreachableJumps.add(node); // FIXME: this is wrong: a
-														// jump is unreachable
-														// if all the top of the
-														// stacks do not
-														// contains jump dests
-														// or are bottom
+					// jump is unreachable
+					// if all the top of the
+					// stacks do not
+					// contains jump dests
+					// or are bottom
 					continue;
 				}
 
