@@ -226,13 +226,13 @@ public class EVMLiSA {
 		conf.serializeInputs = dumpCFG;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.jsonOutput = true;
+		conf.jsonOutput = false;
 		conf.workdir = outputDir;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
-		conf.serializeResults = true;
+		conf.serializeResults = false;
 		conf.optimize = false;
 
 		if (dumpAnalysis != null) {
@@ -345,7 +345,7 @@ public class EVMLiSA {
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
-		conf.serializeResults = true;
+		conf.serializeResults = false;
 		conf.optimize = false;
 
 		LiSA lisa = new LiSA(conf);
