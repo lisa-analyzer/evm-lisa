@@ -137,6 +137,8 @@ public class JumpSolver
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
+		else if (cfgToAnalyze.getAllPushedJumps().contains(node))
+			return true;
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.

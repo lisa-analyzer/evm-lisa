@@ -30,7 +30,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 	}
 
 	public KIntegerSet(Integer... ints) {
-		super(new HashSet<>(2), ints.length > K);
+		super(new HashSet<>(K), ints.length > K);
 
 		if (ints.length <= K)
 			for (Integer i : ints)
@@ -111,7 +111,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements) {
 				BigInteger add = i.add(j);
@@ -129,7 +129,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements) {
 				BigInteger sub = i.subtract(j);
@@ -157,7 +157,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements) {
 				BigInteger mul = i.multiply(j);
@@ -178,7 +178,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				if (j.equals(ZERO_INT))
@@ -197,7 +197,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements) {
 
@@ -216,7 +216,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : that.elements)
 				for (BigInteger k : other.elements)
@@ -234,7 +234,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : that.elements)
 				for (BigInteger k : other.elements)
@@ -252,7 +252,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements) {
 			for (BigInteger j : other.elements) {
 				BigInteger r = i;
@@ -334,7 +334,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				elements.add(i.and(j));
@@ -348,7 +348,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				elements.add(i.or(j));
@@ -362,7 +362,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				elements.add(i.xor(j));
@@ -376,7 +376,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			if (i.compareTo(ZERO_INT) >= 0)
 				elements.add(MAX.subtract(i.add(ONE_INT)));
@@ -392,7 +392,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				elements.add(new BigInteger(shiftLeft(j.toByteArray(), i.intValue())));
@@ -406,7 +406,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				elements.add(j.shiftRight(i.intValue()));
@@ -420,7 +420,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, BigInteger> {
 		else if (isTop() || other.isTop())
 			return top();
 
-		Set<BigInteger> elements = new HashSet<>();
+		Set<BigInteger> elements = new HashSet<>(K);
 		for (BigInteger i : this.elements)
 			for (BigInteger j : other.elements)
 				elements.add(
