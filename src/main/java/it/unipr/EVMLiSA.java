@@ -224,7 +224,7 @@ public class EVMLiSA {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeInputs = dumpCFG;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = false;
 		conf.workdir = outputDir;
@@ -339,7 +339,7 @@ public class EVMLiSA {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeInputs = false;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(),
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = true;
 		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;

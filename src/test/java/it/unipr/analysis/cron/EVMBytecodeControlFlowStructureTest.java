@@ -21,6 +21,8 @@ import org.junit.Test;
 public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExecutor {
 	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
 
+	private static final String FAKE_ADDRESS = "0x000000000000000";
+
 	/**
 	 * Helper method to create a {@link CronConfiguration} object for the test
 	 * cases.
@@ -47,7 +49,7 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 			conf.analysisGraphs = GraphType.DOT;
 		}
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbstractState(),
+				new MonolithicHeap(), new EVMAbstractState(FAKE_ADDRESS),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();

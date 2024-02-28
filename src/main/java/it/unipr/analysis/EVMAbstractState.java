@@ -30,10 +30,15 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
-	private static final EVMAbstractState TOP = new EVMAbstractState(true);
+	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
 			new Memory().bottom(), KIntegerSet.BOTTOM);
 	private final boolean isTop;
+	
+	/**
+	 * The address of the running contract.
+	 */
+	private static String CONTRACT_ADDRESS;
 
 	/**
 	 * The stack memory.
@@ -50,8 +55,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	/**
 	 * Builds the abstract domain.
 	 */
-	public EVMAbstractState() {
-		this(false);
+	public EVMAbstractState(String contractAddress) {
+		this(false, contractAddress);
 	}
 
 	/**
@@ -59,11 +64,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * 
 	 * @param isTop whether the abstract value is top.
 	 */
-	private EVMAbstractState(boolean isTop) {
+	private EVMAbstractState(boolean isTop, String contractAddress) {
 		this.isTop = isTop;
 		this.stacks = new AbstractStackSet();
 		this.memory = new Memory();
 		this.mu_i = KIntegerSet.ZERO;
+		
+		CONTRACT_ADDRESS = contractAddress;
 	}
 
 	/**
@@ -158,12 +165,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					return new EVMAbstractState(result, memory, mu_i);
 				}
 				case "AddressOperator": { // ADDRESS
-					// At the moment, we do not handle ADDRESS
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
-
+					BigInteger hex = toBigDecimal(CONTRACT_ADDRESS);
+					
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
+						resultStack.push(new KIntegerSet(hex));
 						result.add(resultStack);
 					}
 
@@ -1820,7 +1827,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private BigInteger toBigDecimal(SymbolicExpression expression) {
 		Constant c = (Constant) expression;
 		String hex = (String) c.getValue();
-		String hexadecimal = hex.substring(2);
+		return toBigDecimal(hex);
+	}
+	
+	private BigInteger toBigDecimal(String str) {
+		String hexadecimal = str.substring(2);
 		BigInteger bigIntVal = new BigInteger(hexadecimal, 16);
 //		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
 		return bigIntVal;
