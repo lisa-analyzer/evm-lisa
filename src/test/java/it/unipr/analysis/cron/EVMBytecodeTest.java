@@ -272,7 +272,7 @@ public class EVMBytecodeTest extends EVMBytecodeAnalysisExecutor {
 		conf.serializeResults = false;
 		conf.jsonOutput = false;
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new EVMAbstractState(),
+				new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.testDir = "benchmark/" + CONTRACT_ADDR;
 		conf.callGraph = new RTACallGraph();
