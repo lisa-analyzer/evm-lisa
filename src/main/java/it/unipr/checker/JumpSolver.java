@@ -1,5 +1,10 @@
 package it.unipr.checker;
 
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.cfg.EVMCFG;
@@ -25,10 +30,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -53,9 +54,20 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	 */
 	private Set<Statement> jumpDestinations;
 
+	/**
+	 * The set of unreachable jumps (i.e., their state is bottom)
+	 */
 	private Set<Statement> unreachableJumps;
 
+	/**
+	 * The set of definitely unsound jumps (i.e., jumps reached by stacks with top at the top)
+	 */
 	private Set<Statement> unsoundJumps;
+
+	/**
+	 * The set of maybe unsound jumps (i.e., jumps reached by the top abstract state)
+	 */
+	private Set<Statement> maybeUnsoundJumps;
 
 	/**
 	 * Yields the computed CFG.
@@ -72,6 +84,10 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	
 	public Set<Statement> getUnsoundJumps() {
 		return unsoundJumps;
+	}
+	
+	public Set<Statement> getMaybeUnsoundJumps() {
+		return maybeUnsoundJumps;
 	}
 
 	@Override
@@ -101,6 +117,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 			this.unsoundJumps = new HashSet<>();
 			this.unreachableJumps = new HashSet<>();
+			this.maybeUnsoundJumps = new HashSet<>();
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
 				if (cfgToAnalyze.getAllPushedJumps().contains(node))
@@ -129,18 +146,15 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 						this.unreachableJumps.add(node);
 						continue;
 					} else if (valueState.isTop()) {
-						System.err.println("Reachable: " + this.cfgToAnalyze.reachableFrom(entryPoint, node));
-						this.unsoundJumps.add(node);
+						this.maybeUnsoundJumps.add(node);
 						continue;
 					} else {
 						for (KIntegerSet topStack : valueState.getTop())
 							if (topStack.isBottom()) {
 								this.unreachableJumps.add(node); 
 								continue;
-							} else if (topStack.isTop() && !topStack.isTopNotJumpdest()) {
-								System.err.println("Reachable: " + this.cfgToAnalyze.reachableFrom(entryPoint, node));
+							} else if (topStack.isTop() && !topStack.isTopNotJumpdest()) 
 								this.unsoundJumps.add(node);
-							}
 					}
 				}
 			}

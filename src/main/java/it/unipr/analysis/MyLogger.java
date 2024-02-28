@@ -17,6 +17,7 @@ public class MyLogger {
 	private int notSolvedJumps;
 	private double solvedJumpsPercent;
 	private int unsoundJumps;
+	private int maybeUnsoundJumps;
 	private long time;
 	private String notes;
 	private String currentThread;
@@ -31,6 +32,7 @@ public class MyLogger {
 		this.maybeUnreachableJumps = 0;
 		this.solvedJumpsPercent = 0;
 		this.unsoundJumps = 0;
+		this.unsoundJumps = 0;
 		this.time = 0;
 		this.notes = "";
 		this.currentThread = null;
@@ -38,7 +40,7 @@ public class MyLogger {
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
-			int notSolvedJumps, int unsoundJumps, double solvedJumpsPercent, long time, String notes) {
+			int notSolvedJumps, int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent, long time, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
@@ -58,6 +60,7 @@ public class MyLogger {
 		this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps;
 		this.notSolvedJumps = notSolvedJumps;
 		this.unsoundJumps = unsoundJumps;
+		this.maybeUnsoundJumps = maybeUnsoundJumps;
 		this.notes = notes;
 		this.time = time;
 		this.currentThread = Thread.currentThread().getName();
@@ -111,6 +114,11 @@ public class MyLogger {
 		this.unsoundJumps = unsoundJumps;
 		return this;
 	}
+	
+	public MyLogger maybeUnsoundJumps(int maybeUnsoundJumps) {
+		this.maybeUnsoundJumps = maybeUnsoundJumps;
+		return this;
+	}
 
 	public MyLogger solvedJumpsPercent(double solvedJumpsPercent) {
 		this.solvedJumpsPercent = solvedJumpsPercent;
@@ -130,7 +138,7 @@ public class MyLogger {
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps,
-				unsoundJumps, solvedJumpsPercent, time, notes);
+				unsoundJumps, maybeUnsoundJumps,solvedJumpsPercent, time, notes);
 	}
 
 	public int jumpSize() {
@@ -150,6 +158,7 @@ public class MyLogger {
 				totalResolvedJumps + divider +
 				notSolvedJumps + divider +
 				unsoundJumps + divider +
+				maybeUnsoundJumps + divider +
 				solvedJumpsPercent + divider +
 				time + divider +
 //				currentThread + divider +

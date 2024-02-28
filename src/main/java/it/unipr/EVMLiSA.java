@@ -61,7 +61,7 @@ public class EVMLiSA {
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
 	private int CORES;
 	private long startOfExecutionTime = 0;
-	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, Unsound jumps, % Total Solved, Time (millis), Notes \n";
+	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -278,6 +278,7 @@ public class EVMLiSA {
 						.maybeUnreachableJumps(pair.getRight().getMiddle())
 						.notSolvedJumps(pair.getRight().getRight())
 						.unsoundJumps(checker.getUnsoundJumps().size())
+						.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
 						.time(finish - start)
 						.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
 								+ AbstractStackSet.getStackSetLimit())
@@ -368,6 +369,7 @@ public class EVMLiSA {
 				.maybeUnreachableJumps(pair.getRight().getMiddle())
 				.notSolvedJumps(pair.getRight().getRight())
 				.unsoundJumps(checker.getUnsoundJumps().size())
+				.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
 				.time(finish - start)
 				.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
 						+ AbstractStackSet.getStackSetLimit())
@@ -613,6 +615,7 @@ public class EVMLiSA {
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
 		System.err.println("Not solved jumps: " + notSolvedJumps);
 		System.err.println("Unsound jumps: " + checker.getUnsoundJumps().size());
+		System.err.println("Maybe unsound jumps: " + checker.getMaybeUnsoundJumps().size());
 		System.err.println("##############");
 
 		return Triple.of(preciselyResolvedJumps, soundResolvedJumps,
