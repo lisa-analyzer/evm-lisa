@@ -140,7 +140,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 
 		for (int i = 0; i < STACK_LIMIT; i++)
-			result.addLast(KIntegerSet.TOP);
+			result.addLast(KIntegerSet.NUMERIC_TOP);
 
 		return new AbstractStack(result);
 	}
@@ -212,7 +212,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	private static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> list) {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
 		for (KIntegerSet item : list)
-			result.add(item.copy());
+			result.add(item);
 
 		return result;
 	}
@@ -237,7 +237,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (!stack.getFirst().isTop())
 			stack.addFirst(KIntegerSet.BOTTOM);
 		else
-			stack.addFirst(KIntegerSet.TOP);
+			stack.addFirst(KIntegerSet.NUMERIC_TOP);
 		return result;
 
 	}
@@ -294,7 +294,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (isBottom())
 			return KIntegerSet.BOTTOM;
 		else if (isTop())
-			return KIntegerSet.TOP;
+			return KIntegerSet.NUMERIC_TOP;
 		return this.stack.get(STACK_LIMIT - 2);
 	}
 

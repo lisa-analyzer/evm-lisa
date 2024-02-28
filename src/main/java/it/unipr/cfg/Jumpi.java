@@ -1,5 +1,10 @@
 package it.unipr.cfg;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
@@ -53,48 +58,33 @@ public class Jumpi extends Statement {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions) throws SemanticException {
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
-//		EVMCFG cfg = (EVMCFG) getProgram().getAllCFGs().stream().findAny().get();
-//		Set<Statement> jumpDestinations = cfg.getAllJumpdest();
-//
-//		// If the abstract stack is top or bottom or it is empty, we do not
-//		// have enough information
-//		// to solve the jump.
-//		if (!valueState.isBottom() && !valueState.isTop()) {
-//			AbstractStackSet stacks = valueState.getStacks();
-//
-//			for (AbstractStack a : stacks) {
-//
-//				KIntegerSet stack = a.getTop();
-//				if (!stack.isBottom() && !stack.isTop()) {
-//					Set<Statement> filteredDests = jumpDestinations.stream()
-//							.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-//							.filter(pc -> stack
-//									.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
-//							.collect(Collectors.toSet());
-//
-//					// For each JUMPDEST, add the missing edge from this node to
-//					// the JUMPDEST.
-//					for (Statement jmp : filteredDests) {
-//						if (!cfg.containsEdge(new TrueEdge(this, jmp))) {
-//							cfg.addEdge(new TrueEdge(this, jmp));
-//						}
-//					}
-//				}
-//			}
-//		}
 
-		KIntegerSet b = KIntegerSet.BOTTOM;
-		if (!valueState.isBottom() && !valueState.isTop())
-			for (AbstractStack st : valueState.getStacks())
-				b = b.lub(st.getSecondElement());
+		// Split here
+		Set<AbstractStack> trueStacks = new HashSet<>();
+		Set<AbstractStack> falseStacks = new HashSet<>();
+		if (!valueState.isBottom() && !valueState.isTop()) {
+			for (AbstractStack st : valueState.getStacks()) {
+				AbstractStack result = st.clone();
+				result.pop();
+				KIntegerSet condition = result.pop();
+				if (condition.isDefinitelyTrue())
+					trueStacks.add(result);
+				else if (condition.isDefinitelyFalse())
+					falseStacks.add(result);
+				else if (condition.isUnknown()) {
+					trueStacks.add(result);
+					falseStacks.add(result);
+				}
+			}
+		}
 
-		Constant dummy = new Constant(Untyped.INSTANCE, b, getLocation());
+		Constant dummy = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
 				JumpiOperator.INSTANCE, getLocation()), this);
 	}

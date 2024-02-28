@@ -137,7 +137,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 							if (topStack.isBottom()) {
 								this.unreachableJumps.add(node); 
 								continue;
-							} else if (topStack.isTop()) {
+							} else if (topStack.isTop() && !topStack.isTopNotJumpdest()) {
 								System.err.println("Reachable: " + this.cfgToAnalyze.reachableFrom(entryPoint, node));
 								this.unsoundJumps.add(node);
 							}

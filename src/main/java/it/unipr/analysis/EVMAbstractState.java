@@ -1,5 +1,15 @@
 package it.unipr.analysis;
 
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -17,13 +27,6 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
@@ -160,7 +163,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -172,7 +175,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -184,7 +187,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -196,7 +199,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -208,7 +211,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -220,7 +223,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -232,7 +235,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -244,7 +247,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -256,7 +259,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -268,7 +271,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -280,7 +283,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -292,7 +295,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -304,7 +307,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -316,7 +319,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -328,7 +331,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -352,7 +355,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -376,7 +379,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -388,7 +391,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -563,7 +566,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						resultStack.pop();
 						resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NUMERIC_TOP);
 						result.add(resultStack);
 					}
 
@@ -717,7 +720,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet resultKIntegerSet = KIntegerSet.ZERO;
 
 						if (target.isTop() || indexOfByte.isTop()) {
-							resultStack.push(KIntegerSet.TOP);
+							resultStack.push(KIntegerSet.NUMERIC_TOP);
 						} else {
 							for (BigInteger value : target) {
 								byte[] valueAsByteArray = value.toByteArray();
@@ -792,7 +795,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NUMERIC_TOP);
 						result.add(resultStack);
 					}
 
@@ -806,7 +809,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -820,7 +823,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -864,7 +867,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -909,7 +912,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -923,7 +926,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet blockNumber = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -952,9 +955,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						if (mu_i.equals(KIntegerSet.ZERO)) {
 							// This is an error. We cannot read from memory if
 							// there is no active words saved
-							resultStack.push(KIntegerSet.TOP);
+							resultStack.push(KIntegerSet.NUMERIC_TOP);
 						} else if (offset.isTop()) {
-							resultStack.push(KIntegerSet.TOP);
+							resultStack.push(KIntegerSet.NUMERIC_TOP);
 							new_mu_i = mu_i;
 						} else {
 							resultStack.push(offset.mload(memory));
@@ -1041,7 +1044,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NUMERIC_TOP);
 						result.add(resultStack);
 					}
 
@@ -1471,7 +1474,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1488,7 +1491,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = resultStack.pop();
 						KIntegerSet salt = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1508,7 +1511,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1528,7 +1531,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1561,7 +1564,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1580,7 +1583,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1712,20 +1715,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			UnaryOperator op = un.getOperator();
 
 			if (op instanceof JumpiOperator) { // JUMPI
-				KIntegerSet condition = ((KIntegerSet) ((Constant) un.getExpression()).getValue());
-
-				if (condition.isDefinitelyFalse()) {
-					// if condition is surely false, return bottom
+				
+				@SuppressWarnings("unchecked")
+				Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<AbstractStack>>) ((Constant) un.getExpression()).getValue());
+				if (split.getLeft().isEmpty() && split.getRight().isEmpty())
+					return top();
+				else if (split.getLeft().isEmpty())
 					return bottom();
-				} else if (condition.isDefinitelyTrue()) {
-					// if condition is surely true, return the result
-					return new EVMAbstractState(stacks.clone(), memory, mu_i);
-				} else if (condition.isUnknown()) {
-					// Condition could be either true or false
-					// Return the result
-					return new EVMAbstractState(stacks.clone(), memory, mu_i);
-				} else
-					return bottom();
+				return new EVMAbstractState(new AbstractStackSet(split.getLeft(), false), memory, mu_i);
 
 			} else if (op instanceof LogicalNegation) {
 				// Get the expression wrapped by LogicalNegation
@@ -1736,23 +1733,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					// Check if LogicalNegation is wrapping a JUMPI
 					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-						KIntegerSet condition = ((KIntegerSet) ((Constant) ((UnaryExpression) wrappedExpr)
-								.getExpression()).getValue());
 
-						if (condition.isDefinitelyFalse()) {
-							// if condition is surely false, return the
-							// result
-							return new EVMAbstractState(stacks.clone(), memory, mu_i);
-						} else if (condition.isDefinitelyTrue()) {
-							// if condition is surely true, return the
-							// bottom
+						@SuppressWarnings("unchecked")
+						Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression()).getValue());
+						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
+							return top();
+						else if (split.getRight().isEmpty())
 							return bottom();
-						} else if (condition.isUnknown()) {
-							// Condition could be either true or false
-							// Return the result
-							return new EVMAbstractState(stacks.clone(), memory, mu_i);
-						} else
-							return bottom();
+						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, mu_i);
 					}
 				}
 			}
