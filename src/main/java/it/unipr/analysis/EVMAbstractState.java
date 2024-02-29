@@ -153,12 +153,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				}
 				case "PushOperator": { // PUSH
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
+					KIntegerSet toPush = new KIntegerSet(this.toBigDecimal(un.getExpression()));
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						BigInteger valueToPush = this.toBigDecimal(un.getExpression());
-
-						resultStack.push(new KIntegerSet(valueToPush));
+						resultStack.push(toPush);
 						result.add(resultStack);
 					}
 
@@ -166,11 +165,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				}
 				case "AddressOperator": { // ADDRESS
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
-					BigInteger hex = toBigDecimal(CONTRACT_ADDRESS);
+					KIntegerSet hex = new KIntegerSet(toBigDecimal(CONTRACT_ADDRESS));
 					
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(new KIntegerSet(hex));
+						resultStack.push(hex);
 						result.add(resultStack);
 					}
 
