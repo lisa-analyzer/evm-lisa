@@ -69,31 +69,47 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number add(Number other) {
-		BigInteger me = toBigInteger(this);
+		if(this.getType() == other.getType() && other.getType() == Type.INT)
+			return new Number(i + other.getInt());
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l + other.getLong());
+		
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.add(ot));
+		return new Number(b.add(ot));
 	}
 
 	public Number subtract(Number other) {
-		BigInteger me = toBigInteger(this);
+		if(this.getType() == other.getType() && other.getType() == Type.INT)
+			return new Number(i - other.getInt());
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l - other.getLong());
+		
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.subtract(ot));
+		return new Number(b.subtract(ot));
 	}
 
 	public Number multiply(Number other) {
-		BigInteger me = toBigInteger(this);
+		if(this.getType() == other.getType() && other.getType() == Type.INT)
+			return new Number(i * other.getInt());
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l * other.getLong());
+		
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.multiply(ot));
+		return new Number(b.multiply(ot));
 	}
 
 	public Number divide(Number other) {
-		BigInteger me = toBigInteger(this);
+		if(this.getType() == other.getType() && other.getType() == Type.INT)
+			return new Number(i / other.getInt());
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l / other.getLong());
+		
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.divide(ot));
+		return new Number(b.divide(ot));
 	}
 
 	public Number and(Number other) {
@@ -158,6 +174,11 @@ public class Number implements Comparable<Number> {
 
 	@Override
 	public int compareTo(Number other) {
+		if(this.getType() == other.getType() && other.getType() == Type.INT)
+			return i > other.getInt() ? (+1) : i < other.getInt() ? (-1) : 0;
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+			return i > other.getLong() ? (+1) : i < other.getLong() ? (-1) : 0;
+		
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 

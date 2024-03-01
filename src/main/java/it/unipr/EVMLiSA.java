@@ -201,7 +201,7 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		OUTPUT_DIR += addressSC + "/";
+		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 
 		if (outputDir == null)
