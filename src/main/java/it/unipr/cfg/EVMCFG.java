@@ -1,12 +1,5 @@
 package it.unipr.cfg;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -33,6 +26,12 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class EVMCFG extends CFG {
 
@@ -107,31 +106,32 @@ public class EVMCFG extends CFG {
 	public Set<Statement> getAllPushedJumps() {
 		if (pushedJumps == null) {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			pushedJumps = new HashSet<>(); 
+			pushedJumps = new HashSet<>();
 
-			for (Edge edge : cfgNodeList.getEdges()) 
-				if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi) && (edge.getSource() instanceof Push))
+			for (Edge edge : cfgNodeList.getEdges())
+				if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
+						&& (edge.getSource() instanceof Push))
 					pushedJumps.add(edge.getDestination());
 		}
-		
+
 		return pushedJumps;
 	}
 
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalyzedCFG<A, H, V, T> fixpoint(
-			AnalysisState<A, H, V, T> singleton, Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
-			InterproceduralAnalysis<A, H, V, T> interprocedural, WorkingSet<Statement> ws,
-			FixpointConfiguration conf,
-			ScopeId id) throws FixpointException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalyzedCFG<A, H, V, T> fixpoint(
+					AnalysisState<A, H, V, T> singleton, Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
+					InterproceduralAnalysis<A, H, V, T> interprocedural, WorkingSet<Statement> ws,
+					FixpointConfiguration conf,
+					ScopeId id) throws FixpointException {
 		// we disable optimizations for ascending phases if there is a
 		// descending one: the latter will need full results to start applying
 		// glbs/narrowings from a post-fixpoint
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A, H, V, T>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-						: new Fixpoint<>(this, false);
+				: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A, H, V, T> asc = new EVMAscendingFixpoint<A, H, V, T>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -166,13 +166,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-	T extends TypeDomain<T>,
-	A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>> AnalyzedCFG<A, H, V, T> flatten(
-			boolean isOptimized, AnalysisState<A, H, V, T> singleton,
-			Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
-			InterproceduralAnalysis<A, H, V, T> interprocedural, ScopeId id,
-			Map<Statement, CompoundState<A, H, V, T>> fixpointResults) {
+			T extends TypeDomain<T>,
+			A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>> AnalyzedCFG<A, H, V, T> flatten(
+					boolean isOptimized, AnalysisState<A, H, V, T> singleton,
+					Map<Statement, AnalysisState<A, H, V, T>> startingPoints,
+					InterproceduralAnalysis<A, H, V, T> interprocedural, ScopeId id,
+					Map<Statement, CompoundState<A, H, V, T>> fixpointResults) {
 		Map<Statement, AnalysisState<A, H, V, T>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A, H, V, T>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -183,7 +183,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A, H, V, T>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override

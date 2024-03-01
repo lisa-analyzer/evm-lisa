@@ -1,10 +1,5 @@
 package it.unipr.cfg;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
@@ -24,6 +19,9 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Jumpi opcode of the program to analyze.
@@ -58,11 +56,11 @@ public class Jumpi extends Statement {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
 
 		// Split here

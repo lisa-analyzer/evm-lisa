@@ -1,15 +1,5 @@
 package it.unipr.analysis;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -27,6 +17,14 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
@@ -34,7 +32,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
 			new Memory().bottom(), KIntegerSet.BOTTOM);
 	private final boolean isTop;
-	
+
 	/**
 	 * The address of the running contract.
 	 */
@@ -69,7 +67,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		this.stacks = new AbstractStackSet();
 		this.memory = new Memory();
 		this.mu_i = KIntegerSet.ZERO;
-		
+
 		CONTRACT_ADDRESS = contractAddress;
 	}
 
@@ -153,7 +151,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				}
 				case "PushOperator": { // PUSH
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
-					KIntegerSet toPush = new KIntegerSet(this.toBigDecimal(un.getExpression()));
+					KIntegerSet toPush = new KIntegerSet(toBigInteger(un.getExpression()));
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
@@ -165,8 +163,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				}
 				case "AddressOperator": { // ADDRESS
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
-					KIntegerSet hex = new KIntegerSet(toBigDecimal(CONTRACT_ADDRESS));
-					
+					KIntegerSet hex = new KIntegerSet(toBigInteger(CONTRACT_ADDRESS));
+
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						resultStack.push(hex);
@@ -728,10 +726,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.NUMERIC_TOP);
 						} else {
-							for (BigInteger value : target) {
+							for (Number value : target) {
 								byte[] valueAsByteArray = value.toByteArray();
 
-								for (BigInteger index : indexOfByte) {
+								for (Number index : indexOfByte) {
 									int intIndex = index.intValue();
 
 									if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
@@ -992,9 +990,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						} else {
 							KIntegerSet current_mu_i_lub = KIntegerSet.BOTTOM;
 
-							for (BigInteger os : offset) {
-								BigInteger thirtyTwo = BigInteger.valueOf(32);
-								BigInteger current_mu_i = os.add(thirtyTwo)
+							for (Number os : offset) {
+								Number thirtyTwo = new Number(32);
+								Number current_mu_i = os.add(thirtyTwo)
 										.divide(thirtyTwo);
 
 								memoryResult = memory.putState(os, value);
@@ -1026,11 +1024,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						} else {
 							KIntegerSet current_mu_i_lub = KIntegerSet.BOTTOM;
 
-							for (BigInteger os : offset) {
-								BigInteger current_mu_i = os.add(BigInteger.valueOf(1))
-										.divide(BigInteger.valueOf(32));
+							for (Number os : offset) {
+								Number current_mu_i = os.add(new Number(1))
+										.divide(new Number(32));
 
-								memoryResult = memory.putState(os, value.mod(new KIntegerSet(BigInteger.valueOf(256))));
+								memoryResult = memory.putState(os, value.mod(new KIntegerSet(new Number(256))));
 
 								current_mu_i_lub = current_mu_i_lub.lub(new KIntegerSet(current_mu_i));
 							}
@@ -1721,9 +1719,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			UnaryOperator op = un.getOperator();
 
 			if (op instanceof JumpiOperator) { // JUMPI
-				
+
 				@SuppressWarnings("unchecked")
-				Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<AbstractStack>>) ((Constant) un.getExpression()).getValue());
+				Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>,
+						Set<AbstractStack>>) ((Constant) un.getExpression()).getValue());
 				if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 					return top();
 				else if (split.getLeft().isEmpty())
@@ -1741,7 +1740,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
 
 						@SuppressWarnings("unchecked")
-						Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression()).getValue());
+						Pair<Set<AbstractStack>,
+								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+												.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
@@ -1823,17 +1825,17 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * 
 	 * @return the BigInteger corresponding to the memory word
 	 */
-	private BigInteger toBigDecimal(SymbolicExpression expression) {
+	private Number toBigInteger(SymbolicExpression expression) {
 		Constant c = (Constant) expression;
 		String hex = (String) c.getValue();
-		return toBigDecimal(hex);
+		return toBigInteger(hex);
 	}
-	
-	private BigInteger toBigDecimal(String str) {
+
+	private Number toBigInteger(String str) {
 		String hexadecimal = str.substring(2);
 		BigInteger bigIntVal = new BigInteger(hexadecimal, 16);
 //		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
-		return bigIntVal;
+		return new Number(bigIntVal);
 	}
 
 	@Override

@@ -40,7 +40,8 @@ public class MyLogger {
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
-			int notSolvedJumps, int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent, long time, String notes) {
+			int notSolvedJumps, int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent, long time,
+			String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
@@ -109,12 +110,12 @@ public class MyLogger {
 		this.notSolvedJumps = notSolvedJumps;
 		return this;
 	}
-	
+
 	public MyLogger unsoundJumps(int unsoundJumps) {
 		this.unsoundJumps = unsoundJumps;
 		return this;
 	}
-	
+
 	public MyLogger maybeUnsoundJumps(int maybeUnsoundJumps) {
 		this.maybeUnsoundJumps = maybeUnsoundJumps;
 		return this;
@@ -138,7 +139,7 @@ public class MyLogger {
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps,
-				unsoundJumps, maybeUnsoundJumps,solvedJumpsPercent, time, notes);
+				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent, time, notes);
 	}
 
 	public int jumpSize() {

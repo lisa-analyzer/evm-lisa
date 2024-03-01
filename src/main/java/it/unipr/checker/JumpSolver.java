@@ -1,12 +1,8 @@
 package it.unipr.checker;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
+import it.unipr.analysis.Number;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -30,14 +26,17 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver
-implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	/**
 	 * The CFG to be analyzed.
@@ -60,12 +59,14 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	private Set<Statement> unreachableJumps;
 
 	/**
-	 * The set of definitely unsound jumps (i.e., jumps reached by stacks with top at the top)
+	 * The set of definitely unsound jumps (i.e., jumps reached by stacks with
+	 * top at the top)
 	 */
 	private Set<Statement> unsoundJumps;
 
 	/**
-	 * The set of maybe unsound jumps (i.e., jumps reached by the top abstract state)
+	 * The set of maybe unsound jumps (i.e., jumps reached by the top abstract
+	 * state)
 	 */
 	private Set<Statement> maybeUnsoundJumps;
 
@@ -81,11 +82,11 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	public Set<Statement> getUnreachableJumps() {
 		return unreachableJumps;
 	}
-	
+
 	public Set<Statement> getUnsoundJumps() {
 		return unsoundJumps;
 	}
-	
+
 	public Set<Statement> getMaybeUnsoundJumps() {
 		return maybeUnsoundJumps;
 	}
@@ -93,8 +94,8 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void beforeExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 		// resets the unreachable jumps set
 		this.unreachableJumps = new HashSet<>();
 	}
@@ -108,9 +109,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint) {
 			Statement entryPoint = cfgToAnalyze.getEntrypoints().stream().findAny().get();
@@ -128,7 +129,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 						EVMAbstractState,
 						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+							MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -139,7 +140,8 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 					// Retrieve the symbolic stack from the analysis result
 					EVMAbstractState valueState = analysisResult.getState().getValueState();
 
-					// If the abstract stack is top or bottom or it is empty, we do not
+					// If the abstract stack is top or bottom or it is empty, we
+					// do not
 					// have enough information
 					// to solve the jump.
 					if (valueState.isBottom()) {
@@ -151,9 +153,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 					} else {
 						for (KIntegerSet topStack : valueState.getTop())
 							if (topStack.isBottom()) {
-								this.unreachableJumps.add(node); 
+								this.unreachableJumps.add(node);
 								continue;
-							} else if (topStack.isTop() && !topStack.isTopNotJumpdest()) 
+							} else if (topStack.isTop() && !topStack.isTopNotJumpdest())
 								this.unsoundJumps.add(node);
 					}
 				}
@@ -193,9 +195,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -217,7 +219,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -258,7 +260,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				Set<Statement> filteredDests = this.jumpDestinations.stream()
 						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
 						.filter(pc -> topStack
-								.contains(BigInteger.valueOf(((ProgramCounterLocation) pc.getLocation()).getPc())))
+								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
 
 				// If there are no JUMPDESTs for this value, skip to the
