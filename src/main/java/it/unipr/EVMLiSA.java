@@ -207,12 +207,12 @@ public class EVMLiSA {
 		if (outputDir == null)
 			outputDir = OUTPUT_DIR + "/" + addressSC + "_REPORT";
 
-		STATISTICS_FULLPATH = OUTPUT_DIR + addressSC + "_STATISTICS" + ".csv";
-		FAILURE_FULLPATH = OUTPUT_DIR + addressSC + "_FAILURE" + ".csv";
+		STATISTICS_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_STATISTICS" + ".csv";
+		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
 
 		String BYTECODE_FULLPATH = "";
 		if (filepath == null) {
-			BYTECODE_FULLPATH = OUTPUT_DIR + addressSC + ".sol";
+			BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".sol";
 			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
 		} else
 			BYTECODE_FULLPATH = filepath;

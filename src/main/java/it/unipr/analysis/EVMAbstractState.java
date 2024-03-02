@@ -562,15 +562,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					return new EVMAbstractState(result, memory, mu_i);
 				}
 				case "SignextendOperator": { // SIGNEXTEND
-					// At the moment, we do not handle SIGNEXTEND
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.pop();
-						resultStack.pop();
+						KIntegerSet opnd1 = resultStack.pop();
+						KIntegerSet opnd2 = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(opnd2);
 						result.add(resultStack);
 					}
 
@@ -799,7 +798,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -827,7 +826,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
+						resultStack.push(KIntegerSet.NUMERIC_TOP);
 						result.add(resultStack);
 					}
 

@@ -70,13 +70,12 @@ public class Number implements Comparable<Number> {
 
 	public Number add(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number(i + other.getInt());
-		if(this.getType() == other.getType() && other.getType() == Type.LONG)
-			return new Number(l + other.getLong());
+			return new Number((long) i + other.getInt());
 		
+		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(b.add(ot));
+		return new Number(me.subtract(ot));
 	}
 
 	public Number subtract(Number other) {
@@ -85,20 +84,20 @@ public class Number implements Comparable<Number> {
 		if(this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l - other.getLong());
 		
+		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(b.subtract(ot));
+		return new Number(me.subtract(ot));
 	}
 
 	public Number multiply(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number(i * other.getInt());
-		if(this.getType() == other.getType() && other.getType() == Type.LONG)
-			return new Number(l * other.getLong());
+			return new Number((long) i * other.getInt());
 		
+		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(b.multiply(ot));
+		return new Number(me.subtract(ot));
 	}
 
 	public Number divide(Number other) {
@@ -107,9 +106,10 @@ public class Number implements Comparable<Number> {
 		if(this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l / other.getLong());
 		
+		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(b.divide(ot));
+		return new Number(me.subtract(ot));
 	}
 
 	public Number and(Number other) {
@@ -201,4 +201,14 @@ public class Number implements Comparable<Number> {
 		Number other = (Number) obj;
 		return Objects.equals(b, other.b) && i == other.i && l == other.l;
 	}
+	
+	public static void main(String[] args) {
+		int i = 1;
+		long l = 1;
+		BigInteger b = BigInteger.valueOf(l);
+		System.out.println(new Number(i).toByteArray().length);
+		System.out.println(new Number(l).toByteArray().length);
+		System.out.println(new Number(b).toByteArray().length);
+	}
+	
 }
