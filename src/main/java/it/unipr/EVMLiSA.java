@@ -262,7 +262,7 @@ public class EVMLiSA {
 					"SoundResolvedJumps: " + pair.getMiddle() + "\n" +
 					"DefinitelyUnreachableJumps: " + pair.getRight().getLeft() + "\n" +
 					"MaybeUnreachableJumps: " + pair.getRight().getMiddle() + "\n" +
-					"NotUnreachableJumps: " + pair.getRight().getRight() + "\n" +
+					"NotSolvedJumps: " + pair.getRight().getRight() + "\n" +
 					"Time (in millis): " + (finish - start) + "\n";
 
 			System.out.println(msg2);

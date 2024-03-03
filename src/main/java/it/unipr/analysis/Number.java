@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 public class Number implements Comparable<Number> {
-	public static final BigInteger MAX_INT = BigInteger.valueOf((long) Math.pow(2, 32));
-	public static final BigInteger MAX_LONG = BigInteger.valueOf((long) Math.pow(2, 64));
+	public static final BigInteger MAX_INT = BigInteger.valueOf(2).pow(32);
+	public static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(64);
 
 	static enum Type {
 		INT,

@@ -19,7 +19,7 @@ import org.junit.Test;
  * Push Before Jump), are also tested in specific test cases.
  */
 public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExecutor {
-	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = true;
+	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
 
 	private static final String FAKE_ADDRESS = "0x000000000000000";
 

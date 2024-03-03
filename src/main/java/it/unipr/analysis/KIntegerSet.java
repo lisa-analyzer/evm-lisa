@@ -11,7 +11,7 @@ import java.util.Set;
 public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	private static final Number ZERO_INT = new Number(0);
 	private static final Number ONE_INT = new Number(1);
-	private static final Number MAX = new Number((long) Math.pow(2, 256));
+	private static final Number MAX = new Number(BigInteger.valueOf(2).pow(256));
 
 	public static final int K = 2;
 
