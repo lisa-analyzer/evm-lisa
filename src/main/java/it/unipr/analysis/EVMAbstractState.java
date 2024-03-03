@@ -720,7 +720,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet indexOfByte = resultStack.pop();
 						KIntegerSet target = resultStack.pop();
-						KIntegerSet resultKIntegerSet = KIntegerSet.ZERO;
+						KIntegerSet resultKIntegerSet = KIntegerSet.BOTTOM;
 
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.NUMERIC_TOP);
