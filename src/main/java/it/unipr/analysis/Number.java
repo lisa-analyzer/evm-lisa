@@ -103,11 +103,8 @@ public class Number implements Comparable<Number> {
 	public Number divide(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number(i / other.getInt());
-		if(this.getType() == other.getType() && other.getType() == Type.LONG) {
-//			System.err.println("this: " + getInt() + " " + getLong() + " " + getBigInteger());
-//			System.err.println("other: " + other.getInt() + " " + other.getLong() + " " + other.getBigInteger());
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l / other.getLong());
-		}
 			
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);

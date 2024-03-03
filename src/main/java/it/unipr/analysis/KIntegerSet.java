@@ -20,7 +20,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
 
 	public static final KIntegerSet NUMERIC_TOP = new KIntegerSet(Collections.emptySet(), true);
-	public static final KIntegerSet NOT_JUMPDEST_TOP = new KIntegerSet(7);
+	public static final KIntegerSet NOT_JUMPDEST_TOP = NUMERIC_TOP; //new KIntegerSet(7); // TODO to fix
 	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
 
 	public KIntegerSet(Number i) {
