@@ -5,6 +5,7 @@ import it.unive.lisa.analysis.lattices.SetLattice;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
@@ -27,7 +28,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	}
 
 	public KIntegerSet(Integer i) {
-		this(new Integer[] { i });
+		this(new Number(i.intValue()));
 	}
 
 	public KIntegerSet(Integer... ints) {
@@ -101,14 +102,29 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		return super.hashCode();
 	}
 
+	// TODO check
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+		
+		KIntegerSet other = (KIntegerSet) obj;
+		
+		if(this.elements.size() != other.elements.size())
+			return false;
+		
+		Iterator<Number> it = this.elements.iterator();
+		Iterator<Number> ot = other.elements.iterator();
+		
+		while(it.hasNext() && ot.hasNext()) {
+			if(!it.next().equals(ot.next()))
+				return false;
+		}
+		
 		return true;
 	}
 

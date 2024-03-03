@@ -475,8 +475,16 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.div(opnd2));
+//						System.err.println(opnd1 + " " + opnd2);
+//						System.err.println(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop());
+//						
+//						resultStack.push(opnd1.div(opnd2));
+//						resultStack.push(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop() ? KIntegerSet.ZERO : opnd1.div(opnd2));
+						try {
+							resultStack.push(opnd1.div(opnd2));
+						} catch (ArithmeticException e) {
+							resultStack.push(KIntegerSet.ZERO);
+						}
 						result.add(resultStack);
 					}
 
@@ -490,7 +498,12 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
 
-						resultStack.push(opnd1.div(opnd2));
+//						resultStack.push(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop() ? KIntegerSet.ZERO : opnd1.div(opnd2));
+						try {
+							resultStack.push(opnd1.div(opnd2));
+						} catch (ArithmeticException e) {
+							resultStack.push(KIntegerSet.ZERO);
+						}
 						result.add(resultStack);
 					}
 

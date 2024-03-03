@@ -103,9 +103,12 @@ public class Number implements Comparable<Number> {
 	public Number divide(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number(i / other.getInt());
-		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+		if(this.getType() == other.getType() && other.getType() == Type.LONG) {
+//			System.err.println("this: " + getInt() + " " + getLong() + " " + getBigInteger());
+//			System.err.println("other: " + other.getInt() + " " + other.getLong() + " " + other.getBigInteger());
 			return new Number(l / other.getLong());
-
+		}
+			
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -179,13 +182,13 @@ public class Number implements Comparable<Number> {
 	public int compareTo(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
 			return i > other.getInt() ? (+1) : i < other.getInt() ? (-1) : 0;
-			if(this.getType() == other.getType() && other.getType() == Type.LONG)
-				return i > other.getLong() ? (+1) : i < other.getLong() ? (-1) : 0;
+		if(this.getType() == other.getType() && other.getType() == Type.LONG)
+			return i > other.getLong() ? (+1) : i < other.getLong() ? (-1) : 0;
 
-				BigInteger me = toBigInteger(this);
-				BigInteger ot = toBigInteger(other);
+			BigInteger me = toBigInteger(this);
+			BigInteger ot = toBigInteger(other);
 
-				return me.compareTo(ot);
+			return me.compareTo(ot);
 	}
 
 	@Override
