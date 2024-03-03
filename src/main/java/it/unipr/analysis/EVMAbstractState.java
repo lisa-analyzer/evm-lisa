@@ -30,7 +30,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
-			new Memory().bottom(), KIntegerSet.BOTTOM);
+			new Memory().bottom(), new Memory().bottom(), KIntegerSet.BOTTOM);
 	private final boolean isTop;
 
 	/**
@@ -47,6 +47,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * The volatile memory.
 	 */
 	private final Memory memory;
+
+	/**
+	 * The storage.
+	 */
+	private final Memory storage;
 
 	private final KIntegerSet mu_i;
 
@@ -66,6 +71,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		this.isTop = isTop;
 		this.stacks = new AbstractStackSet();
 		this.memory = new Memory();
+		this.storage = new Memory();
 		this.mu_i = KIntegerSet.ZERO;
 
 		CONTRACT_ADDRESS = contractAddress;
@@ -79,10 +85,11 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @param memory the memory to be used.
 	 * @param mu_i   the mu_i to be used.
 	 */
-	public EVMAbstractState(AbstractStackSet stacks, Memory memory, KIntegerSet mu_i) {
+	public EVMAbstractState(AbstractStackSet stacks, Memory memory, Memory storage, KIntegerSet mu_i) {
 		this.isTop = false;
 		this.stacks = stacks;
 		this.memory = memory;
+		this.storage = storage;
 		this.mu_i = mu_i;
 	}
 
@@ -147,7 +154,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "PushOperator": { // PUSH
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -159,7 +166,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "AddressOperator": { // ADDRESS
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -171,7 +178,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "OriginOperator": { // ORIGIN
 					// At the moment, we do not handle ORIGIN
@@ -183,7 +190,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CallerOperator": { // CALLER
 					// At the moment, we do not handle CALLER
@@ -195,7 +202,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CallvalueOperator": { // CALLVALUE
 					// At the moment, we do not handle CALLVALUE
@@ -207,7 +214,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CalldatasizeOperator": { // CALLDATASIZE
 					// At the moment, we do not handle CALLDATASIZE
@@ -219,7 +226,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CodesizeOperator": { // CODESIZE
 					// At the moment, we do not handle CODESIZE
@@ -231,7 +238,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "GaspriceOperator": { // GASPRICE
 					// At the moment, we do not handle GASPRIZE
@@ -243,7 +250,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ReturndatasizeOperator": { // RETURNDATASIZE
 					// At the moment, we do not handle RETURNDATASIZE
@@ -255,7 +262,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CoinbaseOperator": { // COINBASE
 					// At the moment, we do not handle COINBASE
@@ -267,7 +274,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "TimestampOperator": { // TIMESTAMP
 					// At the moment, we do not handle TIMESTAMP
@@ -279,7 +286,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "NumberOperator": { // NUMBER
 					// At the moment, we do not handle NUMBER
@@ -291,7 +298,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "DifficultyOperator": { // DIFFICULTY
 					// At the moment, we do not handle DIFFICULTY
@@ -303,7 +310,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "GaslimitOperator": { // GASLIMIT
 					// At the moment, we do not handle GASLIMIT
@@ -315,7 +322,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ChainidOperator": { // CHAINID
 					// At the moment, we do not handle CHAINID
@@ -327,7 +334,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SelfbalanceOperator": { // SELFBALANCE
 					// At the moment, we do not handle SELFBALANCE
@@ -339,7 +346,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "PcOperator": { // PC
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -351,7 +358,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "GasOperator": { // GAS
 					// At the moment, we do not handle GAS
@@ -363,7 +370,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "JumpiOperator": { // JUMPI
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -375,7 +382,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MsizeOperator": { // MSIZE
 					// At the moment, we do not handle MSIZE
@@ -387,7 +394,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "BasefeeOperator": { // BASEFEE
 					// At the moment, we do not handle BASEFEE
@@ -399,7 +406,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "JumpdestOperator": { // JUMPDEST
 					return this;
@@ -417,7 +424,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "AddOperator": { // ADD
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -431,7 +438,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SubOperator": { // SUB
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -445,7 +452,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MulOperator": { // MUL
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -459,7 +466,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "DivOperator": { // DIV
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -473,7 +480,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SdivOperator": { // SDIV
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -487,7 +494,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ModOperator": { // MOD
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -501,7 +508,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SmodOperator": { // SMOD
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -515,7 +522,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "AddmodOperator": { // ADDMOD
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -530,7 +537,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MulmodOperator": { // MULMOD
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -545,7 +552,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExpOperator": { // EXP
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -559,7 +566,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SignextendOperator": { // SIGNEXTEND
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -573,7 +580,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "LtOperator": { // LT
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -587,7 +594,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SltOperator": { // SLT
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -601,7 +608,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "GtOperator": { // GT
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -615,7 +622,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SgtOperator": { // SGT
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -629,7 +636,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "EqOperator": { // EQ
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -643,7 +650,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "IszeroOperator": { // ISZERO
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -656,7 +663,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "AndOperator": { // AND
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -670,7 +677,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "OrOperator": { // OR
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -684,7 +691,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "XorOperator": { // XOR
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -698,7 +705,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "NotOperator": { // NOT
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -711,7 +718,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ByteOperator": { // BYTE
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -720,7 +727,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet indexOfByte = resultStack.pop();
 						KIntegerSet target = resultStack.pop();
-						KIntegerSet resultKIntegerSet = KIntegerSet.BOTTOM;
+						KIntegerSet resultKIntegerSet = KIntegerSet.ZERO;
 
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.NUMERIC_TOP);
@@ -745,7 +752,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ShlOperator": { // SHL
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -759,7 +766,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ShrOperator": { // SHR
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -773,7 +780,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SarOperator": { // SAR
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -787,7 +794,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Sha3Operator": { // SHA3
 					// At the moment, we do not handle SHA3
@@ -802,7 +809,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "BalanceOperator": { // BALANCE
 					// At the moment, we do not handle BALANCE
@@ -816,7 +823,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CalldataloadOperator": { // CALLDATALOAD
 					// At the moment, we do not handle CALLDATALOAD
@@ -830,7 +837,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CalldatacopyOperator": { // CALLDATACOPY
 					// At the moment, we do not handle CALLDATACOPY
@@ -845,7 +852,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CodecopyOperator": { // CODECOPY
 					// At the moment, we do not handle CODECOPY
@@ -860,7 +867,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExtcodesizeOperator": { // EXTCODESIZE
 					// At the moment, we do not handle EXTCODESIZE
@@ -874,7 +881,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExtcodecopyOperator": { // EXTCODECOPY
 					// At the moment, we do not handle EXTCODECOPY
@@ -890,7 +897,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
 					// At the moment, we do not handle RETURNDATACOPY
@@ -905,7 +912,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExtcodehashOperator": { // EXTCODEHASH
 					// At the moment, we do not handle EXTCODEHASH
@@ -919,7 +926,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "BlockhashOperator": { // BLOCKHASH
 					// At the moment, we do not handle BLOCKHASH
@@ -933,7 +940,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "PopOperator": { // POP
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -944,7 +951,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MloadOperator": { // MLOAD
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -970,7 +977,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MstoreOperator": { // MSTORE
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1004,7 +1011,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(stackResult);
 					}
 
-					return new EVMAbstractState(result, memoryResult, new_mu_i);
+					return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
 				}
 				case "Mstore8Operator": { // MSTORE8
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1037,7 +1044,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(stackResult);
 					}
 
-					return new EVMAbstractState(result, memoryResult, new_mu_i);
+					return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
 				}
 				case "SloadOperator": { // SLOAD
 					// At the moment, we do not handle SLOAD
@@ -1047,25 +1054,43 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						KIntegerSet valueToPush = KIntegerSet.BOTTOM;
+						if (key.isTop() || key.isTopNotJumpdest() || storage.isBottom())
+							valueToPush = KIntegerSet.NUMERIC_TOP;
+						else {
+							for (Number k : key)
+								if (storage.getMap().containsKey(k))
+									valueToPush = valueToPush.lub(storage.getState(k));
+								else
+									valueToPush = valueToPush.lub(KIntegerSet.NUMERIC_TOP);
+						}
+
+						resultStack.push(valueToPush);
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SstoreOperator": { // SSTORE
 					// At the moment, we do not handle SSTORE
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
-
+					Memory storageResult = new Memory().bottom();
+					
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
 						KIntegerSet value = resultStack.pop();
 
+						Memory storageCopy = storage.clone();
+						
+						for (Number k : key) 
+							storageCopy = storageCopy.putState(k, value);
+						
+						storageResult = storageResult.lub(storageCopy);
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storageResult, mu_i);
 				}
 				case "Dup1Operator": { // DUP1
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1075,7 +1100,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup2Operator": { // DUP2
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1085,7 +1110,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup3Operator": { // DUP3
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1095,7 +1120,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup4Operator": { // DUP4
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1105,7 +1130,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup5Operator": { // DUP5
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1115,7 +1140,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup6Operator": { // DUP6
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1125,7 +1150,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup7Operator": { // DUP7
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1135,7 +1160,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup8Operator": { // DUP8
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1145,7 +1170,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup9Operator": { // DUP9
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1155,7 +1180,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup10Operator": { // DUP10
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1165,7 +1190,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup11Operator": { // DUP11
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1175,7 +1200,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup12Operator": { // DUP12
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1185,7 +1210,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup13Operator": { // DUP13
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1195,7 +1220,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup14Operator": { // DUP14
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1205,7 +1230,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup15Operator": { // DUP15
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1215,7 +1240,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Dup16Operator": { // DUP16
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1225,7 +1250,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap1Operator": { // SWAP1
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1235,7 +1260,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap2Operator": { // SWAP2
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1245,7 +1270,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap3Operator": { // SWAP3
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1255,7 +1280,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap4Operator": { // SWAP4
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1265,7 +1290,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap5Operator": { // SWAP5
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1275,7 +1300,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap6Operator": { // SWAP6
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1285,7 +1310,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap7Operator": { // SWAP7
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1295,7 +1320,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap8Operator": { // SWAP8
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1305,7 +1330,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap9Operator": { // SWAP9
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1315,7 +1340,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap10Operator": { // SWAP10
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1325,7 +1350,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap11Operator": { // SWAP11
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1335,7 +1360,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap12Operator": { // SWAP12
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1345,7 +1370,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap13Operator": { // SWAP13
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1355,7 +1380,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap14Operator": { // SWAP14
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1365,7 +1390,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap15Operator": { // SWAP15
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1375,7 +1400,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Swap16Operator": { // SWAP16
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
@@ -1385,7 +1410,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log0Operator": { // LOG0
 					// At the moment, we do not handle LOG0
@@ -1399,7 +1424,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log1Operator": { // LOG1
 					// At the moment, we do not handle LOG1
@@ -1414,7 +1439,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log2Operator": { // LOG2
 					// At the moment, we do not handle LOG2
@@ -1430,7 +1455,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log3Operator": { // LOG3
 					// At the moment, we do not handle LOG3
@@ -1447,7 +1472,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log4Operator": { // LOG4
 					// At the moment, we do not handle LOG4
@@ -1465,7 +1490,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CreateOperator": { // CREATE
 					// At the moment, we do not handle CREATE
@@ -1481,7 +1506,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Create2Operator": { // CREATE2
 					// At the moment, we do not handle CREATE2
@@ -1498,7 +1523,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CallOperator": { // CALL
 					// At the moment, we do not handle CALL
@@ -1518,7 +1543,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CallcodeOperator": { // CALLCODE
 					// At the moment, we do not handle CALLCODE
@@ -1538,7 +1563,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ReturnOperator": { // RETURN
 					// At the moment, we do not handle RETURN
@@ -1552,7 +1577,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "DelegatecallOperator": { // DELEGATECALL
 					// At the moment, we do not handle DELEGATECALL
@@ -1571,7 +1596,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "StaticcallOperator": { // STATICCALL
 					// At the moment, we do not handle STATICCALL
@@ -1590,7 +1615,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "RevertOperator": { // REVERT
 					// At the moment, we do not handle REVERT
@@ -1604,7 +1629,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "InvalidOperator": { // INVALID
 					return this;
@@ -1620,7 +1645,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						result.add(resultStack);
 					}
 
-					return new EVMAbstractState(result, memory, mu_i);
+					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				}
 			}
@@ -1726,7 +1751,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					return top();
 				else if (split.getLeft().isEmpty())
 					return bottom();
-				return new EVMAbstractState(new AbstractStackSet(split.getLeft(), false), memory, mu_i);
+				return new EVMAbstractState(new AbstractStackSet(split.getLeft(), false), memory, storage, mu_i);
 
 			} else if (op instanceof LogicalNegation) {
 				// Get the expression wrapped by LogicalNegation
@@ -1740,14 +1765,14 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-												.getValue());
+						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+								.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
 							return bottom();
-						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, mu_i);
+						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, storage, mu_i);
 					}
 				}
 			}
@@ -1833,13 +1858,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private Number toBigInteger(String str) {
 		String hexadecimal = str.substring(2);
 		BigInteger bigIntVal = new BigInteger(hexadecimal, 16);
-//		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
+		//		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
 		return new Number(bigIntVal);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(isTop, memory, mu_i, stacks);
+		return Objects.hash(isTop, memory, mu_i, stacks, storage);
 	}
 
 	@Override
@@ -1852,8 +1877,10 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			return false;
 		EVMAbstractState other = (EVMAbstractState) obj;
 		return isTop == other.isTop && Objects.equals(memory, other.memory) && Objects.equals(mu_i, other.mu_i)
-				&& Objects.equals(stacks, other.stacks);
+				&& Objects.equals(stacks, other.stacks) && Objects.equals(storage, other.storage);
 	}
+	
+	
 
 	/**
 	 * Getter for the interval value at the top of the stack.
@@ -1893,6 +1920,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState wideningAux(EVMAbstractState other) throws SemanticException {
 		return new EVMAbstractState(stacks.widening(other.getStacks()),
 				memory.widening(other.getMemory()),
+				storage.widening(other.storage),
 				mu_i.widening(other.getMu_i()));
 	}
 
@@ -1900,6 +1928,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState lubAux(EVMAbstractState other) throws SemanticException {
 		return new EVMAbstractState(stacks.lubAux(other.getStacks()),
 				memory.lub(other.getMemory()),
+				storage.lub(other.storage),
 				mu_i.lub(other.getMu_i()));
 	}
 
@@ -1907,6 +1936,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public EVMAbstractState glbAux(EVMAbstractState other) throws SemanticException {
 		return new EVMAbstractState(stacks.glbAux(other.getStacks()),
 				memory.glb(other.getMemory()),
+				storage.glb(other.storage),
 				mu_i.glb(other.getMu_i()));
 	}
 
