@@ -114,8 +114,6 @@ public class JumpSolver
 					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint) {
-			Statement entryPoint = cfgToAnalyze.getEntrypoints().stream().findAny().get();
-
 			this.unsoundJumps = new HashSet<>();
 			this.unreachableJumps = new HashSet<>();
 			this.maybeUnsoundJumps = new HashSet<>();
@@ -155,7 +153,7 @@ public class JumpSolver
 							if (topStack.isBottom()) {
 								this.unreachableJumps.add(node);
 								continue;
-							} else if (topStack.isTop() && !topStack.isTopNotJumpdest())
+							} else if (topStack.isTop())
 								this.unsoundJumps.add(node);
 					}
 				}
