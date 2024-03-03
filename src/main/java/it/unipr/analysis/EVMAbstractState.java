@@ -1083,17 +1083,17 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 				case "SstoreOperator": { // SSTORE
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 					Memory storageResult = new Memory().bottom();
-					
+
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
 						KIntegerSet value = resultStack.pop();
 
 						Memory storageCopy = storage.clone();
-						
-						for (Number k : key) 
+
+						for (Number k : key)
 							storageCopy = storageCopy.putState(k, value);
-						
+
 						storageResult = storageResult.lub(storageCopy);
 						result.add(resultStack);
 					}
@@ -1773,14 +1773,15 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-								.getValue());
+								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+												.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
 							return bottom();
-						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, storage, mu_i);
+						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, storage,
+								mu_i);
 					}
 				}
 			}
@@ -1866,7 +1867,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	private Number toBigInteger(String str) {
 		String hexadecimal = str.substring(2);
 		BigInteger bigIntVal = new BigInteger(hexadecimal, 16);
-		//		BigDecimal bigDecimalVal = new BigDecimal(bigIntVal);
 		return new Number(bigIntVal);
 	}
 
@@ -1887,8 +1887,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		return isTop == other.isTop && Objects.equals(memory, other.memory) && Objects.equals(mu_i, other.mu_i)
 				&& Objects.equals(stacks, other.stacks) && Objects.equals(storage, other.storage);
 	}
-	
-	
 
 	/**
 	 * Getter for the interval value at the top of the stack.
@@ -1977,5 +1975,4 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 		}
 		System.out.println();
 	}
-
 }

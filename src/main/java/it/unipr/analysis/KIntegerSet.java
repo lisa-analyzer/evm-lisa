@@ -1,12 +1,11 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
 
 public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	private static final Number ZERO_INT = new Number(0);
@@ -396,7 +395,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
-		
+
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
 			for (Number j : other.elements)
