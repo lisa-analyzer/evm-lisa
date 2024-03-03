@@ -75,7 +75,7 @@ public class Number implements Comparable<Number> {
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.subtract(ot));
+		return new Number(me.add(ot));
 	}
 
 	public Number subtract(Number other) {
@@ -97,7 +97,7 @@ public class Number implements Comparable<Number> {
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.subtract(ot));
+		return new Number(me.multiply(ot));
 	}
 
 	public Number divide(Number other) {
@@ -109,7 +109,7 @@ public class Number implements Comparable<Number> {
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
-		return new Number(me.subtract(ot));
+		return new Number(me.divide(ot));
 	}
 
 	public Number and(Number other) {
