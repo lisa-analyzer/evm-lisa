@@ -493,7 +493,7 @@ public class EVMLiSA {
 			int extra = 120000;
 			long blocks = smartContracts.size() / CORES * 20000;
 			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
-			timeToWait = timeToWait * 10;
+			timeToWait = timeToWait * 100;
 
 			// Statistics
 			long minutes = (timeToWait / 1000) / 60;
