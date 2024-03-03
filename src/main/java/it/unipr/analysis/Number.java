@@ -71,7 +71,7 @@ public class Number implements Comparable<Number> {
 	public Number add(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number((long) i + other.getInt());
-		
+
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -83,7 +83,7 @@ public class Number implements Comparable<Number> {
 			return new Number(i - other.getInt());
 		if(this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l - other.getLong());
-		
+
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -93,7 +93,7 @@ public class Number implements Comparable<Number> {
 	public Number multiply(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number((long) i * other.getInt());
-		
+
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -105,7 +105,7 @@ public class Number implements Comparable<Number> {
 			return new Number(i / other.getInt());
 		if(this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l / other.getLong());
-		
+
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -158,9 +158,12 @@ public class Number implements Comparable<Number> {
 	}
 
 	public int intValue() {
-		BigInteger me = toBigInteger(this);
-
-		return me.intValue();
+		if (getType() == Type.INT)
+			return i;
+		else if (getType() == Type.LONG)
+			return Long.valueOf(l).intValue();
+		else 
+			return toBigInteger(this).intValue();
 	}
 
 	@Override
@@ -176,13 +179,13 @@ public class Number implements Comparable<Number> {
 	public int compareTo(Number other) {
 		if(this.getType() == other.getType() && other.getType() == Type.INT)
 			return i > other.getInt() ? (+1) : i < other.getInt() ? (-1) : 0;
-		if(this.getType() == other.getType() && other.getType() == Type.LONG)
-			return i > other.getLong() ? (+1) : i < other.getLong() ? (-1) : 0;
-		
-		BigInteger me = toBigInteger(this);
-		BigInteger ot = toBigInteger(other);
+			if(this.getType() == other.getType() && other.getType() == Type.LONG)
+				return i > other.getLong() ? (+1) : i < other.getLong() ? (-1) : 0;
 
-		return me.compareTo(ot);
+				BigInteger me = toBigInteger(this);
+				BigInteger ot = toBigInteger(other);
+
+				return me.compareTo(ot);
 	}
 
 	@Override
@@ -200,15 +203,5 @@ public class Number implements Comparable<Number> {
 			return false;
 		Number other = (Number) obj;
 		return Objects.equals(b, other.b) && i == other.i && l == other.l;
-	}
-	
-	public static void main(String[] args) {
-		int i = 1;
-		long l = 1;
-		BigInteger b = BigInteger.valueOf(l);
-		System.out.println(new Number(i).toByteArray().length);
-		System.out.println(new Number(l).toByteArray().length);
-		System.out.println(new Number(b).toByteArray().length);
-	}
-	
+	}	
 }
