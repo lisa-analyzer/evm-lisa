@@ -1,12 +1,12 @@
 package it.unipr.analysis;
 
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
 
 public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	private static final Number ZERO_INT = new Number(0);
@@ -90,37 +90,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	@Override
 	public KIntegerSet mk(Set<Number> set) {
 		return new KIntegerSet(set);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
-	// TODO check
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		
-		KIntegerSet other = (KIntegerSet) obj;
-		
-		if(this.elements.size() != other.elements.size())
-			return false;
-		
-		Iterator<Number> it = this.elements.iterator();
-		Iterator<Number> ot = other.elements.iterator();
-		
-		while(it.hasNext() && ot.hasNext()) {
-			if(!it.next().equals(ot.next()))
-				return false;
-		}
-		
-		return true;
 	}
 
 	public KIntegerSet isZero() {
