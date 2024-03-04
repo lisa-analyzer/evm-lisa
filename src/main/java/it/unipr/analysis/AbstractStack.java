@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
 	private static int STACK_LIMIT = 64;
+	private static final AbstractStack TOP = new AbstractStack(new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.NUMERIC_TOP)));
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	private final LinkedList<KIntegerSet> stack;
@@ -115,33 +116,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	@Override
-	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
-		LinkedList<KIntegerSet> result = new LinkedList<>();
-
-		for (int i = 0; i < STACK_LIMIT; i++)
-			result.addLast(this.stack.get(i).glb(other.stack.get(i)));
-
-		return new AbstractStack(result);
-	}
-
-	@Override
-	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
-		LinkedList<KIntegerSet> result = new LinkedList<>();
-
-		for (int i = 0; i < STACK_LIMIT; i++)
-			result.addLast(this.stack.get(i).widening(other.stack.get(i)));
-
-		return new AbstractStack(result);
-	}
-
-	@Override
 	public AbstractStack top() {
-		LinkedList<KIntegerSet> result = new LinkedList<>();
-
-		for (int i = 0; i < STACK_LIMIT; i++)
-			result.addLast(KIntegerSet.NUMERIC_TOP);
-
-		return new AbstractStack(result);
+		return TOP;
 	}
 
 	@Override
@@ -270,6 +246,38 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			KIntegerSet thisElement = thisIterator.next();
 			KIntegerSet otherElement = otherIterator.next();
 			result.addLast(thisElement.lub(otherElement));
+		}
+
+		return new AbstractStack(result);
+	}
+	
+	@Override
+	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+
+		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
+		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			KIntegerSet thisElement = thisIterator.next();
+			KIntegerSet otherElement = otherIterator.next();
+			result.addLast(thisElement.widening(otherElement));
+		}
+
+		return new AbstractStack(result);
+	}
+	
+	@Override
+	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
+		LinkedList<KIntegerSet> result = new LinkedList<>();
+
+		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
+		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			KIntegerSet thisElement = thisIterator.next();
+			KIntegerSet otherElement = otherIterator.next();
+			result.addLast(thisElement.glb(otherElement));
 		}
 
 		return new AbstractStack(result);
