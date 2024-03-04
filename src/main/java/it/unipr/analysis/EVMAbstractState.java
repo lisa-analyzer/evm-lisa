@@ -1828,7 +1828,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 			return Lattice.topRepresentation();
 
 		return new StringRepresentation(
-				"{ stacks: " + stacks.toString2() + ", memory: " + memory + ", mu_i: " + mu_i + ", storage: " + storage
+				"{ stacks: " + stacks + ", memory: " + memory + ", mu_i: " + mu_i + ", storage: " + storage
 						+ " }");
 	}
 
