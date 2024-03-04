@@ -95,6 +95,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	@Override
 	public String toString() {
 		return this.stack.toString();
+		// We use the bottom part for debugging
 //		String result = "{";
 //
 //		for (int i = STACK_LIMIT - size(); i < STACK_LIMIT; i++) {

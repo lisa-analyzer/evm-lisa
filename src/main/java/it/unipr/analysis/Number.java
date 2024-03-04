@@ -177,11 +177,6 @@ public class Number implements Comparable<Number> {
 
 	@Override
 	public int compareTo(Number other) {
-//		if(this.getType() == other.getType() && other.getType() == Type.INT)
-//			return i > other.getInt() ? (+1) : i < other.getInt() ? (-1) : 0;
-//		if(this.getType() == other.getType() && other.getType() == Type.LONG)
-//			return i > other.getLong() ? (+1) : i < other.getLong() ? (-1) : 0;
-
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
