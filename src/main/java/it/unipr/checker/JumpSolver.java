@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver
-		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	/**
 	 * The CFG to be analyzed.
@@ -100,9 +100,9 @@ public class JumpSolver
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap,
+			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint) {
 			this.unsoundJumps = new HashSet<>();
@@ -118,7 +118,7 @@ public class JumpSolver
 						EVMAbstractState,
 						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-							MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -135,10 +135,8 @@ public class JumpSolver
 					// to solve the jump.
 					if (valueState.isBottom()) {
 						this.unreachableJumps.add(node);
-						continue;
 					} else if (valueState.isTop()) {
 						this.maybeUnsoundJumps.add(node);
-						continue;
 					} else {
 						for (KIntegerSet topStack : valueState.getTop())
 							if (topStack.isBottom()) 
@@ -179,9 +177,9 @@ public class JumpSolver
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap,
+			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -203,7 +201,7 @@ public class JumpSolver
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -235,22 +233,24 @@ public class JumpSolver
 				}
 
 				Set<Statement> filteredDests = this.jumpDestinations.stream()
-						.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-						.filter(pc -> topStack
-								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
-						.collect(Collectors.toSet());
+				        .filter(pc -> topStack.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
+				        .collect(Collectors.toSet());
 
 				// For each JUMPDEST, add the missing edge from this node to
 				// the JUMPDEST.
-				for (Statement jmp : filteredDests) {
-					if (node instanceof Jump) { // JUMP
-						if (!this.cfgToAnalyze.containsEdge(new SequentialEdge(node, jmp))) {
-							this.cfgToAnalyze.addEdge(new SequentialEdge(node, jmp));
+				if (node instanceof Jump) { // JUMP
+					for (Statement jmp : filteredDests) {
+						SequentialEdge edge = new SequentialEdge(node, jmp);
+						if (!this.cfgToAnalyze.containsEdge(edge)) {
+							this.cfgToAnalyze.addEdge(edge);
 							fixpoint = false;
 						}
-					} else { // JUMPI
-						if (!this.cfgToAnalyze.containsEdge(new TrueEdge(node, jmp))) {
-							this.cfgToAnalyze.addEdge(new TrueEdge(node, jmp));
+					}
+				} else { // JUMPI
+					for (Statement jmp : filteredDests) {
+						TrueEdge edge = new TrueEdge(node, jmp);
+						if (!this.cfgToAnalyze.containsEdge(edge)) {
+							this.cfgToAnalyze.addEdge(edge);
 							fixpoint = false;
 						}
 					}
