@@ -54,7 +54,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	public int size() {
 		return this.elements().size();
 	}
-	
+
 	@Override
 	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
 		AbstractStackSet lubAux = super.lubAux(other);

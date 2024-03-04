@@ -20,7 +20,8 @@ import java.util.function.Predicate;
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
 	private static int STACK_LIMIT = 64;
-	private static final AbstractStack TOP = new AbstractStack(new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.NUMERIC_TOP)));
+	private static final AbstractStack TOP = new AbstractStack(
+			new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.NUMERIC_TOP)));
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	private final LinkedList<KIntegerSet> stack;
@@ -250,7 +251,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 		return new AbstractStack(result);
 	}
-	
+
 	@Override
 	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
 		LinkedList<KIntegerSet> result = new LinkedList<>();
@@ -266,7 +267,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 		return new AbstractStack(result);
 	}
-	
+
 	@Override
 	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
 		LinkedList<KIntegerSet> result = new LinkedList<>();

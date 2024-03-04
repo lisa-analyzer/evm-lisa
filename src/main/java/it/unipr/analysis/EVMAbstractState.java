@@ -113,6 +113,16 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	}
 
 	/**
+	 * Returns a cloned copy of the storage.
+	 *
+	 * @return A cloned copy of the storage or null if the original storage is
+	 *             null.
+	 */
+	public Memory getStorage() {
+		return storage.clone();
+	}
+
+	/**
 	 * Returns a cloned copy of the interval mu_i.
 	 *
 	 * @return A cloned copy of the interval mu_i or null if the original mu_i
@@ -1951,6 +1961,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	public boolean lessOrEqualAux(EVMAbstractState other) throws SemanticException {
 		return stacks.lessOrEqual(other.stacks) &&
 				memory.lessOrEqual(other.getMemory()) &&
+				storage.lessOrEqual(other.getStorage()) &&
 				mu_i.lessOrEqual(other.getMu_i());
 	}
 
