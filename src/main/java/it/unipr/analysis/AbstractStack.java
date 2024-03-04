@@ -182,15 +182,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack clone() {
 		if (isBottom() || isTop())
 			return this;
-		return new AbstractStack(clone(stack));
-	}
-
-	private static LinkedList<KIntegerSet> clone(LinkedList<KIntegerSet> list) {
-		LinkedList<KIntegerSet> result = new LinkedList<>();
-		for (KIntegerSet item : list)
-			result.add(item);
-
-		return result;
+		return new AbstractStack(new LinkedList<>(stack));
 	}
 
 	/**
