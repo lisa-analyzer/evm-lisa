@@ -54,21 +54,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	public int size() {
 		return this.elements().size();
 	}
-
-	@Override
-	public AbstractStackSet clone() {
-		if (isTop())
-			return TOP;
-		else if (isBottom())
-			return BOTTOM;
-		return new AbstractStackSet(new HashSet<>(this.elements), false);
-
-//		AbstractStackSet result = new AbstractStackSet(new HashSet<AbstractStack>(), false);
-//		for (AbstractStack stack : elements())
-//			result.add(stack.clone());
-//		return result;
-	}
-
+	
 	@Override
 	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
 		AbstractStackSet lubAux = super.lubAux(other);

@@ -99,7 +99,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 	 * @return A cloned copy of the stack or null if the original stack is null.
 	 */
 	public AbstractStackSet getStacks() {
-		return stacks.clone();
+		return stacks;
 	}
 
 	/**
@@ -1925,7 +1925,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public EVMAbstractState wideningAux(EVMAbstractState other) throws SemanticException {
-		return new EVMAbstractState(stacks.widening(other.getStacks()),
+		return new EVMAbstractState(stacks.widening(other.stacks),
 				memory.widening(other.getMemory()),
 				storage.widening(other.storage),
 				mu_i.widening(other.getMu_i()));
@@ -1933,7 +1933,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public EVMAbstractState lubAux(EVMAbstractState other) throws SemanticException {
-		return new EVMAbstractState(stacks.lubAux(other.getStacks()),
+		return new EVMAbstractState(stacks.lubAux(other.stacks),
 				memory.lub(other.getMemory()),
 				storage.lub(other.storage),
 				mu_i.lub(other.getMu_i()));
@@ -1941,7 +1941,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public EVMAbstractState glbAux(EVMAbstractState other) throws SemanticException {
-		return new EVMAbstractState(stacks.glbAux(other.getStacks()),
+		return new EVMAbstractState(stacks.glbAux(other.stacks),
 				memory.glb(other.getMemory()),
 				storage.glb(other.storage),
 				mu_i.glb(other.getMu_i()));
@@ -1949,7 +1949,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 	@Override
 	public boolean lessOrEqualAux(EVMAbstractState other) throws SemanticException {
-		return stacks.lessOrEqual(other.getStacks()) &&
+		return stacks.lessOrEqual(other.stacks) &&
 				memory.lessOrEqual(other.getMemory()) &&
 				mu_i.lessOrEqual(other.getMu_i());
 	}
