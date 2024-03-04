@@ -29,9 +29,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public AbstractStack() {
 		this.stack = new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.BOTTOM));
-
-		// for (int i = 0; i < STACK_LIMIT; i++)
-		// stack.add(KIntegerSet.BOTTOM);
 	}
 
 	/**
