@@ -91,15 +91,6 @@ public class JumpSolver
 		return maybeUnsoundJumps;
 	}
 
-	@Override
-	public void beforeExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
-		// resets the unreachable jumps set
-		this.unreachableJumps = new HashSet<>();
-	}
-
 	/**
 	 * {@inheritDoc} Checks if analysis has reached fix-point. If not, it runs
 	 * another LiSA analysis to solve the remaining jumps and reach fix-point.
@@ -150,10 +141,9 @@ public class JumpSolver
 						continue;
 					} else {
 						for (KIntegerSet topStack : valueState.getTop())
-							if (topStack.isBottom()) {
+							if (topStack.isBottom()) 
 								this.unreachableJumps.add(node);
-								continue;
-							} else if (topStack.isTop())
+							else if (topStack.isTop())
 								this.unsoundJumps.add(node);
 					}
 				}
@@ -169,10 +159,6 @@ public class JumpSolver
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
-
-		// We initialize the set of unreachable jumps, if not already
-		// initialized
-		this.unreachableJumps = new HashSet<>();
 
 		try {
 			lisa.run(program);
@@ -232,7 +218,6 @@ public class JumpSolver
 			// have enough information
 			// to solve the jump.
 			if (valueState.isBottom()) {
-				this.unreachableJumps.add(node);
 				continue;
 			} else if (valueState.isTop()) {
 				System.err.println("Not solved jump (state is top): " + node + "["
@@ -242,12 +227,6 @@ public class JumpSolver
 
 			for (KIntegerSet topStack : valueState.getTop()) {
 				if (topStack.isBottom()) {
-					this.unreachableJumps.add(node); // FIXME: this is wrong: a
-					// jump is unreachable
-					// if all the top of the
-					// stacks are bottom or
-					// do not contain jump
-					// dest
 					continue;
 				} else if (topStack.isTop()) {
 					System.err.println("Not solved jump (top of the stack is top): " + node + "["
@@ -260,18 +239,6 @@ public class JumpSolver
 						.filter(pc -> topStack
 								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
-
-				// If there are no JUMPDESTs for this value, skip to the
-				// next one.
-				if (filteredDests.isEmpty()) {
-					this.unreachableJumps.add(node); // FIXME: this is wrong: a
-					// jump is unreachable
-					// if all the top of the
-					// stacks do not
-					// contains jump dests
-					// or are bottom
-					continue;
-				}
 
 				// For each JUMPDEST, add the missing edge from this node to
 				// the JUMPDEST.
