@@ -377,7 +377,7 @@ public class EVMLiSA {
 	}
 
 	private void runBenchmark() throws Exception {
-		clean();
+		// clean();
 		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
 
