@@ -141,7 +141,7 @@ public class JumpSolver
 						for (KIntegerSet topStack : valueState.getTop())
 							if (topStack.isBottom())
 								this.unreachableJumps.add(node);
-							else if (topStack.isTop())
+							else if (topStack.isTop() && !topStack.isTopNotJumpdest())
 								this.unsoundJumps.add(node);
 					}
 				}

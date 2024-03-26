@@ -19,6 +19,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
 
 	public static final KIntegerSet NUMERIC_TOP = new KIntegerSet(Collections.emptySet(), true);
+	public static final KIntegerSet NOT_JUMPDEST_TOP = new KIntegerSet(-1, -2);
 	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
 
 	public KIntegerSet(Number i) {
@@ -71,6 +72,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 
 	@Override
 	public KIntegerSet lubAux(KIntegerSet other) throws SemanticException {
+		if (isTopNotJumpdest())
+			return this;
+		else if (other.isTopNotJumpdest())
+			return other;
 		KIntegerSet result = super.lubAux(other);
 		return result.size() > K ? top() : result;
 	}
@@ -96,6 +101,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if (isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 		else if (equals(ZERO))
 			return KIntegerSet.ONE;
 		else if (!contains(ZERO_INT))
@@ -108,6 +115,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -126,6 +135,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -146,6 +157,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return ZERO;
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -167,6 +180,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -186,6 +201,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -205,6 +222,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -223,6 +242,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -241,6 +262,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements) {
@@ -264,6 +287,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return KIntegerSet.BOTTOM;
 		else if (isTop() || other.isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Boolean> r = new HashSet<Boolean>();
 		for (Number i : this.elements)
@@ -283,6 +308,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return KIntegerSet.BOTTOM;
 		else if (isTop() || other.isTop())
 			return KIntegerSet.ZERO_OR_ONE;
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return KIntegerSet.ZERO_OR_ONE;
 
 		Set<Boolean> r = new HashSet<Boolean>();
 		for (Number i : this.elements)
@@ -301,6 +328,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		if (isBottom() || other.isBottom())
 			return KIntegerSet.BOTTOM;
 		else if (isTop() || other.isTop())
+			return KIntegerSet.ZERO_OR_ONE;
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return KIntegerSet.ZERO_OR_ONE;
 
 		Set<Boolean> r = new HashSet<Boolean>();
@@ -323,6 +352,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return ZERO;
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -337,6 +368,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -351,6 +384,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -365,6 +400,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop())
 			return top();
+		else if (isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -381,6 +418,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -395,6 +434,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -409,6 +450,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop() || other.isTop())
 			return top();
+		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		Set<Number> elements = new HashSet<>(K);
 		for (Number i : this.elements)
@@ -424,6 +467,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return bottom();
 		else if (isTop())
 			return top();
+		else if (isTopNotJumpdest())
+			return NOT_JUMPDEST_TOP;
 
 		KIntegerSet r = KIntegerSet.BOTTOM;
 
@@ -605,7 +650,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	 *             otherwise.
 	 */
 	public boolean isDefinitelyTrue() {
-		if (isTop() || isBottom())
+		if (isTop() || isBottom() || isTopNotJumpdest())
 			return false;
 		return !this.elements().contains(ZERO_INT);
 	}
@@ -617,7 +662,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	 * @return {@code true} if this set is zero, {@code false} otherwise.
 	 */
 	public boolean isDefinitelyFalse() {
-		if (isTop() || isBottom())
+		if (isTop() || isBottom() || isTopNotJumpdest())
 			return false;
 		return this.equals(ZERO);
 	}
@@ -629,6 +674,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	 *             determined, {@code false} otherwise
 	 */
 	public boolean isUnknown() {
-		return isTop() || (!isBottom() && !isDefinitelyFalse() && !isDefinitelyTrue());
+		return isTop() || isTopNotJumpdest() || (!isBottom() && !isDefinitelyFalse() && !isDefinitelyTrue());
+	}
+
+	public boolean isTopNotJumpdest() {
+		return this == NOT_JUMPDEST_TOP;
 	}
 }

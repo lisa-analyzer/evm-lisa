@@ -488,12 +488,14 @@ public class EVMLiSA {
 		synchronized (guardia) {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
-
-			int millisPerSmartContract = 25000 * 10;
-			int extra = 120000;
-			long blocks = smartContracts.size() / CORES * 20000;
-			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
-			timeToWait = timeToWait * 100;
+			
+			long timeToWait;
+//			int millisPerSmartContract = 25000 * 10;
+//			int extra = 120000;
+//			long blocks = smartContracts.size() / CORES * 20000;
+//			timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
+//			timeToWait = timeToWait * 100;
+			timeToWait = 1000 * 60 * 60 * 24 * 3; // 3 days
 
 			// Statistics
 			long minutes = (timeToWait / 1000) / 60;
