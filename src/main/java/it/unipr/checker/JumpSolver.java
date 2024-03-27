@@ -142,7 +142,8 @@ public class JumpSolver
 							if (topStack.isBottom())
 								this.unreachableJumps.add(node);
 							else if (topStack.isTop() && !topStack.isTopNotJumpdest())
-								this.unsoundJumps.add(node);
+//								this.unsoundJumps.add(node);
+								this.maybeUnsoundJumps.add(node);
 					}
 				}
 			}
