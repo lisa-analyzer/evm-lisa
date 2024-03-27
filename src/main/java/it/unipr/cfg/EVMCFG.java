@@ -26,18 +26,18 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
-	public Set<Statement> jumpDests;
+	public Set<Statement> jumpDestsNodes;
+	public Set<Statement> jumpNodes;
+	public Set<Statement> pushedJumps;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -54,7 +54,7 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMPDEST statements in the CFG
 	 */
 	public Set<Statement> getAllJumpdest() {
-		if (jumpDests == null) {
+		if (jumpDestsNodes == null) {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 			Set<Statement> jumpdestStatements = new HashSet<>();
 
@@ -64,10 +64,10 @@ public class EVMCFG extends CFG {
 				}
 			}
 
-			return this.jumpDests = jumpdestStatements;
+			return this.jumpDestsNodes = jumpdestStatements;
 		}
 
-		return jumpDests;
+		return jumpDestsNodes;
 	}
 
 	/**
@@ -76,16 +76,24 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMP and JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumps() {
-		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-		Set<Statement> jumpStatements = new HashSet<>(); // to return
+		if (jumpNodes == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> jumpStatements = new HashSet<>();
 
-		for (Statement statement : cfgNodeList.getNodes()) {
-			if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
-				jumpStatements.add(statement);
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
+					jumpStatements.add(statement);
+				}
 			}
+			return jumpNodes = jumpStatements;
 		}
 
-		return jumpStatements;
+		return jumpNodes;
+	}
+
+	public int getOpcodeCount() {
+		// -1 for the return statement
+		return this.getNodesCount() - 1;
 	}
 
 	/**
@@ -95,106 +103,18 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMP statements preceded by a PUSH statement in
 	 *             the CFG
 	 */
-	public Set<Statement> getAllPushedJUMPs() {
-		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-		Set<Statement> pushedJumps = new HashSet<>(); // to return
+	public Set<Statement> getAllPushedJumps() {
+		if (pushedJumps == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			pushedJumps = new HashSet<>();
 
-		for (Edge edge : cfgNodeList.getEdges()) {
-			if (edge.getDestination() instanceof Jump && (edge.getSource() instanceof Push)) {
-				pushedJumps.add(edge.getDestination());
-			}
-		}
-
-		return pushedJumps;
-	}
-
-	/**
-	 * Returns a set of all the valid JUMP statements preceded by a PUSH
-	 * statement in the CFG, meaning that the destination address corresponds to
-	 * a JUMPDEST statement.
-	 * 
-	 * @return a set of all the valid JUMP statements preceded by a PUSH
-	 *             statement in the CFG
-	 */
-	public Set<Statement> getAllValidPushedJUMPs() {
-		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-		Set<Statement> pushedJumps = new HashSet<>(); // to return
-
-		for (Edge edge : cfgNodeList.getEdges()) {
-			if (edge.getDestination() instanceof Jump && (edge.getSource() instanceof Push)) {
-				if (isValidJumpDestination(edge.getSource())) {
+			for (Edge edge : cfgNodeList.getEdges())
+				if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
+						&& (edge.getSource() instanceof Push))
 					pushedJumps.add(edge.getDestination());
-				}
-			}
 		}
 
 		return pushedJumps;
-	}
-
-	/**
-	 * Returns a set of all the JUMPI statements preceded by a PUSH statement in
-	 * the CFG.
-	 * 
-	 * @return a set of all the JUMPI statements preceded by a PUSH statement in
-	 *             the CFG
-	 */
-	public Set<Statement> getAllPushedJUMPIs() {
-		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-		Set<Statement> pushedJumpis = new HashSet<>(); // to return
-
-		for (Edge edge : cfgNodeList.getEdges()) {
-			if (edge.getDestination() instanceof Jumpi && (edge.getSource() instanceof Push)) {
-				pushedJumpis.add(edge.getDestination());
-			}
-		}
-
-		return pushedJumpis;
-	}
-
-	/**
-	 * Returns a set of all the valid JUMPI statements preceded by a PUSH
-	 * statement in the CFG, meaning that the destination address corresponds to
-	 * a JUMPDEST statement.
-	 * 
-	 * @return a set of all the valid JUMPI statements preceded by a PUSH
-	 *             statement in the CFG
-	 */
-	public Set<Statement> getAllValidPushedJUMPIs() {
-		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-		Set<Statement> pushedJumpis = new HashSet<>(); // to return
-
-		for (Edge edge : cfgNodeList.getEdges()) {
-			if (edge.getDestination() instanceof Jumpi && (edge.getSource() instanceof Push)) {
-				if (isValidJumpDestination(edge.getSource())) {
-					pushedJumpis.add(edge.getDestination());
-				}
-			}
-		}
-
-		return pushedJumpis;
-	}
-
-	/**
-	 * Checks if the PUSH statement's value is a valid JUMP destination.
-	 * 
-	 * @param pushStatement the PUSH statement to check
-	 * 
-	 * @return true if the PUSH statement's value is a valid JUMP destination,
-	 *             false otherwise
-	 */
-	private boolean isValidJumpDestination(Statement pushStatement) {
-		Set<Statement> jumpDestintations = this.getAllJumpdest();
-
-		String hex = (String) pushStatement.getEvaluationPredecessor().toString();
-		String hexadecimal = hex.substring(2);
-		Long jumpAddress = new BigInteger(hexadecimal, 16).longValue();
-
-		Set<Statement> validDests = jumpDestintations.stream()
-				.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-				.filter(pc -> ((ProgramCounterLocation) pc.getLocation()).getPc() == jumpAddress)
-				.collect(Collectors.toSet());
-
-		return !validDests.isEmpty();
 	}
 
 	public <A extends AbstractState<A, H, V, T>,

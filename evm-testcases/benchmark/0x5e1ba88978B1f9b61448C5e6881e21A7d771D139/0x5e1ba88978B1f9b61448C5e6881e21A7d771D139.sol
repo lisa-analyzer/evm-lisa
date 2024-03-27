@@ -2891,7 +2891,6 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
-SELFDESTRUCT
 'c8'(Unknown Opcode)
 'fc'(Unknown Opcode)
 'ad'(Unknown Opcode)

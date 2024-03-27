@@ -7726,7 +7726,6 @@ POP
 SWAP3
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -7754,7 +7753,6 @@ MSIZE
 'ae'(Unknown Opcode)
 DUP15
 INVALID
-SELFDESTRUCT
 DUP10
 'c1'(Unknown Opcode)
 'ea'(Unknown Opcode)

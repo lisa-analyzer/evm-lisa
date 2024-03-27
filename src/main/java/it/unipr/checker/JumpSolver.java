@@ -2,6 +2,7 @@ package it.unipr.checker;
 
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
+import it.unipr.analysis.Number;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -25,7 +26,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,7 +53,22 @@ public class JumpSolver
 	 */
 	private Set<Statement> jumpDestinations;
 
+	/**
+	 * The set of unreachable jumps (i.e., their state is bottom)
+	 */
 	private Set<Statement> unreachableJumps;
+
+	/**
+	 * The set of definitely unsound jumps (i.e., jumps reached by stacks with
+	 * top at the top)
+	 */
+	private Set<Statement> unsoundJumps;
+
+	/**
+	 * The set of maybe unsound jumps (i.e., jumps reached by the top abstract
+	 * state)
+	 */
+	private Set<Statement> maybeUnsoundJumps;
 
 	/**
 	 * Yields the computed CFG.
@@ -68,13 +83,12 @@ public class JumpSolver
 		return unreachableJumps;
 	}
 
-	@Override
-	public void beforeExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
-		// resets the unreachable jumps set
-		this.unreachableJumps = new HashSet<>();
+	public Set<Statement> getUnsoundJumps() {
+		return unsoundJumps;
+	}
+
+	public Set<Statement> getMaybeUnsoundJumps() {
+		return maybeUnsoundJumps;
 	}
 
 	/**
@@ -90,8 +104,52 @@ public class JumpSolver
 					MonolithicHeap,
 					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
-		if (fixpoint)
+		if (fixpoint) {
+			this.unsoundJumps = new HashSet<>();
+			this.unreachableJumps = new HashSet<>();
+			this.maybeUnsoundJumps = new HashSet<>();
+
+			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
+				if (cfgToAnalyze.getAllPushedJumps().contains(node))
+					continue;
+
+				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+						MonolithicHeap,
+						EVMAbstractState,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
+					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+							MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+
+					try {
+						analysisResult = result.getAnalysisStateBefore(node);
+					} catch (SemanticException e1) {
+						e1.printStackTrace();
+					}
+
+					// Retrieve the symbolic stack from the analysis result
+					EVMAbstractState valueState = analysisResult.getState().getValueState();
+
+					// If the abstract stack is top or bottom or it is empty, we
+					// do not
+					// have enough information
+					// to solve the jump.
+					if (valueState.isBottom()) {
+						this.unreachableJumps.add(node);
+					} else if (valueState.isTop()) {
+						this.maybeUnsoundJumps.add(node);
+					} else {
+						for (KIntegerSet topStack : valueState.getTop())
+							if (topStack.isBottom())
+								this.unreachableJumps.add(node);
+							else if (topStack.isTop())
+								this.unsoundJumps.add(node);
+					}
+				}
+			}
+
 			return;
+		}
+
 		this.fixpoint = true;
 
 		LiSAConfiguration conf = tool.getConfiguration();
@@ -99,10 +157,6 @@ public class JumpSolver
 
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
-
-		// We initialize the set of unreachable jumps, if not already
-		// initialized
-		this.unreachableJumps = new HashSet<>();
 
 		try {
 			lisa.run(program);
@@ -137,6 +191,8 @@ public class JumpSolver
 		// The method should focus only on JUMP and JUMPI statements.
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
+		else if (cfgToAnalyze.getAllPushedJumps().contains(node))
+			return true;
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
@@ -160,7 +216,6 @@ public class JumpSolver
 			// have enough information
 			// to solve the jump.
 			if (valueState.isBottom()) {
-				this.unreachableJumps.add(node);
 				continue;
 			} else if (valueState.isTop()) {
 				System.err.println("Not solved jump (state is top): " + node + "["
@@ -168,42 +223,37 @@ public class JumpSolver
 				continue;
 			}
 
-			KIntegerSet topStack = valueState.getTop();
-			if (topStack.isBottom()) {
-				this.unreachableJumps.add(node);
-				continue;
-			} else if (topStack.isTop()) {
-				System.err.println("Not solved jump (top of the stack is top): " + node + "["
-						+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
-				continue;
-			}
+			for (KIntegerSet topStack : valueState.getTop()) {
+				if (topStack.isBottom()) {
+					continue;
+				} else if (topStack.isTop()) {
+					System.err.println("Not solved jump (top of the stack is top): " + node + "["
+							+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
+					continue;
+				}
 
-			Set<Statement> filteredDests;
-			filteredDests = this.jumpDestinations.stream()
-					.filter(t -> t.getLocation() instanceof ProgramCounterLocation)
-					.filter(pc -> topStack
-							.contains(new BigDecimal(((ProgramCounterLocation) pc.getLocation()).getPc())))
-					.collect(Collectors.toSet());
+				Set<Statement> filteredDests = this.jumpDestinations.stream()
+						.filter(pc -> topStack
+								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
+						.collect(Collectors.toSet());
 
-			// If there are no JUMPDESTs for this value, skip to the
-			// next one.
-			if (filteredDests.isEmpty()) {
-				this.unreachableJumps.add(node);
-				continue;
-			}
-
-			// For each JUMPDEST, add the missing edge from this node to
-			// the JUMPDEST.
-			for (Statement jmp : filteredDests) {
+				// For each JUMPDEST, add the missing edge from this node to
+				// the JUMPDEST.
 				if (node instanceof Jump) { // JUMP
-					if (!this.cfgToAnalyze.containsEdge(new SequentialEdge(node, jmp))) {
-						this.cfgToAnalyze.addEdge(new SequentialEdge(node, jmp));
-						fixpoint = false;
+					for (Statement jmp : filteredDests) {
+						SequentialEdge edge = new SequentialEdge(node, jmp);
+						if (!this.cfgToAnalyze.containsEdge(edge)) {
+							this.cfgToAnalyze.addEdge(edge);
+							fixpoint = false;
+						}
 					}
 				} else { // JUMPI
-					if (!this.cfgToAnalyze.containsEdge(new TrueEdge(node, jmp))) {
-						this.cfgToAnalyze.addEdge(new TrueEdge(node, jmp));
-						fixpoint = false;
+					for (Statement jmp : filteredDests) {
+						TrueEdge edge = new TrueEdge(node, jmp);
+						if (!this.cfgToAnalyze.containsEdge(edge)) {
+							this.cfgToAnalyze.addEdge(edge);
+							fixpoint = false;
+						}
 					}
 				}
 			}
