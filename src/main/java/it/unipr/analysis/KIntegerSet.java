@@ -680,4 +680,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public boolean isTopNotJumpdest() {
 		return this == NOT_JUMPDEST_TOP;
 	}
+
+	public boolean isTopNumeric() {
+		return this == NUMERIC_TOP;
+	}
 }

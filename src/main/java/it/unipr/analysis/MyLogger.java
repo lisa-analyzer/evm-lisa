@@ -58,7 +58,8 @@ public class MyLogger {
 			if (solvedJumpsPercent == 0)
 				this.solvedJumpsPercent = -1;
 		}
-		this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps + maybeUnreachableJumps;
+		this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps
+				+ maybeUnreachableJumps;
 		this.notSolvedJumps = notSolvedJumps;
 		this.unsoundJumps = unsoundJumps;
 		this.maybeUnsoundJumps = maybeUnsoundJumps;

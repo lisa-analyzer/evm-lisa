@@ -43,7 +43,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 	private String OUTPUT_DIR = "execution/results";
@@ -246,53 +245,18 @@ public class EVMLiSA {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
 
-//			EVMCFG baseCfg = checker.getComputedCFG();
-//
-//			Triple<Integer, Integer, Triple<Integer, Integer, Integer>> pair;
-
-//			pair = dumpStatistics(checker);
-			
 			// Print the results
 			finish = System.currentTimeMillis();
-			
-			String msg = EVMLiSA.dumpStatistics(checker).address(addressSC)
+
+			String msg = EVMLiSA.dumpStatistics(checker)
+					.address(addressSC)
 					.time(finish - start)
 					.build()
 					.toString();
 
 			System.out.println(msg);
-//			finish = System.currentTimeMillis();
-
-//			String msg2 = "\nResults \n" +
-//					"Address: " + addressSC + "\n" +
-//					"Opcodes: " + baseCfg.getOpcodeCount() + "\n" +
-//					"Jumps: " + baseCfg.getAllJumps().size() + "\n" +
-//					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" +
-//					"SoundResolvedJumps: " + pair.getMiddle() + "\n" +
-//					"DefinitelyUnreachableJumps: " + pair.getRight().getLeft() + "\n" +
-//					"MaybeUnreachableJumps: " + pair.getRight().getMiddle() + "\n" +
-//					"NotSolvedJumps: " + pair.getRight().getRight() + "\n" +
-//					"Time (in millis): " + (finish - start) + "\n";
-//
-//			System.out.println(msg2);
 
 			if (dumpStatistics) {
-//				String msg = MyLogger.newLogger()
-//						.address(addressSC)
-//						.opcodes(baseCfg.getOpcodeCount())
-//						.jumps(baseCfg.getAllJumps().size())
-//						.preciselyResolvedJumps(pair.getLeft())
-//						.soundResolvedJumps(pair.getMiddle())
-//						.definitelyUnreachableJumps(pair.getRight().getLeft())
-//						.maybeUnreachableJumps(pair.getRight().getMiddle())
-//						.notSolvedJumps(pair.getRight().getRight())
-//						.unsoundJumps(checker.getUnsoundJumps().size())
-//						.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
-//						.time(finish - start)
-//						.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
-//								+ AbstractStackSet.getStackSetLimit())
-//						.build().toString();
-
 				toFileStatistics(msg);
 				System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
 			}
@@ -363,29 +327,12 @@ public class EVMLiSA {
 		lisa.run(program);
 
 		// Print the results
-//		EVMCFG baseCfg = checker.getComputedCFG();
 		long finish = System.currentTimeMillis();
-		
-		return EVMLiSA.dumpStatistics(checker).address(CONTRACT_ADDR)
+
+		return EVMLiSA.dumpStatistics(checker)
+				.address(CONTRACT_ADDR)
 				.time(finish - start)
 				.build();
-		
-
-//		return MyLogger.newLogger()
-//				.address(CONTRACT_ADDR)
-//				.opcodes(baseCfg.getNodesCount())
-//				.jumps(baseCfg.getAllJumps().size())
-//				.preciselyResolvedJumps(pair.getLeft())
-//				.soundResolvedJumps(pair.getMiddle())
-//				.definitelyUnreachableJumps(pair.getRight().getLeft())
-//				.maybeUnreachableJumps(pair.getRight().getMiddle())
-//				.notSolvedJumps(pair.getRight().getRight())
-//				.unsoundJumps(checker.getUnsoundJumps().size())
-//				.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
-//				.time(finish - start)
-//				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
-//						+ AbstractStackSet.getStackSetLimit())
-//				.build();
 	}
 
 	private void runBenchmark() throws Exception {
@@ -500,7 +447,7 @@ public class EVMLiSA {
 		synchronized (guardia) {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
-			
+
 			long timeToWait;
 //			int millisPerSmartContract = 25000 * 10;
 //			int extra = 120000;
@@ -588,71 +535,74 @@ public class EVMLiSA {
 	public static MyLogger dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
+		Set<Statement> unsoundJumpNodes = checker.getUnsoundJumps();
 		int preciselyResolvedJumps = 0;
 		int soundResolvedJumps = 0;
+		int resolvedJumps = 0;
 
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int notSolvedJumps = 0;
 		int unsoundJumps = 0;
+		int maybeUnsoundJumps = 0;
 
 		// we are safe supposing that we have a single entry point
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		for (Statement jumpNode : cfg.getAllJumps())
 			if (jumpNode instanceof Jump) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 1)
-					preciselyResolvedJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
-					soundResolvedJumps++;
+				if (cfg.getOutgoingEdges(jumpNode).size() >= 1)
+					resolvedJumps++;
 				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
-				else
+				else if (cfg.getOutgoingEdges(jumpNode).size() == 0 && unsoundJumpNodes.contains(jumpNode)) {
+					unsoundJumps++;
+					notSolvedJumps++;
+				} else
 					notSolvedJumps++;
 			} else if (jumpNode instanceof Jumpi) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
-					preciselyResolvedJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
-					soundResolvedJumps++;
+				if (cfg.getOutgoingEdges(jumpNode).size() >= 2)
+					resolvedJumps++;
 				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
 					definitelyUnreachable++;
 				else if (!cfg.reachableFrom(entryPoint, jumpNode))
 					maybeUnreachable++;
-				else if(cfg.getOutgoingEdges(jumpNode).size() == 1)
+				else if (cfg.getOutgoingEdges(jumpNode).size() == 1 && unsoundJumpNodes.contains(jumpNode)) {
 					unsoundJumps++;
+					notSolvedJumps++;
+				} else if (unsoundJumpNodes.contains(jumpNode))
+					maybeUnsoundJumps++;
 				else
 					notSolvedJumps++;
 			}
 
+		maybeUnsoundJumps += checker.getMaybeUnsoundJumps().size();
+
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);
-		System.err.println("Sound solved jumps: " + soundResolvedJumps);
+		System.err.println("Resolved jumps: " + resolvedJumps);
 		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
 		System.err.println("Not solved jumps: " + notSolvedJumps);
-//		System.err.println("Unsound jumps (old): " + checker.getUnsoundJumps().size());
+//		System.err.println("Unsound jumps: " + checker.getUnsoundJumps().size());
 		System.err.println("Unsound jumps: " + unsoundJumps);
-		System.err.println("Maybe unsound jumps: " + checker.getMaybeUnsoundJumps().size());
+		System.err.println("Maybe unsound jumps: " + maybeUnsoundJumps);
 		System.err.println("##############");
-		
+
 		return MyLogger.newLogger()
-			.opcodes(cfg.getOpcodeCount())
-			.jumps(cfg.getAllJumps().size())
-			.preciselyResolvedJumps(preciselyResolvedJumps)
-			.soundResolvedJumps(soundResolvedJumps)
-			.definitelyUnreachableJumps(definitelyUnreachable)
-			.maybeUnreachableJumps(maybeUnreachable)
-			.notSolvedJumps(notSolvedJumps)
-			.unsoundJumps(unsoundJumps)
-			.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
-			.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
-					+ AbstractStackSet.getStackSetLimit());
-				
-//		return Triple.of(preciselyResolvedJumps, soundResolvedJumps,
-//				Triple.of(definitelyUnreachable, maybeUnreachable, notSolvedJumps));
+				.opcodes(cfg.getOpcodeCount())
+				.jumps(cfg.getAllJumps().size())
+				.preciselyResolvedJumps(resolvedJumps)
+				.definitelyUnreachableJumps(definitelyUnreachable)
+				.maybeUnreachableJumps(maybeUnreachable)
+				.notSolvedJumps(notSolvedJumps)
+				.unsoundJumps(unsoundJumps)
+//			.unsoundJumps(checker.getUnsoundJumps().size())
+				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
+						+ AbstractStackSet.getStackSetLimit());
 	}
 
 	/**
