@@ -3055,3 +3055,27 @@ PUSH2 0x038b
 PUSH2 0x1175
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+ADDMOD
+'e6'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'23'(Unknown Opcode)
+DIV
+'ba'(Unknown Opcode)
+PUSH8 0x7506c847280a1d49
+CALLVALUE
+'df'(Unknown Opcode)
+'a8'(Unknown Opcode)
+SELFBALANCE
+SELFDESTRUCT
+SHR
+DUP15
+'df'(Unknown Opcode)
+ADDMOD
+'d5'(Unknown Opcode)
+'ba'(Unknown Opcode)
+PUSH29 0x016f6c695364736f6c63430008130033

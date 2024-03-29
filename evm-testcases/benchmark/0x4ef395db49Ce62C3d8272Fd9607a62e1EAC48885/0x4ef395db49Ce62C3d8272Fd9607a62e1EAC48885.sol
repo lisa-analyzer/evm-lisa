@@ -1640,3 +1640,26 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'27'(Unknown Opcode)
+PUSH20 0xfb0bce59538e93fd1eaa99e9e381069968d2301a
+DUP7
+MSTORE
+'c0'(Unknown Opcode)
+'df'(Unknown Opcode)
+DUP2
+'b2'(Unknown Opcode)
+GASPRICE
+'c2'(Unknown Opcode)
+MSTORE
+'b6'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

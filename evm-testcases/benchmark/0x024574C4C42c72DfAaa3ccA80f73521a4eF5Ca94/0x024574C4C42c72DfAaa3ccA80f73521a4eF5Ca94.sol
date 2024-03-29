@@ -2564,3 +2564,21 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MLOAD
+CALL
+CHAINID
+SGT
+ISZERO
+'c0'(Unknown Opcode)
+BALANCE
+'c9'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'bc'(Unknown Opcode)
+'d6'(Unknown Opcode)
+PUSH21 0x683cc5739b2d7ae3c8d7fc4a7a614a2084974bd864
+PUSH20 0x6f6c63430008160033

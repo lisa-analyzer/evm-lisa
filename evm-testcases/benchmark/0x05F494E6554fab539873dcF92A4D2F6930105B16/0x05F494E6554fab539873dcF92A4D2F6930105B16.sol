@@ -4832,3 +4832,29 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2c'(Unknown Opcode)
+'a9'(Unknown Opcode)
+CREATE
+'0d'(Unknown Opcode)
+'af'(Unknown Opcode)
+SGT
+DUP6
+SDIV
+SWAP15
+'0d'(Unknown Opcode)
+LOG3
+GASLIMIT
+'b0'(Unknown Opcode)
+'a5'(Unknown Opcode)
+SGT
+DUP4
+RETURNDATASIZE
+'fc'(Unknown Opcode)
+BALANCE
+PUSH22 0xcf648a4ca5080ac40302222b64736f6c634300081100
+CALLER

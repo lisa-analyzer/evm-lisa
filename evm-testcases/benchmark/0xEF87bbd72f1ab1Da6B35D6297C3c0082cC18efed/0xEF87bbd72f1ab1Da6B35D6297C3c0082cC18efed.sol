@@ -1680,3 +1680,46 @@ RETURNDATASIZE
 SWAP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MUL
+PUSH31 0xff3143e7a819b553e2f0d74de6e2458783a2beb226a1fd4210096a83007364
+PUSH20 0x6f6c63430008160033a2646970667358221220f4
+SAR
+'de'(Unknown Opcode)
+CODECOPY
+'af'(Unknown Opcode)
+OR
+SWAP8
+JUMPDEST
+SWAP9
+'ca'(Unknown Opcode)
+DUP14
+TIMESTAMP
+SHA3
+'bd'(Unknown Opcode)
+SDIV
+'f8'(Unknown Opcode)
+'ab'(Unknown Opcode)
+PUSH2 0x7ecb
+CALL
+'c9'(Unknown Opcode)
+'bd'(Unknown Opcode)
+'c6'(Unknown Opcode)
+SWAP3
+'bc'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'2e'(Unknown Opcode)
+SHR
+DUP11
+CALLER
+'c2'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

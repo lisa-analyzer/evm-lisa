@@ -10771,3 +10771,27 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SELFBALANCE
+'2a'(Unknown Opcode)
+'e9'(Unknown Opcode)
+SHA3
+SLOAD
+'dd'(Unknown Opcode)
+'b0'(Unknown Opcode)
+DUP11
+'e9'(Unknown Opcode)
+'0f'(Unknown Opcode)
+BASEFEE
+'0f'(Unknown Opcode)
+JUMPDEST
+RETURNDATACOPY
+'22'(Unknown Opcode)
+'d8'(Unknown Opcode)
+PUSH24 0xba7d0775403a7e3eeeac4a073c8eed64736f6c6343000809
+STOP
+CALLER

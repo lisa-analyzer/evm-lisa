@@ -2934,7 +2934,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -2968,7 +2967,7 @@ MSIZE
 DUP10
 'ea'(Unknown Opcode)
 DUP2
-
+INVALID
 'd3'(Unknown Opcode)
 '28'(Unknown Opcode)
 PUSH5 0x736f6c6343

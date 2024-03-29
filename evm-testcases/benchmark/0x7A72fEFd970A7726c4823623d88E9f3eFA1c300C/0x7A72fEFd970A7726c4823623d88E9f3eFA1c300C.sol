@@ -348,3 +348,29 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'bd'(Unknown Opcode)
+BALANCE
+SELFBALANCE
+ADDRESS
+ADD
+'4c'(Unknown Opcode)
+BALANCE
+DUP8
+'d1'(Unknown Opcode)
+'d8'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'4d'(Unknown Opcode)
+CALLDATACOPY
+'5c'(Unknown Opcode)
+'5e'(Unknown Opcode)
+'df'(Unknown Opcode)
+EXTCODESIZE
+'a7'(Unknown Opcode)
+'a6'(Unknown Opcode)
+'a9'(Unknown Opcode)
+PUSH22 0x0141e8ca0924a3c4dec52b64736f6c63430008110033

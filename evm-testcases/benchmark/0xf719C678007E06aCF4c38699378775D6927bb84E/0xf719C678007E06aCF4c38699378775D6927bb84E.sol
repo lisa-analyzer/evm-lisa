@@ -6266,3 +6266,27 @@ CALLCODE
 DUP5
 NOT
 INVALID
+PUSH32 0x9722a3daafe3b4186f6b6457e0a26469706673582212206570f320daa9bec623
+'b2'(Unknown Opcode)
+'f6'(Unknown Opcode)
+SUB
+'bb'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'df'(Unknown Opcode)
+DUP1
+SELFBALANCE
+BASEFEE
+'0f'(Unknown Opcode)
+'24'(Unknown Opcode)
+'d4'(Unknown Opcode)
+GT
+POP
+'23'(Unknown Opcode)
+MSIZE
+ORIGIN
+'0e'(Unknown Opcode)
+'da'(Unknown Opcode)
+TIMESTAMP
+'db'(Unknown Opcode)
+'fb'(Unknown Opcode)
+PUSH26 0x64736f6c63430008170033

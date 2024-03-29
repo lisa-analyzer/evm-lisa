@@ -896,3 +896,21 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SSTORE
+'2c'(Unknown Opcode)
+MULMOD
+PUSH5 0xa0af22828a
+'ba'(Unknown Opcode)
+MUL
+'b3'(Unknown Opcode)
+'e0'(Unknown Opcode)
+'c2'(Unknown Opcode)
+EQ
+'1f'(Unknown Opcode)
+'db'(Unknown Opcode)
+PUSH30 0xe61965c3e896ed87ee477dfc7f9664736f6c63430008170033

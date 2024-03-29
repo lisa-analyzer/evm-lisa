@@ -8005,3 +8005,28 @@ PUSH21 0x6865207472616e7366657220616d6f756e74206578
 PUSH4 0x65656473
 SHA3
 PUSH2 0x6c6c
+PUSH16 0x77616e6365a2646970667358221220b5
+SSTORE
+DUP8
+'a8'(Unknown Opcode)
+'bf'(Unknown Opcode)
+'ce'(Unknown Opcode)
+EXTCODEHASH
+'de'(Unknown Opcode)
+'e5'(Unknown Opcode)
+'ca'(Unknown Opcode)
+'2c'(Unknown Opcode)
+ADDMOD
+PUSH2 0x27be
+'29'(Unknown Opcode)
+DUP2
+'5c'(Unknown Opcode)
+PUSH2 0xf812
+'2f'(Unknown Opcode)
+'cc'(Unknown Opcode)
+POP
+DIFFICULTY
+SAR
+STOP
+'d8'(Unknown Opcode)
+PUSH26 0xf3730c64736f6c63430008120033

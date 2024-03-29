@@ -4620,3 +4620,23 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALLDATACOPY
+'db'(Unknown Opcode)
+'28'(Unknown Opcode)
+SDIV
+SHR
+EXTCODEHASH
+SWAP5
+DUP3
+'26'(Unknown Opcode)
+'b8'(Unknown Opcode)
+'ca'(Unknown Opcode)
+'cb'(Unknown Opcode)
+SAR
+PUSH20 0x39f1cb9798ac59b446cb1e6beef9baee28496473
+PUSH16 0x6c63430008120033

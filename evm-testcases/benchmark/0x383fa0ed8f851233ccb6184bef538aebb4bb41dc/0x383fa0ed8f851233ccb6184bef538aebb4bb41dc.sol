@@ -2405,3 +2405,17 @@ POP
 POP
 JUMP
 STOP
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+LOG4
+'22'(Unknown Opcode)
+'cc'(Unknown Opcode)
+'29'(Unknown Opcode)
+ADDMOD
+CALL
+'2d'(Unknown Opcode)
+SWAP8
+'0d'(Unknown Opcode)
+PUSH18 0x5a18d108601b5df64f7fff7ed9a3c35feca1
+PUSH28 0x6a7c360029

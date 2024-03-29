@@ -1728,3 +1728,28 @@ PUSH1 0x00
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH1 0xb8
+SHR
+ORIGIN
+ORIGIN
+'a7'(Unknown Opcode)
+POP
+'b4'(Unknown Opcode)
+PUSH4 0x16b03a0c
+SWAP12
+'ad'(Unknown Opcode)
+'e6'(Unknown Opcode)
+'aa'(Unknown Opcode)
+SAR
+'b6'(Unknown Opcode)
+'25'(Unknown Opcode)
+SWAP5
+DUP13
+DUP1
+BLOCKHASH
+PUSH32 0xb80c1f588c876264736f6c63430008160033

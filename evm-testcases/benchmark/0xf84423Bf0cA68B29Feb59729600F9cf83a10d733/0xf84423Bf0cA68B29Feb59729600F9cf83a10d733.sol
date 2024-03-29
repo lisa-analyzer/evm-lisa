@@ -1590,3 +1590,31 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'db'(Unknown Opcode)
+PUSH5 0xda2b046a58
+'eb'(Unknown Opcode)
+'d9'(Unknown Opcode)
+JUMP
+DUP16
+SUB
+SELFDESTRUCT
+CALLDATASIZE
+EQ
+'c4'(Unknown Opcode)
+SGT
+'cd'(Unknown Opcode)
+DIFFICULTY
+'c2'(Unknown Opcode)
+JUMPDEST
+'c5'(Unknown Opcode)
+SWAP8
+SLOAD
+PUSH15 0xd571dba6f24c6164736f6c63430008
+OR
+STOP
+CALLER

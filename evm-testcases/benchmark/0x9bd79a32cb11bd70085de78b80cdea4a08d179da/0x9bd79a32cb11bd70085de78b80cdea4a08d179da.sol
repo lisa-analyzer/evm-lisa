@@ -1932,3 +1932,27 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MSIZE
+'e3'(Unknown Opcode)
+SWAP13
+'0d'(Unknown Opcode)
+INVALID
+'ab'(Unknown Opcode)
+'e7'(Unknown Opcode)
+'b7'(Unknown Opcode)
+'21'(Unknown Opcode)
+DUP16
+MLOAD
+SUB
+'d1'(Unknown Opcode)
+CODESIZE
+BALANCE
+PUSH20 0x131be583b531a00c62c2f03a2b03cf4564736f6c
+PUSH4 0x43000816
+STOP
+CALLER

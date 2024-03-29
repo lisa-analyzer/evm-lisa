@@ -3801,3 +3801,29 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SDIV
+DUP12
+'cc'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'2f'(Unknown Opcode)
+ADDMOD
+'29'(Unknown Opcode)
+'d4'(Unknown Opcode)
+CALLVALUE
+NUMBER
+PUSH10 0x42db3d339bab8899c864
+SMOD
+'c4'(Unknown Opcode)
+ADDRESS
+'eb'(Unknown Opcode)
+CODESIZE
+'2d'(Unknown Opcode)
+PUSH8 0x44c4f16864736f6c
+PUSH4 0x43000817
+STOP
+CALLER

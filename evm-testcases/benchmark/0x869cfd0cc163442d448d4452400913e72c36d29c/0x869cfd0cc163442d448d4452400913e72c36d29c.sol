@@ -8435,3 +8435,26 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SAR
+'d3'(Unknown Opcode)
+LOG3
+DUP3
+'b6'(Unknown Opcode)
+SLT
+LOG4
+'c6'(Unknown Opcode)
+PUSH18 0xe91bf8c87d00ff5ae6a84f237e606fdba33e
+XOR
+'bc'(Unknown Opcode)
+'d7'(Unknown Opcode)
+'e0'(Unknown Opcode)
+PUSH7 0x64736f6c634300
+ADDMOD
+LT
+STOP
+CALLER

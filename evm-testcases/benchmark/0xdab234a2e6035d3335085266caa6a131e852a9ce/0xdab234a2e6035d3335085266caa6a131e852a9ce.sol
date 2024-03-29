@@ -1860,3 +1860,46 @@ PUSH2 0x02d4
 PUSH2 0x08e5
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'28'(Unknown Opcode)
+SELFBALANCE
+DUP3
+'b0'(Unknown Opcode)
+'c6'(Unknown Opcode)
+'e3'(Unknown Opcode)
+LOG1
+'2f'(Unknown Opcode)
+'4c'(Unknown Opcode)
+SWAP1
+'fb'(Unknown Opcode)
+'2c'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'dd'(Unknown Opcode)
+DUP12
+'27'(Unknown Opcode)
+'f9'(Unknown Opcode)
+'23'(Unknown Opcode)
+NUMBER
+'f7'(Unknown Opcode)
+'ca'(Unknown Opcode)
+'2a'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'f8'(Unknown Opcode)
+SWAP6
+CODECOPY
+CALLDATALOAD
+'ed'(Unknown Opcode)
+SWAP13
+'bd'(Unknown Opcode)
+LOG3
+MSIZE
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

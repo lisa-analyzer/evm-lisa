@@ -1860,3 +1860,35 @@ PUSH2 0x031c
 PUSH2 0x08ec
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2b'(Unknown Opcode)
+BASEFEE
+'cd'(Unknown Opcode)
+JUMP
+DIFFICULTY
+'eb'(Unknown Opcode)
+DUP7
+'2a'(Unknown Opcode)
+'d8'(Unknown Opcode)
+SWAP3
+'c1'(Unknown Opcode)
+MOD
+SWAP16
+'c0'(Unknown Opcode)
+'b8'(Unknown Opcode)
+DUP15
+'5d'(Unknown Opcode)
+PUSH6 0xd51a79edeb8a
+DIV
+'2f'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'5e'(Unknown Opcode)
+INVALID
+PUSH10 0xfaf364736f6c63430008
+OR
+STOP
+CALLER

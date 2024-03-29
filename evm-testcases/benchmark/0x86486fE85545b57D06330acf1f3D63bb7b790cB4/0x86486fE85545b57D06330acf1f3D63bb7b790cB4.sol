@@ -7316,3 +7316,34 @@ DUP2
 PUSH2 0x2ed1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c1'(Unknown Opcode)
+LOG0
+SWAP10
+ADDRESS
+TIMESTAMP
+MSIZE
+'e6'(Unknown Opcode)
+'f6'(Unknown Opcode)
+'fc'(Unknown Opcode)
+BASEFEE
+'f6'(Unknown Opcode)
+'0c'(Unknown Opcode)
+'c2'(Unknown Opcode)
+DUP11
+CALLCODE
+SWAP4
+PUSH12 0x893e3aaa548cd70fd5325d29
+'dc'(Unknown Opcode)
+'e2'(Unknown Opcode)
+DUP1
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+'0d'(Unknown Opcode)
+STOP
+CALLER

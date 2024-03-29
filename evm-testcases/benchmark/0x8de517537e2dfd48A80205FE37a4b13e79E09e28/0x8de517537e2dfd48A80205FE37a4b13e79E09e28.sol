@@ -7460,3 +7460,28 @@ MSTORE8
 'cf'(Unknown Opcode)
 SAR
 RETURN
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a9'(Unknown Opcode)
+MULMOD
+SWAP1
+'4b'(Unknown Opcode)
+'22'(Unknown Opcode)
+'cd'(Unknown Opcode)
+REVERT
+LOG4
+ADDMOD
+LOG2
+'de'(Unknown Opcode)
+REVERT
+LOG0
+SLOAD
+'c4'(Unknown Opcode)
+SSTORE
+'be'(Unknown Opcode)
+SLOAD
+PUSH23 0x7f3c6f55aab9e1cc5736ee004464736f6c634300081100
+CALLER

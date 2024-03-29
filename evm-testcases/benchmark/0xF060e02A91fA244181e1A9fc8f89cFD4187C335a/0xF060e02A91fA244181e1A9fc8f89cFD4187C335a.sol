@@ -515,3 +515,21 @@ ISZERO
 PUSH2 0x03ba
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b3'(Unknown Opcode)
+'a7'(Unknown Opcode)
+SWAP16
+'d1'(Unknown Opcode)
+DUP1
+EXTCODEHASH
+STATICCALL
+PUSH12 0xc719ac05cf3cabae94d44262
+'b7'(Unknown Opcode)
+EQ
+DUP16
+'b2'(Unknown Opcode)
+PUSH25 0xcfb681dc50b2b264736f6c63430008160033

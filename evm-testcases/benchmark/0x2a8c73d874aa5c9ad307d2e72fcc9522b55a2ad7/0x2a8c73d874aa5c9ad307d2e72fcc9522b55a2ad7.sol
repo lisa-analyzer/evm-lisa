@@ -2811,7 +2811,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -2825,7 +2824,6 @@ LOG1
 'e5'(Unknown Opcode)
 SIGNEXTEND
 INVALID
-SELFDESTRUCT
 'd3'(Unknown Opcode)
 'd6'(Unknown Opcode)
 '0f'(Unknown Opcode)

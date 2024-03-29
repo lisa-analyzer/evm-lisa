@@ -5399,3 +5399,29 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d2'(Unknown Opcode)
+'b4'(Unknown Opcode)
+ADDRESS
+CALL
+'fc'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'f9'(Unknown Opcode)
+GASPRICE
+'2d'(Unknown Opcode)
+SHL
+'fb'(Unknown Opcode)
+SGT
+INVALID
+PUSH14 0x26f93b840fdd1a5be14c3db60447
+'e8'(Unknown Opcode)
+XOR
+CODESIZE
+PUSH4 0x64736f6c
+PUSH4 0x43000813
+STOP
+CALLER

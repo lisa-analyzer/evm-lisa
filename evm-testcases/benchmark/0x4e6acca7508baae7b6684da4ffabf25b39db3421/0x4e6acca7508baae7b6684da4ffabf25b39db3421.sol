@@ -5085,3 +5085,30 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'4e'(Unknown Opcode)
+'b1'(Unknown Opcode)
+'cf'(Unknown Opcode)
+'b8'(Unknown Opcode)
+CALLDATACOPY
+STOP
+'f7'(Unknown Opcode)
+LOG2
+SLOAD
+'e0'(Unknown Opcode)
+'dc'(Unknown Opcode)
+'e4'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'0f'(Unknown Opcode)
+'c9'(Unknown Opcode)
+MSTORE8
+DUP8
+GASPRICE
+SHL
+CHAINID
+SWAP7
+PUSH25 0x61a2c1d9256cdfd60d2d64736f6c63430008100033

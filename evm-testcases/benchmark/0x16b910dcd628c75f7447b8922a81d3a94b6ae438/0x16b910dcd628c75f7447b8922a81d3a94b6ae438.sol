@@ -2953,3 +2953,37 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2f'(Unknown Opcode)
+SWAP7
+'c6'(Unknown Opcode)
+MLOAD
+PUSH0
+'af'(Unknown Opcode)
+DUP7
+'ec'(Unknown Opcode)
+SIGNEXTEND
+'a8'(Unknown Opcode)
+'d3'(Unknown Opcode)
+RETURN
+'2b'(Unknown Opcode)
+CODESIZE
+MOD
+PUSH9 0x45efb06ebdd0fb1370
+'ed'(Unknown Opcode)
+DUP7
+POP
+'a5'(Unknown Opcode)
+'c3'(Unknown Opcode)
+'ba'(Unknown Opcode)
+'bf'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

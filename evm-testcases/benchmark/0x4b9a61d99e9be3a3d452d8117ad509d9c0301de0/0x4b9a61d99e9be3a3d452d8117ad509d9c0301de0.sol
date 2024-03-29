@@ -4122,3 +4122,23 @@ DIV
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b9'(Unknown Opcode)
+'fb'(Unknown Opcode)
+DUP10
+SWAP10
+'cc'(Unknown Opcode)
+SAR
+PUSH8 0x581b1c8edc44a8f5
+SGT
+'0d'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'5e'(Unknown Opcode)
+SUB
+PUSH8 0xbd24ccce479b5abe
+DUP5
+PUSH30 0x0e64736f6c63430008130033

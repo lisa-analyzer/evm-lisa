@@ -1981,3 +1981,30 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2a'(Unknown Opcode)
+DUP2
+SWAP7
+'af'(Unknown Opcode)
+CREATE
+'af'(Unknown Opcode)
+SGT
+'e9'(Unknown Opcode)
+'4a'(Unknown Opcode)
+PUSH12 0x3083250d34cee8fe8f5d47cb
+DUP7
+LOG4
+CALLDATASIZE
+GT
+'b5'(Unknown Opcode)
+PUSH4 0x02e0652b
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

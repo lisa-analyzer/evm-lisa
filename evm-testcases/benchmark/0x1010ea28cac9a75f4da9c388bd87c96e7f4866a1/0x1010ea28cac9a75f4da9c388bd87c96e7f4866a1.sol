@@ -8930,3 +8930,37 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+BALANCE
+'0f'(Unknown Opcode)
+PC
+INVALID
+'f8'(Unknown Opcode)
+'be'(Unknown Opcode)
+SWAP5
+'ed'(Unknown Opcode)
+'2b'(Unknown Opcode)
+'cb'(Unknown Opcode)
+NOT
+PUSH5 0x970dab4608
+'a8'(Unknown Opcode)
+JUMPDEST
+DUP4
+'5c'(Unknown Opcode)
+PUSH1 0x90
+ADD
+'cf'(Unknown Opcode)
+ISZERO
+MSIZE
+LOG3
+PUSH8 0x914cc164736f6c63
+NUMBER
+STOP
+ADDMOD
+AND
+STOP
+CALLER

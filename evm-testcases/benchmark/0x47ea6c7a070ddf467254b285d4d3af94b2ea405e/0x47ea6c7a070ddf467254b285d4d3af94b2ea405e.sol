@@ -7506,3 +7506,26 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x7358221220cf23
+'d6'(Unknown Opcode)
+SSTORE
+SWAP7
+'f6'(Unknown Opcode)
+'5c'(Unknown Opcode)
+LOG2
+OR
+'c6'(Unknown Opcode)
+LOG4
+'c1'(Unknown Opcode)
+SWAP6
+'22'(Unknown Opcode)
+SSTORE
+'fb'(Unknown Opcode)
+'22'(Unknown Opcode)
+'b8'(Unknown Opcode)
+MSIZE
+CODECOPY
+EXTCODEHASH
+SLT
+PUSH20 0x2a9990d75ff0175f0a64736f6c63430008090033

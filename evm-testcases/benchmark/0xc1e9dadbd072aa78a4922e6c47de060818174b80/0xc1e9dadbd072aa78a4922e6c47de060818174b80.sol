@@ -2158,3 +2158,41 @@ GASPRICE
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x735822122025f8
+ADD
+'dd'(Unknown Opcode)
+'da'(Unknown Opcode)
+'ae'(Unknown Opcode)
+LOG1
+'f9'(Unknown Opcode)
+'da'(Unknown Opcode)
+CALLDATASIZE
+DIFFICULTY
+DUP14
+DUP3
+'e4'(Unknown Opcode)
+DUP4
+'eb'(Unknown Opcode)
+MSTORE
+'b6'(Unknown Opcode)
+SWAP5
+SUB
+GASPRICE
+XOR
+'a9'(Unknown Opcode)
+RETURN
+'25'(Unknown Opcode)
+ADDRESS
+'aa'(Unknown Opcode)
+JUMPDEST
+'ac'(Unknown Opcode)
+'bd'(Unknown Opcode)
+COINBASE
+RETURN
+PUSH5 0x736f6c6343
+STOP
+SMOD
+STOP
+STOP
+CALLER

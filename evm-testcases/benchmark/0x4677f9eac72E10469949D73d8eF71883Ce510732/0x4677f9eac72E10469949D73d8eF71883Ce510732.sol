@@ -9625,3 +9625,21 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+AND
+PUSH25 0x142fecae05a628e451d87e90a65f98d29a5480d7d2c72b1118
+'25'(Unknown Opcode)
+DUP3
+'da'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'b2'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+MOD
+EXP
+STOP
+CALLER

@@ -1204,3 +1204,24 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'de'(Unknown Opcode)
+'26'(Unknown Opcode)
+LOG0
+'d6'(Unknown Opcode)
+MOD
+'e5'(Unknown Opcode)
+SWAP16
+'b2'(Unknown Opcode)
+CALLCODE
+PUSH27 0x619a413836d0643189e9b5364a138ae14d67aecc523c64736f6c63
+NUMBER
+STOP
+ADDMOD
+XOR
+STOP
+CALLER

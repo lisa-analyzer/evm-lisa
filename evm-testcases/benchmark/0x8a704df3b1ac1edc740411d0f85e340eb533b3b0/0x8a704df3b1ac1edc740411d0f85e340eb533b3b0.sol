@@ -3417,3 +3417,32 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CHAINID
+'cc'(Unknown Opcode)
+PUSH2 0xc5bb
+SAR
+'27'(Unknown Opcode)
+'c3'(Unknown Opcode)
+'ca'(Unknown Opcode)
+'0d'(Unknown Opcode)
+'dc'(Unknown Opcode)
+'dd'(Unknown Opcode)
+'eb'(Unknown Opcode)
+CALLER
+'ac'(Unknown Opcode)
+JUMPI
+PUSH12 0x15850fb67c45452bb303f962
+'4c'(Unknown Opcode)
+'5c'(Unknown Opcode)
+LT
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

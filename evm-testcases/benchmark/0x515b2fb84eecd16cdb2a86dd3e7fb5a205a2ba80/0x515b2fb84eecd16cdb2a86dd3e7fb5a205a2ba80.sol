@@ -1371,3 +1371,30 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP14
+PUSH16 0x105325385ac26f7811652a8b93876a66
+'2c'(Unknown Opcode)
+'4a'(Unknown Opcode)
+DUP3
+STOP
+MSTORE
+'d8'(Unknown Opcode)
+'4d'(Unknown Opcode)
+SMOD
+'b1'(Unknown Opcode)
+MLOAD
+SWAP12
+MULMOD
+SDIV
+'23'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

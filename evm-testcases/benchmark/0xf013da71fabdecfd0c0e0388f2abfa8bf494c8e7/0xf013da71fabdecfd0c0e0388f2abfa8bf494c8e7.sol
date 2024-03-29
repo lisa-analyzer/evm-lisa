@@ -4601,14 +4601,13 @@ POP
 SWAP3
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
 SLT
 SHA3
 'b3'(Unknown Opcode)
-
+INVALID
 'e9'(Unknown Opcode)
 BALANCE
 'ad'(Unknown Opcode)

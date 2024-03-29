@@ -7759,3 +7759,24 @@ PUSH4 0x61204772
 PUSH6 0x617420616e64
 SHA3
 SELFBALANCE
+PUSH13 0x6f72696f757320416761696ea2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'25'(Unknown Opcode)
+PC
+PUSH13 0x70663cd6220a260bb5d7f4200e
+BYTE
+'d4'(Unknown Opcode)
+'1e'(Unknown Opcode)
+'e4'(Unknown Opcode)
+XOR
+CREATE
+'a7'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'4c'(Unknown Opcode)
+BYTE
+'fb'(Unknown Opcode)
+DUP16
+PUSH19 0x48edeb64736f6c63430008160033

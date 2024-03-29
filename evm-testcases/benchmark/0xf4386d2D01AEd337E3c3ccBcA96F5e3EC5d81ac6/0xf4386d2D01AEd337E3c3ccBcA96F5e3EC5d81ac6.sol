@@ -1258,3 +1258,23 @@ PUSH2 0x093b
 JUMPI
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ec'(Unknown Opcode)
+DUP11
+'e7'(Unknown Opcode)
+DUP7
+'ec'(Unknown Opcode)
+'4b'(Unknown Opcode)
+DUP2
+'2b'(Unknown Opcode)
+PUSH28 0x4263e116cf052228e1e2198973f8ac88f063f8c689cc2164736f6c63
+NUMBER
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

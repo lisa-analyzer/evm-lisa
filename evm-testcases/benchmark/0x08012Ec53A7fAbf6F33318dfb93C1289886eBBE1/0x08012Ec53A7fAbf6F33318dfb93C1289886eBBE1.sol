@@ -3601,3 +3601,27 @@ PUSH10 0x642d746f2d6164647265
 PUSH20 0x7352776153776170496e707574436f6e64756974
 ORIGIN
 '2f'(Unknown Opcode)
+PUSH22 0x6e7265636f676e697365642d706172616da264697066
+PUSH20 0x5822122026a5f6413493f3569085ae0902892a5d
+SWAP1
+DIV
+'e2'(Unknown Opcode)
+LOG0
+'d2'(Unknown Opcode)
+CALLDATACOPY
+'eb'(Unknown Opcode)
+'2c'(Unknown Opcode)
+'ae'(Unknown Opcode)
+DUP15
+ADDMOD
+'b2'(Unknown Opcode)
+'f8'(Unknown Opcode)
+SWAP4
+'ad'(Unknown Opcode)
+'5c'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

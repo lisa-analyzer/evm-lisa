@@ -2347,7 +2347,6 @@ EXP
 'ac'(Unknown Opcode)
 MOD
 INVALID
-SELFDESTRUCT
 ADDMOD
 DUP7
 '0c'(Unknown Opcode)

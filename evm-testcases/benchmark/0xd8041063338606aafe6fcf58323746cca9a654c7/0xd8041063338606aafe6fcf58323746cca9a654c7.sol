@@ -608,3 +608,43 @@ SUB
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MULMOD
+CODECOPY
+PUSH2 0x4532
+'24'(Unknown Opcode)
+'d0'(Unknown Opcode)
+'d8'(Unknown Opcode)
+'5d'(Unknown Opcode)
+'ce'(Unknown Opcode)
+RETURNDATASIZE
+TIMESTAMP
+'26'(Unknown Opcode)
+SMOD
+'4b'(Unknown Opcode)
+'fb'(Unknown Opcode)
+'a5'(Unknown Opcode)
+'c5'(Unknown Opcode)
+DIFFICULTY
+CALLCODE
+'b5'(Unknown Opcode)
+PUSH1 0x85
+OR
+TIMESTAMP
+SGT
+'aa'(Unknown Opcode)
+JUMP
+SWAP13
+'cb'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'db'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+DIV
+STOP
+CALLER

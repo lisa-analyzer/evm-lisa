@@ -74,6 +74,16 @@ public class EVMLiSA {
 	public static void main(String[] args) throws AnalysisException, IOException, Exception {
 		new EVMLiSA().go(args);
 	}
+	
+	/**
+	 * Save the bytecode of smart contracts
+	 * @throws Exception
+	 */
+	private void save() throws Exception {
+		SMARTCONTRACTS_FULLPATH = "benchmark/5000-benchmark.txt";
+		OUTPUT_DIR = "bytecode";
+		saveSmartContractsFromEtherscan();
+	}
 
 	private void go(String[] args) throws Exception {
 		Options options = new Options();
@@ -536,8 +546,8 @@ public class EVMLiSA {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		Set<Statement> unsoundJumpNodes = checker.getUnsoundJumps();
-		int preciselyResolvedJumps = 0;
-		int soundResolvedJumps = 0;
+//		int preciselyResolvedJumps = 0;
+//		int soundResolvedJumps = 0;
 		int resolvedJumps = 0;
 
 		int definitelyUnreachable = 0;

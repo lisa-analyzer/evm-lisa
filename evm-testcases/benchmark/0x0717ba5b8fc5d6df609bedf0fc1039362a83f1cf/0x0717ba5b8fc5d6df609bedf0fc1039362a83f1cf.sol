@@ -4270,7 +4270,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -4286,7 +4285,7 @@ MLOAD
 SLOAD
 'f8'(Unknown Opcode)
 MOD
-
+INVALID
 'b6'(Unknown Opcode)
 'c7'(Unknown Opcode)
 SWAP6

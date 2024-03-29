@@ -94,3 +94,39 @@ SWAP1
 LOG1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a5'(Unknown Opcode)
+CALLDATACOPY
+REVERT
+SWAP15
+MSTORE
+DUP2
+'c2'(Unknown Opcode)
+CODECOPY
+SWAP6
+'fc'(Unknown Opcode)
+PUSH7 0x09800317d42ce0
+DUP8
+'5d'(Unknown Opcode)
+EQ
+'b5'(Unknown Opcode)
+'b4'(Unknown Opcode)
+'be'(Unknown Opcode)
+'e0'(Unknown Opcode)
+'c0'(Unknown Opcode)
+GT
+'b8'(Unknown Opcode)
+'d4'(Unknown Opcode)
+SSTORE
+MOD
+LOG1
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

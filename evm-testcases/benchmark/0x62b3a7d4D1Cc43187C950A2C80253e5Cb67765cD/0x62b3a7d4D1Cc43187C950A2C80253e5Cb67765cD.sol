@@ -9193,3 +9193,60 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP2
+SGT
+'c9'(Unknown Opcode)
+'28'(Unknown Opcode)
+'e0'(Unknown Opcode)
+BALANCE
+PUSH6 0xe19b5c7ac5b6
+PUSH28 0x85c32ab586cd042677306fbd142d27afccf664736f6c634300081100
+CALLER
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+TIMESTAMP
+MULMOD
+MULMOD
+CALLDATACOPY
+'ba'(Unknown Opcode)
+CALLDATALOAD
+'5d'(Unknown Opcode)
+'dc'(Unknown Opcode)
+OR
+INVALID
+'2b'(Unknown Opcode)
+GT
+POP
+JUMP
+'d5'(Unknown Opcode)
+'ee'(Unknown Opcode)
+LOG3
+DUP12
+GASPRICE
+'d8'(Unknown Opcode)
+SWAP16
+'b9'(Unknown Opcode)
+DUP12
+EQ
+INVALID
+CREATE
+'c1'(Unknown Opcode)
+SELFDESTRUCT
+SWAP6
+'be'(Unknown Opcode)
+'ac'(Unknown Opcode)
+DUP6
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

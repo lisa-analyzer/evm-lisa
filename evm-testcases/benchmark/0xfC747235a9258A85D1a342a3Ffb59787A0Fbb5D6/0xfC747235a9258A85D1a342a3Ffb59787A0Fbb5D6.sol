@@ -2853,3 +2853,14 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ad'(Unknown Opcode)
+SWAP11
+'27'(Unknown Opcode)
+'a8'(Unknown Opcode)
+PUSH28 0x257eb37bf835a0b8f13bea831c14a2a0debf7c43b42f4740e11f5a64
+PUSH20 0x6f6c63430008130033

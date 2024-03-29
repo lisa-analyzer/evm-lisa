@@ -28,3 +28,29 @@ RETURNDATASIZE
 SWAP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH17 0x735439b0b1c67ba7e89f7fca82b9b6e11e
+GAS
+'ad'(Unknown Opcode)
+'e7'(Unknown Opcode)
+'4a'(Unknown Opcode)
+SHL
+'a8'(Unknown Opcode)
+'e6'(Unknown Opcode)
+SWAP2
+'bf'(Unknown Opcode)
+'bd'(Unknown Opcode)
+SMOD
+'af'(Unknown Opcode)
+MUL
+SWAP4
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

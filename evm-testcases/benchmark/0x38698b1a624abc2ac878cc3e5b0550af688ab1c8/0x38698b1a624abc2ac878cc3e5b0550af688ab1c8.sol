@@ -3237,3 +3237,26 @@ PUSH6 0x656473206261
 PUSH13 0x616e636542455032303a206465
 PUSH4 0x72656173
 PUSH6 0x6420616c6c6f
+PUSH24 0x616e63652062656c6f77207a65726fa26469706673582212
+SHA3
+'ad'(Unknown Opcode)
+'b7'(Unknown Opcode)
+RETURNDATACOPY
+'e9'(Unknown Opcode)
+'dd'(Unknown Opcode)
+'e1'(Unknown Opcode)
+TIMESTAMP
+'a6'(Unknown Opcode)
+'1f'(Unknown Opcode)
+'27'(Unknown Opcode)
+'0d'(Unknown Opcode)
+MSIZE
+GASLIMIT
+'b5'(Unknown Opcode)
+SDIV
+'2b'(Unknown Opcode)
+'d7'(Unknown Opcode)
+'c3'(Unknown Opcode)
+'c2'(Unknown Opcode)
+SLT
+PUSH32 0x3ed032a49b5fc70a3b78f164736f6c63430008130033

@@ -840,3 +840,20 @@ SDIV
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SLOAD
+'aa'(Unknown Opcode)
+'2a'(Unknown Opcode)
+'b5'(Unknown Opcode)
+'4b'(Unknown Opcode)
+'ce'(Unknown Opcode)
+PUSH8 0x78ef246690dbc759
+'4a'(Unknown Opcode)
+DUP13
+DUP8
+SHR
+PUSH31 0x9342f5b117b579798a9dd16464736f6c63430008170033

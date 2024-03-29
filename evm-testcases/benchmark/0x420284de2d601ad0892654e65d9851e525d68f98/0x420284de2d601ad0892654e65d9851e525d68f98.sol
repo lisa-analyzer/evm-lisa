@@ -2997,3 +2997,26 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+NOT
+'fc'(Unknown Opcode)
+'ae'(Unknown Opcode)
+GASLIMIT
+EXP
+'e6'(Unknown Opcode)
+'a5'(Unknown Opcode)
+'d8'(Unknown Opcode)
+PUSH5 0x05f970c9ef
+CALLDATACOPY
+'4e'(Unknown Opcode)
+'af'(Unknown Opcode)
+'e1'(Unknown Opcode)
+OR
+DUP16
+SWAP6
+'ba'(Unknown Opcode)
+DUP3
+'ca'(Unknown Opcode)
+PUSH12 0xb04e1e2abf38320029

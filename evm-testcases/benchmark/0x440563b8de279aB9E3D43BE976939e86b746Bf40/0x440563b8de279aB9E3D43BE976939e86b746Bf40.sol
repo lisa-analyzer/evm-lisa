@@ -3548,3 +3548,30 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5c'(Unknown Opcode)
+'24'(Unknown Opcode)
+SWAP15
+'2f'(Unknown Opcode)
+DUP1
+'db'(Unknown Opcode)
+'4d'(Unknown Opcode)
+'a8'(Unknown Opcode)
+BYTE
+DUP2
+SWAP14
+MSTORE8
+'fc'(Unknown Opcode)
+CREATE
+'c1'(Unknown Opcode)
+CALLDATALOAD
+'ac'(Unknown Opcode)
+PUSH21 0x8781dc7fd113eef1e0d083f5785464736f6c634300
+ADDMOD
+AND
+STOP
+CALLER

@@ -3507,3 +3507,33 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a5'(Unknown Opcode)
+'e4'(Unknown Opcode)
+'f9'(Unknown Opcode)
+'ae'(Unknown Opcode)
+'29'(Unknown Opcode)
+'d1'(Unknown Opcode)
+SWAP7
+'2d'(Unknown Opcode)
+LOG1
+DUP4
+JUMP
+'b5'(Unknown Opcode)
+DIV
+'28'(Unknown Opcode)
+'fb'(Unknown Opcode)
+EQ
+SWAP1
+'e6'(Unknown Opcode)
+'e4'(Unknown Opcode)
+DIV
+EXP
+EXTCODESIZE
+CODECOPY
+PUSH18 0xfed0b66f863446d064736f6c634300080a00
+CALLER

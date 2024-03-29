@@ -6570,3 +6570,18 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MULMOD
+'fc'(Unknown Opcode)
+CALLVALUE
+'e2'(Unknown Opcode)
+'0e'(Unknown Opcode)
+'c6'(Unknown Opcode)
+COINBASE
+PUSH9 0x2b94f7f59d9ca3a8ce
+SHA3
+PUSH27 0x682bd5cbd573936ba0d85ab79c64736f6c63430008170033

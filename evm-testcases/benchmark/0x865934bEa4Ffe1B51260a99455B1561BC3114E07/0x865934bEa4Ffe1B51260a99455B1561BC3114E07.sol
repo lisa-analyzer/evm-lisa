@@ -1836,3 +1836,22 @@ DUP4
 PUSH2 0x0a0a
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+RETURNDATASIZE
+'2a'(Unknown Opcode)
+'4a'(Unknown Opcode)
+PUSH8 0x4cb30b7bbd064a54
+PUSH6 0xde58dffa9332
+'0e'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'e8'(Unknown Opcode)
+PUSH1 0x86
+'ee'(Unknown Opcode)
+SELFBALANCE
+PUSH14 0x392f29f74c64736f6c6343000811
+STOP
+CALLER

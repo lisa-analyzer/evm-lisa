@@ -2531,3 +2531,27 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SELFBALANCE
+'b6'(Unknown Opcode)
+PUSH12 0x751a61e9307ce05d5dfbb77d
+MSTORE
+'be'(Unknown Opcode)
+'4d'(Unknown Opcode)
+'e2'(Unknown Opcode)
+MOD
+PUSH1 0xfe
+'c9'(Unknown Opcode)
+DUP11
+SHL
+SWAP16
+'a7'(Unknown Opcode)
+PUSH11 0xebce182364736f6c634300
+ADDMOD
+ISZERO
+STOP
+CALLER

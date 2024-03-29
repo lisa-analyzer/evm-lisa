@@ -6661,3 +6661,24 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x7358221220ca5d
+'aa'(Unknown Opcode)
+'a7'(Unknown Opcode)
+RETURNDATASIZE
+'2c'(Unknown Opcode)
+DUP6
+'2b'(Unknown Opcode)
+'5d'(Unknown Opcode)
+DELEGATECALL
+'ab'(Unknown Opcode)
+MULMOD
+'0f'(Unknown Opcode)
+DUP6
+'ea'(Unknown Opcode)
+'23'(Unknown Opcode)
+'c9'(Unknown Opcode)
+PUSH18 0x01f4c9ce76f2047e8a2896af6d3464736f6c
+PUSH4 0x43000813
+STOP
+CALLER

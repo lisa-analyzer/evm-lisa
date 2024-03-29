@@ -2997,3 +2997,16 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+'bf'(Unknown Opcode)
+'24'(Unknown Opcode)
+MSTORE
+MUL
+CALLDATASIZE
+'a8'(Unknown Opcode)
+EXTCODESIZE
+PUSH18 0x3f55733b2437137613f8c97469d7a1be5ec8
+'22'(Unknown Opcode)
+PUSH8 0x2933dd5b0029

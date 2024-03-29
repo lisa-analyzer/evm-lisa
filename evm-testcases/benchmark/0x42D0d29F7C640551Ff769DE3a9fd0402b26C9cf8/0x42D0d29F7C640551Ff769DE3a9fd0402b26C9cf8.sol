@@ -6794,3 +6794,33 @@ JUMPDEST
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5e'(Unknown Opcode)
+DUP4
+PUSH3 0x9d7c45
+'b6'(Unknown Opcode)
+NUMBER
+PUSH10 0x38280185faabf9588c5a
+'22'(Unknown Opcode)
+CALLCODE
+'c6'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'4b'(Unknown Opcode)
+SWAP11
+DUP1
+SWAP15
+'a8'(Unknown Opcode)
+'bc'(Unknown Opcode)
+BYTE
+MSTORE
+EQ
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+STOP
+STOP
+CALLER

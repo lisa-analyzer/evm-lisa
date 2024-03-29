@@ -9427,3 +9427,32 @@ PUSH21 0x206d6f7374203530546865206e756d657261746f72
 SHA3
 PUSH10 0x73206e6f742064697669
 PUSH20 0x69626c65206279207468652064656e6f6d696e61
+PUSH21 0x6f722ea264697066735822122042bea51c50108a1c
+'e4'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'ef'(Unknown Opcode)
+INVALID
+'b6'(Unknown Opcode)
+'5d'(Unknown Opcode)
+'a5'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'21'(Unknown Opcode)
+'ed'(Unknown Opcode)
+SWAP5
+'b1'(Unknown Opcode)
+DUP16
+'ac'(Unknown Opcode)
+PUSH2 0xba4a
+REVERT
+'e3'(Unknown Opcode)
+SWAP13
+'1f'(Unknown Opcode)
+SWAP11
+'21'(Unknown Opcode)
+JUMPDEST
+PUSH5 0x736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

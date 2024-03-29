@@ -2934,3 +2934,28 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+POP
+SMOD
+'ec'(Unknown Opcode)
+'b4'(Unknown Opcode)
+SWAP3
+'bd'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'28'(Unknown Opcode)
+XOR
+CALLDATALOAD
+'b3'(Unknown Opcode)
+'28'(Unknown Opcode)
+BYTE
+'a8'(Unknown Opcode)
+SWAP8
+'d7'(Unknown Opcode)
+SWAP2
+'b1'(Unknown Opcode)
+CHAINID
+PUSH26 0x760335e6fc9f69bc7067e4c764736f6c63430008170033

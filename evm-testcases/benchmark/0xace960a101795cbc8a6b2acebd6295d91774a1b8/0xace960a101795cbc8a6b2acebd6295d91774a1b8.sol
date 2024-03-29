@@ -4757,3 +4757,20 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+LOG3
+'d4'(Unknown Opcode)
+'d1'(Unknown Opcode)
+SUB
+LOG0
+PUSH13 0xbd1df8a3b7733035ea1f248fdf
+'21'(Unknown Opcode)
+'eb'(Unknown Opcode)
+CALL
+'29'(Unknown Opcode)
+PUSH18 0x85213f7f265dce1664736f6c634300081100
+CALLER

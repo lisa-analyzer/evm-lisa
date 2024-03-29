@@ -3751,3 +3751,31 @@ DIV
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALLDATACOPY
+'c3'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'b5'(Unknown Opcode)
+CALLDATASIZE
+'e2'(Unknown Opcode)
+SELFBALANCE
+SWAP10
+SWAP5
+'4e'(Unknown Opcode)
+'a6'(Unknown Opcode)
+PUSH15 0xaca2d470c41e5c6ac954acd6bfee78
+JUMPDEST
+'c3'(Unknown Opcode)
+SLOAD
+'dd'(Unknown Opcode)
+'e6'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

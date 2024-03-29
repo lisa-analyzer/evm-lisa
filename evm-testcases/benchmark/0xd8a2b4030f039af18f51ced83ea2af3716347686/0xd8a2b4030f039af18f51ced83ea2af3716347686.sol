@@ -6437,3 +6437,42 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+BALANCE
+'b6'(Unknown Opcode)
+'db'(Unknown Opcode)
+'2e'(Unknown Opcode)
+'fc'(Unknown Opcode)
+JUMPI
+DUP14
+'ab'(Unknown Opcode)
+'ea'(Unknown Opcode)
+CALLER
+'e0'(Unknown Opcode)
+EXP
+'0e'(Unknown Opcode)
+SWAP5
+NOT
+DUP15
+DELEGATECALL
+'e3'(Unknown Opcode)
+'29'(Unknown Opcode)
+'2e'(Unknown Opcode)
+CALLER
+DUP15
+'ee'(Unknown Opcode)
+'b4'(Unknown Opcode)
+ORIGIN
+PUSH4 0xc7ef4755
+'cb'(Unknown Opcode)
+'ad'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

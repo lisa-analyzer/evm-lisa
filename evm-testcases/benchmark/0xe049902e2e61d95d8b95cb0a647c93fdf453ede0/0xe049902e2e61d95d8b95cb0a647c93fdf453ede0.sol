@@ -523,3 +523,36 @@ PUSH2 0x02fe
 PUSH2 0x0208
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP2
+'d6'(Unknown Opcode)
+PUSH0
+SWAP15
+PUSH10 0x542d5550981c568755de
+'c8'(Unknown Opcode)
+SWAP12
+LT
+LOG0
+'ac'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'af'(Unknown Opcode)
+'0e'(Unknown Opcode)
+'d6'(Unknown Opcode)
+LT
+'cb'(Unknown Opcode)
+SGT
+DUP11
+'af'(Unknown Opcode)
+MSIZE
+'be'(Unknown Opcode)
+'2a'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

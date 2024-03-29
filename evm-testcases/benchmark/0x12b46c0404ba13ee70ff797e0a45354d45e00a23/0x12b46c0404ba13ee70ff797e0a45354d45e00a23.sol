@@ -1371,3 +1371,31 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP4
+'ee'(Unknown Opcode)
+PUSH0
+'aa'(Unknown Opcode)
+PUSH15 0xebead44c0d9c98d44d7f4a86253f19
+'df'(Unknown Opcode)
+DUP6
+CODESIZE
+SSTORE
+'24'(Unknown Opcode)
+CODESIZE
+'d1'(Unknown Opcode)
+POP
+DUP2
+'ba'(Unknown Opcode)
+CODESIZE
+'cb'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

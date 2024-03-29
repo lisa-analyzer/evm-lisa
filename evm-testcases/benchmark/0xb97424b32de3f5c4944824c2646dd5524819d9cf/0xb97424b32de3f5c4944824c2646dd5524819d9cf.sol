@@ -6609,3 +6609,29 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b9'(Unknown Opcode)
+MSTORE8
+JUMPDEST
+LOG3
+'28'(Unknown Opcode)
+'c9'(Unknown Opcode)
+'b5'(Unknown Opcode)
+DIFFICULTY
+'e0'(Unknown Opcode)
+DIFFICULTY
+'b6'(Unknown Opcode)
+'e4'(Unknown Opcode)
+'28'(Unknown Opcode)
+'c2'(Unknown Opcode)
+RETURNDATASIZE
+MLOAD
+BALANCE
+TIMESTAMP
+RETURN
+'e5'(Unknown Opcode)
+PUSH31 0x59d7a9650402579df6c66f64736f6c63430008160033

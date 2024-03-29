@@ -3493,3 +3493,35 @@ SSTORE
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c7'(Unknown Opcode)
+'0d'(Unknown Opcode)
+'e8'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'e9'(Unknown Opcode)
+LOG0
+COINBASE
+EXTCODESIZE
+LT
+SWAP7
+'c1'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'df'(Unknown Opcode)
+MOD
+'eb'(Unknown Opcode)
+SAR
+'db'(Unknown Opcode)
+SWAP4
+INVALID
+CALLDATASIZE
+'0f'(Unknown Opcode)
+DUP16
+PUSH16 0x4a8b7030785fba6b7464736f6c634300
+ADDMOD
+SGT
+STOP
+CALLER

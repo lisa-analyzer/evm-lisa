@@ -2029,3 +2029,30 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ac'(Unknown Opcode)
+'ec'(Unknown Opcode)
+CALLDATACOPY
+'cf'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'bc'(Unknown Opcode)
+'4c'(Unknown Opcode)
+COINBASE
+'ab'(Unknown Opcode)
+DELEGATECALL
+'c4'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'de'(Unknown Opcode)
+'c7'(Unknown Opcode)
+AND
+SWAP1
+SWAP1
+'aa'(Unknown Opcode)
+'d5'(Unknown Opcode)
+CALLCODE
+PUSH23 0x4d4290d98cf4a8259e8964736f6c63430008060033

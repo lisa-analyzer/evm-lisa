@@ -4300,3 +4300,25 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+ADDMOD
+'25'(Unknown Opcode)
+SELFBALANCE
+'26'(Unknown Opcode)
+SWAP13
+'d1'(Unknown Opcode)
+PUSH8 0xca19f0dd3bf8afc0
+'27'(Unknown Opcode)
+DUP10
+'cf'(Unknown Opcode)
+PUSH18 0x034aafe33355561af49052120064736f6c63
+NUMBER
+STOP
+ADDMOD
+OR
+STOP
+CALLER

@@ -1874,3 +1874,25 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d7'(Unknown Opcode)
+'ef'(Unknown Opcode)
+JUMPI
+MOD
+'aa'(Unknown Opcode)
+SLOAD
+'a6'(Unknown Opcode)
+CALLVALUE
+EXTCODEHASH
+'db'(Unknown Opcode)
+DUP15
+'e2'(Unknown Opcode)
+BALANCE
+'0e'(Unknown Opcode)
+GASPRICE
+CALLDATALOAD
+PUSH32 0x76f238c8f9b415df76a61ffcf3680b64736f6c63430008170033

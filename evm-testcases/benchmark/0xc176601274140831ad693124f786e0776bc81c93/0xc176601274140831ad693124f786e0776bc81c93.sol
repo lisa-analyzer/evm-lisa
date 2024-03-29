@@ -1860,3 +1860,28 @@ PUSH2 0x02db
 PUSH2 0x08e9
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP8
+'2d'(Unknown Opcode)
+LOG3
+GASPRICE
+DUP5
+SWAP5
+PUSH11 0xa8f2740bd9d2a5fee6f830
+'4b'(Unknown Opcode)
+DUP8
+SIGNEXTEND
+'b7'(Unknown Opcode)
+'d9'(Unknown Opcode)
+'d3'(Unknown Opcode)
+INVALID
+COINBASE
+'2f'(Unknown Opcode)
+'5c'(Unknown Opcode)
+SWAP2
+PUSH5 0x26c464736f
+PUSH13 0x63430008170033

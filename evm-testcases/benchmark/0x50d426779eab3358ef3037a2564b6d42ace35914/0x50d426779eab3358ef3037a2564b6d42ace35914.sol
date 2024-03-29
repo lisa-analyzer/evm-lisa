@@ -5826,7 +5826,6 @@ ADD
 SWAP1
 JUMP
 INVALID
-SELFDESTRUCT
 '22'(Unknown Opcode)
 '2c'(Unknown Opcode)
 '22'(Unknown Opcode)

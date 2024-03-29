@@ -3397,7 +3397,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -3408,7 +3407,7 @@ PUSH9 0x83aa5b2c035268ccff
 BASEFEE
 SWAP13
 'e9'(Unknown Opcode)
-
+INVALID
 'b1'(Unknown Opcode)
 'e1'(Unknown Opcode)
 'b7'(Unknown Opcode)

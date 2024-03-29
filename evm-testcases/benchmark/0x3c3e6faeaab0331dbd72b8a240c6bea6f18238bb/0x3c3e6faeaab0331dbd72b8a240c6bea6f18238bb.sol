@@ -2667,3 +2667,31 @@ PUSH2 0x159c
 JUMPI
 INVALID
 STOP
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+DUP8
+GAS
+'f8'(Unknown Opcode)
+'ab'(Unknown Opcode)
+'b8'(Unknown Opcode)
+BALANCE
+LOG3
+'2d'(Unknown Opcode)
+RETURNDATACOPY
+PUSH1 0x78
+'e5'(Unknown Opcode)
+EXP
+'e1'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'2b'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'cf'(Unknown Opcode)
+'0e'(Unknown Opcode)
+SMOD
+'c0'(Unknown Opcode)
+SWAP1
+CODESIZE
+'ce'(Unknown Opcode)
+'ef'(Unknown Opcode)
+PUSH12 0x515a1f6a14a80029

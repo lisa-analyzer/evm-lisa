@@ -712,3 +712,29 @@ PUSH1 0x00
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e7'(Unknown Opcode)
+SWAP11
+'c1'(Unknown Opcode)
+'ad'(Unknown Opcode)
+DUP3
+'e8'(Unknown Opcode)
+INVALID
+GT
+'d9'(Unknown Opcode)
+CREATE
+GASPRICE
+DUP15
+CREATE2
+'f9'(Unknown Opcode)
+SWAP5
+MLOAD
+'4d'(Unknown Opcode)
+ADD
+CODESIZE
+'e6'(Unknown Opcode)
+PUSH24 0x5e236cf09da9768b0dbc6964736f6c63430008160033

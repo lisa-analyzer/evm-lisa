@@ -6634,3 +6634,19 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x7358221220dcd6
+'da'(Unknown Opcode)
+'c5'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'fb'(Unknown Opcode)
+JUMPI
+'bc'(Unknown Opcode)
+'b8'(Unknown Opcode)
+SWAP2
+'b9'(Unknown Opcode)
+JUMPDEST
+NOT
+'0f'(Unknown Opcode)
+PUSH32 0xeaaa551f2d280b10aa9f8cfd7e763e7b64736f6c63430008110033

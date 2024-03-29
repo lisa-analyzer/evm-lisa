@@ -5085,3 +5085,34 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5d'(Unknown Opcode)
+SWAP2
+LOG1
+MLOAD
+'aa'(Unknown Opcode)
+'1f'(Unknown Opcode)
+DUP4
+'f6'(Unknown Opcode)
+DUP9
+'de'(Unknown Opcode)
+SMOD
+DUP10
+'b6'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'c2'(Unknown Opcode)
+DUP2
+SHL
+'d2'(Unknown Opcode)
+'c9'(Unknown Opcode)
+DUP15
+DUP6
+PUSH17 0x688618705323795d730064736f6c634300
+ADDMOD
+LT
+STOP
+CALLER

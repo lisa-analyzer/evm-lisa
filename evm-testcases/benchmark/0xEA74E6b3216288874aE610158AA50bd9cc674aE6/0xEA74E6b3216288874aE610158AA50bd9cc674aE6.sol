@@ -2948,3 +2948,46 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP15
+CREATE
+LOG4
+CODECOPY
+DIV
+BALANCE
+SLOAD
+SWAP13
+DUP16
+SSTORE
+'d3'(Unknown Opcode)
+'f6'(Unknown Opcode)
+'aa'(Unknown Opcode)
+'f6'(Unknown Opcode)
+DUP7
+'fc'(Unknown Opcode)
+'be'(Unknown Opcode)
+'a8'(Unknown Opcode)
+DIFFICULTY
+EQ
+GASPRICE
+'22'(Unknown Opcode)
+'df'(Unknown Opcode)
+BASEFEE
+'b7'(Unknown Opcode)
+'26'(Unknown Opcode)
+DUP12
+'fc'(Unknown Opcode)
+CALLDATASIZE
+DIV
+'4b'(Unknown Opcode)
+'e9'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

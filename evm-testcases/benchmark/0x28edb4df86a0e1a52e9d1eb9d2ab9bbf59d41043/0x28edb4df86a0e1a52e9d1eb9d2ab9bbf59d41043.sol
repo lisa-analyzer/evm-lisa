@@ -155,3 +155,19 @@ SLOAD
 DUP2
 JUMP
 STOP
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+'cf'(Unknown Opcode)
+DUP11
+SMOD
+'ea'(Unknown Opcode)
+PUSH1 0x5e
+'b0'(Unknown Opcode)
+'db'(Unknown Opcode)
+INVALID
+PC
+PUSH17 0xbae38e1cda991bf2561c84da90d6ec0dff
+'d3'(Unknown Opcode)
+SWAP10
+PUSH19 0x960029

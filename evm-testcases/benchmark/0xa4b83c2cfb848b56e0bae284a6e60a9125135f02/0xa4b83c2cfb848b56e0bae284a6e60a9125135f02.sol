@@ -5136,3 +5136,29 @@ PUSH2 0x0872
 PUSH2 0x2028
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH6 0x4f4fec31abd0
+DUP6
+'b8'(Unknown Opcode)
+'ab'(Unknown Opcode)
+PUSH7 0xf67ac51e335871
+SHR
+SWAP1
+PUSH4 0x2261bc6b
+SAR
+SMOD
+'22'(Unknown Opcode)
+SGT
+'4a'(Unknown Opcode)
+'5e'(Unknown Opcode)
+STOP
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

@@ -10733,3 +10733,30 @@ DUP5
 PUSH2 0x306e
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+NUMBER
+'da'(Unknown Opcode)
+LOG3
+'e1'(Unknown Opcode)
+ORIGIN
+REVERT
+'a8'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'bd'(Unknown Opcode)
+ADDMOD
+'a8'(Unknown Opcode)
+'ed'(Unknown Opcode)
+ISZERO
+'dd'(Unknown Opcode)
+'f9'(Unknown Opcode)
+SGT
+'bc'(Unknown Opcode)
+PUSH3 0x25fb1e
+DIFFICULTY
+MSIZE
+'a6'(Unknown Opcode)
+PUSH29 0x09d9a92dfeb4c764736f6c63430008110033

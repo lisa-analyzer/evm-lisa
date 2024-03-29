@@ -5228,7 +5228,6 @@ DIV
 SWAP1
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -5240,7 +5239,7 @@ SWAP10
 BASEFEE
 'f9'(Unknown Opcode)
 'e3'(Unknown Opcode)
-
+INVALID
 STOP
 '1e'(Unknown Opcode)
 PUSH15 0x017fa0eac60155bec8c20aafec5f21

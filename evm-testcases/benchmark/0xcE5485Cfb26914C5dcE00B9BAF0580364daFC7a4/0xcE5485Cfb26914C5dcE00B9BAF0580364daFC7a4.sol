@@ -4295,3 +4295,32 @@ STATICCALL
 MUL
 SWAP11
 PUSH30 0xfd6d98e8fb177667240aeeea7e35eabe3a35e18306f336219e1386f7710a
+PUSH12 0xf8783f761b24a26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP8
+JUMP
+STOP
+CODESIZE
+'ae'(Unknown Opcode)
+RETURNDATACOPY
+DUP8
+PUSH6 0x148b666a7d92
+'da'(Unknown Opcode)
+'e6'(Unknown Opcode)
+'e4'(Unknown Opcode)
+GAS
+'fb'(Unknown Opcode)
+LOG4
+GAS
+'5c'(Unknown Opcode)
+GAS
+ADDRESS
+'ba'(Unknown Opcode)
+'22'(Unknown Opcode)
+'bf'(Unknown Opcode)
+BALANCE
+'d5'(Unknown Opcode)
+PUSH14 0x14ab64736f6c63430008140033

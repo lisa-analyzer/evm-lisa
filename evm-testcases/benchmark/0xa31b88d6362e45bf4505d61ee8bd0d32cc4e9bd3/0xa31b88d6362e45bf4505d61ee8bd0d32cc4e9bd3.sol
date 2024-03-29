@@ -2416,3 +2416,25 @@ PUSH2 0x03c9
 PUSH2 0x0f28
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'df'(Unknown Opcode)
+CALLER
+ADD
+CODESIZE
+'1e'(Unknown Opcode)
+'d0'(Unknown Opcode)
+SWAP12
+CODECOPY
+INVALID
+CALLDATASIZE
+DUP7
+PUSH12 0xa1954927d9cc93c2f86cbce0
+MULMOD
+'0e'(Unknown Opcode)
+'df'(Unknown Opcode)
+'ec'(Unknown Opcode)
+PUSH27 0xdefa9564736f6c63430008160033

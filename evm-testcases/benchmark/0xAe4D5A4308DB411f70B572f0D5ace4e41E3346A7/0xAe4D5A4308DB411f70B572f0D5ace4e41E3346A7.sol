@@ -16357,3 +16357,35 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'29'(Unknown Opcode)
+CALLDATALOAD
+SHA3
+CALLDATASIZE
+'c6'(Unknown Opcode)
+'a6'(Unknown Opcode)
+PUSH11 0x56f3ad49626f0de6724b08
+SWAP9
+'5c'(Unknown Opcode)
+SWAP14
+SWAP10
+'e8'(Unknown Opcode)
+'be'(Unknown Opcode)
+SWAP5
+'a8'(Unknown Opcode)
+'f6'(Unknown Opcode)
+GASPRICE
+STATICCALL
+'cf'(Unknown Opcode)
+'ef'(Unknown Opcode)
+CALLVALUE
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

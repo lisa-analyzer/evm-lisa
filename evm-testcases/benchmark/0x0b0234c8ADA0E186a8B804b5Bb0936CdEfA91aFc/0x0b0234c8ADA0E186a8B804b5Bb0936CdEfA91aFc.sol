@@ -2561,3 +2561,19 @@ PUSH2 0x0386
 PUSH2 0x0e27
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'bb'(Unknown Opcode)
+LOG0
+INVALID
+PUSH13 0xdf67c2881f521d6e2b77802510
+'d9'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'e2'(Unknown Opcode)
+SWAP8
+ADDMOD
+'aa'(Unknown Opcode)
+PUSH20 0x69da4ead28ad1eed64736f6c63430008100033

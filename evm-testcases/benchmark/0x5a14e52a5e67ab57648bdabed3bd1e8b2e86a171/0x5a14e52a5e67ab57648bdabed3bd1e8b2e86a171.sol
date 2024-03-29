@@ -3921,3 +3921,21 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ab'(Unknown Opcode)
+'fb'(Unknown Opcode)
+'21'(Unknown Opcode)
+ADDRESS
+'23'(Unknown Opcode)
+PUSH25 0x48c09ccf74cad00671a591c67475b175dc1933ff213550cc48
+'e6'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

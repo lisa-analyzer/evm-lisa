@@ -5994,3 +5994,25 @@ DUP5
 PUSH2 0x20bb
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e7'(Unknown Opcode)
+'b3'(Unknown Opcode)
+DUP10
+DUP11
+PUSH12 0x78888fd0fdfcea67c401e154
+TIMESTAMP
+COINBASE
+'db'(Unknown Opcode)
+'bd'(Unknown Opcode)
+PUSH9 0x270ea970ced956da12
+'ad'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

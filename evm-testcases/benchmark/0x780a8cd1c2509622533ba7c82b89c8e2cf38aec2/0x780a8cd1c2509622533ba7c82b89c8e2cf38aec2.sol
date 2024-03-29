@@ -5249,7 +5249,6 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -5277,7 +5276,7 @@ CALLVALUE
 DUP2
 SLOAD
 'b2'(Unknown Opcode)
-
+INVALID
 DUP16
 'd3'(Unknown Opcode)
 'd9'(Unknown Opcode)

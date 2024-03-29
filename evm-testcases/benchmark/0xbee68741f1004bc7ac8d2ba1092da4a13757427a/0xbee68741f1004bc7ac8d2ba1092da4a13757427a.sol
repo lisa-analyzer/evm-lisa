@@ -10579,3 +10579,33 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e3'(Unknown Opcode)
+'2b'(Unknown Opcode)
+'fb'(Unknown Opcode)
+PC
+INVALID
+'ea'(Unknown Opcode)
+'b9'(Unknown Opcode)
+SDIV
+'a5'(Unknown Opcode)
+'26'(Unknown Opcode)
+'cc'(Unknown Opcode)
+'d0'(Unknown Opcode)
+'a8'(Unknown Opcode)
+'b8'(Unknown Opcode)
+MULMOD
+SLT
+CREATE
+'21'(Unknown Opcode)
+'d4'(Unknown Opcode)
+CALL
+EXP
+CALLCODE
+'ad'(Unknown Opcode)
+'e6'(Unknown Opcode)
+PUSH24 0xf0336100ee7e0f64736f6c63430008140033

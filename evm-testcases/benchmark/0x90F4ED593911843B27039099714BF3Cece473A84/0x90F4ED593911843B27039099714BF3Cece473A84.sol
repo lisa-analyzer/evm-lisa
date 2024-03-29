@@ -3753,3 +3753,26 @@ DUP2
 PUSH2 0x1501
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a8'(Unknown Opcode)
+'29'(Unknown Opcode)
+PUSH4 0xef349ac3
+PUSH16 0xf27a867ac3b3f8545412430fd996e773
+'26'(Unknown Opcode)
+DUP12
+LOG3
+JUMPI
+'eb'(Unknown Opcode)
+DUP16
+'fb'(Unknown Opcode)
+DUP5
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

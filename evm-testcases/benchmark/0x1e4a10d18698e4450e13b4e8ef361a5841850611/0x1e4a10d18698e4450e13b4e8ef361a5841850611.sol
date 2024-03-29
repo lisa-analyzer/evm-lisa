@@ -3808,3 +3808,34 @@ SWAP1
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c4'(Unknown Opcode)
+GASLIMIT
+'e1'(Unknown Opcode)
+'f9'(Unknown Opcode)
+'c7'(Unknown Opcode)
+EXTCODEHASH
+'eb'(Unknown Opcode)
+JUMPI
+'dc'(Unknown Opcode)
+'c5'(Unknown Opcode)
+'ab'(Unknown Opcode)
+'af'(Unknown Opcode)
+'df'(Unknown Opcode)
+STOP
+'29'(Unknown Opcode)
+ADD
+DUP9
+'c7'(Unknown Opcode)
+PUSH12 0xc96ffb01d4206b08e8a4b708
+'b2'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

@@ -5748,3 +5748,19 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+TIMESTAMP
+JUMP
+'d2'(Unknown Opcode)
+DUP3
+'d4'(Unknown Opcode)
+'b8'(Unknown Opcode)
+CREATE
+'4a'(Unknown Opcode)
+STOP
+PUSH32 0xaf06bab50264cbf0aa528fc344bfac62e216b675e01a64736f6c634300081100
+CALLER

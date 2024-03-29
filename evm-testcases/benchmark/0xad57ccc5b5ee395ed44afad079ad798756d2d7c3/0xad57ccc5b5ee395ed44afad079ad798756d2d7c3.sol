@@ -5919,3 +5919,18 @@ MOD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a9'(Unknown Opcode)
+'bd'(Unknown Opcode)
+PUSH15 0x30a8227ecf3853e18d4b88c670ab12
+SWAP9
+STOP
+CALLDATALOAD
+'cc'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'e4'(Unknown Opcode)
+PUSH29 0xf56d587db9698f64736f6c63430008160033

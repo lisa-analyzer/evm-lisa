@@ -9876,3 +9876,28 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'28'(Unknown Opcode)
+CODESIZE
+SMOD
+PUSH18 0x9aac2f00ed0f3be2f35c32d3323073b27d2d
+CALLDATASIZE
+SELFBALANCE
+'ec'(Unknown Opcode)
+JUMPI
+'e5'(Unknown Opcode)
+SWAP16
+NUMBER
+DUP16
+'a5'(Unknown Opcode)
+'ae'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

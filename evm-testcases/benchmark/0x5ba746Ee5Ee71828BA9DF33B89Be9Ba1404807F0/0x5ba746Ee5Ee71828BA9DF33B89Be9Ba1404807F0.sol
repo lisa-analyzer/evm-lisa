@@ -2495,3 +2495,26 @@ MOD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b5'(Unknown Opcode)
+PUSH12 0x4bf5dea5bdfc58a40180f8cd
+'c0'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'a8'(Unknown Opcode)
+SWAP14
+'c8'(Unknown Opcode)
+SELFBALANCE
+'b2'(Unknown Opcode)
+STOP
+PUSH8 0x33679ff1796555b5
+SWAP10
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

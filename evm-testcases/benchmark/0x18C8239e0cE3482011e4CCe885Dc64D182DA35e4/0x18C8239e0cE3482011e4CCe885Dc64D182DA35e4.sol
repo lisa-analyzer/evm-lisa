@@ -3034,3 +3034,20 @@ PUSH2 0x0385
 PUSH2 0x1146
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'bb'(Unknown Opcode)
+'5e'(Unknown Opcode)
+'24'(Unknown Opcode)
+'2d'(Unknown Opcode)
+PUSH20 0xc09a65f72b4402ffe895850d6d2b9b84acf18f6d
+'28'(Unknown Opcode)
+'c6'(Unknown Opcode)
+PUSH11 0x2e3ff00764736f6c634300
+ADDMOD
+SGT
+STOP
+CALLER

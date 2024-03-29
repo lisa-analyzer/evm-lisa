@@ -3775,3 +3775,27 @@ ADDRESS
 GASPRICE
 SHA3
 PUSH21 0x72616e7366657220616d6f756e7420657863656564
+PUSH20 0x20616c6c6f77616e6365a2646970667358221220
+'1e'(Unknown Opcode)
+'be'(Unknown Opcode)
+GASPRICE
+COINBASE
+PUSH9 0x268cec4af5ed4013ee
+SWAP11
+'ac'(Unknown Opcode)
+DUP1
+'e6'(Unknown Opcode)
+'ef'(Unknown Opcode)
+NUMBER
+'22'(Unknown Opcode)
+DUP6
+'2b'(Unknown Opcode)
+'eb'(Unknown Opcode)
+PUSH6 0xa55b4b41a516
+'d9'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

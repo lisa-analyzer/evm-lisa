@@ -3227,7 +3227,6 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -3248,7 +3247,7 @@ SWAP7
 'da'(Unknown Opcode)
 '27'(Unknown Opcode)
 'e6'(Unknown Opcode)
-
+INVALID
 '2e'(Unknown Opcode)
 MSIZE
 'ed'(Unknown Opcode)

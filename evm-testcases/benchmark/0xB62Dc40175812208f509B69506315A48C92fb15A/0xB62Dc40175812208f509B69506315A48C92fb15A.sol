@@ -8606,3 +8606,25 @@ PUSH1 0x20
 PUSH1 0x00
 RETURN
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP8
+'d8'(Unknown Opcode)
+PUSH15 0x47ca568d62e9cb96e5127f71cab2b0
+'d8'(Unknown Opcode)
+CREATE2
+EQ
+DIV
+'0d'(Unknown Opcode)
+BYTE
+'be'(Unknown Opcode)
+'d9'(Unknown Opcode)
+DUP7
+SWAP14
+'c9'(Unknown Opcode)
+JUMPDEST
+TIMESTAMP
+PUSH19 0x64736f6c634300060c0033

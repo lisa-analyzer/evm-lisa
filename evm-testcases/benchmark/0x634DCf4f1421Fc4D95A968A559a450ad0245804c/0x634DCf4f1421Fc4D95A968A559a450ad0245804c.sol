@@ -904,3 +904,30 @@ AND
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a5'(Unknown Opcode)
+'c8'(Unknown Opcode)
+DELEGATECALL
+'4c'(Unknown Opcode)
+SUB
+DUP7
+'ce'(Unknown Opcode)
+'ba'(Unknown Opcode)
+'21'(Unknown Opcode)
+ADDRESS
+'c2'(Unknown Opcode)
+PUSH16 0x42e9c5afe3f0b71d9ef9cc212de334aa
+SWAP10
+DUP7
+'28'(Unknown Opcode)
+'0d'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

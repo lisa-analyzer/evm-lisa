@@ -5571,3 +5571,71 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+EXP
+'d8'(Unknown Opcode)
+EXTCODESIZE
+PUSH17 0x1edfbc4c3da364522822dca4e8c11db197
+'eb'(Unknown Opcode)
+CALLDATACOPY
+SLOAD
+'b5'(Unknown Opcode)
+'5e'(Unknown Opcode)
+'4e'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'e0'(Unknown Opcode)
+ADD
+'e3'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER
+'24'(Unknown Opcode)
+'1e'(Unknown Opcode)
+'cf'(Unknown Opcode)
+AND
+'d7'(Unknown Opcode)
+SWAP14
+'0f'(Unknown Opcode)
+DUP14
+'bf'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'2c'(Unknown Opcode)
+'bc'(Unknown Opcode)
+SMOD
+INVALID
+OR
+DUP5
+DIV
+'25'(Unknown Opcode)
+SWAP8
+PUSH13 0xf0667f022fe9877caa831b08a2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CREATE
+'e8'(Unknown Opcode)
+JUMPDEST
+GAS
+ADDMOD
+'dd'(Unknown Opcode)
+'c2'(Unknown Opcode)
+SLOAD
+SWAP4
+DUP1
+'5e'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'c9'(Unknown Opcode)
+PUSH10 0xc7667a02835eb01d649c
+'fc'(Unknown Opcode)
+LT
+EXTCODESIZE
+PUSH23 0xdbe8852264736f6c63430008120033

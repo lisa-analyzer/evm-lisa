@@ -3101,3 +3101,21 @@ JUMPDEST
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+INVALID
+'2d'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'ad'(Unknown Opcode)
+DUP8
+PUSH25 0xe1dd8031bbd42c411e955be04ec36f6e1d0ebe31a445f2eab1
+'4e'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SMOD
+STOP
+CALLER

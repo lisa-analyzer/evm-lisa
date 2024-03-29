@@ -3364,3 +3364,32 @@ INVALID
 'a9'(Unknown Opcode)
 'b9'(Unknown Opcode)
 '29'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SSTORE
+REVERT
+'ec'(Unknown Opcode)
+MULMOD
+'f7'(Unknown Opcode)
+PUSH8 0x6a0857d2137862b8
+'d7'(Unknown Opcode)
+'e7'(Unknown Opcode)
+'bc'(Unknown Opcode)
+DUP7
+'2d'(Unknown Opcode)
+'b6'(Unknown Opcode)
+CALLCODE
+PUSH4 0x409518b0
+PUSH2 0x46f0
+MUL
+'e4'(Unknown Opcode)
+ORIGIN
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

@@ -4748,12 +4748,11 @@ CODECOPY
 'b2'(Unknown Opcode)
 '23'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 DUP14
 EXP
 '0e'(Unknown Opcode)
 '5c'(Unknown Opcode)
-
+INVALID
 '27'(Unknown Opcode)
 'ea'(Unknown Opcode)
 'd9'(Unknown Opcode)

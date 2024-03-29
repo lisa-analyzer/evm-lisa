@@ -2846,3 +2846,34 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'21'(Unknown Opcode)
+'25'(Unknown Opcode)
+RETURNDATASIZE
+DIV
+PUSH0
+'23'(Unknown Opcode)
+PUSH12 0x17137814e593bcb6f322c86a
+SIGNEXTEND
+'c8'(Unknown Opcode)
+'4d'(Unknown Opcode)
+DUP6
+'d7'(Unknown Opcode)
+'ae'(Unknown Opcode)
+SLT
+MLOAD
+'fb'(Unknown Opcode)
+SHR
+SWAP13
+NOT
+MUL
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

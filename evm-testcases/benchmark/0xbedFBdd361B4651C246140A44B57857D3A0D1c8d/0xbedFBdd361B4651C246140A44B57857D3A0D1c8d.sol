@@ -2934,3 +2934,23 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5c'(Unknown Opcode)
+SWAP10
+RETURNDATASIZE
+INVALID
+'0e'(Unknown Opcode)
+CREATE
+COINBASE
+PUSH4 0xb69fd183
+'e3'(Unknown Opcode)
+STOP
+'bd'(Unknown Opcode)
+'e3'(Unknown Opcode)
+PUSH2 0xbcbb
+PUSH22 0xf6bcedd701803d275074d12d64736f6c634300081700
+CALLER

@@ -7249,3 +7249,25 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ce'(Unknown Opcode)
+LOG4
+AND
+SMOD
+PUSH14 0x8ff7187c819583f8d55eac45e343
+CALLDATACOPY
+'fc'(Unknown Opcode)
+SWAP5
+BLOCKHASH
+RETURNDATACOPY
+'b8'(Unknown Opcode)
+'c6'(Unknown Opcode)
+SWAP12
+MSTORE
+'24'(Unknown Opcode)
+GASLIMIT
+PUSH22 0xdd64736f6c63430008140033

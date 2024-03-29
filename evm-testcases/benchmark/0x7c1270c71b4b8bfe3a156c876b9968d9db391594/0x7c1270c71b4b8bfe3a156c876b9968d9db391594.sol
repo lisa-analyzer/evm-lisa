@@ -3836,3 +3836,22 @@ PUSH15 0x6365546f6b656e3a207472616e7366
 PUSH6 0x7220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH17 0x067058ebb7cde8d87b0ba1478b2984b16e
+'f6'(Unknown Opcode)
+'0c'(Unknown Opcode)
+PC
+GASPRICE
+'ad'(Unknown Opcode)
+DELEGATECALL
+'db'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'d8'(Unknown Opcode)
+MSTORE8
+'e2'(Unknown Opcode)
+'d9'(Unknown Opcode)
+PUSH18 0xd264736f6c63430008140033

@@ -8641,7 +8641,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 'dd'(Unknown Opcode)
 CALLCODE
 MSTORE
@@ -8682,17 +8681,17 @@ ADDRESS
 ADDRESS
 SHA3
 TIMESTAMP
-
+INVALID
 '4c'(Unknown Opcode)
 '4c'(Unknown Opcode)
-
-
+INVALID
+INVALID
 '4e'(Unknown Opcode)
 SHA3
 '24'(Unknown Opcode)
 MSTORE8
 '4d'(Unknown Opcode)
-
+INVALID
 '4e'(Unknown Opcode)
 SHA3
 RETURNDATASIZE
@@ -8701,7 +8700,7 @@ BALANCE
 SHA3
 MSTORE8
 '4d'(Unknown Opcode)
-
+INVALID
 '4e'(Unknown Opcode)
 SHA3
 '4e'(Unknown Opcode)
@@ -8730,17 +8729,17 @@ SSTORE
 COINBASE
 DIFFICULTY
 MSTORE
-
+INVALID
 '4c'(Unknown Opcode)
 '4c'(Unknown Opcode)
-
-
+INVALID
+INVALID
 '4e'(Unknown Opcode)
 SHA3
 '24'(Unknown Opcode)
 MSTORE8
 '4d'(Unknown Opcode)
-
+INVALID
 '4e'(Unknown Opcode)
 '2e'(Unknown Opcode)
 LOG2

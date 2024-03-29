@@ -3866,3 +3866,34 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2f'(Unknown Opcode)
+'29'(Unknown Opcode)
+'2c'(Unknown Opcode)
+DIV
+CALLCODE
+GASLIMIT
+'28'(Unknown Opcode)
+SHR
+'b0'(Unknown Opcode)
+SWAP9
+PUSH3 0x67838e
+'ad'(Unknown Opcode)
+LT
+SWAP10
+'e6'(Unknown Opcode)
+'ea'(Unknown Opcode)
+LOG3
+'ea'(Unknown Opcode)
+'c0'(Unknown Opcode)
+DUP7
+SWAP14
+'d4'(Unknown Opcode)
+'e4'(Unknown Opcode)
+'2e'(Unknown Opcode)
+'0f'(Unknown Opcode)
+PUSH32 0x96c69a64736f6c63430008000033

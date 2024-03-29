@@ -1228,3 +1228,19 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'dc'(Unknown Opcode)
+'da'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'c2'(Unknown Opcode)
+PUSH3 0x8107d2
+MSTORE8
+PUSH11 0x322d8a4b50e73421f0c0a6
+'bd'(Unknown Opcode)
+PUSH6 0xcb3b7fa69134
+'ea'(Unknown Opcode)
+PUSH20 0x1d64736f6c63430008180033

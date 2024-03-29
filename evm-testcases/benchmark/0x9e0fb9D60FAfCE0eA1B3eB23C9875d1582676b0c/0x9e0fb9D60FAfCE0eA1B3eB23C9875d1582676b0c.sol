@@ -7313,3 +7313,24 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x73582212207557
+'be'(Unknown Opcode)
+'27'(Unknown Opcode)
+'4c'(Unknown Opcode)
+'2e'(Unknown Opcode)
+NOT
+'4a'(Unknown Opcode)
+DUP7
+'ea'(Unknown Opcode)
+'a6'(Unknown Opcode)
+BALANCE
+DUP6
+'e9'(Unknown Opcode)
+BLOCKHASH
+'4b'(Unknown Opcode)
+NUMBER
+EXTCODEHASH
+DUP1
+PUSH13 0xa18703b7cc7b599dd44ae63664
+PUSH20 0x6f6c634300060c0033

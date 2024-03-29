@@ -3730,3 +3730,37 @@ SWAP1
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALL
+'eb'(Unknown Opcode)
+SWAP5
+SWAP8
+DUP5
+'af'(Unknown Opcode)
+JUMPI
+CALLDATALOAD
+'a8'(Unknown Opcode)
+CHAINID
+'2e'(Unknown Opcode)
+'b6'(Unknown Opcode)
+SWAP4
+EXTCODEHASH
+'f8'(Unknown Opcode)
+PUSH9 0x9a900a32b17ae07feb
+DIV
+DUP7
+CALLCODE
+SWAP9
+'22'(Unknown Opcode)
+EXTCODESIZE
+'2a'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

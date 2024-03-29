@@ -1338,3 +1338,23 @@ ISZERO
 PUSH2 0x0bd1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'f9'(Unknown Opcode)
+POP
+'c1'(Unknown Opcode)
+'27'(Unknown Opcode)
+MULMOD
+OR
+'d1'(Unknown Opcode)
+PUSH16 0xde3f0a838cc298aa1d965cd4c39b0d59
+OR
+STOP
+GT
+ADDMOD
+JUMP
+'29'(Unknown Opcode)
+PUSH23 0x8d64736f6c63430008160033

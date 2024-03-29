@@ -2238,3 +2238,18 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'de'(Unknown Opcode)
+SGT
+'ca'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'ec'(Unknown Opcode)
+'22'(Unknown Opcode)
+LOG3
+'d3'(Unknown Opcode)
+PUSH26 0x8f92cf992cd3d50d82aca691f247b7d1c00daa70c8b3a764736f
+PUSH13 0x63430008160033

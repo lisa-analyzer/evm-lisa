@@ -1866,3 +1866,31 @@ PUSH9 0x652046697273742047
 PUSH16 0x6473204f6e205468652043727970746f
 SHA3
 '4d'(Unknown Opcode)
+PUSH6 0x6d65a2646970
+PUSH7 0x7358221220d72a
+'e3'(Unknown Opcode)
+BYTE
+'ce'(Unknown Opcode)
+INVALID
+CALLCODE
+'a8'(Unknown Opcode)
+'c9'(Unknown Opcode)
+JUMP
+BALANCE
+'af'(Unknown Opcode)
+XOR
+'bd'(Unknown Opcode)
+STOP
+RETURN
+'ba'(Unknown Opcode)
+PUSH10 0x8d951cac97b66a2b45a1
+CALLER
+ISZERO
+'df'(Unknown Opcode)
+'23'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

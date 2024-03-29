@@ -5656,7 +5656,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -5673,7 +5672,6 @@ BYTE
 GASPRICE
 'e3'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 'd2'(Unknown Opcode)
 'ef'(Unknown Opcode)
 PUSH4 0x9c2bc349

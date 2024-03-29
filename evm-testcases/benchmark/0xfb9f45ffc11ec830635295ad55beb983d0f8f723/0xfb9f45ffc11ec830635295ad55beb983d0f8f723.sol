@@ -1015,3 +1015,32 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a8'(Unknown Opcode)
+CALLCODE
+'cf'(Unknown Opcode)
+DUP15
+DIFFICULTY
+'2a'(Unknown Opcode)
+'4c'(Unknown Opcode)
+PUSH3 0xd37c3f
+'d7'(Unknown Opcode)
+CALLCODE
+'28'(Unknown Opcode)
+'a6'(Unknown Opcode)
+SWAP4
+SWAP4
+'4e'(Unknown Opcode)
+LOG4
+STATICCALL
+PUSH11 0xc8dfde0555848bb95700bf
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

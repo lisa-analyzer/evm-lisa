@@ -3939,3 +3939,18 @@ DUP2
 PUSH2 0x117f
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+NOT
+'c3'(Unknown Opcode)
+'e8'(Unknown Opcode)
+INVALID
+'c0'(Unknown Opcode)
+'0f'(Unknown Opcode)
+'f6'(Unknown Opcode)
+RETURNDATASIZE
+PUSH24 0x6575392eb08b9ea0bb9620f6ff74142f0763abcd50ce3864
+PUSH20 0x6f6c63430008130033

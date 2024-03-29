@@ -4517,3 +4517,35 @@ SHA3
 PUSH21 0x72616e7366657220616d6f756e7420657863656564
 PUSH20 0x20616c6c6f77616e636545524332303a20646563
 PUSH19 0x656173656420616c6c6f77616e63652062656c
+PUSH16 0x77207a65726fa2646970667358221220
+ADD
+SDIV
+MSTORE
+SMOD
+'ca'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'b2'(Unknown Opcode)
+SWAP14
+'ce'(Unknown Opcode)
+SSTORE
+DUP6
+'db'(Unknown Opcode)
+'df'(Unknown Opcode)
+'2e'(Unknown Opcode)
+SELFDESTRUCT
+BLOCKHASH
+GASPRICE
+'ab'(Unknown Opcode)
+CALLER
+PC
+'cc'(Unknown Opcode)
+DUP2
+'b3'(Unknown Opcode)
+SWAP10
+'d6'(Unknown Opcode)
+'ec'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'0f'(Unknown Opcode)
+CALLDATACOPY
+DUP7
+PUSH22 0xe864736f6c63430008150033

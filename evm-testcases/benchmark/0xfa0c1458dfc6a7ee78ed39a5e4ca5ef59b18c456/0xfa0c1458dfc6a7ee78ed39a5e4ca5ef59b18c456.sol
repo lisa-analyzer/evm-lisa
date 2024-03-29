@@ -1340,3 +1340,39 @@ PUSH2 0x0282
 PUSH2 0x0870
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e9'(Unknown Opcode)
+SMOD
+SELFDESTRUCT
+SGT
+BYTE
+OR
+'2d'(Unknown Opcode)
+'db'(Unknown Opcode)
+MSTORE8
+'d9'(Unknown Opcode)
+'a9'(Unknown Opcode)
+JUMPDEST
+SWAP10
+'b9'(Unknown Opcode)
+'df'(Unknown Opcode)
+'2f'(Unknown Opcode)
+AND
+CALLER
+DUP6
+DUP8
+PUSH7 0x379b14e3da613c
+'e8'(Unknown Opcode)
+SHR
+'bd'(Unknown Opcode)
+'26'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

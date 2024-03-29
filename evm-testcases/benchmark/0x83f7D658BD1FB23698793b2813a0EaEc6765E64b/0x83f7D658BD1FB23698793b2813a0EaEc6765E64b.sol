@@ -10049,3 +10049,22 @@ ADDRESS
 CALLCODE
 PUSH14 0x96d71e98ec8e21e4a340921d94df
 'e4'(Unknown Opcode)
+PUSH4 0x07dca264
+PUSH10 0x70667358221220945df8
+'db'(Unknown Opcode)
+'c3'(Unknown Opcode)
+DIFFICULTY
+'25'(Unknown Opcode)
+PUSH8 0xd2a70a466875d027
+'d2'(Unknown Opcode)
+LOG4
+PC
+'c3'(Unknown Opcode)
+DUP2
+'ab'(Unknown Opcode)
+'b0'(Unknown Opcode)
+CODESIZE
+'cf'(Unknown Opcode)
+LOG1
+'df'(Unknown Opcode)
+PUSH22 0x96d75f0c64736f6c63430008150033

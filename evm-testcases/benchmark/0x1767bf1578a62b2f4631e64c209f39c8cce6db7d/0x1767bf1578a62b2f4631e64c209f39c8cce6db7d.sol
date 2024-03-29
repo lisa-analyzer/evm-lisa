@@ -11908,3 +11908,19 @@ STOP
 STOP
 STOP
 STOP
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e7'(Unknown Opcode)
+'5d'(Unknown Opcode)
+'fc'(Unknown Opcode)
+GASPRICE
+'cb'(Unknown Opcode)
+'fb'(Unknown Opcode)
+SWAP8
+PUSH32 0x686a18b21a3844ed762a663d3e03fc2ab4a3a0ad7f9e394c64736f6c63430006
+MOD
+STOP
+CALLER

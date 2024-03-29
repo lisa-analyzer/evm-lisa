@@ -11587,3 +11587,24 @@ PUSH24 0xf7c8cc9e38e8afe78954f703aeeda7fffe014eeb6e56ea84
 '2f'(Unknown Opcode)
 PUSH14 0xa70128d63adbf6b09002c26caf55
 'c4'(Unknown Opcode)
+PUSH31 0x2f26635807e3ef1b027218aa74c8d61a3ea264697066735822122010447a5a
+CREATE
+'c6'(Unknown Opcode)
+ADDMOD
+'d6'(Unknown Opcode)
+'c2'(Unknown Opcode)
+DUP11
+'f9'(Unknown Opcode)
+AND
+SWAP15
+GASPRICE
+POP
+RETURNDATACOPY
+SUB
+'dd'(Unknown Opcode)
+'f7'(Unknown Opcode)
+'fc'(Unknown Opcode)
+PUSH15 0x6fa8b0c7753021427ca4cf64736f6c
+PUSH4 0x43000814
+STOP
+CALLER

@@ -8108,7 +8108,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 COINBASE
 TIMESTAMP
 NUMBER
@@ -8117,13 +8116,13 @@ GASLIMIT
 CHAINID
 SELFBALANCE
 BASEFEE
-
+INVALID
 '4a'(Unknown Opcode)
 '4b'(Unknown Opcode)
 '4c'(Unknown Opcode)
 '4d'(Unknown Opcode)
 '4e'(Unknown Opcode)
-
+INVALID
 POP
 MLOAD
 MSTORE

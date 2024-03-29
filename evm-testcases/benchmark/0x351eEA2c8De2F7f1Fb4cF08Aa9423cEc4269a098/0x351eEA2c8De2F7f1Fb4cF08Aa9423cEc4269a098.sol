@@ -3428,3 +3428,26 @@ INVALID
 'a9'(Unknown Opcode)
 'b9'(Unknown Opcode)
 '29'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SHR
+GASLIMIT
+SELFBALANCE
+DUP8
+'f9'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'c2'(Unknown Opcode)
+'4c'(Unknown Opcode)
+'28'(Unknown Opcode)
+PUSH9 0x88b49e4360d57f98c7
+'1e'(Unknown Opcode)
+'29'(Unknown Opcode)
+'ef'(Unknown Opcode)
+EQ
+INVALID
+DUP9
+ADDRESS
+PUSH26 0x3f7c2dc55264736f6c634300080c0033

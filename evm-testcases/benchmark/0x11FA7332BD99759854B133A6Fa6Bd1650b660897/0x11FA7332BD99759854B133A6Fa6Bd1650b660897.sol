@@ -5424,3 +5424,30 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALLDATASIZE
+'d4'(Unknown Opcode)
+'d3'(Unknown Opcode)
+DUP12
+'d5'(Unknown Opcode)
+'d1'(Unknown Opcode)
+DUP16
+MLOAD
+SWAP13
+'0d'(Unknown Opcode)
+'b4'(Unknown Opcode)
+'aa'(Unknown Opcode)
+NUMBER
+'d3'(Unknown Opcode)
+SWAP11
+'4c'(Unknown Opcode)
+AND
+'4b'(Unknown Opcode)
+GT
+'ab'(Unknown Opcode)
+'eb'(Unknown Opcode)
+PUSH23 0x2c15762a68771ee2f5d764736f6c63430008110033

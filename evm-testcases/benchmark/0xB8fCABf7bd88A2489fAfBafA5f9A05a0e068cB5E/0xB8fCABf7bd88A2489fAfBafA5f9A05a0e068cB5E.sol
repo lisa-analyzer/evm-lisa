@@ -63,3 +63,24 @@ RETURNDATASIZE
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH2 0x310a
+'2f'(Unknown Opcode)
+'e9'(Unknown Opcode)
+PUSH20 0x5bbdde5bc146c1d658638fb9d5d5a6285c312e0d
+EQ
+SWAP1
+'4c'(Unknown Opcode)
+CALLDATALOAD
+'b5'(Unknown Opcode)
+'af'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

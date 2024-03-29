@@ -10447,3 +10447,26 @@ PUSH1 0x20
 PUSH1 0x00
 RETURN
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SELFDESTRUCT
+'2a'(Unknown Opcode)
+'da'(Unknown Opcode)
+PUSH20 0x184626f4f0fe88cfe7c745dcf43f8b54b0e35887
+POP
+'f7'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'ed'(Unknown Opcode)
+'e7'(Unknown Opcode)
+GT
+'e9'(Unknown Opcode)
+'d4'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

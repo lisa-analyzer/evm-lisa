@@ -12818,3 +12818,30 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c9'(Unknown Opcode)
+CREATE2
+'d5'(Unknown Opcode)
+SSTORE
+SGT
+CALLDATACOPY
+LOG4
+MSTORE
+'db'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'e8'(Unknown Opcode)
+'c0'(Unknown Opcode)
+'de'(Unknown Opcode)
+'2f'(Unknown Opcode)
+SELFDESTRUCT
+DUP4
+PUSH0
+'0d'(Unknown Opcode)
+SHA3
+SHL
+GAS
+PUSH22 0xdc383a4bc59ac55b45b864736f6c63430008170033

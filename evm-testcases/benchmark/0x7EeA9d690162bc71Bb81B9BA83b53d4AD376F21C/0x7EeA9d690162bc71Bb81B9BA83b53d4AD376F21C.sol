@@ -602,3 +602,30 @@ PUSH2 0x0397
 PUSH2 0x036a
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+EXTCODESIZE
+'bf'(Unknown Opcode)
+'c9'(Unknown Opcode)
+'e5'(Unknown Opcode)
+LOG4
+JUMPI
+'4d'(Unknown Opcode)
+SWAP15
+'bf'(Unknown Opcode)
+'0e'(Unknown Opcode)
+EXTCODESIZE
+EXTCODESIZE
+'b9'(Unknown Opcode)
+'29'(Unknown Opcode)
+'26'(Unknown Opcode)
+BALANCE
+'b5'(Unknown Opcode)
+PUSH4 0xec21e625
+PUSH3 0x6ec946
+POP
+DIV
+PUSH14 0xcbb17164736f6c63430008110033

@@ -7876,3 +7876,29 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x7358221220250e
+'23'(Unknown Opcode)
+AND
+'ee'(Unknown Opcode)
+PUSH7 0x0c0c53e8833dd2
+'b3'(Unknown Opcode)
+'ac'(Unknown Opcode)
+RETURNDATASIZE
+'0e'(Unknown Opcode)
+NOT
+'bb'(Unknown Opcode)
+'f9'(Unknown Opcode)
+'ae'(Unknown Opcode)
+DUP9
+'a9'(Unknown Opcode)
+PUSH5 0xf2c454adac
+DUP2
+'c1'(Unknown Opcode)
+BYTE
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+MULMOD
+STOP
+CALLER

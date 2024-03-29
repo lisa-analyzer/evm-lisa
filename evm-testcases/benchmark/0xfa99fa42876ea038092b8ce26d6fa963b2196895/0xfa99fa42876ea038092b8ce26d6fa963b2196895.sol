@@ -5617,3 +5617,20 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2f'(Unknown Opcode)
+CALLER
+'bf'(Unknown Opcode)
+DUP2
+'4b'(Unknown Opcode)
+PUSH31 0xc1ff5d2a78a2c3ebee32ffd4e7fd5b4c7ea24b7011a8f6a5e4fc64736f6c63
+NUMBER
+STOP
+ADDMOD
+SMOD
+STOP
+CALLER

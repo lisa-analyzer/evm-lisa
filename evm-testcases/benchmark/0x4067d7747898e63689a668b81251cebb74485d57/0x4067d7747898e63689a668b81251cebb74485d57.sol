@@ -4462,7 +4462,6 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 'b0'(Unknown Opcode)
 SWAP11
 'a5'(Unknown Opcode)

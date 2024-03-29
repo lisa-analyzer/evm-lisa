@@ -4432,3 +4432,21 @@ SWAP7
 'e5'(Unknown Opcode)
 SWAP7
 'b5'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'28'(Unknown Opcode)
+PUSH17 0xe5bb1d38a68b1a59f7bdf5f0e95b7e1e8f
+MULMOD
+ADD
+'db'(Unknown Opcode)
+'b9'(Unknown Opcode)
+SELFDESTRUCT
+EXTCODEHASH
+PUSH1 0xc7
+'b5'(Unknown Opcode)
+DUP5
+SWAP12
+PUSH26 0xc464736f6c63430008130033

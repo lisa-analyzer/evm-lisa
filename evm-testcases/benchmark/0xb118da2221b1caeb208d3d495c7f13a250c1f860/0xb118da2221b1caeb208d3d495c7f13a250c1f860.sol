@@ -2938,3 +2938,31 @@ SUB
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP10
+RETURN
+CALLDATACOPY
+'eb'(Unknown Opcode)
+'be'(Unknown Opcode)
+'ed'(Unknown Opcode)
+'b5'(Unknown Opcode)
+SWAP1
+CODECOPY
+TIMESTAMP
+'ca'(Unknown Opcode)
+'d6'(Unknown Opcode)
+SWAP8
+MOD
+'c4'(Unknown Opcode)
+'e3'(Unknown Opcode)
+'5c'(Unknown Opcode)
+XOR
+'b3'(Unknown Opcode)
+'4e'(Unknown Opcode)
+'db'(Unknown Opcode)
+CALLVALUE
+PUSH23 0x533a2da914a777fc7264736f6c634300080b0033

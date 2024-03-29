@@ -775,3 +775,21 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP12
+'c6'(Unknown Opcode)
+'25'(Unknown Opcode)
+'e9'(Unknown Opcode)
+SLOAD
+'ca'(Unknown Opcode)
+'a8'(Unknown Opcode)
+'b5'(Unknown Opcode)
+PUSH18 0x69d273d50c14175b36fe8641c5dd9ea63943
+'f9'(Unknown Opcode)
+'b7'(Unknown Opcode)
+'2d'(Unknown Opcode)
+PUSH32 0xc164736f6c63430008140033

@@ -3446,3 +3446,46 @@ SWAP1
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5c'(Unknown Opcode)
+'2b'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'a8'(Unknown Opcode)
+'2e'(Unknown Opcode)
+SWAP8
+'d8'(Unknown Opcode)
+'d5'(Unknown Opcode)
+MUL
+CALLDATALOAD
+'ee'(Unknown Opcode)
+'28'(Unknown Opcode)
+'2a'(Unknown Opcode)
+BASEFEE
+MULMOD
+DELEGATECALL
+SWAP13
+'ad'(Unknown Opcode)
+'bc'(Unknown Opcode)
+CALLER
+SELFDESTRUCT
+'b1'(Unknown Opcode)
+'2b'(Unknown Opcode)
+POP
+ADDRESS
+'d3'(Unknown Opcode)
+EXTCODECOPY
+SDIV
+'2c'(Unknown Opcode)
+DUP1
+LOG2
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

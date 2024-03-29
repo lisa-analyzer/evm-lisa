@@ -2699,3 +2699,35 @@ DUP5
 PUSH2 0x0ea0
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a7'(Unknown Opcode)
+'0e'(Unknown Opcode)
+'b6'(Unknown Opcode)
+SAR
+CALLER
+BALANCE
+'21'(Unknown Opcode)
+'e2'(Unknown Opcode)
+SWAP1
+SHL
+TIMESTAMP
+PUSH11 0xc570d7b6edc217e0ac38c2
+'d2'(Unknown Opcode)
+'c4'(Unknown Opcode)
+DUP10
+'cb'(Unknown Opcode)
+EXTCODEHASH
+CREATE2
+'ea'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'24'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER
