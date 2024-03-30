@@ -3,6 +3,7 @@ package it.unipr;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -60,7 +61,7 @@ public class EVMLiSA {
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
 	private int CORES;
 	private long startOfExecutionTime = 0;
-	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
+	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, Unsound jumps, Maybe unsound jumps, Fake missed jumps, % Total Solved, Time (millis), Notes \n";
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -73,16 +74,6 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) throws AnalysisException, IOException, Exception {
 		new EVMLiSA().go(args);
-	}
-	
-	/**
-	 * Save the bytecode of smart contracts
-	 * @throws Exception
-	 */
-	private void save() throws Exception {
-		SMARTCONTRACTS_FULLPATH = "benchmark/5000-benchmark.txt";
-		OUTPUT_DIR = "bytecode";
-		saveSmartContractsFromEtherscan();
 	}
 
 	private void go(String[] args) throws Exception {
@@ -555,37 +546,107 @@ public class EVMLiSA {
 		int notSolvedJumps = 0;
 		int unsoundJumps = 0;
 		int maybeUnsoundJumps = 0;
+		int fakeMissedJumps = 0;
 
 		// we are safe supposing that we have a single entry point
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
-		for (Statement jumpNode : cfg.getAllJumps())
+		for (Statement jumpNode : cfg.getAllJumps()) {
+			Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+
 			if (jumpNode instanceof Jump) {
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				if (cfg.getOutgoingEdges(jumpNode).size() >= 1)
 					resolvedJumps++;
-				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
+				else if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
 					definitelyUnreachable++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
+				else if (!reachableFrom)
 					maybeUnreachable++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() == 0 && unsoundJumpNodes.contains(jumpNode)) {
+				else if (cfg.getIngoingEdges(jumpNode).size() > 0
+						&& cfg.getOutgoingEdges(jumpNode).size() == 0
+						&& unsoundJumpNodes.contains(jumpNode)) {
 					unsoundJumps++;
 					notSolvedJumps++;
-				} else
-					notSolvedJumps++;
+				} else if (topStackValuesPerJump == null ||
+						topStackValuesPerJump.contains(KIntegerSet.BOTTOM)) {
+					// Almeno uno stack e' vuoto e quindi siamo in un percorso
+					// inesistente
+					fakeMissedJumps++;
+					resolvedJumps++;
+				} else {
+					boolean allNumericTop = true;
+
+					// Se tutti gli elementi in cima agli stack sono top, allora
+					// non risolviamo la jump
+					for (KIntegerSet x : topStackValuesPerJump) {
+						if (!x.isTopNumeric()) {
+							allNumericTop = false;
+							break;
+						}
+					}
+
+					if (allNumericTop)
+						notSolvedJumps++;
+					else {
+						fakeMissedJumps++;
+						resolvedJumps++;
+					}
+
+//					System.err.println("Jump not solved");
+//					System.err.println("JumpNode: " + jumpNode);
+//					System.err.println("getTopStackValuesPerJump: " + checker.getTopStackValuesPerJump(jumpNode));
+//					System.out.println(checker.getMapTopStackValuesPerJump());
+
+					System.err.println();
+				}
 			} else if (jumpNode instanceof Jumpi) {
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				if (cfg.getOutgoingEdges(jumpNode).size() >= 2)
 					resolvedJumps++;
-				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
+				else if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
 					definitelyUnreachable++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
+				else if (!reachableFrom)
 					maybeUnreachable++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() == 1 && unsoundJumpNodes.contains(jumpNode)) {
+				else if (cfg.getIngoingEdges(jumpNode).size() > 0
+						&& cfg.getOutgoingEdges(jumpNode).size() < 2
+						&& unsoundJumpNodes.contains(jumpNode)) {
 					unsoundJumps++;
 					notSolvedJumps++;
 				} else if (unsoundJumpNodes.contains(jumpNode))
 					maybeUnsoundJumps++;
-				else
-					notSolvedJumps++;
+				else if (topStackValuesPerJump == null ||
+						topStackValuesPerJump.contains(KIntegerSet.BOTTOM)) {
+					// Almeno uno stack e' vuoto e quindi siamo in un percorso
+					// inesistente
+					fakeMissedJumps++;
+					resolvedJumps++;
+				} else {
+					boolean allNumericTop = true;
+
+					// Se tutti gli elementi in cima agli stack sono top, allora
+					// non risolviamo la jump
+					for (KIntegerSet x : topStackValuesPerJump) {
+						if (!x.isTopNumeric()) {
+							allNumericTop = false;
+							break;
+						}
+					}
+
+					if (allNumericTop)
+						notSolvedJumps++;
+					else {
+						fakeMissedJumps++;
+						resolvedJumps++;
+					}
+
+//					System.err.println("Jump not solved");
+//					System.err.println("JumpNode: " + jumpNode);
+//					System.err.println("getTopStackValuesPerJump: " + checker.getTopStackValuesPerJump(jumpNode));
+//					System.out.println(checker.getMapTopStackValuesPerJump());
+//					
+//					System.err.println();
+				}
 			}
+		}
 
 		maybeUnsoundJumps += checker.getMaybeUnsoundJumps().size();
 
@@ -595,6 +656,7 @@ public class EVMLiSA {
 		System.err.println("Resolved jumps: " + resolvedJumps);
 		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
+		System.err.println("Fake missed jumps: " + fakeMissedJumps);
 		System.err.println("Not solved jumps: " + notSolvedJumps);
 //		System.err.println("Unsound jumps: " + checker.getUnsoundJumps().size());
 		System.err.println("Unsound jumps: " + unsoundJumps);
@@ -609,6 +671,7 @@ public class EVMLiSA {
 				.maybeUnreachableJumps(maybeUnreachable)
 				.notSolvedJumps(notSolvedJumps)
 				.unsoundJumps(unsoundJumps)
+				.fakeMissedJumps(fakeMissedJumps)
 //			.unsoundJumps(checker.getUnsoundJumps().size())
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
@@ -842,7 +905,6 @@ public class EVMLiSA {
 	 *
 	 * @throws Exception if an error occurs during the process.
 	 */
-	@SuppressWarnings("unused")
 	private void saveSmartContractsFromEtherscan() throws Exception {
 		List<String> smartContracts = readSmartContractsFromFile();
 
@@ -881,6 +943,18 @@ public class EVMLiSA {
 				continue;
 			}
 		}
+	}
+
+	/**
+	 * Save the bytecode of smart contracts
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unused")
+	private void downloadBytecode() throws Exception {
+		SMARTCONTRACTS_FULLPATH = "benchmark/5000-benchmark.txt";
+		OUTPUT_DIR = "bytecode";
+		saveSmartContractsFromEtherscan();
 	}
 
 	public class Converter {

@@ -18,6 +18,7 @@ public class MyLogger {
 	private double solvedJumpsPercent;
 	private int unsoundJumps;
 	private int maybeUnsoundJumps;
+	private int fakeMissedJumps;
 	private long time;
 	private String notes;
 	private String currentThread;
@@ -33,6 +34,7 @@ public class MyLogger {
 		this.solvedJumpsPercent = 0;
 		this.unsoundJumps = 0;
 		this.unsoundJumps = 0;
+		this.fakeMissedJumps = 0;
 		this.time = 0;
 		this.notes = "";
 		this.currentThread = null;
@@ -40,7 +42,8 @@ public class MyLogger {
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
-			int notSolvedJumps, int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent, long time,
+			int notSolvedJumps, int unsoundJumps, int maybeUnsoundJumps, int fakeMissedJumps, double solvedJumpsPercent,
+			long time,
 			String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
@@ -63,6 +66,7 @@ public class MyLogger {
 		this.notSolvedJumps = notSolvedJumps;
 		this.unsoundJumps = unsoundJumps;
 		this.maybeUnsoundJumps = maybeUnsoundJumps;
+		this.fakeMissedJumps = fakeMissedJumps;
 		this.notes = notes;
 		this.time = time;
 		this.currentThread = Thread.currentThread().getName();
@@ -127,6 +131,11 @@ public class MyLogger {
 		return this;
 	}
 
+	public MyLogger fakeMissedJumps(int fakeMissedJumps) {
+		this.fakeMissedJumps = fakeMissedJumps;
+		return this;
+	}
+
 	public MyLogger time(long time) {
 		this.time = time;
 		return this;
@@ -140,7 +149,7 @@ public class MyLogger {
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps,
-				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent, time, notes);
+				unsoundJumps, maybeUnsoundJumps, fakeMissedJumps, solvedJumpsPercent, time, notes);
 	}
 
 	public int jumpSize() {
@@ -161,6 +170,7 @@ public class MyLogger {
 				notSolvedJumps + divider +
 				unsoundJumps + divider +
 				maybeUnsoundJumps + divider +
+				fakeMissedJumps + divider +
 				solvedJumpsPercent + divider +
 				time + divider +
 //				currentThread + divider +

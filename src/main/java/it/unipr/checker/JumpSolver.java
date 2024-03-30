@@ -26,7 +26,9 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,6 +93,16 @@ public class JumpSolver
 		return maybeUnsoundJumps;
 	}
 
+	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
+
+	public Map<Statement, Set<KIntegerSet>> getMapTopStackValuesPerJump() {
+		return topStackValuesPerJump;
+	}
+
+	public Set<KIntegerSet> getTopStackValuesPerJump(Statement node) {
+		return topStackValuesPerJump.get(node);
+	}
+
 	/**
 	 * {@inheritDoc} Checks if analysis has reached fix-point. If not, it runs
 	 * another LiSA analysis to solve the remaining jumps and reach fix-point.
@@ -138,12 +150,14 @@ public class JumpSolver
 					} else if (valueState.isTop()) {
 						this.maybeUnsoundJumps.add(node);
 					} else {
-						for (KIntegerSet topStack : valueState.getTop())
+//						topStackValuesPerJump.put(node, valueState.getTop());
+						for (KIntegerSet topStack : valueState.getTop()) {
 							if (topStack.isBottom())
 								this.unreachableJumps.add(node);
 							else if (topStack.isTopNumeric() && !topStack.isTopNotJumpdest())
 								this.unsoundJumps.add(node);
 //								this.maybeUnsoundJumps.add(node);
+						}
 					}
 				}
 			}
@@ -238,6 +252,7 @@ public class JumpSolver
 								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
 
+				topStackValuesPerJump.put(node, valueState.getTop());
 				// For each JUMPDEST, add the missing edge from this node to
 				// the JUMPDEST.
 				if (node instanceof Jump) { // JUMP

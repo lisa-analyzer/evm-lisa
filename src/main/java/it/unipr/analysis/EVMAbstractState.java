@@ -1106,10 +1106,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						Memory storageCopy = storage.clone();
 
-						for (Number k : key)
-							storageCopy = storageCopy.putState(k, value);
+						if (!(key.isTopNumeric() && key.isTopNotJumpdest())) {
+							for (Number k : key)
+								storageCopy = storageCopy.putState(k, value);
 
-						storageResult = storageResult.lub(storageCopy);
+							storageResult = storageResult.lub(storageCopy);
+						}
+
 						result.add(resultStack);
 					}
 

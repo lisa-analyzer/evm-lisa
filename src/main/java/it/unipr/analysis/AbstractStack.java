@@ -96,24 +96,24 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public String toString() {
-		return this.stack.toString();
+//		return this.stack.toString();
 		// We use the bottom part for debugging
-//		String result = "{";
-//
-//		for (int i = STACK_LIMIT - size(); i < STACK_LIMIT; i++) {
-//			if (stack.get(i).isBottom())
-//				result += Lattice.bottomRepresentation();
-//			else if (stack.get(i).isBottom())
-//				result += Lattice.topRepresentation();
-//			else
-//				result += stack.get(i);
-//
-//			if ((i + 1) != STACK_LIMIT)
-//				result += ", ";
-//		}
-//
-//		result += "}";
-//		return result;
+		String result = "{";
+
+		for (int i = STACK_LIMIT - size(); i < STACK_LIMIT; i++) {
+			if (stack.get(i).isBottom())
+				result += Lattice.bottomRepresentation();
+			else if (stack.get(i).isBottom())
+				result += Lattice.topRepresentation();
+			else
+				result += stack.get(i);
+
+			if ((i + 1) != STACK_LIMIT)
+				result += ", ";
+		}
+
+		result += "}";
+		return result;
 	}
 
 	@Override
