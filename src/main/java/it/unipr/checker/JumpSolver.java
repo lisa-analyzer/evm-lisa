@@ -150,14 +150,22 @@ public class JumpSolver
 					} else if (valueState.isTop()) {
 						this.maybeUnsoundJumps.add(node);
 					} else {
-//						topStackValuesPerJump.put(node, valueState.getTop());
+						boolean allNumericTop = true;
+						boolean allBottom = true;
+
+						topStackValuesPerJump.put(node, valueState.getTop());
+
 						for (KIntegerSet topStack : valueState.getTop()) {
-							if (topStack.isBottom())
-								this.unreachableJumps.add(node);
-							else if (topStack.isTopNumeric() && !topStack.isTopNotJumpdest())
-								this.unsoundJumps.add(node);
-//								this.maybeUnsoundJumps.add(node);
+							if (allNumericTop && !topStack.isTopNumeric())
+								allNumericTop = false;
+							if (allBottom && !topStack.isBottom())
+								allBottom = false;
 						}
+
+						if (allNumericTop)
+							this.unsoundJumps.add(node);
+						if (allBottom)
+							this.unreachableJumps.add(node);
 					}
 				}
 			}
@@ -252,7 +260,6 @@ public class JumpSolver
 								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 						.collect(Collectors.toSet());
 
-				topStackValuesPerJump.put(node, valueState.getTop());
 				// For each JUMPDEST, add the missing edge from this node to
 				// the JUMPDEST.
 				if (node instanceof Jump) { // JUMP

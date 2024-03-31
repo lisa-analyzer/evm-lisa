@@ -537,10 +537,8 @@ public class EVMLiSA {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		Set<Statement> unsoundJumpNodes = checker.getUnsoundJumps();
-//		int preciselyResolvedJumps = 0;
-//		int soundResolvedJumps = 0;
-		int resolvedJumps = 0;
 
+		int resolvedJumps = 0;
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int notSolvedJumps = 0;
@@ -561,11 +559,9 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!reachableFrom)
 					maybeUnreachable++;
-				else if (cfg.getIngoingEdges(jumpNode).size() > 0
-						&& cfg.getOutgoingEdges(jumpNode).size() == 0
-						&& unsoundJumpNodes.contains(jumpNode)) {
-					unsoundJumps++;
+				else if (unsoundJumpNodes.contains(jumpNode)) {
 					notSolvedJumps++;
+					unsoundJumps++;
 				} else if (topStackValuesPerJump == null ||
 						topStackValuesPerJump.contains(KIntegerSet.BOTTOM)) {
 					// Almeno uno stack e' vuoto e quindi siamo in un percorso
@@ -573,12 +569,21 @@ public class EVMLiSA {
 					fakeMissedJumps++;
 					resolvedJumps++;
 				} else {
+
+//					System.err.println();
+//					System.err.println(cfg.getIngoingEdges(jumpNode).size());
+//					System.err.println(cfg.getOutgoingEdges(jumpNode).size());
+//					System.err.println(unsoundJumpNodes.contains(jumpNode));
+//					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
+//					System.err.println();
+
 					boolean allNumericTop = true;
 
-					// Se tutti gli elementi in cima agli stack sono top, allora
-					// non risolviamo la jump
-					for (KIntegerSet x : topStackValuesPerJump) {
-						if (!x.isTopNumeric()) {
+					// Se tutti gli elementi in cima agli stack sono top non
+					// risolviamo la jump, altrimenti si tratta di un percorso
+					// inesistente
+					for (KIntegerSet value : topStackValuesPerJump) {
+						if (!value.isTopNumeric()) {
 							allNumericTop = false;
 							break;
 						}
@@ -590,13 +595,6 @@ public class EVMLiSA {
 						fakeMissedJumps++;
 						resolvedJumps++;
 					}
-
-//					System.err.println("Jump not solved");
-//					System.err.println("JumpNode: " + jumpNode);
-//					System.err.println("getTopStackValuesPerJump: " + checker.getTopStackValuesPerJump(jumpNode));
-//					System.out.println(checker.getMapTopStackValuesPerJump());
-
-					System.err.println();
 				}
 			} else if (jumpNode instanceof Jumpi) {
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
@@ -606,14 +604,10 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!reachableFrom)
 					maybeUnreachable++;
-				else if (cfg.getIngoingEdges(jumpNode).size() > 0
-						&& cfg.getOutgoingEdges(jumpNode).size() < 2
-						&& unsoundJumpNodes.contains(jumpNode)) {
-					unsoundJumps++;
+				else if (unsoundJumpNodes.contains(jumpNode)) {
 					notSolvedJumps++;
-				} else if (unsoundJumpNodes.contains(jumpNode))
-					maybeUnsoundJumps++;
-				else if (topStackValuesPerJump == null ||
+					unsoundJumps++;
+				} else if (topStackValuesPerJump == null ||
 						topStackValuesPerJump.contains(KIntegerSet.BOTTOM)) {
 					// Almeno uno stack e' vuoto e quindi siamo in un percorso
 					// inesistente
@@ -622,10 +616,11 @@ public class EVMLiSA {
 				} else {
 					boolean allNumericTop = true;
 
-					// Se tutti gli elementi in cima agli stack sono top, allora
-					// non risolviamo la jump
-					for (KIntegerSet x : topStackValuesPerJump) {
-						if (!x.isTopNumeric()) {
+					// Se tutti gli elementi in cima agli stack sono top non
+					// risolviamo la jump, altrimenti si tratta di un percorso
+					// inesistente
+					for (KIntegerSet value : topStackValuesPerJump) {
+						if (!value.isTopNumeric()) {
 							allNumericTop = false;
 							break;
 						}
@@ -637,13 +632,6 @@ public class EVMLiSA {
 						fakeMissedJumps++;
 						resolvedJumps++;
 					}
-
-//					System.err.println("Jump not solved");
-//					System.err.println("JumpNode: " + jumpNode);
-//					System.err.println("getTopStackValuesPerJump: " + checker.getTopStackValuesPerJump(jumpNode));
-//					System.out.println(checker.getMapTopStackValuesPerJump());
-//					
-//					System.err.println();
 				}
 			}
 		}
@@ -653,12 +641,11 @@ public class EVMLiSA {
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-		System.err.println("Resolved jumps: " + resolvedJumps);
+		System.err.println("Resolved jumps: " + (resolvedJumps + definitelyUnreachable + maybeUnreachable));
 		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
 		System.err.println("Fake missed jumps: " + fakeMissedJumps);
 		System.err.println("Not solved jumps: " + notSolvedJumps);
-//		System.err.println("Unsound jumps: " + checker.getUnsoundJumps().size());
 		System.err.println("Unsound jumps: " + unsoundJumps);
 		System.err.println("Maybe unsound jumps: " + maybeUnsoundJumps);
 		System.err.println("##############");
@@ -672,7 +659,6 @@ public class EVMLiSA {
 				.notSolvedJumps(notSolvedJumps)
 				.unsoundJumps(unsoundJumps)
 				.fakeMissedJumps(fakeMissedJumps)
-//			.unsoundJumps(checker.getUnsoundJumps().size())
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
 						+ AbstractStackSet.getStackSetLimit());
