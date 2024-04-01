@@ -170,9 +170,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Getter for the Interval at the top of the stack.
+	 * Getter for the KIntegerSet at the top of the stack.
 	 * 
-	 * @return the Interval at the top of the stack.
+	 * @return the KIntegerSet at the top of the stack.
 	 */
 	public KIntegerSet getTop() {
 		return this.stack.getLast();
@@ -186,9 +186,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Pushes the specified interval onto the stack.
+	 * Pushes the specified KIntegerSet onto the stack.
 	 *
-	 * @param target the interval to be pushed onto the stack.
+	 * @param target the KIntegerSet to be pushed onto the stack.
 	 */
 	public void push(KIntegerSet target) {
 		stack.addLast(target);
@@ -196,9 +196,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Pops the interval from the stack.
+	 * Pops the KIntegerSet from the stack.
 	 *
-	 * @return the interval at the top of the stack.
+	 * @return the KIntegerSet at the top of the stack.
 	 */
 	public KIntegerSet pop() {
 		KIntegerSet result = stack.removeLast();

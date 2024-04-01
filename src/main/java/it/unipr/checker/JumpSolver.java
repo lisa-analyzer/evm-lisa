@@ -1,5 +1,7 @@
 package it.unipr.checker;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.Number;
@@ -73,6 +75,16 @@ public class JumpSolver
 	private Set<Statement> maybeUnsoundJumps;
 
 	/**
+	 * Map of top stack values per jump
+	 */
+	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
+
+	/**
+	 * Map of stack sizes per jump
+	 */
+	private Map<Statement, Set<KIntegerSet>> stacksSizePerJump = new HashMap<>();
+
+	/**
 	 * Yields the computed CFG.
 	 * 
 	 * @return the computed CFG
@@ -93,14 +105,12 @@ public class JumpSolver
 		return maybeUnsoundJumps;
 	}
 
-	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
-
-	public Map<Statement, Set<KIntegerSet>> getMapTopStackValuesPerJump() {
-		return topStackValuesPerJump;
-	}
-
 	public Set<KIntegerSet> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
+	}
+
+	public Set<KIntegerSet> getStacksSizePerJump(Statement node) {
+		return stacksSizePerJump.get(node);
 	}
 
 	/**
@@ -153,14 +163,36 @@ public class JumpSolver
 						boolean allNumericTop = true;
 						boolean allBottom = true;
 
-						topStackValuesPerJump.put(node, valueState.getTop());
+						Set<KIntegerSet> stacksSize = new HashSet<>();
+						Set<KIntegerSet> stacksTop = new HashSet<>();
 
-						for (KIntegerSet topStack : valueState.getTop()) {
+						AbstractStackSet stacks = valueState.getStacks();
+						for (AbstractStack stack : stacks) {
+							stacksSize.add(new KIntegerSet(stack.size()));
+
+							// Siamo in un fake path: le successive statistiche
+							// non verrebbero usate e quindi ritorniamo
+							// ottimizzando i tempi
+							if (stacksSize.size() > 1)
+								break;
+
+							KIntegerSet topStack = stack.getTop();
 							if (allNumericTop && !topStack.isTopNumeric())
 								allNumericTop = false;
 							if (allBottom && !topStack.isBottom())
 								allBottom = false;
+
+							stacksTop.add(topStack); // Questa istruzione
+														// equivale a fare
+														// direttamente
+														// `topStackValuesPerJump.put(node,
+														// valueState.getTop())`,
+														// ma facciamo cosi per
+														// ottimizzare i tempi
 						}
+
+						stacksSizePerJump.put(node, stacksSize);
+						topStackValuesPerJump.put(node, stacksTop);
 
 						if (allNumericTop)
 							this.unsoundJumps.add(node);

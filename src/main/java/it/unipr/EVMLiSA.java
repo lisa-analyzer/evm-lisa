@@ -535,6 +535,9 @@ public class EVMLiSA {
 //	public static Triple<Integer, Integer, Triple<Integer, Integer, Integer>> dumpStatistics(JumpSolver checker) {
 	public static MyLogger dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
+
+		System.err.println("### Calculating statistics ###");
+
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 		Set<Statement> unsoundJumpNodes = checker.getUnsoundJumps();
 
@@ -550,6 +553,7 @@ public class EVMLiSA {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+			Set<KIntegerSet> stacksSizePerJump = checker.getStacksSizePerJump(jumpNode);
 
 			if (jumpNode instanceof Jump) {
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
@@ -559,23 +563,20 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!reachableFrom)
 					maybeUnreachable++;
-				else if (unsoundJumpNodes.contains(jumpNode)) {
-					notSolvedJumps++;
-					unsoundJumps++;
-				} else if (topStackValuesPerJump == null ||
+				else if (stacksSizePerJump.size() > 1 || topStackValuesPerJump == null ||
 						topStackValuesPerJump.contains(KIntegerSet.BOTTOM)) {
-					// Almeno uno stack e' vuoto e quindi siamo in un percorso
-					// inesistente
+					// Se abbiamo stacks di diverse dimensioni o almeno uno
+					// stacks e' vuoto siamo in un percorso inesistente
 					fakeMissedJumps++;
 					resolvedJumps++;
+					System.err.println(jumpNode + " fake path");
+					System.err.println("Stacks di diverse dimensioni: " + stacksSizePerJump);
+				} else if (unsoundJumpNodes.contains(jumpNode)) {
+					notSolvedJumps++;
+					unsoundJumps++;
+					System.err.println(jumpNode + " not solved");
+					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
 				} else {
-
-//					System.err.println();
-//					System.err.println(cfg.getIngoingEdges(jumpNode).size());
-//					System.err.println(cfg.getOutgoingEdges(jumpNode).size());
-//					System.err.println(unsoundJumpNodes.contains(jumpNode));
-//					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
-//					System.err.println();
 
 					boolean allNumericTop = true;
 
@@ -594,6 +595,8 @@ public class EVMLiSA {
 					else {
 						fakeMissedJumps++;
 						resolvedJumps++;
+						System.err.println(jumpNode + " fake path");
+						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
 					}
 				}
 			} else if (jumpNode instanceof Jumpi) {
@@ -604,15 +607,19 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 				else if (!reachableFrom)
 					maybeUnreachable++;
-				else if (unsoundJumpNodes.contains(jumpNode)) {
-					notSolvedJumps++;
-					unsoundJumps++;
-				} else if (topStackValuesPerJump == null ||
+				else if (stacksSizePerJump.size() > 1 || topStackValuesPerJump == null ||
 						topStackValuesPerJump.contains(KIntegerSet.BOTTOM)) {
-					// Almeno uno stack e' vuoto e quindi siamo in un percorso
-					// inesistente
+					// Se abbiamo stacks di diverse dimensioni o almeno uno
+					// stacks e' vuoto siamo in un percorso inesistente
 					fakeMissedJumps++;
 					resolvedJumps++;
+					System.err.println(jumpNode + " fake path");
+					System.err.println("Stacks di diverse dimensioni: " + stacksSizePerJump);
+				} else if (unsoundJumpNodes.contains(jumpNode)) {
+					notSolvedJumps++;
+					unsoundJumps++;
+					System.err.println(jumpNode + " not solved");
+					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
 				} else {
 					boolean allNumericTop = true;
 
@@ -631,6 +638,8 @@ public class EVMLiSA {
 					else {
 						fakeMissedJumps++;
 						resolvedJumps++;
+						System.err.println(jumpNode + " fake path");
+						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
 					}
 				}
 			}
@@ -638,6 +647,7 @@ public class EVMLiSA {
 
 		maybeUnsoundJumps += checker.getMaybeUnsoundJumps().size();
 
+		System.err.println();
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
