@@ -82,7 +82,7 @@ public class JumpSolver
 	/**
 	 * Map of stack sizes per jump
 	 */
-	private Map<Statement, Set<KIntegerSet>> stacksSizePerJump = new HashMap<>();
+	private Map<Statement, Set<Integer>> stacksSizePerJump = new HashMap<>();
 
 	/**
 	 * Yields the computed CFG.
@@ -109,7 +109,7 @@ public class JumpSolver
 		return topStackValuesPerJump.get(node);
 	}
 
-	public Set<KIntegerSet> getStacksSizePerJump(Statement node) {
+	public Set<Integer> getStacksSizePerJump(Statement node) {
 		return stacksSizePerJump.get(node);
 	}
 
@@ -152,9 +152,7 @@ public class JumpSolver
 					EVMAbstractState valueState = analysisResult.getState().getValueState();
 
 					// If the abstract stack is top or bottom or it is empty, we
-					// do not
-					// have enough information
-					// to solve the jump.
+					// do not have enough information to solve the jump.
 					if (valueState.isBottom()) {
 						this.unreachableJumps.add(node);
 					} else if (valueState.isTop()) {
@@ -163,18 +161,15 @@ public class JumpSolver
 						boolean allNumericTop = true;
 						boolean allBottom = true;
 
-						Set<KIntegerSet> stacksSize = new HashSet<>();
+						Set<Integer> stacksSize = new HashSet<>();
 						Set<KIntegerSet> stacksTop = new HashSet<>();
 
 						AbstractStackSet stacks = valueState.getStacks();
 						for (AbstractStack stack : stacks) {
-							stacksSize.add(new KIntegerSet(stack.size()));
+							stacksSize.add(Integer.valueOf(stack.size()));
 
-							// Siamo in un fake path: le successive statistiche
-							// non verrebbero usate e quindi ritorniamo
-							// ottimizzando i tempi
-							if (stacksSize.size() > 1)
-								break;
+//							if (stacksSize.size() > 1)
+//								break;
 
 							KIntegerSet topStack = stack.getTop();
 							if (allNumericTop && !topStack.isTopNumeric())
@@ -182,13 +177,7 @@ public class JumpSolver
 							if (allBottom && !topStack.isBottom())
 								allBottom = false;
 
-							stacksTop.add(topStack); // Questa istruzione
-														// equivale a fare
-														// direttamente
-														// `topStackValuesPerJump.put(node,
-														// valueState.getTop())`,
-														// ma facciamo cosi per
-														// ottimizzare i tempi
+							stacksTop.add(topStack);
 						}
 
 						stacksSizePerJump.put(node, stacksSize);
