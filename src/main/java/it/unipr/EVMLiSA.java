@@ -53,7 +53,7 @@ public class EVMLiSA {
 	private String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
 	private String FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
 	private String LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
-	private String SMARTCONTRACTS_FULLPATH = "";
+	private static String SMARTCONTRACTS_FULLPATH = "";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -533,7 +533,6 @@ public class EVMLiSA {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-//	public static Triple<Integer, Integer, Triple<Integer, Integer, Integer>> dumpStatistics(JumpSolver checker) {
 	public static MyLogger dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 
@@ -556,8 +555,6 @@ public class EVMLiSA {
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
 
-				Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-				Set<Integer> stacksSizePerJump = checker.getStacksSizePerJump(jumpNode);
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				boolean skip = false;
 
@@ -574,6 +571,9 @@ public class EVMLiSA {
 				}
 				// If the jump has been resolved, we skip the next checks
 				if (!skip) {
+					Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+					Set<Integer> stacksSizePerJump = checker.getStacksSizePerJump(jumpNode);
+
 					if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
 						definitelyUnreachable++;
 					else if (!reachableFrom)
