@@ -296,8 +296,8 @@ public class EVMLiSA {
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
 				try {
-					Thread.sleep(1001); // I can do max 5 API request in 1 sec
-										// to Etherscan.io
+					// I can do max 5 API request in 1 sec to Etherscan.io
+					Thread.sleep(1001);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -338,7 +338,6 @@ public class EVMLiSA {
 	}
 
 	private void runBenchmark() throws Exception {
-		// clean();
 		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
 
@@ -451,11 +450,7 @@ public class EVMLiSA {
 			handler.start();
 
 			long timeToWait;
-//			int millisPerSmartContract = 25000 * 10;
-//			int extra = 120000;
-//			long blocks = smartContracts.size() / CORES * 20000;
-//			timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
-//			timeToWait = timeToWait * 100;
+
 			timeToWait = 1000 * 60 * 60 * 24 * 3; // 3 days
 
 			// Statistics
@@ -872,9 +867,8 @@ public class EVMLiSA {
 
 			if (i % 5 == 0) {
 				try {
-					Thread.sleep(1001); // I can do max 5 API
-										// request in 1 sec to
-										// Etherscan.io
+					// I can do max 5 API request in 1 sec to Etherscan.io
+					Thread.sleep(1001);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

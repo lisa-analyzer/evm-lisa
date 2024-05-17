@@ -191,8 +191,6 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 				else
 					elements.add(i.divide(j));
 
-//					elements.add(i.divide(j, RoundingMode.FLOOR));
-
 		return new KIntegerSet(elements);
 	}
 

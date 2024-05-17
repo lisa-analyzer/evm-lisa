@@ -486,7 +486,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
 
-//						resultStack.push(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop() ? KIntegerSet.ZERO : opnd1.div(opnd2));
 						try {
 							resultStack.push(opnd1.div(opnd2));
 						} catch (ArithmeticException e) {
@@ -505,7 +504,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
 
-//						resultStack.push(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop() ? KIntegerSet.ZERO : opnd1.div(opnd2));
 						try {
 							resultStack.push(opnd1.div(opnd2));
 						} catch (ArithmeticException e) {
