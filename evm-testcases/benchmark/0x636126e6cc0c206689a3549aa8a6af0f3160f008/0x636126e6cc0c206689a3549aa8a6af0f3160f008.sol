@@ -4422,3 +4422,28 @@ DUP2
 PUSH2 0x14a1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH2 0xff2d
+'0e'(Unknown Opcode)
+'aa'(Unknown Opcode)
+INVALID
+NOT
+'d5'(Unknown Opcode)
+'ad'(Unknown Opcode)
+'b4'(Unknown Opcode)
+SWAP12
+OR
+'be'(Unknown Opcode)
+PUSH16 0xd8bd9a415edfeda98ccadeef9dbea6a4
+'e8'(Unknown Opcode)
+GAS
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

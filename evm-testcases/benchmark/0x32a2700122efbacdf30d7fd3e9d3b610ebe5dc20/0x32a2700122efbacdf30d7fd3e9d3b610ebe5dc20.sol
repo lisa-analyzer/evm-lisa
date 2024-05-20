@@ -7283,3 +7283,38 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c1'(Unknown Opcode)
+RETURNDATACOPY
+'ac'(Unknown Opcode)
+CODECOPY
+RETURN
+'0e'(Unknown Opcode)
+CALLDATALOAD
+LOG4
+INVALID
+COINBASE
+EXTCODEHASH
+SWAP16
+'25'(Unknown Opcode)
+MLOAD
+'fc'(Unknown Opcode)
+LOG4
+'bc'(Unknown Opcode)
+SWAP10
+MSIZE
+'4d'(Unknown Opcode)
+'2b'(Unknown Opcode)
+'aa'(Unknown Opcode)
+'b0'(Unknown Opcode)
+'df'(Unknown Opcode)
+SLT
+DIV
+SGT
+'df'(Unknown Opcode)
+SWAP16
+PUSH18 0xca0e64736f6c63430008140033

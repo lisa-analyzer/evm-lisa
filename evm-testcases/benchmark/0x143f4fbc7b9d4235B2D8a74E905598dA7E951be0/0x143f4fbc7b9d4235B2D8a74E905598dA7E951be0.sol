@@ -4370,3 +4370,20 @@ DUP4
 PUSH2 0x18f0
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a5'(Unknown Opcode)
+'21'(Unknown Opcode)
+COINBASE
+'e1'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'c4'(Unknown Opcode)
+PUSH31 0x6095db987e4aa0bd99f9b5a06ee6b7975cc36f3b560c34e8ac64736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

@@ -1860,7 +1860,6 @@ PUSH2 0x030f
 PUSH2 0x08df
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -1870,7 +1869,6 @@ ADDRESS
 DUP8
 'dd'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 BLOCKHASH
 'd2'(Unknown Opcode)
 'd6'(Unknown Opcode)

@@ -1909,3 +1909,30 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'af'(Unknown Opcode)
+STOP
+'aa'(Unknown Opcode)
+'d8'(Unknown Opcode)
+'29'(Unknown Opcode)
+'b7'(Unknown Opcode)
+BALANCE
+MSTORE
+'b5'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'e9'(Unknown Opcode)
+COINBASE
+'a5'(Unknown Opcode)
+SWAP13
+SWAP5
+PUSH16 0x9c99d2ca5dfde2e6a37cc408c9372986
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

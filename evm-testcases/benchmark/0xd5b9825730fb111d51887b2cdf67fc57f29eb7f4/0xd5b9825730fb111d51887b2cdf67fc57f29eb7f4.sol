@@ -10416,7 +10416,6 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -10425,7 +10424,6 @@ SHA3
 SWAP2
 'e8'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 CALL
 'e0'(Unknown Opcode)
 'f8'(Unknown Opcode)

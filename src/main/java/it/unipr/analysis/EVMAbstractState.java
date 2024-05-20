@@ -196,7 +196,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -208,7 +208,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -220,7 +220,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -232,7 +232,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -244,7 +244,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -256,7 +256,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -268,7 +268,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -280,7 +280,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -292,7 +292,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -304,7 +304,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -316,7 +316,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -328,7 +328,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -340,7 +340,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -352,7 +352,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -376,7 +376,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -388,7 +388,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -400,7 +400,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -486,7 +486,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
 
-//						resultStack.push(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop() ? KIntegerSet.ZERO : opnd1.div(opnd2));
 						try {
 							resultStack.push(opnd1.div(opnd2));
 						} catch (ArithmeticException e) {
@@ -505,7 +504,6 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
 
-//						resultStack.push(opnd2.equals(KIntegerSet.ZERO) && !opnd1.isTop() ? KIntegerSet.ZERO : opnd1.div(opnd2));
 						try {
 							resultStack.push(opnd1.div(opnd2));
 						} catch (ArithmeticException e) {
@@ -751,6 +749,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						if (target.isTop() || indexOfByte.isTop()) {
 							resultStack.push(KIntegerSet.NUMERIC_TOP);
+						} else if (target.isTopNotJumpdest() || indexOfByte.isTopNotJumpdest()) {
+							resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						} else {
 							for (Number value : target) {
 								byte[] valueAsByteArray = value.toByteArray();
@@ -825,7 +825,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -839,7 +839,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -853,7 +853,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -897,7 +897,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -942,7 +942,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -956,7 +956,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet blockNumber = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -988,6 +988,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							resultStack.push(KIntegerSet.ZERO);
 						} else if (offset.isTop()) {
 							resultStack.push(KIntegerSet.NUMERIC_TOP);
+							new_mu_i = mu_i;
+						} else if (offset.isTopNotJumpdest()) {
+							resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 							new_mu_i = mu_i;
 						} else {
 							resultStack.push(offset.mload(memory));
@@ -1074,7 +1077,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet key = resultStack.pop();
 
 						KIntegerSet valueToPush = KIntegerSet.BOTTOM;
-						if (key.isTop() || storage.isBottom())
+						if (key.isTop() || key.isTopNotJumpdest() || storage.isBottom())
 							valueToPush = KIntegerSet.NUMERIC_TOP;
 						else {
 							for (Number k : key)
@@ -1101,10 +1104,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						Memory storageCopy = storage.clone();
 
-						for (Number k : key)
-							storageCopy = storageCopy.putState(k, value);
+						if (!(key.isTopNumeric() && key.isTopNotJumpdest())) {
+							for (Number k : key)
+								storageCopy = storageCopy.putState(k, value);
 
-						storageResult = storageResult.lub(storageCopy);
+							storageResult = storageResult.lub(storageCopy);
+						}
+
 						result.add(resultStack);
 					}
 
@@ -1520,7 +1526,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1537,7 +1543,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet length = resultStack.pop();
 						KIntegerSet salt = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1557,7 +1563,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1577,7 +1583,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1610,7 +1616,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 
@@ -1629,7 +1635,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						KIntegerSet outOffset = resultStack.pop();
 						KIntegerSet outLength = resultStack.pop();
 
-						resultStack.push(KIntegerSet.NUMERIC_TOP);
+						resultStack.push(KIntegerSet.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
 

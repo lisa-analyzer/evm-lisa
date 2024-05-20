@@ -719,3 +719,31 @@ PUSH2 0x027f
 PUSH2 0x030b
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+EXTCODEHASH
+RETURN
+'eb'(Unknown Opcode)
+MULMOD
+'df'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'ea'(Unknown Opcode)
+DUP16
+'b0'(Unknown Opcode)
+SWAP6
+INVALID
+'d4'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'bf'(Unknown Opcode)
+COINBASE
+MSTORE8
+SAR
+'28'(Unknown Opcode)
+PUSH5 0x281d2f8080
+DUP16
+'4d'(Unknown Opcode)
+CODECOPY
+PUSH17 0x834ab08364736f6c63430008130033

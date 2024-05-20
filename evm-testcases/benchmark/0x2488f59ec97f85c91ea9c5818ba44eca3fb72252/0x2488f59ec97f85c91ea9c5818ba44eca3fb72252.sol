@@ -2767,7 +2767,6 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -2778,7 +2777,7 @@ CREATE
 'ec'(Unknown Opcode)
 '5e'(Unknown Opcode)
 '5e'(Unknown Opcode)
-
+INVALID
 CALL
 DUP9
 'de'(Unknown Opcode)

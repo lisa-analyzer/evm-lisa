@@ -654,3 +654,39 @@ SWAP1
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+INVALID
+DUP2
+SWAP4
+'0e'(Unknown Opcode)
+'f7'(Unknown Opcode)
+SHA3
+'22'(Unknown Opcode)
+SWAP4
+GASLIMIT
+'da'(Unknown Opcode)
+'bb'(Unknown Opcode)
+'28'(Unknown Opcode)
+SWAP1
+CALLER
+'d5'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'ef'(Unknown Opcode)
+DELEGATECALL
+DELEGATECALL
+SWAP4
+GASPRICE
+STATICCALL
+JUMPDEST
+'2b'(Unknown Opcode)
+'23'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'2a'(Unknown Opcode)
+PUSH12 0x5d732efd64736f6c63430008
+AND
+STOP
+CALLER

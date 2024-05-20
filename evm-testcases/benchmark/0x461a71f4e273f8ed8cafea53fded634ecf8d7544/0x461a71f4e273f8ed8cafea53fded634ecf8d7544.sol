@@ -1602,3 +1602,41 @@ PUSH20 0x2062616c616e636545524332303a207472616e73
 PUSH7 0x657220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b2'(Unknown Opcode)
+PUSH5 0x0118b53430
+'21'(Unknown Opcode)
+DUP9
+LOG0
+'e1'(Unknown Opcode)
+'e9'(Unknown Opcode)
+MSTORE
+TIMESTAMP
+'d9'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'ed'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'cf'(Unknown Opcode)
+'d8'(Unknown Opcode)
+CALLDATALOAD
+LOG4
+BASEFEE
+'ce'(Unknown Opcode)
+GASLIMIT
+EQ
+SWAP13
+MOD
+SAR
+'c0'(Unknown Opcode)
+EQ
+'2e'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

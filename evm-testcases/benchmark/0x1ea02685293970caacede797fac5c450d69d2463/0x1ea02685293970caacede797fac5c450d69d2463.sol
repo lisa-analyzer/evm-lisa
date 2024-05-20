@@ -11711,3 +11711,17 @@ SWAP2
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MSIZE
+'2b'(Unknown Opcode)
+DIFFICULTY
+'fc'(Unknown Opcode)
+'0f'(Unknown Opcode)
+PUSH17 0x50f01f07051a367cd7050af002f179f3ee
+'b4'(Unknown Opcode)
+'ce'(Unknown Opcode)
+PUSH27 0x48c23e2fab2364736f6c63430008170033

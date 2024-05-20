@@ -2596,3 +2596,21 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b2'(Unknown Opcode)
+'ec'(Unknown Opcode)
+CREATE2
+'de'(Unknown Opcode)
+'c6'(Unknown Opcode)
+DIV
+'4e'(Unknown Opcode)
+'5e'(Unknown Opcode)
+SWAP6
+'b0'(Unknown Opcode)
+'be'(Unknown Opcode)
+PUSH21 0x697e21cb67ef0df314a7f710922ebaaf13d4a1df64
+PUSH20 0x6f6c63430008130033

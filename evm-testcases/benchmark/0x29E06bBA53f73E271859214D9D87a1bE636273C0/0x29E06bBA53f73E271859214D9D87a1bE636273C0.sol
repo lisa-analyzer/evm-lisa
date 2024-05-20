@@ -5526,3 +5526,46 @@ DUP3
 PUSH2 0x1e03
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+ADD
+MSTORE
+'cc'(Unknown Opcode)
+SELFDESTRUCT
+'ef'(Unknown Opcode)
+'4e'(Unknown Opcode)
+'d0'(Unknown Opcode)
+EXTCODEHASH
+'d2'(Unknown Opcode)
+'d7'(Unknown Opcode)
+'e5'(Unknown Opcode)
+LT
+CALLDATASIZE
+COINBASE
+EXTCODESIZE
+LOG1
+'cd'(Unknown Opcode)
+BLOCKHASH
+LOG1
+'a6'(Unknown Opcode)
+POP
+GASPRICE
+'be'(Unknown Opcode)
+'c7'(Unknown Opcode)
+LOG0
+SHL
+'4e'(Unknown Opcode)
+SIGNEXTEND
+SWAP14
+'cc'(Unknown Opcode)
+LOG3
+'fc'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

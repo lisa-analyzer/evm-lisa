@@ -3,6 +3,7 @@ package it.unipr;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.MyLogger;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -43,7 +44,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Triple;
 
 public class EVMLiSA {
 	private String OUTPUT_DIR = "execution/results";
@@ -53,7 +53,7 @@ public class EVMLiSA {
 	private String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
 	private String FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
 	private String LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
-	private String SMARTCONTRACTS_FULLPATH = "";
+	private static String SMARTCONTRACTS_FULLPATH = "";
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -61,7 +61,8 @@ public class EVMLiSA {
 	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
 	private int CORES;
 	private long startOfExecutionTime = 0;
-	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, Not solved jumps, Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
+	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
+			+ "Not solved jumps, Unsound jumps, Maybe unsound jumps, Definitely fake missed jumps, Maybe fake missed jumps, % Total Solved, Time (millis), Notes \n";
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -227,7 +228,7 @@ public class EVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = false;
-		conf.workdir = outputDir;
+		conf.workdir = outputDir + "/" + addressSC;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
@@ -246,44 +247,18 @@ public class EVMLiSA {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
 
-			EVMCFG baseCfg = checker.getComputedCFG();
-
-			Triple<Integer, Integer, Triple<Integer, Integer, Integer>> pair;
-
-			pair = dumpStatistics(checker);
-
+			// Print the results
 			finish = System.currentTimeMillis();
 
-			String msg2 = "\nResults \n" +
-					"Address: " + addressSC + "\n" +
-					"Opcodes: " + baseCfg.getOpcodeCount() + "\n" +
-					"Jumps: " + baseCfg.getAllJumps().size() + "\n" +
-					"PreciselyResolvedJumps: " + pair.getLeft() + "\n" +
-					"SoundResolvedJumps: " + pair.getMiddle() + "\n" +
-					"DefinitelyUnreachableJumps: " + pair.getRight().getLeft() + "\n" +
-					"MaybeUnreachableJumps: " + pair.getRight().getMiddle() + "\n" +
-					"NotSolvedJumps: " + pair.getRight().getRight() + "\n" +
-					"Time (in millis): " + (finish - start) + "\n";
+			String msg = EVMLiSA.dumpStatistics(checker)
+					.address(addressSC)
+					.time(finish - start)
+					.build()
+					.toString();
 
-			System.out.println(msg2);
+			System.out.println(msg);
 
 			if (dumpStatistics) {
-				String msg = MyLogger.newLogger()
-						.address(addressSC)
-						.opcodes(baseCfg.getOpcodeCount())
-						.jumps(baseCfg.getAllJumps().size())
-						.preciselyResolvedJumps(pair.getLeft())
-						.soundResolvedJumps(pair.getMiddle())
-						.definitelyUnreachableJumps(pair.getRight().getLeft())
-						.maybeUnreachableJumps(pair.getRight().getMiddle())
-						.notSolvedJumps(pair.getRight().getRight())
-						.unsoundJumps(checker.getUnsoundJumps().size())
-						.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
-						.time(finish - start)
-						.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
-								+ AbstractStackSet.getStackSetLimit())
-						.build().toString();
-
 				toFileStatistics(msg);
 				System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
 			}
@@ -321,8 +296,8 @@ public class EVMLiSA {
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
 				try {
-					Thread.sleep(1001); // I can do max 5 API request in 1 sec
-										// to Etherscan.io
+					// I can do max 5 API request in 1 sec to Etherscan.io
+					Thread.sleep(1001);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -354,30 +329,15 @@ public class EVMLiSA {
 		lisa.run(program);
 
 		// Print the results
-		EVMCFG baseCfg = checker.getComputedCFG();
-
-		Triple<Integer, Integer, Triple<Integer, Integer, Integer>> pair = EVMLiSA.dumpStatistics(checker);
 		long finish = System.currentTimeMillis();
 
-		return MyLogger.newLogger()
+		return EVMLiSA.dumpStatistics(checker)
 				.address(CONTRACT_ADDR)
-				.opcodes(baseCfg.getNodesCount())
-				.jumps(baseCfg.getAllJumps().size())
-				.preciselyResolvedJumps(pair.getLeft())
-				.soundResolvedJumps(pair.getMiddle())
-				.definitelyUnreachableJumps(pair.getRight().getLeft())
-				.maybeUnreachableJumps(pair.getRight().getMiddle())
-				.notSolvedJumps(pair.getRight().getRight())
-				.unsoundJumps(checker.getUnsoundJumps().size())
-				.maybeUnsoundJumps(checker.getMaybeUnsoundJumps().size())
 				.time(finish - start)
-				.notes("Stack.size: " + AbstractStack.getStackLimit() + " Stack-set.size: "
-						+ AbstractStackSet.getStackSetLimit())
 				.build();
 	}
 
 	private void runBenchmark() throws Exception {
-		clean();
 		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
 
@@ -489,11 +449,9 @@ public class EVMLiSA {
 			Thread handler = new Thread(runnableHandler);
 			handler.start();
 
-			int millisPerSmartContract = 25000 * 10;
-			int extra = 120000;
-			long blocks = smartContracts.size() / CORES * 20000;
-			long timeToWait = smartContracts.size() * millisPerSmartContract + extra + blocks;
-			timeToWait = timeToWait * 100;
+			long timeToWait;
+
+			timeToWait = 1000 * 60 * 60 * 24 * 3; // 3 days
 
 			// Statistics
 			long minutes = (timeToWait / 1000) / 60;
@@ -570,57 +528,105 @@ public class EVMLiSA {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-	public static Triple<Integer, Integer, Triple<Integer, Integer, Integer>> dumpStatistics(JumpSolver checker) {
+	public static MyLogger dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
-		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
-		int preciselyResolvedJumps = 0;
-		int soundResolvedJumps = 0;
 
+		System.err.println("### Calculating statistics ###");
+
+		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
+		Set<Statement> unsoundJumpNodes = checker.getUnsoundJumps();
+
+		int resolvedJumps = 0;
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int notSolvedJumps = 0;
+		int unsoundJumps = 0;
+		int maybeUnsoundJumps = 0;
+		int definitelyFakeMissedJumps = 0;
+		int maybeFakeMissedJumps = 0;
 
 		// we are safe supposing that we have a single entry point
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
-		for (Statement jumpNode : cfg.getAllJumps())
-			if (jumpNode instanceof Jump) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 1)
-					preciselyResolvedJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() > 1)
-					soundResolvedJumps++;
-				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
-					definitelyUnreachable++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
-					maybeUnreachable++;
-				else
-					notSolvedJumps++;
-			} else if (jumpNode instanceof Jumpi) {
-				if (cfg.getOutgoingEdges(jumpNode).size() == 2)
-					preciselyResolvedJumps++;
-				else if (cfg.getOutgoingEdges(jumpNode).size() > 2)
-					soundResolvedJumps++;
-				else if (cfg.reachableFrom(entryPoint, jumpNode) && unreachableJumpNodes.contains(jumpNode))
-					definitelyUnreachable++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode))
-					maybeUnreachable++;
-				else
-					notSolvedJumps++;
-			}
+		for (Statement jumpNode : cfg.getAllJumps()) {
+			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
 
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+				boolean skip = false;
+
+				if (jumpNode instanceof Jump) {
+					if (cfg.getOutgoingEdges(jumpNode).size() >= 1) {
+						resolvedJumps++;
+						skip = true;
+					}
+				} else if (jumpNode instanceof Jumpi) {
+					if (cfg.getOutgoingEdges(jumpNode).size() >= 2) {
+						resolvedJumps++;
+						skip = true;
+					}
+				}
+				// If the jump has been resolved, we skip the next checks
+				if (!skip) {
+					Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+					Set<Integer> stacksSizePerJump = checker.getStacksSizePerJump(jumpNode);
+
+					if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+						definitelyUnreachable++;
+					else if (!reachableFrom)
+						maybeUnreachable++;
+					else if (topStackValuesPerJump == null) {
+						// If all stacks are bottom, then we have a
+						// maybeFakeMissedJump
+						maybeFakeMissedJumps++;
+					} else if (!topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
+						// If the elements at the top of the stacks are all
+						// different from NUMERIC_TOP, then we are sure that it
+						// is definitelyFakeMissedJumps
+						definitelyFakeMissedJumps++;
+					} else if (topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)
+							&& stacksSizePerJump.size() == 1) {
+						// If we have only one stack and the top element is
+						// NUMERIC_TOP, then the jump is unsound
+						notSolvedJumps++;
+						unsoundJumps++;
+						System.err.println(jumpNode + " not solved");
+						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
+					} else {
+						// In all other cases, we have a maybeFakeMissedJump
+						maybeFakeMissedJumps++;
+					}
+				}
+			}
+		}
+
+		maybeUnsoundJumps += checker.getMaybeUnsoundJumps().size();
+
+		System.err.println();
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-		System.err.println("Precisely solved jumps: " + preciselyResolvedJumps);
-		System.err.println("Sound solved jumps: " + soundResolvedJumps);
+		System.err.println("Resolved jumps: " + (resolvedJumps + definitelyUnreachable + maybeUnreachable));
 		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
+		System.err.println("Definitely fake missed jumps: " + definitelyFakeMissedJumps);
+		System.err.println("Maybe fake missed jumps: " + maybeFakeMissedJumps);
 		System.err.println("Not solved jumps: " + notSolvedJumps);
-		System.err.println("Unsound jumps: " + checker.getUnsoundJumps().size());
-		System.err.println("Maybe unsound jumps: " + checker.getMaybeUnsoundJumps().size());
+		System.err.println("Unsound jumps: " + unsoundJumps);
+		System.err.println("Maybe unsound jumps: " + maybeUnsoundJumps);
 		System.err.println("##############");
 
-		return Triple.of(preciselyResolvedJumps, soundResolvedJumps,
-				Triple.of(definitelyUnreachable, maybeUnreachable, notSolvedJumps));
+		return MyLogger.newLogger()
+				.opcodes(cfg.getOpcodeCount())
+				.jumps(cfg.getAllJumps().size())
+				.preciselyResolvedJumps(resolvedJumps)
+				.definitelyUnreachableJumps(definitelyUnreachable)
+				.maybeUnreachableJumps(maybeUnreachable)
+				.notSolvedJumps(notSolvedJumps)
+				.unsoundJumps(unsoundJumps)
+				.definitelyFakeMissedJumps(definitelyFakeMissedJumps)
+				.maybeFakeMissedJumps(maybeFakeMissedJumps)
+				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
+						+ AbstractStackSet.getStackSetLimit());
 	}
 
 	/**
@@ -850,7 +856,6 @@ public class EVMLiSA {
 	 *
 	 * @throws Exception if an error occurs during the process.
 	 */
-	@SuppressWarnings("unused")
 	private void saveSmartContractsFromEtherscan() throws Exception {
 		List<String> smartContracts = readSmartContractsFromFile();
 
@@ -862,9 +867,8 @@ public class EVMLiSA {
 
 			if (i % 5 == 0) {
 				try {
-					Thread.sleep(1001); // I can do max 5 API
-										// request in 1 sec to
-										// Etherscan.io
+					// I can do max 5 API request in 1 sec to Etherscan.io
+					Thread.sleep(1001);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -889,6 +893,18 @@ public class EVMLiSA {
 				continue;
 			}
 		}
+	}
+
+	/**
+	 * Save the bytecode of smart contracts
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unused")
+	private void downloadBytecode() throws Exception {
+		SMARTCONTRACTS_FULLPATH = "benchmark/5000-benchmark.txt";
+		OUTPUT_DIR = "bytecode";
+		saveSmartContractsFromEtherscan();
 	}
 
 	public class Converter {

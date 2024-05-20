@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
-	private static int STACK_LIMIT = 64;
+	private static int STACK_LIMIT = 32;
 	private static final AbstractStack TOP = new AbstractStack(
 			new LinkedList<KIntegerSet>(Collections.nCopies(STACK_LIMIT, KIntegerSet.NUMERIC_TOP)));
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
@@ -97,23 +97,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	@Override
 	public String toString() {
 		return this.stack.toString();
-		// We use the bottom part for debugging
-//		String result = "{";
-//
-//		for (int i = STACK_LIMIT - size(); i < STACK_LIMIT; i++) {
-//			if (stack.get(i).isBottom())
-//				result += Lattice.bottomRepresentation();
-//			else if (stack.get(i).isBottom())
-//				result += Lattice.topRepresentation();
-//			else
-//				result += stack.get(i);
-//
-//			if ((i + 1) != STACK_LIMIT)
-//				result += ", ";
-//		}
-//
-//		result += "}";
-//		return result;
 	}
 
 	@Override
@@ -170,9 +153,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Getter for the Interval at the top of the stack.
+	 * Getter for the KIntegerSet at the top of the stack.
 	 * 
-	 * @return the Interval at the top of the stack.
+	 * @return the KIntegerSet at the top of the stack.
 	 */
 	public KIntegerSet getTop() {
 		return this.stack.getLast();
@@ -186,9 +169,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Pushes the specified interval onto the stack.
+	 * Pushes the specified KIntegerSet onto the stack.
 	 *
-	 * @param target the interval to be pushed onto the stack.
+	 * @param target the KIntegerSet to be pushed onto the stack.
 	 */
 	public void push(KIntegerSet target) {
 		stack.addLast(target);
@@ -196,9 +179,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Pops the interval from the stack.
+	 * Pops the KIntegerSet from the stack.
 	 *
-	 * @return the interval at the top of the stack.
+	 * @return the KIntegerSet at the top of the stack.
 	 */
 	public KIntegerSet pop() {
 		KIntegerSet result = stack.removeLast();

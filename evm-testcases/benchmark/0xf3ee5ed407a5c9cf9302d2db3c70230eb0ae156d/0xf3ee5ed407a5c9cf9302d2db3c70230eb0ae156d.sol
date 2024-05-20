@@ -654,14 +654,13 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
 SLT
 SHA3
 SWAP9
-
+INVALID
 LOG0
 'b9'(Unknown Opcode)
 SAR
@@ -670,7 +669,6 @@ POP
 GT
 PUSH2 0xcea8
 INVALID
-SELFDESTRUCT
 PUSH9 0x03fb6db9befd405c8f
 'd1'(Unknown Opcode)
 'e5'(Unknown Opcode)

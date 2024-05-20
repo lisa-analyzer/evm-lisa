@@ -5849,3 +5849,60 @@ DUP5
 PUSH2 0x1404
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+POP
+ISZERO
+CHAINID
+'dc'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'c0'(Unknown Opcode)
+'dc'(Unknown Opcode)
+PUSH28 0x5491054abd06c98332de9db81869cc805b58cf557d8c976364736f6c
+PUSH4 0x43000812
+STOP
+CALLER
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b2'(Unknown Opcode)
+'b3'(Unknown Opcode)
+'ab'(Unknown Opcode)
+'e8'(Unknown Opcode)
+DUP10
+'ee'(Unknown Opcode)
+'0e'(Unknown Opcode)
+LOG3
+TIMESTAMP
+CALLDATASIZE
+'e4'(Unknown Opcode)
+'2e'(Unknown Opcode)
+RETURN
+'24'(Unknown Opcode)
+MSIZE
+SWAP3
+SHL
+'e9'(Unknown Opcode)
+COINBASE
+SUB
+'fc'(Unknown Opcode)
+'2a'(Unknown Opcode)
+SWAP3
+PUSH2 0xdc98
+'0c'(Unknown Opcode)
+GT
+'ee'(Unknown Opcode)
+'f8'(Unknown Opcode)
+XOR
+RETURNDATACOPY
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

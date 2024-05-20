@@ -10736,3 +10736,20 @@ SWAP2
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'cc'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'da'(Unknown Opcode)
+DUP11
+'2d'(Unknown Opcode)
+'e0'(Unknown Opcode)
+'b5'(Unknown Opcode)
+BASEFEE
+'d9'(Unknown Opcode)
+DUP11
+STOP
+PUSH31 0x52340ee801449d3358ec0b54b93d29d7e585cb9f64736f6c63430008170033

@@ -6682,3 +6682,40 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x7358221220450f
+'ac'(Unknown Opcode)
+DUP4
+DUP4
+'e3'(Unknown Opcode)
+DUP5
+'1f'(Unknown Opcode)
+'db'(Unknown Opcode)
+'27'(Unknown Opcode)
+'d3'(Unknown Opcode)
+INVALID
+'2f'(Unknown Opcode)
+DUP5
+'e5'(Unknown Opcode)
+'5d'(Unknown Opcode)
+BLOCKHASH
+PC
+'e3'(Unknown Opcode)
+DIV
+DUP15
+'29'(Unknown Opcode)
+'c1'(Unknown Opcode)
+CALLER
+SHA3
+INVALID
+PUSH1 0x0e
+'e4'(Unknown Opcode)
+DUP5
+'0f'(Unknown Opcode)
+LOG0
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

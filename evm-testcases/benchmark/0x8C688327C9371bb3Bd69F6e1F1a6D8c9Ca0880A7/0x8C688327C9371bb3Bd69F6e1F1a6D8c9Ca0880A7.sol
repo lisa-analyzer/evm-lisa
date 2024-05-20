@@ -5286,3 +5286,31 @@ PUSH2 0x0639
 PUSH2 0x1b3b
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a8'(Unknown Opcode)
+SWAP8
+SELFDESTRUCT
+SSTORE
+'0d'(Unknown Opcode)
+SDIV
+LT
+PUSH15 0xd2f68441d245085e6218ecfed53e50
+'b5'(Unknown Opcode)
+'c3'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'b3'(Unknown Opcode)
+'df'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'2e'(Unknown Opcode)
+'bc'(Unknown Opcode)
+RETURN
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

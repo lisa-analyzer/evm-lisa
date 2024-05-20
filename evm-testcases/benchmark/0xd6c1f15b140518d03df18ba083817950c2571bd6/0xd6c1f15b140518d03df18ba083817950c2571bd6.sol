@@ -4504,7 +4504,6 @@ DIV
 SWAP1
 JUMP
 INVALID
-SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -4529,7 +4528,7 @@ POP
 '4b'(Unknown Opcode)
 '1f'(Unknown Opcode)
 'db'(Unknown Opcode)
-
+INVALID
 'e2'(Unknown Opcode)
 PUSH3 0x94e902
 DUP12

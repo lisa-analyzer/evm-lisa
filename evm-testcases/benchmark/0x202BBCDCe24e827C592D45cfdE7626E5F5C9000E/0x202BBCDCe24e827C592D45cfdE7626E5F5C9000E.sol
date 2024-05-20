@@ -10110,3 +10110,23 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'bc'(Unknown Opcode)
+SWAP12
+PUSH11 0x65d3aaf255e8f14d4a56b9
+CODESIZE
+'27'(Unknown Opcode)
+'df'(Unknown Opcode)
+SSTORE
+'ca'(Unknown Opcode)
+DUP6
+ADD
+SELFDESTRUCT
+CODESIZE
+PUSH2 0x2c2e
+'24'(Unknown Opcode)
+PUSH20 0x1a493d5d64736f6c63430008170033

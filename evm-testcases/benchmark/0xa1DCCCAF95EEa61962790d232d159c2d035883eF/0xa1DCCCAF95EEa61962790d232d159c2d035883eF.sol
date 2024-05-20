@@ -3055,3 +3055,25 @@ PUSH2 0x0387
 PUSH2 0x1171
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH21 0xfaecfe1af6721edfc5e27ec5037cd264ae6bd382b3
+POP
+'e9'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'1f'(Unknown Opcode)
+'4b'(Unknown Opcode)
+GASLIMIT
+INVALID
+SWAP7
+DUP16
+LOG4
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

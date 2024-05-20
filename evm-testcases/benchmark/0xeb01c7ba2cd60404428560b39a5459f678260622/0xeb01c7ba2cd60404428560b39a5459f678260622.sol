@@ -8,3 +8,21 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH12 0x8f62dc21450932572842cfa6
+'c7'(Unknown Opcode)
+'c9'(Unknown Opcode)
+RETURNDATACOPY
+'1f'(Unknown Opcode)
+'dc'(Unknown Opcode)
+'b3'(Unknown Opcode)
+CREATE
+BALANCE
+XOR
+'0c'(Unknown Opcode)
+PUSH10 0x089231287545362a6473
+PUSH16 0x6c63430008110033

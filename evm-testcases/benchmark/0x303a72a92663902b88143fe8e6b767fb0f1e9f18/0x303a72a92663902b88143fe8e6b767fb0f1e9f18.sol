@@ -1494,3 +1494,42 @@ SWAP1
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b9'(Unknown Opcode)
+'c6'(Unknown Opcode)
+BALANCE
+'2d'(Unknown Opcode)
+'2d'(Unknown Opcode)
+SWAP4
+COINBASE
+'4d'(Unknown Opcode)
+'bc'(Unknown Opcode)
+JUMPI
+EXTCODESIZE
+'4b'(Unknown Opcode)
+NOT
+SWAP8
+'ce'(Unknown Opcode)
+'e7'(Unknown Opcode)
+'1f'(Unknown Opcode)
+'5c'(Unknown Opcode)
+PUSH4 0x17d70f34
+'f8'(Unknown Opcode)
+'af'(Unknown Opcode)
+'cb'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'22'(Unknown Opcode)
+'ac'(Unknown Opcode)
+DUP13
+ADDRESS
+'d5'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

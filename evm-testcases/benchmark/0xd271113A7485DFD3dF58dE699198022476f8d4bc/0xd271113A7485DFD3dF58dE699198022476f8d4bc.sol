@@ -5609,3 +5609,38 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+STOP
+'fc'(Unknown Opcode)
+GASPRICE
+'bf'(Unknown Opcode)
+CALLER
+'ca'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'c2'(Unknown Opcode)
+'b2'(Unknown Opcode)
+'de'(Unknown Opcode)
+LOG2
+'24'(Unknown Opcode)
+MSTORE
+'e7'(Unknown Opcode)
+BALANCE
+'1f'(Unknown Opcode)
+'ec'(Unknown Opcode)
+SWAP3
+NUMBER
+DUP13
+'b3'(Unknown Opcode)
+'dd'(Unknown Opcode)
+'1f'(Unknown Opcode)
+'ca'(Unknown Opcode)
+REVERT
+'b6'(Unknown Opcode)
+'b4'(Unknown Opcode)
+'d8'(Unknown Opcode)
+CALLVALUE
+PUSH22 0xdf5964736f6c63430008100033

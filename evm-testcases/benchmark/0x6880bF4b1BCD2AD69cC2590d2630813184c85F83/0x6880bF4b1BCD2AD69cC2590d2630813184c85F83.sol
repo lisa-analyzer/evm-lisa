@@ -1234,3 +1234,31 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d6'(Unknown Opcode)
+'28'(Unknown Opcode)
+SWAP2
+DUP7
+DUP13
+'2c'(Unknown Opcode)
+CALL
+SMOD
+'bc'(Unknown Opcode)
+'c7'(Unknown Opcode)
+RETURNDATASIZE
+'f8'(Unknown Opcode)
+'b0'(Unknown Opcode)
+SSTORE
+POP
+ADDMOD
+'fc'(Unknown Opcode)
+'cf'(Unknown Opcode)
+'e6'(Unknown Opcode)
+CHAINID
+ADD
+'b3'(Unknown Opcode)
+PUSH25 0x84d474d41224eb32ba64736f6c63430008130033

@@ -5461,3 +5461,66 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d7'(Unknown Opcode)
+PUSH20 0x727ff288005b1c20354620a615aeb6421b2b36a4
+AND
+'cc'(Unknown Opcode)
+DIFFICULTY
+'e6'(Unknown Opcode)
+'e0'(Unknown Opcode)
+DIFFICULTY
+DUP13
+SWAP8
+SHR
+SWAP8
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER
+'24'(Unknown Opcode)
+'1e'(Unknown Opcode)
+'cf'(Unknown Opcode)
+AND
+'d7'(Unknown Opcode)
+SWAP14
+'0f'(Unknown Opcode)
+DUP14
+'bf'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'2c'(Unknown Opcode)
+'bc'(Unknown Opcode)
+SMOD
+INVALID
+OR
+DUP5
+DIV
+'25'(Unknown Opcode)
+SWAP8
+PUSH13 0xf0667f022fe9877caa831b08a2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP15
+'d4'(Unknown Opcode)
+CODESIZE
+DUP7
+DUP12
+'2c'(Unknown Opcode)
+'0f'(Unknown Opcode)
+DUP7
+BALANCE
+COINBASE
+'f7'(Unknown Opcode)
+PUSH14 0xf4cd51fe9861d9cabe7c0867715a
+'e4'(Unknown Opcode)
+LOG4
+'29'(Unknown Opcode)
+PUSH30 0xc2b664736f6c63430008120033

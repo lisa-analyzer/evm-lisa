@@ -6284,3 +6284,61 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c5'(Unknown Opcode)
+'29'(Unknown Opcode)
+'0f'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'d7'(Unknown Opcode)
+TIMESTAMP
+GASPRICE
+LOG2
+STATICCALL
+SWAP5
+'b5'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'d3'(Unknown Opcode)
+'e0'(Unknown Opcode)
+PUSH21 0x248e522e57334a24808aad981463df066864736f6c
+PUSH4 0x43000817
+STOP
+CALLER
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b7'(Unknown Opcode)
+'ec'(Unknown Opcode)
+'5d'(Unknown Opcode)
+'cb'(Unknown Opcode)
+'a8'(Unknown Opcode)
+ISZERO
+'24'(Unknown Opcode)
+'c0'(Unknown Opcode)
+PUSH8 0xfb49d13c31832e0d
+DUP5
+'f9'(Unknown Opcode)
+'d0'(Unknown Opcode)
+'2d'(Unknown Opcode)
+EXTCODECOPY
+'2e'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'fb'(Unknown Opcode)
+'e0'(Unknown Opcode)
+'bf'(Unknown Opcode)
+EXTCODESIZE
+STATICCALL
+SWAP3
+'a9'(Unknown Opcode)
+SMOD
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

@@ -3965,3 +3965,22 @@ DUP2
 PUSH2 0x17fe
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'db'(Unknown Opcode)
+DUP12
+'dd'(Unknown Opcode)
+'c8'(Unknown Opcode)
+'e6'(Unknown Opcode)
+EXP
+'c0'(Unknown Opcode)
+PUSH6 0xa5d9b6717b58
+'b2'(Unknown Opcode)
+'21'(Unknown Opcode)
+'a8'(Unknown Opcode)
+'1e'(Unknown Opcode)
+PUSH5 0x99ea4440e7
+PUSH31 0xe16b015f938e4c64736f6c63430008170033

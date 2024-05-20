@@ -8874,3 +8874,24 @@ PUSH9 0x0cff592b805c2deb80
 'b1'(Unknown Opcode)
 'db'(Unknown Opcode)
 RETURN
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d5'(Unknown Opcode)
+PUSH22 0x6756294cee5b4320f152a022906e8cce523bdf88ef16
+GASLIMIT
+DUP10
+XOR
+'0f'(Unknown Opcode)
+'c8'(Unknown Opcode)
+INVALID
+POP
+'4c'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

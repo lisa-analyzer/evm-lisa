@@ -10125,3 +10125,33 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+LOG3
+'b9'(Unknown Opcode)
+'bb'(Unknown Opcode)
+'b0'(Unknown Opcode)
+XOR
+'e2'(Unknown Opcode)
+'c3'(Unknown Opcode)
+SWAP2
+'de'(Unknown Opcode)
+JUMPDEST
+PUSH13 0x75b146874162cf91e6ec494e49
+SGT
+GASPRICE
+INVALID
+'0c'(Unknown Opcode)
+'c5'(Unknown Opcode)
+BALANCE
+'b8'(Unknown Opcode)
+'ad'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+MOD
+EXP
+STOP
+CALLER

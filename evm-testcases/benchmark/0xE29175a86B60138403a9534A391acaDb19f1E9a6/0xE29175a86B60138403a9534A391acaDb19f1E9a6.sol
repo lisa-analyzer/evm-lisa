@@ -2974,3 +2974,28 @@ SUB
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP5
+'ca'(Unknown Opcode)
+'e8'(Unknown Opcode)
+'5e'(Unknown Opcode)
+MOD
+'b0'(Unknown Opcode)
+RETURNDATACOPY
+'ea'(Unknown Opcode)
+'fb'(Unknown Opcode)
+'e9'(Unknown Opcode)
+JUMPDEST
+OR
+CALLCODE
+PUSH23 0x5bae585bc1b9e7b853b6801e3ac40263851164736f6c63
+NUMBER
+STOP
+ADDMOD
+EXP
+STOP
+CALLER

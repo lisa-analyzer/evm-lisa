@@ -11458,3 +11458,29 @@ PUSH6 0x45524332303a
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x735822122075c6
+CALLVALUE
+'4c'(Unknown Opcode)
+'f7'(Unknown Opcode)
+'df'(Unknown Opcode)
+PUSH12 0x7111dc5449a5620e818921c4
+STATICCALL
+'f9'(Unknown Opcode)
+MSIZE
+SWAP2
+DUP10
+'ea'(Unknown Opcode)
+'d5'(Unknown Opcode)
+'b7'(Unknown Opcode)
+INVALID
+'cf'(Unknown Opcode)
+'2e'(Unknown Opcode)
+XOR
+'e1'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SUB
+STOP
+CALLER

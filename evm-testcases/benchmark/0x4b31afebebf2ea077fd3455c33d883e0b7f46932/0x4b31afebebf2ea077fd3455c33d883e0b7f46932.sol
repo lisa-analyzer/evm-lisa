@@ -12055,3 +12055,34 @@ CREATE
 CALLDATACOPY
 EXTCODESIZE
 'c7'(Unknown Opcode)
+PUSH17 0x802ebd1e6c918eb78fdef843cdb37b0fa2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c5'(Unknown Opcode)
+SWAP7
+'aa'(Unknown Opcode)
+SWAP9
+'5d'(Unknown Opcode)
+'ba'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'ca'(Unknown Opcode)
+REVERT
+'ee'(Unknown Opcode)
+'b1'(Unknown Opcode)
+DUP13
+DUP13
+'bf'(Unknown Opcode)
+SWAP4
+SAR
+'21'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'c8'(Unknown Opcode)
+MUL
+'e7'(Unknown Opcode)
+'4c'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'e6'(Unknown Opcode)
+'28'(Unknown Opcode)
+PUSH20 0xa19459ef94d264736f6c63430006090033

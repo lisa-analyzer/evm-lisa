@@ -3850,3 +3850,33 @@ CALLCODE
 DUP5
 NOT
 INVALID
+PUSH32 0x9722a3daafe3b4186f6b6457e0a26469706673582212207c1794b753fd060a54
+'f9'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'24'(Unknown Opcode)
+'ec'(Unknown Opcode)
+MSTORE8
+MSTORE8
+'ed'(Unknown Opcode)
+'e9'(Unknown Opcode)
+SGT
+'4b'(Unknown Opcode)
+'cb'(Unknown Opcode)
+'25'(Unknown Opcode)
+CHAINID
+'d7'(Unknown Opcode)
+'2a'(Unknown Opcode)
+'e5'(Unknown Opcode)
+SHA3
+RETURN
+SWAP15
+CALL
+'a8'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'d0'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

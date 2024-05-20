@@ -1199,3 +1199,27 @@ SHA3
 PUSH13 0x6f772d6c6576656c2064656c65
 PUSH8 0x6174652063616c6c
 SHA3
+PUSH7 0x61696c6564a264
+PUSH10 0x70667358221220fa2da2
+JUMPI
+PUSH5 0xef3747a923
+'b7'(Unknown Opcode)
+SUB
+'e1'(Unknown Opcode)
+XOR
+EXP
+CALLDATALOAD
+DUP12
+SWAP7
+'ab'(Unknown Opcode)
+CHAINID
+'da'(Unknown Opcode)
+ADDRESS
+'cc'(Unknown Opcode)
+'1e'(Unknown Opcode)
+DIFFICULTY
+'b4'(Unknown Opcode)
+'0f'(Unknown Opcode)
+'dc'(Unknown Opcode)
+SIGNEXTEND
+PUSH22 0x164c64736f6c634300080a0033

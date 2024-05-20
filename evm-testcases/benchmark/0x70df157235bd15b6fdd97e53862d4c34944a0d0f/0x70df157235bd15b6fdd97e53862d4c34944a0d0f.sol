@@ -7924,7 +7924,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -7934,7 +7933,7 @@ DUP10
 'bc'(Unknown Opcode)
 'ac'(Unknown Opcode)
 GAS
-
+INVALID
 'fb'(Unknown Opcode)
 DUP12
 SAR

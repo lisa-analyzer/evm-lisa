@@ -6270,3 +6270,29 @@ JUMPDEST
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+LOG3
+NUMBER
+BALANCE
+DUP5
+'da'(Unknown Opcode)
+MLOAD
+'b0'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'b7'(Unknown Opcode)
+MULMOD
+CALLDATASIZE
+SHA3
+'c9'(Unknown Opcode)
+CHAINID
+GT
+'b1'(Unknown Opcode)
+'ad'(Unknown Opcode)
+PUSH22 0x1b4a18730616fdef519b97bd1c7964736f6c63430008
+STOP
+STOP
+CALLER

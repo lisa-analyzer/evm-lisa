@@ -639,3 +639,18 @@ SWAP1
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c7'(Unknown Opcode)
+MUL
+'b9'(Unknown Opcode)
+MSTORE8
+'e3'(Unknown Opcode)
+SWAP14
+'cc'(Unknown Opcode)
+CODECOPY
+PUSH25 0x03100ae95dbd72687e6ee463722363f6d88066b3baa8bc6473
+PUSH16 0x6c63430008170033

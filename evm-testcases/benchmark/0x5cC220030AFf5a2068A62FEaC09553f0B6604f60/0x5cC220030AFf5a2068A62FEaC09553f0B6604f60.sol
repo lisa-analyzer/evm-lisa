@@ -676,3 +676,35 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5c'(Unknown Opcode)
+'5d'(Unknown Opcode)
+DUP15
+CALLCODE
+CODESIZE
+'e7'(Unknown Opcode)
+'e3'(Unknown Opcode)
+LOG4
+CHAINID
+NOT
+'d2'(Unknown Opcode)
+'1e'(Unknown Opcode)
+GAS
+PUSH8 0x1b17d3d943a2731f
+SWAP7
+'ed'(Unknown Opcode)
+'f6'(Unknown Opcode)
+PUSH3 0xc2679e
+'d5'(Unknown Opcode)
+CREATE2
+CALLDATACOPY
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

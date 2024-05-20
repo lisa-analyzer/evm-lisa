@@ -1814,3 +1814,28 @@ PUSH2 0x0304
 PUSH2 0x0ab7
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b3'(Unknown Opcode)
+SMOD
+'1f'(Unknown Opcode)
+'cd'(Unknown Opcode)
+BASEFEE
+'b3'(Unknown Opcode)
+PUSH18 0x24bbaf771918b3db14fce2dc7f2d06952fb3
+ISZERO
+INVALID
+CREATE
+DUP2
+EXP
+'c0'(Unknown Opcode)
+'b7'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

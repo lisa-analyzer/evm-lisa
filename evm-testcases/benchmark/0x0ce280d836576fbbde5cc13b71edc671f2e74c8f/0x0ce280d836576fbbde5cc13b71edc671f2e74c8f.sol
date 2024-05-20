@@ -1225,3 +1225,36 @@ PUSH2 0x7320
 PUSH19 0x6573747269637465642064756520746f207469
 PUSH14 0x656c6f636b656420746f6b656e73
 '2e'(Unknown Opcode)
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+NUMBER
+'bc'(Unknown Opcode)
+SSTORE
+'e1'(Unknown Opcode)
+'d2'(Unknown Opcode)
+PUSH4 0x28989699
+EXTCODESIZE
+'a8'(Unknown Opcode)
+'cb'(Unknown Opcode)
+'e6'(Unknown Opcode)
+'4b'(Unknown Opcode)
+CREATE2
+'b6'(Unknown Opcode)
+'e4'(Unknown Opcode)
+'b6'(Unknown Opcode)
+SELFDESTRUCT
+'2a'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'cd'(Unknown Opcode)
+SLOAD
+'5c'(Unknown Opcode)
+SWAP5
+'b8'(Unknown Opcode)
+JUMPI
+'c5'(Unknown Opcode)
+'c8'(Unknown Opcode)
+SIGNEXTEND
+CALLDATALOAD
+STOP
+'29'(Unknown Opcode)

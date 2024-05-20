@@ -2743,3 +2743,29 @@ DUP5
 PUSH2 0x0f86
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'db'(Unknown Opcode)
+BASEFEE
+PUSH1 0x46
+MOD
+LOG1
+'d1'(Unknown Opcode)
+DUP4
+PUSH16 0x877fae623feb0b524e899c8969a55c78
+EXP
+SELFDESTRUCT
+'dc'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'0d'(Unknown Opcode)
+'ae'(Unknown Opcode)
+NOT
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

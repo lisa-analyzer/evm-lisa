@@ -7246,3 +7246,13 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ba'(Unknown Opcode)
+GASLIMIT
+'cc'(Unknown Opcode)
+PUSH7 0x28d891c4cf87b4
+PUSH31 0xeed1c697181b39cc1e014f04f0509214f9f57b5264736f6c63430008160033

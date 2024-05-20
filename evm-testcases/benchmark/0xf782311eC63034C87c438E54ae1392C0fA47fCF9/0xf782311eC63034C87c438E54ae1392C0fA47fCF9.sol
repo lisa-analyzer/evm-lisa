@@ -2934,7 +2934,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -2960,7 +2959,7 @@ DUP6
 DUP6
 SWAP8
 SHA3
-
+INVALID
 MUL
 'b3'(Unknown Opcode)
 'eb'(Unknown Opcode)

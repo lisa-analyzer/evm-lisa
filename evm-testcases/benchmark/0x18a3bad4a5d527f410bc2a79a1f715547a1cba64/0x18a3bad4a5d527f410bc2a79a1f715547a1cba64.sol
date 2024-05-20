@@ -1860,3 +1860,29 @@ PUSH2 0x02d0
 PUSH2 0x08de
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP10
+'ee'(Unknown Opcode)
+BALANCE
+'b3'(Unknown Opcode)
+LOG3
+'4b'(Unknown Opcode)
+'2f'(Unknown Opcode)
+SWAP10
+SAR
+'5e'(Unknown Opcode)
+'23'(Unknown Opcode)
+SWAP16
+INVALID
+MLOAD
+PUSH22 0x0fb9596cc139a8aa1b9579eb1b041d3f3c64736f6c63
+NUMBER
+STOP
+ADDMOD
+OR
+STOP
+CALLER

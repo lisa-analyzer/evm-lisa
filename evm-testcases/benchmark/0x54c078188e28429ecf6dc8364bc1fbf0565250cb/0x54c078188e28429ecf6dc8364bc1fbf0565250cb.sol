@@ -2896,3 +2896,19 @@ DIV
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c7'(Unknown Opcode)
+'a9'(Unknown Opcode)
+GT
+SAR
+COINBASE
+'d5'(Unknown Opcode)
+'2a'(Unknown Opcode)
+CALLCODE
+PUSH32 0xe347a77f4dbf8370e64e2784ee00bd301da77d8cce3fb064736f6c6343000816
+STOP
+CALLER

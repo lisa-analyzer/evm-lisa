@@ -8080,3 +8080,24 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+XOR
+'ce'(Unknown Opcode)
+PUSH8 0x3f691e4734eefc4a
+'22'(Unknown Opcode)
+SWAP11
+'b3'(Unknown Opcode)
+'bf'(Unknown Opcode)
+AND
+INVALID
+'a9'(Unknown Opcode)
+'c3'(Unknown Opcode)
+CODESIZE
+PUSH15 0x513cf9501ed41b8916304d64736f6c
+PUSH4 0x43000817
+STOP
+CALLER

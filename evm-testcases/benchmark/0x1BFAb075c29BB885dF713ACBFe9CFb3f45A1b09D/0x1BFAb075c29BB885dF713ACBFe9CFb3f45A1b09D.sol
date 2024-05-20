@@ -658,3 +658,27 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+GASPRICE
+CALL
+INVALID
+'bd'(Unknown Opcode)
+'ab'(Unknown Opcode)
+'c8'(Unknown Opcode)
+'4d'(Unknown Opcode)
+RETURNDATASIZE
+CALLDATALOAD
+'2c'(Unknown Opcode)
+GASPRICE
+PUSH8 0x6cf4161adda0f592
+GASLIMIT
+'ac'(Unknown Opcode)
+'bb'(Unknown Opcode)
+PUSH5 0x02d5369a33
+SWAP5
+SWAP8
+PUSH24 0x64736f6c63430008160033

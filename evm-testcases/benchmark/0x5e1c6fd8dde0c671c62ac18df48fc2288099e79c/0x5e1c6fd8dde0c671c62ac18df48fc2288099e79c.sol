@@ -1860,3 +1860,19 @@ PUSH2 0x02d9
 PUSH2 0x08e7
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP13
+'a6'(Unknown Opcode)
+'4a'(Unknown Opcode)
+SAR
+'ec'(Unknown Opcode)
+CODESIZE
+'cc'(Unknown Opcode)
+CALL
+ADD
+PUSH32 0x756b740c0ff8ad5e55ce5109ba3bf4c63da606c3e0f764736f6c634300081700
+CALLER

@@ -7283,3 +7283,21 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e1'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'a7'(Unknown Opcode)
+'ae'(Unknown Opcode)
+GASPRICE
+CREATE
+MUL
+DUP16
+PUSH30 0x8912a475188a76db90c9bdf026ebb25542cb0f0901609764736f6c634300
+ADDMOD
+EQ
+STOP
+CALLER

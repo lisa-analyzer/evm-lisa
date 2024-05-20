@@ -12133,3 +12133,33 @@ DUP2
 PUSH2 0x398f
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP16
+'b1'(Unknown Opcode)
+'ee'(Unknown Opcode)
+DUP8
+'0f'(Unknown Opcode)
+'b5'(Unknown Opcode)
+DUP15
+'e2'(Unknown Opcode)
+CALLDATALOAD
+'ea'(Unknown Opcode)
+'4a'(Unknown Opcode)
+CALLDATALOAD
+'c1'(Unknown Opcode)
+NUMBER
+DUP15
+EXTCODECOPY
+'cc'(Unknown Opcode)
+INVALID
+DUP15
+DUP14
+TIMESTAMP
+LOG0
+AND
+PUSH9 0x1c5529267657661164
+PUSH20 0x6f6c63430008120033

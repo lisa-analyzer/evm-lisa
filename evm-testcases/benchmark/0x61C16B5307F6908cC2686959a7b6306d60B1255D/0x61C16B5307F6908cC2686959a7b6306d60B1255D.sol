@@ -4450,3 +4450,23 @@ SWAP2
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH12 0x7cd448cf9effdf5536e6b04e
+'e8'(Unknown Opcode)
+'0f'(Unknown Opcode)
+SWAP12
+SELFBALANCE
+SWAP4
+MLOAD
+'b9'(Unknown Opcode)
+LOG1
+'e1'(Unknown Opcode)
+SHR
+LOG4
+'ac'(Unknown Opcode)
+SHR
+PUSH26 0xd7f9acf00d64736f6c63430008160033

@@ -7116,3 +7116,28 @@ DUP2
 PUSH2 0x25f3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP5
+'4e'(Unknown Opcode)
+SDIV
+SWAP16
+'af'(Unknown Opcode)
+'b8'(Unknown Opcode)
+'ba'(Unknown Opcode)
+'eb'(Unknown Opcode)
+CALLDATACOPY
+CALLDATACOPY
+CREATE2
+'d1'(Unknown Opcode)
+'c9'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'a5'(Unknown Opcode)
+CALLDATACOPY
+'e4'(Unknown Opcode)
+PUSH10 0x2cd42cd9d65887385651
+PUSH13 0x5812b364736f6c634300081300
+CALLER

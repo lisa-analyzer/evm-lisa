@@ -1,5 +1,7 @@
 package it.unipr.checker;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.Number;
@@ -26,7 +28,9 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,6 +75,16 @@ public class JumpSolver
 	private Set<Statement> maybeUnsoundJumps;
 
 	/**
+	 * Map of top stack values per jump
+	 */
+	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
+
+	/**
+	 * Map of stack sizes per jump
+	 */
+	private Map<Statement, Set<Integer>> stacksSizePerJump = new HashMap<>();
+
+	/**
 	 * Yields the computed CFG.
 	 * 
 	 * @return the computed CFG
@@ -89,6 +103,14 @@ public class JumpSolver
 
 	public Set<Statement> getMaybeUnsoundJumps() {
 		return maybeUnsoundJumps;
+	}
+
+	public Set<KIntegerSet> getTopStackValuesPerJump(Statement node) {
+		return topStackValuesPerJump.get(node);
+	}
+
+	public Set<Integer> getStacksSizePerJump(Statement node) {
+		return stacksSizePerJump.get(node);
 	}
 
 	/**
@@ -130,19 +152,41 @@ public class JumpSolver
 					EVMAbstractState valueState = analysisResult.getState().getValueState();
 
 					// If the abstract stack is top or bottom or it is empty, we
-					// do not
-					// have enough information
-					// to solve the jump.
+					// do not have enough information to solve the jump.
 					if (valueState.isBottom()) {
 						this.unreachableJumps.add(node);
 					} else if (valueState.isTop()) {
 						this.maybeUnsoundJumps.add(node);
 					} else {
-						for (KIntegerSet topStack : valueState.getTop())
-							if (topStack.isBottom())
-								this.unreachableJumps.add(node);
-							else if (topStack.isTop())
-								this.unsoundJumps.add(node);
+						boolean allNumericTop = true;
+						boolean allBottom = true;
+
+						Set<Integer> stacksSize = new HashSet<>();
+						Set<KIntegerSet> stacksTop = new HashSet<>();
+
+						AbstractStackSet stacks = valueState.getStacks();
+						for (AbstractStack stack : stacks) {
+							stacksSize.add(Integer.valueOf(stack.size()));
+
+//							if (stacksSize.size() > 1)
+//								break;
+
+							KIntegerSet topStack = stack.getTop();
+							if (allNumericTop && !topStack.isTopNumeric())
+								allNumericTop = false;
+							if (allBottom && !topStack.isBottom())
+								allBottom = false;
+
+							stacksTop.add(topStack);
+						}
+
+						stacksSizePerJump.put(node, stacksSize);
+						topStackValuesPerJump.put(node, stacksTop);
+
+						if (allNumericTop)
+							this.unsoundJumps.add(node);
+						if (allBottom)
+							this.unreachableJumps.add(node);
 					}
 				}
 			}

@@ -3070,3 +3070,23 @@ PUSH2 0x0443
 PUSH2 0x11b2
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH4 0xcc66dc2a
+JUMP
+GAS
+'c7'(Unknown Opcode)
+PUSH12 0x0d286ac7617eade482ddda3a
+'d7'(Unknown Opcode)
+RETURNDATASIZE
+MSTORE8
+ADDMOD
+SWAP2
+'bc'(Unknown Opcode)
+'4a'(Unknown Opcode)
+SWAP7
+'ce'(Unknown Opcode)
+PUSH15 0x8a64736f6c63430008130033

@@ -2596,3 +2596,20 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP7
+SELFBALANCE
+SWAP3
+DUP9
+'5e'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'e9'(Unknown Opcode)
+PUSH11 0xf6d0bd4021f23260ba3924
+'ad'(Unknown Opcode)
+'ed'(Unknown Opcode)
+PUSH13 0xaa0f5358d34a17ea67fc64736f
+PUSH13 0x63430008130033

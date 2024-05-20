@@ -719,3 +719,21 @@ PUSH2 0x027f
 PUSH2 0x030b
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+NOT
+'21'(Unknown Opcode)
+PUSH25 0x9c0c8ab0490fc242cb0f3b1878429362cdeda581504683a9bb
+'2c'(Unknown Opcode)
+'af'(Unknown Opcode)
+SLT
+'c0'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

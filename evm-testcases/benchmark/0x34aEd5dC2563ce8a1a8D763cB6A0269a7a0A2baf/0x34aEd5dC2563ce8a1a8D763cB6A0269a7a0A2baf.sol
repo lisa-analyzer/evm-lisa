@@ -3074,3 +3074,28 @@ PUSH2 0x0390
 PUSH2 0x118c
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+OR
+DUP15
+'b9'(Unknown Opcode)
+GT
+SIGNEXTEND
+'a8'(Unknown Opcode)
+'a8'(Unknown Opcode)
+BALANCE
+'db'(Unknown Opcode)
+SHR
+PUSH18 0xd850911ab27d46ad169d02647d3c894c4a40
+'d0'(Unknown Opcode)
+DUP13
+'ca'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

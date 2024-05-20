@@ -6880,3 +6880,22 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+AND
+GT
+DUP4
+MSTORE
+CODECOPY
+'a9'(Unknown Opcode)
+'0e'(Unknown Opcode)
+PUSH13 0xdf513551e4eba48ae4e14bd0e2
+'2c'(Unknown Opcode)
+'eb'(Unknown Opcode)
+PUSH12 0x483dee2080cc182264736f6c
+PUSH4 0x43000808
+STOP
+CALLER

@@ -4445,3 +4445,38 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5e'(Unknown Opcode)
+NUMBER
+'b2'(Unknown Opcode)
+'ce'(Unknown Opcode)
+COINBASE
+LOG2
+EXTCODESIZE
+NUMBER
+'28'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'2f'(Unknown Opcode)
+'dd'(Unknown Opcode)
+XOR
+MOD
+PUSH8 0x9a2f981c14e01efd
+BALANCE
+'b2'(Unknown Opcode)
+OR
+MSIZE
+LOG0
+'e4'(Unknown Opcode)
+'b6'(Unknown Opcode)
+CODECOPY
+CREATE2
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

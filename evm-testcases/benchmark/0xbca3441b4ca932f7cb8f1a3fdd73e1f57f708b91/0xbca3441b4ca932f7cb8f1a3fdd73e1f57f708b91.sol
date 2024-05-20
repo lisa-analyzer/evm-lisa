@@ -2548,3 +2548,45 @@ DIV
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'a8'(Unknown Opcode)
+INVALID
+'f6'(Unknown Opcode)
+DUP15
+DUP14
+CALLDATACOPY
+'a9'(Unknown Opcode)
+'2a'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'5d'(Unknown Opcode)
+PUSH1 0x0c
+GASLIMIT
+'e9'(Unknown Opcode)
+SWAP10
+'d0'(Unknown Opcode)
+DUP15
+BLOCKHASH
+DELEGATECALL
+BALANCE
+'e6'(Unknown Opcode)
+'b0'(Unknown Opcode)
+DIFFICULTY
+'d9'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'c7'(Unknown Opcode)
+PC
+RETURNDATASIZE
+'29'(Unknown Opcode)
+DUP12
+'dc'(Unknown Opcode)
+'4a'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

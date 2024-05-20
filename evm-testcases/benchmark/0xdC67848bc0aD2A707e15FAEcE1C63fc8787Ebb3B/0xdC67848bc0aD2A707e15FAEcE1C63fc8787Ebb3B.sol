@@ -9838,3 +9838,15 @@ SHA3
 PUSH13 0x6f772d6c6576656c2064656c65
 PUSH8 0x6174652063616c6c
 SHA3
+PUSH7 0x61696c6564a264
+PUSH10 0x70667358221220c0f15b
+'4d'(Unknown Opcode)
+'eb'(Unknown Opcode)
+'0e'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'ed'(Unknown Opcode)
+'b4'(Unknown Opcode)
+PUSH30 0x9028b8048325bd565da3adf9651583a5f28a160dbfe964736f6c63430008
+'0f'(Unknown Opcode)
+STOP
+CALLER

@@ -881,3 +881,36 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP1
+DUP15
+CALLVALUE
+'e7'(Unknown Opcode)
+'da'(Unknown Opcode)
+'2a'(Unknown Opcode)
+PUSH1 0x0e
+PUSH9 0x7601d9a722f924d3b3
+'ce'(Unknown Opcode)
+SDIV
+BLOCKHASH
+CALLDATASIZE
+'21'(Unknown Opcode)
+'ae'(Unknown Opcode)
+JUMPDEST
+'bb'(Unknown Opcode)
+'e2'(Unknown Opcode)
+SHA3
+'f9'(Unknown Opcode)
+INVALID
+DUP7
+PC
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

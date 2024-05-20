@@ -5419,3 +5419,32 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b2'(Unknown Opcode)
+STOP
+PUSH14 0xfcc7e62e774006ebf874e3adc525
+SWAP1
+MSIZE
+'f9'(Unknown Opcode)
+SMOD
+'c1'(Unknown Opcode)
+'26'(Unknown Opcode)
+RETURN
+EXTCODECOPY
+'cc'(Unknown Opcode)
+GASLIMIT
+'e9'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'af'(Unknown Opcode)
+'c0'(Unknown Opcode)
+GASLIMIT
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SGT
+STOP
+CALLER

@@ -4497,7 +4497,6 @@ SWAP1
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 GASLIMIT
 MSTORE
 NUMBER
@@ -4512,7 +4511,6 @@ PUSH2 0x4e74
 'cc'(Unknown Opcode)
 '23'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 'b5'(Unknown Opcode)
 'e8'(Unknown Opcode)
 'ee'(Unknown Opcode)

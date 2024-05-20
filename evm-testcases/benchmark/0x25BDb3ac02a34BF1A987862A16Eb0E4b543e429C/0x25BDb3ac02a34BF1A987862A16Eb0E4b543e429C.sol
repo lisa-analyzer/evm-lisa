@@ -10042,3 +10042,19 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ca'(Unknown Opcode)
+SSTORE
+PUSH24 0x3823ddaf4dfbcc4a3cffb96e9255ab0c5f12366ba8606e1e
+'21'(Unknown Opcode)
+PUSH3 0xa47df1
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

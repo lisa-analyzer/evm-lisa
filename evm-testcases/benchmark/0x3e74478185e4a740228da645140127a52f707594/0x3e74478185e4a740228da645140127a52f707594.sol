@@ -7283,3 +7283,30 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e5'(Unknown Opcode)
+'d3'(Unknown Opcode)
+CODESIZE
+'bb'(Unknown Opcode)
+'24'(Unknown Opcode)
+DUP12
+CALLDATALOAD
+'ce'(Unknown Opcode)
+JUMPI
+'d4'(Unknown Opcode)
+PUSH3 0xf06ac6
+EXTCODESIZE
+SWAP5
+'5d'(Unknown Opcode)
+PUSH13 0x0803250e2d055fa2bbec43e3a1
+'be'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

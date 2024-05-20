@@ -5603,3 +5603,16 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d3'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'ee'(Unknown Opcode)
+OR
+PUSH20 0x3c784b53822f7b386eeaf5c4c39593ec9f68af53
+'4c'(Unknown Opcode)
+BALANCE
+PUSH32 0x204ee3ef64736f6c63430008040033

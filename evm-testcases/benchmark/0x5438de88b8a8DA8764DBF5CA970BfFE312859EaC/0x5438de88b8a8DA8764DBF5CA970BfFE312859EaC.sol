@@ -6437,3 +6437,34 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b8'(Unknown Opcode)
+MSTORE8
+EXTCODECOPY
+'0c'(Unknown Opcode)
+'d9'(Unknown Opcode)
+'b4'(Unknown Opcode)
+DUP14
+SMOD
+'eb'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'0e'(Unknown Opcode)
+'4a'(Unknown Opcode)
+EXTCODEHASH
+DUP13
+JUMP
+MSIZE
+'d3'(Unknown Opcode)
+'b2'(Unknown Opcode)
+OR
+DUP11
+MSTORE
+SWAP2
+'c1'(Unknown Opcode)
+ADDMOD
+PUSH18 0x4969ef44732e64736f6c63430008160033

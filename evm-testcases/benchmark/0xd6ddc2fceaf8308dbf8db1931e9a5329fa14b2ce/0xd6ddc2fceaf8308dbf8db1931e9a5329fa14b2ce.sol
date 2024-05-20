@@ -6934,3 +6934,23 @@ PUSH8 0x016345785d8a0000
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c3'(Unknown Opcode)
+CALL
+'eb'(Unknown Opcode)
+SWAP13
+DUP6
+NUMBER
+'ca'(Unknown Opcode)
+'a6'(Unknown Opcode)
+PUSH28 0xa98ca8b4eb7b0ff05f2bcccad35984afccd64a76879d1364736f6c63
+NUMBER
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

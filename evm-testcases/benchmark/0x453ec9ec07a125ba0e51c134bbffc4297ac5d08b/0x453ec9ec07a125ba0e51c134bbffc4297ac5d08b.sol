@@ -2146,3 +2146,30 @@ PUSH2 0x0373
 PUSH2 0x0a63
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH0
+'5c'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'e7'(Unknown Opcode)
+DUP1
+DUP13
+'cd'(Unknown Opcode)
+'f7'(Unknown Opcode)
+PUSH16 0x6d0c042135cf88a335d799b9721c3593
+'b5'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'23'(Unknown Opcode)
+CALLDATALOAD
+'d1'(Unknown Opcode)
+SWAP12
+'ec'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

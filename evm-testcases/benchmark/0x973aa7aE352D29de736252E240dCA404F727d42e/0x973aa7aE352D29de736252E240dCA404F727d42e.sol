@@ -139,3 +139,30 @@ AND
 DUP2
 JUMP
 STOP
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+'e5'(Unknown Opcode)
+'d2'(Unknown Opcode)
+GAS
+PUSH3 0xe432b5
+DUP15
+'0d'(Unknown Opcode)
+JUMPI
+'b3'(Unknown Opcode)
+SELFBALANCE
+'1e'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'24'(Unknown Opcode)
+'f9'(Unknown Opcode)
+DUP16
+'1e'(Unknown Opcode)
+PUSH7 0xed4429ff043a69
+'d8'(Unknown Opcode)
+EXTCODEHASH
+'d6'(Unknown Opcode)
+LOG3
+'23'(Unknown Opcode)
+'d7'(Unknown Opcode)
+STOP
+'29'(Unknown Opcode)

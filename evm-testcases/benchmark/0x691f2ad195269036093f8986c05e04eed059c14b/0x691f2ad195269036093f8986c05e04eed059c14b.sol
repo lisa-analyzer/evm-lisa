@@ -1429,3 +1429,34 @@ MSTORE
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+INVALID
+'db'(Unknown Opcode)
+MSIZE
+'0d'(Unknown Opcode)
+SMOD
+SLOAD
+'db'(Unknown Opcode)
+DUP11
+SAR
+MOD
+'e2'(Unknown Opcode)
+SWAP5
+'1f'(Unknown Opcode)
+'4c'(Unknown Opcode)
+CALLVALUE
+CALLER
+PUSH12 0x84e211d531665f7728351ea8
+'ed'(Unknown Opcode)
+'d0'(Unknown Opcode)
+'c1'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

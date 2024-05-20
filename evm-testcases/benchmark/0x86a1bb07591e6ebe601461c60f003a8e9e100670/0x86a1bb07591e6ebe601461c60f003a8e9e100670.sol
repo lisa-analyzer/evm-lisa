@@ -2137,3 +2137,46 @@ PUSH15 0x736665722066726f6d20746865207a
 PUSH6 0x726f20616464
 PUSH19 0x65737345524332303a20617070726f76652066
 PUSH19 0x6f6d20746865207a65726f2061646472657373
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP7
+'0e'(Unknown Opcode)
+GT
+'ae'(Unknown Opcode)
+'da'(Unknown Opcode)
+'aa'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'1e'(Unknown Opcode)
+STATICCALL
+'a6'(Unknown Opcode)
+EXTCODECOPY
+'e9'(Unknown Opcode)
+'2e'(Unknown Opcode)
+CHAINID
+'c4'(Unknown Opcode)
+'c3'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'fc'(Unknown Opcode)
+SWAP1
+'1f'(Unknown Opcode)
+'d9'(Unknown Opcode)
+'4e'(Unknown Opcode)
+COINBASE
+JUMPI
+'eb'(Unknown Opcode)
+'b5'(Unknown Opcode)
+'dd'(Unknown Opcode)
+'f6'(Unknown Opcode)
+SWAP5
+'2f'(Unknown Opcode)
+EXTCODEHASH
+SMOD
+PUSH5 0x736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

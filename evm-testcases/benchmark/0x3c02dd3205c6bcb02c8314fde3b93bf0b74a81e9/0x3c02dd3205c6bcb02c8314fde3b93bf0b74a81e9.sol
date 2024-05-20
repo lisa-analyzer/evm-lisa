@@ -3717,3 +3717,33 @@ DIV
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ac'(Unknown Opcode)
+'b8'(Unknown Opcode)
+SWAP14
+CREATE
+POP
+'e6'(Unknown Opcode)
+SWAP2
+'b4'(Unknown Opcode)
+'d0'(Unknown Opcode)
+'a5'(Unknown Opcode)
+SLOAD
+'ec'(Unknown Opcode)
+DUP16
+'4d'(Unknown Opcode)
+BLOCKHASH
+SMOD
+DUP2
+'ee'(Unknown Opcode)
+DUP14
+CALLDATACOPY
+CALLCODE
+SWAP13
+'e3'(Unknown Opcode)
+GAS
+PUSH28 0x979c6736ca790264736f6c63430008140033

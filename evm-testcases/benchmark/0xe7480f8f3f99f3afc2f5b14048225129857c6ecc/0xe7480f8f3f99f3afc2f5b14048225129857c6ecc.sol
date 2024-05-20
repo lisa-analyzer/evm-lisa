@@ -789,3 +789,19 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'bb'(Unknown Opcode)
+'cc'(Unknown Opcode)
+PUSH12 0x24a78a6793c38b25ea219f8f
+SWAP1
+SIGNEXTEND
+SWAP3
+'c5'(Unknown Opcode)
+'ae'(Unknown Opcode)
+PUSH1 0xda
+'b7'(Unknown Opcode)
+PUSH31 0x7b5554cc75d3bbb464736f6c63430008160033

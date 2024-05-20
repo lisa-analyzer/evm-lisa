@@ -1737,7 +1737,6 @@ DUP4
 PUSH2 0x0ab9
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -1754,7 +1753,7 @@ CALLDATALOAD
 MSTORE
 SWAP4
 'a9'(Unknown Opcode)
-
+INVALID
 'b3'(Unknown Opcode)
 'd2'(Unknown Opcode)
 PUSH0

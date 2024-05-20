@@ -8065,3 +8065,20 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+INVALID
+DUP16
+SWAP10
+STOP
+'c2'(Unknown Opcode)
+SWAP7
+'d3'(Unknown Opcode)
+'b5'(Unknown Opcode)
+PUSH15 0x8dbb2469491384798f3e8988d7e059
+'c1'(Unknown Opcode)
+'eb'(Unknown Opcode)
+PUSH31 0xbb765ea3af64736f6c63430008160033

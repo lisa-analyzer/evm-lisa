@@ -36,3 +36,37 @@ SELFDESTRUCT
 JUMPDEST
 STOP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b6'(Unknown Opcode)
+'22'(Unknown Opcode)
+'b5'(Unknown Opcode)
+PUSH1 0x4d
+'d6'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'24'(Unknown Opcode)
+'e2'(Unknown Opcode)
+'ee'(Unknown Opcode)
+SDIV
+'b1'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'af'(Unknown Opcode)
+PUSH8 0xb574af2fbb787e08
+'22'(Unknown Opcode)
+DUP14
+'bc'(Unknown Opcode)
+'e1'(Unknown Opcode)
+INVALID
+DUP7
+'f8'(Unknown Opcode)
+CALLVALUE
+'eb'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EXP
+STOP
+CALLER

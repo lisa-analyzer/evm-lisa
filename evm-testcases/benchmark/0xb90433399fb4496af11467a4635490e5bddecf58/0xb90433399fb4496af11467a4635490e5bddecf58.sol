@@ -313,3 +313,46 @@ AND
 DUP2
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP11
+TIMESTAMP
+'b0'(Unknown Opcode)
+BYTE
+'2c'(Unknown Opcode)
+EXTCODESIZE
+'a6'(Unknown Opcode)
+'4c'(Unknown Opcode)
+SHL
+'ab'(Unknown Opcode)
+DELEGATECALL
+'21'(Unknown Opcode)
+CALLCODE
+'c2'(Unknown Opcode)
+'d4'(Unknown Opcode)
+CHAINID
+JUMPDEST
+DUP3
+'c3'(Unknown Opcode)
+'f7'(Unknown Opcode)
+MSTORE
+SWAP7
+'5d'(Unknown Opcode)
+'c8'(Unknown Opcode)
+CALLDATASIZE
+'a9'(Unknown Opcode)
+SWAP5
+EXTCODECOPY
+'2d'(Unknown Opcode)
+'4c'(Unknown Opcode)
+SWAP11
+POP
+PUSH5 0x736f6c6343
+STOP
+MOD
+STOP
+STOP
+CALLER

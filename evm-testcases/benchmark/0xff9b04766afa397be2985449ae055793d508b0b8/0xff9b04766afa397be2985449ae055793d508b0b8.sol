@@ -8734,3 +8734,23 @@ SHA3
 SLOAD
 PUSH16 0x6b656e732069732054696d65206c6f63
 PUSH12 0x656420666f722073656e6465
+PUSH19 0x732061646472657373a2646970667358221220
+'2c'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'cc'(Unknown Opcode)
+DUP12
+PUSH6 0x0b7dbefaf62b
+SWAP1
+'d0'(Unknown Opcode)
+'f7'(Unknown Opcode)
+DUP12
+'cb'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'cb'(Unknown Opcode)
+'1e'(Unknown Opcode)
+POP
+PUSH18 0x0c45a4c0d59f6f4c0a9964736f6c63430008
+SMOD
+STOP
+CALLER

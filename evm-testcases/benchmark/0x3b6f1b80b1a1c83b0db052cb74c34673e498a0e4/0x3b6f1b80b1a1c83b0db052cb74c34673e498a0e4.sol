@@ -5130,14 +5130,13 @@ DIV
 SWAP1
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
 SLT
 SHA3
 'ba'(Unknown Opcode)
-
+INVALID
 '25'(Unknown Opcode)
 SIGNEXTEND
 'b7'(Unknown Opcode)

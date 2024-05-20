@@ -7979,3 +7979,22 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SHA3
+EXTCODESIZE
+AND
+DUP12
+DUP2
+'5c'(Unknown Opcode)
+'f7'(Unknown Opcode)
+PUSH3 0x5b1595
+'bd'(Unknown Opcode)
+'aa'(Unknown Opcode)
+DUP7
+'be'(Unknown Opcode)
+LOG3
+PUSH32 0x03ff8032e716d0ce0cf49fd141386764736f6c634300080e0033

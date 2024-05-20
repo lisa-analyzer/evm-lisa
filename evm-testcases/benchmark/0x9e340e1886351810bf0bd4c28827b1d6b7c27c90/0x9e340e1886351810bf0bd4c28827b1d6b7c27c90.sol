@@ -1605,3 +1605,26 @@ PUSH20 0x2062616c616e636545524332303a207472616e73
 PUSH7 0x657220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+'df'(Unknown Opcode)
+PUSH2 0x91f1
+'db'(Unknown Opcode)
+DUP9
+'da'(Unknown Opcode)
+'af'(Unknown Opcode)
+'b4'(Unknown Opcode)
+'0e'(Unknown Opcode)
+CHAINID
+STOP
+LOG2
+'a8'(Unknown Opcode)
+'cc'(Unknown Opcode)
+CALLDATALOAD
+SWAP10
+'5e'(Unknown Opcode)
+PUSH14 0x12dce838dd31c1ac6f9ff667ed64
+PUSH20 0x6f6c63430008150033

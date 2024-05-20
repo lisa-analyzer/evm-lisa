@@ -2834,3 +2834,30 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'fc'(Unknown Opcode)
+SWAP16
+'a7'(Unknown Opcode)
+LT
+'4c'(Unknown Opcode)
+'ed'(Unknown Opcode)
+'2b'(Unknown Opcode)
+'d0'(Unknown Opcode)
+DUP1
+'4b'(Unknown Opcode)
+'ef'(Unknown Opcode)
+SWAP1
+LT
+PUSH0
+'b2'(Unknown Opcode)
+INVALID
+STATICCALL
+'cb'(Unknown Opcode)
+STOP
+PUSH21 0x2d1be2d37a77174cd20fba2564736f6c6343000811
+STOP
+CALLER

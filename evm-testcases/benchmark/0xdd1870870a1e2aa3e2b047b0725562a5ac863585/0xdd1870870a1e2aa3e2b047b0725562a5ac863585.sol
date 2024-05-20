@@ -4840,7 +4840,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -4852,7 +4851,7 @@ EXTCODEHASH
 'c0'(Unknown Opcode)
 'e1'(Unknown Opcode)
 'c0'(Unknown Opcode)
-
+INVALID
 'ef'(Unknown Opcode)
 PUSH29 0xdedcc72cbbb26a19d34e4cb5f80f27c30cac35038787af64736f6c6343
 STOP

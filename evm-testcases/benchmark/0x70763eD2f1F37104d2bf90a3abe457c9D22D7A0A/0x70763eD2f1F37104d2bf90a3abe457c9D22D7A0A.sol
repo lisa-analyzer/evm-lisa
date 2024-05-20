@@ -2066,3 +2066,44 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+JUMPDEST
+SDIV
+POP
+DELEGATECALL
+PUSH0
+RETURNDATACOPY
+'c4'(Unknown Opcode)
+'f6'(Unknown Opcode)
+EQ
+'ab'(Unknown Opcode)
+TIMESTAMP
+DUP16
+CREATE
+CALL
+'e1'(Unknown Opcode)
+'b0'(Unknown Opcode)
+'23'(Unknown Opcode)
+SELFBALANCE
+MSTORE8
+PUSH2 0xec24
+'f9'(Unknown Opcode)
+CALLDATACOPY
+XOR
+SWAP8
+XOR
+DUP1
+'0e'(Unknown Opcode)
+COINBASE
+'b6'(Unknown Opcode)
+'24'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

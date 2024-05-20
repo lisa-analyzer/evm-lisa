@@ -15622,3 +15622,21 @@ PUSH13 0xb9f3376673440d862ac2979137
 PUSH24 0x4e40fe2638d355bf7a7b092be4c67f242aad1655e1e27f9d
 'f9'(Unknown Opcode)
 'cc'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+COINBASE
+MLOAD
+'26'(Unknown Opcode)
+'ed'(Unknown Opcode)
+PUSH25 0x066d52f36a4499b37ff11ea3dd2c2a4aa6cccfa5649605a6ef
+'c0'(Unknown Opcode)
+'2b'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

@@ -565,3 +565,19 @@ SLOAD
 DUP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b9'(Unknown Opcode)
+'b6'(Unknown Opcode)
+DUP12
+SWAP9
+BALANCE
+SWAP15
+DUP6
+'c3'(Unknown Opcode)
+'f6'(Unknown Opcode)
+'be'(Unknown Opcode)
+PUSH32 0x82c9bc1cbc66ee013652210f3465c1565a4ce504ad64736f6c63430007060033

@@ -5927,3 +5927,32 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2b'(Unknown Opcode)
+DUP11
+'a7'(Unknown Opcode)
+DUP11
+CALLCODE
+SWAP16
+'21'(Unknown Opcode)
+BYTE
+ORIGIN
+'bc'(Unknown Opcode)
+MLOAD
+PUSH14 0x4d0be7aa98a6ad88f4ae3b0e35dd
+'24'(Unknown Opcode)
+'b1'(Unknown Opcode)
+'b1'(Unknown Opcode)
+'5c'(Unknown Opcode)
+SWAP3
+'cd'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

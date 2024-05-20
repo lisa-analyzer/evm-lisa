@@ -1957,3 +1957,33 @@ DUP5
 PUSH2 0x0997
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+DUP1
+'f6'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'bb'(Unknown Opcode)
+DUP2
+'a6'(Unknown Opcode)
+'da'(Unknown Opcode)
+'0c'(Unknown Opcode)
+PUSH13 0x3a15454197ff4b0732ff74e9b5
+SLT
+'c7'(Unknown Opcode)
+'f7'(Unknown Opcode)
+'a5'(Unknown Opcode)
+'b7'(Unknown Opcode)
+'ae'(Unknown Opcode)
+SWAP15
+'c8'(Unknown Opcode)
+'d0'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

@@ -4580,3 +4580,22 @@ DUP2
 PUSH2 0x1810
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d0'(Unknown Opcode)
+'c7'(Unknown Opcode)
+'0d'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'ca'(Unknown Opcode)
+JUMPDEST
+ORIGIN
+'c9'(Unknown Opcode)
+CREATE
+GASLIMIT
+PUSH25 0xdb0eb265982835f64edaf6950eb9e4b570f58b644e64736f6c
+PUSH4 0x43000811
+STOP
+CALLER

@@ -5046,3 +5046,27 @@ AND
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e0'(Unknown Opcode)
+'d1'(Unknown Opcode)
+PUSH10 0x3f2625e0bf80fd101e9f
+'ac'(Unknown Opcode)
+SWAP10
+'b6'(Unknown Opcode)
+DUP15
+CALLVALUE
+'b7'(Unknown Opcode)
+'2a'(Unknown Opcode)
+JUMPI
+SWAP12
+'e7'(Unknown Opcode)
+SHL
+DUP3
+GAS
+PUSH14 0xcea64e388264736f6c6343000816
+STOP
+CALLER

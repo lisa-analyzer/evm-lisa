@@ -5982,3 +5982,24 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP14
+'b0'(Unknown Opcode)
+'f6'(Unknown Opcode)
+'d7'(Unknown Opcode)
+BASEFEE
+DUP2
+'ab'(Unknown Opcode)
+'28'(Unknown Opcode)
+CALLER
+'c1'(Unknown Opcode)
+'bc'(Unknown Opcode)
+CHAINID
+PUSH27 0x3d34b3e5d62365d6e93e83c6060f7d6870c00864736f6c63430008
+SMOD
+STOP
+CALLER

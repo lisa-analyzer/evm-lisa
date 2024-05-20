@@ -2527,3 +2527,32 @@ MOD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'f7'(Unknown Opcode)
+'2a'(Unknown Opcode)
+OR
+'da'(Unknown Opcode)
+DUP7
+ADDRESS
+LOG0
+SWAP8
+'a6'(Unknown Opcode)
+LT
+'c6'(Unknown Opcode)
+'e7'(Unknown Opcode)
+SWAP1
+PUSH14 0x89fe4b3fc3b72cb152f9b5e8dd70
+SWAP10
+ADDRESS
+SWAP3
+'e1'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

@@ -4086,3 +4086,15 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH19 0x51f028070a330f428bf5273a9183fb25dda26d
+'cd'(Unknown Opcode)
+'ea'(Unknown Opcode)
+'4d'(Unknown Opcode)
+'b0'(Unknown Opcode)
+'db'(Unknown Opcode)
+PUSH24 0x61913090b89964736f6c63430008000033

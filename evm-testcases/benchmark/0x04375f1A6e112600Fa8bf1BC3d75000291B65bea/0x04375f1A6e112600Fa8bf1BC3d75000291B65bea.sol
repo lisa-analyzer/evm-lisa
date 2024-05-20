@@ -10735,3 +10735,21 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d3'(Unknown Opcode)
+'4e'(Unknown Opcode)
+MUL
+MSTORE
+'b3'(Unknown Opcode)
+SELFBALANCE
+GASPRICE
+'cf'(Unknown Opcode)
+'bd'(Unknown Opcode)
+'d3'(Unknown Opcode)
+GAS
+PUSH15 0xbeab74fbc7e493bcf805be75ebb229
+PUSH24 0x9542ffdc64736f6c634300080a0033

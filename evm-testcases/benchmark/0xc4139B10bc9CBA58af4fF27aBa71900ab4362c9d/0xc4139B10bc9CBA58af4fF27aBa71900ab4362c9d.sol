@@ -1234,3 +1234,31 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+EXTCODESIZE
+EXP
+CALLCODE
+LOG3
+PUSH6 0xefbaeb43f088
+'ad'(Unknown Opcode)
+JUMPI
+'ea'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'c7'(Unknown Opcode)
+NOT
+CALLER
+'a9'(Unknown Opcode)
+'e2'(Unknown Opcode)
+PUSH0
+'ee'(Unknown Opcode)
+'e9'(Unknown Opcode)
+OR
+CREATE2
+'cb'(Unknown Opcode)
+SIGNEXTEND
+SWAP10
+PUSH15 0x57c5de64736f6c63430008130033

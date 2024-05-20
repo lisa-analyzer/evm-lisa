@@ -2232,3 +2232,23 @@ DUP2
 PUSH2 0x0b71
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'e7'(Unknown Opcode)
+'d8'(Unknown Opcode)
+SWAP11
+CHAINID
+JUMPDEST
+'d3'(Unknown Opcode)
+PUSH23 0x14758aaea6897f83696a9d7a968536f1d47b5915d111fb
+'ab'(Unknown Opcode)
+'2e'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

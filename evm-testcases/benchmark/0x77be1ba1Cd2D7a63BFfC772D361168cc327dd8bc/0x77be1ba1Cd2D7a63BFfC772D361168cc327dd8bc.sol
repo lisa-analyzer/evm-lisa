@@ -6732,3 +6732,24 @@ SWAP7
 'e5'(Unknown Opcode)
 SWAP7
 'b5'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'2e'(Unknown Opcode)
+DUP5
+'26'(Unknown Opcode)
+'23'(Unknown Opcode)
+LOG4
+CALLDATACOPY
+TIMESTAMP
+'da'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'a8'(Unknown Opcode)
+'c8'(Unknown Opcode)
+'ef'(Unknown Opcode)
+CODESIZE
+'ea'(Unknown Opcode)
+PUSH19 0xe37d5cf829dd52bb4168db6f762f82ffb76473
+PUSH16 0x6c63430008170033

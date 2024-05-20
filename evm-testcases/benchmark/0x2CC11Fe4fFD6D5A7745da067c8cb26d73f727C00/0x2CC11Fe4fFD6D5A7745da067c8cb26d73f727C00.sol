@@ -3388,7 +3388,6 @@ POP
 SWAP3
 JUMP
 INVALID
-SELFDESTRUCT
 LOG2
 PUSH5 0x6970667358
 '22'(Unknown Opcode)
@@ -3405,12 +3404,12 @@ DUP16
 '2f'(Unknown Opcode)
 'd5'(Unknown Opcode)
 'ed'(Unknown Opcode)
-
+INVALID
 'ad'(Unknown Opcode)
 CODESIZE
 SWAP5
 'b7'(Unknown Opcode)
-
+INVALID
 ORIGIN
 DUP7
 PUSH0

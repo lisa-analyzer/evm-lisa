@@ -13819,3 +13819,21 @@ SHA3
 PUSH13 0x6f772d6c6576656c2064656c65
 PUSH8 0x6174652063616c6c
 SHA3
+PUSH7 0x61696c6564a264
+PUSH10 0x70667358221220e036bc
+INVALID
+'b1'(Unknown Opcode)
+'a7'(Unknown Opcode)
+'d3'(Unknown Opcode)
+RETURNDATACOPY
+'cc'(Unknown Opcode)
+PUSH10 0xabc563e339a4f1f63b32
+ADDRESS
+'b1'(Unknown Opcode)
+'dc'(Unknown Opcode)
+GAS
+'2a'(Unknown Opcode)
+DUP6
+'bc'(Unknown Opcode)
+SWAP3
+PUSH24 0x9392cf64736f6c63430008110033

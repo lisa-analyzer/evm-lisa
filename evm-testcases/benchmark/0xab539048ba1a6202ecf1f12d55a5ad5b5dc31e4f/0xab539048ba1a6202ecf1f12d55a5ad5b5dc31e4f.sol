@@ -5710,3 +5710,27 @@ GASPRICE
 SHA3
 PUSH5 0x6563726561
 PUSH20 0x656420616c6c6f77616e63652062656c6f77207a
+PUSH6 0x726fa2646970
+PUSH7 0x73582212201e2c
+'b2'(Unknown Opcode)
+ISZERO
+'0e'(Unknown Opcode)
+'27'(Unknown Opcode)
+DUP8
+CALLER
+LT
+PUSH14 0xa9c9cdee7f9354ef1b58b75e8533
+SWAP1
+SWAP3
+'a8'(Unknown Opcode)
+NUMBER
+'c5'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'f8'(Unknown Opcode)
+'ad'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

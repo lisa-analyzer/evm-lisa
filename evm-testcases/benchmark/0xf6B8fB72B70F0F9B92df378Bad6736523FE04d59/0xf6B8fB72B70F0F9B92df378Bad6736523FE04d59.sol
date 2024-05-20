@@ -3797,3 +3797,24 @@ PUSH2 0x05fe
 PUSH2 0x145f
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'5e'(Unknown Opcode)
+'da'(Unknown Opcode)
+'b5'(Unknown Opcode)
+EXP
+PUSH6 0x3ab4df2a1fcc
+LOG0
+MSTORE
+EXTCODECOPY
+SHR
+'f8'(Unknown Opcode)
+'2b'(Unknown Opcode)
+MSTORE
+CHAINID
+PUSH21 0x233b0e2f96a946a4606c355164736f6c6343000811
+STOP
+CALLER

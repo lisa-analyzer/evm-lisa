@@ -3413,3 +3413,29 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+CREATE
+SWAP10
+'bb'(Unknown Opcode)
+'b3'(Unknown Opcode)
+'27'(Unknown Opcode)
+'e7'(Unknown Opcode)
+MSTORE
+GT
+'0d'(Unknown Opcode)
+SWAP5
+CALL
+'af'(Unknown Opcode)
+'e2'(Unknown Opcode)
+PUSH9 0x9af7c15ee594ad8adb
+PUSH13 0xbde60ffcc78acebd64736f6c63
+NUMBER
+STOP
+ADDMOD
+AND
+STOP
+CALLER

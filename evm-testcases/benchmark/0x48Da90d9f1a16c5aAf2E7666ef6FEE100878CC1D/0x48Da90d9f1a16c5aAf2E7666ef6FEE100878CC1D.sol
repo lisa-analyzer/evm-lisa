@@ -5595,3 +5595,61 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+NUMBER
+'29'(Unknown Opcode)
+RETURNDATASIZE
+MSIZE
+PUSH12 0xc7c9552caf78d4cb14f2fce3
+CHAINID
+PUSH26 0x6375ce6b75d8268f6c9489fc3764736f6c63430008120033241e
+'cf'(Unknown Opcode)
+AND
+'d7'(Unknown Opcode)
+SWAP14
+'0f'(Unknown Opcode)
+DUP14
+'bf'(Unknown Opcode)
+'b9'(Unknown Opcode)
+'2c'(Unknown Opcode)
+'bc'(Unknown Opcode)
+SMOD
+INVALID
+OR
+DUP5
+DIV
+'25'(Unknown Opcode)
+SWAP8
+PUSH13 0xf0667f022fe9877caa831b08a2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'be'(Unknown Opcode)
+'c2'(Unknown Opcode)
+'c5'(Unknown Opcode)
+'21'(Unknown Opcode)
+'d7'(Unknown Opcode)
+'2d'(Unknown Opcode)
+DIV
+ADDRESS
+PUSH14 0x5ad73dba14fea018ff42bce6ede0
+LOG3
+DUP3
+SWAP7
+DUP1
+'d1'(Unknown Opcode)
+'cb'(Unknown Opcode)
+INVALID
+'d1'(Unknown Opcode)
+SWAP10
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

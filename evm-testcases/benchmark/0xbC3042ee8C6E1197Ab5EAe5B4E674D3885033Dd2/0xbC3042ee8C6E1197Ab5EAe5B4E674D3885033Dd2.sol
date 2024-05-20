@@ -4410,3 +4410,42 @@ ADD
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'be'(Unknown Opcode)
+'5c'(Unknown Opcode)
+'4b'(Unknown Opcode)
+EQ
+'c4'(Unknown Opcode)
+SWAP3
+MLOAD
+NUMBER
+GT
+DUP2
+'f6'(Unknown Opcode)
+LOG4
+SWAP3
+'ef'(Unknown Opcode)
+PUSH4 0xa2f1381a
+'e3'(Unknown Opcode)
+SAR
+GASPRICE
+'bb'(Unknown Opcode)
+'0e'(Unknown Opcode)
+'a5'(Unknown Opcode)
+'c5'(Unknown Opcode)
+SHR
+ADDMOD
+'23'(Unknown Opcode)
+'a5'(Unknown Opcode)
+AND
+GT
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

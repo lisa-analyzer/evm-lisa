@@ -1603,3 +1603,22 @@ PUSH20 0x2062616c616e636545524332303a207472616e73
 PUSH7 0x657220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b6'(Unknown Opcode)
+'e3'(Unknown Opcode)
+'e1'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'d6'(Unknown Opcode)
+DUP7
+DUP12
+'bd'(Unknown Opcode)
+PUSH25 0xf32ab6f3b4d82cd167ccd38e30b77cc8c80b2298d664736f6c
+PUSH4 0x43000813
+STOP
+CALLER

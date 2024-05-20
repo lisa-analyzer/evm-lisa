@@ -8097,3 +8097,46 @@ PUSH9 0x0cff592b805c2deb80
 'b1'(Unknown Opcode)
 'db'(Unknown Opcode)
 RETURN
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+LOG1
+SHR
+'4a'(Unknown Opcode)
+MOD
+'f9'(Unknown Opcode)
+BYTE
+'ef'(Unknown Opcode)
+'c4'(Unknown Opcode)
+'e3'(Unknown Opcode)
+DUP3
+'c9'(Unknown Opcode)
+BALANCE
+'0e'(Unknown Opcode)
+'d3'(Unknown Opcode)
+'c3'(Unknown Opcode)
+'d1'(Unknown Opcode)
+'4b'(Unknown Opcode)
+SLT
+GASLIMIT
+'0d'(Unknown Opcode)
+'d5'(Unknown Opcode)
+XOR
+SHL
+CALLCODE
+'4e'(Unknown Opcode)
+DUP11
+MLOAD
+'ab'(Unknown Opcode)
+DUP9
+CALLDATACOPY
+'4c'(Unknown Opcode)
+'d2'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SLT
+STOP
+CALLER

@@ -5849,3 +5849,36 @@ DUP5
 PUSH2 0x1404
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c2'(Unknown Opcode)
+'ec'(Unknown Opcode)
+'a8'(Unknown Opcode)
+AND
+'d3'(Unknown Opcode)
+DUP11
+'c7'(Unknown Opcode)
+'21'(Unknown Opcode)
+PUSH7 0x46bcf9ef17faf2
+AND
+'f6'(Unknown Opcode)
+PUSH31 0xc4adc3756702eb094c25b4494564736f6c63430008120033a2646970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'0c'(Unknown Opcode)
+'24'(Unknown Opcode)
+SELFDESTRUCT
+'c3'(Unknown Opcode)
+'d9'(Unknown Opcode)
+SUB
+DUP3
+'2f'(Unknown Opcode)
+LOG0
+PUSH6 0x6f07516b7a36
+PUSH9 0x5dc32368dde743c96b
+'db'(Unknown Opcode)
+PUSH32 0xff5156f164736f6c63430008120033

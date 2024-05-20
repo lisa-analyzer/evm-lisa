@@ -5658,3 +5658,38 @@ DUP3
 PUSH2 0x1bd7
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SHL
+'bd'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'be'(Unknown Opcode)
+'c1'(Unknown Opcode)
+'e7'(Unknown Opcode)
+'b3'(Unknown Opcode)
+EQ
+'dd'(Unknown Opcode)
+SHR
+SWAP5
+JUMPDEST
+DUP15
+'fc'(Unknown Opcode)
+PUSH8 0x18f30ee81af94b89
+'b3'(Unknown Opcode)
+REVERT
+'25'(Unknown Opcode)
+GAS
+'e6'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'b9'(Unknown Opcode)
+ORIGIN
+BALANCE
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER

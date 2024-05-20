@@ -692,3 +692,15 @@ POP
 POP
 JUMP
 STOP
+LOG1
+PUSH6 0x627a7a723058
+SHA3
+'d8'(Unknown Opcode)
+'b3'(Unknown Opcode)
+BALANCE
+NUMBER
+PUSH20 0x6ea17b66c35145946cd15159ca745ff5b1a3acaa
+'2e'(Unknown Opcode)
+'1e'(Unknown Opcode)
+INVALID
+PUSH7 0x73d0730029

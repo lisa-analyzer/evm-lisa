@@ -12405,7 +12405,6 @@ POP
 POP
 JUMP
 INVALID
-SELFDESTRUCT
 'd0'(Unknown Opcode)
 EXTCODESIZE
 '21'(Unknown Opcode)
@@ -12473,7 +12472,7 @@ PUSH0
 PUSH10 0xdcac5b759dc9a2646970
 PUSH7 0x73582212209854
 'be'(Unknown Opcode)
-
+INVALID
 LOG4
 'ba'(Unknown Opcode)
 PUSH1 0x17
@@ -12492,7 +12491,6 @@ DUP6
 STOP
 'ed'(Unknown Opcode)
 INVALID
-SELFDESTRUCT
 SHA3
 STATICCALL
 'c6'(Unknown Opcode)

@@ -9802,3 +9802,23 @@ PUSH1 0x20
 PUSH1 0x00
 RETURN
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+OR
+MSIZE
+'bb'(Unknown Opcode)
+'ee'(Unknown Opcode)
+PUSH22 0x079dfcd7df03c46c6f893293e06ed364b567f5d99d6e
+'2b'(Unknown Opcode)
+MUL
+'5d'(Unknown Opcode)
+'a6'(Unknown Opcode)
+PUSH6 0x64736f6c6343
+STOP
+MOD
+'0c'(Unknown Opcode)
+STOP
+CALLER

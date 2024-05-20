@@ -4740,3 +4740,27 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ba'(Unknown Opcode)
+'d0'(Unknown Opcode)
+GASPRICE
+'ad'(Unknown Opcode)
+'cc'(Unknown Opcode)
+'b2'(Unknown Opcode)
+DIV
+STOP
+SWAP10
+'4d'(Unknown Opcode)
+CALLDATACOPY
+'ac'(Unknown Opcode)
+JUMP
+'2b'(Unknown Opcode)
+'28'(Unknown Opcode)
+'ca'(Unknown Opcode)
+MUL
+'c8'(Unknown Opcode)
+PUSH26 0x3efeb507860de9879837f8666864736f6c63430008150033

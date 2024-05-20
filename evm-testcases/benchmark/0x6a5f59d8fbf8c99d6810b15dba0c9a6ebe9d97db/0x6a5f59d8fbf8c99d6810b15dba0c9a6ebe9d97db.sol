@@ -5450,3 +5450,32 @@ CREATE2
 '23'(Unknown Opcode)
 'b3'(Unknown Opcode)
 'ef'(Unknown Opcode)
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+MSTORE8
+SSTORE
+SWAP4
+CALLDATALOAD
+LT
+SWAP6
+SAR
+'a9'(Unknown Opcode)
+MUL
+EXTCODECOPY
+'b3'(Unknown Opcode)
+PUSH14 0x189ec7d13bd361cd70808356b36e
+LOG0
+GT
+'e7'(Unknown Opcode)
+'a8'(Unknown Opcode)
+'df'(Unknown Opcode)
+DUP3
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+DIV
+STOP
+CALLER

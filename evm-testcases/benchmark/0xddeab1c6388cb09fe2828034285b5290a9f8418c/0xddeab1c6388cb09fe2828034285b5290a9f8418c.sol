@@ -4180,3 +4180,38 @@ PUSH2 0x242f
 PUSH2 0x2391
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'d4'(Unknown Opcode)
+'ac'(Unknown Opcode)
+'ce'(Unknown Opcode)
+'f6'(Unknown Opcode)
+'fb'(Unknown Opcode)
+LT
+'1e'(Unknown Opcode)
+CALLVALUE
+NUMBER
+ADDMOD
+'ec'(Unknown Opcode)
+'b0'(Unknown Opcode)
+'e1'(Unknown Opcode)
+GASLIMIT
+'a6'(Unknown Opcode)
+SDIV
+CALLDATACOPY
+SSTORE
+TIMESTAMP
+'ca'(Unknown Opcode)
+INVALID
+CALLDATACOPY
+DUP1
+DIV
+'b0'(Unknown Opcode)
+PUSH13 0x87199d7c235164736f6c634300
+ADDMOD
+AND
+STOP
+CALLER

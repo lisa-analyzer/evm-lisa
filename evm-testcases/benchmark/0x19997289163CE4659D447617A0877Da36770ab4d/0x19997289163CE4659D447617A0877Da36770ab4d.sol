@@ -1909,3 +1909,34 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'be'(Unknown Opcode)
+GASLIMIT
+LOG2
+'d0'(Unknown Opcode)
+'27'(Unknown Opcode)
+'c6'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'ca'(Unknown Opcode)
+CREATE2
+PUSH12 0x2ebe5d57f76c51e0381ba0ed
+CALLCODE
+SHL
+DIFFICULTY
+'23'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'f8'(Unknown Opcode)
+SAR
+'bc'(Unknown Opcode)
+CHAINID
+CREATE
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+EQ
+STOP
+CALLER

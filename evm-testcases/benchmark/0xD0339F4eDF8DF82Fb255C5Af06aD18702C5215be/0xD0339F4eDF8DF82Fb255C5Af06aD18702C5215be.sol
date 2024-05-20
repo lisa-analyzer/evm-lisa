@@ -527,3 +527,35 @@ SUB
 SWAP1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'cd'(Unknown Opcode)
+XOR
+PUSH9 0xac88250c065f2b9a98
+ADDRESS
+INVALID
+'ef'(Unknown Opcode)
+'e3'(Unknown Opcode)
+'e9'(Unknown Opcode)
+SHR
+PC
+'d5'(Unknown Opcode)
+SWAP16
+'26'(Unknown Opcode)
+SWAP10
+'b8'(Unknown Opcode)
+LOG3
+PUSH0
+'4d'(Unknown Opcode)
+PUSH2 0x9287
+'e0'(Unknown Opcode)
+'f8'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SMOD
+STOP
+CALLER

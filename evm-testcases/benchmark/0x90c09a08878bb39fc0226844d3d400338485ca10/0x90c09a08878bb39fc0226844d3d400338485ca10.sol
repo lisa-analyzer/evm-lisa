@@ -1272,3 +1272,52 @@ PUSH2 0x06ee
 PUSH2 0x06c1
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'c2'(Unknown Opcode)
+'da'(Unknown Opcode)
+SDIV
+'c5'(Unknown Opcode)
+'2e'(Unknown Opcode)
+'2e'(Unknown Opcode)
+SWAP15
+'a7'(Unknown Opcode)
+CALLDATASIZE
+DUP6
+SWAP1
+'23'(Unknown Opcode)
+REVERT
+'bf'(Unknown Opcode)
+'ea'(Unknown Opcode)
+SDIV
+'e8'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'5c'(Unknown Opcode)
+SAR
+'d6'(Unknown Opcode)
+'a5'(Unknown Opcode)
+SHA3
+SDIV
+'5c'(Unknown Opcode)
+PUSH3 0x1d9499
+PUSH1 0x1f
+DUP16
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+PUSH22 0xf2f7d563d9e8830686dfaa94f7f6b9cae1d07964e714
+'ca'(Unknown Opcode)
+SWAP11
+PUSH8 0x00f7633f11266473
+PUSH16 0x6c63430008110033

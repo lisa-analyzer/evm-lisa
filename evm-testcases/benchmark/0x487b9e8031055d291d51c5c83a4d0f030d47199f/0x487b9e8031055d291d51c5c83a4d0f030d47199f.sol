@@ -970,3 +970,17 @@ JUMPDEST
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'ad'(Unknown Opcode)
+'2d'(Unknown Opcode)
+'2b'(Unknown Opcode)
+PUSH8 0xc046e54bf7bae137
+PUSH4 0xc969cf5f
+'2f'(Unknown Opcode)
+COINBASE
+'cd'(Unknown Opcode)
+PUSH32 0xfdfc22b72f480e7d56027964736f6c63430007060033

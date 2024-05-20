@@ -1005,3 +1005,28 @@ DUP2
 PUSH2 0x05ec
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'b0'(Unknown Opcode)
+'d4'(Unknown Opcode)
+NOT
+PUSH5 0x8160dbf66f
+DUP1
+DIFFICULTY
+GASLIMIT
+CHAINID
+SWAP12
+'0f'(Unknown Opcode)
+POP
+BALANCE
+'d6'(Unknown Opcode)
+'bc'(Unknown Opcode)
+'27'(Unknown Opcode)
+SLT
+'e7'(Unknown Opcode)
+DUP8
+DUP16
+PUSH29 0x23ec7858d7c62864736f6c63430008150033

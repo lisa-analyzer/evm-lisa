@@ -3849,3 +3849,26 @@ PUSH15 0x6365546f6b656e3a207472616e7366
 PUSH6 0x7220616d6f75
 PUSH15 0x74206578636565647320616c6c6f77
 PUSH2 0x6e63
+PUSH6 0xa26469706673
+PC
+'22'(Unknown Opcode)
+SLT
+SHA3
+CALLCODE
+SWAP4
+SIGNEXTEND
+'c4'(Unknown Opcode)
+ADD
+DUP10
+'cc'(Unknown Opcode)
+'f6'(Unknown Opcode)
+DUP14
+'26'(Unknown Opcode)
+SUB
+'29'(Unknown Opcode)
+'4a'(Unknown Opcode)
+'f9'(Unknown Opcode)
+'28'(Unknown Opcode)
+'4a'(Unknown Opcode)
+EXTCODECOPY
+PUSH28 0xcae4da24b486cf3c4db2f28007e764736f6c63430008140033

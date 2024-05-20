@@ -890,3 +890,46 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+POP
+'b6'(Unknown Opcode)
+COINBASE
+'b6'(Unknown Opcode)
+EXTCODEHASH
+COINBASE
+BASEFEE
+PC
+'ed'(Unknown Opcode)
+'db'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'af'(Unknown Opcode)
+'d8'(Unknown Opcode)
+'26'(Unknown Opcode)
+NOT
+'fb'(Unknown Opcode)
+'dc'(Unknown Opcode)
+SWAP9
+'b5'(Unknown Opcode)
+SLOAD
+'1e'(Unknown Opcode)
+'c2'(Unknown Opcode)
+DUP4
+DIFFICULTY
+'b4'(Unknown Opcode)
+'2f'(Unknown Opcode)
+DUP1
+DUP4
+'cc'(Unknown Opcode)
+GASPRICE
+JUMP
+OR
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+ISZERO
+STOP
+CALLER

@@ -4127,3 +4127,26 @@ DUP2
 PUSH2 0x12c9
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'db'(Unknown Opcode)
+'1f'(Unknown Opcode)
+PUSH20 0x268b7ae6aa3da8aeeb309fb0061250bc27f6d507
+SSTORE
+DUP8
+EXP
+DIV
+LT
+'d4'(Unknown Opcode)
+'b3'(Unknown Opcode)
+'5e'(Unknown Opcode)
+SIGNEXTEND
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+AND
+STOP
+CALLER

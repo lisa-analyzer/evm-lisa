@@ -6653,3 +6653,41 @@ PUSH21 0x72616e7366657220616d6f756e7420657863656564
 PUSH20 0x20616c6c6f77616e636557656e44657657656e59
 PUSH16 0x754c61756e6368427463526577617264
 SLOAD
+PUSH16 0x6b656e44657657656ea2646970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'4c'(Unknown Opcode)
+'a8'(Unknown Opcode)
+SWAP2
+DUP2
+GT
+SHA3
+'2c'(Unknown Opcode)
+'cb'(Unknown Opcode)
+'c8'(Unknown Opcode)
+INVALID
+SWAP6
+'aa'(Unknown Opcode)
+POP
+'ee'(Unknown Opcode)
+'b6'(Unknown Opcode)
+'af'(Unknown Opcode)
+'27'(Unknown Opcode)
+'c9'(Unknown Opcode)
+SWAP12
+'d8'(Unknown Opcode)
+NOT
+DIFFICULTY
+LT
+'a7'(Unknown Opcode)
+'4e'(Unknown Opcode)
+'b9'(Unknown Opcode)
+CODECOPY
+CODECOPY
+PUSH9 0xef3fc664736f6c6343
+STOP
+ADDMOD
+GT
+STOP
+CALLER

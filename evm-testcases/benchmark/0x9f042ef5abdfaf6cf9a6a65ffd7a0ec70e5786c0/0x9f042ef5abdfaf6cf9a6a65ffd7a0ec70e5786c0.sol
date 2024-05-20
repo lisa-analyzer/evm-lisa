@@ -2374,3 +2374,46 @@ POP
 POP
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+'aa'(Unknown Opcode)
+LOG3
+'b6'(Unknown Opcode)
+'e3'(Unknown Opcode)
+'4a'(Unknown Opcode)
+BLOCKHASH
+POP
+INVALID
+DUP13
+CODESIZE
+'22'(Unknown Opcode)
+'c9'(Unknown Opcode)
+'d6'(Unknown Opcode)
+'cd'(Unknown Opcode)
+'ab'(Unknown Opcode)
+'2e'(Unknown Opcode)
+DUP16
+CHAINID
+DIV
+'d3'(Unknown Opcode)
+LOG2
+'ef'(Unknown Opcode)
+DUP13
+'cd'(Unknown Opcode)
+'fc'(Unknown Opcode)
+'d2'(Unknown Opcode)
+'ef'(Unknown Opcode)
+'c0'(Unknown Opcode)
+'a9'(Unknown Opcode)
+'b9'(Unknown Opcode)
+MLOAD
+LOG0
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+SIGNEXTEND
+STOP
+CALLER

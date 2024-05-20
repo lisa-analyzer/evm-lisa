@@ -2961,3 +2961,31 @@ POP
 SWAP3
 JUMP
 INVALID
+LOG2
+PUSH5 0x6970667358
+'22'(Unknown Opcode)
+SLT
+SHA3
+SWAP3
+SWAP16
+INVALID
+XOR
+'5e'(Unknown Opcode)
+'5d'(Unknown Opcode)
+TIMESTAMP
+DUP10
+ADDRESS
+'5e'(Unknown Opcode)
+SUB
+REVERT
+SLT
+'b6'(Unknown Opcode)
+CALLDATASIZE
+SWAP12
+'4b'(Unknown Opcode)
+'e1'(Unknown Opcode)
+CALLDATALOAD
+INVALID
+'0c'(Unknown Opcode)
+SHA3
+PUSH23 0xa71486300d49d912eb64736f6c63430008130033

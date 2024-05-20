@@ -1723,3 +1723,30 @@ SHA3
 PUSH10 0x732064697361626c6564
 SHA3
 PUSH2 0x7420
+PUSH21 0x6865206d6f6d656e74a2646970667358221220e3f6
+'d0'(Unknown Opcode)
+'db'(Unknown Opcode)
+XOR
+'a8'(Unknown Opcode)
+PUSH10 0xb7858bbe64a70bbfe7fe
+'b7'(Unknown Opcode)
+'f6'(Unknown Opcode)
+'1e'(Unknown Opcode)
+'ba'(Unknown Opcode)
+BLOCKHASH
+LT
+'a9'(Unknown Opcode)
+DIFFICULTY
+BYTE
+CREATE
+ADDRESS
+SWAP7
+'c5'(Unknown Opcode)
+XOR
+'b4'(Unknown Opcode)
+PUSH5 0x736f6c6343
+STOP
+ADDMOD
+OR
+STOP
+CALLER
