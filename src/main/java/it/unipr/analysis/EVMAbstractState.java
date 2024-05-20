@@ -1,6 +1,19 @@
 package it.unipr.analysis;
 
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unipr.analysis.operator.JumpiOperator;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -9,6 +22,7 @@ import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -17,14 +31,6 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
@@ -418,8 +424,15 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.pop();
-						result.add(resultStack);
+						KIntegerSet jmpDest = resultStack.pop();
+						
+						Set<Statement> filteredDests = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+								.filter(pc -> jmpDest.elements()
+										.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
+								.collect(Collectors.toSet());
+						
+						if (!filteredDests.isEmpty())
+							result.add(resultStack);
 					}
 
 					return new EVMAbstractState(result, memory, storage, mu_i);
@@ -429,9 +442,17 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
+						KIntegerSet jmpDest = resultStack.pop();
 						resultStack.pop();
-						resultStack.pop();
-						result.add(resultStack);
+						
+
+						Set<Statement> filteredDests = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+								.filter(pc -> jmpDest.elements()
+										.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
+								.collect(Collectors.toSet());
+						
+						if (!filteredDests.isEmpty())
+							result.add(resultStack);
 					}
 
 					return new EVMAbstractState(result, memory, storage, mu_i);
@@ -1789,9 +1810,9 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-												.getValue());
+						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+								.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
@@ -1845,7 +1866,7 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 		return new StringRepresentation(
 				"{ stacks: " + stacks + ", memory: " + memory + ", mu_i: " + mu_i + ", storage: " + storage
-						+ " }");
+				+ " }");
 	}
 
 	@Override
