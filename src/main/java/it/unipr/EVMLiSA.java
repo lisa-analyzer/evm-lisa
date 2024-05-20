@@ -576,7 +576,7 @@ public class EVMLiSA {
 					else if (topStackValuesPerJump == null) {
 						// If all stacks are bottom, then we have a
 						// maybeFakeMissedJump
-						maybeFakeMissedJumps++;
+						definitelyUnreachable++;
 					} else if (!topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
 						// If the elements at the top of the stacks are all
 						// different from NUMERIC_TOP, then we are sure that it
