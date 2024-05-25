@@ -423,6 +423,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
 						
@@ -441,6 +443,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
 						resultStack.pop();
@@ -461,6 +465,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -475,6 +481,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -489,6 +497,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -503,6 +513,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -521,6 +533,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -539,6 +553,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -553,6 +569,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -567,6 +585,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -582,6 +602,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -597,6 +619,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -611,6 +635,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -625,6 +651,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -639,6 +667,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -653,6 +683,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -667,6 +699,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -681,6 +715,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -695,6 +731,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 
@@ -708,6 +746,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -722,6 +762,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -736,6 +778,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -750,6 +794,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 
@@ -763,6 +809,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet indexOfByte = resultStack.pop();
 						KIntegerSet target = resultStack.pop();
@@ -799,6 +847,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -813,6 +863,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -827,6 +879,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet opnd1 = resultStack.pop();
 						KIntegerSet opnd2 = resultStack.pop();
@@ -842,6 +896,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -857,6 +913,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
@@ -871,6 +929,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 
@@ -885,6 +945,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet memOffset = resultStack.pop();
 						KIntegerSet dataOffset = resultStack.pop();
@@ -900,6 +962,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet memOffset = resultStack.pop();
 						KIntegerSet dataOffset = resultStack.pop();
@@ -915,6 +979,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
@@ -929,6 +995,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(4))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 						KIntegerSet memOffset = resultStack.pop();
@@ -945,6 +1013,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet memOffset = resultStack.pop();
 						KIntegerSet dataOffset = resultStack.pop();
@@ -960,6 +1030,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet address = resultStack.pop();
 
@@ -974,6 +1046,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet blockNumber = resultStack.pop();
 
@@ -987,6 +1061,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						resultStack.pop();
 						result.add(resultStack);
@@ -998,6 +1074,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet new_mu_i = null;
 
@@ -1029,6 +1107,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					KIntegerSet new_mu_i = mu_i;
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack stackResult = stack.clone();
 
 						KIntegerSet offset = stackResult.pop();
@@ -1063,6 +1143,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					KIntegerSet new_mu_i = mu_i;
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack stackResult = stack.clone();
 
 						KIntegerSet offset = stackResult.pop();
@@ -1094,6 +1176,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
 
@@ -1119,6 +1203,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					Memory storageResult = new Memory().bottom();
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
 						KIntegerSet value = resultStack.pop();
@@ -1141,6 +1227,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 1)
+							continue;
 						AbstractStack resultStack = dupX(1, stack.clone());
 						result.add(resultStack);
 					}
@@ -1151,6 +1239,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 2)
+							continue;
 						AbstractStack resultStack = dupX(2, stack.clone());
 						result.add(resultStack);
 					}
@@ -1161,6 +1251,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 3)
+							continue;
 						AbstractStack resultStack = dupX(3, stack.clone());
 						result.add(resultStack);
 					}
@@ -1171,6 +1263,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 4)
+							continue;
 						AbstractStack resultStack = dupX(4, stack.clone());
 						result.add(resultStack);
 					}
@@ -1181,6 +1275,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 5)
+							continue;
 						AbstractStack resultStack = dupX(5, stack.clone());
 						result.add(resultStack);
 					}
@@ -1191,6 +1287,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 6)
+							continue;
 						AbstractStack resultStack = dupX(6, stack.clone());
 						result.add(resultStack);
 					}
@@ -1201,6 +1299,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 7)
+							continue;
 						AbstractStack resultStack = dupX(7, stack.clone());
 						result.add(resultStack);
 					}
@@ -1211,6 +1311,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 8)
+							continue;
 						AbstractStack resultStack = dupX(8, stack.clone());
 						result.add(resultStack);
 					}
@@ -1221,6 +1323,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 9)
+							continue;
 						AbstractStack resultStack = dupX(9, stack.clone());
 						result.add(resultStack);
 					}
@@ -1231,6 +1335,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 10)
+							continue;
 						AbstractStack resultStack = dupX(10, stack.clone());
 						result.add(resultStack);
 					}
@@ -1241,6 +1347,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 11)
+							continue;
 						AbstractStack resultStack = dupX(11, stack.clone());
 						result.add(resultStack);
 					}
@@ -1251,6 +1359,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 12)
+							continue;
 						AbstractStack resultStack = dupX(12, stack.clone());
 						result.add(resultStack);
 					}
@@ -1261,6 +1371,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 13)
+							continue;
 						AbstractStack resultStack = dupX(13, stack.clone());
 						result.add(resultStack);
 					}
@@ -1271,6 +1383,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 14)
+							continue;
 						AbstractStack resultStack = dupX(14, stack.clone());
 						result.add(resultStack);
 					}
@@ -1281,6 +1395,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 15)
+							continue;
 						AbstractStack resultStack = dupX(15, stack.clone());
 						result.add(resultStack);
 					}
@@ -1291,6 +1407,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 16)
+							continue;
 						AbstractStack resultStack = dupX(16, stack.clone());
 						result.add(resultStack);
 					}
@@ -1301,6 +1419,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 2)
+							continue;
 						AbstractStack resultStack = swapX(1, stack.clone());
 						result.add(resultStack);
 					}
@@ -1311,6 +1431,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 3)
+							continue;
 						AbstractStack resultStack = swapX(2, stack.clone());
 						result.add(resultStack);
 					}
@@ -1321,6 +1443,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 4)
+							continue;
 						AbstractStack resultStack = swapX(3, stack.clone());
 						result.add(resultStack);
 					}
@@ -1331,6 +1455,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 5)
+							continue;
 						AbstractStack resultStack = swapX(4, stack.clone());
 						result.add(resultStack);
 					}
@@ -1341,6 +1467,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 6)
+							continue;
 						AbstractStack resultStack = swapX(5, stack.clone());
 						result.add(resultStack);
 					}
@@ -1351,6 +1479,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 7)
+							continue;
 						AbstractStack resultStack = swapX(6, stack.clone());
 						result.add(resultStack);
 					}
@@ -1361,6 +1491,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 8)
+							continue;
 						AbstractStack resultStack = swapX(7, stack.clone());
 						result.add(resultStack);
 					}
@@ -1371,6 +1503,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 9)
+							continue;
 						AbstractStack resultStack = swapX(8, stack.clone());
 						result.add(resultStack);
 					}
@@ -1381,6 +1515,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 10)
+							continue;
 						AbstractStack resultStack = swapX(9, stack.clone());
 						result.add(resultStack);
 					}
@@ -1391,6 +1527,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 11)
+							continue;
 						AbstractStack resultStack = swapX(10, stack.clone());
 						result.add(resultStack);
 					}
@@ -1401,6 +1539,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 12)
+							continue;
 						AbstractStack resultStack = swapX(11, stack.clone());
 						result.add(resultStack);
 					}
@@ -1411,6 +1551,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 13)
+							continue;
 						AbstractStack resultStack = swapX(12, stack.clone());
 						result.add(resultStack);
 					}
@@ -1421,6 +1563,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 14)
+							continue;
 						AbstractStack resultStack = swapX(13, stack.clone());
 						result.add(resultStack);
 					}
@@ -1431,6 +1575,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 15)
+							continue;
 						AbstractStack resultStack = swapX(14, stack.clone());
 						result.add(resultStack);
 					}
@@ -1441,6 +1587,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 16)
+							continue;
 						AbstractStack resultStack = swapX(15, stack.clone());
 						result.add(resultStack);
 					}
@@ -1451,6 +1599,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.size() < 17)
+							continue;
 						AbstractStack resultStack = swapX(16, stack.clone());
 						result.add(resultStack);
 					}
@@ -1462,6 +1612,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1476,6 +1628,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1491,6 +1645,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(4))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1507,6 +1663,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(5))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1524,6 +1682,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(6))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1542,6 +1702,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet value = resultStack.pop();
 						KIntegerSet offset = resultStack.pop();
@@ -1558,6 +1720,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(4))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet value = resultStack.pop();
 						KIntegerSet offset = resultStack.pop();
@@ -1575,6 +1739,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(7))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet gas = resultStack.pop();
 						KIntegerSet to = resultStack.pop();
@@ -1595,6 +1761,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(7))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet gas = resultStack.pop();
 						KIntegerSet to = resultStack.pop();
@@ -1615,6 +1783,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1629,6 +1799,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(6))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet gas = resultStack.pop();
 						KIntegerSet to = resultStack.pop();
@@ -1648,6 +1820,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(6))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet gas = resultStack.pop();
 						KIntegerSet to = resultStack.pop();
@@ -1667,6 +1841,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(2))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet offset = resultStack.pop();
 						KIntegerSet length = resultStack.pop();
@@ -1684,6 +1860,8 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 					AbstractStackSet result = new AbstractStackSet(new HashSet<>(stacks.size()), false);
 
 					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet recipient = resultStack.pop();
 
