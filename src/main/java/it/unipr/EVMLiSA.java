@@ -62,7 +62,7 @@ public class EVMLiSA {
 	private int CORES;
 	private long startOfExecutionTime = 0;
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
-			+ "Not solved jumps, Unsound jumps, Maybe unsound jumps, Definitely fake missed jumps, Maybe fake missed jumps, % Total Solved, Time (millis), Notes \n";
+			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -534,19 +534,31 @@ public class EVMLiSA {
 		System.err.println("### Calculating statistics ###");
 
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
-		Set<Statement> unsoundJumpNodes = checker.getUnsoundJumps();
 
 		int resolvedJumps = 0;
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
-		int notSolvedJumps = 0;
 		int unsoundJumps = 0;
-		int maybeUnsoundJumps = 0;
-		int definitelyFakeMissedJumps = 0;
-		int maybeFakeMissedJumps = 0;
+		int maybeUnsoundJumps = checker.getMaybeUnsoundJumps().size();
+
+		boolean allJumpAreSound = true;
+		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
+		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
+		for (Statement jumpNode : cfg.getAllJumps()) {
+			if (pushedJumps.contains(jumpNode))
+				continue;
+			boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+			Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+			if (topStackValuesPerJump == null || !reachableFrom)
+				continue;
+			else if (topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
+				allJumpAreSound = false;
+				break;
+			}
+		}
+
 
 		// we are safe supposing that we have a single entry point
-		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
 
@@ -567,13 +579,15 @@ public class EVMLiSA {
 				// If the jump has been resolved, we skip the next checks
 				if (!skip) {
 					Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-					Set<Integer> stacksSizePerJump = checker.getStacksSizePerJump(jumpNode);
 
 					if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
 						definitelyUnreachable++;
-					else if (!reachableFrom)
-						maybeUnreachable++;
-					else if (topStackValuesPerJump == null) {
+					else if (!reachableFrom) {
+						if (allJumpAreSound)
+							definitelyUnreachable++;
+						else
+							maybeUnreachable++;
+					} else if (topStackValuesPerJump == null) {
 						// If all stacks are bottom, then we have a
 						// maybeFakeMissedJump
 						definitelyUnreachable++;
@@ -581,35 +595,23 @@ public class EVMLiSA {
 						// If the elements at the top of the stacks are all
 						// different from NUMERIC_TOP, then we are sure that it
 						// is definitelyFakeMissedJumps
-						definitelyFakeMissedJumps++;
-					} else if (topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)
-							&& stacksSizePerJump.size() == 1) {
-						// If we have only one stack and the top element is
-						// NUMERIC_TOP, then the jump is unsound
-						notSolvedJumps++;
+						definitelyUnreachable++;
+					} else {
 						unsoundJumps++;
 						System.err.println(jumpNode + " not solved");
 						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
-					} else {
-						// In all other cases, we have a maybeFakeMissedJump
-						maybeFakeMissedJumps++;
-					}
+					} 
 				}
 			}
 		}
-
-		maybeUnsoundJumps += checker.getMaybeUnsoundJumps().size();
-
+				
 		System.err.println();
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
 		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-		System.err.println("Resolved jumps: " + (resolvedJumps + definitelyUnreachable + maybeUnreachable));
+		System.err.println("Resolved jumps: " + resolvedJumps);
 		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
 		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
-		System.err.println("Definitely fake missed jumps: " + definitelyFakeMissedJumps);
-		System.err.println("Maybe fake missed jumps: " + maybeFakeMissedJumps);
-		System.err.println("Not solved jumps: " + notSolvedJumps);
 		System.err.println("Unsound jumps: " + unsoundJumps);
 		System.err.println("Maybe unsound jumps: " + maybeUnsoundJumps);
 		System.err.println("##############");
@@ -620,10 +622,7 @@ public class EVMLiSA {
 				.preciselyResolvedJumps(resolvedJumps)
 				.definitelyUnreachableJumps(definitelyUnreachable)
 				.maybeUnreachableJumps(maybeUnreachable)
-				.notSolvedJumps(notSolvedJumps)
 				.unsoundJumps(unsoundJumps)
-				.definitelyFakeMissedJumps(definitelyFakeMissedJumps)
-				.maybeFakeMissedJumps(maybeFakeMissedJumps)
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
 						+ AbstractStackSet.getStackSetLimit());

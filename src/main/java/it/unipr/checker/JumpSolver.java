@@ -1,5 +1,11 @@
 package it.unipr.checker;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -28,11 +34,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -63,12 +64,6 @@ public class JumpSolver
 	private Set<Statement> unreachableJumps;
 
 	/**
-	 * The set of definitely unsound jumps (i.e., jumps reached by stacks with
-	 * top at the top)
-	 */
-	private Set<Statement> unsoundJumps;
-
-	/**
 	 * The set of maybe unsound jumps (i.e., jumps reached by the top abstract
 	 * state)
 	 */
@@ -78,11 +73,6 @@ public class JumpSolver
 	 * Map of top stack values per jump
 	 */
 	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
-
-	/**
-	 * Map of stack sizes per jump
-	 */
-	private Map<Statement, Set<Integer>> stacksSizePerJump = new HashMap<>();
 
 	/**
 	 * Yields the computed CFG.
@@ -97,20 +87,12 @@ public class JumpSolver
 		return unreachableJumps;
 	}
 
-	public Set<Statement> getUnsoundJumps() {
-		return unsoundJumps;
-	}
-
 	public Set<Statement> getMaybeUnsoundJumps() {
 		return maybeUnsoundJumps;
 	}
 
 	public Set<KIntegerSet> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
-	}
-
-	public Set<Integer> getStacksSizePerJump(Statement node) {
-		return stacksSizePerJump.get(node);
 	}
 
 	/**
@@ -127,7 +109,6 @@ public class JumpSolver
 					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint) {
-			this.unsoundJumps = new HashSet<>();
 			this.unreachableJumps = new HashSet<>();
 			this.maybeUnsoundJumps = new HashSet<>();
 
@@ -153,41 +134,20 @@ public class JumpSolver
 
 					// If the abstract stack is top or bottom or it is empty, we
 					// do not have enough information to solve the jump.
-					if (valueState.isBottom()) {
+					if (valueState.isBottom()) 
 						this.unreachableJumps.add(node);
-					} else if (valueState.isTop()) {
+					 else if (valueState.isTop())
 						this.maybeUnsoundJumps.add(node);
-					} else {
-						boolean allNumericTop = true;
-						boolean allBottom = true;
+					 else {
+							Set<KIntegerSet> stacksTop = new HashSet<>();
+							AbstractStackSet stacks = valueState.getStacks();
+							for (AbstractStack stack : stacks) {
+								KIntegerSet topStack = stack.getTop();
+								stacksTop.add(topStack);
+							}
 
-						Set<Integer> stacksSize = new HashSet<>();
-						Set<KIntegerSet> stacksTop = new HashSet<>();
-
-						AbstractStackSet stacks = valueState.getStacks();
-						for (AbstractStack stack : stacks) {
-							stacksSize.add(Integer.valueOf(stack.size()));
-
-//							if (stacksSize.size() > 1)
-//								break;
-
-							KIntegerSet topStack = stack.getTop();
-							if (allNumericTop && !topStack.isTopNumeric())
-								allNumericTop = false;
-							if (allBottom && !topStack.isBottom())
-								allBottom = false;
-
-							stacksTop.add(topStack);
+							topStackValuesPerJump.put(node, stacksTop);
 						}
-
-						stacksSizePerJump.put(node, stacksSize);
-						topStackValuesPerJump.put(node, stacksTop);
-
-						if (allNumericTop)
-							this.unsoundJumps.add(node);
-						if (allBottom)
-							this.unreachableJumps.add(node);
-					}
 				}
 			}
 

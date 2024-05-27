@@ -428,12 +428,15 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
 						
+						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
+							continue;
+													
 						Set<Statement> filteredDests = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
 								.filter(pc -> jmpDest.elements()
 										.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 								.collect(Collectors.toSet());
 						
-						if (!filteredDests.isEmpty())
+						if (!filteredDests.isEmpty() || jmpDest.isTop())
 							result.add(resultStack);
 					}
 
@@ -447,15 +450,17 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
-						resultStack.pop();
+						KIntegerSet cond = resultStack.pop();
 						
+						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
+							continue;
 
 						Set<Statement> filteredDests = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
 								.filter(pc -> jmpDest.elements()
 										.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 								.collect(Collectors.toSet());
 						
-						if (!filteredDests.isEmpty())
+						if (!filteredDests.isEmpty() || jmpDest.isTop())
 							result.add(resultStack);
 					}
 
@@ -1186,13 +1191,13 @@ public class EVMAbstractState implements ValueDomain<EVMAbstractState>, BaseLatt
 
 						KIntegerSet valueToPush = KIntegerSet.BOTTOM;
 						if (key.isTop() || key.isTopNotJumpdest() || storage.isBottom())
-							valueToPush = KIntegerSet.NUMERIC_TOP;
+							valueToPush = KIntegerSet.NOT_JUMPDEST_TOP;
 						else {
 							for (Number k : key)
 								if (storage.getMap().containsKey(k))
 									valueToPush = valueToPush.lub(storage.getState(k));
 								else
-									valueToPush = valueToPush.lub(KIntegerSet.NUMERIC_TOP);
+									valueToPush = KIntegerSet.NOT_JUMPDEST_TOP; //valueToPush.lub(KIntegerSet.NUMERIC_TOP);
 						}
 
 						resultStack.push(valueToPush);
