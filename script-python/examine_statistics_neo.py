@@ -62,7 +62,7 @@ def calculate_statistics(file_path):
     print(f"Unsound jumps: {unsound_jumps}")
     print(f"Maybe unsound jumps: {maybe_unsound_jumps}")
     print(f"Average % Total Solved: {percentuale(avg_total_solved_percent)}")
-    print(f"Average Time (millis): {avg_time_millis}")
+    print(f"Average Time (seconds): {avg_time_millis / 1000}")
 
 def percentuale(numero_decimale):
     if numero_decimale is None:
@@ -71,7 +71,11 @@ def percentuale(numero_decimale):
     return percentuale_str
 
 if __name__ == "__main__":
-    print("something...")
-    calculate_statistics("path")
+    print("statistics-numeric-top-17-32.csv")
+    calculate_statistics("stats/statistics-numeric-top-17-32.csv")
+    print()
+
+    print("statistics-numeric-top-32-32.csv")
+    calculate_statistics("stats/statistics-numeric-top-32-32.csv")
     print()
 

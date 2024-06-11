@@ -56,7 +56,7 @@ public class Number implements Comparable<Number> {
 		return b;
 	}
 
-	public BigInteger toBigInteger(Number other) {
+	public static BigInteger toBigInteger(Number other) {
 		BigInteger ot;
 		if (other.getType() == Type.INT)
 			ot = BigInteger.valueOf(other.getInt());
@@ -185,7 +185,7 @@ public class Number implements Comparable<Number> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(b, i, l);
+		return Objects.hash(toBigInteger(this));
 	}
 
 	@Override
@@ -197,6 +197,6 @@ public class Number implements Comparable<Number> {
 		if (getClass() != obj.getClass())
 			return false;
 		Number other = (Number) obj;
-		return Objects.equals(b, other.getBigInteger()) && i == other.getInt() && l == other.getLong();
+		return Objects.equals(toBigInteger(this), toBigInteger(other));
 	}
 }
