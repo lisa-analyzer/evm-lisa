@@ -178,6 +178,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet div(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
