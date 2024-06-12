@@ -199,6 +199,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet mod(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
@@ -220,6 +222,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet addmod(KIntegerSet that, KIntegerSet other) {
 		if (isBottom() || other.isBottom() || that.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
@@ -240,6 +244,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet mulmod(KIntegerSet that, KIntegerSet other) {
 		if (isBottom() || other.isBottom() || that.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
@@ -260,6 +266,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet exp(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ONE;
 		else if (isTop() || other.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
