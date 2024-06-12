@@ -115,7 +115,7 @@ public class JumpSolver
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
 				if (cfgToAnalyze.getAllPushedJumps().contains(node)
-						|| this.cfgToAnalyze.reachableFrom(entryPoint, node))
+						|| !this.cfgToAnalyze.reachableFrom(entryPoint, node))
 					continue;
 
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
