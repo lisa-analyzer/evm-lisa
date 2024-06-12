@@ -299,11 +299,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public static int getStackLimit() {
 		return STACK_LIMIT;
 	}
-	
+
 	/**
-	 * Checks whether between 0 and x-positions of the stack an element is bottom.
+	 * Checks whether between 0 and x-positions of the stack an element is
+	 * bottom.
+	 * 
 	 * @param x the position
-	 * @return {@code true} if between 0 and x-positions of the stack an element is bottom, {@code false} otherwise.
+	 * 
+	 * @return {@code true} if between 0 and x-positions of the stack an element
+	 *             is bottom, {@code false} otherwise.
 	 */
 	public boolean hasBottomUntil(int x) {
 		for (int i = 0; i < x; i++)

@@ -557,7 +557,6 @@ public class EVMLiSA {
 			}
 		}
 
-
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
@@ -600,11 +599,11 @@ public class EVMLiSA {
 						unsoundJumps++;
 						System.err.println(jumpNode + " not solved");
 						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
-					} 
+					}
 				}
 			}
 		}
-				
+
 		System.err.println();
 		System.err.println("##############");
 		System.err.println("Total opcodes: " + cfg.getOpcodeCount());

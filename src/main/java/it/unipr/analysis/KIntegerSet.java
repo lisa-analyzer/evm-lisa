@@ -684,7 +684,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public boolean isTopNumeric() {
 		return this == NUMERIC_TOP;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -694,15 +694,15 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if(obj == null)
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		if(isBottom() && ((KIntegerSet) obj).isBottom())
+		if (isBottom() && ((KIntegerSet) obj).isBottom())
 			return true;
-		if(isTopNumeric() && ((KIntegerSet) obj).isTopNumeric())
+		if (isTopNumeric() && ((KIntegerSet) obj).isTopNumeric())
 			return true;
-		if(isTopNotJumpdest() && ((KIntegerSet) obj).isTopNotJumpdest())
+		if (isTopNotJumpdest() && ((KIntegerSet) obj).isTopNotJumpdest())
 			return true;
 		if (!super.equals(obj))
 			return false;

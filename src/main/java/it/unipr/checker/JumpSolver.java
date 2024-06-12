@@ -1,11 +1,5 @@
 package it.unipr.checker;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -34,14 +28,19 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver
-implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	/**
 	 * The CFG to be analyzed.
@@ -104,16 +103,19 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint) {
 			this.unreachableJumps = new HashSet<>();
 			this.maybeUnsoundJumps = new HashSet<>();
 
+			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
+
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				if (cfgToAnalyze.getAllPushedJumps().contains(node))
+				if (cfgToAnalyze.getAllPushedJumps().contains(node)
+						|| this.cfgToAnalyze.reachableFrom(entryPoint, node))
 					continue;
 
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
@@ -121,7 +123,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 						EVMAbstractState,
 						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+							MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -131,12 +133,14 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 					// Retrieve the symbolic stack from the analysis result
 					EVMAbstractState valueState = analysisResult.getState().getValueState();
-					
-					// If the value state is bottom, the jump is definitely unreachable
-					if (valueState.isBottom()) 
+
+					// If the value state is bottom, the jump is definitely
+					// unreachable
+					if (valueState.isBottom())
 						this.unreachableJumps.add(node);
 					// If the value state is top, the jump is maybe unsound
-					// (i.e., we should re-run the analysis with different parameter)
+					// (i.e., we should re-run the analysis with different
+					// parameter)
 					else if (valueState.isTop())
 						this.maybeUnsoundJumps.add(node);
 					else {
@@ -182,9 +186,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -206,7 +210,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
