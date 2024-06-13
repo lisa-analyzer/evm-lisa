@@ -12,7 +12,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	private static final Number ONE_INT = new Number(1);
 	private static final Number MAX = new Number(BigInteger.valueOf(2).pow(256));
 
-	public static final int K = 2;
+	public static final int K = 16;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
 	public static final KIntegerSet ONE = new KIntegerSet(1);

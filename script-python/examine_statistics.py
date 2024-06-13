@@ -1,19 +1,17 @@
 import csv
 
-# Percorso del file CSV
-file_path = "statistics-128-256.csv"
-file_path2 = "statistics-200-150.csv"
-
 def calculate_statistics(file_path):
-    # Lista per memorizzare i valori delle colonne
-    total_solved_values = 0
-    time_millis_values = 0
-    total_jumps_values = 0
-    total_solved_jumps_values = 0
-    precisely_solved_jumps = 0
-    sound_solved_jumps = 0
+    # Inizializza le variabili per memorizzare i valori delle colonne
+    total_opcodes = 0
+    total_jumps = 0
+    solved_jumps = 0
     definitely_unreachable_jumps = 0
     maybe_unreachable_jumps = 0
+    total_solved_jumps = 0
+    unsound_jumps = 0
+    maybe_unsound_jumps = 0
+    total_solved_percent = 0
+    time_millis = 0
     rows = 0
 
     # Apri il file CSV in modalità lettura
@@ -24,62 +22,60 @@ def calculate_statistics(file_path):
         header = next(reader)
         
         # Trova gli indici delle colonne
-        total_solved_index = header.index(" % Total Solved")
-        time_millis_index = header.index(" Time (millis)")
+        total_opcodes_index = header.index(" Total Opcodes")
         total_jumps_index = header.index(" Total Jumps")
-        total_solved_jumps_index = header.index(" Total solved Jumps")
-        precisely_solved_jumps_index = header.index(" Precisely solved Jumps")
-        sound_solved_jumps_index = header.index(" Sound solved Jumps")
+        solved_jumps_index = header.index(" Solved Jumps")
         definitely_unreachable_jumps_index = header.index(" Definitely unreachable jumps")
         maybe_unreachable_jumps_index = header.index(" Maybe unreachable jumps")
+        total_solved_jumps_index = header.index(" Total solved Jumps")
+        unsound_jumps_index = header.index(" Unsound jumps")
+        maybe_unsound_jumps_index = header.index(" Maybe unsound jumps")
+        total_solved_percent_index = header.index(" % Total Solved")
+        time_millis_index = header.index(" Time (millis)")
 
         # Leggi le righe rimanenti
         for row in reader:
             rows += 1
-            # Aggiungi i valori alle rispettive liste
-            if(float(row[total_solved_index]) != float(-1)):
-                total_solved_values += float(row[total_solved_index])
-            time_millis_values += int(row[time_millis_index])
-            total_jumps_values += int(row[total_jumps_index])
-            total_solved_jumps_values += int(row[total_solved_jumps_index])
-            precisely_solved_jumps += int(row[precisely_solved_jumps_index])
-            sound_solved_jumps += int(row[sound_solved_jumps_index])
+            total_opcodes += int(row[total_opcodes_index])
+            total_jumps += int(row[total_jumps_index])
+            solved_jumps += int(row[solved_jumps_index])
             definitely_unreachable_jumps += int(row[definitely_unreachable_jumps_index])
             maybe_unreachable_jumps += int(row[maybe_unreachable_jumps_index])
+            total_solved_jumps += int(row[total_solved_jumps_index])
+            unsound_jumps += int(row[unsound_jumps_index])
+            maybe_unsound_jumps += int(row[maybe_unsound_jumps_index])
+            total_solved_percent += float(row[total_solved_percent_index])
+            time_millis += int(row[time_millis_index])
 
     # Calcola le statistiche
-    avg_total_solved = total_solved_values / rows if rows else None
-    avg_time_millis = time_millis_values / rows if rows else None
-    sum_total_jumps = total_jumps_values
-    sum_total_solved_jumps = total_solved_jumps_values
-    total_solved_jumps_percent = (precisely_solved_jumps + sound_solved_jumps) / total_jumps_values
-    total_unsolved_jumps_percent = (definitely_unreachable_jumps + maybe_unreachable_jumps) / total_jumps_values
-    total_missed_jumps = sum_total_jumps - (precisely_solved_jumps + sound_solved_jumps + definitely_unreachable_jumps + maybe_unreachable_jumps)
-    total_missed_jumps_percent = total_missed_jumps / total_jumps_values
-    
+    avg_total_solved_percent = total_solved_percent / rows if rows else None
+    avg_time_millis = time_millis / rows if rows else None
+
     # Stampa dei risultati
-    print(f"Smart contract examined: {rows}")
-    print(f"Total Jumps: {sum_total_jumps}")
-    print(f"Missed Jumps: {total_missed_jumps}")
-    print(f"Precisely solved Jumps: {precisely_solved_jumps}")
-    print(f"Sound solved Jumps: {sound_solved_jumps}")
+    print(f"Smart contracts examined: {rows}")
+    print(f"Total Opcodes: {total_opcodes}")
+    print(f"Total Jumps: {total_jumps}")
+    print(f"Solved Jumps: {solved_jumps}")
     print(f"Definitely unreachable jumps: {definitely_unreachable_jumps}")
     print(f"Maybe unreachable jumps: {maybe_unreachable_jumps}")
-    print(f"Total reachable jumps (%): {percentuale(total_solved_jumps_percent)}")
-    print(f"Total unreachable jumps (%): {percentuale(total_unsolved_jumps_percent)}")
-    print(f"Total unsolved jumps (%): {percentuale(total_missed_jumps_percent)}")
-    print(f"Total solved jumps (%): {percentuale(1 - total_missed_jumps_percent)}")
-    print(f"Avg execution time (seconds): {avg_time_millis / 1000}")
-
+    print(f"Total solved Jumps: {total_solved_jumps}")
+    print(f"Unsound jumps: {unsound_jumps}")
+    print(f"Maybe unsound jumps: {maybe_unsound_jumps}")
+    print(f"Average % Total Solved: {percentuale(avg_total_solved_percent)}")
+    print(f"Average Time (seconds): {avg_time_millis / 1000}")
 
 def percentuale(numero_decimale):
+    if numero_decimale is None:
+        return "N/A"
     percentuale_str = "{:.4f}%".format(numero_decimale * 100)
     return percentuale_str
 
-
 if __name__ == "__main__":
-    print("Stack.size: 128 Stack-set.size: 256")
-    calculate_statistics(file_path)
+    print("statistics-numeric-128-32.csv")
+    calculate_statistics("stats/statistics-numeric-128-32.csv")
     print()
-    print("Stack.size: 200 Stack-set.size: 150")
-    calculate_statistics(file_path2)
+
+    print("statistics-notjumpdest-128-32.csv")
+    calculate_statistics("stats/statistics-notjumpdest-128-32.csv")
+    print()
+
