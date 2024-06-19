@@ -12,7 +12,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	private static final Number ONE_INT = new Number(1);
 	private static final Number MAX = new Number(BigInteger.valueOf(2).pow(256));
 
-	public static final int K = 2;
+	public static final int K = 16;
 
 	public static final KIntegerSet ZERO = new KIntegerSet(0);
 	public static final KIntegerSet ONE = new KIntegerSet(1);
@@ -178,6 +178,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet div(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
@@ -197,6 +199,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet mod(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
@@ -218,6 +222,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet addmod(KIntegerSet that, KIntegerSet other) {
 		if (isBottom() || other.isBottom() || that.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
@@ -238,6 +244,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet mulmod(KIntegerSet that, KIntegerSet other) {
 		if (isBottom() || other.isBottom() || that.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ZERO;
 		else if (isTop() || other.isTop() || that.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
@@ -258,6 +266,8 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public KIntegerSet exp(KIntegerSet other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
+		else if (other.equals(ZERO))
+			return ONE;
 		else if (isTop() || other.isTop())
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
@@ -473,7 +483,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		for (Number i : this.elements) {
 			KIntegerSet state = memory.getState(i);
 			if (state.isBottom())
-				r = r.lub(KIntegerSet.NUMERIC_TOP);
+				r = r.lub(KIntegerSet.BOTTOM);
 			else
 				r = r.lub(state);
 		}
@@ -681,5 +691,29 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 
 	public boolean isTopNumeric() {
 		return this == NUMERIC_TOP;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		if (isBottom() && ((KIntegerSet) obj).isBottom())
+			return true;
+		if (isTopNumeric() && ((KIntegerSet) obj).isTopNumeric())
+			return true;
+		if (isTopNotJumpdest() && ((KIntegerSet) obj).isTopNotJumpdest())
+			return true;
+		if (!super.equals(obj))
+			return false;
+		return true;
 	}
 }

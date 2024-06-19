@@ -14,12 +14,9 @@ public class MyLogger {
 	private int definitelyUnreachableJumps;
 	private int maybeUnreachableJumps;
 	private int totalResolvedJumps;
-	private int notSolvedJumps;
 	private double solvedJumpsPercent;
 	private int unsoundJumps;
 	private int maybeUnsoundJumps;
-	private int definitelyFakeMissedJumps;
-	private int maybeFakeMissedJumps;
 	private long time;
 	private String notes;
 	private String currentThread;
@@ -34,9 +31,7 @@ public class MyLogger {
 		this.maybeUnreachableJumps = 0;
 		this.solvedJumpsPercent = 0;
 		this.unsoundJumps = 0;
-		this.unsoundJumps = 0;
-		this.definitelyFakeMissedJumps = 0;
-		this.maybeFakeMissedJumps = 0;
+		this.maybeUnsoundJumps = 0;
 		this.time = 0;
 		this.notes = "";
 		this.currentThread = null;
@@ -44,8 +39,7 @@ public class MyLogger {
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
-			int notSolvedJumps, int unsoundJumps, int maybeUnsoundJumps, int definitelyFakeMissedJumps,
-			int maybeFakeMissedJumps, double solvedJumpsPercent,
+			int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent,
 			long time,
 			String notes) {
 		this.address = address;
@@ -59,18 +53,15 @@ public class MyLogger {
 			if (solvedJumpsPercent == 0)
 				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps
 						+ definitelyUnreachableJumps + maybeUnreachableJumps)
-						/ (jumps - maybeFakeMissedJumps - definitelyFakeMissedJumps));
+						/ (jumps));
 		} else {
 			if (solvedJumpsPercent == 0)
 				this.solvedJumpsPercent = -1;
 		}
 		this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps
 				+ maybeUnreachableJumps;
-		this.notSolvedJumps = notSolvedJumps;
 		this.unsoundJumps = unsoundJumps;
 		this.maybeUnsoundJumps = maybeUnsoundJumps;
-		this.definitelyFakeMissedJumps = definitelyFakeMissedJumps;
-		this.maybeFakeMissedJumps = maybeFakeMissedJumps;
 		this.notes = notes;
 		this.time = time;
 		this.currentThread = Thread.currentThread().getName();
@@ -115,11 +106,6 @@ public class MyLogger {
 		return this;
 	}
 
-	public MyLogger notSolvedJumps(int notSolvedJumps) {
-		this.notSolvedJumps = notSolvedJumps;
-		return this;
-	}
-
 	public MyLogger unsoundJumps(int unsoundJumps) {
 		this.unsoundJumps = unsoundJumps;
 		return this;
@@ -135,16 +121,6 @@ public class MyLogger {
 		return this;
 	}
 
-	public MyLogger definitelyFakeMissedJumps(int definitelyFakeMissedJumps) {
-		this.definitelyFakeMissedJumps = definitelyFakeMissedJumps;
-		return this;
-	}
-
-	public MyLogger maybeFakeMissedJumps(int maybeFakeMissedJumps) {
-		this.maybeFakeMissedJumps = maybeFakeMissedJumps;
-		return this;
-	}
-
 	public MyLogger time(long time) {
 		this.time = time;
 		return this;
@@ -157,8 +133,8 @@ public class MyLogger {
 
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
-				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps, notSolvedJumps,
-				unsoundJumps, maybeUnsoundJumps, definitelyFakeMissedJumps, maybeFakeMissedJumps, solvedJumpsPercent,
+				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps,
+				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent,
 				time, notes);
 	}
 
@@ -175,11 +151,8 @@ public class MyLogger {
 				definitelyUnreachableJumps + divider +
 				maybeUnreachableJumps + divider +
 				totalResolvedJumps + divider +
-				notSolvedJumps + divider +
 				unsoundJumps + divider +
 				maybeUnsoundJumps + divider +
-				definitelyFakeMissedJumps + divider +
-				maybeFakeMissedJumps + divider +
 				solvedJumpsPercent + divider +
 				time + divider +
 //				currentThread + divider +
