@@ -64,6 +64,9 @@ public class EVMLiSA {
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
 			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
 
+	
+	private static final boolean REGENERATE = true;
+	
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
 	 * from a EVM bytecode smart contract and runs the analysis on it.
@@ -291,7 +294,7 @@ public class EVMLiSA {
 
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists()) {
+//		if (!file.exists() || REGENERATE) {
 			numberOfAPIEtherscanRequest++;
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
@@ -305,7 +308,7 @@ public class EVMLiSA {
 
 			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
 				numberOfAPIEtherscanRequestOnSuccess++;
-		}
+//		}
 
 		// Config and test run
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
