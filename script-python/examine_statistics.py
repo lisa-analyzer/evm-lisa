@@ -35,6 +35,9 @@ def calculate_statistics(file_path):
 
         # Leggi le righe rimanenti
         for row in reader:
+            # if int(row[maybe_unreachable_jumps_index]) == 0 and int(row[maybe_unsound_jumps_index]) == 0 and int(row[unsound_jumps_index]) == 0:
+                # print(row[header.index("Smart Contract")])
+
             rows += 1
             total_opcodes += int(row[total_opcodes_index])
             total_jumps += int(row[total_jumps_index])
@@ -50,6 +53,7 @@ def calculate_statistics(file_path):
     # Calcola le statistiche
     avg_total_solved_percent = total_solved_percent / rows if rows else None
     avg_time_millis = time_millis / rows if rows else None
+    avg_unsolved = unsound_jumps / total_jumps
 
     # Stampa dei risultati
     print(f"Smart contracts examined: {rows}")
@@ -61,7 +65,8 @@ def calculate_statistics(file_path):
     print(f"Total solved Jumps: {total_solved_jumps}")
     print(f"Unsound jumps: {unsound_jumps}")
     print(f"Maybe unsound jumps: {maybe_unsound_jumps}")
-    print(f"Average % Total Solved: {percentuale(avg_total_solved_percent)}")
+    print(f"Average % Total unsolved: {percentuale(avg_unsolved)}")
+    print(f"Average % Total Solved: {percentuale(1 - avg_unsolved)}")
     print(f"Average Time (seconds): {avg_time_millis / 1000}")
 
 def percentuale(numero_decimale):
@@ -71,11 +76,15 @@ def percentuale(numero_decimale):
     return percentuale_str
 
 if __name__ == "__main__":
-    print("statistics-numeric-128-32.csv")
+    print("statistics-numeric-top-128-32-1697.csv")
     calculate_statistics("stats/statistics-numeric-128-32.csv")
     print()
 
-    print("statistics-notjumpdest-128-32.csv")
-    calculate_statistics("stats/statistics-notjumpdest-128-32.csv")
+    print("statistics-numeric-top-128-32-549.csv")
+    calculate_statistics("stats/statistics-numeric-top-128-32.csv")
     print()
+
+    # print("statistics-notjumpdest-128-32.csv")
+    # calculate_statistics("stats/statistics-notjumpdest-128-32.csv")
+    # print()
 

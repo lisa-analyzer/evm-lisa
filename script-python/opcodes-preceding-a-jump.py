@@ -11,8 +11,10 @@ def find_previous_jump_line(file_path, jump_line_counter):
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
         for i in range(1, len(lines)):
-            if 'JUMP' in lines[i] or 'JUMPI' in lines[i]:
+            if ('JUMP' in lines[i] or 'JUMPI' in lines[i]) and ('JUMPDEST' not in lines[i]):
                 previous_line = lines[i - 1].strip()
+                if previous_line.startswith('SLOAD'):
+                    print(file_path)
                 if previous_line.startswith('PUSH'):
                     previous_line = 'PUSH'
                 if previous_line.startswith('LOG'):
