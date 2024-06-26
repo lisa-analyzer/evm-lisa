@@ -888,7 +888,7 @@ public class EVMLiSA {
 		for (int i = 0; i < smartContracts.size(); i++) {
 			String address = smartContracts.get(i);
 
-			String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + address + "/" + address
+			String BYTECODE_FULLPATH = OUTPUT_DIR + "/bytecode/" + address + "/" + address
 					+ ".sol";
 
 			if (i % 5 == 0) {
