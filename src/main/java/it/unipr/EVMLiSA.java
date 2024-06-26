@@ -64,7 +64,7 @@ public class EVMLiSA {
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
 			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
 	
-	private static final boolean REGENERATE = true;
+	private static final boolean REGENERATE = false;
 	
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})

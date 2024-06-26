@@ -32,10 +32,12 @@ def calculate_statistics(file_path):
         maybe_unsound_jumps_index = header.index(" Maybe unsound jumps")
         total_solved_percent_index = header.index(" % Total Solved")
         time_millis_index = header.index(" Time (millis)")
+        sound = 0
 
         # Leggi le righe rimanenti
         for row in reader:
-            # if int(row[maybe_unreachable_jumps_index]) == 0 and int(row[maybe_unsound_jumps_index]) == 0 and int(row[unsound_jumps_index]) == 0:
+            if int(row[maybe_unreachable_jumps_index]) == 0 and int(row[maybe_unsound_jumps_index]) == 0 and int(row[unsound_jumps_index]) == 0:
+                sound += 1
                 # print(row[header.index("Smart Contract")])
 
             rows += 1
@@ -68,6 +70,7 @@ def calculate_statistics(file_path):
     print(f"Average % Total unsolved: {percentuale(avg_unsolved)}")
     print(f"Average % Total Solved: {percentuale(1 - avg_unsolved)}")
     print(f"Average Time (seconds): {avg_time_millis / 1000}")
+    print(f"Smart contracts sound: {sound}")
 
 def percentuale(numero_decimale):
     if numero_decimale is None:
@@ -76,12 +79,24 @@ def percentuale(numero_decimale):
     return percentuale_str
 
 if __name__ == "__main__":
-    print("statistics-numeric-top-128-32-1697.csv")
+    print("statistics-128-32-with-metadata")
     calculate_statistics("stats/statistics-numeric-128-32.csv")
     print()
 
-    print("statistics-numeric-top-128-32-549.csv")
-    calculate_statistics("stats/statistics-numeric-top-128-32.csv")
+    print("statistics-128-32-without-metadata")
+    calculate_statistics("stats/statistics.csv")
+    print()
+
+    print("statistics-64-128-without-metadata")
+    calculate_statistics("stats/statistics-64-128.csv")
+    print()
+
+    print("statistics-15-10-without-metadata")
+    calculate_statistics("stats/statistics-15-10.csv")
+    print()
+
+    print("statistics-20-10-without-metadata")
+    calculate_statistics("stats/aaaa.csv")
     print()
 
     # print("statistics-notjumpdest-128-32.csv")

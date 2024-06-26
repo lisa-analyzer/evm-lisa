@@ -14,11 +14,15 @@ def find_previous_jump_line(file_path, jump_line_counter):
             if ('JUMP' in lines[i] or 'JUMPI' in lines[i]) and ('JUMPDEST' not in lines[i]):
                 previous_line = lines[i - 1].strip()
 
-                if previous_line.startswith('SSTORE'):
-                    previous_line = lines[i - 3].strip()
+                """
                 if previous_line.startswith('MSTORE'):
                     previous_line = lines[i - 3].strip()
-                
+                if previous_line.startswith('SSTORE'):
+                    previous_line = lines[i - 3].strip()
+                """
+                if previous_line.startswith('AND'):
+                    print(f"{get_name(file_path)} - line: {i}")
+                    
                 if previous_line.startswith('PUSH'):
                     previous_line = 'PUSH'
                 if previous_line.startswith('LOG'):
@@ -34,9 +38,14 @@ def find_previous_jump_line(file_path, jump_line_counter):
                 else:
                     jump_line_counter[previous_line] = 1
 
+def get_name(file_path):
+    return os.path.splitext(os.path.basename(file_path))[0]
+
 if __name__ == "__main__":
     directory_path = "../evm-testcases/benchmark"
     output_file = "results-opcodes-preceding-a-jump.txt"
+
+    file_counter = 0
 
     # Conta quante volte ogni riga precedente a "JUMP" o "JUMPI" appare nei file
     jump_line_counter = {}
@@ -45,9 +54,10 @@ if __name__ == "__main__":
             if file.endswith('.sol'):  # Controllo sull'estensione del file
                 file_path = os.path.join(root, file)
                 find_previous_jump_line(file_path, jump_line_counter)
+                file_counter += 1
     
     with open(output_file, 'w', encoding='utf-8') as output:
-        print("Opcode precedenti a 'JUMP' o 'JUMPI':")
+        print(f"Opcode precedenti a 'JUMP' o 'JUMPI' in {file_counter} bytecode esaminati:")
         for line, count in jump_line_counter.items():
             print(f"{line}: {count}")
             output.write(line + '\n')
