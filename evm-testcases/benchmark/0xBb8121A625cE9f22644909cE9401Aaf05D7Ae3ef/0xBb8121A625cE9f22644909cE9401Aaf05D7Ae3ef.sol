@@ -2031,27 +2031,3 @@ PUSH2 0x086d
 PUSH2 0x0cc3
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'c3'(Unknown Opcode)
-'d9'(Unknown Opcode)
-JUMP
-'f7'(Unknown Opcode)
-'23'(Unknown Opcode)
-CALLDATALOAD
-GASLIMIT
-NUMBER
-PUSH5 0xb1af3e53fc
-'0f'(Unknown Opcode)
-'bb'(Unknown Opcode)
-SWAP15
-CHAINID
-LOG3
-MSTORE8
-'2c'(Unknown Opcode)
-LT
-PUSH4 0x6f91cdd9
-PUSH21 0x3125cbf064736f6c63430008130033

@@ -2044,30 +2044,3 @@ PUSH2 0x0cfe
 PUSH2 0x0cd7
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-TIMESTAMP
-PUSH7 0xb895ef9686fdac
-'1f'(Unknown Opcode)
-CODESIZE
-'bc'(Unknown Opcode)
-BASEFEE
-'d0'(Unknown Opcode)
-'26'(Unknown Opcode)
-'c5'(Unknown Opcode)
-SIGNEXTEND
-PUSH9 0x2ad0afd86637ce433e
-'d3'(Unknown Opcode)
-'af'(Unknown Opcode)
-'db'(Unknown Opcode)
-LOG3
-'29'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

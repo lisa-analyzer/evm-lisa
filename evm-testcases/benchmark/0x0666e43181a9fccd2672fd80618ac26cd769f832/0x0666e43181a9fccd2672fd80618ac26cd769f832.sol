@@ -1969,21 +1969,3 @@ PUSH2 0x0366
 PUSH2 0x0aeb
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'e1'(Unknown Opcode)
-CALLVALUE
-'de'(Unknown Opcode)
-'e8'(Unknown Opcode)
-'f6'(Unknown Opcode)
-MLOAD
-BASEFEE
-'e4'(Unknown Opcode)
-'c9'(Unknown Opcode)
-PUSH8 0x5c0a642924f75450
-ORIGIN
-COINBASE
-PUSH25 0x16c99b1ad1e4c2ced5dfee64736f6c63430008190033

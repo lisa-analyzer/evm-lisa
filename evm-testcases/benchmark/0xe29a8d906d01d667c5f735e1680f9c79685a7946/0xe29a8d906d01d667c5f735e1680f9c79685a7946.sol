@@ -665,21 +665,3 @@ DIV
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'e9'(Unknown Opcode)
-'ae'(Unknown Opcode)
-COINBASE
-CALLDATALOAD
-'dd'(Unknown Opcode)
-LOG4
-SWAP11
-'d8'(Unknown Opcode)
-'25'(Unknown Opcode)
-'4d'(Unknown Opcode)
-MOD
-PUSH30 0xe9b926ea2e449c949b141dda38585d91361f32ca64736f6c634300081900
-CALLER

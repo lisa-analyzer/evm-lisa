@@ -1495,28 +1495,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP5
-'ca'(Unknown Opcode)
-'d4'(Unknown Opcode)
-SWAP2
-SMOD
-PUSH6 0xaa57ff9e693c
-PUSH7 0x67b61a63ee271b
-CREATE
-'db'(Unknown Opcode)
-CALLDATACOPY
-'d5'(Unknown Opcode)
-EQ
-'ba'(Unknown Opcode)
-'ce'(Unknown Opcode)
-'c3'(Unknown Opcode)
-DUP7
-PUSH6 0xa1e864736f6c
-PUSH4 0x43000818
-STOP
-CALLER

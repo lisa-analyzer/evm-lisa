@@ -1564,31 +1564,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP9
-'c4'(Unknown Opcode)
-'e9'(Unknown Opcode)
-RETURNDATACOPY
-'a5'(Unknown Opcode)
-DUP2
-'d5'(Unknown Opcode)
-CODESIZE
-NUMBER
-PUSH15 0x769507d123f391b3223d431bfe302a
-'c9'(Unknown Opcode)
-AND
-'d1'(Unknown Opcode)
-'ea'(Unknown Opcode)
-SWAP8
-'c5'(Unknown Opcode)
-SWAP10
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

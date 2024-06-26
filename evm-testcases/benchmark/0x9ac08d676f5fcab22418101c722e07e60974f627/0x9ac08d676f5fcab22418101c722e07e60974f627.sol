@@ -1751,26 +1751,3 @@ PUSH2 0x029c
 PUSH2 0x099c
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'e4'(Unknown Opcode)
-'4a'(Unknown Opcode)
-'b8'(Unknown Opcode)
-EXTCODESIZE
-'e9'(Unknown Opcode)
-'ab'(Unknown Opcode)
-'fb'(Unknown Opcode)
-CALLDATASIZE
-'d3'(Unknown Opcode)
-'b8'(Unknown Opcode)
-MSTORE8
-'b6'(Unknown Opcode)
-'ee'(Unknown Opcode)
-RETURN
-'f9'(Unknown Opcode)
-PUSH25 0xa00e84fdf74f3aac4cbc81e5b8b5574364736f6c6343000816
-STOP
-CALLER

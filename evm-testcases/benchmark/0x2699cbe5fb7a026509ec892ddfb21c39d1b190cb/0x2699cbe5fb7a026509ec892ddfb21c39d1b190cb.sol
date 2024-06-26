@@ -1494,37 +1494,3 @@ SWAP1
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'f7'(Unknown Opcode)
-CALLDATALOAD
-EQ
-INVALID
-'dc'(Unknown Opcode)
-ADDMOD
-LOG2
-DUP7
-CALLVALUE
-RETURNDATACOPY
-'d5'(Unknown Opcode)
-'f8'(Unknown Opcode)
-CREATE
-'d0'(Unknown Opcode)
-CALLDATASIZE
-'4a'(Unknown Opcode)
-PUSH9 0x5189cd82ceac6d9388
-'b3'(Unknown Opcode)
-GASLIMIT
-'ac'(Unknown Opcode)
-'f8'(Unknown Opcode)
-'21'(Unknown Opcode)
-SWAP6
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

@@ -1998,29 +1998,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-'dd'(Unknown Opcode)
-CALLCODE
-MSTORE
-'ad'(Unknown Opcode)
-SHL
-'e2'(Unknown Opcode)
-'c8'(Unknown Opcode)
-SWAP12
-PUSH10 0xc2b068fc378daa952ba7
-CALL
-PUSH4 0xc4a11628
-CREATE2
-GAS
-'4d'(Unknown Opcode)
-CREATE2
-'23'(Unknown Opcode)
-'b3'(Unknown Opcode)
-'ef'(Unknown Opcode)
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-PUSH28 0x9de8268979d7d31681bdb07577555478fd55e2363eb34a7b123d55ca
-'1f'(Unknown Opcode)
-PUSH27 0xb964736f6c63430008180033

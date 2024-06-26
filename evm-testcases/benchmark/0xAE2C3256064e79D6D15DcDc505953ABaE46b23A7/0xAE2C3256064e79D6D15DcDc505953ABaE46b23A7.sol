@@ -1814,21 +1814,3 @@ PUSH2 0x0354
 PUSH2 0x0b01
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d0'(Unknown Opcode)
-'0c'(Unknown Opcode)
-'ed'(Unknown Opcode)
-INVALID
-'da'(Unknown Opcode)
-DUP16
-'4d'(Unknown Opcode)
-ISZERO
-'bf'(Unknown Opcode)
-PUSH4 0xf124d174
-SWAP12
-PUSH18 0x8d1152ee0bb219feb83a4942d6a5ef426473
-PUSH16 0x6c63430008190033

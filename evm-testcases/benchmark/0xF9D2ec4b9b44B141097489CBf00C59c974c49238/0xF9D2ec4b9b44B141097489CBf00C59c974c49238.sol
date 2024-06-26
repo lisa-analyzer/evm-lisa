@@ -2167,38 +2167,3 @@ PUSH2 0x08bd
 PUSH2 0x0d7c
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'e0'(Unknown Opcode)
-'ea'(Unknown Opcode)
-PUSH0
-INVALID
-RETURN
-CODESIZE
-'e6'(Unknown Opcode)
-DUP10
-'b8'(Unknown Opcode)
-'4d'(Unknown Opcode)
-'ae'(Unknown Opcode)
-PUSH7 0xef2c0e8c872dc4
-SELFDESTRUCT
-'b6'(Unknown Opcode)
-AND
-'ca'(Unknown Opcode)
-'a8'(Unknown Opcode)
-SWAP11
-SWAP4
-'5d'(Unknown Opcode)
-'bc'(Unknown Opcode)
-STOP
-'a6'(Unknown Opcode)
-PUSH1 0x8e
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-SGT
-STOP
-CALLER

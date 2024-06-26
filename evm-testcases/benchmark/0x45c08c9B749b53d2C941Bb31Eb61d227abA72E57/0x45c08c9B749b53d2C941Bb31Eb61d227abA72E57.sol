@@ -2408,20 +2408,3 @@ PUSH2 0x0488
 PUSH2 0x11f3
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-RETURNDATASIZE
-DUP13
-MLOAD
-'dc'(Unknown Opcode)
-'4d'(Unknown Opcode)
-'af'(Unknown Opcode)
-'ed'(Unknown Opcode)
-INVALID
-SWAP2
-SDIV
-PUSH6 0x189085ec86ea
-PUSH28 0xb93138b200ffddbfe5a74abbdece64736f6c63430008190033

@@ -1340,27 +1340,3 @@ PUSH2 0x0282
 PUSH2 0x0871
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP13
-PUSH5 0xedc1c2b8fd
-'a9'(Unknown Opcode)
-BALANCE
-'df'(Unknown Opcode)
-INVALID
-'b1'(Unknown Opcode)
-LOG3
-'4e'(Unknown Opcode)
-MOD
-'b6'(Unknown Opcode)
-PUSH14 0xeb5945013a2ccf1f4a0f878e6761
-DUP13
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-OR
-STOP
-CALLER

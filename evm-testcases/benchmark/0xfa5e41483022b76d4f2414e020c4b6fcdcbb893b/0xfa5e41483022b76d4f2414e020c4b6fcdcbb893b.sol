@@ -801,28 +801,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DIV
-'0f'(Unknown Opcode)
-'5e'(Unknown Opcode)
-'a6'(Unknown Opcode)
-PUSH18 0x98781386a5cb9853bb77b056f1d54c5ae80c
-CREATE2
-SLT
-'fc'(Unknown Opcode)
-'f7'(Unknown Opcode)
-'e9'(Unknown Opcode)
-'b4'(Unknown Opcode)
-'4c'(Unknown Opcode)
-'b7'(Unknown Opcode)
-MULMOD
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-OR
-STOP
-CALLER

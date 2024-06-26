@@ -2225,27 +2225,3 @@ PUSH0
 DUP1
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'bf'(Unknown Opcode)
-CREATE
-'b2'(Unknown Opcode)
-'4a'(Unknown Opcode)
-'db'(Unknown Opcode)
-SWAP2
-'c9'(Unknown Opcode)
-INVALID
-CREATE
-'b6'(Unknown Opcode)
-RETURNDATASIZE
-LT
-DUP2
-'d8'(Unknown Opcode)
-PUSH24 0x16a4a0f83c9637b64fe6b2c8ccbf684dcc64736f6c634300
-ADDMOD
-EQ
-STOP
-CALLER

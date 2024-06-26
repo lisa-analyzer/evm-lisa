@@ -1371,20 +1371,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'eb'(Unknown Opcode)
-CALLVALUE
-PUSH6 0x6526957e120b
-'eb'(Unknown Opcode)
-'2d'(Unknown Opcode)
-'4e'(Unknown Opcode)
-'4d'(Unknown Opcode)
-'bf'(Unknown Opcode)
-'c8'(Unknown Opcode)
-COINBASE
-RETURN
-PUSH32 0x134f851359cf21f3ec9d84d30adf64736f6c63430008180033

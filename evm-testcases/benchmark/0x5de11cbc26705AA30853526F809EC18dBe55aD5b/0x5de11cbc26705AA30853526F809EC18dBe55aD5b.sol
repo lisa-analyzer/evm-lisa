@@ -1202,36 +1202,3 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-NOT
-'d5'(Unknown Opcode)
-'fc'(Unknown Opcode)
-SWAP11
-'e4'(Unknown Opcode)
-'2e'(Unknown Opcode)
-SWAP9
-GAS
-'e9'(Unknown Opcode)
-'e1'(Unknown Opcode)
-PUSH3 0x86b76a
-SWAP9
-EXTCODEHASH
-BLOCKHASH
-'ae'(Unknown Opcode)
-MSIZE
-BALANCE
-'c4'(Unknown Opcode)
-'f9'(Unknown Opcode)
-AND
-'1f'(Unknown Opcode)
-'ac'(Unknown Opcode)
-MSIZE
-GAS
-'e0'(Unknown Opcode)
-ISZERO
-GASPRICE
-PUSH24 0x7164736f6c63430008180033

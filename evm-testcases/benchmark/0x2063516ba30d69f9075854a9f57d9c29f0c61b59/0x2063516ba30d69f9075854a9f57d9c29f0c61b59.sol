@@ -2708,24 +2708,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-POP
-PUSH14 0x0f5440c021db44daf558372b5db6
-MOD
-'bb'(Unknown Opcode)
-PUSH3 0xb967de
-'b5'(Unknown Opcode)
-LOG0
-SAR
-'b3'(Unknown Opcode)
-SWAP13
-'ca'(Unknown Opcode)
-JUMPI
-'2e'(Unknown Opcode)
-'ae'(Unknown Opcode)
-PUSH1 0x64
-PUSH20 0x6f6c63430008140033

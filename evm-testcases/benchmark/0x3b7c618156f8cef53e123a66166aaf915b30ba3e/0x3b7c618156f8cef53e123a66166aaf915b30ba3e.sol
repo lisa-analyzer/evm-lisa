@@ -1623,22 +1623,3 @@ PUSH2 0x0306
 PUSH2 0x0a13
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-EXTCODECOPY
-CODECOPY
-'5d'(Unknown Opcode)
-DIV
-'28'(Unknown Opcode)
-CALLER
-STOP
-'a7'(Unknown Opcode)
-'ba'(Unknown Opcode)
-PUSH3 0xfe57d0
-'26'(Unknown Opcode)
-'e6'(Unknown Opcode)
-'0f'(Unknown Opcode)
-PUSH28 0xadb31524c96eca0198facec1a0906664736f6c63430008180033

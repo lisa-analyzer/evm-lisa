@@ -2242,22 +2242,3 @@ JUMPDEST
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-ADDRESS
-DUP7
-INVALID
-'4a'(Unknown Opcode)
-CHAINID
-PUSH2 0x7e5f
-'cc'(Unknown Opcode)
-'e5'(Unknown Opcode)
-'5d'(Unknown Opcode)
-'5e'(Unknown Opcode)
-'de'(Unknown Opcode)
-DUP9
-'cc'(Unknown Opcode)
-PUSH27 0x71707a692d8f117b43ab0d11d067f27564736f6c63430008000033

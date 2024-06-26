@@ -2036,34 +2036,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'ef'(Unknown Opcode)
-CHAINID
-SHL
-AND
-'b3'(Unknown Opcode)
-'cb'(Unknown Opcode)
-'dd'(Unknown Opcode)
-GASLIMIT
-'1f'(Unknown Opcode)
-'da'(Unknown Opcode)
-'5d'(Unknown Opcode)
-'b6'(Unknown Opcode)
-'23'(Unknown Opcode)
-MUL
-'a5'(Unknown Opcode)
-COINBASE
-'ee'(Unknown Opcode)
-CREATE
-PUSH1 0xb1
-PUSH0
-COINBASE
-JUMP
-SWAP15
-MLOAD
-'a8'(Unknown Opcode)
-PUSH27 0x02bd6b7e1764736f6c63430008170033

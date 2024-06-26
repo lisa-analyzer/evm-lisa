@@ -1576,31 +1576,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-LOG1
-SELFBALANCE
-'f6'(Unknown Opcode)
-'4a'(Unknown Opcode)
-GASLIMIT
-CALLVALUE
-'b8'(Unknown Opcode)
-'f9'(Unknown Opcode)
-GT
-CALLER
-GASPRICE
-DUP16
-'c2'(Unknown Opcode)
-'e9'(Unknown Opcode)
-'ac'(Unknown Opcode)
-PUSH15 0x096890b91dcdc166261fbcae73ab9f
-'2a'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

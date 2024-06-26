@@ -2443,36 +2443,3 @@ PUSH2 0x02d7
 PUSH2 0x0d11
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-ADDMOD
-LOG4
-'d8'(Unknown Opcode)
-'a5'(Unknown Opcode)
-'5d'(Unknown Opcode)
-DUP5
-'d0'(Unknown Opcode)
-PUSH10 0x402d2fe1628c285199ed
-'ed'(Unknown Opcode)
-'ed'(Unknown Opcode)
-CALLER
-'ab'(Unknown Opcode)
-MUL
-EXTCODECOPY
-CREATE2
-MULMOD
-EXP
-DELEGATECALL
-SWAP13
-SAR
-'22'(Unknown Opcode)
-'4a'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-BYTE
-STOP
-CALLER

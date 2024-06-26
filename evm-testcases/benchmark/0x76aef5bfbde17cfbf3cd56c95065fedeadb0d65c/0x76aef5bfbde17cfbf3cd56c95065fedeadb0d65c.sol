@@ -1320,24 +1320,3 @@ PUSH2 0x0282
 PUSH2 0x085a
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP3
-SGT
-'d1'(Unknown Opcode)
-'e4'(Unknown Opcode)
-LOG2
-DUP12
-'c8'(Unknown Opcode)
-RETURNDATASIZE
-CALLCODE
-'26'(Unknown Opcode)
-'aa'(Unknown Opcode)
-'aa'(Unknown Opcode)
-'a9'(Unknown Opcode)
-SLOAD
-PUSH19 0x14a40d8928bd1f73f483a914b5c1df1e446473
-PUSH16 0x6c63430008190033

@@ -1540,28 +1540,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-LOG4
-'ab'(Unknown Opcode)
-'f9'(Unknown Opcode)
-PUSH18 0x45b3c03a10a20820459231e133b12c6e3fd2
-JUMP
-JUMPI
-MSIZE
-STOP
-'25'(Unknown Opcode)
-'b7'(Unknown Opcode)
-'db'(Unknown Opcode)
-RETURNDATACOPY
-RETURN
-'1e'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

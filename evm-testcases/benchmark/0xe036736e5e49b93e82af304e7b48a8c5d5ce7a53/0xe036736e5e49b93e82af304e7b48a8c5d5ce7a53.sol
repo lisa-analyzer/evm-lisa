@@ -1466,28 +1466,3 @@ PUSH2 0x0261
 PUSH2 0x090f
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-GAS
-SWAP8
-ADD
-'a7'(Unknown Opcode)
-'e6'(Unknown Opcode)
-'d2'(Unknown Opcode)
-'c5'(Unknown Opcode)
-PUSH18 0x53f92d326befc6427c5d9a7028e142b9c80d
-CALLER
-CALL
-SAR
-'a6'(Unknown Opcode)
-INVALID
-'ee'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

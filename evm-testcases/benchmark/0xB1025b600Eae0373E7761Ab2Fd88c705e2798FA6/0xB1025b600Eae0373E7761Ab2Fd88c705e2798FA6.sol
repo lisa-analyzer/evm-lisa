@@ -2401,37 +2401,3 @@ PUSH2 0x03af
 PUSH2 0x0eb3
 JUMP
 INVALID
-'dd'(Unknown Opcode)
-CALLCODE
-MSTORE
-'ad'(Unknown Opcode)
-SHL
-'e2'(Unknown Opcode)
-'c8'(Unknown Opcode)
-SWAP12
-PUSH10 0xc2b068fc378daa952ba7
-CALL
-PUSH4 0xc4a11628
-CREATE2
-GAS
-'4d'(Unknown Opcode)
-CREATE2
-'23'(Unknown Opcode)
-'b3'(Unknown Opcode)
-'ef'(Unknown Opcode)
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'ef'(Unknown Opcode)
-'22'(Unknown Opcode)
-'4c'(Unknown Opcode)
-'ae'(Unknown Opcode)
-SDIV
-DUP13
-DUP1
-SWAP9
-EXTCODECOPY
-PUSH13 0x87fb413a57396b02dcba263be2
-PUSH29 0xb421794d7d72e0e664736f6c63430008190033

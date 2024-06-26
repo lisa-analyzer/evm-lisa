@@ -1564,28 +1564,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'ee'(Unknown Opcode)
-MULMOD
-PUSH13 0x6141ab13048daddfe58913b7bf
-'22'(Unknown Opcode)
-DUP14
-REVERT
-MOD
-MSTORE
-SWAP10
-PUSH5 0x08aad3893c
-'ca'(Unknown Opcode)
-'4e'(Unknown Opcode)
-'b1'(Unknown Opcode)
-DUP13
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-SGT
-STOP
-CALLER

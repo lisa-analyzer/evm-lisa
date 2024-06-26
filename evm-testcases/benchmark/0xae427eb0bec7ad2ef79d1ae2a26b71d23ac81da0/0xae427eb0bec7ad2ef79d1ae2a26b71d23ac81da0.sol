@@ -2549,23 +2549,3 @@ PUSH2 0x0330
 PUSH2 0x0e04
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'0d'(Unknown Opcode)
-OR
-LOG2
-MSTORE8
-ISZERO
-DUP10
-'4e'(Unknown Opcode)
-'d6'(Unknown Opcode)
-RETURNDATASIZE
-SHA3
-MSTORE
-'28'(Unknown Opcode)
-'ec'(Unknown Opcode)
-'a5'(Unknown Opcode)
-PUSH30 0xff317fd1259bbb19865e7af014e6229e5b64736f6c63430008130033

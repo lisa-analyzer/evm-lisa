@@ -1751,26 +1751,3 @@ PUSH2 0x029c
 PUSH2 0x099c
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'c4'(Unknown Opcode)
-SWAP3
-'b7'(Unknown Opcode)
-SIGNEXTEND
-SWAP13
-'2e'(Unknown Opcode)
-PUSH2 0x2948
-'dd'(Unknown Opcode)
-LT
-'b1'(Unknown Opcode)
-'1f'(Unknown Opcode)
-DUP13
-CALLCODE
-EXP
-LOG0
-'1f'(Unknown Opcode)
-'26'(Unknown Opcode)
-PUSH25 0x97beb2a3cc743829aef970ef64736f6c63430008160033

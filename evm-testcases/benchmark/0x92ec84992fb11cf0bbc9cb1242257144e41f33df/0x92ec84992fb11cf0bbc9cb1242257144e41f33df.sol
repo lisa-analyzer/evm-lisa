@@ -1575,22 +1575,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b6'(Unknown Opcode)
-'2b'(Unknown Opcode)
-JUMP
-CALLDATASIZE
-DUP8
-PUSH16 0xc48a9386083cfc4f5fc238596ac6f559
-'bc'(Unknown Opcode)
-'e3'(Unknown Opcode)
-PUSH13 0xacdb76744f9c0864736f6c6343
-STOP
-ADDMOD
-'0d'(Unknown Opcode)
-STOP
-CALLER

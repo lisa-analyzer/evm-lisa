@@ -1494,25 +1494,3 @@ SWAP1
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-RETURNDATASIZE
-JUMP
-'c4'(Unknown Opcode)
-MLOAD
-'d5'(Unknown Opcode)
-SIGNEXTEND
-DIV
-'eb'(Unknown Opcode)
-PUSH1 0x8f
-SWAP7
-'0e'(Unknown Opcode)
-'c8'(Unknown Opcode)
-'c3'(Unknown Opcode)
-'22'(Unknown Opcode)
-SWAP8
-'b4'(Unknown Opcode)
-PUSH27 0x7c9bc3f99c6fcd6d986055b00fa664736f6c63430008140033

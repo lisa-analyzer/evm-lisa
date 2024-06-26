@@ -1495,23 +1495,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-RETURN
-'eb'(Unknown Opcode)
-PUSH23 0x0d3096552cd387ea6711815f0508e12eb62de740bf0c5b
-ADD
-'ee'(Unknown Opcode)
-'0f'(Unknown Opcode)
-LOG3
-'1e'(Unknown Opcode)
-'d2'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

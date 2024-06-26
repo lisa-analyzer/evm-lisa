@@ -2397,21 +2397,3 @@ PUSH2 0x03c9
 PUSH2 0x0f12
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'e9'(Unknown Opcode)
-GAS
-'b7'(Unknown Opcode)
-PUSH8 0x62de9521a792a106
-CALLDATACOPY
-SWAP10
-'fc'(Unknown Opcode)
-PUSH2 0x2601
-CALLDATALOAD
-'ce'(Unknown Opcode)
-'27'(Unknown Opcode)
-DUP2
-PUSH21 0xe6f1ca368f4a4e269f64736f6c634300081a0033

@@ -2031,24 +2031,3 @@ DUP5
 PUSH2 0x1151
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'5c'(Unknown Opcode)
-'e5'(Unknown Opcode)
-'b7'(Unknown Opcode)
-CODESIZE
-'f7'(Unknown Opcode)
-'ee'(Unknown Opcode)
-'d5'(Unknown Opcode)
-'5d'(Unknown Opcode)
-GASLIMIT
-LOG4
-MSTORE8
-INVALID
-PUSH23 0x4bf4cb8f995f6863705ff58ff02a798be0f2a664736f6c
-PUSH4 0x43000812
-STOP
-CALLER

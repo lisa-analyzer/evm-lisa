@@ -1638,36 +1638,3 @@ PUSH2 0x035a
 PUSH2 0x0a20
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-SGT
-CALLDATASIZE
-EXTCODESIZE
-DELEGATECALL
-CODECOPY
-'ad'(Unknown Opcode)
-TIMESTAMP
-SDIV
-MSIZE
-'dc'(Unknown Opcode)
-DUP15
-'af'(Unknown Opcode)
-PUSH10 0x7aff496fa37e243a741b
-DUP6
-'c1'(Unknown Opcode)
-'ea'(Unknown Opcode)
-SWAP5
-'cd'(Unknown Opcode)
-BALANCE
-'e4'(Unknown Opcode)
-MSIZE
-'f8'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

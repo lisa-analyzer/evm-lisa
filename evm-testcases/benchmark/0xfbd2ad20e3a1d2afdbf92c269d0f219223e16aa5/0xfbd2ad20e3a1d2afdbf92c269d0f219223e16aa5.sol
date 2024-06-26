@@ -1160,37 +1160,3 @@ PUSH2 0x01e1
 PUSH2 0x0598
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-SHR
-SELFBALANCE
-GAS
-'0e'(Unknown Opcode)
-DUP3
-'f8'(Unknown Opcode)
-'27'(Unknown Opcode)
-PUSH2 0x56c2
-'b9'(Unknown Opcode)
-'b4'(Unknown Opcode)
-'a8'(Unknown Opcode)
-BLOCKHASH
-SELFDESTRUCT
-LOG0
-'bd'(Unknown Opcode)
-NUMBER
-PUSH7 0x4e7820361d5fc6
-JUMP
-SHA3
-CALLVALUE
-'ca'(Unknown Opcode)
-DIFFICULTY
-LOG4
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

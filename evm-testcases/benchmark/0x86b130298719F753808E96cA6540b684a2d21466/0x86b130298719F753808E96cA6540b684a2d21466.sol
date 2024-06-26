@@ -39,34 +39,3 @@ RETURNDATASIZE
 SWAP1
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b7'(Unknown Opcode)
-RETURNDATACOPY
-SELFDESTRUCT
-'27'(Unknown Opcode)
-'2c'(Unknown Opcode)
-CALL
-'2b'(Unknown Opcode)
-'ad'(Unknown Opcode)
-'df'(Unknown Opcode)
-SHL
-JUMPDEST
-CALL
-'cb'(Unknown Opcode)
-'ed'(Unknown Opcode)
-SWAP13
-DUP8
-'b6'(Unknown Opcode)
-'2c'(Unknown Opcode)
-CALL
-DUP4
-SWAP9
-'b2'(Unknown Opcode)
-PUSH13 0x77fc7444a459b28ef564736f6c
-PUSH4 0x43000814
-STOP
-CALLER

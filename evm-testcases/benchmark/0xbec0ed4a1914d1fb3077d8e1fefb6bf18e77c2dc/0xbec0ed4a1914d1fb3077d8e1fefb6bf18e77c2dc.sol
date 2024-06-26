@@ -901,19 +901,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'4d'(Unknown Opcode)
-'2b'(Unknown Opcode)
-'c6'(Unknown Opcode)
-'0e'(Unknown Opcode)
-PUSH32 0xd4ac7b94bf483d9b0f05e3bb894bd46e40ae378bb08039737a8c1a64736f6c63
-NUMBER
-STOP
-ADDMOD
-GT
-STOP
-CALLER

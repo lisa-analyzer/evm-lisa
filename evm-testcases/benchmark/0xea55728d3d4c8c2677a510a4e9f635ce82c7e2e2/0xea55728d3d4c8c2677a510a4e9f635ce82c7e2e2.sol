@@ -8,30 +8,3 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d8'(Unknown Opcode)
-EXTCODECOPY
-'b2'(Unknown Opcode)
-PUSH10 0x63cee872424f15f261db
-'ac'(Unknown Opcode)
-JUMPDEST
-ADDMOD
-'b5'(Unknown Opcode)
-EXTCODEHASH
-EXP
-LOG3
-'2d'(Unknown Opcode)
-'c4'(Unknown Opcode)
-DUP5
-CALLDATALOAD
-LOG4
-'ab'(Unknown Opcode)
-'fb'(Unknown Opcode)
-'cc'(Unknown Opcode)
-MSIZE
-DUP4
-PUSH14 0x64736f6c63430008040033

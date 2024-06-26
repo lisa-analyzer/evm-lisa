@@ -2815,26 +2815,3 @@ SWAP1
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-SWAP2
-MSTORE8
-SAR
-'aa'(Unknown Opcode)
-SHA3
-'d4'(Unknown Opcode)
-SWAP4
-'e6'(Unknown Opcode)
-ADDRESS
-PUSH5 0x43d1260fd5
-RETURN
-'0d'(Unknown Opcode)
-'b7'(Unknown Opcode)
-'2b'(Unknown Opcode)
-XOR
-JUMPDEST
-PUSH13 0x318073b801613ccb8eed64736f
-PUSH13 0x63430008190033

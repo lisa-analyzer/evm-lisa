@@ -2547,39 +2547,3 @@ PUSH2 0x04f0
 PUSH2 0x0fc3
 JUMP
 INVALID
-'4d'(Unknown Opcode)
-PUSH2 0x6972
-PUSH22 0x3a207472616e7366657220616d6f756e742065786365
-PUSH6 0x647320616c6c
-PUSH16 0x77616e63654d616972753a2064656372
-PUSH6 0x617365642061
-PUSH13 0x6c6f77616e6365206f72206265
-PUSH13 0x6f77207a65726fa26469706673
-PC
-'22'(Unknown Opcode)
-SLT
-SHA3
-'2f'(Unknown Opcode)
-'b2'(Unknown Opcode)
-'24'(Unknown Opcode)
-'ec'(Unknown Opcode)
-'b5'(Unknown Opcode)
-'af'(Unknown Opcode)
-'dc'(Unknown Opcode)
-'dd'(Unknown Opcode)
-'4b'(Unknown Opcode)
-'e5'(Unknown Opcode)
-'f8'(Unknown Opcode)
-'f7'(Unknown Opcode)
-'de'(Unknown Opcode)
-SHL
-'a8'(Unknown Opcode)
-'bb'(Unknown Opcode)
-'0d'(Unknown Opcode)
-'4e'(Unknown Opcode)
-'4a'(Unknown Opcode)
-'4a'(Unknown Opcode)
-CALLDATACOPY
-CALLDATACOPY
-PUSH8 0xa5c1b8ecfa403b85
-PUSH31 0x64736f6c63430008160033

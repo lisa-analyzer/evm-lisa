@@ -1798,32 +1798,3 @@ PUSH2 0x0342
 PUSH2 0x0ae4
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'af'(Unknown Opcode)
-'27'(Unknown Opcode)
-DUP13
-SWAP8
-CALLDATALOAD
-INVALID
-TIMESTAMP
-'a5'(Unknown Opcode)
-SWAP16
-'b2'(Unknown Opcode)
-'be'(Unknown Opcode)
-STOP
-CHAINID
-SWAP7
-SHL
-DUP15
-'ae'(Unknown Opcode)
-'26'(Unknown Opcode)
-DUP5
-'d8'(Unknown Opcode)
-'ce'(Unknown Opcode)
-DUP6
-'d3'(Unknown Opcode)
-PUSH24 0x1a329697dd41c28e64736f6c63430008190033

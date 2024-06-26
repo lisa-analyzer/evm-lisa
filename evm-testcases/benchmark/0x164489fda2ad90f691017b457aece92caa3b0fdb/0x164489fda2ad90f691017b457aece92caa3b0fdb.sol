@@ -2734,39 +2734,3 @@ POP
 SWAP3
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b4'(Unknown Opcode)
-'c8'(Unknown Opcode)
-'22'(Unknown Opcode)
-CODESIZE
-'b4'(Unknown Opcode)
-SWAP3
-'2a'(Unknown Opcode)
-'2d'(Unknown Opcode)
-'c9'(Unknown Opcode)
-'a5'(Unknown Opcode)
-'b3'(Unknown Opcode)
-CODESIZE
-SWAP11
-'5d'(Unknown Opcode)
-SSTORE
-'cc'(Unknown Opcode)
-INVALID
-JUMPDEST
-'f6'(Unknown Opcode)
-'f6'(Unknown Opcode)
-CREATE2
-'25'(Unknown Opcode)
-'c6'(Unknown Opcode)
-'db'(Unknown Opcode)
-'bb'(Unknown Opcode)
-'e4'(Unknown Opcode)
-'c7'(Unknown Opcode)
-'2c'(Unknown Opcode)
-PUSH12 0x3adbeb64736f6c6343000819
-STOP
-CALLER

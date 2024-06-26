@@ -1898,25 +1898,3 @@ PUSH2 0x090a
 PUSH2 0x0c19
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'a7'(Unknown Opcode)
-OR
-'ce'(Unknown Opcode)
-SHL
-PUSH7 0x7e0c1c629f8423
-'ed'(Unknown Opcode)
-'e9'(Unknown Opcode)
-MSIZE
-SWAP5
-EXP
-PUSH19 0xb5c3bbeb4329868d8f846a58c9ad64736f6c63
-NUMBER
-STOP
-ADDMOD
-SGT
-STOP
-CALLER

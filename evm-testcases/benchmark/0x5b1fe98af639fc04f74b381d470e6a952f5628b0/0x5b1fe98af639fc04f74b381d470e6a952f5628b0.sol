@@ -1881,28 +1881,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-STATICCALL
-INVALID
-JUMPI
-'e2'(Unknown Opcode)
-'a7'(Unknown Opcode)
-'b6'(Unknown Opcode)
-'af'(Unknown Opcode)
-SWAP8
-'cf'(Unknown Opcode)
-SGT
-ADD
-PUSH11 0x33c561d6bf0de723c48521
-'ef'(Unknown Opcode)
-'c4'(Unknown Opcode)
-BALANCE
-PC
-'5c'(Unknown Opcode)
-DUP9
-MUL
-PUSH27 0xf364736f6c63430008170033

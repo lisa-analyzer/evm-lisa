@@ -2116,35 +2116,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'f6'(Unknown Opcode)
-SWAP14
-INVALID
-LOG3
-'e4'(Unknown Opcode)
-CALL
-'ad'(Unknown Opcode)
-'ef'(Unknown Opcode)
-'1f'(Unknown Opcode)
-PUSH4 0xcbf8b5be
-SWAP13
-'e3'(Unknown Opcode)
-XOR
-CODECOPY
-PC
-'24'(Unknown Opcode)
-'2c'(Unknown Opcode)
-'4e'(Unknown Opcode)
-CHAINID
-DUP6
-'fc'(Unknown Opcode)
-'28'(Unknown Opcode)
-EXTCODEHASH
-'a8'(Unknown Opcode)
-'bf'(Unknown Opcode)
-MOD
-PUSH16 0x3064736f6c63430008190033

@@ -1922,34 +1922,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-CREATE
-XOR
-'d6'(Unknown Opcode)
-RETURNDATASIZE
-PUSH1 0xf5
-BYTE
-MSTORE8
-'0d'(Unknown Opcode)
-'e2'(Unknown Opcode)
-'2f'(Unknown Opcode)
-ADD
-PUSH3 0x0e61a7
-PC
-'bf'(Unknown Opcode)
-'4a'(Unknown Opcode)
-'22'(Unknown Opcode)
-'27'(Unknown Opcode)
-EXTCODEHASH
-POP
-PUSH8 0xab432ca692451bc6
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

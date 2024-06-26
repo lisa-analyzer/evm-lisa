@@ -1202,26 +1202,3 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'ee'(Unknown Opcode)
-MSTORE8
-CHAINID
-PUSH20 0x67c1d86e133c3e71be5514e9720e99a7320c44d4
-LOG3
-'a5'(Unknown Opcode)
-'ef'(Unknown Opcode)
-PUSH0
-RETURN
-'2a'(Unknown Opcode)
-'cb'(Unknown Opcode)
-DUP13
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

@@ -1908,30 +1908,3 @@ POP
 POP
 JUMP
 INVALID
-MSTORE8
-PUSH21 0x61726b45782e50726f78792e323031392e476f7665
-PUSH19 0x6e6f7273496e666f726d6174696f6ea2646970
-PUSH7 0x7358221220a15e
-'dc'(Unknown Opcode)
-PUSH6 0x01d58e5c0c9b
-'4c'(Unknown Opcode)
-AND
-'a7'(Unknown Opcode)
-JUMP
-SGT
-BASEFEE
-'da'(Unknown Opcode)
-'0c'(Unknown Opcode)
-PUSH7 0x27f799dab495d4
-BASEFEE
-'c0'(Unknown Opcode)
-GT
-'da'(Unknown Opcode)
-NUMBER
-'b7'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-MOD
-'0c'(Unknown Opcode)
-STOP
-CALLER

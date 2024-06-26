@@ -2308,23 +2308,3 @@ JUMPDEST
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP16
-DIFFICULTY
-'5e'(Unknown Opcode)
-XOR
-SWAP7
-'d5'(Unknown Opcode)
-MLOAD
-INVALID
-DUP12
-PUSH16 0xb5c5d6ff339cbac0e5ca46b9194d940a
-'bd'(Unknown Opcode)
-'2a'(Unknown Opcode)
-'5e'(Unknown Opcode)
-'df'(Unknown Opcode)
-PUSH14 0xe164736f6c63430008000033

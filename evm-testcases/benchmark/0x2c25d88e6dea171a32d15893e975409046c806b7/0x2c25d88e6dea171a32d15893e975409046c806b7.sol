@@ -993,22 +993,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP3
-'c0'(Unknown Opcode)
-'e8'(Unknown Opcode)
-'cf'(Unknown Opcode)
-'db'(Unknown Opcode)
-DUP8
-MSTORE
-PUSH24 0x97ad772a57aaac396b7e503354d57716596b6c724a13aa76
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

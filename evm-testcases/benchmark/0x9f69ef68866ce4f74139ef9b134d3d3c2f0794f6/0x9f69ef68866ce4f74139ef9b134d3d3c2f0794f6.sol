@@ -1466,26 +1466,3 @@ PUSH2 0x0261
 PUSH2 0x090f
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'ac'(Unknown Opcode)
-GAS
-CODESIZE
-GT
-'dc'(Unknown Opcode)
-DUP11
-'0e'(Unknown Opcode)
-MSTORE8
-'a8'(Unknown Opcode)
-CALL
-'de'(Unknown Opcode)
-'ea'(Unknown Opcode)
-EXTCODESIZE
-'c9'(Unknown Opcode)
-'be'(Unknown Opcode)
-SWAP16
-'ab'(Unknown Opcode)
-PUSH28 0xdd07ca637ddf7078e34027c7b62564736f6c63430008140033

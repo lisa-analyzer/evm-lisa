@@ -1881,33 +1881,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d7'(Unknown Opcode)
-DUP4
-MSTORE
-'b9'(Unknown Opcode)
-'c5'(Unknown Opcode)
-EXTCODECOPY
-COINBASE
-'2e'(Unknown Opcode)
-MSTORE8
-'0e'(Unknown Opcode)
-PUSH0
-SWAP12
-'1e'(Unknown Opcode)
-'c6'(Unknown Opcode)
-'c2'(Unknown Opcode)
-'f9'(Unknown Opcode)
-'b5'(Unknown Opcode)
-SHR
-PUSH13 0x44b969e9b1c6121bdbcbe480c4
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

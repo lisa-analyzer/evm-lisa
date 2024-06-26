@@ -2005,30 +2005,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DIV
-POP
-LOG4
-MUL
-DUP16
-'de'(Unknown Opcode)
-DUP4
-'cf'(Unknown Opcode)
-'d1'(Unknown Opcode)
-DUP6
-DUP15
-LOG4
-'f6'(Unknown Opcode)
-'e5'(Unknown Opcode)
-'2f'(Unknown Opcode)
-DUP2
-CODECOPY
-'d4'(Unknown Opcode)
-PUSH21 0x1fb7f2461336230218d2c21aaf64736f6c63430008
-XOR
-STOP
-CALLER

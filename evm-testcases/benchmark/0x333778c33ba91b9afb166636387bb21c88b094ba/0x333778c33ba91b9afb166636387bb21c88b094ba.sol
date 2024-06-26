@@ -2234,32 +2234,3 @@ POP
 SWAP3
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-SWAP5
-'dd'(Unknown Opcode)
-PUSH8 0x5f540dc8b88435dd
-LT
-SHL
-'5d'(Unknown Opcode)
-DUP4
-'c2'(Unknown Opcode)
-CALLVALUE
-PUSH6 0xdae1e3c7c380
-'fb'(Unknown Opcode)
-GASPRICE
-DUP12
-CODESIZE
-'ec'(Unknown Opcode)
-'c5'(Unknown Opcode)
-COINBASE
-CALLDATACOPY
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

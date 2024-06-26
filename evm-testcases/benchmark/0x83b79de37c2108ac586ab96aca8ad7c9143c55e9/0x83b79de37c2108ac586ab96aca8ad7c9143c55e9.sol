@@ -993,24 +993,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b3'(Unknown Opcode)
-POP
-'b3'(Unknown Opcode)
-GT
-'e4'(Unknown Opcode)
-PUSH14 0x2cd0b53f1c04139161f0ec794231
-'d9'(Unknown Opcode)
-'eb'(Unknown Opcode)
-'b3'(Unknown Opcode)
-'24'(Unknown Opcode)
-DUP10
-'f8'(Unknown Opcode)
-SWAP12
-STOP
-PUSH5 0x66c7216473
-PUSH16 0x6c63430008190033

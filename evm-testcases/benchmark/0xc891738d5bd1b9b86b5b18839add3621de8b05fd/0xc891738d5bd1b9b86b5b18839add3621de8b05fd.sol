@@ -204,37 +204,3 @@ PUSH2 0x0123
 PUSH2 0x00f6
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b3'(Unknown Opcode)
-'2b'(Unknown Opcode)
-'0d'(Unknown Opcode)
-'c2'(Unknown Opcode)
-'e6'(Unknown Opcode)
-'dc'(Unknown Opcode)
-DUP7
-'e2'(Unknown Opcode)
-'b8'(Unknown Opcode)
-'f8'(Unknown Opcode)
-CALLDATALOAD
-'ba'(Unknown Opcode)
-LOG1
-PUSH9 0x305cd0ebe5ae796c4e
-'b4'(Unknown Opcode)
-'d0'(Unknown Opcode)
-'b8'(Unknown Opcode)
-CALLDATALOAD
-SWAP11
-'d8'(Unknown Opcode)
-'aa'(Unknown Opcode)
-BALANCE
-'ad'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-SGT
-STOP
-CALLER

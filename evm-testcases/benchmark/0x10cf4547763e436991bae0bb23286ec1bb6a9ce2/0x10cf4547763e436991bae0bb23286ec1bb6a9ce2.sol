@@ -38,29 +38,3 @@ STOP
 JUMPDEST
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-MSIZE
-DUP15
-'22'(Unknown Opcode)
-PUSH17 0xdef4357bd1a6b19ad0f03d80399d413d40
-SWAP12
-ISZERO
-'c9'(Unknown Opcode)
-LOG3
-'ac'(Unknown Opcode)
-'ea'(Unknown Opcode)
-'23'(Unknown Opcode)
-JUMPI
-'cd'(Unknown Opcode)
-'ee'(Unknown Opcode)
-'e7'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-SMOD
-MOD
-STOP
-CALLER

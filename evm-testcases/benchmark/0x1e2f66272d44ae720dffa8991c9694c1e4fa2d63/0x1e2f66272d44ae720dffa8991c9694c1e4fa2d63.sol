@@ -993,20 +993,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'c9'(Unknown Opcode)
-'d3'(Unknown Opcode)
-'b7'(Unknown Opcode)
-'e8'(Unknown Opcode)
-'cc'(Unknown Opcode)
-'f9'(Unknown Opcode)
-DIFFICULTY
-'1e'(Unknown Opcode)
-'bf'(Unknown Opcode)
-PUSH8 0x498ea0ff454a7dbe
-'ce'(Unknown Opcode)
-PUSH24 0xd26ec26ef6f767516933708c64736f6c63430008190033

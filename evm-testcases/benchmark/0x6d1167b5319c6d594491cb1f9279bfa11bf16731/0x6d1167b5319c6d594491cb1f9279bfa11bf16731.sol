@@ -1888,31 +1888,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-JUMP
-'c7'(Unknown Opcode)
-'4e'(Unknown Opcode)
-SHR
-DIV
-CHAINID
-'1e'(Unknown Opcode)
-NUMBER
-'d7'(Unknown Opcode)
-DUP6
-PUSH8 0x191724608cd82b8f
-INVALID
-XOR
-'23'(Unknown Opcode)
-'e8'(Unknown Opcode)
-GASLIMIT
-LOG3
-'24'(Unknown Opcode)
-EXTCODECOPY
-EXP
-PUSH12 0x9d1fe164736f6c634300081a
-STOP
-CALLER

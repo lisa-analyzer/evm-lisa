@@ -8,23 +8,3 @@ PUSH1 0x00
 DUP1
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-PUSH7 0xaded9ecc7fed92
-PUSH9 0x091c8eeff90b5cdceb
-'a8'(Unknown Opcode)
-GAS
-'b1'(Unknown Opcode)
-'29'(Unknown Opcode)
-SUB
-DUP11
-CHAINID
-'2e'(Unknown Opcode)
-SMOD
-'c0'(Unknown Opcode)
-'1e'(Unknown Opcode)
-PUSH4 0xb5516473
-PUSH16 0x6c63430008160033

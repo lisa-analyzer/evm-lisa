@@ -1751,34 +1751,3 @@ PUSH2 0x029c
 PUSH2 0x099c
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-COINBASE
-INVALID
-STATICCALL
-CALLER
-TIMESTAMP
-LOG0
-'27'(Unknown Opcode)
-SELFBALANCE
-DUP11
-'bd'(Unknown Opcode)
-DIFFICULTY
-'c8'(Unknown Opcode)
-'cf'(Unknown Opcode)
-SWAP5
-'b4'(Unknown Opcode)
-TIMESTAMP
-'e1'(Unknown Opcode)
-BASEFEE
-'2e'(Unknown Opcode)
-'d6'(Unknown Opcode)
-'a7'(Unknown Opcode)
-'ec'(Unknown Opcode)
-XOR
-SWAP6
-'b2'(Unknown Opcode)
-PUSH24 0x3229cd7578c864736f6c63430008160033

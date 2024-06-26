@@ -1975,38 +1975,3 @@ PUSH2 0x08c2
 PUSH2 0x0c77
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DIV
-DUP10
-LT
-BASEFEE
-'a5'(Unknown Opcode)
-'5d'(Unknown Opcode)
-REVERT
-PUSH7 0x6d24acd14e5bc1
-'ec'(Unknown Opcode)
-'22'(Unknown Opcode)
-PUSH1 0x46
-SWAP5
-AND
-'29'(Unknown Opcode)
-'22'(Unknown Opcode)
-EXTCODESIZE
-MSTORE8
-'25'(Unknown Opcode)
-DUP12
-'e1'(Unknown Opcode)
-'b3'(Unknown Opcode)
-DUP10
-MSIZE
-'24'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-SGT
-STOP
-CALLER

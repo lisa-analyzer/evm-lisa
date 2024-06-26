@@ -1741,32 +1741,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-ORIGIN
-'26'(Unknown Opcode)
-'d3'(Unknown Opcode)
-'d5'(Unknown Opcode)
-SWAP13
-DUP5
-DUP12
-'1e'(Unknown Opcode)
-CALL
-GAS
-'eb'(Unknown Opcode)
-'e5'(Unknown Opcode)
-'1e'(Unknown Opcode)
-'e5'(Unknown Opcode)
-SELFBALANCE
-'ec'(Unknown Opcode)
-SWAP11
-PUSH2 0x9c88
-LOG4
-'d2'(Unknown Opcode)
-PUSH17 0xd16dfad54b5df8e57b64736f6c63430008
-EQ
-STOP
-CALLER

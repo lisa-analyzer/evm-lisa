@@ -2495,33 +2495,3 @@ DIV
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'4e'(Unknown Opcode)
-CALLDATACOPY
-'21'(Unknown Opcode)
-'ba'(Unknown Opcode)
-'d6'(Unknown Opcode)
-'be'(Unknown Opcode)
-'e0'(Unknown Opcode)
-'bf'(Unknown Opcode)
-'4d'(Unknown Opcode)
-'0f'(Unknown Opcode)
-SWAP11
-'bc'(Unknown Opcode)
-'a9'(Unknown Opcode)
-DUP4
-SWAP13
-'b1'(Unknown Opcode)
-'ac'(Unknown Opcode)
-SUB
-STATICCALL
-'bc'(Unknown Opcode)
-'bc'(Unknown Opcode)
-SWAP13
-'bc'(Unknown Opcode)
-PUSH3 0xa07d2c
-PUSH32 0x78c6913664736f6c63430008120033

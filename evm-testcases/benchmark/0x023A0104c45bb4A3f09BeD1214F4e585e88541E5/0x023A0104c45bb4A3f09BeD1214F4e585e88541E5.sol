@@ -2501,21 +2501,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-PUSH0
-PUSH11 0xad2217055650a1d467dd50
-'e2'(Unknown Opcode)
-'b1'(Unknown Opcode)
-SDIV
-'e5'(Unknown Opcode)
-'bb'(Unknown Opcode)
-'b2'(Unknown Opcode)
-ADDMOD
-'d9'(Unknown Opcode)
-STATICCALL
-'b3'(Unknown Opcode)
-PUSH21 0x3ddde210fdd4b03a64736f6c63430008170033

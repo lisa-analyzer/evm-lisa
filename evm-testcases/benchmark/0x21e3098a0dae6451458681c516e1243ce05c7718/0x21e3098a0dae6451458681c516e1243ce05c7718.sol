@@ -1354,39 +1354,3 @@ PUSH2 0x0294
 PUSH2 0x087b
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-BALANCE
-SWAP1
-'b7'(Unknown Opcode)
-'d3'(Unknown Opcode)
-JUMPDEST
-NUMBER
-'cf'(Unknown Opcode)
-'c3'(Unknown Opcode)
-EXTCODEHASH
-GASLIMIT
-'4c'(Unknown Opcode)
-PC
-GASPRICE
-ADD
-SWAP1
-'d4'(Unknown Opcode)
-'a6'(Unknown Opcode)
-'fc'(Unknown Opcode)
-'28'(Unknown Opcode)
-'d5'(Unknown Opcode)
-SDIV
-TIMESTAMP
-JUMPI
-POP
-LT
-'a9'(Unknown Opcode)
-'ea'(Unknown Opcode)
-'ed'(Unknown Opcode)
-'de'(Unknown Opcode)
-'e2'(Unknown Opcode)
-PUSH18 0x5764736f6c63430008190033

@@ -2349,39 +2349,3 @@ DIV
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-JUMPI
-'e4'(Unknown Opcode)
-'fb'(Unknown Opcode)
-BASEFEE
-'b6'(Unknown Opcode)
-SWAP15
-'25'(Unknown Opcode)
-'5c'(Unknown Opcode)
-'4c'(Unknown Opcode)
-PUSH5 0xc1f23f0494
-JUMP
-CALLDATASIZE
-TIMESTAMP
-DELEGATECALL
-SWAP9
-'b9'(Unknown Opcode)
-PUSH1 0x11
-SELFDESTRUCT
-XOR
-'ad'(Unknown Opcode)
-'ef'(Unknown Opcode)
-PUSH1 0x88
-'0d'(Unknown Opcode)
-SELFBALANCE
-'dc'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-ISZERO
-STOP
-CALLER

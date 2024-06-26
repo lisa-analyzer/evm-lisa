@@ -2416,24 +2416,3 @@ PUSH2 0x03c9
 PUSH2 0x0f27
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-NOT
-'f6'(Unknown Opcode)
-SWAP14
-'d1'(Unknown Opcode)
-'e4'(Unknown Opcode)
-'27'(Unknown Opcode)
-'ec'(Unknown Opcode)
-DUP1
-LOG2
-PUSH18 0x057463787a2f0d9e56285c92ecc2f8ecce65
-DUP11
-PUSH9 0x225164736f6c634300
-ADDMOD
-EQ
-STOP
-CALLER

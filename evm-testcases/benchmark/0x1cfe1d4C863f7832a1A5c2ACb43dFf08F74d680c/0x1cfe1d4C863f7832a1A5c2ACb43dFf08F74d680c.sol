@@ -1254,20 +1254,3 @@ PUSH2 0x01ca
 PUSH2 0x06bb
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-MSTORE
-'b2'(Unknown Opcode)
-'f6'(Unknown Opcode)
-BLOCKHASH
-PUSH19 0x4ecf333fb96f79a95757c5948f4c2b3da3a961
-'a6'(Unknown Opcode)
-'c6'(Unknown Opcode)
-DUP11
-CODECOPY
-'e4'(Unknown Opcode)
-SWAP3
-PUSH25 0xc164736f6c63430008150033

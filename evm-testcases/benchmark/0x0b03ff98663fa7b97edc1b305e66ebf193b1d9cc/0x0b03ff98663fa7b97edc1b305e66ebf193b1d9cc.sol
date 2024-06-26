@@ -1540,34 +1540,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'eb'(Unknown Opcode)
-'cb'(Unknown Opcode)
-MSTORE
-SLOAD
-'4b'(Unknown Opcode)
-'5d'(Unknown Opcode)
-ORIGIN
-DUP14
-'d0'(Unknown Opcode)
-SWAP12
-LOG2
-'22'(Unknown Opcode)
-CHAINID
-'dc'(Unknown Opcode)
-'4e'(Unknown Opcode)
-'eb'(Unknown Opcode)
-DUP7
-MOD
-'e2'(Unknown Opcode)
-PUSH3 0xbbd8e4
-'de'(Unknown Opcode)
-'d7'(Unknown Opcode)
-EXTCODESIZE
-LOG0
-JUMPDEST
-PUSH15 0x5c6b4564736f6c63430008180033

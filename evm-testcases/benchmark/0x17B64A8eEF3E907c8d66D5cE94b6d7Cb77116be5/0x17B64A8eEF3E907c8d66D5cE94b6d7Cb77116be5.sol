@@ -2913,32 +2913,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-STATICCALL
-PUSH14 0x08980ba90e2dd5b8fa8b68faa850
-'ca'(Unknown Opcode)
-CALLVALUE
-'4e'(Unknown Opcode)
-'a8'(Unknown Opcode)
-INVALID
-SHR
-'ae'(Unknown Opcode)
-CODECOPY
-'e0'(Unknown Opcode)
-DUP1
-SWAP10
-STOP
-'28'(Unknown Opcode)
-'ed'(Unknown Opcode)
-REVERT
-DUP4
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-BYTE
-STOP
-CALLER

@@ -993,39 +993,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d3'(Unknown Opcode)
-SWAP15
-BLOCKHASH
-MLOAD
-EXTCODECOPY
-EXP
-CALLDATALOAD
-'e2'(Unknown Opcode)
-EXTCODECOPY
-'d5'(Unknown Opcode)
-SUB
-'fb'(Unknown Opcode)
-'f8'(Unknown Opcode)
-BALANCE
-ADDMOD
-'ed'(Unknown Opcode)
-MSIZE
-MOD
-'bc'(Unknown Opcode)
-'5d'(Unknown Opcode)
-'24'(Unknown Opcode)
-PUSH7 0x03d71fde9500ac
-EXTCODEHASH
-'cf'(Unknown Opcode)
-SWAP5
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

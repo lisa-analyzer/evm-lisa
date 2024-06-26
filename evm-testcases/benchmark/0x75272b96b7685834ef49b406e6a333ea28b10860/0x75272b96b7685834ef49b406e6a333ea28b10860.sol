@@ -993,33 +993,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-CALLDATALOAD
-'ea'(Unknown Opcode)
-'4b'(Unknown Opcode)
-'d7'(Unknown Opcode)
-'b3'(Unknown Opcode)
-'4d'(Unknown Opcode)
-CODECOPY
-'1f'(Unknown Opcode)
-MSTORE
-PC
-'ca'(Unknown Opcode)
-CREATE2
-'28'(Unknown Opcode)
-'fc'(Unknown Opcode)
-PUSH4 0xcff6d527
-JUMP
-'0f'(Unknown Opcode)
-DUP9
-SWAP1
-SWAP13
-SWAP14
-'e1'(Unknown Opcode)
-LT
-'ca'(Unknown Opcode)
-PUSH29 0x1b6c2c64736f6c63430008190033

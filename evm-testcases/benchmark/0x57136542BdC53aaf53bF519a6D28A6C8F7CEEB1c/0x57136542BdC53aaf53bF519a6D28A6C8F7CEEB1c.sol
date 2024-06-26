@@ -838,24 +838,3 @@ ADD
 MSTORE
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'5e'(Unknown Opcode)
-'d9'(Unknown Opcode)
-'22'(Unknown Opcode)
-SUB
-'e5'(Unknown Opcode)
-CREATE
-'0f'(Unknown Opcode)
-PUSH8 0x52e16b970297a9e7
-'bd'(Unknown Opcode)
-DUP7
-PUSH19 0xa336dcb22563275cab809a517764736f6c6343
-STOP
-ADDMOD
-DIV
-STOP
-CALLER

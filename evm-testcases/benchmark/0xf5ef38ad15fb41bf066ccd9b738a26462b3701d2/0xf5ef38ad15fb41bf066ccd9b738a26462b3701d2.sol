@@ -1881,36 +1881,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-PUSH6 0x1f123b057013
-'e7'(Unknown Opcode)
-SHR
-'e1'(Unknown Opcode)
-'fc'(Unknown Opcode)
-SWAP5
-'ab'(Unknown Opcode)
-'dd'(Unknown Opcode)
-MSTORE
-'cd'(Unknown Opcode)
-PC
-ADD
-'c0'(Unknown Opcode)
-'d4'(Unknown Opcode)
-'0c'(Unknown Opcode)
-'ce'(Unknown Opcode)
-'0d'(Unknown Opcode)
-'e9'(Unknown Opcode)
-DUP7
-PUSH4 0x6476e862
-CALLDATALOAD
-CODESIZE
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-XOR
-STOP
-CALLER

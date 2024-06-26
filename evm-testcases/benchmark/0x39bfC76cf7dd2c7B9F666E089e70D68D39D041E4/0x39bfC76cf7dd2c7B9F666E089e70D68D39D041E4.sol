@@ -565,24 +565,3 @@ SLOAD
 DUP3
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'cf'(Unknown Opcode)
-'be'(Unknown Opcode)
-JUMPDEST
-'ca'(Unknown Opcode)
-SWAP16
-CODESIZE
-'da'(Unknown Opcode)
-EXTCODECOPY
-'d2'(Unknown Opcode)
-AND
-CODESIZE
-'22'(Unknown Opcode)
-DUP11
-CHAINID
-PUSH27 0xfd6f04e040d50d84dc42c655c4935061d364736f6c634300070600
-CALLER

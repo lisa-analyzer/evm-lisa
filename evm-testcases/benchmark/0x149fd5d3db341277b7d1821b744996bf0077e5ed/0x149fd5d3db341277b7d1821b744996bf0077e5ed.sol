@@ -2416,29 +2416,3 @@ PUSH2 0x03c9
 PUSH2 0x0f27
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'a5'(Unknown Opcode)
-'c9'(Unknown Opcode)
-DUP16
-'24'(Unknown Opcode)
-'dd'(Unknown Opcode)
-'1e'(Unknown Opcode)
-'da'(Unknown Opcode)
-DUP12
-PUSH10 0x646667b88fc1e615c31b
-'4d'(Unknown Opcode)
-SELFDESTRUCT
-BALANCE
-CALLDATALOAD
-SWAP1
-SSTORE
-SELFBALANCE
-'a5'(Unknown Opcode)
-PUSH8 0x224d11fc64736f6c
-PUSH4 0x43000814
-STOP
-CALLER

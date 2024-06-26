@@ -2619,33 +2619,3 @@ ADD
 MSTORE
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-ADDRESS
-SWAP8
-'b9'(Unknown Opcode)
-'c4'(Unknown Opcode)
-RETURNDATASIZE
-'b8'(Unknown Opcode)
-'ea'(Unknown Opcode)
-'b6'(Unknown Opcode)
-CALLDATALOAD
-'4a'(Unknown Opcode)
-'b7'(Unknown Opcode)
-REVERT
-BASEFEE
-'a7'(Unknown Opcode)
-'0e'(Unknown Opcode)
-MULMOD
-'27'(Unknown Opcode)
-SWAP8
-SAR
-SWAP6
-'c7'(Unknown Opcode)
-'21'(Unknown Opcode)
-'5d'(Unknown Opcode)
-MSTORE8
-PUSH31 0xc8868145194fb964736f6c63430008130033

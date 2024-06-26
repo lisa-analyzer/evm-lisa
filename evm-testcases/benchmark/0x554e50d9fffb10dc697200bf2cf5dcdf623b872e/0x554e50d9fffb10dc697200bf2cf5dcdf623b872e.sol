@@ -1494,33 +1494,3 @@ SWAP1
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b2'(Unknown Opcode)
-'d8'(Unknown Opcode)
-'fb'(Unknown Opcode)
-DUP10
-PUSH13 0x4b40ceaa2ba367d9eff1175fa1
-LT
-MSTORE
-'df'(Unknown Opcode)
-'cb'(Unknown Opcode)
-SELFBALANCE
-'27'(Unknown Opcode)
-CODECOPY
-SWAP16
-'25'(Unknown Opcode)
-'c3'(Unknown Opcode)
-'ac'(Unknown Opcode)
-'d3'(Unknown Opcode)
-'c4'(Unknown Opcode)
-SLT
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

@@ -2416,34 +2416,3 @@ PUSH2 0x03c9
 PUSH2 0x0f27
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-CREATE2
-'ad'(Unknown Opcode)
-PUSH0
-DUP9
-'ed'(Unknown Opcode)
-'c8'(Unknown Opcode)
-'b2'(Unknown Opcode)
-SWAP5
-BALANCE
-OR
-'dc'(Unknown Opcode)
-'bc'(Unknown Opcode)
-'e0'(Unknown Opcode)
-'e4'(Unknown Opcode)
-'26'(Unknown Opcode)
-'b6'(Unknown Opcode)
-GASPRICE
-'5e'(Unknown Opcode)
-ADDMOD
-'ab'(Unknown Opcode)
-'c7'(Unknown Opcode)
-NUMBER
-'4c'(Unknown Opcode)
-SGT
-'2d'(Unknown Opcode)
-PUSH21 0x63168f1c356364736f6c63430008140033

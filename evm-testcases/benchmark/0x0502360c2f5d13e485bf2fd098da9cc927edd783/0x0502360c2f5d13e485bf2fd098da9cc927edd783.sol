@@ -2272,38 +2272,3 @@ ADD
 SWAP1
 JUMP
 INVALID
-'dd'(Unknown Opcode)
-CALLCODE
-MSTORE
-'ad'(Unknown Opcode)
-SHL
-'e2'(Unknown Opcode)
-'c8'(Unknown Opcode)
-SWAP12
-PUSH10 0xc2b068fc378daa952ba7
-CALL
-PUSH4 0xc4a11628
-CREATE2
-GAS
-'4d'(Unknown Opcode)
-CREATE2
-'23'(Unknown Opcode)
-'b3'(Unknown Opcode)
-'ef'(Unknown Opcode)
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'4a'(Unknown Opcode)
-'d4'(Unknown Opcode)
-GAS
-'e8'(Unknown Opcode)
-REVERT
-RETURNDATACOPY
-XOR
-PUSH2 0xa959
-JUMPI
-POP
-'e1'(Unknown Opcode)
-PUSH29 0x9139fc83741c6a78a63d7b3418fbcbb0caf264736f6c63430008090033

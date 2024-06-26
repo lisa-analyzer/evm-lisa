@@ -1457,30 +1457,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'eb'(Unknown Opcode)
-GAS
-CALLCODE
-'c3'(Unknown Opcode)
-'2c'(Unknown Opcode)
-'d5'(Unknown Opcode)
-'b6'(Unknown Opcode)
-'1e'(Unknown Opcode)
-PUSH16 0x2e606052e394de8daccaccb69724f8f5
-SUB
-JUMPI
-DUP15
-EXTCODEHASH
-'b3'(Unknown Opcode)
-'d9'(Unknown Opcode)
-'e7'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

@@ -2084,31 +2084,3 @@ PUSH2 0x03c1
 PUSH2 0x0d26
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP1
-'4c'(Unknown Opcode)
-'b0'(Unknown Opcode)
-PUSH5 0xce386c480b
-AND
-SWAP11
-SUB
-'1e'(Unknown Opcode)
-'1e'(Unknown Opcode)
-'d6'(Unknown Opcode)
-'ac'(Unknown Opcode)
-DUP11
-'dc'(Unknown Opcode)
-SUB
-'c2'(Unknown Opcode)
-CODECOPY
-SHA3
-'b0'(Unknown Opcode)
-CODECOPY
-'b6'(Unknown Opcode)
-'ed'(Unknown Opcode)
-PUSH7 0xe5dbacf8d16473
-PUSH16 0x6c63430008130033

@@ -2205,28 +2205,3 @@ JUMPDEST
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-JUMPI
-ADDMOD
-PUSH18 0xa366f4e294050e294b5a05ac9e0ed0ef90db
-'c6'(Unknown Opcode)
-CALLDATASIZE
-RETURNDATASIZE
-EQ
-'e7'(Unknown Opcode)
-'c1'(Unknown Opcode)
-'d6'(Unknown Opcode)
-CALLDATALOAD
-'e8'(Unknown Opcode)
-'d7'(Unknown Opcode)
-EXTCODEHASH
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-STOP
-STOP
-CALLER

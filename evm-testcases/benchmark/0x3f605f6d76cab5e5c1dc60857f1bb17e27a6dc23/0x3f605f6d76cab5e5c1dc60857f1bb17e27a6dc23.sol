@@ -2009,29 +2009,3 @@ JUMPDEST
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'a5'(Unknown Opcode)
-MSIZE
-SWAP16
-CHAINID
-'f6'(Unknown Opcode)
-EXTCODESIZE
-SHL
-SWAP10
-INVALID
-'a9'(Unknown Opcode)
-PUSH4 0xa4771724
-'d7'(Unknown Opcode)
-SWAP2
-'bd'(Unknown Opcode)
-'b8'(Unknown Opcode)
-'ca'(Unknown Opcode)
-EXP
-'27'(Unknown Opcode)
-PUSH6 0xcb10142a4bfc
-PUSH5 0x8ab464736f
-PUSH13 0x63430008010033

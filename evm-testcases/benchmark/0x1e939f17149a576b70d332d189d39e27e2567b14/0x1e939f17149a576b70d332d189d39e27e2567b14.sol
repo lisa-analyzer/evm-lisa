@@ -1989,31 +1989,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP8
-'ef'(Unknown Opcode)
-'1e'(Unknown Opcode)
-PUSH0
-LOG1
-CALLER
-SWAP8
-'b9'(Unknown Opcode)
-'1f'(Unknown Opcode)
-'a5'(Unknown Opcode)
-'df'(Unknown Opcode)
-'ec'(Unknown Opcode)
-ISZERO
-'fb'(Unknown Opcode)
-CODECOPY
-'a5'(Unknown Opcode)
-'2b'(Unknown Opcode)
-GAS
-'0c'(Unknown Opcode)
-'5d'(Unknown Opcode)
-PUSH20 0xe7040371df0d12d8ba9d7864736f6c6343000814
-STOP
-CALLER

@@ -1733,13 +1733,3 @@ PUSH2 0x02f1
 PUSH2 0x0b6c
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'b5'(Unknown Opcode)
-'af'(Unknown Opcode)
-'aa'(Unknown Opcode)
-PUSH18 0xe909f16b14f7103dccfa7c2119fcca20f82d
-PUSH28 0x85ccd8b82071b705a364736f6c63430008140033

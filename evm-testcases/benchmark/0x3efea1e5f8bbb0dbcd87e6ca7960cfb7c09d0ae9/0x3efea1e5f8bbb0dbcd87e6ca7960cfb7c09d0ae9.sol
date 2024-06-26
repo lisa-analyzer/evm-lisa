@@ -2107,23 +2107,3 @@ PUSH2 0x0cbe
 PUSH2 0x0c39
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'ce'(Unknown Opcode)
-DELEGATECALL
-'b5'(Unknown Opcode)
-SWAP11
-'e1'(Unknown Opcode)
-NUMBER
-'2b'(Unknown Opcode)
-'27'(Unknown Opcode)
-SWAP12
-'d4'(Unknown Opcode)
-'5d'(Unknown Opcode)
-'f7'(Unknown Opcode)
-'e3'(Unknown Opcode)
-'ed'(Unknown Opcode)
-PUSH28 0xdb5ca65061a5191459b526ed61f659420164736f6c63430008180033

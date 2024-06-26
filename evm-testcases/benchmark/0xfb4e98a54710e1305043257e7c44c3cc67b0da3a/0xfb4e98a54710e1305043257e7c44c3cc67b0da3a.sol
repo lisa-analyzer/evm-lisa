@@ -1729,28 +1729,3 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-SWAP8
-'ce'(Unknown Opcode)
-EXP
-GAS
-SUB
-NOT
-CALLDATACOPY
-REVERT
-'2c'(Unknown Opcode)
-'aa'(Unknown Opcode)
-EXP
-'26'(Unknown Opcode)
-SWAP10
-LOG0
-'c8'(Unknown Opcode)
-SWAP10
-ADD
-DUP9
-'ea'(Unknown Opcode)
-PUSH24 0x411c35663bc7868ceb4c1c7164736f6c63430008110033

@@ -1947,36 +1947,3 @@ JUMPDEST
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP4
-SUB
-'c7'(Unknown Opcode)
-SWAP16
-'b3'(Unknown Opcode)
-'d9'(Unknown Opcode)
-JUMPI
-JUMPI
-'4d'(Unknown Opcode)
-'ba'(Unknown Opcode)
-'b3'(Unknown Opcode)
-RETURN
-SIGNEXTEND
-'24'(Unknown Opcode)
-ORIGIN
-COINBASE
-SLT
-'d1'(Unknown Opcode)
-'ee'(Unknown Opcode)
-SWAP14
-'ca'(Unknown Opcode)
-'2d'(Unknown Opcode)
-LOG3
-CALLCODE
-SHL
-SMOD
-RETURNDATASIZE
-PUSH23 0xdcf6a52e64736f6c63430008000033

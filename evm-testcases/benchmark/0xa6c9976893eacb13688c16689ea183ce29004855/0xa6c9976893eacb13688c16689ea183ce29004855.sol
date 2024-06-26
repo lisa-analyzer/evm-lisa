@@ -1241,21 +1241,3 @@ JUMPI
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d2'(Unknown Opcode)
-'21'(Unknown Opcode)
-EXP
-'25'(Unknown Opcode)
-'d6'(Unknown Opcode)
-'a6'(Unknown Opcode)
-BASEFEE
-'a8'(Unknown Opcode)
-MUL
-PUSH30 0x00a980888085de9df6c1552e4ab1351182573dc3cad764736f6c63430008
-SGT
-STOP
-CALLER

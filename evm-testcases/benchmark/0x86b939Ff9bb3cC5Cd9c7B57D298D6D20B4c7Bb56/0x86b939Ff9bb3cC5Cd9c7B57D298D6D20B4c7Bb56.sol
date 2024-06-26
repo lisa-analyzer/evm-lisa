@@ -1390,38 +1390,3 @@ POP
 SWAP1
 JUMP
 INVALID
-MSTORE8
-PUSH21 0x61726b576172655f46696e616c697a61626c654770
-PUSH20 0x46616374416461707465725f323032325f31a264
-PUSH10 0x70667358221220191352
-TIMESTAMP
-PUSH4 0x5f15232d
-'0f'(Unknown Opcode)
-EQ
-'ab'(Unknown Opcode)
-'c2'(Unknown Opcode)
-MOD
-COINBASE
-DIV
-'0d'(Unknown Opcode)
-'ae'(Unknown Opcode)
-BALANCE
-DUP6
-'d6'(Unknown Opcode)
-'cf'(Unknown Opcode)
-'a9'(Unknown Opcode)
-'c0'(Unknown Opcode)
-DUP2
-JUMPDEST
-'b9'(Unknown Opcode)
-'d6'(Unknown Opcode)
-PUSH0
-'d9'(Unknown Opcode)
-'1f'(Unknown Opcode)
-'ed'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-MOD
-'0c'(Unknown Opcode)
-STOP
-CALLER

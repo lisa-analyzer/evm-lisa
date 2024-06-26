@@ -1540,30 +1540,3 @@ PUSH2 0x02d4
 PUSH2 0x091f
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-MOD
-SWAP7
-'cb'(Unknown Opcode)
-'ba'(Unknown Opcode)
-SMOD
-'24'(Unknown Opcode)
-DUP6
-'cc'(Unknown Opcode)
-'ae'(Unknown Opcode)
-INVALID
-ISZERO
-EXTCODECOPY
-GT
-'26'(Unknown Opcode)
-'e1'(Unknown Opcode)
-'c1'(Unknown Opcode)
-CREATE
-'aa'(Unknown Opcode)
-PUSH17 0xd489c90cffc69a01fc64491b7164736f6c
-PUSH4 0x43000818
-STOP
-CALLER

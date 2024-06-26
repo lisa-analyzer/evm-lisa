@@ -788,31 +788,3 @@ JUMPDEST
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DUP6
-COINBASE
-PUSH9 0xd73d5c0b0e1b589188
-ADD
-'d2'(Unknown Opcode)
-'2a'(Unknown Opcode)
-PC
-XOR
-'f8'(Unknown Opcode)
-'af'(Unknown Opcode)
-DUP3
-'1f'(Unknown Opcode)
-SELFDESTRUCT
-'1e'(Unknown Opcode)
-SWAP1
-CALLCODE
-ISZERO
-DUP6
-PUSH11 0x7d81a8e364736f6c634300
-ADDMOD
-STOP
-STOP
-CALLER

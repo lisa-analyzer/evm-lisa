@@ -1963,34 +1963,3 @@ PUSH2 0x0912
 PUSH2 0x0c72
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d4'(Unknown Opcode)
-CALLER
-'f9'(Unknown Opcode)
-CODECOPY
-GASPRICE
-NOT
-CALLER
-RETURN
-CREATE2
-'2e'(Unknown Opcode)
-'a9'(Unknown Opcode)
-SUB
-CREATE2
-COINBASE
-SUB
-'ce'(Unknown Opcode)
-'bc'(Unknown Opcode)
-SWAP15
-PUSH6 0xa632d53a8d2e
-COINBASE
-DUP6
-CODECOPY
-'ce'(Unknown Opcode)
-ADDRESS
-PUSH3 0x2d6473
-PUSH16 0x6c63430008130033

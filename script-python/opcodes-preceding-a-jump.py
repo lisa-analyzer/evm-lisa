@@ -13,8 +13,12 @@ def find_previous_jump_line(file_path, jump_line_counter):
         for i in range(1, len(lines)):
             if ('JUMP' in lines[i] or 'JUMPI' in lines[i]) and ('JUMPDEST' not in lines[i]):
                 previous_line = lines[i - 1].strip()
-                if previous_line.startswith('SLOAD'):
-                    print(file_path)
+
+                if previous_line.startswith('SSTORE'):
+                    previous_line = lines[i - 3].strip()
+                if previous_line.startswith('MSTORE'):
+                    previous_line = lines[i - 3].strip()
+                
                 if previous_line.startswith('PUSH'):
                     previous_line = 'PUSH'
                 if previous_line.startswith('LOG'):

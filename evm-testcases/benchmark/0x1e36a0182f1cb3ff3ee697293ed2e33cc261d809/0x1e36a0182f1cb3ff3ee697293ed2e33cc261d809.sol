@@ -1908,35 +1908,3 @@ PUSH2 0x03a1
 PUSH2 0x0b96
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-DIV
-'27'(Unknown Opcode)
-'eb'(Unknown Opcode)
-'25'(Unknown Opcode)
-'b7'(Unknown Opcode)
-LT
-'d1'(Unknown Opcode)
-ADDMOD
-'22'(Unknown Opcode)
-'b2'(Unknown Opcode)
-'d5'(Unknown Opcode)
-DELEGATECALL
-'4b'(Unknown Opcode)
-'cb'(Unknown Opcode)
-'f9'(Unknown Opcode)
-GASLIMIT
-DUP1
-SWAP16
-'2e'(Unknown Opcode)
-COINBASE
-MSTORE8
-CODESIZE
-'ef'(Unknown Opcode)
-MULMOD
-PC
-LOG2
-PUSH19 0x6c20b848be64736f6c63430008190033

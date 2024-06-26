@@ -2443,23 +2443,3 @@ PUSH2 0x02d5
 PUSH2 0x0d0f
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-JUMP
-'ee'(Unknown Opcode)
-CHAINID
-CALL
-SWAP1
-'ca'(Unknown Opcode)
-'e9'(Unknown Opcode)
-'2f'(Unknown Opcode)
-PC
-'ac'(Unknown Opcode)
-'c4'(Unknown Opcode)
-'ed'(Unknown Opcode)
-EQ
-PUSH20 0xd24f11368aedb1d7de99219f2c784075e8616473
-PUSH16 0x6c634300081a0033

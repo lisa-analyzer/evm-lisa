@@ -431,23 +431,3 @@ SUB
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-PUSH9 0xd7cdb6bac4686fc1fa
-SWAP1
-SHL
-'4e'(Unknown Opcode)
-XOR
-DUP2
-PUSH14 0x07ee469489df796adfc3befd8a09
-'d0'(Unknown Opcode)
-'b4'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-SMOD
-STOP
-CALLER

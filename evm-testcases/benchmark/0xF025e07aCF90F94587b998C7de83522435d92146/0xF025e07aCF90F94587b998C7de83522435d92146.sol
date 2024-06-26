@@ -1654,23 +1654,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'aa'(Unknown Opcode)
-SWAP8
-'be'(Unknown Opcode)
-PUSH3 0xcafcbc
-BASEFEE
-XOR
-'e6'(Unknown Opcode)
-CALLDATALOAD
-'4a'(Unknown Opcode)
-'2a'(Unknown Opcode)
-PUSH1 0x28
-ADD
-'e6'(Unknown Opcode)
-SSTORE
-PUSH25 0x56c9ba9ad69aa98ccb384b6ba564736f6c63430008190033

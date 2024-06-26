@@ -689,17 +689,3 @@ PUSH1 0x64
 SWAP1
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'a8'(Unknown Opcode)
-PUSH2 0x3a5c
-'c0'(Unknown Opcode)
-CALLDATALOAD
-'d4'(Unknown Opcode)
-'ba'(Unknown Opcode)
-'f8'(Unknown Opcode)
-PUSH10 0xfce4daf8eb3fdeda559b
-PUSH26 0xb5739acfd1e4dab3760f1764736f6c63430008150033

@@ -2815,33 +2815,3 @@ SWAP1
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-RETURNDATACOPY
-CREATE
-SWAP6
-'b3'(Unknown Opcode)
-PUSH8 0x56d30c2fd5eeb7c0
-'ba'(Unknown Opcode)
-EXTCODESIZE
-NUMBER
-LOG4
-'28'(Unknown Opcode)
-'cf'(Unknown Opcode)
-'f9'(Unknown Opcode)
-'d3'(Unknown Opcode)
-'dd'(Unknown Opcode)
-DUP12
-COINBASE
-SWAP5
-'aa'(Unknown Opcode)
-PUSH5 0x21795cbb01
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

@@ -993,28 +993,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-INVALID
-SWAP16
-MSTORE
-'c4'(Unknown Opcode)
-PUSH3 0xe00df6
-SELFBALANCE
-'f7'(Unknown Opcode)
-'e1'(Unknown Opcode)
-'5e'(Unknown Opcode)
-DUP13
-AND
-'c3'(Unknown Opcode)
-'d5'(Unknown Opcode)
-PUSH20 0x476c8dcac2228012879f4051c5151764736f6c63
-NUMBER
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

@@ -1180,29 +1180,3 @@ POP
 POP
 JUMP
 INVALID
-COINBASE
-PUSH5 0x6472657373
-GASPRICE
-SHA3
-PUSH13 0x6f772d6c6576656c2064656c65
-PUSH8 0x6174652063616c6c
-SHA3
-PUSH7 0x61696c6564a264
-PUSH10 0x7066735822122055bbae
-SWAP10
-'22'(Unknown Opcode)
-'c7'(Unknown Opcode)
-'2d'(Unknown Opcode)
-PUSH6 0x00fdc2dee901
-'ee'(Unknown Opcode)
-'db'(Unknown Opcode)
-EXP
-'26'(Unknown Opcode)
-SELFBALANCE
-DUP2
-BLOCKHASH
-'27'(Unknown Opcode)
-'c8'(Unknown Opcode)
-'d8'(Unknown Opcode)
-'4e'(Unknown Opcode)
-PUSH24 0x65d92922dd7c64736f6c63430008090033

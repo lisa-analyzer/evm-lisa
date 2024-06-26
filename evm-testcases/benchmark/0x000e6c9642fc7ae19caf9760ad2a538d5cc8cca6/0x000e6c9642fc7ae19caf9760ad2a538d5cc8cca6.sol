@@ -1861,23 +1861,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'bd'(Unknown Opcode)
-'27'(Unknown Opcode)
-PUSH23 0xbfbb8bbe7724700146f6cd94a6d9c7ca6492ffd29a4cbd
-'ce'(Unknown Opcode)
-'dd'(Unknown Opcode)
-LOG2
-LOG1
-PUSH0
-CALLVALUE
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-NOT
-STOP
-CALLER

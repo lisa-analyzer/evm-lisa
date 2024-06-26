@@ -2965,31 +2965,3 @@ PUSH1 0x24
 PUSH1 0x00
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'dd'(Unknown Opcode)
-DUP16
-PUSH11 0x5e91245f8bd32e02839669
-'ca'(Unknown Opcode)
-'e4'(Unknown Opcode)
-DUP11
-'ec'(Unknown Opcode)
-CALLDATASIZE
-LOG3
-LOG3
-BALANCE
-ISZERO
-DUP13
-'e4'(Unknown Opcode)
-PUSH4 0x1cdc0a81
-'a6'(Unknown Opcode)
-BYTE
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-STOP
-STOP
-CALLER

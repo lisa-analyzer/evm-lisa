@@ -2645,32 +2645,3 @@ DIV
 SWAP1
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-RETURNDATACOPY
-'cf'(Unknown Opcode)
-'23'(Unknown Opcode)
-'a5'(Unknown Opcode)
-'af'(Unknown Opcode)
-'f8'(Unknown Opcode)
-CHAINID
-PUSH14 0x438d4ceb605319456e62e62f60af
-'d7'(Unknown Opcode)
-INVALID
-SSTORE
-'0d'(Unknown Opcode)
-SMOD
-'ef'(Unknown Opcode)
-DUP7
-BASEFEE
-SWAP3
-'23'(Unknown Opcode)
-PUSH5 0x736f6c6343
-STOP
-ADDMOD
-EQ
-STOP
-CALLER

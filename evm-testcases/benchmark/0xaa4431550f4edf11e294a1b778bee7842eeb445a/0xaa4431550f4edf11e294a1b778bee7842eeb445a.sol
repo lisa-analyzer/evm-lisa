@@ -2572,26 +2572,3 @@ POP
 POP
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-GASLIMIT
-GASLIMIT
-SIGNEXTEND
-'5c'(Unknown Opcode)
-'eb'(Unknown Opcode)
-'ee'(Unknown Opcode)
-'a8'(Unknown Opcode)
-DIV
-'c7'(Unknown Opcode)
-'29'(Unknown Opcode)
-GASPRICE
-'d2'(Unknown Opcode)
-REVERT
-SELFBALANCE
-PUSH12 0xebdeb26902e6d0adaeb946ab
-JUMP
-DUP4
-PUSH21 0xdcdd64736f6c63430008190033

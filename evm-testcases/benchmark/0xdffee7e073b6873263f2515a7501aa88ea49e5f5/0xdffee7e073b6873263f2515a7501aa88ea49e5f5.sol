@@ -1642,22 +1642,3 @@ PUSH2 0x034f
 PUSH2 0x0a22
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'c4'(Unknown Opcode)
-MSTORE
-'21'(Unknown Opcode)
-'ed'(Unknown Opcode)
-'d3'(Unknown Opcode)
-PC
-'c0'(Unknown Opcode)
-'b1'(Unknown Opcode)
-'2f'(Unknown Opcode)
-SWAP10
-SHR
-XOR
-PUSH22 0x4671057a82f44bb60ec0add8949a85cb26d41164736f
-PUSH13 0x63430008180033

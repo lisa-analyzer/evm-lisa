@@ -1867,21 +1867,3 @@ PUSH2 0x0c03
 PUSH2 0x0bda
 JUMP
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-MSTORE8
-'28'(Unknown Opcode)
-'ca'(Unknown Opcode)
-'eb'(Unknown Opcode)
-BALANCE
-'e5'(Unknown Opcode)
-SWAP8
-INVALID
-SLT
-DUP9
-'d8'(Unknown Opcode)
-'0c'(Unknown Opcode)
-PUSH31 0xc519cf9942b98b0ca50f3b5eb1a173245882eb64736f6c63430008140033

@@ -2609,34 +2609,3 @@ PUSH1 0x24
 PUSH0
 REVERT
 INVALID
-LOG2
-PUSH5 0x6970667358
-'22'(Unknown Opcode)
-SLT
-SHA3
-'d9'(Unknown Opcode)
-'d2'(Unknown Opcode)
-'29'(Unknown Opcode)
-MSIZE
-'cc'(Unknown Opcode)
-DUP14
-DUP13
-NOT
-DIFFICULTY
-SWAP16
-MULMOD
-'bf'(Unknown Opcode)
-'0f'(Unknown Opcode)
-BALANCE
-'af'(Unknown Opcode)
-'f6'(Unknown Opcode)
-'de'(Unknown Opcode)
-SLOAD
-SSTORE
-SMOD
-'c7'(Unknown Opcode)
-PUSH17 0x236c9208141b5f968b4c64736f6c634300
-ADDMOD
-NOT
-STOP
-CALLER
