@@ -73,6 +73,7 @@ Options:
  -C,--cores <arg>            number of cores used
  -c,--dump-cfg               dump the CFG
  -d,--dump-analysis <arg>    dump the analysis (html, dot)
+ -D,--download-bytecode      download the bytecode
  -f,--filepath <arg>         filepath of the Etherem smart contract
  -o,--output <arg>           output directory path
  -q,--stack-size <arg>       dimension of stack

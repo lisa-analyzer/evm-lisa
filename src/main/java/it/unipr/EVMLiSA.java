@@ -65,7 +65,7 @@ public class EVMLiSA {
 			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
 
 	
-	private static final boolean REGENERATE = true;
+	private static final boolean REGENERATE = false;
 	
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -123,14 +123,24 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(false)
 				.build();
-		options.addOption(dumpStatisticsOption);
+		
 		Option dumpCFGOption = Option.builder("c")
 				.longOpt("dump-cfg")
 				.desc("dump the CFG")
 				.required(false)
 				.hasArg(false)
 				.build();
+		
+		Option downloadBytecodeOption = Option.builder("D")
+				.longOpt("download-bytecode")
+				.desc("download the bytecode")
+				.required(false)
+				.hasArg(false)
+				.build();
+		
+		options.addOption(dumpStatisticsOption);
 		options.addOption(dumpCFGOption);
+		options.addOption(downloadBytecodeOption);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -150,19 +160,28 @@ public class EVMLiSA {
 		Boolean dumpCFG = cmd.hasOption("dumpcfg");
 		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
+		boolean downloadBytecode = cmd.hasOption("download-bytecode");
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
 
-		// --cores
+		// Download bytecode case
+		if(downloadBytecode && benchmark != null) {
+			SMARTCONTRACTS_FULLPATH = benchmark;
+			OUTPUT_DIR = "download";
+			saveSmartContractsFromEtherscan();
+			return;
+		}
+		
+		// Setting cores
 		if (coresOpt != null && Integer.parseInt(coresOpt) > 0)
 			CORES = Integer.parseInt(coresOpt);
 		else
 			CORES = 1;
 
-		// --stack-size & --stack-set-size
+		// Setting AbstractStack size and AbstractStackSet size
 		try {
 			if (stackSize != null && Integer.parseInt(stackSize) > 0)
 				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
@@ -177,7 +196,7 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		// --output
+		// Setting output directories
 		if (outputDir != null) {
 			OUTPUT_DIR = outputDir;
 			STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
@@ -186,7 +205,7 @@ public class EVMLiSA {
 			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
 		}
 
-		// --benchmark
+		// Run benchmark case
 		if (benchmark != null) {
 			Files.createDirectories(Paths.get(OUTPUT_DIR));
 			SMARTCONTRACTS_FULLPATH = benchmark;
@@ -198,13 +217,14 @@ public class EVMLiSA {
 			return;
 		}
 
+		// Error case
 		if (addressSC == null && filepath == null) {
-			// Error: no address and no filepath
-			System.out.println("Address or filepath required");
+			System.err.println("Address or filepath required");
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
 
+		// Single analysis case
 		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 
@@ -294,7 +314,7 @@ public class EVMLiSA {
 
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-//		if (!file.exists() || REGENERATE) {
+		if (!file.exists() || REGENERATE) {
 			numberOfAPIEtherscanRequest++;
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
@@ -308,9 +328,9 @@ public class EVMLiSA {
 
 			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
 				numberOfAPIEtherscanRequestOnSuccess++;
-//		}
+		}
 
-		// Config and test run
+		// Configuration and test run
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
 
 		long start = System.currentTimeMillis();
@@ -340,6 +360,11 @@ public class EVMLiSA {
 				.build();
 	}
 
+	/**
+	 * Runs the benchmark for analyzing smart contracts.
+	 *
+	 * @throws Exception if an error occurs during the benchmark execution.
+	 */
 	private void runBenchmark() throws Exception {
 		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
@@ -894,18 +919,8 @@ public class EVMLiSA {
 				continue;
 			}
 		}
-	}
-
-	/**
-	 * Save the bytecode of smart contracts
-	 * 
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unused")
-	private void downloadBytecode() throws Exception {
-		SMARTCONTRACTS_FULLPATH = "benchmark/5000-benchmark.txt";
-		OUTPUT_DIR = "bytecode";
-		saveSmartContractsFromEtherscan();
+		
+		System.out.printf("Downloaded %s smart contract \n", numberOfAPIEtherscanRequestOnSuccess);
 	}
 
 	public class Converter {

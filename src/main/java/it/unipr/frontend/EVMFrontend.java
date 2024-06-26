@@ -105,8 +105,6 @@ public class EVMFrontend {
 
 		writer.close();
 
-		System.out.println(writer);
-
 		return true;
 	}
 
