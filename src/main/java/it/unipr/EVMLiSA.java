@@ -63,9 +63,8 @@ public class EVMLiSA {
 	private long startOfExecutionTime = 0;
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
 			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
-
 	
-	private static final boolean REGENERATE = false;
+	private static final boolean REGENERATE = true;
 	
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -572,6 +571,7 @@ public class EVMLiSA {
 		boolean allJumpAreSound = true;
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
+		
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if (pushedJumps.contains(jumpNode))
 				continue;
@@ -588,46 +588,31 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-				boolean skip = false;
+				Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
-				if (jumpNode instanceof Jump) {
-					if (cfg.getOutgoingEdges(jumpNode).size() >= 1) {
-						resolvedJumps++;
-						skip = true;
-					}
-				} else if (jumpNode instanceof Jumpi) {
-					if (cfg.getOutgoingEdges(jumpNode).size() >= 2) {
-						resolvedJumps++;
-						skip = true;
-					}
-				}
-				// If the jump has been resolved, we skip the next checks
-				if (!skip) {
-					Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-
-					if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+				if (pushedJumps.contains(jumpNode))
+					resolvedJumps++;
+				else if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+					definitelyUnreachable++;
+				else if (!reachableFrom) {
+					if (allJumpAreSound)
 						definitelyUnreachable++;
-					else if (!reachableFrom) {
-						if (allJumpAreSound)
-							definitelyUnreachable++;
-						else
-							maybeUnreachable++;
-					} else if (topStackValuesPerJump == null) {
-						// If all stacks are bottom, then we have a
-						// maybeFakeMissedJump
-						definitelyUnreachable++;
-					} else if (!topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
-						// If the elements at the top of the stacks are all
-						// different from NUMERIC_TOP, then we are sure that it
-						// is definitelyFakeMissedJumps
-						definitelyUnreachable++;
-					} else {
-						unsoundJumps++;
-						System.err.println(jumpNode + " not solved");
-						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
-					}
+					else
+						maybeUnreachable++;
+				} else if (topStackValuesPerJump == null) {
+					// If all stacks are bottom, then we have a
+					// maybeFakeMissedJump
+					definitelyUnreachable++;
+				} else if (!topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
+					// If the elements at the top of the stacks are all
+					// different from NUMERIC_TOP, then we are sure that it
+					// is definitelyFakeMissedJumps
+					resolvedJumps++;
+				} else {
+					unsoundJumps++;
+					System.err.println(jumpNode + " not solved");
+					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
 				}
 			}
 		}

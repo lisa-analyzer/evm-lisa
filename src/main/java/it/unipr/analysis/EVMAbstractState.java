@@ -2333,12 +2333,12 @@ public class EVMAbstractState
 
 	@Override
 	public boolean isTop() {
-		return stacks.isTop();
+		return this == TOP;
 	}
 
 	@Override
 	public boolean isBottom() {
-		return stacks.isBottom();
+		return this == BOTTOM;
 	}
 
 	/**
