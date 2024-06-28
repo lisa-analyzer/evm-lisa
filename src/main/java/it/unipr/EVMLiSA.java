@@ -63,9 +63,9 @@ public class EVMLiSA {
 	private long startOfExecutionTime = 0;
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
 			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
-	
+
 	private static final boolean REGENERATE = false;
-	
+
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
 	 * from a EVM bytecode smart contract and runs the analysis on it.
@@ -122,21 +122,21 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(false)
 				.build();
-		
+
 		Option dumpCFGOption = Option.builder("c")
 				.longOpt("dump-cfg")
 				.desc("dump the CFG")
 				.required(false)
 				.hasArg(false)
 				.build();
-		
+
 		Option downloadBytecodeOption = Option.builder("D")
 				.longOpt("download-bytecode")
 				.desc("download the bytecode")
 				.required(false)
 				.hasArg(false)
 				.build();
-		
+
 		options.addOption(dumpStatisticsOption);
 		options.addOption(dumpCFGOption);
 		options.addOption(downloadBytecodeOption);
@@ -167,13 +167,13 @@ public class EVMLiSA {
 		String coresOpt = cmd.getOptionValue("cores");
 
 		// Download bytecode case
-		if(downloadBytecode && benchmark != null) {
+		if (downloadBytecode && benchmark != null) {
 			SMARTCONTRACTS_FULLPATH = benchmark;
 			OUTPUT_DIR = "download";
 			saveSmartContractsFromEtherscan();
 			return;
 		}
-		
+
 		// Setting cores
 		if (coresOpt != null && Integer.parseInt(coresOpt) > 0)
 			CORES = Integer.parseInt(coresOpt);
@@ -571,7 +571,7 @@ public class EVMLiSA {
 		boolean allJumpAreSound = true;
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
-		
+
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if (pushedJumps.contains(jumpNode))
 				continue;
@@ -904,7 +904,7 @@ public class EVMLiSA {
 				continue;
 			}
 		}
-		
+
 		System.out.printf("Downloaded %s smart contract \n", numberOfAPIEtherscanRequestOnSuccess);
 	}
 

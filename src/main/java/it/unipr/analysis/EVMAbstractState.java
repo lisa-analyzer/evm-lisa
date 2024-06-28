@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -20,6 +21,7 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMAbstractState
-implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
+		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
@@ -425,12 +427,11 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						if (stack.hasBottomUntil(1))
 							continue;
 
-						
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
 						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
 							continue;
-						
+
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
@@ -1315,16 +1316,22 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
+						Memory storageCopy = storage.clone();
 
 						KIntegerSet valueToPush = KIntegerSet.BOTTOM;
 						if (key.isTop() || key.isTopNotJumpdest())
 							valueToPush = KIntegerSet.NUMERIC_TOP;
 						else {
-							for (Number k : key)
+							for (Number k : key) {
 								if (storage.getKeys().contains(k))
 									valueToPush = valueToPush.lub(storage.getState(k));
-								else
-									valueToPush = KIntegerSet.NUMERIC_TOP;
+								else {
+									valueToPush = getStorageAt(k, CONTRACT_ADDRESS);
+									// TODO We can optimize this adding the value
+									// gotten pushing that into the storage, so
+									// we can avoid future api's request
+								}
+							}
 						}
 
 						resultStack.push(valueToPush);
@@ -2267,9 +2274,9 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-								.getValue());
+								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+												.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
@@ -2323,7 +2330,7 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 		return new StringRepresentation(
 				"{ stacks: " + stacks + ", memory: " + memory + ", mu_i: " + mu_i + ", storage: " + storage
-				+ " }");
+						+ " }");
 	}
 
 	@Override
@@ -2470,5 +2477,46 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 			System.out.printf("%02X ", b);
 		}
 		System.out.println();
+	}
+
+	/**
+	 * Retrieves the storage value at a specific key for a given Ethereum contract address using the Etherscan API.
+	 *
+	 * @param key     the storage key as a Number. This key will be converted to a hexadecimal string.
+	 * @param address the Ethereum contract address as a String.
+	 * @return a {@link KIntegerSet} containing the storage value if the request is successful, or {@link KIntegerSet#NUMERIC_TOP} if an error occurs.
+	 * @throws IOException if an I/O error occurs while making the API request.
+	 * @throws InterruptedException if the thread is interrupted while sleeping.
+	 */
+	public KIntegerSet getStorageAt(Number key, String address) {
+		try {
+			BigInteger toHex = Number.toBigInteger(key);
+			String hexString = "0x" + toHex.toString(16);
+
+			Thread.sleep(100);
+
+			String getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+
+			if (getStorageAtRequest == null || getStorageAtRequest.isEmpty()) {
+				System.err.println("ERROR: couldn't download contract's storage.");
+				return KIntegerSet.NUMERIC_TOP;
+			}
+
+			String[] test = getStorageAtRequest.split("\"");
+			String bytecode = test[9].substring(2);
+
+			BigInteger decimal = new BigInteger(bytecode, 16);
+
+			System.err.printf("getStorageAt API request. Request: %s, got: %s\n", hexString, decimal);
+
+			return new KIntegerSet(decimal);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		return KIntegerSet.NUMERIC_TOP;
 	}
 }
