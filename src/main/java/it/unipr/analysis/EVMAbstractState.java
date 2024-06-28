@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMAbstractState
-		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
+implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
@@ -424,9 +424,13 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
+
+						
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
-
+						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
+							continue;
+						
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
@@ -435,8 +439,9 @@ public class EVMAbstractState
 										.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 								.collect(Collectors.toSet());
 
-						if (!filteredDests.isEmpty() || jmpDest.isTop())
+						if (!filteredDests.isEmpty())
 							result.add(resultStack);
+
 					}
 
 					if (result.isEmpty())
@@ -2262,9 +2267,9 @@ public class EVMAbstractState
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-												.getValue());
+						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+								.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
@@ -2318,7 +2323,7 @@ public class EVMAbstractState
 
 		return new StringRepresentation(
 				"{ stacks: " + stacks + ", memory: " + memory + ", mu_i: " + mu_i + ", storage: " + storage
-						+ " }");
+				+ " }");
 	}
 
 	@Override
