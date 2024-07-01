@@ -1326,10 +1326,23 @@ public class EVMAbstractState
 								if (storage.getKeys().contains(k))
 									valueToPush = valueToPush.lub(storage.getState(k));
 								else {
-									valueToPush = getStorageAt(k, CONTRACT_ADDRESS);
-									// TODO We can optimize this adding the value
-									// gotten pushing that into the storage, so
-									// we can avoid future api's request
+
+									KIntegerSet valueCached = MyCache.getInstance().get(Pair.of(CONTRACT_ADDRESS, k));
+
+									if (valueCached == null) {
+										valueToPush = getStorageAt(k, CONTRACT_ADDRESS); // API
+																							// request
+										MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
+
+										System.err.printf("[(%s, %s), %s] API request \n", CONTRACT_ADDRESS, k,
+												valueToPush);
+									} else {
+										valueToPush = valueCached;
+
+										System.err.printf("[(%s, %s), %s] cache in action \n", CONTRACT_ADDRESS, k,
+												valueToPush);
+									}
+
 								}
 							}
 						}
@@ -2480,12 +2493,19 @@ public class EVMAbstractState
 	}
 
 	/**
-	 * Retrieves the storage value at a specific key for a given Ethereum contract address using the Etherscan API.
+	 * Retrieves the storage value at a specific key for a given Ethereum
+	 * contract address using the Etherscan API.
 	 *
-	 * @param key     the storage key as a Number. This key will be converted to a hexadecimal string.
+	 * @param key     the storage key as a Number. This key will be converted to
+	 *                    a hexadecimal string.
 	 * @param address the Ethereum contract address as a String.
-	 * @return a {@link KIntegerSet} containing the storage value if the request is successful, or {@link KIntegerSet#NUMERIC_TOP} if an error occurs.
-	 * @throws IOException if an I/O error occurs while making the API request.
+	 * 
+	 * @return a {@link KIntegerSet} containing the storage value if the request
+	 *             is successful, or {@link KIntegerSet#NUMERIC_TOP} if an error
+	 *             occurs.
+	 * 
+	 * @throws IOException          if an I/O error occurs while making the API
+	 *                                  request.
 	 * @throws InterruptedException if the thread is interrupted while sleeping.
 	 */
 	public KIntegerSet getStorageAt(Number key, String address) {
@@ -2493,7 +2513,7 @@ public class EVMAbstractState
 			BigInteger toHex = Number.toBigInteger(key);
 			String hexString = "0x" + toHex.toString(16);
 
-			Thread.sleep(100);
+			Thread.sleep(1000);
 
 			String getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
 
@@ -2507,10 +2527,7 @@ public class EVMAbstractState
 
 			BigInteger decimal = new BigInteger(bytecode, 16);
 
-			System.err.printf("getStorageAt API request. Request: %s, got: %s\n", hexString, decimal);
-
 			return new KIntegerSet(decimal);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {

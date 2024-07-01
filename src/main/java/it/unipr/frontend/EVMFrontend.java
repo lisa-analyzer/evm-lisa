@@ -19,19 +19,8 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
@@ -80,280 +69,44 @@ public class EVMFrontend {
 	 * @throws IOException
 	 */
 	public static boolean parseContractFromEtherscan(String address, String output) throws IOException {
-		final boolean DEPLOYED_CODE = true;
-		
-		if(DEPLOYED_CODE) {
-			String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
+		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 
-			if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
-				System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
-				return false;
-			}
-
-			String[] test = bytecodeRequest.split("\"");
-			String bytecode = test[9];
-
-			BufferedWriter writer = new BufferedWriter(new FileWriter(output));
-
-			for (int i = 2; i < bytecode.length(); i += 2) {
-				String opcode = bytecode.substring(i, i + 2);
-				int t = pushTest(opcode);
-
-				if (t != 0) {
-					String push;
-					int offset = (i + 2 + 2 * t);
-					if (offset > bytecode.length())
-						push = bytecode.substring(i + 2);
-					else
-						push = bytecode.substring(i + 2, (i + 2 + 2 * t));
-
-					addPush(push, t, writer);
-					i += 2 * t;
-				}
-
-				else {
-					if (!addOpcode(opcode, writer))
-						break;
-				}
-			}
-
-			writer.close();
-
-			return true;
-		} 
-		
-		// Deployed code case above, creation code case below
-		
-		if(!getSourceCodeFromEtherscan(address, output)) {
-			System.err.println("Unable to download source code");
-			System.exit(-1);
+		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
+			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
+			return false;
 		}
-		
-		String directoryBytecode = extractParentPath(output) + "/bytecode";
-		compileSourceCodeWithSolc(output, directoryBytecode);
-		
-        Path directory = Paths.get(directoryBytecode);
 
-        if (Files.exists(directory) && Files.isDirectory(directory)) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-                for (Path file : stream) {
-                    
-                    String bytecode = Files.readString(file);
-                    if(bytecode != "") {
-                    	bytecode = "0x" + bytecode;
-                    	System.out.println(file.getFileName() + ": " + bytecode);
-                    	
-                		BufferedWriter writer = new BufferedWriter(new FileWriter(file.toString()));
+		String[] test = bytecodeRequest.split("\"");
+		String bytecode = test[9];
 
-                		for (int i = 2; i < bytecode.length(); i += 2) {
-                			String opcode = bytecode.substring(i, i + 2);
-                			int t = pushTest(opcode);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 
-                			if (t != 0) {
-                				String push;
-                				int offset = (i + 2 + 2 * t);
-                				if (offset > bytecode.length())
-                					push = bytecode.substring(i + 2);
-                				else
-                					push = bytecode.substring(i + 2, (i + 2 + 2 * t));
+		for (int i = 2; i < bytecode.length(); i += 2) {
+			String opcode = bytecode.substring(i, i + 2);
+			int t = pushTest(opcode);
 
-                				addPush(push, t, writer);
-                				i += 2 * t;
-                			}
+			if (t != 0) {
+				String push;
+				int offset = (i + 2 + 2 * t);
+				if (offset > bytecode.length())
+					push = bytecode.substring(i + 2);
+				else
+					push = bytecode.substring(i + 2, (i + 2 + 2 * t));
 
-                			else {
-                				if (!addOpcode(opcode, writer))
-                					break;
-                			}
-                		}
+				addPush(push, t, writer);
+				i += 2 * t;
+			}
 
-                		writer.close();
-                    	
-                    }
-                    
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.err.println("Unable to find the directory.");
-        }
-        
-        System.exit(-1);
+			else {
+				if (!addOpcode(opcode, writer))
+					break;
+			}
+		}
+
+		writer.close();
 
 		return true;
 	}
-	
-	/**
-	 * Compiles the Solidity source code file using the Solidity compiler (solc).
-	 * 
-	 * @param solidityFile         Path to the Solidity source file to compile.
-	 * @param destinationDirectory Directory where the compiled output should be saved.
-	 *                             The compiled binaries will be generated in this directory.
-	 */
-	public static void compileSourceCodeWithSolc(String solidityFile, String destinationDirectory) {
-		
-		Dotenv dotenv = Dotenv.load();
-		final String solc = dotenv.get("SOLC_PATH");
-		
-		String cmd = solc + " --bin-runtime --overwrite --optimize " + solidityFile + " -o " + destinationDirectory;
-        String result = execCommand(cmd);
-        System.err.println(result);
-	}
-	
-	/**
-	 * Updates the Solidity version in the source code based on the compiler information.
-	 * If the compiler version is found in the information, it replaces the existing pragma statement
-	 * with the detected version.
-	 * 
-	 * @param compilerInfo The information string containing the Solidity compiler version.
-	 * @param sourceCode   The original Solidity source code with pragma statement to be updated.
-	 * @return             The updated source code with the Solidity version pragma replaced,
-	 *                     or the original source code if the version cannot be extracted or updated.
-	 */
-	public static String updateSolidityVersion(String compilerInfo, String sourceCode) {
-	    if (compilerInfo == null) {
-	        System.err.println("compilerInfo is null. Cannot extract version.");
-	        return sourceCode;
-	    }
-
-	    // Regex pattern to extract the version from compilerInfo
-	    Pattern pattern = Pattern.compile("Version: (\\d+\\.\\d+\\.\\d+)");
-	    Matcher matcher = pattern.matcher(compilerInfo);
-
-	    String solidityVersion = "";
-	    if (matcher.find()) {
-	        solidityVersion = matcher.group(1);
-	    } else {
-	        System.err.println("Unable to find solc version.");
-	        return sourceCode;
-	    }
-
-	    if (sourceCode == null) {
-	        System.err.println("sourceCode is null. Cannot perform replacement.");
-	        return sourceCode;
-	    }
-
-	    // Replace the existing pragma solidity statement with the updated version
-	    String updatedSourceCode = sourceCode.replaceAll("pragma solidity \\d+\\.\\d+\\.\\d+;", "pragma solidity " + solidityVersion + ";");
-
-	    // Print a message if the Solidity version pragma was updated
-	    if (!sourceCode.equals(updatedSourceCode)) {
-	        System.err.println("Solidity version updated to " + solidityVersion);
-	    }
-
-	    return updatedSourceCode;
-	}
-	
-	/**
-	 * Executes a command in the system's shell and returns the combined output from stdout and stderr.
-	 * 
-	 * @param cmd The command to execute in the shell.
-	 * @return    The combined output (stdout and stderr) generated by executing the command.
-	 */
-	public static String execCommand(String cmd) {
-	    String output = "";
-	    try {
-	        ProcessBuilder pb = new ProcessBuilder();
-	        
-	        List<String> commands = new ArrayList<>();
-	        commands.add("/bin/bash"); // Use bash shell
-	        commands.add("-c"); // Option to execute a command from a string
-	        commands.add(cmd); // Add the command to execute
-	        
-	        pb.command(commands);
-
-	        Process process = pb.start();
-	        
-	        // Read the output from stdout
-	        String line;
-	        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-	        while ((line = reader.readLine()) != null) {
-	            output += line; 
-	        }
-	        
-	        // Read the output from stderr
-	        BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-	        while ((line = errorReader.readLine()) != null) {
-	            output += line; 
-	        }
-
-	        // Wait for the process to complete and get the exit code
-	        int exitCode = process.waitFor();
-	        
-	        // System.out.println("Command executed with exit code: " + exitCode);
-
-	    } catch (IOException | InterruptedException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    return output; 
-	}
-	
-	/**
-	 * Retrieves the source code of a contract from Etherscan API based on the provided address,
-	 * parses the JSON response, updates Solidity version pragma in the source code if necessary,
-	 * and writes the modified source code to a file specified by the output path.
-	 * 
-	 * @param address The Ethereum address of the contract.
-	 * @param output  The file path where the modified source code should be saved.
-	 * @return        True if the source code was successfully retrieved, updated, and saved to the file; false otherwise.
-	 * @throws IOException If an I/O error occurs while writing to the file.
-	 */
-	public static boolean getSourceCodeFromEtherscan(String address, String output) throws IOException {
-	    String getSourceCode = EVMFrontend.etherscanRequest("contract", "getsourcecode", address);
-	    
-	    // Parse JSON response from Etherscan
-	    JSONObject json = new JSONObject(getSourceCode);
-	    JSONArray resultArray = json.getJSONArray("result");
-	    JSONObject resultObject = resultArray.getJSONObject(0);
-	    String sourcecode = resultObject.getString("SourceCode");
-
-	    System.out.println(sourcecode);
-	    
-	    File file = new File(output);
-	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-	        // Clean up source code formatting
-	        String newFile = "";
-	        for (int i = 0; i < sourcecode.length(); i++) {
-	            if ((i + 1) < sourcecode.length()) {
-	                char c1 = sourcecode.charAt(i);
-	                char c2 = sourcecode.charAt(i + 1);
-	                String check = "" + c1 + c2;
-
-	                if (check.equals("\\r")) {
-	                    i++;
-	                } else if (check.equals("\\n")) {
-	                    newFile += "\n";
-	                    i++;
-	                } else {
-	                    newFile += sourcecode.charAt(i);
-	                }
-	            } else {
-	                newFile += sourcecode.charAt(i);
-	            }
-	        }
-
-	        // Retrieve Solidity compiler version information
-	        Dotenv dotenv = Dotenv.load();
-	        final String solc = dotenv.get("SOLC_PATH");
-	        String compilerInfo = execCommand(solc + " --version");
-
-	        // Update Solidity version pragma in the source code
-	        newFile = updateSolidityVersion(compilerInfo, newFile);
-	        
-	        // Write the modified source code to the file
-	        writer.write(newFile);
-	        System.out.println("File created at: " + file.getAbsolutePath());
-
-	        return true;
-
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    return false;
-	}
-
 
 	/**
 	 * Yelds the EVM bytecode of a smart contract stored at the address
@@ -753,8 +506,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-//			return false;
-			break;
+			return false;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;
@@ -849,13 +601,19 @@ public class EVMFrontend {
 	}
 
 	/**
-	 * Makes a request to the Etherscan API to retrieve information based on the provided module, action, and address.
-	 * Requires an API key stored in the environment variable 'ETHERSCAN_API_KEY'.
+	 * Makes a request to the Etherscan API to retrieve information based on the
+	 * provided module, action, and address. Requires an API key stored in the
+	 * environment variable 'ETHERSCAN_API_KEY'.
 	 *
-	 * @param module  The module name for the Etherscan API request (e.g., 'contract', 'account', etc.).
-	 * @param action  The action to perform within the specified module (e.g., 'getsourcecode', 'balance', etc.).
+	 * @param module  The module name for the Etherscan API request (e.g.,
+	 *                    'contract', 'account', etc.).
+	 * @param action  The action to perform within the specified module (e.g.,
+	 *                    'getsourcecode', 'balance', etc.).
 	 * @param address The Ethereum address or identifier used for the request.
-	 * @return        The JSON response received from the Etherscan API, or null if there was an error or no response.
+	 * 
+	 * @return The JSON response received from the Etherscan API, or null if
+	 *             there was an error or no response.
+	 * 
 	 * @throws IOException If an I/O error occurs while making the HTTP request.
 	 */
 	public static String etherscanRequest(String module, String action, String address) throws IOException {
@@ -873,7 +631,7 @@ public class EVMFrontend {
 		// Send request to Etherscan
 		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s", module,
 				action, address, API_KEY);
-		
+
 		URL requestUrl = new URL(request);
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
 		connection.setRequestMethod("GET");
@@ -903,14 +661,21 @@ public class EVMFrontend {
 	}
 
 	/**
-	 * Makes a request to the Etherscan API to retrieve information based on the provided module, action, position, and address.
-	 * Requires an API key stored in the environment variable 'ETHERSCAN_API_KEY'.
+	 * Makes a request to the Etherscan API to retrieve information based on the
+	 * provided module, action, position, and address. Requires an API key
+	 * stored in the environment variable 'ETHERSCAN_API_KEY'.
 	 *
-	 * @param module   The module name for the Etherscan API request (e.g., 'contract', 'account', etc.).
-	 * @param action   The action to perform within the specified module (e.g., 'getsourcecode', 'balance', etc.).
-	 * @param position The position or specific identifier within the module (optional depending on the API endpoint).
+	 * @param module   The module name for the Etherscan API request (e.g.,
+	 *                     'contract', 'account', etc.).
+	 * @param action   The action to perform within the specified module (e.g.,
+	 *                     'getsourcecode', 'balance', etc.).
+	 * @param position The position or specific identifier within the module
+	 *                     (optional depending on the API endpoint).
 	 * @param address  The Ethereum address or identifier used for the request.
-	 * @return         The JSON response received from the Etherscan API, or null if there was an error or no response.
+	 * 
+	 * @return The JSON response received from the Etherscan API, or null if
+	 *             there was an error or no response.
+	 * 
 	 * @throws IOException If an I/O error occurs while making the HTTP request.
 	 */
 	public static String etherscanRequest(String module, String action, String position, String address)
@@ -975,26 +740,4 @@ public class EVMFrontend {
 			return false;
 		}
 	}
-	
-	/**
-	 * Extracts the parent directory path from a given input path that ends with a .sol file.
-	 * 
-	 * @param inputPath The input path containing the .sol file whose parent directory path needs to be extracted.
-	 * @return          The parent directory path extracted from the inputPath, or null if extraction fails.
-	 */
-	private static String extractParentPath(String inputPath) {
-	    // Use a regular expression to find the path up to the last slash
-	    // followed by a series of non-slash characters (the .sol file name)
-	    String regex = "^(.*?)(?:/[^/]+)\\.sol$";
-	    Pattern pattern = Pattern.compile(regex);
-	    Matcher matcher = pattern.matcher(inputPath);
-
-	    if (matcher.find()) {
-	        return matcher.group(1); // Return the group corresponding to the path before the .sol file
-	    } else {
-	        System.err.println("Unable to extract the parent path from the .sol file.");
-	        return null; 
-	    }
-	}
-
 }
