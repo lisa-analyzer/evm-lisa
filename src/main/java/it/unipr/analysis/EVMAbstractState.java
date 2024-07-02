@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -20,6 +21,7 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -59,6 +61,8 @@ public class EVMAbstractState
 	private final Memory storage;
 
 	private final KIntegerSet mu_i;
+
+	private static boolean USE_STORAGE_LIVE = false;
 
 	/**
 	 * Builds the abstract domain.
@@ -135,6 +139,10 @@ public class EVMAbstractState
 	 */
 	public KIntegerSet getMu_i() {
 		return mu_i;
+	}
+
+	public static void setUseStorageLive() {
+		USE_STORAGE_LIVE = true;
 	}
 
 	@Override
@@ -424,8 +432,11 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
+
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet jmpDest = resultStack.pop();
+						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
+							continue;
 
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
@@ -435,8 +446,9 @@ public class EVMAbstractState
 										.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
 								.collect(Collectors.toSet());
 
-						if (!filteredDests.isEmpty() || jmpDest.isTop())
+						if (!filteredDests.isEmpty())
 							result.add(resultStack);
+
 					}
 
 					if (result.isEmpty())
@@ -1310,16 +1322,37 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						KIntegerSet key = resultStack.pop();
+						Memory storageCopy = storage.clone();
 
 						KIntegerSet valueToPush = KIntegerSet.BOTTOM;
 						if (key.isTop() || key.isTopNotJumpdest())
 							valueToPush = KIntegerSet.NUMERIC_TOP;
 						else {
-							for (Number k : key)
+							for (Number k : key) {
 								if (storage.getKeys().contains(k))
 									valueToPush = valueToPush.lub(storage.getState(k));
-								else
-									valueToPush = KIntegerSet.NUMERIC_TOP;
+								else {
+									if (USE_STORAGE_LIVE) {
+										KIntegerSet valueCached = MyCache.getInstance()
+												.get(Pair.of(CONTRACT_ADDRESS, k));
+
+										if (valueCached == null) {
+											valueToPush = getStorageAt(k, CONTRACT_ADDRESS); // API
+																								// request
+											MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
+
+											System.err.printf("[(%s, %s), %s] API request \n", CONTRACT_ADDRESS, k,
+													valueToPush);
+										} else {
+											valueToPush = valueCached;
+
+											System.err.printf("[(%s, %s), %s] cache in action \n", CONTRACT_ADDRESS, k,
+													valueToPush);
+										}
+									} else
+										valueToPush = KIntegerSet.NUMERIC_TOP;
+								}
+							}
 						}
 
 						resultStack.push(valueToPush);
@@ -2333,12 +2366,12 @@ public class EVMAbstractState
 
 	@Override
 	public boolean isTop() {
-		return stacks.isTop();
+		return this == TOP;
 	}
 
 	@Override
 	public boolean isBottom() {
-		return stacks.isBottom();
+		return this == BOTTOM;
 	}
 
 	/**
@@ -2465,5 +2498,50 @@ public class EVMAbstractState
 			System.out.printf("%02X ", b);
 		}
 		System.out.println();
+	}
+
+	/**
+	 * Retrieves the storage value at a specific key for a given Ethereum
+	 * contract address using the Etherscan API.
+	 *
+	 * @param key     the storage key as a Number. This key will be converted to
+	 *                    a hexadecimal string.
+	 * @param address the Ethereum contract address as a String.
+	 * 
+	 * @return a {@link KIntegerSet} containing the storage value if the request
+	 *             is successful, or {@link KIntegerSet#NUMERIC_TOP} if an error
+	 *             occurs.
+	 * 
+	 * @throws IOException          if an I/O error occurs while making the API
+	 *                                  request.
+	 * @throws InterruptedException if the thread is interrupted while sleeping.
+	 */
+	public KIntegerSet getStorageAt(Number key, String address) {
+		try {
+			BigInteger toHex = Number.toBigInteger(key);
+			String hexString = "0x" + toHex.toString(16);
+
+			Thread.sleep(1000);
+
+			String getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+
+			if (getStorageAtRequest == null || getStorageAtRequest.isEmpty()) {
+				System.err.println("ERROR: couldn't download contract's storage.");
+				return KIntegerSet.NUMERIC_TOP;
+			}
+
+			String[] test = getStorageAtRequest.split("\"");
+			String bytecode = test[9].substring(2);
+
+			BigInteger decimal = new BigInteger(bytecode, 16);
+
+			return new KIntegerSet(decimal);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		return KIntegerSet.NUMERIC_TOP;
 	}
 }

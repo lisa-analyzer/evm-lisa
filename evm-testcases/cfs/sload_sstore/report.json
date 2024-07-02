@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_not_not_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_sload_sstore_sload_sstore.sol().json" ],
   "info" : {
     "cfgs" : "1",
     "duration" : "4ms",
-    "end" : "2024-07-02T10:40:14.008+02:00",
-    "expressions" : "16",
+    "end" : "2024-07-02T10:49:29.821+02:00",
+    "expressions" : "8",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-07-02T10:40:14.004+02:00",
-    "statements" : "33",
+    "start" : "2024-07-02T10:49:29.817+02:00",
+    "statements" : "15",
     "units" : "0",
     "version" : "0.1b8",
     "warnings" : "0"
@@ -32,6 +32,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "evm-outputs/cfs/not"
+    "workdir" : "evm-outputs/cfs/sload_sstore"
   }
 }
