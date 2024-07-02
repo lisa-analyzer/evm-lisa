@@ -79,24 +79,12 @@ def percentuale(numero_decimale):
     return percentuale_str
 
 if __name__ == "__main__":
-    print("statistics-128-32-with-metadata")
-    calculate_statistics("stats/statistics-numeric-128-32.csv")
+    print("statistics-20-10-cache")
+    calculate_statistics("stats/statistics-cache.csv")
     print()
 
-    print("statistics-128-32-without-metadata")
-    calculate_statistics("stats/statistics.csv")
-    print()
-
-    print("statistics-64-128-without-metadata")
-    calculate_statistics("stats/statistics-64-128.csv")
-    print()
-
-    print("statistics-15-10-without-metadata")
-    calculate_statistics("stats/statistics-15-10.csv")
-    print()
-
-    print("statistics-20-10-without-metadata")
-    calculate_statistics("stats/aaaa.csv")
+    print("statistics-32-2-cache")
+    calculate_statistics("stats/statistics-cache-32-2.csv")
     print()
 
     # print("statistics-notjumpdest-128-32.csv")
