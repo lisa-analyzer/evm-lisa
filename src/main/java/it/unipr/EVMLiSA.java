@@ -136,10 +136,18 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(false)
 				.build();
+		
+		Option useStorageLiveOption = Option.builder("S")
+				.longOpt("use-live-storage")
+				.desc("use the live storage in SLOAD")
+				.required(false)
+				.hasArg(false)
+				.build();
 
 		options.addOption(dumpStatisticsOption);
 		options.addOption(dumpCFGOption);
 		options.addOption(downloadBytecodeOption);
+		options.addOption(useStorageLiveOption);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -160,11 +168,15 @@ public class EVMLiSA {
 		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
 		boolean downloadBytecode = cmd.hasOption("download-bytecode");
+		boolean useStorageLive = cmd.hasOption("use-live-storage");
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
+		
+		if(useStorageLive)
+			EVMAbstractState.setUseStorageLive();
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {

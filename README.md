@@ -78,5 +78,6 @@ Options:
  -o,--output <arg>           output directory path
  -q,--stack-size <arg>       dimension of stack
  -s,--dump-stats             dump statistics
+ -S,--use-live-storage       use the live storage in SLOAD
  -w,--stack-set-size <arg>   dimension of stack-set
 ```

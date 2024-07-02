@@ -61,6 +61,8 @@ public class EVMAbstractState
 	private final Memory storage;
 
 	private final KIntegerSet mu_i;
+	
+	private static boolean USE_STORAGE_LIVE = false;
 
 	/**
 	 * Builds the abstract domain.
@@ -137,6 +139,10 @@ public class EVMAbstractState
 	 */
 	public KIntegerSet getMu_i() {
 		return mu_i;
+	}
+	
+	public static void setUseStorageLive() {
+		USE_STORAGE_LIVE = true;
 	}
 
 	@Override
@@ -1326,23 +1332,24 @@ public class EVMAbstractState
 								if (storage.getKeys().contains(k))
 									valueToPush = valueToPush.lub(storage.getState(k));
 								else {
+									if(USE_STORAGE_LIVE) {
+										KIntegerSet valueCached = MyCache.getInstance().get(Pair.of(CONTRACT_ADDRESS, k));
 
-									KIntegerSet valueCached = MyCache.getInstance().get(Pair.of(CONTRACT_ADDRESS, k));
+										if (valueCached == null) {
+											valueToPush = getStorageAt(k, CONTRACT_ADDRESS); // API request
+											MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
 
-									if (valueCached == null) {
-										valueToPush = getStorageAt(k, CONTRACT_ADDRESS); // API
-																							// request
-										MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
+											System.err.printf("[(%s, %s), %s] API request \n", CONTRACT_ADDRESS, k,
+													valueToPush);
+										} else {
+											valueToPush = valueCached;
 
-										System.err.printf("[(%s, %s), %s] API request \n", CONTRACT_ADDRESS, k,
-												valueToPush);
-									} else {
-										valueToPush = valueCached;
-
-										System.err.printf("[(%s, %s), %s] cache in action \n", CONTRACT_ADDRESS, k,
-												valueToPush);
-									}
-
+											System.err.printf("[(%s, %s), %s] cache in action \n", CONTRACT_ADDRESS, k,
+													valueToPush);
+										}
+									} 
+									else 
+										valueToPush = KIntegerSet.NUMERIC_TOP;
 								}
 							}
 						}
