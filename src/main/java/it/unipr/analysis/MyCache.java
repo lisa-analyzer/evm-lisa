@@ -85,49 +85,4 @@ public class MyCache {
 			return _map.size();
 		}
 	}
-
-	public static void main(String[] args) {
-		// TODO remove these tests
-		Pair<String, Number> p1 = Pair.of("test1", new Number(1));
-
-		MyCache.getInstance().put(p1, new KIntegerSet(10));
-
-		Pair<String, Number> p2 = Pair.of("test2", new Number(2));
-		Pair<String, Number> p3 = Pair.of("test3", new Number(3));
-
-		MyCache.getInstance().put(p2, new KIntegerSet(20));
-		MyCache.getInstance().put(p3, new KIntegerSet(30));
-
-		System.out.println(MyCache.getInstance().size());
-		System.out.println(MyCache.getInstance().toString());
-
-		Pair<String, Number> p4 = Pair.of("test4", new Number(4));
-		Pair<String, Number> p5 = Pair.of("test5", new Number(5));
-		Pair<String, Number> p6 = Pair.of("test6", new Number(6));
-
-		MyCache.getInstance().put(p4, new KIntegerSet(40));
-		MyCache.getInstance().put(p5, new KIntegerSet(50));
-
-		System.out.println(MyCache.getInstance().size());
-		System.out.println(MyCache.getInstance().toString());
-
-		new Thread(() -> {
-			System.out.println(MyCache.getInstance().get(p1));
-		}).start();
-		new Thread(() -> {
-			System.out.println(MyCache.getInstance().get(p2));
-		}).start();
-		new Thread(() -> {
-			System.out.println(MyCache.getInstance().get(p3));
-		}).start();
-		new Thread(() -> {
-			System.out.println(MyCache.getInstance().get(p4));
-		}).start();
-		new Thread(() -> {
-			System.out.println(MyCache.getInstance().get(p5));
-		}).start();
-		new Thread(() -> {
-			System.out.println(MyCache.getInstance().get(p6)); // null expected
-		}).start();
-	}
 }
