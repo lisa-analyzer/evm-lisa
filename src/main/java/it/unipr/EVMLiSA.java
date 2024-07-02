@@ -136,7 +136,7 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(false)
 				.build();
-		
+
 		Option useStorageLiveOption = Option.builder("S")
 				.longOpt("use-live-storage")
 				.desc("use the live storage in SLOAD")
@@ -174,8 +174,8 @@ public class EVMLiSA {
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
-		
-		if(useStorageLive)
+
+		if (useStorageLive)
 			EVMAbstractState.setUseStorageLive();
 
 		// Download bytecode case
