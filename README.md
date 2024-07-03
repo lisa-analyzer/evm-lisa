@@ -81,3 +81,35 @@ Options:
  -S,--use-live-storage       use the live storage in SLOAD
  -w,--stack-set-size <arg>   dimension of stack-set
 ```
+
+# 📋 Example execution
+Here is an example of how to run an analysis using EVMLiSA. In this example, we will analyze a smart contract at the address `0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B` with specific options for stack size, stack-set size, live storage usage and the dump of the CFG:
+```
+./execution/evm-lisa/bin/evm-lisa 
+-a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B 
+--stack-size 64 
+--stack-set-size 10 
+--use-live-storage
+--dump-analysis dot
+```
+
+The expected output is as follows:
+```yaml
+##############
+Total opcodes: 344
+Total jumps: 45
+Resolved jumps: 44
+Definitely unreachable jumps: 1
+Maybe unreachable jumps: 0
+Unsound jumps: 0
+Maybe unsound jumps: 0
+##############
+```
+
+## Explanation of jump cases
+- Resolved: the destination is known and valid.
+- Definitely unreachable: no stack reaches the jump node.
+- Maybe unreachable: potentially lead to code that may or may not be executed depending on runtime conditions.
+- Unsound: at least one stack reaching the jump with an unknown numerical value that may correspond to a
+valid jump destination.
+- Maybe unsound: the stack set exceeded the maximal stack size.

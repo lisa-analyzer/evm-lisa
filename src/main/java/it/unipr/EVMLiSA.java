@@ -175,9 +175,6 @@ public class EVMLiSA {
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
 
-		if (useStorageLive)
-			EVMAbstractState.setUseStorageLive();
-
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
 			SMARTCONTRACTS_FULLPATH = benchmark;
@@ -215,6 +212,9 @@ public class EVMLiSA {
 			FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
 			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
 		}
+
+		if (useStorageLive)
+			EVMAbstractState.setUseStorageLive();
 
 		// Run benchmark case
 		if (benchmark != null) {
