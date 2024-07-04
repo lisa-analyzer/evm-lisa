@@ -66,7 +66,7 @@ Replace `<smart_contract_address>` with the address of the Ethereum smart contra
 
 This command will initiate the analysis process for the specified smart contract, providing insights and results based on the EVM bytecode of the contract.
 
-```bash
+```
 Options:
  -a,--address <arg>          address of an Ethereum smart contract
  -b,--benchmark <arg>        filepath of the benchmark suite (i.e., a list of smart contract addresses)
@@ -81,6 +81,11 @@ Options:
  -S,--use-live-storage       use the live storage in SLOAD
  -w,--stack-set-size <arg>   maximal size of stack sets
 ```
+
+# 🔍 Abstract Stack Set Domain
+In the analysis of EVM bytecode programs, EVMLiSA employs a domain of sets of abstract stacks to enhance precision, particularly when loops are encountered in the source code. Previously, a single abstract stack was used (you can simulate this option with `--stack-set-size 1`), which could lead to precision loss when the least upper bound (lub) operator merged abstract stacks into a single stack.
+
+To address this, EVMLiSA introduces the abstract stack powerset domain $$\texttt{SetSt}^{\#}_{k,h,l}$$ which consists of sets of abstract stacks with at most $l$ elements and an height of at most $h$. This domain allows the analyzer to maintain collections of abstract stacks, avoiding the need to compute the lub and allowing each element of an abstract stack to be an integer value.
 
 # 📋 Running example
 Here is an example of how to run EVMLiSA. In this example, we will analyze a smart contract at the address `0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B` with specific options for stack size, stack-set size, live storage usage and the dump of the CFG:
