@@ -298,4 +298,16 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 		perform(conf);
 	}
 
+	/**
+	 * All the items in the final stack must be 1
+	 * 
+	 * @throws AnalysisSetupException
+	 * @throws IOException
+	 */
+	@Test
+	public void testSloadSstore() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs/sload_sstore", "sload_sstore.sol", false);
+		perform(conf);
+	}
+
 }

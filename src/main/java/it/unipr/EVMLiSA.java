@@ -64,6 +64,8 @@ public class EVMLiSA {
 	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
 			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
 
+	private static final boolean REGENERATE = false;
+
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
 	 * from a EVM bytecode smart contract and runs the analysis on it.
@@ -120,14 +122,32 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(false)
 				.build();
-		options.addOption(dumpStatisticsOption);
+
 		Option dumpCFGOption = Option.builder("c")
 				.longOpt("dump-cfg")
 				.desc("dump the CFG")
 				.required(false)
 				.hasArg(false)
 				.build();
+
+		Option downloadBytecodeOption = Option.builder("D")
+				.longOpt("download-bytecode")
+				.desc("download the bytecode")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option useStorageLiveOption = Option.builder("S")
+				.longOpt("use-live-storage")
+				.desc("use the live storage in SLOAD")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		options.addOption(dumpStatisticsOption);
 		options.addOption(dumpCFGOption);
+		options.addOption(downloadBytecodeOption);
+		options.addOption(useStorageLiveOption);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -147,19 +167,29 @@ public class EVMLiSA {
 		Boolean dumpCFG = cmd.hasOption("dumpcfg");
 		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
+		boolean downloadBytecode = cmd.hasOption("download-bytecode");
+		boolean useStorageLive = cmd.hasOption("use-live-storage");
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
 
-		// --cores
+		// Download bytecode case
+		if (downloadBytecode && benchmark != null) {
+			SMARTCONTRACTS_FULLPATH = benchmark;
+			OUTPUT_DIR = "download";
+			saveSmartContractsFromEtherscan();
+			return;
+		}
+
+		// Setting cores
 		if (coresOpt != null && Integer.parseInt(coresOpt) > 0)
 			CORES = Integer.parseInt(coresOpt);
 		else
 			CORES = 1;
 
-		// --stack-size & --stack-set-size
+		// Setting AbstractStack size and AbstractStackSet size
 		try {
 			if (stackSize != null && Integer.parseInt(stackSize) > 0)
 				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
@@ -174,7 +204,7 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		// --output
+		// Setting output directories
 		if (outputDir != null) {
 			OUTPUT_DIR = outputDir;
 			STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
@@ -183,7 +213,10 @@ public class EVMLiSA {
 			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
 		}
 
-		// --benchmark
+		if (useStorageLive)
+			EVMAbstractState.setUseStorageLive();
+
+		// Run benchmark case
 		if (benchmark != null) {
 			Files.createDirectories(Paths.get(OUTPUT_DIR));
 			SMARTCONTRACTS_FULLPATH = benchmark;
@@ -195,13 +228,14 @@ public class EVMLiSA {
 			return;
 		}
 
+		// Error case
 		if (addressSC == null && filepath == null) {
-			// Error: no address and no filepath
-			System.out.println("Address or filepath required");
+			System.err.println("Address or filepath required");
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
 
+		// Single analysis case
 		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 
@@ -291,7 +325,7 @@ public class EVMLiSA {
 
 		// If the file does not exists, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists()) {
+		if (!file.exists() || REGENERATE) {
 			numberOfAPIEtherscanRequest++;
 
 			if (numberOfAPIEtherscanRequest % 5 == 0) {
@@ -307,7 +341,7 @@ public class EVMLiSA {
 				numberOfAPIEtherscanRequestOnSuccess++;
 		}
 
-		// Config and test run
+		// Configuration and test run
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
 
 		long start = System.currentTimeMillis();
@@ -337,6 +371,11 @@ public class EVMLiSA {
 				.build();
 	}
 
+	/**
+	 * Runs the benchmark for analyzing smart contracts.
+	 *
+	 * @throws Exception if an error occurs during the benchmark execution.
+	 */
 	private void runBenchmark() throws Exception {
 		startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
@@ -544,6 +583,7 @@ public class EVMLiSA {
 		boolean allJumpAreSound = true;
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
+
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if (pushedJumps.contains(jumpNode))
 				continue;
@@ -560,46 +600,31 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-				boolean skip = false;
+				Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
-				if (jumpNode instanceof Jump) {
-					if (cfg.getOutgoingEdges(jumpNode).size() >= 1) {
-						resolvedJumps++;
-						skip = true;
-					}
-				} else if (jumpNode instanceof Jumpi) {
-					if (cfg.getOutgoingEdges(jumpNode).size() >= 2) {
-						resolvedJumps++;
-						skip = true;
-					}
-				}
-				// If the jump has been resolved, we skip the next checks
-				if (!skip) {
-					Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-
-					if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+				if (pushedJumps.contains(jumpNode))
+					resolvedJumps++;
+				else if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+					definitelyUnreachable++;
+				else if (!reachableFrom) {
+					if (allJumpAreSound)
 						definitelyUnreachable++;
-					else if (!reachableFrom) {
-						if (allJumpAreSound)
-							definitelyUnreachable++;
-						else
-							maybeUnreachable++;
-					} else if (topStackValuesPerJump == null) {
-						// If all stacks are bottom, then we have a
-						// maybeFakeMissedJump
-						definitelyUnreachable++;
-					} else if (!topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
-						// If the elements at the top of the stacks are all
-						// different from NUMERIC_TOP, then we are sure that it
-						// is definitelyFakeMissedJumps
-						definitelyUnreachable++;
-					} else {
-						unsoundJumps++;
-						System.err.println(jumpNode + " not solved");
-						System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
-					}
+					else
+						maybeUnreachable++;
+				} else if (topStackValuesPerJump == null) {
+					// If all stacks are bottom, then we have a
+					// maybeFakeMissedJump
+					definitelyUnreachable++;
+				} else if (!topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
+					// If the elements at the top of the stacks are all
+					// different from NUMERIC_TOP, then we are sure that it
+					// is definitelyFakeMissedJumps
+					resolvedJumps++;
+				} else {
+					unsoundJumps++;
+					System.err.println(jumpNode + " not solved");
+					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
 				}
 			}
 		}
@@ -860,7 +885,7 @@ public class EVMLiSA {
 		for (int i = 0; i < smartContracts.size(); i++) {
 			String address = smartContracts.get(i);
 
-			String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + address + "/" + address
+			String BYTECODE_FULLPATH = OUTPUT_DIR + "/bytecode/" + address + "/" + address
 					+ ".sol";
 
 			if (i % 5 == 0) {
@@ -891,18 +916,8 @@ public class EVMLiSA {
 				continue;
 			}
 		}
-	}
 
-	/**
-	 * Save the bytecode of smart contracts
-	 * 
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unused")
-	private void downloadBytecode() throws Exception {
-		SMARTCONTRACTS_FULLPATH = "benchmark/5000-benchmark.txt";
-		OUTPUT_DIR = "bytecode";
-		saveSmartContractsFromEtherscan();
+		System.out.printf("Downloaded %s smart contract \n", numberOfAPIEtherscanRequestOnSuccess);
 	}
 
 	public class Converter {

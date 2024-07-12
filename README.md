@@ -64,18 +64,57 @@ Run EVMLiSA:
 ```
 Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 
-This command will initiate the analysis process for the specified smart contract, providing insights and results based on the Ethereum Virtual Machine (EVM) bytecode of the contract.
+This command will initiate the analysis process for the specified smart contract, providing insights and results based on the EVM bytecode of the contract.
 
-```bash
+```
 Options:
  -a,--address <arg>          address of an Ethereum smart contract
- -b,--benchmark <arg>        filepath of the benchmark
- -C,--cores <arg>            number of cores used
+ -b,--benchmark <arg>        filepath of the benchmark suite (i.e., a list of smart contract addresses)
+ -C,--cores <arg>            number of cores to use
  -c,--dump-cfg               dump the CFG
  -d,--dump-analysis <arg>    dump the analysis (html, dot)
- -f,--filepath <arg>         filepath of the Etherem smart contract
+ -D,--download-bytecode      download the bytecode, without analyzing it
+ -f,--filepath <arg>         filepath of an EVM bytecode smart contract
  -o,--output <arg>           output directory path
- -q,--stack-size <arg>       dimension of stack
+ -q,--stack-size <arg>       maximal height of stack
  -s,--dump-stats             dump statistics
- -w,--stack-set-size <arg>   dimension of stack-set
+ -S,--use-live-storage       use the live storage in SLOAD
+ -w,--stack-set-size <arg>   maximal size of stack sets
 ```
+
+# 🔍 Abstract Stack Set Domain
+In the analysis of EVM bytecode programs, EVMLiSA employs a domain of sets of abstract stacks to enhance precision, particularly when loops are encountered in the source code.
+
+EVMLiSA introduces the abstract stack powerset domain $\texttt{SetSt}_{k,h,l}$ which consists of sets of abstract stacks with at most $l$ elements and an height of at most $h$. This domain allows the analyzer to maintain collections of abstract stacks, avoiding the need to compute the lub and allowing each element of an abstract stack to be a $k$ integer set.
+
+# 📋 Running example
+Here is an example of how to run EVMLiSA. In this example, we will analyze a smart contract at the address `0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B` with specific options for stack size, stack-set size, live storage usage and the dump of the CFG:
+```
+./execution/evm-lisa/bin/evm-lisa 
+-a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B 
+--stack-size 64 
+--stack-set-size 10 
+--use-live-storage
+--dump-analysis dot
+```
+
+The expected output is as follows:
+```yaml
+##############
+Total opcodes: 344
+Total jumps: 45
+Resolved jumps: 44
+Definitely unreachable jumps: 1
+Maybe unreachable jumps: 0
+Unsound jumps: 0
+Maybe unsound jumps: 0
+##############
+```
+
+### Jump classification
+- _Resolved_: all the destinations of the jump node have been resolved;
+- _Definitely unreachable_: the jump node is unreachable (i.e., it is reached with the bottom abstract state);
+- _Maybe unreachable_: the jump node is not reachable in the CFG, starting from its entry point, but it may be reachable via a (maybe) unsound jump node (if any);
+- _Unsound_: the jump node is reached at least with a stack with an unknown numerical value that may correspond to a
+valid jump destination as the top element;
+- _Maybe unsound_: the stack set exceeded the maximal stack size.

@@ -98,13 +98,12 @@ public class EVMFrontend {
 			}
 
 			else {
-				addOpcode(opcode, writer);
+				if (!addOpcode(opcode, writer))
+					break;
 			}
 		}
 
 		writer.close();
-
-		System.out.println(writer);
 
 		return true;
 	}
@@ -169,7 +168,7 @@ public class EVMFrontend {
 	 * 
 	 * @throws IOException
 	 */
-	private static void addOpcode(String opcode, Writer writer) throws IOException {
+	private static boolean addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
 		case "00":
 			writer.write("STOP\n");
@@ -507,7 +506,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-			break;
+			return false;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;
@@ -515,6 +514,8 @@ public class EVMFrontend {
 			writer.write("'" + opcode + "'" + "(Unknown Opcode)\n");
 			break;
 		}
+
+		return true;
 	}
 
 	private static int pushTest(String opcode) {
@@ -599,7 +600,23 @@ public class EVMFrontend {
 		writer.write("\n");
 	}
 
-	private static String etherscanRequest(String module, String action, String address) throws IOException {
+	/**
+	 * Makes a request to the Etherscan API to retrieve information based on the
+	 * provided module, action, and address. Requires an API key stored in the
+	 * environment variable 'ETHERSCAN_API_KEY'.
+	 *
+	 * @param module  The module name for the Etherscan API request (e.g.,
+	 *                    'contract', 'account', etc.).
+	 * @param action  The action to perform within the specified module (e.g.,
+	 *                    'getsourcecode', 'balance', etc.).
+	 * @param address The Ethereum address or identifier used for the request.
+	 * 
+	 * @return The JSON response received from the Etherscan API, or null if
+	 *             there was an error or no response.
+	 * 
+	 * @throws IOException If an I/O error occurs while making the HTTP request.
+	 */
+	public static String etherscanRequest(String module, String action, String address) throws IOException {
 		// Get the API key from the environment variable
 		Dotenv dotenv = Dotenv.load();
 		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
@@ -614,6 +631,70 @@ public class EVMFrontend {
 		// Send request to Etherscan
 		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s", module,
 				action, address, API_KEY);
+
+		URL requestUrl = new URL(request);
+		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+		if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			StringBuilder sb = new StringBuilder();
+			String readLine = null;
+
+			while ((readLine = in.readLine()) != null) {
+				sb.append(readLine);
+			}
+
+			in.close();
+			String result = sb.toString();
+
+			// Check for error
+			if (errorInResponse(result)) {
+				return null;
+			} else {
+				return result;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Makes a request to the Etherscan API to retrieve information based on the
+	 * provided module, action, position, and address. Requires an API key
+	 * stored in the environment variable 'ETHERSCAN_API_KEY'.
+	 *
+	 * @param module   The module name for the Etherscan API request (e.g.,
+	 *                     'contract', 'account', etc.).
+	 * @param action   The action to perform within the specified module (e.g.,
+	 *                     'getsourcecode', 'balance', etc.).
+	 * @param position The position or specific identifier within the module
+	 *                     (optional depending on the API endpoint).
+	 * @param address  The Ethereum address or identifier used for the request.
+	 * 
+	 * @return The JSON response received from the Etherscan API, or null if
+	 *             there was an error or no response.
+	 * 
+	 * @throws IOException If an I/O error occurs while making the HTTP request.
+	 */
+	public static String etherscanRequest(String module, String action, String position, String address)
+			throws IOException {
+		// Get the API key from the environment variable
+		Dotenv dotenv = Dotenv.load();
+		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
+
+		// Check if API key was retrieved correctly from the environment
+		// variable
+		if (API_KEY == null || API_KEY.isEmpty()) {
+			System.err.println("ERROR: couldn't retrieve ETHERSCAN_API_KEY environment variable from your system.");
+			return null;
+		}
+
+		// Send request to Etherscan
+		String request = String.format(
+				"https://api.etherscan.io/api?module=%s&action=%s&address=%s&position=%s&apikey=%s", module,
+				action, address, position, API_KEY);
 
 		URL requestUrl = new URL(request);
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
