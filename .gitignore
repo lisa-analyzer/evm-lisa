@@ -16,6 +16,7 @@ evm-testcases/benchmark/
 # Ignore Gradle build output directory
 build
 
+.classpath
 .metadata
 bin/
 tmp/

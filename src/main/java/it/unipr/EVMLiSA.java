@@ -1,16 +1,11 @@
 package it.unipr;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.KIntegerSet;
-import it.unipr.analysis.MyLogger;
+import it.unipr.analysis.*;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -58,11 +53,10 @@ public class EVMLiSA {
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
-	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss,SSS");
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private int CORES;
-	private long startOfExecutionTime = 0;
-	private String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
-			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Notes \n";
+	private final String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
+			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Time lost to get Storage, Actual time, Notes \n";
 
 	private static final boolean REGENERATE = false;
 
@@ -71,11 +65,9 @@ public class EVMLiSA {
 	 * from a EVM bytecode smart contract and runs the analysis on it.
 	 * 
 	 * @param args
-	 * 
-	 * @throws AnalysisException
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws AnalysisException, IOException, Exception {
+	 *
+     */
+	public static void main(String[] args) throws Exception {
 		new EVMLiSA().go(args);
 	}
 
@@ -164,7 +156,7 @@ public class EVMLiSA {
 
 		String addressSC = cmd.getOptionValue("address");
 		String outputDir = cmd.getOptionValue("output");
-		Boolean dumpCFG = cmd.hasOption("dumpcfg");
+		boolean dumpCFG = cmd.hasOption("dumpcfg");
 		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
 		boolean downloadBytecode = cmd.hasOption("download-bytecode");
@@ -245,7 +237,7 @@ public class EVMLiSA {
 		STATISTICS_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_STATISTICS" + ".csv";
 		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
 
-		String BYTECODE_FULLPATH = "";
+		String BYTECODE_FULLPATH;
 		if (filepath == null) {
 			BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".sol";
 			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
@@ -287,10 +279,9 @@ public class EVMLiSA {
 			String msg = EVMLiSA.dumpStatistics(checker)
 					.address(addressSC)
 					.time(finish - start)
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage())
 					.build()
 					.toString();
-
-			System.out.println(msg);
 
 			if (dumpStatistics) {
 				toFileStatistics(msg);
@@ -304,6 +295,7 @@ public class EVMLiSA {
 					.address(addressSC)
 					.notes("failure: " + e + " - details: " + e.getMessage())
 					.time(finish - start)
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage())
 					.build().toString();
 
 			System.err.println(msg);
@@ -368,6 +360,7 @@ public class EVMLiSA {
 		return EVMLiSA.dumpStatistics(checker)
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
+				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage())
 				.build();
 	}
 
@@ -377,19 +370,19 @@ public class EVMLiSA {
 	 * @throws Exception if an error occurs during the benchmark execution.
 	 */
 	private void runBenchmark() throws Exception {
-		startOfExecutionTime = System.currentTimeMillis();
+		long startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
 
 		List<String> smartContracts = readSmartContractsFromFile();
-		List<String> smartContractsTerminatedSuccesfully = new ArrayList<String>();
-		List<String> smartContractsFailed = new ArrayList<String>();
+		List<String> smartContractsTerminatedSuccesfully = new ArrayList<>();
+		List<String> smartContractsFailed = new ArrayList<>();
 
 		Thread[] threads = new Thread[smartContracts.size()];
 
 		Runnable runnableHandler = new Runnable() {
 			private int analysesTerminated = 0;
 			private int analysesFailed = 0;
-			private Object mutex = new Object();
+			private final Object mutex = new Object();
 			int threadsStarted = 0;
 
 			@Override
@@ -546,6 +539,9 @@ public class EVMLiSA {
 				"Total duration: " + ((executionTime / 1000) / 60) + " minutes and " + ((executionTime / 1000) % 60)
 				+ " seconds \n";
 
+		msg += "Time lost to get the Storage from Etherscan: " + MyCache.getInstance().getTimeLostToGetStorage()
+				+ " \n";
+
 		System.out.println(msg);
 		toFileLogs(msg);
 
@@ -553,8 +549,6 @@ public class EVMLiSA {
 		System.out.println("Logs successfully written in " + LOGS_FULLPATH);
 		System.out.println("Statistics with zero jumps successfully written in " + STATISTICSZEROJUMP_FULLPATH);
 		System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
-
-		return;
 	}
 
 	/**

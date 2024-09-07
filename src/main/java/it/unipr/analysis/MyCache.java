@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MyCache {
 	private static MyCache _instance = null;
 	private LRUMap<Pair<String, Number>, KIntegerSet> _map;
+	private long _timeLostToGetStorage;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -34,6 +35,7 @@ public class MyCache {
 	 */
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, Number>, KIntegerSet>(500);
+		this._timeLostToGetStorage = 0;
 	}
 
 	/**
@@ -83,6 +85,31 @@ public class MyCache {
 	public int size() {
 		synchronized (_map) {
 			return _map.size();
+		}
+	}
+
+	/**
+	 * Updates the cumulative time lost due to fetching live-storage by adding
+	 * the specified amount of time to the existing total.
+	 *
+	 * @param timeLostToGetStorage the amount of time (in milliseconds) to add
+	 *                                 to the total time lost due to fetching
+	 *                                 storage
+	 */
+	public void updateTimeLostToGetStorage(long timeLostToGetStorage) {
+		synchronized (_map) {
+			this._timeLostToGetStorage += timeLostToGetStorage;
+		}
+	}
+
+	/**
+	 * Retrieves the total cumulative time lost due to fetching storage.
+	 *
+	 * @return the total time (in milliseconds) lost due to fetching storage
+	 */
+	public long getTimeLostToGetStorage() {
+		synchronized (_map) {
+			return this._timeLostToGetStorage;
 		}
 	}
 }

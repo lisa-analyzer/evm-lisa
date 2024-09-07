@@ -90,7 +90,7 @@ public class EVMAbstractState
 	 * Builds a EVMAbsDomain with the given stack, memory and mu_i. The built
 	 * EVMAbsDomain is not TOP.
 	 * 
-	 * @param stack  the stack to be used.
+	 * @param stacks the stack to be used.
 	 * @param memory the memory to be used.
 	 * @param mu_i   the mu_i to be used.
 	 */
@@ -1337,8 +1337,13 @@ public class EVMAbstractState
 												.get(Pair.of(CONTRACT_ADDRESS, k));
 
 										if (valueCached == null) {
+											long start = System.currentTimeMillis();
 											valueToPush = getStorageAt(k, CONTRACT_ADDRESS); // API
 																								// request
+											long timeLostToGetStorage = System.currentTimeMillis() - start;
+
+											MyCache.getInstance().updateTimeLostToGetStorage(timeLostToGetStorage);
+
 											MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
 
 											System.err.printf("[(%s, %s), %s] API request \n", CONTRACT_ADDRESS, k,
