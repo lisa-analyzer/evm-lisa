@@ -65,8 +65,7 @@ public class EVMLiSA {
 	 * from a EVM bytecode smart contract and runs the analysis on it.
 	 * 
 	 * @param args
-	 *
-     */
+	 */
 	public static void main(String[] args) throws Exception {
 		new EVMLiSA().go(args);
 	}
@@ -279,7 +278,7 @@ public class EVMLiSA {
 			String msg = EVMLiSA.dumpStatistics(checker)
 					.address(addressSC)
 					.time(finish - start)
-					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage())
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
 					.build()
 					.toString();
 
@@ -295,7 +294,7 @@ public class EVMLiSA {
 					.address(addressSC)
 					.notes("failure: " + e + " - details: " + e.getMessage())
 					.time(finish - start)
-					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage())
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
 					.build().toString();
 
 			System.err.println(msg);
@@ -360,7 +359,7 @@ public class EVMLiSA {
 		return EVMLiSA.dumpStatistics(checker)
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
-				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage())
+				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
 				.build();
 	}
 
@@ -531,16 +530,8 @@ public class EVMLiSA {
 		msg += "\n"; // Blank line
 
 		msg += "Total analysis: " + smartContracts.size() + ", " +
-				"succesfully: " + smartContractsTerminatedSuccesfully.size() + ", " +
+				"successfully: " + smartContractsTerminatedSuccesfully.size() + ", " +
 				"failed: " + (smartContracts.size() - smartContractsTerminatedSuccesfully.size()) + " \n";
-
-		msg += "API Etherscan Request: " + numberOfAPIEtherscanRequest + ", " +
-				"succesfully: " + numberOfAPIEtherscanRequestOnSuccess + " \n" +
-				"Total duration: " + ((executionTime / 1000) / 60) + " minutes and " + ((executionTime / 1000) % 60)
-				+ " seconds \n";
-
-		msg += "Time lost to get the Storage from Etherscan: " + MyCache.getInstance().getTimeLostToGetStorage()
-				+ " \n";
 
 		System.out.println(msg);
 		toFileLogs(msg);

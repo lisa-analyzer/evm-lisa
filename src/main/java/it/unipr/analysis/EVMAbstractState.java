@@ -1342,17 +1342,27 @@ public class EVMAbstractState
 																								// request
 											long timeLostToGetStorage = System.currentTimeMillis() - start;
 
-											MyCache.getInstance().updateTimeLostToGetStorage(timeLostToGetStorage);
+											try {
+												MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
+														timeLostToGetStorage);
+											} catch (NullPointerException e) {
+												System.err.println(
+														"Unable to update time lost to get storage because address is null");
+											}
 
 											MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
 
-											System.err.printf("[(%s, %s), %s] API request \n", CONTRACT_ADDRESS, k,
-													valueToPush);
+											// System.err.printf("[(%s, %s), %s]
+											// API request \n",
+											// CONTRACT_ADDRESS, k,
+											// valueToPush);
 										} else {
 											valueToPush = valueCached;
 
-											System.err.printf("[(%s, %s), %s] cache in action \n", CONTRACT_ADDRESS, k,
-													valueToPush);
+											// System.err.printf("[(%s, %s), %s]
+											// cache in action \n",
+											// CONTRACT_ADDRESS, k,
+											// valueToPush);
 										}
 									} else
 										valueToPush = KIntegerSet.NUMERIC_TOP;
