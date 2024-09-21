@@ -11,7 +11,7 @@ EVMLiSA is a static analyzer based on abstract interpretation for [EVM bytecode]
 
 
 EVMLiSA is based on the peer-reviewed publication
-> Vincenzo Arceri, Saverio Mattia Merenda, Greta Dolcetti, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"Towards a Sound Construction of EVM Bytecode Control-Flow Graphs"**_. To appear in Proceedings of the Proceedings of the 26th ACM International Workshop on Formal Techniques for Java-like Programs (FTfJP 2024), co-located with ISSTA/ECOOP 2024.
+> Vincenzo Arceri, Saverio Mattia Merenda, Greta Dolcetti, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"Towards a Sound Construction of EVM Bytecode Control-Flow Graphs"**_. In Proceedings of the 26th ACM International Workshop on Formal Techniques for Java-like Programs (FTfJP 2024), co-located with ECOOP 2024.
 
 
 # 🛠 Building EVMLiSA
