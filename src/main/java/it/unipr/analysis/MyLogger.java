@@ -18,6 +18,8 @@ public class MyLogger {
 	private int unsoundJumps;
 	private int maybeUnsoundJumps;
 	private long time;
+	private long timeLostToGetStorage;
+	private long actualTime;
 	private String notes;
 	private String currentThread;
 
@@ -33,6 +35,8 @@ public class MyLogger {
 		this.unsoundJumps = 0;
 		this.maybeUnsoundJumps = 0;
 		this.time = 0;
+		this.timeLostToGetStorage = 0;
+		this.actualTime = 0;
 		this.notes = "";
 		this.currentThread = null;
 	}
@@ -40,7 +44,7 @@ public class MyLogger {
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
 			int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent,
-			long time,
+			long time, long timeLostToGetStorage,
 			String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
@@ -64,6 +68,8 @@ public class MyLogger {
 		this.maybeUnsoundJumps = maybeUnsoundJumps;
 		this.notes = notes;
 		this.time = time;
+		this.timeLostToGetStorage = timeLostToGetStorage;
+		this.actualTime = time - timeLostToGetStorage;
 		this.currentThread = Thread.currentThread().getName();
 	}
 
@@ -126,6 +132,11 @@ public class MyLogger {
 		return this;
 	}
 
+	public MyLogger timeLostToGetStorage(long timeLostToGetStorage) {
+		this.timeLostToGetStorage = timeLostToGetStorage;
+		return this;
+	}
+
 	public MyLogger notes(String notes) {
 		this.notes = notes;
 		return this;
@@ -135,7 +146,7 @@ public class MyLogger {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps,
 				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent,
-				time, notes);
+				time, timeLostToGetStorage, notes);
 	}
 
 	public int jumpSize() {
@@ -155,6 +166,8 @@ public class MyLogger {
 				maybeUnsoundJumps + divider +
 				solvedJumpsPercent + divider +
 				time + divider +
+				timeLostToGetStorage + divider +
+				actualTime + divider +
 //				currentThread + divider +
 				notes + " \n";
 	}

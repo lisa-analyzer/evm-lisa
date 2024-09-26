@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MyCache {
 	private static MyCache _instance = null;
 	private LRUMap<Pair<String, Number>, KIntegerSet> _map;
+	private LRUMap<String, Long> _timeLostToGetStorage;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -34,6 +35,7 @@ public class MyCache {
 	 */
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, Number>, KIntegerSet>(500);
+		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 	}
 
 	/**
@@ -44,7 +46,7 @@ public class MyCache {
 	 * @param value the value, a {@link KIntegerSet}.
 	 */
 	public void put(Pair<String, Number> key, KIntegerSet value) {
-		synchronized (_map) {
+		synchronized (MyCache.class) {
 			_map.put(key, value);
 		}
 	}
@@ -58,7 +60,7 @@ public class MyCache {
 	 *             not in the cache.
 	 */
 	public KIntegerSet get(Pair<String, Number> key) {
-		synchronized (_map) {
+		synchronized (MyCache.class) {
 			KIntegerSet value = _map.get(key);
 			return value;
 		}
@@ -70,7 +72,7 @@ public class MyCache {
 	 * @param key the key, a {@link Pair} of {@link String} and {@link Number}.
 	 */
 	public void remove(Pair<String, Number> key) {
-		synchronized (_map) {
+		synchronized (MyCache.class) {
 			_map.remove(key);
 		}
 	}
@@ -81,8 +83,37 @@ public class MyCache {
 	 * @return the size of the cache.
 	 */
 	public int size() {
-		synchronized (_map) {
+		synchronized (MyCache.class) {
 			return _map.size();
+		}
+	}
+
+	/**
+	 * Updates the cumulative time lost due to fetching live-storage by adding
+	 * the specified amount of time to the existing total.
+	 *
+	 * @param timeLostToGetStorage the amount of time (in milliseconds) to add
+	 *                                 to the total time lost due to fetching
+	 *                                 storage
+	 */
+	public void updateTimeLostToGetStorage(String address, long timeLostToGetStorage) {
+		if (address == null)
+			throw new NullPointerException("Address is null");
+		synchronized (MyCache.class) {
+			this._timeLostToGetStorage.put(address, timeLostToGetStorage);
+		}
+	}
+
+	/**
+	 * Retrieves the total cumulative time lost due to fetching storage.
+	 *
+	 * @return the total time (in milliseconds) lost due to fetching storage
+	 */
+	public long getTimeLostToGetStorage(String address) {
+		if (address == null)
+			throw new NullPointerException("Address is null");
+		synchronized (MyCache.class) {
+			return this._timeLostToGetStorage.get(address);
 		}
 	}
 }
