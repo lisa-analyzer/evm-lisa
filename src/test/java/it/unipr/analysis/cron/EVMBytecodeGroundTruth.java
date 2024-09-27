@@ -12,14 +12,14 @@ import java.util.List;
 import org.junit.Test;
 
 /*
- * truth-ground-stats/truth-ground-data.csv FILE MUST BE UPDATED WHEN A NEW
+ * ground-truth-stats/ground-truth-data.csv FILE MUST BE UPDATED WHEN A NEW
  * VERSION OF THE TRUTH DATASET IS CHOSEN.
  */
-public class EVMBytecodeTruthGround {
+public class EVMBytecodeGroundTruth {
 	@Test
-	public void testTruthGround() throws AnalysisSetupException, IOException, Exception {
-		String TRUTH_GROUND_FILE_PATH = "truth-ground-stats/truth-ground-data.csv";
-		String RESULT_EXEC_DIR_PATH = "test-truth-ground-stats";
+	public void testGroundTruth() throws AnalysisSetupException, IOException, Exception {
+		String GROUND_TRUTH_FILE_PATH = "ground-truth-stats/ground-truth-data.csv";
+		String RESULT_EXEC_DIR_PATH = "test-ground-truth-stats";
 		boolean changed = false;
 
 		clearDirectory(RESULT_EXEC_DIR_PATH);
@@ -27,11 +27,11 @@ public class EVMBytecodeTruthGround {
 		// run new benchmark
 		String[] args = new String[11];
 		args[0] = "--benchmark";
-		args[1] = "benchmark/50-truth-ground.txt";
+		args[1] = "benchmark/50-ground-truth.txt";
 		args[2] = "--stack-size";
 		args[3] = "32";
 		args[4] = "--stack-set-size";
-		args[5] = "32";
+		args[5] = "8";
 		args[6] = "--cores";
 		args[7] = "2";
 		args[8] = "--output";
@@ -41,9 +41,11 @@ public class EVMBytecodeTruthGround {
 		// end new benchmark test
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_DIR_PATH + "/statistics.csv");
-		List<SmartContractData> smartContractTruthGroundList = readStatsFromCSV(TRUTH_GROUND_FILE_PATH);
+		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
 
-		for (SmartContractData truthSC : smartContractTruthGroundList) {
+		assert smartContractList.size() == smartContractGroundTruthList.size();
+
+		for (SmartContractData truthSC : smartContractGroundTruthList) {
 			for (SmartContractData newSC : smartContractList) {
 				if (truthSC.getAddress().equals(newSC.getAddress())) {
 					if (!truthSC.equals(newSC)) {
@@ -126,7 +128,7 @@ public class EVMBytecodeTruthGround {
 		String csvSeparator = ",";
 
 		try (BufferedReader br = new BufferedReader(new FileReader(csvPath))) {
-			line = br.readLine(); // Salta l'intestazione
+			line = br.readLine(); // Skip the header
 
 			while ((line = br.readLine()) != null) {
 				String[] values = line.split(csvSeparator);
