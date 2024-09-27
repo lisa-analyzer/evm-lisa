@@ -70,7 +70,7 @@ public class EVMLiSA {
 		new EVMLiSA().go(args);
 	}
 
-	private void go(String[] args) throws Exception {
+	public void go(String[] args) throws Exception {
 		Options options = new Options();
 
 		// String parameters
@@ -314,7 +314,7 @@ public class EVMLiSA {
 		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + CONTRACT_ADDR));
 
-		// If the file does not exists, we will do an API request to Etherscan
+		// If the file does not exist, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
 		if (!file.exists() || REGENERATE) {
 			numberOfAPIEtherscanRequest++;

@@ -61,8 +61,7 @@ public class MyCache {
 	 */
 	public KIntegerSet get(Pair<String, Number> key) {
 		synchronized (MyCache.class) {
-			KIntegerSet value = _map.get(key);
-			return value;
+            return _map.get(key);
 		}
 	}
 
@@ -111,9 +110,9 @@ public class MyCache {
 	 */
 	public long getTimeLostToGetStorage(String address) {
 		if (address == null)
-			throw new NullPointerException("Address is null");
+			return 0;
 		synchronized (MyCache.class) {
-			return this._timeLostToGetStorage.get(address);
+			return this._timeLostToGetStorage.get(address) == null ? 0 : this._timeLostToGetStorage.get(address);
 		}
 	}
 }
