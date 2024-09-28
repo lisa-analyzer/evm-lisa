@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -41,6 +43,8 @@ import java.util.stream.Collectors;
 public class JumpSolver
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+
+	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
 	/**
 	 * The CFG to be analyzed.
@@ -228,7 +232,7 @@ public class JumpSolver
 			if (valueState.isBottom()) {
 				continue;
 			} else if (valueState.isTop()) {
-				System.err.println("Not solved jump (state is top): " + node + "["
+				LOG.warn("Not solved jump (state is top): " + node + "["
 						+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 				continue;
 			}
@@ -237,7 +241,7 @@ public class JumpSolver
 				if (topStack.isBottom()) {
 					continue;
 				} else if (topStack.isTop()) {
-					System.err.println("Not solved jump (top of the stack is top): " + node + "["
+					LOG.warn("Not solved jump (top of the stack is top): " + node + "["
 							+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 					continue;
 				}
