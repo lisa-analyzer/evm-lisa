@@ -49,7 +49,7 @@ public class EVMBytecodeGroundTruth {
 			for (SmartContractData newSC : smartContractList) {
 				if (truthSC.getAddress().equals(newSC.getAddress())) {
 					if (!truthSC.equals(newSC)) {
-						if(!changed)
+						if (!changed)
 							System.err.println("\n*******************************************\n");
 
 						changed = true;

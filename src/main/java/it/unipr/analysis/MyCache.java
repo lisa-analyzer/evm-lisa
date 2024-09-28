@@ -61,7 +61,7 @@ public class MyCache {
 	 */
 	public KIntegerSet get(Pair<String, Number> key) {
 		synchronized (MyCache.class) {
-            return _map.get(key);
+			return _map.get(key);
 		}
 	}
 
