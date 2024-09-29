@@ -1,0 +1,37 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "2s 198ms",
+    "end" : "2024-09-29T10:57:50.112+02:00",
+    "expressions" : "400",
+    "files" : "0",
+    "globals" : "0",
+    "members" : "1",
+    "programs" : "1",
+    "start" : "2024-09-29T10:57:47.914+02:00",
+    "statements" : "1891",
+    "units" : "0",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "JumpSolver",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "ground-truth-stats/test/benchmark/0xa25150b69733D6834628613E712934C279BEadF7"
+  }
+}

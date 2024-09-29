@@ -3,12 +3,15 @@ package it.unipr.analysis.cron;
 import it.unipr.EVMLiSA;
 import it.unive.lisa.AnalysisSetupException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 /*
@@ -16,13 +19,20 @@ import org.junit.Test;
  * VERSION OF THE TRUTH DATASET IS CHOSEN.
  */
 public class EVMBytecodeGroundTruth {
+	private static final Logger LOG = LogManager.getLogger(EVMBytecodeGroundTruth.class);
+
 	@Test
 	public void testGroundTruth() throws AnalysisSetupException, IOException, Exception {
 		String GROUND_TRUTH_FILE_PATH = "ground-truth-stats/ground-truth-data.csv";
-		String RESULT_EXEC_DIR_PATH = "test-ground-truth-stats";
+		String RESULT_EXEC_DIR_PATH = "ground-truth-stats/test";
+		String RESULT_EXEC_FILE_PATH = "ground-truth-stats/test/statistics.csv";
 		boolean changed = false;
 
-		clearDirectory(RESULT_EXEC_DIR_PATH);
+		// clearDirectory(RESULT_EXEC_DIR_PATH);
+		if (new File(RESULT_EXEC_FILE_PATH).delete())
+			LOG.warn("File deleted {}\n", RESULT_EXEC_FILE_PATH);
+		if (new File(RESULT_EXEC_DIR_PATH + "/logs.txt").delete())
+			LOG.warn("File deleted {}\n", RESULT_EXEC_DIR_PATH + "/logs.txt");
 
 		// run new benchmark
 		String[] args = new String[11];
@@ -33,14 +43,14 @@ public class EVMBytecodeGroundTruth {
 		args[4] = "--stack-set-size";
 		args[5] = "8";
 		args[6] = "--cores";
-		args[7] = "2";
+		args[7] = "1";
 		args[8] = "--output";
 		args[9] = RESULT_EXEC_DIR_PATH;
 		args[10] = "--dump-stats";
 		new EVMLiSA().go(args);
 		// end new benchmark test
 
-		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_DIR_PATH + "/statistics.csv");
+		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
 		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
 
 		assert smartContractList.size() == smartContractGroundTruthList.size();
