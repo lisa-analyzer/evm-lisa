@@ -25,10 +25,9 @@ public class EVMBytecodeGroundTruth {
 	public void testGroundTruth() throws AnalysisSetupException, IOException, Exception {
 		String GROUND_TRUTH_FILE_PATH = "ground-truth-stats/ground-truth-data.csv";
 		String RESULT_EXEC_DIR_PATH = "ground-truth-stats/test";
-		String RESULT_EXEC_FILE_PATH = "ground-truth-stats/test/statistics.csv";
+		String RESULT_EXEC_FILE_PATH = RESULT_EXEC_DIR_PATH + "/statistics.csv";
 		boolean changed = false;
 
-		// clearDirectory(RESULT_EXEC_DIR_PATH);
 		if (new File(RESULT_EXEC_FILE_PATH).delete())
 			LOG.warn("File deleted {}\n", RESULT_EXEC_FILE_PATH);
 		if (new File(RESULT_EXEC_DIR_PATH + "/logs.txt").delete())
