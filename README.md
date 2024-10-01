@@ -24,7 +24,7 @@ You need to:
   git clone https://github.com/lisa-analyzer/evm-lisa.git
   cd evm-lisa
   ```
-- Import the project into the Eclipse/IntelliJ workspace as a Gradle project.
+- Import the project into the Eclipse/IntelliJ workspace as a Gradle project (optional).
 
 # ⚙️ Running EVMLiSA
 Before running EVMLiSA, ensure you have set up an Environment Variable with your Etherscan API Key. Follow the steps below to set up the environment variable:
