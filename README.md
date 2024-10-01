@@ -9,10 +9,8 @@
 
 EVMLiSA is a static analyzer based on abstract interpretation for [EVM bytecode](https://www.ethervm.io/) of smart contracts deployed on Ethereum blockchain and built upon [LiSA](https://unive-ssv.github.io/lisa/). Given a EVM bytecode smart contract, EVMLiSA builds a sound and precise control-flow graph of the smart contract.
 
-
 EVMLiSA is based on the peer-reviewed publication
 > Vincenzo Arceri, Saverio Mattia Merenda, Greta Dolcetti, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"Towards a Sound Construction of EVM Bytecode Control-Flow Graphs"**_. In Proceedings of the 26th ACM International Workshop on Formal Techniques for Java-like Programs (FTfJP 2024), co-located with ECOOP 2024.
-
 
 # 🛠 Building EVMLiSA
 Compiling EVMLiSA requires:
@@ -20,19 +18,13 @@ Compiling EVMLiSA requires:
 - [Gradle](https://gradle.org/releases/) >= 6.6
 - [Etherscan API key](https://etherscan.io/myapikey)
 
-Development is done in [Eclipse](https://www.eclipse.org/downloads/).
 You need to:
 - Clone the repository:
   ```bash
   git clone https://github.com/lisa-analyzer/evm-lisa.git
   cd evm-lisa
   ```
-- Install the Gradle IDE Pack plugin through the Eclipse Marketplace; from the eclipse menu bar:
-  - *Help*
-  - *Eclipse Marketplace...*
-  - *Search* for *Gradle IDE Pack 3.8*
-  - *Install Gradle IDE Pack 3.8*
-- Import the project into the eclipse workspace as a Gradle project.
+- Import the project into the Eclipse/IntelliJ workspace as a Gradle project.
 
 # ⚙️ Running EVMLiSA
 Before running EVMLiSA, ensure you have set up an Environment Variable with your Etherscan API Key. Follow the steps below to set up the environment variable:
@@ -46,8 +38,21 @@ ETHERSCAN_API_KEY=<your_etherscan_api_key>
 
 > Here you can find how to generate an [Etherscan API key](https://etherscan.io/myapikey).
 
-Once you have set up the environment variable, follow these steps to run EVMLiSA:
+Once you have set up the environment variable, you can run EVMLiSA via Docker or via Bash.
 
+## Via Docker
+Build the container:
+```
+docker build -t evm-lisa:latest .
+```
+
+Then you can run EVMLiSA with:
+```
+docker run --rm -it -v $(pwd)/.env:/app/.env evm-lisa:latest -a <smart_contract_address> [options]
+```
+> Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
+
+## Via Bash
 Build the Project:
 ```bash
 ./gradlew build
@@ -63,11 +68,11 @@ Unzip the Distribution:
 unzip build/distributions/evm-lisa.zip -d execution
 ```
 
-Run EVMLiSA:
+Then you can run EVMLiSA with:
 ```bash
 ./execution/evm-lisa/bin/evm-lisa -a <smart_contract_address> [options]
 ```
-Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
+> Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 
 This command will initiate the analysis process for the specified smart contract, providing insights and results based on the EVM bytecode of the contract.
 
@@ -94,13 +99,23 @@ EVMLiSA introduces the abstract stack powerset domain $\texttt{SetSt}_{k,h,l}$ w
 
 # 📋 Running example
 Here is an example of how to run EVMLiSA. In this example, we will analyze a smart contract at the address `0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B` with specific options for stack size, stack-set size, live storage usage and the dump of the CFG:
-```
+
+- Bash:
+```bash
 ./execution/evm-lisa/bin/evm-lisa 
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B 
 --stack-size 64 
 --stack-set-size 10 
 --use-live-storage
---dump-analysis dot
+```
+
+- Docker:
+```bash
+docker run --rm -it -v $(pwd)/.env:/app/.env evm-lisa:latest 
+-a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B -
+-stack-size 64 
+--stack-set-size 10 
+--use-live-storage
 ```
 
 The expected output is as follows:
