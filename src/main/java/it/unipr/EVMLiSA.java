@@ -39,8 +39,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMLiSA {
+	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
 	private String OUTPUT_DIR = "execution/results";
 
 	// Path
@@ -55,16 +58,14 @@ public class EVMLiSA {
 	private int numberOfAPIEtherscanRequestOnSuccess = 0;
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private int CORES;
-	private final String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
-			+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Time lost to get Storage, Actual time, Notes \n";
 
 	private static final boolean REGENERATE = false;
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
-	 * from a EVM bytecode smart contract and runs the analysis on it.
+	 * from an EVM bytecode smart contract and runs the analysis on it.
 	 * 
-	 * @param args
+	 * @param args configuration options
 	 */
 	public static void main(String[] args) throws Exception {
 		new EVMLiSA().go(args);
@@ -221,7 +222,7 @@ public class EVMLiSA {
 
 		// Error case
 		if (addressSC == null && filepath == null) {
-			System.err.println("Address or filepath required");
+			log.error("Address or filepath required");
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
@@ -283,7 +284,7 @@ public class EVMLiSA {
 					.toString();
 
 			if (dumpStatistics) {
-				toFileStatistics(msg);
+				toFile(STATISTICS_FULLPATH, msg);
 				System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
 			}
 
@@ -300,7 +301,7 @@ public class EVMLiSA {
 			System.err.println(msg);
 
 			if (dumpStatistics) {
-				toFileFailure(msg);
+				toFile(FAILURE_FULLPATH, msg);
 				System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
 			}
 		}
@@ -324,7 +325,7 @@ public class EVMLiSA {
 					// I can do max 5 API request in 1 sec to Etherscan.io
 					Thread.sleep(1001);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					log.error("e: ", e);
 				}
 			}
 
@@ -369,7 +370,6 @@ public class EVMLiSA {
 	 * @throws Exception if an error occurs during the benchmark execution.
 	 */
 	private void runBenchmark() throws Exception {
-		long startOfExecutionTime = System.currentTimeMillis();
 		Object guardia = new Object();
 
 		List<String> smartContracts = readSmartContractsFromFile();
@@ -397,7 +397,7 @@ public class EVMLiSA {
 							try {
 								mutex.wait();
 							} catch (InterruptedException e) {
-								e.printStackTrace();
+								log.error("e: ", e);
 							}
 						}
 					}
@@ -412,16 +412,16 @@ public class EVMLiSA {
 								smartContractsTerminatedSuccesfully.add(address);
 
 								if (myStats.jumpSize() == 0)
-									toFileStatisticsWithZeroJumps(myStats.toString());
+									toFile(STATISTICSZEROJUMP_FULLPATH, myStats.toString());
 								else
-									toFileStatistics(myStats.toString());
+									toFile(STATISTICS_FULLPATH, myStats.toString());
 
 								String msg = buildMessage("SUCCESS", address, smartContracts.size(),
 										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
 										analysesFailed, threadsStarted);
 
 								System.out.println(msg);
-								toFileLogs(msg);
+								toFile(LOGS_FULLPATH, msg);
 
 								mutex.notifyAll();
 							}
@@ -438,14 +438,14 @@ public class EVMLiSA {
 										.build().toString();
 
 								System.err.println(msg);
-								toFileFailure(msg);
+								toFile(FAILURE_FULLPATH, msg);
 
 								msg = buildMessage("FAILURE", address, smartContracts.size(),
 										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
 										analysesFailed, threadsStarted);
 
 								System.out.println(msg);
-								toFileLogs(msg);
+								toFile(LOGS_FULLPATH, msg);
 
 								mutex.notifyAll();
 							}
@@ -466,7 +466,7 @@ public class EVMLiSA {
 					}
 
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					log.error("e: ", e);
 				}
 
 				synchronized (guardia) {
@@ -482,15 +482,9 @@ public class EVMLiSA {
 
 			long timeToWait;
 
-			timeToWait = 1000 * 60 * 60 * 24 * 3; // 3 days
+			timeToWait = 1000 * 60 * 60 * 24; // 1 day
 
-			// Statistics
-			long minutes = (timeToWait / 1000) / 60;
-			long seconds = (timeToWait / 1000) % 60;
-
-			String msg = "Timeout setted: " + timeToWait + " millis " +
-					"(" + minutes + " minutes and " + seconds + " seconds) \n";
-			msg += "Started at " + now() + " \n";
+			String msg = "Started at " + now() + " \n";
 			msg += "Finish (brute) expected at " + DATE_FORMAT.format(System.currentTimeMillis() + timeToWait) + " \n";
 			msg += "Number of cores: " + CORES + " \n";
 			msg += "Number of analyses: " + smartContracts.size() + " \n";
@@ -505,7 +499,7 @@ public class EVMLiSA {
 			msg += "\n"; // Blank line
 
 			System.out.println(msg);
-			toFileLogs(msg);
+			toFile(LOGS_FULLPATH, msg);
 
 			guardia.wait(timeToWait);
 
@@ -513,19 +507,18 @@ public class EVMLiSA {
 				threads[i].interrupt();
 		}
 
-		for (int i = 0; i < smartContracts.size(); i++) {
-			if (!smartContractsTerminatedSuccesfully.contains(smartContracts.get(i)) &&
-					!smartContractsFailed.contains(smartContracts.get(i))) {
+		for (String smartContract : smartContracts) {
+			if (!smartContractsTerminatedSuccesfully.contains(smartContract) &&
+					!smartContractsFailed.contains(smartContract)) {
 				String msg = MyLogger.newLogger()
-						.address(smartContracts.get(i))
+						.address(smartContract)
 						.notes("Killed: timeout")
 						.build().toString();
-				toFileFailure(msg);
+				toFile(FAILURE_FULLPATH, msg);
 			}
 		}
 
 		// Print statistics to standard output and log file
-		long executionTime = System.currentTimeMillis() - startOfExecutionTime;
 		String msg = "";
 		msg += "\n"; // Blank line
 
@@ -534,7 +527,7 @@ public class EVMLiSA {
 				"failed: " + (smartContracts.size() - smartContractsTerminatedSuccesfully.size()) + " \n";
 
 		System.out.println(msg);
-		toFileLogs(msg);
+		toFile(LOGS_FULLPATH, msg);
 
 		System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
 		System.out.println("Logs successfully written in " + LOGS_FULLPATH);
@@ -566,6 +559,12 @@ public class EVMLiSA {
 		int maybeUnsoundJumps = checker.getMaybeUnsoundJumps().size();
 
 		boolean allJumpAreSound = true;
+
+		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
+			log.warn("There are no entrypoint");
+			return null;
+		}
+
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
 
@@ -659,17 +658,24 @@ public class EVMLiSA {
 					}
 				});
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error("e: ", e);
 			}
 
 		File f = new File(STATISTICS_FULLPATH);
-		f.delete();
+		if (f.delete())
+			log.info(STATISTICS_FULLPATH + " deleted.");
+
 		f = new File(LOGS_FULLPATH);
-		f.delete();
+		if (f.delete())
+			log.info(LOGS_FULLPATH + " deleted.");
+
 		f = new File(STATISTICSZEROJUMP_FULLPATH);
-		f.delete();
+		if (f.delete())
+			log.info(STATISTICSZEROJUMP_FULLPATH + " deleted.");
+
 		f = new File(FAILURE_FULLPATH);
-		f.delete();
+		if (f.delete())
+			log.info(FAILURE_FULLPATH + " deleted.");
 	}
 
 	/**
@@ -701,17 +707,19 @@ public class EVMLiSA {
 		return smartContractsRead;
 	}
 
-	/**
-	 * Writes the given statistics to a file.
-	 *
-	 * @param stats The statistics to be written to the file.
-	 */
-	private void toFileStatistics(String stats) {
-		synchronized (STATISTICS_FULLPATH) {
+	private void toFile(String FILE_PATH, String stats) {
+		if (FILE_PATH == null || stats == null)
+			throw new NullPointerException("(void EVMLiSA.toFile) FILE_PATH or stats null");
+
+		synchronized (EVMLiSA.class) {
 			try {
-				File idea = new File(STATISTICS_FULLPATH);
+				File idea = new File(FILE_PATH);
 				if (!idea.exists()) {
 					FileWriter myWriter = new FileWriter(idea, true);
+
+					String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
+							+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Time lost to get Storage, Actual time, Notes \n";
+
 					myWriter.write(init + stats);
 					myWriter.close();
 
@@ -722,83 +730,7 @@ public class EVMLiSA {
 				}
 
 			} catch (IOException e) {
-				System.err.println("An error occurred. (toFileStatistics)");
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Writes the given statistics to a file.
-	 *
-	 * @param stats The statistics to be written to the file.
-	 */
-	private void toFileStatisticsWithZeroJumps(String stats) {
-		synchronized (STATISTICSZEROJUMP_FULLPATH) {
-			try {
-				File idea = new File(STATISTICSZEROJUMP_FULLPATH);
-				if (!idea.exists()) {
-					FileWriter myWriter = new FileWriter(idea, true);
-					myWriter.write(init + stats);
-					myWriter.close();
-
-				} else {
-					FileWriter myWriter = new FileWriter(idea, true);
-					myWriter.write(stats);
-					myWriter.close();
-				}
-
-			} catch (IOException e) {
-				System.err.println("An error occurred. (toFileStatisticsWithZeroJumps)");
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Writes the given failures to a file.
-	 *
-	 * @param stats The failures to be written to the file.
-	 */
-	private void toFileFailure(String stats) {
-		synchronized (FAILURE_FULLPATH) {
-			try {
-				File idea = new File(FAILURE_FULLPATH);
-				if (!idea.exists()) {
-					FileWriter myWriter = new FileWriter(idea, true);
-					myWriter.write(init + stats);
-					myWriter.close();
-
-				} else {
-					FileWriter myWriter = new FileWriter(idea, true);
-					myWriter.write(stats);
-					myWriter.close();
-				}
-
-			} catch (IOException e) {
-				System.err.println("An error occurred. (toFileFailure)");
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Writes the given message to a file.
-	 *
-	 * @param msg The logs to be written to the file.
-	 */
-	private void toFileLogs(String msg) {
-		synchronized (LOGS_FULLPATH) {
-			try {
-				File idea = new File(LOGS_FULLPATH);
-
-				FileWriter myWriter = new FileWriter(idea, true);
-				myWriter.write(msg);
-				myWriter.close();
-
-			} catch (IOException e) {
-				System.err.println("An error occurred. (toFileLogs)");
-				e.printStackTrace();
+				System.err.println("An error occurred in " + FILE_PATH);
 			}
 		}
 	}
@@ -876,9 +808,9 @@ public class EVMLiSA {
 			if (i % 5 == 0) {
 				try {
 					// I can do max 5 API request in 1 sec to Etherscan.io
-					Thread.sleep(1001);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					log.error("e: ", e);
 				}
 			}
 
@@ -886,7 +818,7 @@ public class EVMLiSA {
 			try {
 				Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + address));
 
-				// If the file does not exists, we will do an API request to
+				// If the file does not exist, we will do an API request to
 				// Etherscan
 				File file = new File(BYTECODE_FULLPATH);
 				if (!file.exists()) {
@@ -905,30 +837,28 @@ public class EVMLiSA {
 		System.out.printf("Downloaded %s smart contract \n", numberOfAPIEtherscanRequestOnSuccess);
 	}
 
-	public class Converter {
+	public static class Converter {
 		long kilo = 1024;
 		long mega = kilo * kilo;
 		long giga = mega * kilo;
 		long tera = giga * kilo;
 
 		public String getSize(long size) {
-			String s = "";
 			double kb = (double) size / kilo;
 			double mb = kb / kilo;
 			double gb = mb / kilo;
 			double tb = gb / kilo;
 			if (size < kilo) {
-				s = size + " Bytes";
-			} else if (size >= kilo && size < mega) {
-				s = String.format("%.2f", kb) + " KB";
-			} else if (size >= mega && size < giga) {
-				s = String.format("%.2f", mb) + " MB";
-			} else if (size >= giga && size < tera) {
-				s = String.format("%.2f", gb) + " GB";
-			} else if (size >= tera) {
-				s = String.format("%.2f", tb) + " TB";
+				return size + " Bytes";
+			} else if (size < mega) {
+				return String.format("%.2f", kb) + " KB";
+			} else if (size < giga) {
+				return String.format("%.2f", mb) + " MB";
+			} else if (size < tera) {
+				return String.format("%.2f", gb) + " GB";
+			} else {
+				return String.format("%.2f", tb) + " TB";
 			}
-			return s;
 		}
 	}
 
