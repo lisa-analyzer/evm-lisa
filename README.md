@@ -48,8 +48,16 @@ docker build -t evm-lisa:latest .
 
 Then you can run EVMLiSA with:
 ```
-docker run --rm -it -v $(pwd)/.env:/app/.env evm-lisa:latest -a <smart_contract_address> [options]
+docker run --rm -it \
+-v $(pwd)/.env:/app/.env \
+-v $(pwd)/execution:/app/execution \
+evm-lisa:latest \
+-a <smart_contract_address> [options]
 ```
+
+- `-v $(pwd)/.env:/app/.env`: mount the `.env` file.
+- `-v $(pwd)/execution:/app/execution`: share the results folder.
+
 > Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 
 ## Via Bash
@@ -111,10 +119,14 @@ Here is an example of how to run EVMLiSA. In this example, we will analyze a sma
 
 - Docker:
 ```bash
-docker run --rm -it -v $(pwd)/.env:/app/.env evm-lisa:latest 
--a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B 
---stack-size 64 
---stack-set-size 10 
+docker run --rm -it \
+-v $(pwd)/.env:/app/.env \
+-v $(pwd)/execution:/app/execution \
+evm-lisa:latest \
+-a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
+--stack-size 64 \
+--stack-set-size 10 \
+--dump-stats \
 --use-live-storage
 ```
 
