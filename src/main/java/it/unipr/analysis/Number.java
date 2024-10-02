@@ -1,26 +1,18 @@
 package it.unipr.analysis;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
 public class Number implements Comparable<Number> {
-	public static final BigInteger MAX_INT = BigInteger.valueOf(2).pow(31);
-	public static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(63);
 
 	static enum Type {
-		INT,
 		LONG,
 		BIGINTEGER
 	}
 
-	private int i = -1;
 	private long l = -1;
 	private BigInteger b;
-
-	public Number(int other) {
-		this.i = other;
-		this.b = null;
-	}
 
 	public Number(long other) {
 		this.l = other;
@@ -28,9 +20,7 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number(BigInteger other) {
-		if (other.compareTo(MAX_INT) < 0)
-			this.i = other.intValue();
-		else if (other.compareTo(MAX_LONG) < 0)
+		if (other.bitLength() <= 63)
 			this.l = other.longValue();
 		else
 			this.b = other;
@@ -39,13 +29,7 @@ public class Number implements Comparable<Number> {
 	public Type getType() {
 		if (b != null)
 			return Type.BIGINTEGER;
-		if (i != -1)
-			return Type.INT;
 		return Type.LONG;
-	}
-
-	public int getInt() {
-		return i;
 	}
 
 	public long getLong() {
@@ -57,20 +41,15 @@ public class Number implements Comparable<Number> {
 	}
 
 	public static BigInteger toBigInteger(Number other) {
-		BigInteger ot;
-		if (other.getType() == Type.INT)
-			ot = BigInteger.valueOf(other.getInt());
-		else if (other.getType() == Type.LONG)
-			ot = BigInteger.valueOf(other.getLong());
+		if (other.getType() == Type.LONG)
+			return BigInteger.valueOf(other.getLong());
 		else
-			ot = other.getBigInteger();
-
-		return ot;
+			return other.getBigInteger();
 	}
 
 	public Number add(Number other) {
-		if (this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number((long) i + other.getInt());
+		if (this.getType() == other.getType() && this.getType() == Type.LONG && this.getLong() > 0 && other.getLong() > 0 && this.getLong() > Long.MAX_VALUE - other.getLong()) 
+			return new Number(this.getLong() + other.getLong());
 
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
@@ -79,8 +58,6 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number subtract(Number other) {
-		if (this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number(i - other.getInt());
 		if (this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l - other.getLong());
 
@@ -91,9 +68,6 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number multiply(Number other) {
-		if (this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number((long) i * other.getInt());
-
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -101,8 +75,6 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number divide(Number other) {
-		if (this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number(i / other.getInt());
 		if (this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number(l / other.getLong());
 
@@ -113,6 +85,8 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number and(Number other) {
+		if (this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l & other.getLong());
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -120,6 +94,8 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number or(Number other) {
+		if (this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l | other.getLong());
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -127,6 +103,8 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number xor(Number other) {
+		if (this.getType() == other.getType() && other.getType() == Type.LONG)
+			return new Number(l ^ other.getLong());
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -134,15 +112,21 @@ public class Number implements Comparable<Number> {
 	}
 
 	public Number not() {
+		if (this.getType() == Type.LONG)
+			return new Number(~l);
 		BigInteger me = toBigInteger(this);
 
 		return new Number(me.not());
 	}
 
 	public byte[] toByteArray() {
-		BigInteger me = toBigInteger(this);
-
-		return me.toByteArray();
+		if (getType() == Type.LONG) {
+			ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+			buffer.putLong(getLong());
+			return buffer.array();
+		} else {
+			return getBigInteger().toByteArray();
+		}
 	}
 
 	public Number shiftRight(int other) {
@@ -158,9 +142,7 @@ public class Number implements Comparable<Number> {
 	}
 
 	public int intValue() {
-		if (getType() == Type.INT)
-			return i;
-		else if (getType() == Type.LONG)
+		if (getType() == Type.LONG)
 			return Long.valueOf(l).intValue();
 		else
 			return toBigInteger(this).intValue();
@@ -170,13 +152,13 @@ public class Number implements Comparable<Number> {
 	public String toString() {
 		if (b != null)
 			return b.toString();
-		if (i != -1)
-			return i + "";
 		return l + "";
 	}
 
 	@Override
 	public int compareTo(Number other) {
+		if (this.getType() == other.getType() && other.getType() == Type.LONG)
+			return Long.compare(this.getLong(), other.getLong());
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 
@@ -185,7 +167,10 @@ public class Number implements Comparable<Number> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(toBigInteger(this));
+		if (getType() == Type.LONG) 
+			return Long.hashCode(this.getLong());
+		else 
+			return Objects.hashCode(this.getBigInteger());
 	}
 
 	@Override
@@ -197,6 +182,8 @@ public class Number implements Comparable<Number> {
 		if (getClass() != obj.getClass())
 			return false;
 		Number other = (Number) obj;
+		if (this.getType() == other.getType() && this.getType() == Type.LONG)
+			return this.getLong() == other.getLong();
 		return Objects.equals(toBigInteger(this), toBigInteger(other));
 	}
 }
