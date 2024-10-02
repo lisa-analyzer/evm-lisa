@@ -1,14 +1,5 @@
 package it.unipr.checker;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -38,14 +29,21 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver
-implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
@@ -110,9 +108,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
 
 		if (fixpoint) {
 			this.unreachableJumps = new HashSet<>();
@@ -131,7 +129,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 						EVMAbstractState,
 						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+							MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -194,9 +192,9 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap,
+					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -218,7 +216,7 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				EVMAbstractState,
 				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -240,26 +238,33 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 				continue;
 			}
 
-
 			Set<Number> flattenedTopStack = valueState.getTop().stream()
 					.filter(t -> !t.isTop() && !t.isBottom())
 					.map(s -> s.elements)
-					.flatMap(Set::stream) 
+					.flatMap(Set::stream)
 					.collect(Collectors.toSet());
 
 			Set<Statement> filteredDests = this.jumpDestinations.stream()
 					.filter(pc -> {
 						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
 						int pcValue = pcLocation.getPc();
-						return flattenedTopStack.contains(new Number(pcValue));  // Check if the value is in the flattened set
+						return flattenedTopStack.contains(new Number(pcValue)); // Check
+																				// if
+																				// the
+																				// value
+																				// is
+																				// in
+																				// the
+																				// flattened
+																				// set
 					})
 					.collect(Collectors.toSet());
-						
+
 			// For each JUMPDEST, add the missing edge from this node to
 			// the JUMPDEST.
-			if (node instanceof Jump) 
+			if (node instanceof Jump)
 				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
-			else 
+			else
 				addEdgesToCFG(node, filteredDests, TrueEdge.class);
 		}
 
@@ -268,7 +273,8 @@ MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	private <T extends Edge> void addEdgesToCFG(Statement node, Set<Statement> filteredDests, Class<T> edgeClass) {
 		for (Statement jmp : filteredDests) {
-			Edge edge = edgeClass.equals(SequentialEdge.class) ? new SequentialEdge(node, jmp) : new TrueEdge(node, jmp);
+			Edge edge = edgeClass.equals(SequentialEdge.class) ? new SequentialEdge(node, jmp)
+					: new TrueEdge(node, jmp);
 			if (!this.cfgToAnalyze.containsEdge(edge)) {
 				this.cfgToAnalyze.addEdge(edge);
 				this.fixpoint = false;
