@@ -7,6 +7,11 @@ viene stampato a schermo.
 
 import os
 
+global pushed_jumps
+pushed_jumps = 0
+global orphan_jumps
+orphan_jumps = 0
+
 def find_previous_jump_line(file_path, jump_line_counter):
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -20,8 +25,6 @@ def find_previous_jump_line(file_path, jump_line_counter):
                 if previous_line.startswith('SSTORE'):
                     previous_line = lines[i - 3].strip()
                 """
-                if previous_line.startswith('AND'):
-                    print(f"{get_name(file_path)} - line: {i}")
                     
                 if previous_line.startswith('PUSH'):
                     previous_line = 'PUSH'
@@ -38,11 +41,20 @@ def find_previous_jump_line(file_path, jump_line_counter):
                 else:
                     jump_line_counter[previous_line] = 1
 
+                if previous_line == 'PUSH':
+                    global pushed_jumps
+                    pushed_jumps += 1
+                    # return True # pushed jump
+                else:
+                    global orphan_jumps
+                    orphan_jumps += 1
+                # return False # orphan jump
+
 def get_name(file_path):
     return os.path.splitext(os.path.basename(file_path))[0]
 
 if __name__ == "__main__":
-    directory_path = "../evm-testcases/benchmark"
+    directory_path = "../ground-truth-stats/test/benchmark"
     output_file = "results-opcodes-preceding-a-jump.txt"
 
     file_counter = 0
@@ -60,4 +72,7 @@ if __name__ == "__main__":
         print(f"Opcode precedenti a 'JUMP' o 'JUMPI' in {file_counter} bytecode esaminati:")
         for line, count in jump_line_counter.items():
             print(f"{line}: {count}")
-            output.write(line + '\n')
+            # output.write(line + '\n')
+
+        print(f"Pushed jumps: {pushed_jumps}")
+        print(f"Orphan jumps: {orphan_jumps}")
