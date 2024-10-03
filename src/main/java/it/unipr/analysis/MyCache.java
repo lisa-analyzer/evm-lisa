@@ -7,11 +7,11 @@ import org.apache.commons.lang3.tuple.Pair;
  * Singleton class implementing a cache with an LRU (Least Recently Used)
  * eviction policy. The cache uses a {@link LRUMap} to store key-value pairs
  * where the key is a {@link Pair} of {@link String} and {@link Number}, and the
- * value is a {@link KIntegerSet}.
+ * value is a {@link StackElement}.
  */
 public class MyCache {
 	private static MyCache _instance = null;
-	private LRUMap<Pair<String, Number>, KIntegerSet> _map;
+	private LRUMap<Pair<String, Number>, StackElement> _map;
 	private LRUMap<String, Long> _timeLostToGetStorage;
 
 	/**
@@ -34,7 +34,7 @@ public class MyCache {
 	 * a maximum size of 500.
 	 */
 	private MyCache() {
-		this._map = new LRUMap<Pair<String, Number>, KIntegerSet>(500);
+		this._map = new LRUMap<Pair<String, Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 	}
 
@@ -43,9 +43,9 @@ public class MyCache {
 	 *
 	 * @param key   the key, a {@link Pair} of {@link String} and
 	 *                  {@link Number}.
-	 * @param value the value, a {@link KIntegerSet}.
+	 * @param value the value, a {@link StackElement}.
 	 */
-	public void put(Pair<String, Number> key, KIntegerSet value) {
+	public void put(Pair<String, Number> key, StackElement value) {
 		synchronized (MyCache.class) {
 			_map.put(key, value);
 		}
@@ -59,7 +59,7 @@ public class MyCache {
 	 * @return the value associated with the key, or {@code null} if the key is
 	 *             not in the cache.
 	 */
-	public KIntegerSet get(Pair<String, Number> key) {
+	public StackElement get(Pair<String, Number> key) {
 		synchronized (MyCache.class) {
 			return _map.get(key);
 		}
