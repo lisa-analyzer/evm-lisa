@@ -1,8 +1,13 @@
 package it.unipr.cfg;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.KIntegerSet;
+import it.unipr.analysis.StackElement;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -19,9 +24,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.HashSet;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Jumpi opcode of the program to analyze.
@@ -70,7 +72,7 @@ public class Jumpi extends Statement {
 			for (AbstractStack st : valueState.getStacks()) {
 				AbstractStack result = st.clone();
 				result.pop();
-				KIntegerSet condition = result.pop();
+				StackElement condition = result.pop();
 				if (condition.isDefinitelyTrue())
 					trueStacks.add(result);
 				else if (condition.isDefinitelyFalse())

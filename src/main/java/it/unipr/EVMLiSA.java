@@ -572,7 +572,7 @@ public class EVMLiSA {
 			if (pushedJumps.contains(jumpNode))
 				continue;
 			boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-			Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+			Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 			if (topStackValuesPerJump == null || !reachableFrom)
 				continue;
 			else if (topStackValuesPerJump.contains(KIntegerSet.NUMERIC_TOP)) {
@@ -585,7 +585,7 @@ public class EVMLiSA {
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-				Set<KIntegerSet> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
 				if (pushedJumps.contains(jumpNode))
 					resolvedJumps++;

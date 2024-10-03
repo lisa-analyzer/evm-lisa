@@ -21,16 +21,16 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	private static int STACK_LIMIT = 32;
 	private static final AbstractStack TOP = new AbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, KIntegerSet.NUMERIC_TOP)));
+			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.NUMERIC_TOP)));
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
-	private final ArrayList<KIntegerSet> stack;
+	private final ArrayList<StackElement> stack;
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, KIntegerSet.BOTTOM));
+		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.BOTTOM));
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 *
 	 * @param stack the stack of values
 	 */
-	public AbstractStack(ArrayList<KIntegerSet> stack) {
+	public AbstractStack(ArrayList<StackElement> stack) {
 		this.stack = stack;
 	}
 
@@ -113,7 +113,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public boolean isTop() {
 		if (isBottom())
 			return false;
-		for (KIntegerSet element : this.stack)
+		for (StackElement element : this.stack)
 			if (!element.isTop())
 				return false;
 		return true;
@@ -152,11 +152,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Getter for the KIntegerSet at the top of the stack.
+	 * Getter for the StackElement at the top of the stack.
 	 *
-	 * @return the KIntegerSet at the top of the stack.
+	 * @return the StackElement at the top of the stack.
 	 */
-	public KIntegerSet getTop() {
+	public StackElement getTop() {
 		return this.stack.get(stack.size() - 1); // Get the last element
 	}
 
@@ -172,7 +172,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 *
 	 * @param target the element to be pushed onto the stack.
 	 */
-	public void push(KIntegerSet target) {
+	public void push(StackElement target) {
 		stack.remove(0);
 		stack.add(target);
 	}
@@ -182,12 +182,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 *
 	 * @return the element at the top of the stack.
 	 */
-	public KIntegerSet pop() {
-		KIntegerSet result = stack.remove(stack.size() - 1);
+	public StackElement pop() {
+		StackElement result = stack.remove(stack.size() - 1);
 		if (!stack.get(0).isTop())
-			stack.add(0, KIntegerSet.BOTTOM);
+			stack.add(0, StackElement.BOTTOM);
 		else
-			stack.add(0, KIntegerSet.NUMERIC_TOP);
+			stack.add(0, StackElement.NUMERIC_TOP);
 		return result;
 	}
 
@@ -198,7 +198,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public int size() {
 		int bottomCounter = 0;
-		for (KIntegerSet item : stack) {
+		for (StackElement item : stack) {
 			if (item.isBottom()) {
 				bottomCounter++;
 			}
@@ -206,20 +206,20 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return stack.size() - bottomCounter;
 	}
 
-	public List<KIntegerSet> getStack() {
+	public List<StackElement> getStack() {
 		return stack;
 	}
 
 	@Override
 	public AbstractStack lubAux(AbstractStack other) throws SemanticException {
-		ArrayList<KIntegerSet> result = new ArrayList<>(STACK_LIMIT);
+		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
 
-		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
-		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+		Iterator<StackElement> thisIterator = this.stack.iterator();
+		Iterator<StackElement> otherIterator = other.stack.iterator();
 
 		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			KIntegerSet thisElement = thisIterator.next();
-			KIntegerSet otherElement = otherIterator.next();
+			StackElement thisElement = thisIterator.next();
+			StackElement otherElement = otherIterator.next();
 			result.add(thisElement.lub(otherElement));
 		}
 
@@ -228,14 +228,14 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
-		ArrayList<KIntegerSet> result = new ArrayList<>(STACK_LIMIT);
+		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
 
-		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
-		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+		Iterator<StackElement> thisIterator = this.stack.iterator();
+		Iterator<StackElement> otherIterator = other.stack.iterator();
 
 		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			KIntegerSet thisElement = thisIterator.next();
-			KIntegerSet otherElement = otherIterator.next();
+			StackElement thisElement = thisIterator.next();
+			StackElement otherElement = otherIterator.next();
 			result.add(thisElement.widening(otherElement));
 		}
 
@@ -244,14 +244,14 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
-		ArrayList<KIntegerSet> result = new ArrayList<>(STACK_LIMIT);
+		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
 
-		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
-		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+		Iterator<StackElement> thisIterator = this.stack.iterator();
+		Iterator<StackElement> otherIterator = other.stack.iterator();
 
 		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			KIntegerSet thisElement = thisIterator.next();
-			KIntegerSet otherElement = otherIterator.next();
+			StackElement thisElement = thisIterator.next();
+			StackElement otherElement = otherIterator.next();
 			result.add(thisElement.glb(otherElement));
 		}
 
@@ -260,8 +260,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		Iterator<KIntegerSet> thisIterator = this.stack.iterator();
-		Iterator<KIntegerSet> otherIterator = other.stack.iterator();
+		Iterator<StackElement> thisIterator = this.stack.iterator();
+		Iterator<StackElement> otherIterator = other.stack.iterator();
 
 		while (thisIterator.hasNext() && otherIterator.hasNext()) {
 			if (!thisIterator.next().lessOrEqual(otherIterator.next())) {
@@ -272,11 +272,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return true;
 	}
 
-	public KIntegerSet getSecondElement() {
+	public StackElement getSecondElement() {
 		if (isBottom())
-			return KIntegerSet.BOTTOM;
+			return StackElement.BOTTOM;
 		else if (isTop())
-			return KIntegerSet.NUMERIC_TOP;
+			return StackElement.NUMERIC_TOP;
 		return this.stack.get(STACK_LIMIT - 2);
 	}
 

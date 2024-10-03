@@ -3,7 +3,7 @@ package it.unipr.checker;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.KIntegerSet;
+import it.unipr.analysis.StackElement;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
@@ -58,11 +58,6 @@ public class JumpSolver
 	private boolean fixpoint = true;
 
 	/**
-	 * The set of jump destinations.
-	 */
-	private Set<Statement> jumpDestinations;
-
-	/**
 	 * The set of unreachable jumps (i.e., their state is bottom)
 	 */
 	private Set<Statement> unreachableJumps;
@@ -76,7 +71,7 @@ public class JumpSolver
 	/**
 	 * Map of top stack values per jump
 	 */
-	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
+	private Map<Statement, Set<StackElement>> topStackValuesPerJump = new HashMap<>();
 
 	/**
 	 * Yields the computed CFG.
@@ -95,7 +90,7 @@ public class JumpSolver
 		return maybeUnsoundJumps;
 	}
 
-	public Set<KIntegerSet> getTopStackValuesPerJump(Statement node) {
+	public Set<StackElement> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
 	}
 
@@ -150,10 +145,10 @@ public class JumpSolver
 					else if (valueState.isTop())
 						this.maybeUnsoundJumps.add(node);
 					else {
-						Set<KIntegerSet> stacksTop = new HashSet<>();
+						Set<StackElement> stacksTop = new HashSet<>();
 						AbstractStackSet stacks = valueState.getStacks();
 						for (AbstractStack stack : stacks) {
-							KIntegerSet topStack = stack.getTop();
+							StackElement topStack = stack.getTop();
 							stacksTop.add(topStack);
 						}
 
@@ -199,10 +194,6 @@ public class JumpSolver
 
 		this.cfgToAnalyze = (EVMCFG) graph;
 
-		// We compute the set of jump destination, if not already computed
-		if (this.jumpDestinations == null)
-			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
-
 		// The method focuses only on JUMP and JUMPI statements
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
@@ -240,11 +231,10 @@ public class JumpSolver
 
 			Set<Number> flattenedTopStack = valueState.getTop().stream()
 					.filter(t -> !t.isTop() && !t.isBottom())
-					.map(s -> s.elements)
-					.flatMap(Set::stream)
+					.map(s -> s.getNumber())
 					.collect(Collectors.toSet());
 
-			Set<Statement> filteredDests = this.jumpDestinations.stream()
+			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
 					.filter(pc -> {
 						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
 						int pcValue = pcLocation.getPc();
@@ -259,7 +249,7 @@ public class JumpSolver
 																				// set
 					})
 					.collect(Collectors.toSet());
-
+			
 			// For each JUMPDEST, add the missing edge from this node to
 			// the JUMPDEST.
 			if (node instanceof Jump)
