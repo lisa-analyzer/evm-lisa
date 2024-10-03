@@ -1,16 +1,5 @@
 package it.unipr.analysis;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.frontend.EVMFrontend;
@@ -30,9 +19,18 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMAbstractState
-implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
+		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
@@ -420,8 +418,9 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
-						
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber()) || jmpDest.isTop())
+
+						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
+								|| jmpDest.isTop())
 							result.add(resultStack);
 
 					}
@@ -442,8 +441,9 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
-						
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber()) || jmpDest.isTop())
+
+						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
+								|| jmpDest.isTop())
 							result.add(resultStack);
 					}
 
@@ -1184,7 +1184,6 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						} else {
 							StackElement current_mu_i_lub = StackElement.BOTTOM;
 
-
 							Number thirtyTwo = new Number(32);
 							Number current_mu_i = offset.getNumber().add(thirtyTwo)
 									.divide(thirtyTwo);
@@ -1192,7 +1191,6 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							memoryResult = memory.putState(offset.getNumber(), value);
 
 							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
-
 
 							new_mu_i = current_mu_i_lub;
 						}
@@ -1226,7 +1224,8 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							Number current_mu_i = offset.getNumber().add(new Number(1))
 									.divide(new Number(32));
 
-							memoryResult = memory.putState(offset.getNumber(), value.mod(new StackElement(new Number(256))));
+							memoryResult = memory.putState(offset.getNumber(),
+									value.mod(new StackElement(new Number(256))));
 							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
 
 							new_mu_i = current_mu_i_lub;
@@ -1252,46 +1251,51 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						if (key.isTop() || key.isTopNotJumpdest())
 							valueToPush = StackElement.NUMERIC_TOP;
 						else {
-							//							for (Number k : key) {
+							// for (Number k : key) {
 							if (storage.getKeys().contains(key.getNumber()))
 								valueToPush = valueToPush.lub(storage.getState(key.getNumber()));
 							else {
-								//									if (USE_STORAGE_LIVE) {
-								//										StackElement valueCached = MyCache.getInstance()
-								//												.get(Pair.of(CONTRACT_ADDRESS, k));
+								// if (USE_STORAGE_LIVE) {
+								// StackElement valueCached =
+								// MyCache.getInstance()
+								// .get(Pair.of(CONTRACT_ADDRESS, k));
 								//
-								//										if (valueCached == null) {
-								//											long start = System.currentTimeMillis();
-								//											valueToPush = getStorageAt(k, CONTRACT_ADDRESS); // API
-								//											// request
-								//											long timeLostToGetStorage = System.currentTimeMillis() - start;
+								// if (valueCached == null) {
+								// long start = System.currentTimeMillis();
+								// valueToPush = getStorageAt(k,
+								// CONTRACT_ADDRESS); // API
+								// // request
+								// long timeLostToGetStorage =
+								// System.currentTimeMillis() - start;
 								//
-								//											try {
-								//												MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
-								//														timeLostToGetStorage);
-								//											} catch (NullPointerException e) {
-								//												System.err.println(
-								//														"Unable to update time lost to get storage because address is null");
-								//											}
+								// try {
+								// MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
+								// timeLostToGetStorage);
+								// } catch (NullPointerException e) {
+								// System.err.println(
+								// "Unable to update time lost to get storage
+								// because address is null");
+								// }
 								//
-								//											MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, k), valueToPush);
+								// MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS,
+								// k), valueToPush);
 								//
-								//											// System.err.printf("[(%s, %s), %s]
-								//											// API request \n",
-								//											// CONTRACT_ADDRESS, k,
-								//											// valueToPush);
-								//										} else {
-								//											valueToPush = valueCached;
+								// // System.err.printf("[(%s, %s), %s]
+								// // API request \n",
+								// // CONTRACT_ADDRESS, k,
+								// // valueToPush);
+								// } else {
+								// valueToPush = valueCached;
 								//
-								//											// System.err.printf("[(%s, %s), %s]
-								//											// cache in action \n",
-								//											// CONTRACT_ADDRESS, k,
-								//											// valueToPush);
-								//										}
-								//									} else
+								// // System.err.printf("[(%s, %s), %s]
+								// // cache in action \n",
+								// // CONTRACT_ADDRESS, k,
+								// // valueToPush);
+								// }
+								// } else
 								valueToPush = StackElement.NUMERIC_TOP;
 							}
-							//							}
+							// }
 						}
 
 						resultStack.push(valueToPush);
@@ -1924,12 +1928,12 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							continue;
 						AbstractStack resultStack = stack.clone();
 						StackElement gas = resultStack.pop();
-						StackElement to  = resultStack.pop();
+						StackElement to = resultStack.pop();
 						StackElement value = resultStack.pop();
-						StackElement inOffset  = resultStack.pop();
-						StackElement inLength  = resultStack.pop();
-						StackElement outOffset  = resultStack.pop();
-						StackElement outLength  = resultStack.pop();
+						StackElement inOffset = resultStack.pop();
+						StackElement inLength = resultStack.pop();
+						StackElement outOffset = resultStack.pop();
+						StackElement outLength = resultStack.pop();
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1948,12 +1952,12 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							continue;
 						AbstractStack resultStack = stack.clone();
 						StackElement gas = resultStack.pop();
-						StackElement to  = resultStack.pop();
+						StackElement to = resultStack.pop();
 						StackElement value = resultStack.pop();
-						StackElement inOffset  = resultStack.pop();
-						StackElement inLength  = resultStack.pop();
-						StackElement outOffset  = resultStack.pop();
-						StackElement outLength  = resultStack.pop();
+						StackElement inOffset = resultStack.pop();
+						StackElement inLength = resultStack.pop();
+						StackElement outOffset = resultStack.pop();
+						StackElement outLength = resultStack.pop();
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1990,11 +1994,11 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							continue;
 						AbstractStack resultStack = stack.clone();
 						StackElement gas = resultStack.pop();
-						StackElement to  = resultStack.pop();
-						StackElement inOffset  = resultStack.pop();
-						StackElement inLength  = resultStack.pop();
-						StackElement outOffset  = resultStack.pop();
-						StackElement outLength  = resultStack.pop();
+						StackElement to = resultStack.pop();
+						StackElement inOffset = resultStack.pop();
+						StackElement inLength = resultStack.pop();
+						StackElement outOffset = resultStack.pop();
+						StackElement outLength = resultStack.pop();
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -2013,11 +2017,11 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 							continue;
 						AbstractStack resultStack = stack.clone();
 						StackElement gas = resultStack.pop();
-						StackElement to  = resultStack.pop();
-						StackElement inOffset  = resultStack.pop();
-						StackElement inLength  = resultStack.pop();
-						StackElement outOffset  = resultStack.pop();
-						StackElement outLength  = resultStack.pop();
+						StackElement to = resultStack.pop();
+						StackElement inOffset = resultStack.pop();
+						StackElement inLength = resultStack.pop();
+						StackElement outOffset = resultStack.pop();
+						StackElement outLength = resultStack.pop();
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -2184,9 +2188,9 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-								.getValue());
+								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+												.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
@@ -2240,7 +2244,7 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 		return new StringRepresentation(
 				"{ stacks: " + stacks + ", memory: " + memory + ", mu_i: " + mu_i + ", storage: " + storage
-				+ " }");
+						+ " }");
 	}
 
 	@Override
@@ -2397,9 +2401,9 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 	 *                    a hexadecimal string.
 	 * @param address the Ethereum contract address as a String.
 	 * 
-	 * @return a {@link StackElement} containing the storage value if the request
-	 *             is successful, or {@link StackElement#NUMERIC_TOP} if an error
-	 *             occurs.
+	 * @return a {@link StackElement} containing the storage value if the
+	 *             request is successful, or {@link StackElement#NUMERIC_TOP} if
+	 *             an error occurs.
 	 * 
 	 * @throws IOException          if an I/O error occurs while making the API
 	 *                                  request.

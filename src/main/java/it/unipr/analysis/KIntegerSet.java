@@ -480,13 +480,13 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 
 		KIntegerSet r = KIntegerSet.BOTTOM;
 
-		for (Number i : this.elements) {
-			KIntegerSet state = memory.getState(i);
-			if (state.isBottom())
-				r = r.lub(KIntegerSet.BOTTOM);
-			else
-				r = r.lub(state);
-		}
+//		for (Number i : this.elements) {
+//			KIntegerSet state = memory.getState(i);
+//			if (state.isBottom())
+//				r = r.lub(KIntegerSet.BOTTOM);
+//			else
+//				r = r.lub(state);
+//		}
 		return r;
 	}
 

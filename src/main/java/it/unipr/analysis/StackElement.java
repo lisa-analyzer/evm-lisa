@@ -1,11 +1,10 @@
 package it.unipr.analysis;
 
-import java.math.BigInteger;
-import java.util.Objects;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
+import java.math.BigInteger;
+import java.util.Objects;
 
 public class StackElement implements BaseLattice<StackElement> {
 	private static final Number ZERO_INT = new Number(0);
@@ -23,15 +22,14 @@ public class StackElement implements BaseLattice<StackElement> {
 	private final Number n;
 	private final boolean isTop, isBottom;
 
-
 	public Number getNumber() {
 		return n;
 	}
-	
+
 	public StackElement() {
 		this(null, true, false);
 	}
-	
+
 	public StackElement(boolean isTop, boolean isBottom) {
 		this(null, isTop, isBottom);
 	}
@@ -59,12 +57,11 @@ public class StackElement implements BaseLattice<StackElement> {
 		return NUMERIC_TOP;
 	}
 
-	
 	@Override
 	public boolean isTop() {
 		return isTop;
 	}
-	
+
 	@Override
 	public boolean isBottom() {
 		return isBottom;
@@ -80,7 +77,7 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (isTopNotJumpdest())
 			if (other.isTopNotJumpdest())
 				return true;
-			else 
+			else
 				return false;
 		else if (other.isTopNotJumpdest())
 			return true;
@@ -93,10 +90,10 @@ public class StackElement implements BaseLattice<StackElement> {
 			return this;
 		else if (other.isTopNotJumpdest())
 			return other;
-				
+
 		return top();
 	}
-	
+
 	@Override
 	public final String toString() {
 		if (isTop())
@@ -104,7 +101,7 @@ public class StackElement implements BaseLattice<StackElement> {
 
 		if (isTopNotJumpdest())
 			return "#TOPNJD#";
-		
+
 		if (isBottom())
 			return Lattice.BOTTOM_STRING;
 
@@ -157,7 +154,6 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (sub.compareTo(ZERO_INT) < 0)
 			sub = sub.add(MAX);
 
-
 		return new StackElement(sub);
 	}
 
@@ -176,7 +172,6 @@ public class StackElement implements BaseLattice<StackElement> {
 			mul = mul.add(MAX);
 		if (mul.compareTo(MAX) > 0)
 			mul = mul.subtract(MAX);
-
 
 		return new StackElement(mul);
 	}
@@ -244,7 +239,8 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (other.n.equals(ZERO_INT))
 			return new StackElement(ZERO_INT);
 		else
-			return new StackElement(this.n.multiply(that.n).subtract(other.n.multiply(this.n.multiply(that.n).divide(other.n))));
+			return new StackElement(
+					this.n.multiply(that.n).subtract(other.n.multiply(this.n.multiply(that.n).divide(other.n))));
 	}
 
 	public StackElement exp(StackElement other) {
@@ -256,7 +252,6 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-
 
 		Number r = this.n;
 
@@ -614,7 +609,6 @@ public class StackElement implements BaseLattice<StackElement> {
 		return Objects.hash(isBottom, isTop, n);
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -630,7 +624,8 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (isTopNotJumpdest() && ((StackElement) obj).isTopNotJumpdest())
 			return true;
 		if (!isBottom() && !isTopNumeric() && !isTopNotJumpdest() &&
-				!((StackElement) obj).isBottom() && !((StackElement) obj).isTopNumeric() && !((StackElement) obj).isTopNotJumpdest())
+				!((StackElement) obj).isBottom() && !((StackElement) obj).isTopNumeric()
+				&& !((StackElement) obj).isTopNotJumpdest())
 			return this.n.equals(((StackElement) obj).n);
 		return false;
 	}
