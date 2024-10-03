@@ -3,8 +3,8 @@ package it.unipr.checker;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.StackElement;
 import it.unipr.analysis.Number;
+import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -249,7 +249,7 @@ public class JumpSolver
 																				// set
 					})
 					.collect(Collectors.toSet());
-			
+
 			// For each JUMPDEST, add the missing edge from this node to
 			// the JUMPDEST.
 			if (node instanceof Jump)

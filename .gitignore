@@ -10,6 +10,7 @@
 # Ignore output directories that contain generated results
 evm-outputs/
 test-ground-truth-stats/
+ground-truth-stats/test/benchmark/*/report.json
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/
