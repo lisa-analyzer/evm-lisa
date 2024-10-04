@@ -149,7 +149,7 @@ public class EVMBytecodeGroundTruth {
 		conf.serializeInputs = false;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.jsonOutput = true;
+		conf.jsonOutput = false;
 		conf.workdir = BYTECODE_DIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
