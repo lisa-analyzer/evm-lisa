@@ -2134,8 +2134,7 @@ public class EVMAbstractState
 	@Override
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
 			throws SemanticException {
-		// Ensure BOTTOM and TOP propagation
-
+		// Ensures BOTTOM and TOP propagation
 		if (this.isBottom() || this.isTop())
 			return this;
 
@@ -2246,7 +2245,7 @@ public class EVMAbstractState
 	}
 
 	/**
-	 * Helper method to convert a memory word to a BigInteger
+	 * Helper method to convert a memory word to a BigInteger.
 	 * 
 	 * @param expression the memory word to convert
 	 * 
@@ -2365,9 +2364,8 @@ public class EVMAbstractState
 	 *                                      {@code null}.
 	 */
 	public static void printByte(byte[] bytes) {
-		for (byte b : bytes) {
+		for (byte b : bytes) 
 			System.out.printf("%02X ", b);
-		}
 		System.out.println();
 	}
 

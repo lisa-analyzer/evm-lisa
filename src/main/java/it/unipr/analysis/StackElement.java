@@ -22,19 +22,15 @@ public class StackElement implements BaseLattice<StackElement> {
 	private final Number n;
 	private final boolean isTop, isBottom;
 
-	public Number getNumber() {
-		return n;
-	}
-
 	public StackElement() {
 		this(null, true, false);
 	}
 
-	public StackElement(boolean isTop, boolean isBottom) {
+	private StackElement(boolean isTop, boolean isBottom) {
 		this(null, isTop, isBottom);
 	}
 
-	public StackElement(Number n, boolean isTop, boolean isBottom) {
+	private StackElement(Number n, boolean isTop, boolean isBottom) {
 		this.n = n;
 		this.isTop = isTop;
 		this.isBottom = isBottom;
@@ -127,6 +123,10 @@ public class StackElement implements BaseLattice<StackElement> {
 		return NOT_JUMPDEST_TOP;
 	}
 
+	public Number getNumber() {
+		return n;
+	}
+	
 	public StackElement sum(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();

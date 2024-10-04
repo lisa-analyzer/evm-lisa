@@ -136,10 +136,19 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+
+		Option dumpAnalysisReport = Option.builder("r")
+				.longOpt("dump-report")
+				.desc("dump analysis report")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(dumpStatisticsOption);
 		options.addOption(dumpCFGOption);
 		options.addOption(downloadBytecodeOption);
 		options.addOption(useStorageLiveOption);
+		options.addOption(dumpAnalysisReport);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -166,6 +175,7 @@ public class EVMLiSA {
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
+		boolean dumpReport = cmd.hasOption("dump-report");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
@@ -253,7 +263,7 @@ public class EVMLiSA {
 		conf.serializeInputs = dumpCFG;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.jsonOutput = false;
+		conf.jsonOutput = dumpReport;
 		conf.workdir = outputDir + "/" + addressSC;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
@@ -342,7 +352,7 @@ public class EVMLiSA {
 		conf.serializeInputs = false;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.jsonOutput = true;
+		conf.jsonOutput = false;
 		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
