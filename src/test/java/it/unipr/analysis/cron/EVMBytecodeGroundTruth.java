@@ -1,11 +1,20 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.EVMLiSA;
+import it.unipr.analysis.*;
+import it.unipr.checker.JumpSolver;
+import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.AnalysisSetupException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.program.Program;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -26,37 +35,40 @@ public class EVMBytecodeGroundTruth {
 		String GROUND_TRUTH_FILE_PATH = "ground-truth-stats/ground-truth-data.csv";
 		String RESULT_EXEC_DIR_PATH = "ground-truth-stats/test";
 		String RESULT_EXEC_FILE_PATH = RESULT_EXEC_DIR_PATH + "/statistics.csv";
+		String SMARTCONTRACTS_FULLPATH = "benchmark/50-ground-truth.txt";
+		AbstractStack.setStackLimit(32);
+		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
 
 		if (new File(RESULT_EXEC_FILE_PATH).delete())
 			LOG.warn("File deleted {}\n", RESULT_EXEC_FILE_PATH);
-		if (new File(RESULT_EXEC_DIR_PATH + "/logs.txt").delete())
-			LOG.warn("File deleted {}\n", RESULT_EXEC_DIR_PATH + "/logs.txt");
 
-		// run new benchmark
-		String[] args = new String[11];
-		args[0] = "--benchmark";
-		args[1] = "benchmark/50-ground-truth.txt";
-		args[2] = "--stack-size";
-		args[3] = "32";
-		args[4] = "--stack-set-size";
-		args[5] = "8";
-		args[6] = "--cores";
-		args[7] = "1";
-		args[8] = "--output";
-		args[9] = RESULT_EXEC_DIR_PATH;
-		args[10] = "--dump-stats";
-		new EVMLiSA().go(args);
-		// end new benchmark test
+		List<String> smartContracts = EVMLiSA.readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
+
+		for (String address : smartContracts) {
+			MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
+
+			if (myStats.jumpSize() != 0)
+				EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
+
+			Runtime.getRuntime().gc(); // Force Java Garbage Collection
+		}
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
 		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
+		long smartContractGroundTruthListTime = 0;
+		long smartContractListTime = 0;
 
 		assert smartContractList.size() == smartContractGroundTruthList.size();
 
 		for (SmartContractData truthSC : smartContractGroundTruthList) {
 			for (SmartContractData newSC : smartContractList) {
+
 				if (truthSC.getAddress().equals(newSC.getAddress())) {
+
+					smartContractGroundTruthListTime += truthSC.getTimeMillis();
+					smartContractListTime += newSC.getTimeMillis();
+
 					if (!truthSC.equals(newSC)) {
 						if (!changed)
 							System.err.println("\n*******************************************\n");
@@ -96,8 +108,67 @@ public class EVMBytecodeGroundTruth {
 				}
 			}
 		}
-
 		assert !changed;
+
+		if (smartContractGroundTruthListTime != 0) {
+			float percentageChange = ((smartContractListTime - smartContractGroundTruthListTime)
+					/ (float) smartContractGroundTruthListTime) * 100;
+
+			System.err.println("\n");
+			System.err.println("GroundTruth Time: " + (smartContractGroundTruthListTime / (float) 1000) + " seconds");
+			System.err.println("New Execution Time: " + (smartContractListTime / (float) 1000) + " seconds");
+
+			if (percentageChange > 0) {
+				System.err.println("Time lost: " + percentageChange + "%");
+			} else {
+				System.err.println("Time gained: " + Math.abs(percentageChange) + "%");
+			}
+		} else {
+			System.err.println("Cannot calculate percentage change, ground truth time is zero.");
+		}
+	}
+
+	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
+		String BYTECODE_DIR = RESULT_EXEC_DIR_PATH + "/benchmark/" + CONTRACT_ADDR;
+		String BYTECODE_FULLPATH = BYTECODE_DIR + "/" + CONTRACT_ADDR + ".sol";
+
+		// Directory setup and bytecode retrieval
+		Files.createDirectories(Paths.get(RESULT_EXEC_DIR_PATH + "/" + "benchmark/" + CONTRACT_ADDR));
+
+		// If the file does not exist, we will do an API request to Etherscan
+		File file = new File(BYTECODE_FULLPATH);
+		if (!file.exists())
+			EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
+
+		// Configuration and test run
+		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+
+		long start = System.currentTimeMillis();
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeInputs = false;
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.jsonOutput = true;
+		conf.workdir = BYTECODE_DIR;
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		// Print the results
+		long finish = System.currentTimeMillis();
+
+		return EVMLiSA.dumpStatistics(checker)
+				.address(CONTRACT_ADDR)
+				.time(finish - start)
+				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
+				.build();
 	}
 
 	/**

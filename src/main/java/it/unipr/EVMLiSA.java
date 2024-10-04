@@ -372,7 +372,7 @@ public class EVMLiSA {
 	private void runBenchmark() throws Exception {
 		Object guardia = new Object();
 
-		List<String> smartContracts = readSmartContractsFromFile();
+		List<String> smartContracts = readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 		List<String> smartContractsTerminatedSuccesfully = new ArrayList<>();
 		List<String> smartContractsFailed = new ArrayList<>();
 
@@ -686,7 +686,7 @@ public class EVMLiSA {
 	 * 
 	 * @throws Exception If an error occurs while reading the file.
 	 */
-	public ArrayList<String> readSmartContractsFromFile() throws Exception {
+	public static ArrayList<String> readSmartContractsFromFile(String SMARTCONTRACTS_FULLPATH) throws Exception {
 		ArrayList<String> smartContractsRead = new ArrayList<String>();
 
 		try {
@@ -707,7 +707,7 @@ public class EVMLiSA {
 		return smartContractsRead;
 	}
 
-	private void toFile(String FILE_PATH, String stats) {
+	public static void toFile(String FILE_PATH, String stats) {
 		if (FILE_PATH == null || stats == null)
 			throw new NullPointerException("(void EVMLiSA.toFile) FILE_PATH or stats null");
 
@@ -797,7 +797,7 @@ public class EVMLiSA {
 	 * @throws Exception if an error occurs during the process.
 	 */
 	private void saveSmartContractsFromEtherscan() throws Exception {
-		List<String> smartContracts = readSmartContractsFromFile();
+		List<String> smartContracts = readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 
 		for (int i = 0; i < smartContracts.size(); i++) {
 			String address = smartContracts.get(i);
