@@ -126,7 +126,7 @@ public class StackElement implements BaseLattice<StackElement> {
 	public Number getNumber() {
 		return n;
 	}
-	
+
 	public StackElement sum(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();

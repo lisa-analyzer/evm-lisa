@@ -136,7 +136,6 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-
 		Option dumpAnalysisReport = Option.builder("r")
 				.longOpt("dump-report")
 				.desc("dump analysis report")

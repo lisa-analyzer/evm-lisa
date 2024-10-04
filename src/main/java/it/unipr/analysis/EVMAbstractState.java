@@ -2364,7 +2364,7 @@ public class EVMAbstractState
 	 *                                      {@code null}.
 	 */
 	public static void printByte(byte[] bytes) {
-		for (byte b : bytes) 
+		for (byte b : bytes)
 			System.out.printf("%02X ", b);
 		System.out.println();
 	}
