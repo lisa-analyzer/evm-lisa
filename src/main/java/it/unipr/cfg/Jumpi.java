@@ -82,8 +82,8 @@ public class Jumpi extends Statement {
 			}
 		}
 
-		Constant dummy = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
+		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
+		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
 				JumpiOperator.INSTANCE, getLocation()), this);
 	}
 }

@@ -1,6 +1,7 @@
 package it.unipr.cfg.push;
 
 import it.unipr.analysis.operator.Push0Operator;
+import it.unipr.cfg.DummyConstant;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -13,7 +14,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
@@ -55,8 +55,10 @@ public class Push0 extends Statement {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		Constant dummy = new Constant(Untyped.INSTANCE, 1, getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
-				Push0Operator.INSTANCE, getLocation()), this);
+
+		return entryState.smallStepSemantics(
+				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
+						Push0Operator.INSTANCE, getLocation()),
+				this);
 	}
 }

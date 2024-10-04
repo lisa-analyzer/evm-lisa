@@ -55,8 +55,8 @@ public class Jump extends Statement {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		Constant dummy = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
+		Constant c = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
+		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
 				JumpOperator.INSTANCE, getLocation()), this);
 	}
 }

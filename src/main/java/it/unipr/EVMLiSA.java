@@ -1,6 +1,11 @@
 package it.unipr;
 
-import it.unipr.analysis.*;
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.MyCache;
+import it.unipr.analysis.MyLogger;
+import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;

@@ -11,7 +11,6 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -42,9 +41,10 @@ public class Log4 extends Log {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		// TODO too coarse
-		Constant dummy = new Constant(Untyped.INSTANCE, 1, getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
-				Log4Operator.INSTANCE, getLocation()), this);
+
+		return entryState.smallStepSemantics(
+				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
+						Log4Operator.INSTANCE, getLocation()),
+				this);
 	}
 }
