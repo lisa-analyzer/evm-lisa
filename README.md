@@ -43,6 +43,7 @@ Once you have set up the environment variable, you can run EVMLiSA via Docker or
 ## Via Docker
 Build the container:
 ```
+mkdir -p execution/docker \
 docker build -t evm-lisa:latest .
 ```
 
@@ -50,13 +51,13 @@ Then you can run EVMLiSA with:
 ```
 docker run --rm -it \
 -v $(pwd)/.env:/app/.env \
--v $(pwd)/execution:/app/execution \
+-v $(pwd)/execution/docker:/app/execution/results \
 evm-lisa:latest \
 -a <smart_contract_address> [options]
 ```
 
 - `-v $(pwd)/.env:/app/.env`: mount the `.env` file.
-- `-v $(pwd)/execution:/app/execution`: share the results folder.
+- `-v $(pwd)/execution/docker:/app/execution/results`: share the results' folder.
 
 > Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 
@@ -78,7 +79,8 @@ unzip build/distributions/evm-lisa.zip -d execution
 
 Then you can run EVMLiSA with:
 ```bash
-./execution/evm-lisa/bin/evm-lisa -a <smart_contract_address> [options]
+./execution/evm-lisa/bin/evm-lisa \
+-a <smart_contract_address> [options]
 ```
 > Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
 
@@ -110,10 +112,11 @@ Here is an example of how to run EVMLiSA. In this example, we will analyze a sma
 
 - Bash:
 ```bash
-./execution/evm-lisa/bin/evm-lisa 
--a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B 
---stack-size 64 
---stack-set-size 10 
+./execution/evm-lisa/bin/evm-lisa \
+-a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
+--stack-size 64 \
+--stack-set-size 10 \
+--dump-stats \
 --use-live-storage
 ```
 
@@ -121,7 +124,7 @@ Here is an example of how to run EVMLiSA. In this example, we will analyze a sma
 ```bash
 docker run --rm -it \
 -v $(pwd)/.env:/app/.env \
--v $(pwd)/execution:/app/execution \
+-v $(pwd)/execution/docker:/app/execution/results \
 evm-lisa:latest \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
@@ -150,3 +153,10 @@ Maybe unsound jumps: 0
 - _Unsound_: the jump node is reached at least with a stack with an unknown numerical value that may correspond to a
 valid jump destination as the top element;
 - _Maybe unsound_: the stack set exceeded the maximal stack size.
+
+---
+
+## Contributors
+<a href="https://github.com/lisa-analyzer/evm-lisa/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lisa-analyzer/evm-lisa" />
+</a>
