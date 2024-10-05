@@ -43,7 +43,7 @@ Once you have set up the environment variable, you can run EVMLiSA via Docker or
 ## Via Docker
 Build the container:
 ```
-mkdir -p execution/docker \
+mkdir -p execution/docker &&
 docker build -t evm-lisa:latest .
 ```
 
