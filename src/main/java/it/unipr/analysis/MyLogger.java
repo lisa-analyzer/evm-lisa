@@ -1,5 +1,7 @@
 package it.unipr.analysis;
 
+import org.json.JSONObject;
+
 /**
  * Represents a logger object for recording statistical data related to Ethereum
  * smart contracts.
@@ -22,6 +24,7 @@ public class MyLogger {
 	private long actualTime;
 	private String notes;
 	private String currentThread;
+	private JSONObject json;
 
 	private MyLogger() {
 		this.address = null;
@@ -39,13 +42,14 @@ public class MyLogger {
 		this.actualTime = 0;
 		this.notes = "";
 		this.currentThread = null;
+		this.json = new JSONObject();
 	}
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
 			int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent,
 			long time, long timeLostToGetStorage,
-			String notes) {
+			JSONObject json, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
@@ -71,6 +75,20 @@ public class MyLogger {
 		this.timeLostToGetStorage = timeLostToGetStorage;
 		this.actualTime = time - timeLostToGetStorage;
 		this.currentThread = Thread.currentThread().getName();
+
+		this.json = json;
+		this.json.put("opcodes", this.opcodes);
+		this.json.put("jumps", this.jumps);
+		this.json.put("resolved-jumps", this.totalResolvedJumps);
+		this.json.put("definitely-unreachable-jumps", this.definitelyUnreachableJumps);
+		this.json.put("maybe-unreachable-jumps", this.maybeUnreachableJumps);
+		this.json.put("unsound-jumps", this.unsoundJumps);
+		this.json.put("maybe-unsound-jumps", this.maybeUnsoundJumps);
+		this.json.put("solved-jumps-percent", this.solvedJumpsPercent);
+		this.json.put("time", this.time);
+		this.json.put("time-lost-to-get-storage", this.timeLostToGetStorage);
+		this.json.put("actual-time", this.actualTime);
+		this.json.put("current-thread", this.currentThread);
 	}
 
 	public static MyLogger newLogger() {
@@ -142,11 +160,16 @@ public class MyLogger {
 		return this;
 	}
 
+	public MyLogger buildJson(JSONObject json) {
+		this.json = json;
+		return this;
+	}
+
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps,
 				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent,
-				time, timeLostToGetStorage, notes);
+				time, timeLostToGetStorage, json, notes);
 	}
 
 	public int jumpSize() {
@@ -168,7 +191,6 @@ public class MyLogger {
 				time + divider +
 				timeLostToGetStorage + divider +
 				actualTime + divider +
-//				currentThread + divider +
-				notes + " \n";
+				json.toString() + "\n";
 	}
 }

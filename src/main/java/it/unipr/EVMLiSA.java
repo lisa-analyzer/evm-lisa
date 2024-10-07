@@ -46,6 +46,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
@@ -161,7 +162,7 @@ public class EVMLiSA {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 			formatter.printHelp("help", options);
 
 			System.exit(1);
@@ -222,12 +223,28 @@ public class EVMLiSA {
 		if (useStorageLive)
 			EVMAbstractState.setUseStorageLive();
 
+		// Creating json output notes
+		JSONObject jsonOptions = new JSONObject();
+		jsonOptions.put("address", addressSC);
+		jsonOptions.put("dump-CFG", dumpCFG);
+		jsonOptions.put("dump-analysis", dumpAnalysis);
+		jsonOptions.put("dump-statistics", dumpStatistics);
+		jsonOptions.put("download-bytecode", downloadBytecode);
+		jsonOptions.put("use-storage-live", useStorageLive);
+		jsonOptions.put("filepath", filepath);
+		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
+		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
+		jsonOptions.put("benchmark", benchmark);
+		jsonOptions.put("cores", CORES);
+		jsonOptions.put("dump-report", dumpReport);
+		jsonOptions.put("output-directory", OUTPUT_DIR);
+
 		// Run benchmark case
 		if (benchmark != null) {
 			Files.createDirectories(Paths.get(OUTPUT_DIR));
 			SMARTCONTRACTS_FULLPATH = benchmark;
 			try {
-				runBenchmark();
+				runBenchmark(jsonOptions);
 			} catch (FileNotFoundException e) {
 				System.err.println("File " + benchmark + " not found.");
 			}
@@ -244,6 +261,7 @@ public class EVMLiSA {
 		// Single analysis case
 		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
+		jsonOptions.put("output-directory", OUTPUT_DIR);
 
 		if (outputDir == null)
 			outputDir = OUTPUT_DIR + "/" + addressSC + "_REPORT";
@@ -294,6 +312,7 @@ public class EVMLiSA {
 					.address(addressSC)
 					.time(finish - start)
 					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
+					.buildJson(jsonOptions)
 					.build()
 					.toString();
 
@@ -310,6 +329,7 @@ public class EVMLiSA {
 					.notes("failure: " + e + " - details: " + e.getMessage())
 					.time(finish - start)
 					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
+					.buildJson(jsonOptions)
 					.build().toString();
 
 			System.err.println(msg);
@@ -321,7 +341,7 @@ public class EVMLiSA {
 		}
 	}
 
-	private MyLogger newAnalysis(String CONTRACT_ADDR) throws Exception {
+	private MyLogger newAnalysis(String CONTRACT_ADDR, JSONObject jsonOptions) throws Exception {
 
 		String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
 				+ ".sol";
@@ -375,6 +395,7 @@ public class EVMLiSA {
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
 				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
+				.buildJson(jsonOptions)
 				.build();
 	}
 
@@ -383,7 +404,7 @@ public class EVMLiSA {
 	 *
 	 * @throws Exception if an error occurs during the benchmark execution.
 	 */
-	private void runBenchmark() throws Exception {
+	private void runBenchmark(JSONObject jsonOptions) throws Exception {
 		Object guardia = new Object();
 
 		List<String> smartContracts = readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
@@ -419,7 +440,7 @@ public class EVMLiSA {
 					Runnable runnable = () -> {
 						try {
 
-							MyLogger myStats = newAnalysis(address);
+							MyLogger myStats = newAnalysis(address, jsonOptions);
 
 							synchronized (mutex) {
 								analysesTerminated++;
@@ -645,9 +666,7 @@ public class EVMLiSA {
 				.definitelyUnreachableJumps(definitelyUnreachable)
 				.maybeUnreachableJumps(maybeUnreachable)
 				.unsoundJumps(unsoundJumps)
-				.maybeUnsoundJumps(maybeUnsoundJumps)
-				.notes("ss: " + AbstractStack.getStackLimit() + " sss: "
-						+ AbstractStackSet.getStackSetLimit());
+				.maybeUnsoundJumps(maybeUnsoundJumps);
 	}
 
 	/**
