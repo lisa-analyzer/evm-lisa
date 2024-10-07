@@ -133,6 +133,8 @@ evm-lisa:latest \
 --use-live-storage
 ```
 
+> Use `docker run -a stderr` to dump only the json report as standard output.
+
 The expected output is as follows:
 ```yaml
 ##############
