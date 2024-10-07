@@ -162,7 +162,7 @@ public class EVMLiSA {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			System.err.println(e.getMessage());
+			log.error(e.getMessage());
 			formatter.printHelp("help", options);
 
 			System.exit(1);
@@ -205,7 +205,7 @@ public class EVMLiSA {
 				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
 
 		} catch (NumberFormatException e) {
-			System.out.println("Size must be an integer");
+			log.error("Size must be an integer");
 			formatter.printHelp("help", options);
 
 			System.exit(1);
@@ -246,7 +246,7 @@ public class EVMLiSA {
 			try {
 				runBenchmark(jsonOptions);
 			} catch (FileNotFoundException e) {
-				System.err.println("File " + benchmark + " not found.");
+				log.error("File " + benchmark + " not found.");
 			}
 			return;
 		}
@@ -308,18 +308,19 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			String msg = EVMLiSA.dumpStatistics(checker)
-					.address(addressSC)
-					.time(finish - start)
-					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
-					.buildJson(jsonOptions)
-					.build()
-					.toString();
+			MyLogger result = EVMLiSA.dumpStatistics(checker)
+				.address(addressSC)
+				.time(finish - start)
+				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
+				.buildJson(jsonOptions)
+				.build();
 
 			if (dumpStatistics) {
-				toFile(STATISTICS_FULLPATH, msg);
-				System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
+				toFile(STATISTICS_FULLPATH, result.toString());
+				log.info("Statistics successfully written in " + STATISTICS_FULLPATH);
 			}
+
+			System.err.println(result.getJson());
 
 		} catch (Throwable e) {
 			finish = System.currentTimeMillis();
@@ -332,11 +333,11 @@ public class EVMLiSA {
 					.buildJson(jsonOptions)
 					.build().toString();
 
-			System.err.println(msg);
+			log.error(msg);
 
 			if (dumpStatistics) {
 				toFile(FAILURE_FULLPATH, msg);
-				System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
+				log.info("Failures successfully written in " + FAILURE_FULLPATH);
 			}
 		}
 	}
@@ -455,7 +456,7 @@ public class EVMLiSA {
 										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
 										analysesFailed, threadsStarted);
 
-								System.out.println(msg);
+								log.info(msg);
 								toFile(LOGS_FULLPATH, msg);
 
 								mutex.notifyAll();
@@ -472,14 +473,14 @@ public class EVMLiSA {
 										.notes("failure: " + e + " - details: " + e.getMessage())
 										.build().toString();
 
-								System.err.println(msg);
+								log.error(msg);
 								toFile(FAILURE_FULLPATH, msg);
 
 								msg = buildMessage("FAILURE", address, smartContracts.size(),
 										smartContractsTerminatedSuccesfully.size(), analysesTerminated,
 										analysesFailed, threadsStarted);
 
-								System.out.println(msg);
+								log.info(msg);
 								toFile(LOGS_FULLPATH, msg);
 
 								mutex.notifyAll();
@@ -533,7 +534,7 @@ public class EVMLiSA {
 			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + "\n";
 			msg += "\n"; // Blank line
 
-			System.out.println(msg);
+			log.info(msg);
 			toFile(LOGS_FULLPATH, msg);
 
 			guardia.wait(timeToWait);
@@ -561,13 +562,13 @@ public class EVMLiSA {
 				"successfully: " + smartContractsTerminatedSuccesfully.size() + ", " +
 				"failed: " + (smartContracts.size() - smartContractsTerminatedSuccesfully.size()) + " \n";
 
-		System.out.println(msg);
+		log.info(msg);
 		toFile(LOGS_FULLPATH, msg);
 
-		System.out.println("Statistics successfully written in " + STATISTICS_FULLPATH);
-		System.out.println("Logs successfully written in " + LOGS_FULLPATH);
-		System.out.println("Statistics with zero jumps successfully written in " + STATISTICSZEROJUMP_FULLPATH);
-		System.out.println("Failures successfully written in " + FAILURE_FULLPATH);
+		log.info("Statistics successfully written in " + STATISTICS_FULLPATH);
+		log.info("Logs successfully written in " + LOGS_FULLPATH);
+		log.info("Statistics with zero jumps successfully written in " + STATISTICSZEROJUMP_FULLPATH);
+		log.info("Failures successfully written in " + FAILURE_FULLPATH);
 	}
 
 	/**
@@ -583,7 +584,7 @@ public class EVMLiSA {
 	public static MyLogger dumpStatistics(JumpSolver checker) {
 		EVMCFG cfg = checker.getComputedCFG();
 
-		System.err.println("### Calculating statistics ###");
+		log.info("### Calculating statistics ###");
 
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 
@@ -642,22 +643,19 @@ public class EVMLiSA {
 					resolvedJumps++;
 				} else {
 					unsoundJumps++;
-					System.err.println(jumpNode + " not solved");
-					System.err.println("getTopStackValuesPerJump: " + topStackValuesPerJump);
+					log.error(jumpNode + " not solved");
+					log.error("getTopStackValuesPerJump: " + topStackValuesPerJump);
 				}
 			}
 		}
 
-		System.err.println();
-		System.err.println("##############");
-		System.err.println("Total opcodes: " + cfg.getOpcodeCount());
-		System.err.println("Total jumps: " + cfg.getAllJumps().size());
-		System.err.println("Resolved jumps: " + resolvedJumps);
-		System.err.println("Definitely unreachable jumps: " + definitelyUnreachable);
-		System.err.println("Maybe unreachable jumps: " + maybeUnreachable);
-		System.err.println("Unsound jumps: " + unsoundJumps);
-		System.err.println("Maybe unsound jumps: " + maybeUnsoundJumps);
-		System.err.println("##############");
+		log.info("Total opcodes: " + cfg.getOpcodeCount());
+		log.info("Total jumps: " + cfg.getAllJumps().size());
+		log.info("Resolved jumps: " + resolvedJumps);
+		log.info("Definitely unreachable jumps: " + definitelyUnreachable);
+		log.info("Maybe unreachable jumps: " + maybeUnreachable);
+		log.info("Unsound jumps: " + unsoundJumps);
+		log.info("Maybe unsound jumps: " + maybeUnsoundJumps);
 
 		return MyLogger.newLogger()
 				.opcodes(cfg.getOpcodeCount())
@@ -733,7 +731,7 @@ public class EVMLiSA {
 			myReader.close();
 
 		} catch (FileNotFoundException e) {
-			System.err.println("[ERROR] " + SMARTCONTRACTS_FULLPATH + " not found");
+			log.error(SMARTCONTRACTS_FULLPATH + " not found");
 			throw e;
 		}
 
@@ -763,7 +761,7 @@ public class EVMLiSA {
 				}
 
 			} catch (IOException e) {
-				System.err.println("An error occurred in " + FILE_PATH);
+				log.error("An error occurred in " + FILE_PATH);
 			}
 		}
 	}
@@ -859,7 +857,7 @@ public class EVMLiSA {
 					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
 						numberOfAPIEtherscanRequestOnSuccess++;
 
-					System.out.printf("Downloading %s, remaining: %s \n", address,
+					log.info("Downloading {}, remaining: {}", address,
 							(smartContracts.size() - numberOfAPIEtherscanRequest));
 				}
 			} catch (Exception e) {
@@ -867,7 +865,7 @@ public class EVMLiSA {
 			}
 		}
 
-		System.out.printf("Downloaded %s smart contract \n", numberOfAPIEtherscanRequestOnSuccess);
+		log.info("Downloaded {} smart contract", numberOfAPIEtherscanRequestOnSuccess);
 	}
 
 	public static class Converter {
