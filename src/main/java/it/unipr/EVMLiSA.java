@@ -309,11 +309,11 @@ public class EVMLiSA {
 			finish = System.currentTimeMillis();
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker)
-				.address(addressSC)
-				.time(finish - start)
-				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
-				.buildJson(jsonOptions)
-				.build();
+					.address(addressSC)
+					.time(finish - start)
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
+					.buildJson(jsonOptions)
+					.build();
 
 			if (dumpStatistics) {
 				toFile(STATISTICS_FULLPATH, result.toString());

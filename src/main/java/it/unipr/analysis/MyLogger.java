@@ -176,10 +176,9 @@ public class MyLogger {
 		return jumps;
 	}
 
-	public String getJson(){
+	public String getJson() {
 		return json.toString(4);
 	}
-
 
 	@Override
 	public String toString() {
