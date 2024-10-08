@@ -2,7 +2,7 @@ package it.unipr.cfg;
 
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.KIntegerSet;
+import it.unipr.analysis.StackElement;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -70,7 +70,7 @@ public class Jumpi extends Statement {
 			for (AbstractStack st : valueState.getStacks()) {
 				AbstractStack result = st.clone();
 				result.pop();
-				KIntegerSet condition = result.pop();
+				StackElement condition = result.pop();
 				if (condition.isDefinitelyTrue())
 					trueStacks.add(result);
 				else if (condition.isDefinitelyFalse())
@@ -82,8 +82,8 @@ public class Jumpi extends Statement {
 			}
 		}
 
-		Constant dummy = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, dummy,
+		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
+		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
 				JumpiOperator.INSTANCE, getLocation()), this);
 	}
 }

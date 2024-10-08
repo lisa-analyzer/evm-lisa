@@ -3,8 +3,8 @@ package it.unipr.checker;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.KIntegerSet;
 import it.unipr.analysis.Number;
+import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -25,6 +25,7 @@ import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -33,6 +34,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -41,6 +44,8 @@ import java.util.stream.Collectors;
 public class JumpSolver
 		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
 				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+
+	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
 	/**
 	 * The CFG to be analyzed.
@@ -51,11 +56,6 @@ public class JumpSolver
 	 * Yields if the fixpoint has been reached.
 	 */
 	private boolean fixpoint = true;
-
-	/**
-	 * The set of jump destinations.
-	 */
-	private Set<Statement> jumpDestinations;
 
 	/**
 	 * The set of unreachable jumps (i.e., their state is bottom)
@@ -71,7 +71,7 @@ public class JumpSolver
 	/**
 	 * Map of top stack values per jump
 	 */
-	private Map<Statement, Set<KIntegerSet>> topStackValuesPerJump = new HashMap<>();
+	private Map<Statement, Set<StackElement>> topStackValuesPerJump = new HashMap<>();
 
 	/**
 	 * Yields the computed CFG.
@@ -90,7 +90,7 @@ public class JumpSolver
 		return maybeUnsoundJumps;
 	}
 
-	public Set<KIntegerSet> getTopStackValuesPerJump(Statement node) {
+	public Set<StackElement> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
 	}
 
@@ -145,10 +145,10 @@ public class JumpSolver
 					else if (valueState.isTop())
 						this.maybeUnsoundJumps.add(node);
 					else {
-						Set<KIntegerSet> stacksTop = new HashSet<>();
+						Set<StackElement> stacksTop = new HashSet<>();
 						AbstractStackSet stacks = valueState.getStacks();
 						for (AbstractStack stack : stacks) {
-							KIntegerSet topStack = stack.getTop();
+							StackElement topStack = stack.getTop();
 							stacksTop.add(topStack);
 						}
 
@@ -194,11 +194,7 @@ public class JumpSolver
 
 		this.cfgToAnalyze = (EVMCFG) graph;
 
-		// We compute the set of jump destination, if not already computed
-		if (this.jumpDestinations == null)
-			this.jumpDestinations = this.cfgToAnalyze.getAllJumpdest();
-
-		// The method should focus only on JUMP and JUMPI statements.
+		// The method focuses only on JUMP and JUMPI statements
 		if (!(node instanceof Jump) && !(node instanceof Jumpi))
 			return true;
 		else if (cfgToAnalyze.getAllPushedJumps().contains(node))
@@ -228,47 +224,51 @@ public class JumpSolver
 			if (valueState.isBottom()) {
 				continue;
 			} else if (valueState.isTop()) {
-				System.err.println("Not solved jump (state is top): " + node + "["
+				LOG.warn("Not solved jump (state is top): " + node + "["
 						+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
 				continue;
 			}
 
-			for (KIntegerSet topStack : valueState.getTop()) {
-				if (topStack.isBottom()) {
-					continue;
-				} else if (topStack.isTop()) {
-					System.err.println("Not solved jump (top of the stack is top): " + node + "["
-							+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
-					continue;
-				}
+			Set<Number> flattenedTopStack = valueState.getTop().stream()
+					.filter(t -> !t.isTop() && !t.isBottom())
+					.map(s -> s.getNumber())
+					.collect(Collectors.toSet());
 
-				Set<Statement> filteredDests = this.jumpDestinations.stream()
-						.filter(pc -> topStack
-								.contains(new Number(((ProgramCounterLocation) pc.getLocation()).getPc())))
-						.collect(Collectors.toSet());
+			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
+					.filter(pc -> {
+						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
+						int pcValue = pcLocation.getPc();
+						return flattenedTopStack.contains(new Number(pcValue)); // Check
+																				// if
+																				// the
+																				// value
+																				// is
+																				// in
+																				// the
+																				// flattened
+																				// set
+					})
+					.collect(Collectors.toSet());
 
-				// For each JUMPDEST, add the missing edge from this node to
-				// the JUMPDEST.
-				if (node instanceof Jump) { // JUMP
-					for (Statement jmp : filteredDests) {
-						SequentialEdge edge = new SequentialEdge(node, jmp);
-						if (!this.cfgToAnalyze.containsEdge(edge)) {
-							this.cfgToAnalyze.addEdge(edge);
-							fixpoint = false;
-						}
-					}
-				} else { // JUMPI
-					for (Statement jmp : filteredDests) {
-						TrueEdge edge = new TrueEdge(node, jmp);
-						if (!this.cfgToAnalyze.containsEdge(edge)) {
-							this.cfgToAnalyze.addEdge(edge);
-							fixpoint = false;
-						}
-					}
-				}
-			}
+			// For each JUMPDEST, add the missing edge from this node to
+			// the JUMPDEST.
+			if (node instanceof Jump)
+				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
+			else
+				addEdgesToCFG(node, filteredDests, TrueEdge.class);
 		}
 
 		return true;
+	}
+
+	private <T extends Edge> void addEdgesToCFG(Statement node, Set<Statement> filteredDests, Class<T> edgeClass) {
+		for (Statement jmp : filteredDests) {
+			Edge edge = edgeClass.equals(SequentialEdge.class) ? new SequentialEdge(node, jmp)
+					: new TrueEdge(node, jmp);
+			if (!this.cfgToAnalyze.containsEdge(edge)) {
+				this.cfgToAnalyze.addEdge(edge);
+				this.fixpoint = false;
+			}
+		}
 	}
 }

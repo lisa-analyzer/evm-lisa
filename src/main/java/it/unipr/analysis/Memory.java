@@ -4,7 +4,7 @@ import it.unive.lisa.analysis.lattices.FunctionalLattice;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Memory extends FunctionalLattice<Memory, Number, KIntegerSet> {
+public class Memory extends FunctionalLattice<Memory, Number, StackElement> {
 
 	/**
 	 * Default constructor for Memory. Initializes the Memory with a default
@@ -12,7 +12,7 @@ public class Memory extends FunctionalLattice<Memory, Number, KIntegerSet> {
 	 * the entire range of possible values (TOP).
 	 */
 	public Memory() {
-		this(new KIntegerSet());
+		this(new StackElement());
 	}
 
 	/**
@@ -20,7 +20,7 @@ public class Memory extends FunctionalLattice<Memory, Number, KIntegerSet> {
 	 *
 	 * @param lattice The initial lattice (Interval) for the Memory.
 	 */
-	public Memory(KIntegerSet lattice) {
+	public Memory(StackElement lattice) {
 		this(lattice, new HashMap<>());
 	}
 
@@ -32,7 +32,7 @@ public class Memory extends FunctionalLattice<Memory, Number, KIntegerSet> {
 	 * @param function The initial function (mapping of addresses to Intervals)
 	 *                     for the Memory.
 	 */
-	public Memory(KIntegerSet lattice, Map<Number, KIntegerSet> function) {
+	public Memory(StackElement lattice, Map<Number, StackElement> function) {
 		super(lattice, function);
 	}
 
@@ -47,7 +47,7 @@ public class Memory extends FunctionalLattice<Memory, Number, KIntegerSet> {
 	}
 
 	@Override
-	public Memory mk(KIntegerSet lattice, Map<Number, KIntegerSet> function) {
+	public Memory mk(StackElement lattice, Map<Number, StackElement> function) {
 		return new Memory(lattice, function);
 	}
 
@@ -56,7 +56,7 @@ public class Memory extends FunctionalLattice<Memory, Number, KIntegerSet> {
 	 * 
 	 * @return the lattice inside this memory
 	 */
-	public KIntegerSet getLattice() {
+	public StackElement getLattice() {
 		return this.lattice;
 	}
 

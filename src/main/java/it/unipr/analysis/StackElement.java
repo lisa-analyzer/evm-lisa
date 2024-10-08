@@ -1,116 +1,133 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.BaseLattice;
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
-public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
+public class StackElement implements BaseLattice<StackElement> {
 	private static final Number ZERO_INT = new Number(0);
 	private static final Number ONE_INT = new Number(1);
 	private static final Number MAX = new Number(BigInteger.valueOf(2).pow(256));
 
-	public static final int K = 16;
+	public static final StackElement ZERO = new StackElement(0);
+	public static final StackElement ONE = new StackElement(1);
 
-	public static final KIntegerSet ZERO = new KIntegerSet(0);
-	public static final KIntegerSet ONE = new KIntegerSet(1);
-	public static final KIntegerSet ZERO_OR_ONE = new KIntegerSet(0, 1);
+	public static final StackElement NOT_JUMPDEST_TOP = new StackElement(-10);
 
-	public static final KIntegerSet NUMERIC_TOP = new KIntegerSet(Collections.emptySet(), true);
-	public static final KIntegerSet NOT_JUMPDEST_TOP = new KIntegerSet(-10);
-	public static final KIntegerSet BOTTOM = new KIntegerSet(Collections.emptySet(), false);
+	public static final StackElement NUMERIC_TOP = new StackElement(true, false);
+	public static final StackElement BOTTOM = new StackElement(false, true);
 
-	public KIntegerSet(Number i) {
-		this(Collections.singleton(i), false);
+	private final Number n;
+	private final boolean isTop, isBottom;
+
+	public StackElement() {
+		this(null, true, false);
 	}
 
-	public KIntegerSet(Integer i) {
+	private StackElement(boolean isTop, boolean isBottom) {
+		this(null, isTop, isBottom);
+	}
+
+	private StackElement(Number n, boolean isTop, boolean isBottom) {
+		this.n = n;
+		this.isTop = isTop;
+		this.isBottom = isBottom;
+	}
+
+	public StackElement(Number i) {
+		this(i, false, false);
+	}
+
+	public StackElement(Integer i) {
 		this(new Number(i.intValue()));
 	}
 
-	public KIntegerSet(Integer... ints) {
-		super(new HashSet<>(K), ints.length > K);
-
-		if (ints.length <= K)
-			for (Integer i : ints)
-				this.elements.add(new Number(i));
-	}
-
-	public KIntegerSet(BigInteger i) {
+	public StackElement(BigInteger i) {
 		this(new Number(i));
 	}
 
-	public KIntegerSet(Set<Number> set) {
-		this(set.size() > K ? Collections.emptySet() : set, set.size() > K);
-	}
-
-	public KIntegerSet(Set<Number> elements, boolean isTop) {
-		super(elements, isTop);
-	}
-
 	@Override
-	public KIntegerSet top() {
+	public StackElement top() {
 		return NUMERIC_TOP;
 	}
 
 	@Override
-	public KIntegerSet bottom() {
-		return BOTTOM;
+	public boolean isTop() {
+		return isTop;
 	}
 
 	@Override
 	public boolean isBottom() {
-		return elements != null && super.isBottom();
+		return isBottom;
 	}
 
 	@Override
-	public boolean isTop() {
-		return elements != null && super.isTop();
+	public StackElement bottom() {
+		return BOTTOM;
 	}
 
 	@Override
-	public KIntegerSet lubAux(KIntegerSet other) throws SemanticException {
+	public boolean lessOrEqualAux(StackElement other) throws SemanticException {
+		if (isTopNotJumpdest())
+			if (other.isTopNotJumpdest())
+				return true;
+			else
+				return false;
+		else if (other.isTopNotJumpdest())
+			return true;
+		return false;
+	}
+
+	@Override
+	public StackElement lubAux(StackElement other) throws SemanticException {
 		if (isTopNotJumpdest())
 			return this;
 		else if (other.isTopNotJumpdest())
 			return other;
-		KIntegerSet result = super.lubAux(other);
-		return result.size() > K ? top() : result;
+
+		return top();
 	}
 
 	@Override
-	public KIntegerSet wideningAux(KIntegerSet other) throws SemanticException {
-		return lubAux(other);
+	public final String toString() {
+		if (isTop())
+			return Lattice.TOP_STRING;
+
+		if (isTopNotJumpdest())
+			return "#TOPNJD#";
+
+		if (isBottom())
+			return Lattice.BOTTOM_STRING;
+
+		return n.toString();
 	}
 
 	@Override
-	public KIntegerSet glbAux(KIntegerSet other) throws SemanticException {
-		KIntegerSet result = super.glbAux(other);
-		return result.size() > K ? top() : result;
+	public StackElement glbAux(StackElement other) throws SemanticException {
+		return bottom();
 	}
 
-	@Override
-	public KIntegerSet mk(Set<Number> set) {
-		return new KIntegerSet(set);
-	}
-
-	public KIntegerSet isZero() {
+	public StackElement isZero() {
 		if (isBottom())
 			return bottom();
 		else if (isTop())
-			return KIntegerSet.ZERO_OR_ONE;
+			return NOT_JUMPDEST_TOP;
 		else if (isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 		else if (equals(ZERO))
-			return KIntegerSet.ONE;
-		else if (!contains(ZERO_INT))
-			return KIntegerSet.ZERO;
-		return KIntegerSet.ZERO_OR_ONE;
+			return ONE;
+		else if (!equals(ZERO))
+			return ZERO;
+		return NOT_JUMPDEST_TOP;
 	}
 
-	public KIntegerSet sum(KIntegerSet other) {
+	public Number getNumber() {
+		return n;
+	}
+
+	public StackElement sum(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -118,19 +135,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements) {
-				Number add = i.add(j);
-				if (add.compareTo(MAX) >= 0)
-					add = add.subtract(MAX);
-				elements.add(add);
-			}
+		Number add = this.n.add(other.n);
+		if (add.compareTo(MAX) >= 0)
+			add = add.subtract(MAX);
 
-		return new KIntegerSet(elements);
+		return new StackElement(add);
 	}
 
-	public KIntegerSet sub(KIntegerSet other) {
+	public StackElement sub(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -138,19 +150,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements) {
-				Number sub = i.subtract(j);
-				if (sub.compareTo(ZERO_INT) < 0)
-					sub = sub.add(MAX);
-				elements.add(sub);
-			}
+		Number sub = this.n.subtract(other.n);
+		if (sub.compareTo(ZERO_INT) < 0)
+			sub = sub.add(MAX);
 
-		return new KIntegerSet(elements);
+		return new StackElement(sub);
 	}
 
-	public KIntegerSet mul(KIntegerSet other) {
+	public StackElement mul(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (this.equals(ZERO) || other.equals(ZERO))
@@ -160,22 +167,16 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements) {
-				Number mul = i.multiply(j);
-				if (mul.compareTo(ZERO_INT) < 0)
-					mul = mul.add(MAX);
-				if (mul.compareTo(MAX) > 0)
-					mul = mul.subtract(MAX);
+		Number mul = this.n.multiply(other.n);
+		if (mul.compareTo(ZERO_INT) < 0)
+			mul = mul.add(MAX);
+		if (mul.compareTo(MAX) > 0)
+			mul = mul.subtract(MAX);
 
-				elements.add(mul);
-			}
-
-		return new KIntegerSet(elements);
+		return new StackElement(mul);
 	}
 
-	public KIntegerSet div(KIntegerSet other) {
+	public StackElement div(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (other.equals(ZERO))
@@ -185,18 +186,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				if (j.equals(ZERO_INT))
-					elements.add(ZERO_INT);
-				else
-					elements.add(i.divide(j));
+		if (other.n.equals(ZERO_INT))
+			return new StackElement(ZERO_INT);
+		else
+			return new StackElement(this.n.divide(other.n));
 
-		return new KIntegerSet(elements);
 	}
 
-	public KIntegerSet mod(KIntegerSet other) {
+	public StackElement mod(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (other.equals(ZERO))
@@ -206,20 +203,13 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements) {
-
-				if (j.equals(ZERO_INT))
-					elements.add(i);
-				else
-					elements.add(i.subtract(j.multiply(i.divide(j))));
-			}
-
-		return new KIntegerSet(elements);
+		if (other.n.equals(ZERO_INT))
+			return new StackElement(this.n);
+		else
+			return new StackElement(this.n.subtract(other.n.multiply(this.n.divide(other.n))));
 	}
 
-	public KIntegerSet addmod(KIntegerSet that, KIntegerSet other) {
+	public StackElement addmod(StackElement that, StackElement other) {
 		if (isBottom() || other.isBottom() || that.isBottom())
 			return bottom();
 		else if (other.equals(ZERO))
@@ -229,19 +219,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : that.elements)
-				for (Number k : other.elements)
-					if (k.equals(ZERO_INT))
-						elements.add(ZERO_INT);
-					else
-						elements.add(i.add(j).subtract(k.multiply(i.add(j).divide(k))));
+		if (other.n.equals(ZERO_INT))
+			return new StackElement(ZERO_INT);
+		else
+			return new StackElement(this.n.add(that.n).subtract(other.n.multiply(this.n.add(that.n).divide(other.n))));
 
-		return new KIntegerSet(elements);
 	}
 
-	public KIntegerSet mulmod(KIntegerSet that, KIntegerSet other) {
+	public StackElement mulmod(StackElement that, StackElement other) {
 		if (isBottom() || other.isBottom() || that.isBottom())
 			return bottom();
 		else if (other.equals(ZERO))
@@ -251,19 +236,14 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : that.elements)
-				for (Number k : other.elements)
-					if (k.equals(ZERO_INT))
-						elements.add(ZERO_INT);
-					else
-						elements.add(i.multiply(j).subtract(k.multiply(i.multiply(j).divide(k))));
-
-		return new KIntegerSet(elements);
+		if (other.n.equals(ZERO_INT))
+			return new StackElement(ZERO_INT);
+		else
+			return new StackElement(
+					this.n.multiply(that.n).subtract(other.n.multiply(this.n.multiply(that.n).divide(other.n))));
 	}
 
-	public KIntegerSet exp(KIntegerSet other) {
+	public StackElement exp(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (other.equals(ZERO))
@@ -273,87 +253,60 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements) {
-			for (Number j : other.elements) {
-				Number r = i;
+		Number r = this.n;
 
-				for (int k = 0; j.compareTo(new Number(k)) > 0; k++)
-					if (r.compareTo(MAX) > 0)
-						return NUMERIC_TOP;
-					else
-						r = r.multiply(i);
-				elements.add(r);
-			}
-		}
+		for (int k = 0; other.n.compareTo(new Number(k)) > 0; k++)
+			if (r.compareTo(MAX) > 0)
+				return NUMERIC_TOP;
+			else
+				r = r.multiply(this.n);
 
-		return new KIntegerSet(elements);
+		return new StackElement(r);
 	}
 
-	public KIntegerSet lt(KIntegerSet other) {
+	public StackElement lt(StackElement other) {
 		if (isBottom() || other.isBottom())
-			return KIntegerSet.BOTTOM;
+			return StackElement.BOTTOM;
 		else if (isTop() || other.isTop())
-			return KIntegerSet.ZERO_OR_ONE;
+			return StackElement.NOT_JUMPDEST_TOP;
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Boolean> r = new HashSet<Boolean>();
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				r.add(i.compareTo(j) < 0);
-
-		if (r.size() == 2)
-			return KIntegerSet.ZERO_OR_ONE;
-		else if (r.contains(true))
-			return KIntegerSet.ONE;
-
-		return KIntegerSet.ZERO;
+		if (this.n.compareTo(other.n) < 0)
+			return StackElement.ONE;
+		else
+			return StackElement.ZERO;
 	}
 
-	public KIntegerSet gt(KIntegerSet other) {
+	public StackElement gt(StackElement other) {
 		if (isBottom() || other.isBottom())
-			return KIntegerSet.BOTTOM;
+			return StackElement.BOTTOM;
 		else if (isTop() || other.isTop())
-			return KIntegerSet.ZERO_OR_ONE;
+			return StackElement.NOT_JUMPDEST_TOP;
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
-			return KIntegerSet.ZERO_OR_ONE;
+			return StackElement.NOT_JUMPDEST_TOP;
 
-		Set<Boolean> r = new HashSet<Boolean>();
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				r.add(i.compareTo(j) > 0);
-
-		if (r.size() == 2)
-			return KIntegerSet.ZERO_OR_ONE;
-		else if (r.contains(true))
-			return KIntegerSet.ONE;
-
-		return KIntegerSet.ZERO;
+		if (this.n.compareTo(other.n) > 0)
+			return StackElement.ONE;
+		else
+			return StackElement.ZERO;
 	}
 
-	public KIntegerSet eq(KIntegerSet other) {
+	public StackElement eq(StackElement other) {
 		if (isBottom() || other.isBottom())
-			return KIntegerSet.BOTTOM;
+			return StackElement.BOTTOM;
 		else if (isTop() || other.isTop())
-			return KIntegerSet.ZERO_OR_ONE;
+			return StackElement.NOT_JUMPDEST_TOP;
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
-			return KIntegerSet.ZERO_OR_ONE;
+			return StackElement.NOT_JUMPDEST_TOP;
 
-		Set<Boolean> r = new HashSet<Boolean>();
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				r.add(i.compareTo(j) == 0);
-
-		if (r.size() == 2)
-			return KIntegerSet.ZERO_OR_ONE;
-		else if (r.contains(true))
-			return KIntegerSet.ONE;
-
-		return KIntegerSet.ZERO;
+		if (this.n.compareTo(other.n) == 0)
+			return StackElement.ONE;
+		else
+			return StackElement.ZERO;
 	}
 
-	public KIntegerSet and(KIntegerSet other) {
+	public StackElement and(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (this.equals(ZERO) || other.equals(ZERO))
@@ -363,15 +316,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				elements.add(i.and(j));
-
-		return new KIntegerSet(elements);
+		return new StackElement(this.n.and(other.n));
 	}
 
-	public KIntegerSet or(KIntegerSet other) {
+	public StackElement or(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -379,15 +327,11 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				elements.add(i.or(j));
+		return new StackElement(this.n.or(other.n));
 
-		return new KIntegerSet(elements);
 	}
 
-	public KIntegerSet xor(KIntegerSet other) {
+	public StackElement xor(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -395,15 +339,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				elements.add(i.xor(j));
-
-		return new KIntegerSet(elements);
+		return new StackElement(this.n.xor(other.n));
 	}
 
-	public KIntegerSet not() {
+	public StackElement not() {
 		if (isBottom())
 			return bottom();
 		else if (isTop())
@@ -411,17 +350,13 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			if (i.compareTo(ZERO_INT) >= 0)
-				elements.add(MAX.subtract(i.add(ONE_INT)));
-			else
-				elements.add(i.not());
-
-		return new KIntegerSet(elements);
+		if (this.n.compareTo(ZERO_INT) >= 0)
+			return new StackElement(MAX.subtract(this.n.add(ONE_INT)));
+		else
+			return new StackElement(this.n.not());
 	}
 
-	public KIntegerSet shl(KIntegerSet other) {
+	public StackElement shl(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -429,15 +364,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				elements.add(new Number(new BigInteger(shiftLeft(j.toByteArray(), i.intValue()))));
-
-		return new KIntegerSet(elements);
+		return new StackElement((new Number(new BigInteger(shiftLeft(other.n.toByteArray(), this.n.intValue())))));
 	}
 
-	public KIntegerSet shr(KIntegerSet other) {
+	public StackElement shr(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -445,15 +375,10 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				elements.add(j.shiftRight(i.intValue()));
-
-		return new KIntegerSet(elements);
+		return new StackElement(other.n.shiftRight(this.n.intValue()));
 	}
 
-	public KIntegerSet sar(KIntegerSet other) {
+	public StackElement sar(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
 		else if (isTop() || other.isTop())
@@ -461,16 +386,11 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Set<Number> elements = new HashSet<>(K);
-		for (Number i : this.elements)
-			for (Number j : other.elements)
-				elements.add(
-						new Number(new BigInteger(shiftArithmeticRight(j.toByteArray(), i.intValue()))));
-
-		return new KIntegerSet(elements);
+		return new StackElement(
+				new Number(new BigInteger(shiftArithmeticRight(other.n.toByteArray(), this.n.intValue()))));
 	}
 
-	public KIntegerSet mload(Memory memory) throws SemanticException {
+	public StackElement mload(Memory memory) throws SemanticException {
 		if (isBottom())
 			return bottom();
 		else if (isTop())
@@ -478,16 +398,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 		else if (isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		KIntegerSet r = KIntegerSet.BOTTOM;
-
-		for (Number i : this.elements) {
-			KIntegerSet state = memory.getState(i);
-			if (state.isBottom())
-				r = r.lub(KIntegerSet.BOTTOM);
-			else
-				r = r.lub(state);
-		}
-		return r;
+		return memory.getState(this.n);
 	}
 
 	/**
@@ -660,7 +571,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public boolean isDefinitelyTrue() {
 		if (isTop() || isBottom() || isTopNotJumpdest())
 			return false;
-		return !this.elements().contains(ZERO_INT);
+		return !this.n.equals(ZERO_INT);
 	}
 
 	/**
@@ -672,7 +583,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 	public boolean isDefinitelyFalse() {
 		if (isTop() || isBottom() || isTopNotJumpdest())
 			return false;
-		return this.equals(ZERO);
+		return this.n.equals(ZERO_INT);
 	}
 
 	/**
@@ -695,7 +606,7 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return Objects.hash(isBottom, isTop, n);
 	}
 
 	@Override
@@ -706,14 +617,16 @@ public class KIntegerSet extends SetLattice<KIntegerSet, Number> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		if (isBottom() && ((KIntegerSet) obj).isBottom())
+		if (isBottom() && ((StackElement) obj).isBottom())
 			return true;
-		if (isTopNumeric() && ((KIntegerSet) obj).isTopNumeric())
+		if (isTopNumeric() && ((StackElement) obj).isTopNumeric())
 			return true;
-		if (isTopNotJumpdest() && ((KIntegerSet) obj).isTopNotJumpdest())
+		if (isTopNotJumpdest() && ((StackElement) obj).isTopNotJumpdest())
 			return true;
-		if (!super.equals(obj))
-			return false;
-		return true;
+		if (!isBottom() && !isTopNumeric() && !isTopNotJumpdest() &&
+				!((StackElement) obj).isBottom() && !((StackElement) obj).isTopNumeric()
+				&& !((StackElement) obj).isTopNotJumpdest())
+			return this.n.equals(((StackElement) obj).n);
+		return false;
 	}
 }

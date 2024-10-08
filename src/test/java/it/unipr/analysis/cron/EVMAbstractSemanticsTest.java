@@ -18,7 +18,7 @@ import org.junit.Test;
  * as if, if-else, while, etc. Operations with orphan jumps, marked as NPBJ (No
  * Push Before Jump), are also tested in specific test cases.
  */
-public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExecutor {
+public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
 
 	private static final String FAKE_ADDRESS = "0x000000000000000";
@@ -108,9 +108,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testAnd() throws AnalysisSetupException, IOException {
@@ -120,9 +117,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testOr() throws AnalysisSetupException, IOException {
@@ -132,9 +126,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testXor() throws AnalysisSetupException, IOException {
@@ -144,9 +135,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testNot() throws AnalysisSetupException, IOException {
@@ -156,9 +144,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testShl() throws AnalysisSetupException, IOException {
@@ -168,9 +153,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testShr() throws AnalysisSetupException, IOException {
@@ -180,9 +162,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testSar() throws AnalysisSetupException, IOException {
@@ -192,9 +171,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testDiv() throws AnalysisSetupException, IOException {
@@ -204,9 +180,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testSdiv() throws AnalysisSetupException, IOException {
@@ -216,9 +189,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testMod() throws AnalysisSetupException, IOException {
@@ -228,9 +198,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testSmod() throws AnalysisSetupException, IOException {
@@ -240,9 +207,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testAddmod() throws AnalysisSetupException, IOException {
@@ -252,9 +216,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testMulmod() throws AnalysisSetupException, IOException {
@@ -264,9 +225,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testAdd() throws AnalysisSetupException, IOException {
@@ -276,9 +234,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testSub() throws AnalysisSetupException, IOException {
@@ -288,9 +243,6 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testByte() throws AnalysisSetupException, IOException {
@@ -300,14 +252,10 @@ public class EVMBytecodeControlFlowStructureTest extends EVMBytecodeAnalysisExec
 
 	/**
 	 * All the items in the final stack must be 1
-	 * 
-	 * @throws AnalysisSetupException
-	 * @throws IOException
 	 */
 	@Test
 	public void testSloadSstore() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs/sload_sstore", "sload_sstore.sol", false);
 		perform(conf);
 	}
-
 }
