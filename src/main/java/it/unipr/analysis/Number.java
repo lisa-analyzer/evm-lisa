@@ -13,27 +13,36 @@ public class Number implements Comparable<Number> {
 		BIGINTEGER
 	}
 
-	private int i = -1;
-	private long l = -1;
-	private BigInteger b;
+	private final int i;
+	private final long l;
+	private final BigInteger b;
 
 	public Number(int other) {
 		this.i = other;
+		this.l = -1;
 		this.b = null;
 	}
 
 	public Number(long other) {
 		this.l = other;
 		this.b = null;
+		this.i = -1;
 	}
 
 	public Number(BigInteger other) {
-		if (other.compareTo(MAX_INT) < 0)
+		if (other.compareTo(MAX_INT) < 0) {
 			this.i = other.intValue();
-		else if (other.compareTo(MAX_LONG) < 0)
+			this.l = -1;
+			this.b = null;
+		} else if (other.compareTo(MAX_LONG) < 0) {
+			this.i = -1;
 			this.l = other.longValue();
-		else
+			this.b = null;
+		} else {
+			this.i = -1;
+			this.l = -1;
 			this.b = other;
+		}
 	}
 
 	public Type getType() {
