@@ -25,6 +25,7 @@ public class MyLogger {
 	private String notes;
 	private String currentThread;
 	private JSONObject json;
+	private boolean txOriginVulnerabilityDetected;
 
 	private MyLogger() {
 		this.address = null;
@@ -43,13 +44,14 @@ public class MyLogger {
 		this.notes = "";
 		this.currentThread = null;
 		this.json = new JSONObject();
+		this.txOriginVulnerabilityDetected = false;
 	}
 
 	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
 			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
 			int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent,
 			long time, long timeLostToGetStorage,
-			JSONObject json, String notes) {
+			boolean txOriginVulnerabilityDetected, JSONObject json, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
@@ -75,6 +77,7 @@ public class MyLogger {
 		this.timeLostToGetStorage = timeLostToGetStorage;
 		this.actualTime = time - timeLostToGetStorage;
 		this.currentThread = Thread.currentThread().getName();
+		this.txOriginVulnerabilityDetected = txOriginVulnerabilityDetected;
 
 		this.json = json;
 		this.json.put("opcodes", this.opcodes);
@@ -89,6 +92,7 @@ public class MyLogger {
 		this.json.put("time-lost-to-get-storage", this.timeLostToGetStorage);
 		this.json.put("actual-time", this.actualTime);
 		this.json.put("current-thread", this.currentThread);
+		this.json.put("tx-origin-vulnerability", txOriginVulnerabilityDetected);
 	}
 
 	public static MyLogger newLogger() {
@@ -165,11 +169,16 @@ public class MyLogger {
 		return this;
 	}
 
+	public MyLogger txOriginVulnerabilityDetected(boolean txOriginVulnerabilityDetected) {
+		this.txOriginVulnerabilityDetected = txOriginVulnerabilityDetected;
+		return this;
+	}
+
 	public MyLogger build() {
 		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
 				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps,
 				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent,
-				time, timeLostToGetStorage, json, notes);
+				time, timeLostToGetStorage, txOriginVulnerabilityDetected, json, notes);
 	}
 
 	public int jumpSize() {

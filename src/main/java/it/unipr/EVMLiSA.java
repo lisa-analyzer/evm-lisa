@@ -149,11 +149,19 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option checkTxOriginVulnerability = Option.builder("T")
+				.longOpt("check-tx-origin-vulnerability")
+				.desc("Check TxOrigin Vulnerability")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(dumpStatisticsOption);
 		options.addOption(dumpCFGOption);
 		options.addOption(downloadBytecodeOption);
 		options.addOption(useStorageLiveOption);
 		options.addOption(dumpAnalysisReport);
+		options.addOption(checkTxOriginVulnerability);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -181,6 +189,7 @@ public class EVMLiSA {
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
 		boolean dumpReport = cmd.hasOption("dump-report");
+		boolean txOriginVulnerability = cmd.hasOption("check-tx-origin-vulnerability");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
@@ -294,6 +303,11 @@ public class EVMLiSA {
 		conf.serializeResults = false;
 		conf.optimize = false;
 
+//		if (txOriginVulnerability) {
+//			txOriginChecker = new TxOriginChecker();
+//			conf.semanticChecks.add(txOriginChecker);
+//		}
+
 		if (dumpAnalysis != null) {
 			if (dumpAnalysis.equals("dot"))
 				conf.analysisGraphs = GraphType.DOT;
@@ -308,6 +322,10 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
+//			if (txOriginVulnerability) {
+//				jsonOptions.put("tx-origin-vulnerability", txOriginChecker.compute());
+//			}
+
 			MyLogger result = EVMLiSA.dumpStatistics(checker)
 					.address(addressSC)
 					.time(finish - start)
@@ -317,7 +335,7 @@ public class EVMLiSA {
 
 			if (dumpStatistics) {
 				toFile(STATISTICS_FULLPATH, result.toString());
-				log.info("Statistics successfully written in " + STATISTICS_FULLPATH);
+				log.info("Statistics successfully written in {}", STATISTICS_FULLPATH);
 			}
 
 			System.err.println(result.getJson());
@@ -595,6 +613,7 @@ public class EVMLiSA {
 		int maybeUnsoundJumps = checker.getMaybeUnsoundJumps().size();
 
 		boolean allJumpAreSound = true;
+		boolean txOriginVulnerabilityDetected = false;
 
 		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
 			log.warn("There are no entrypoint");
@@ -609,6 +628,8 @@ public class EVMLiSA {
 				continue;
 			boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 			Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+			Set<StackElement> secondTopStackValuesPerJump = checker.getSecondTopStackValuesPerJump(jumpNode);
+
 			if (topStackValuesPerJump == null || !reachableFrom)
 				continue;
 			else if (topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
@@ -622,6 +643,7 @@ public class EVMLiSA {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
 				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+				Set<StackElement> secondTopStackValuesPerJump = checker.getSecondTopStackValuesPerJump(jumpNode);
 
 				if (pushedJumps.contains(jumpNode))
 					resolvedJumps++;
@@ -646,6 +668,12 @@ public class EVMLiSA {
 					log.error(jumpNode + " not solved");
 					log.error("getTopStackValuesPerJump: " + topStackValuesPerJump);
 				}
+
+				// Tx.Origin vulnerability chech
+				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.ORIGIN_OPCODE_TOP))
+					txOriginVulnerabilityDetected = true;
+				if (secondTopStackValuesPerJump != null && secondTopStackValuesPerJump.contains(StackElement.ORIGIN_OPCODE_TOP))
+					txOriginVulnerabilityDetected = true;
 			}
 		}
 
@@ -657,6 +685,11 @@ public class EVMLiSA {
 		log.info("Unsound jumps: " + unsoundJumps);
 		log.info("Maybe unsound jumps: " + maybeUnsoundJumps);
 
+		if(txOriginVulnerabilityDetected)
+			log.warn("Tx.Origin vulnerability detected!!");
+		else
+			log.info("Tx.Origin vulnerability not detected!!");
+
 		return MyLogger.newLogger()
 				.opcodes(cfg.getOpcodeCount())
 				.jumps(cfg.getAllJumps().size())
@@ -664,7 +697,8 @@ public class EVMLiSA {
 				.definitelyUnreachableJumps(definitelyUnreachable)
 				.maybeUnreachableJumps(maybeUnreachable)
 				.unsoundJumps(unsoundJumps)
-				.maybeUnsoundJumps(maybeUnsoundJumps);
+				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.txOriginVulnerabilityDetected(txOriginVulnerabilityDetected);
 	}
 
 	/**

@@ -15,6 +15,7 @@ public class StackElement implements BaseLattice<StackElement> {
 	public static final StackElement ONE = new StackElement(1);
 
 	public static final StackElement NOT_JUMPDEST_TOP = new StackElement(-10);
+	public static final StackElement ORIGIN_OPCODE_TOP = new StackElement(-11);
 
 	public static final StackElement NUMERIC_TOP = new StackElement(true, false);
 	public static final StackElement BOTTOM = new StackElement(false, true);
@@ -98,6 +99,9 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (isTopNotJumpdest())
 			return "#TOPNJD#";
 
+		if (isTopOriginOpcode())
+			return "#TOPORIGIN#";
+
 		if (isBottom())
 			return Lattice.BOTTOM_STRING;
 
@@ -116,6 +120,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return NOT_JUMPDEST_TOP;
 		else if (isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 		else if (equals(ZERO))
 			return ONE;
 		else if (!equals(ZERO))
@@ -134,6 +140,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		Number add = this.n.add(other.n);
 		if (add.compareTo(MAX) >= 0)
@@ -149,6 +157,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		Number sub = this.n.subtract(other.n);
 		if (sub.compareTo(ZERO_INT) < 0)
@@ -166,6 +176,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		Number mul = this.n.multiply(other.n);
 		if (mul.compareTo(ZERO_INT) < 0)
@@ -185,6 +197,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (other.n.equals(ZERO_INT))
 			return new StackElement(ZERO_INT);
@@ -202,6 +216,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (other.n.equals(ZERO_INT))
 			return new StackElement(this.n);
@@ -218,6 +234,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (other.n.equals(ZERO_INT))
 			return new StackElement(ZERO_INT);
@@ -235,6 +253,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest() || that.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode() || that.isTopNotJumpdest())
+			return ORIGIN_OPCODE_TOP;
 
 		if (other.n.equals(ZERO_INT))
 			return new StackElement(ZERO_INT);
@@ -252,6 +272,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		Number r = this.n;
 
@@ -268,9 +290,11 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (isBottom() || other.isBottom())
 			return StackElement.BOTTOM;
 		else if (isTop() || other.isTop())
-			return StackElement.NOT_JUMPDEST_TOP;
+			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (this.n.compareTo(other.n) < 0)
 			return StackElement.ONE;
@@ -282,9 +306,11 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (isBottom() || other.isBottom())
 			return StackElement.BOTTOM;
 		else if (isTop() || other.isTop())
-			return StackElement.NOT_JUMPDEST_TOP;
+			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return StackElement.NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (this.n.compareTo(other.n) > 0)
 			return StackElement.ONE;
@@ -296,9 +322,11 @@ public class StackElement implements BaseLattice<StackElement> {
 		if (isBottom() || other.isBottom())
 			return StackElement.BOTTOM;
 		else if (isTop() || other.isTop())
-			return StackElement.NOT_JUMPDEST_TOP;
+			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return StackElement.NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (this.n.compareTo(other.n) == 0)
 			return StackElement.ONE;
@@ -315,6 +343,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return new StackElement(this.n.and(other.n));
 	}
@@ -326,6 +356,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return new StackElement(this.n.or(other.n));
 
@@ -338,6 +370,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return new StackElement(this.n.xor(other.n));
 	}
@@ -349,6 +383,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		if (this.n.compareTo(ZERO_INT) >= 0)
 			return new StackElement(MAX.subtract(this.n.add(ONE_INT)));
@@ -363,6 +399,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return new StackElement((new Number(new BigInteger(shiftLeft(other.n.toByteArray(), this.n.intValue())))));
 	}
@@ -374,6 +412,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return new StackElement(other.n.shiftRight(this.n.intValue()));
 	}
@@ -385,6 +425,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode() || other.isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return new StackElement(
 				new Number(new BigInteger(shiftArithmeticRight(other.n.toByteArray(), this.n.intValue()))));
@@ -397,6 +439,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (isTopOriginOpcode())
+			return ORIGIN_OPCODE_TOP;
 
 		return memory.getState(this.n);
 	}
@@ -598,6 +642,10 @@ public class StackElement implements BaseLattice<StackElement> {
 
 	public boolean isTopNotJumpdest() {
 		return this == NOT_JUMPDEST_TOP;
+	}
+
+	public boolean isTopOriginOpcode() {
+		return this == ORIGIN_OPCODE_TOP;
 	}
 
 	public boolean isTopNumeric() {

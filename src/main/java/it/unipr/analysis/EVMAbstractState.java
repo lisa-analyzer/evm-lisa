@@ -208,7 +208,7 @@ public class EVMAbstractState
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+						resultStack.push(StackElement.ORIGIN_OPCODE_TOP);
 						result.add(resultStack);
 					}
 

@@ -72,6 +72,7 @@ public class JumpSolver
 	 * Map of top stack values per jump
 	 */
 	private Map<Statement, Set<StackElement>> topStackValuesPerJump = new HashMap<>();
+	private Map<Statement, Set<StackElement>> secondTopStackValuesPerJump = new HashMap<>();
 
 	/**
 	 * Yields the computed CFG.
@@ -92,6 +93,10 @@ public class JumpSolver
 
 	public Set<StackElement> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
+	}
+
+	public Set<StackElement> getSecondTopStackValuesPerJump(Statement node) {
+		return secondTopStackValuesPerJump.get(node);
 	}
 
 	/**
@@ -146,12 +151,16 @@ public class JumpSolver
 						this.maybeUnsoundJumps.add(node);
 					else {
 						Set<StackElement> stacksTop = new HashSet<>();
+						Set<StackElement> stacksSecondTop = new HashSet<>();
+
 						AbstractStackSet stacks = valueState.getStacks();
 						for (AbstractStack stack : stacks) {
 							StackElement topStack = stack.getTop();
 							stacksTop.add(topStack);
-						}
 
+							stacksSecondTop.add(stack.getSecondElement());
+						}
+						secondTopStackValuesPerJump.put(node, stacksSecondTop);
 						topStackValuesPerJump.put(node, stacksTop);
 					}
 				}
