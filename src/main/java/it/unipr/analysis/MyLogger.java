@@ -77,6 +77,7 @@ public class MyLogger {
 		this.currentThread = Thread.currentThread().getName();
 
 		this.json = json;
+		this.json.put("address", this.address);
 		this.json.put("opcodes", this.opcodes);
 		this.json.put("jumps", this.jumps);
 		this.json.put("resolved-jumps", this.totalResolvedJumps);
