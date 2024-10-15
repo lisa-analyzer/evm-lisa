@@ -53,7 +53,7 @@ public class Jumpto extends Statement {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		// TODO too coarse
+
 		return entryState.top();
 	}
 }

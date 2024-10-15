@@ -1,5 +1,6 @@
 package it.unipr.cfg;
 
+import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -32,10 +33,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
 	public Set<Statement> jumpDestsNodes;
+	public Set<Number> jumpDestsNodesLocations;
 	public Set<Statement> jumpNodes;
 	public Set<Statement> pushedJumps;
 
@@ -68,6 +72,18 @@ public class EVMCFG extends CFG {
 		}
 
 		return jumpDestsNodes;
+	}
+
+	public Set<Number> getAllJumpdestLocations() {
+		if (jumpDestsNodes == null)
+			getAllJumpdest();
+		if (jumpDestsNodesLocations == null)
+			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
+					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
+					.collect(Collectors.toSet());
+		else
+			return jumpDestsNodesLocations;
+
 	}
 
 	/**
@@ -207,22 +223,29 @@ public class EVMCFG extends CFG {
 		return dfs(start, target, new HashSet<>());
 	}
 
-	private boolean dfs(Statement current, Statement target, Set<Statement> visited) {
-		// If the current node is the target, return true
-		if (current.equals(target))
-			return true;
+	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
 
-		// Mark the current node as visited
-		visited.add(current);
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
 
-		// Recur for all the vertices adjacent to this vertex
-		for (Edge edge : list.getOutgoingEdges(current)) {
-			Statement next = edge.getDestination();
-			if (!visited.contains(next) && dfs(next, target, visited))
+			if (current.equals(target))
 				return true;
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
 		}
 
-		// If the target is not reachable from the current node, return false
 		return false;
 	}
 
