@@ -273,8 +273,11 @@ public class EVMLiSA {
 		if (filepath == null) {
 			BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".sol";
 			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
-		} else
-			BYTECODE_FULLPATH = filepath;
+		} else {
+			BYTECODE_FULLPATH = filepath + "opcodes";
+			String bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
+			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+		}
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
 

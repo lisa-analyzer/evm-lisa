@@ -12,22 +12,22 @@ import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
 
-public class ReentrancyChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
-	
+public class ReentrancyChecker
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>, MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
-		
-		
-		
-		if (node instanceof Call) {	
+
+		if (node instanceof Call) {
 			EVMCFG cfg = ((EVMCFG) graph);
 			// found paths to SSTORE
 		}
-		
+
 		return true;
 	}
 }

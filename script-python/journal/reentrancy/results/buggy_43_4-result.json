@@ -1,0 +1,25 @@
+Picked up _JAVA_OPTIONS: -Xmx16000M
+{
+    "solved-jumps-percent": 1,
+    "current-thread": "main",
+    "dump-CFG": false,
+    "stack-size": 32,
+    "stack-set-size": 10,
+    "jumps": 1,
+    "time-lost-to-get-storage": 0,
+    "maybe-unsound-jumps": 0,
+    "output-directory": "execution/results/null",
+    "cores": 1,
+    "filepath": "./reentrancy/bytecode/buggy_43_4.bytecode",
+    "definitely-unreachable-jumps": 0,
+    "unsound-jumps": 0,
+    "dump-statistics": false,
+    "maybe-unreachable-jumps": 0,
+    "use-storage-live": false,
+    "time": 249,
+    "opcodes": 117,
+    "download-bytecode": false,
+    "actual-time": 249,
+    "dump-report": false,
+    "resolved-jumps": 1
+}
