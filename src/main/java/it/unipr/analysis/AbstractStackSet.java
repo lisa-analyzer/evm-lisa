@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
-	private static int SIZE = 32;
+	private static int SIZE = 8;
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null, false);
 	private static final AbstractStackSet TOP = new AbstractStackSet(Collections.emptySet(), true);
 
