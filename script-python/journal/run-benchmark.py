@@ -143,7 +143,7 @@ def run_ethersolve(bytecode_file):
     result_filepath = os.path.join(result_ethersolve_dir, result_filename)
     
     command = (
-        f"sleep 1 && "
+        f"sleep 0.9 && "
         f"java -jar EtherSolve/EtherSolve.jar "
         f"{bytecode_file} "
         f"--json --creation "
@@ -170,7 +170,7 @@ def ethersolve():
     bytecode_files = [os.path.join(bytecode_dir, f) for f in os.listdir(bytecode_dir) if f.endswith(".bytecode")]
     num_files = len(bytecode_files)
     print(f"[ETHERSOLVE] Found {num_files} bytecode files for analysis.")
-    print(f"[ETHERSOLVE] Starting {max_threads} parallels analysis")
+    print(f"[ETHERSOLVE] Starting analysis")
 
     analysis_ended = 0
 
@@ -188,6 +188,28 @@ def ethersolve():
     print(f"[ETHERSOLVE] Completed {analysis_ended}/{num_files}.")
     delete_tmp_files(bytecode_dir)
 
+def count_sstore_occurrences(directory_path):
+    """
+    Counts occurrences of the word "SSTORE" in files with "reentrancy" in their names 
+    within the specified directory.
+
+    Args:
+        directory_path (str): The path to the directory containing files to search.
+    """
+    for filename in os.listdir(directory_path):
+        # Verifica se il file contiene "reentrancy" nel nome
+        if "reentrancy" in filename:
+            file_path = os.path.join(directory_path, filename)
+            if os.path.isfile(file_path):
+                with open(file_path, 'r') as file:
+                    content = file.read()
+                
+                # Conta le occorrenze di "SSTORE"
+                sstore_count = content.count("SSTORE")
+                
+                # Stampa il risultato per il file
+                print(f"{filename}: {sstore_count}")
+
 #################################### Main
 
 if __name__ == "__main__":
@@ -202,5 +224,6 @@ if __name__ == "__main__":
 
     print("Finished")
     clean_files(result_evmlisa_dir)
-    
+
     # TODO print of results
+    count_sstore_occurrences(result_ethersolve_dir)
