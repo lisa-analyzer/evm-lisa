@@ -190,7 +190,7 @@ public class EVMLiSA {
 
 		// Single analysis case
 		if (addressSC == null)
-			addressSC = "no-address";
+			addressSC = "no-address-" + System.currentTimeMillis();;
 		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 		jsonOptions.put("output-directory", OUTPUT_DIR);
@@ -869,7 +869,7 @@ public class EVMLiSA {
 
 		Option dumpDotOption = Option.builder()
 				.longOpt("dot")
-				.desc("Export a dot-notation file..")
+				.desc("Export a dot-notation file.")
 				.required(false)
 				.hasArg(false)
 				.build();
