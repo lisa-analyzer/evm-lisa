@@ -41,9 +41,8 @@ import org.apache.logging.log4j.Logger;
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
  * filtering all the possible destinations and adding the missing edges.
  */
-public class JumpSolver
-		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-				MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> {
+public class JumpSolver implements
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
@@ -103,9 +102,7 @@ public class JumpSolver
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
 
 		if (fixpoint) {
 			this.unreachableJumps = new HashSet<>();
@@ -119,12 +116,10 @@ public class JumpSolver
 						|| !this.cfgToAnalyze.reachableFrom(entryPoint, node))
 					continue;
 
-				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-						MonolithicHeap,
-						EVMAbstractState,
-						TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
-					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-							MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(this.cfgToAnalyze)) {
+					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+							TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -187,9 +182,7 @@ public class JumpSolver
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap,
-					EVMAbstractState, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -202,12 +195,11 @@ public class JumpSolver
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
-		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-				MonolithicHeap,
-				EVMAbstractState,
-				TypeEnvironment<InferredTypes>> result : tool.getResultOf(this.cfgToAnalyze)) {
-			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>,
-					MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>> analysisResult = null;
+		for (AnalyzedCFG<
+				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
+						.getResultOf(this.cfgToAnalyze)) {
+			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+					TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);

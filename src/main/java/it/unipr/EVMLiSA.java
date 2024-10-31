@@ -293,7 +293,7 @@ public class EVMLiSA {
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
-
+		conf.useWideningPoints = false;
 		if (dumpAnalysis != null) {
 			if (dumpAnalysis.equals("dot"))
 				conf.analysisGraphs = GraphType.DOT;

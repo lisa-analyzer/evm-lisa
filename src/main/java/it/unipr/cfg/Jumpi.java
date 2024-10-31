@@ -8,9 +8,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -40,11 +37,6 @@ public class Jumpi extends Statement {
 	}
 
 	@Override
-	public int setOffset(int offset) {
-		return this.offset = offset;
-	}
-
-	@Override
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
 		return visitor.visit(tool, getCFG(), this);
 	}
@@ -54,14 +46,10 @@ public class Jumpi extends Statement {
 		return "JUMPI";
 	}
 
-	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		EVMAbstractState valueState = entryState.getDomainInstance(EVMAbstractState.class);
+	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
+			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
+
+		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
 
 		// Split here
 		Set<AbstractStack> trueStacks = new HashSet<>();
@@ -85,5 +73,11 @@ public class Jumpi extends Statement {
 		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
 				JumpiOperator.INSTANCE, getLocation()), this);
+	}
+
+	@Override
+	protected int compareSameClass(Statement o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

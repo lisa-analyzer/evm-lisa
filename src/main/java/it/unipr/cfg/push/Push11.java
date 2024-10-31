@@ -3,6 +3,7 @@ package it.unipr.cfg.push;
 import it.unipr.cfg.HexDecimalLiteral;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.evaluation.EvaluationOrder;
 import it.unive.lisa.program.cfg.statement.evaluation.LeftToRightEvaluation;
 import it.unive.lisa.type.Untyped;
@@ -29,5 +30,11 @@ public class Push11 extends Push {
 	@Override
 	public String toString() {
 		return "PUSH11 " + getSubExpression();
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

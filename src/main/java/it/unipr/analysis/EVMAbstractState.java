@@ -7,8 +7,8 @@ import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -19,6 +19,8 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -147,14 +149,15 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp) {
+	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) {
 		// nothing to do here
 		return this;
 	}
 
 	@SuppressWarnings("unused")
 	@Override
-	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// bottom state is propagated
 		if (this.isBottom())
 			return this;
@@ -2132,7 +2135,8 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+			SemanticOracle oracle)
 			throws SemanticException {
 		// Ensures BOTTOM and TOP propagation
 		if (this.isBottom() || this.isTop())
@@ -2195,7 +2199,7 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) {
 		// nothing to do here
 		return Satisfiability.UNKNOWN;
 	}
@@ -2213,7 +2217,7 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isBottom())
 			return Lattice.bottomRepresentation();
 		else if (isTop())
@@ -2412,5 +2416,10 @@ public class EVMAbstractState
 		}
 
 		return StackElement.NUMERIC_TOP;
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return true;
 	}
 }
