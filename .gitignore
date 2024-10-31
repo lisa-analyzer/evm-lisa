@@ -12,6 +12,9 @@ evm-outputs/
 test-ground-truth-stats/
 evm-testcases/ground-truth/test/logs.txt
 evm-testcases/ground-truth/test/statistics.csv
+script-python/journal/reentrancy/results/
+script-python/journal/reentrancy/json/
+script-python/journal/execution/
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/

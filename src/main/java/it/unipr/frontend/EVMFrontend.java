@@ -79,6 +79,37 @@ public class EVMFrontend {
 		String[] test = bytecodeRequest.split("\"");
 		String bytecode = test[9];
 
+		return opcodesFromBytecode(bytecode, output);
+	}
+
+	/**
+	 * Processes the given bytecode string to extract opcodes and writes them to
+	 * an output file.
+	 * <p>
+	 * This method reads the bytecode, identifies opcodes and their associated
+	 * push data, and writes the results to the specified output file. If the
+	 * bytecode string is null or empty, the method logs an error message and
+	 * returns false, indicating that the output file will not be created.
+	 * </p>
+	 *
+	 * @param bytecode the bytecode string to be processed, must not be null or
+	 *                     empty
+	 * @param output   the path to the output file where the extracted opcodes
+	 *                     will be written
+	 * 
+	 * @return {@code true} if the processing is successful and the output file
+	 *             is created, {@code false} if the bytecode is null or empty
+	 * 
+	 * @throws IOException if an I/O error occurs while writing to the output
+	 *                         file
+	 */
+	public static boolean opcodesFromBytecode(String bytecode, String output) throws IOException {
+
+		if (bytecode == null || bytecode.isEmpty()) {
+			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
+			return false;
+		}
+
 		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 
 		for (int i = 2; i < bytecode.length(); i += 2) {
