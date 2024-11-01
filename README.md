@@ -88,18 +88,21 @@ This command will initiate the analysis process for the specified smart contract
 
 ```
 Options:
- -a,--address <arg>          address of an Ethereum smart contract
- -b,--benchmark <arg>        filepath of the benchmark suite (i.e., a list of smart contract addresses)
- -C,--cores <arg>            number of cores to use
- -c,--dump-cfg               dump the CFG
- -d,--dump-analysis <arg>    dump the analysis (html, dot)
- -D,--download-bytecode      download the bytecode, without analyzing it
- -f,--filepath <arg>         filepath of an EVM bytecode smart contract
- -o,--output <arg>           output directory path
- -q,--stack-size <arg>       maximal height of stack
- -s,--dump-stats             dump statistics
- -S,--use-live-storage       use the live storage in SLOAD
- -w,--stack-set-size <arg>   maximal size of stack sets
+ -a,--address <arg>             Address of an Ethereum smart contract.
+ -b,--benchmark <arg>           Filepath of the benchmark suite (i.e., a list of smart contract addresses).
+ -c,--cores <arg>               Number of cores used in benchmark.
+    --creation-code             Parse bytecode as creation code (instead of runtime code).
+    --dot                       Export a dot-notation file.
+    --download-bytecode         Download the bytecode.
+    --dump-report               Dump analysis report.
+    --dump-stats                Dump statistics.
+ -f,--filepath-bytecode <arg>   Filepath of the bytecode file.
+    --html                      Export a graphic HTML report.
+ -o,--output <arg>              Output directory path.
+    --serialize-inputs          Serialize inputs.
+    --stack-set-size <arg>      Dimension of stack-set (default: 8).
+    --stack-size <arg>          Dimension of stack (default: 32).
+    --use-live-storage          Use the live storage in SLOAD.
 ```
 
 # 🔍 Abstract Stack Set Domain

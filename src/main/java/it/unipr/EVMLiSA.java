@@ -78,83 +78,7 @@ public class EVMLiSA {
 	}
 
 	public void go(String[] args) throws Exception {
-		Options options = new Options();
-
-		// String parameters
-		Option addressOption = new Option("a", "address", true, "address of an Ethereum smart contract");
-		addressOption.setRequired(false);
-		options.addOption(addressOption);
-
-		Option outputOption = new Option("o", "output", true, "output directory path");
-		outputOption.setRequired(false);
-		options.addOption(outputOption);
-
-		Option dumpAnalysisOption = new Option("d", "dump-analysis", true, "dump the analysis (html, dot)");
-		dumpAnalysisOption.setRequired(false);
-		options.addOption(dumpAnalysisOption);
-
-		Option filePathOption = new Option("f", "filepath", true, "filepath of the Etherem smart contract");
-		filePathOption.setRequired(false);
-		options.addOption(filePathOption);
-
-		Option stackSizeOption = new Option("q", "stack-size", true, "dimension of stack");
-		stackSizeOption.setRequired(false);
-		options.addOption(stackSizeOption);
-
-		Option stackSetSizeOption = new Option("w", "stack-set-size", true, "dimension of stack-set");
-		stackSetSizeOption.setRequired(false);
-		options.addOption(stackSetSizeOption);
-
-		Option benchmarkOption = new Option("b", "benchmark", true, "filepath of the benchmark");
-		benchmarkOption.setRequired(false);
-		options.addOption(benchmarkOption);
-
-		Option coresOption = new Option("C", "cores", true, "number of cores used");
-		coresOption.setRequired(false);
-		options.addOption(coresOption);
-
-		// Boolean parameters
-		Option dumpStatisticsOption = Option.builder("s")
-				.longOpt("dump-stats")
-				.desc("dump statistics")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option dumpCFGOption = Option.builder("c")
-				.longOpt("dump-cfg")
-				.desc("dump the CFG")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option downloadBytecodeOption = Option.builder("D")
-				.longOpt("download-bytecode")
-				.desc("download the bytecode")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option useStorageLiveOption = Option.builder("S")
-				.longOpt("use-live-storage")
-				.desc("use the live storage in SLOAD")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option dumpAnalysisReport = Option.builder("r")
-				.longOpt("dump-report")
-				.desc("dump analysis report")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		options.addOption(dumpStatisticsOption);
-		options.addOption(dumpCFGOption);
-		options.addOption(downloadBytecodeOption);
-		options.addOption(useStorageLiveOption);
-		options.addOption(dumpAnalysisReport);
-
+		Options options = getOptions();
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -170,17 +94,19 @@ public class EVMLiSA {
 
 		String addressSC = cmd.getOptionValue("address");
 		String outputDir = cmd.getOptionValue("output");
-		boolean dumpCFG = cmd.hasOption("dumpcfg");
-		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
+		boolean serializeInputs = cmd.hasOption("serialize-inputs");
+		boolean dumpHTML = cmd.hasOption("html");
+		boolean dumpDot = cmd.hasOption("dot");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
 		boolean downloadBytecode = cmd.hasOption("download-bytecode");
 		boolean useStorageLive = cmd.hasOption("use-live-storage");
-		String filepath = cmd.getOptionValue("filepath");
+		String filepath = cmd.getOptionValue("filepath-bytecode");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
 		boolean dumpReport = cmd.hasOption("dump-report");
+		boolean useCreationCode = cmd.hasOption("creation-code");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
@@ -222,15 +148,19 @@ public class EVMLiSA {
 
 		if (useStorageLive)
 			EVMAbstractState.setUseStorageLive();
+		if (useCreationCode)
+			EVMFrontend.setUseCreationCode();
 
 		// Creating json output notes
 		JSONObject jsonOptions = new JSONObject();
 		jsonOptions.put("address", addressSC);
-		jsonOptions.put("dump-CFG", dumpCFG);
-		jsonOptions.put("dump-analysis", dumpAnalysis);
+		jsonOptions.put("serialize-inputs", serializeInputs);
+		jsonOptions.put("dump-html", dumpHTML);
+		jsonOptions.put("dump-dot", dumpDot);
 		jsonOptions.put("dump-statistics", dumpStatistics);
 		jsonOptions.put("download-bytecode", downloadBytecode);
 		jsonOptions.put("use-storage-live", useStorageLive);
+		jsonOptions.put("use-creation-code", useCreationCode);
 		jsonOptions.put("filepath", filepath);
 		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
 		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
@@ -259,6 +189,8 @@ public class EVMLiSA {
 		}
 
 		// Single analysis case
+		if (addressSC == null)
+			addressSC = "no-address-" + System.currentTimeMillis();;
 		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 		jsonOptions.put("output-directory", OUTPUT_DIR);
@@ -269,12 +201,10 @@ public class EVMLiSA {
 		STATISTICS_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_STATISTICS" + ".csv";
 		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
 
-		String BYTECODE_FULLPATH;
+		String BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".opcode";
 		if (filepath == null) {
-			BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".sol";
 			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
 		} else {
-			BYTECODE_FULLPATH = filepath + "opcodes";
 			String bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
 			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
 		}
@@ -285,7 +215,7 @@ public class EVMLiSA {
 		long finish;
 
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.serializeInputs = dumpCFG;
+		conf.serializeInputs = serializeInputs;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = dumpReport;
@@ -297,12 +227,10 @@ public class EVMLiSA {
 		conf.serializeResults = false;
 		conf.optimize = false;
 		conf.useWideningPoints = false;
-		if (dumpAnalysis != null) {
-			if (dumpAnalysis.equals("dot"))
-				conf.analysisGraphs = GraphType.DOT;
-			else if (dumpAnalysis.equals("html"))
-				conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
-		}
+		if (dumpHTML)
+			conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+		else if (dumpDot)
+			conf.analysisGraphs = GraphType.DOT;
 
 		try {
 			LiSA lisa = new LiSA(conf);
@@ -348,7 +276,7 @@ public class EVMLiSA {
 	private MyLogger newAnalysis(String CONTRACT_ADDR, JSONObject jsonOptions) throws Exception {
 
 		String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
-				+ ".sol";
+				+ ".opcode";
 
 		// Directory setup and bytecode retrieval
 		Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + CONTRACT_ADDR));
@@ -869,6 +797,136 @@ public class EVMLiSA {
 		}
 
 		log.info("Downloaded {} smart contract.", numberOfAPIEtherscanRequestOnSuccess);
+	}
+
+	private Options getOptions() {
+		Options options = new Options();
+
+		// String parameters
+		Option addressOption = Option.builder("a")
+				.longOpt("address")
+				.desc("Address of an Ethereum smart contract.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option outputOption = Option.builder("o")
+				.longOpt("output")
+				.desc("Output directory path.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option filePathOption = Option.builder("f")
+				.longOpt("filepath-bytecode")
+				.desc("Filepath of the bytecode file.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option stackSizeOption = Option.builder()
+				.longOpt("stack-size")
+				.desc("Dimension of stack (default: 32).")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option stackSetSizeOption = Option.builder()
+				.longOpt("stack-set-size")
+				.desc("Dimension of stack-set (default: 8).")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option benchmarkOption = Option.builder("b")
+				.longOpt("benchmark")
+				.desc("Filepath of the benchmark.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option coresOption = Option.builder("c")
+				.longOpt("cores")
+				.desc("Number of cores used in benchmark.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		// Boolean parameters
+		Option dumpStatisticsOption = Option.builder()
+				.longOpt("dump-stats")
+				.desc("Dump statistics.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option dumpHtmlOption = Option.builder()
+				.longOpt("html")
+				.desc("Export a graphic HTML report.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option dumpDotOption = Option.builder()
+				.longOpt("dot")
+				.desc("Export a dot-notation file.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option serializeInputsOption = Option.builder()
+				.longOpt("serialize-inputs")
+				.desc("Serialize inputs.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option downloadBytecodeOption = Option.builder()
+				.longOpt("download-bytecode")
+				.desc("Download the bytecode.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option useStorageLiveOption = Option.builder()
+				.longOpt("use-live-storage")
+				.desc("Use the live storage in SLOAD.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option dumpAnalysisReport = Option.builder()
+				.longOpt("dump-report")
+				.desc("Dump analysis report.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option useCreationCodeOption = Option.builder()
+				.longOpt("creation-code")
+				.desc("Parse bytecode as creation code (instead of runtime code).")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		options.addOption(addressOption);
+		options.addOption(outputOption);
+		options.addOption(filePathOption);
+		options.addOption(stackSizeOption);
+		options.addOption(stackSetSizeOption);
+		options.addOption(benchmarkOption);
+		options.addOption(coresOption);
+
+		options.addOption(dumpStatisticsOption);
+		options.addOption(serializeInputsOption);
+		options.addOption(downloadBytecodeOption);
+		options.addOption(useStorageLiveOption);
+		options.addOption(dumpAnalysisReport);
+		options.addOption(useCreationCodeOption);
+		options.addOption(dumpHtmlOption);
+		options.addOption(dumpDotOption);
+
+		return options;
 	}
 
 	public static class Converter {

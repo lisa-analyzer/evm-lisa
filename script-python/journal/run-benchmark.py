@@ -14,19 +14,15 @@ max_threads = os.cpu_count() - 3  # Core avaiable
 #################################### Utility
 def delete_tmp_files(directory):
     """
-    Deletes files in the specified directory that contain 'opcodes' in their name.
+    Deletes files in the specified directory that contain 'no-address' in their name.
 
     Args:
         directory (str): The path to the directory from which to delete files.
     """
-    try:
-        for filename in os.listdir(directory):
-            if 'opcodes' in filename:
-                file_path = os.path.join(directory, filename)
-                os.remove(file_path)
-                # print(f"Deleted: {file_path}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    command = (
+        f"rm -rf {directory}/no-address* "
+    )
+    subprocess.run(command, shell=True, check=True)
 
 def clean_files(directory_path):
     """
@@ -122,8 +118,12 @@ def evmlisa():
                     # print(f"Analysis complete for {result_file}")
                     analysis_ended += 1
                 pbar.update(1)
+    
     print(f"[EVMLISA] Completed {analysis_ended}/{num_files}.")
-    delete_tmp_files(bytecode_dir)
+    delete_tmp_files(results_dir)
+    delete_tmp_files("./execution/results")
+    clean_files(result_evmlisa_dir)
+    print(f"[EVMLISA] File cleaned.")
 
 #################################### EtherSolve
 
@@ -223,7 +223,6 @@ if __name__ == "__main__":
     ethersolve_thread.join()
 
     print("Finished")
-    clean_files(result_evmlisa_dir)
 
     # TODO print of results
-    count_sstore_occurrences(result_ethersolve_dir)
+    # count_sstore_occurrences(result_ethersolve_dir)
