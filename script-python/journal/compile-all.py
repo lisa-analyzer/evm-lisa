@@ -44,9 +44,9 @@ def compile_solidity_sources():
             except subprocess.CalledProcessError as e:
                 print(f"Error compiling {filename}: {e}")
 
-def extract_and_save_bytecode():
+def extract_and_save_longest_bytecode():
     """
-    Extracts all bytecode from each .json file and saves it in the specified output directory.
+    Extracts the longest bytecode from each .json file and saves it in the specified output directory.
     """
     # Clear and create bytecode directory
     clear_directory(bytecode_dir)
@@ -59,19 +59,26 @@ def extract_and_save_bytecode():
                 data = json.load(json_file)
                 contracts = data.get("contracts", {})
                 
-                count = 1  # Sequential counter for each bytecode in the same JSON
+                longest_bytecode = None
+                longest_contract_name = None
+
                 for contract_name, contract_data in contracts.items():
                     bytecode = contract_data.get("bin")
                     if bytecode:
-                        # Add a sequential number to the filename
-                        bytecode_filename = os.path.join(
-                            bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
-                        )
-                        with open(bytecode_filename, 'w') as bytecode_file:
-                            bytecode_file.write("0x" + bytecode)
-                        print(f"Extracted bytecode to {bytecode_filename}")
-                        count += 1  # Increment counter for next bytecode
+                        # Check if this bytecode is longer than the current longest
+                        if longest_bytecode is None or len(bytecode) > len(longest_bytecode):
+                            longest_bytecode = bytecode
+                            longest_contract_name = contract_name
+
+                # Save the longest bytecode, if it exists
+                if longest_bytecode:
+                    bytecode_filename = os.path.join(
+                        bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
+                    )
+                    with open(bytecode_filename, 'w') as bytecode_file:
+                        bytecode_file.write("0x" + longest_bytecode)
+                    # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 
 if __name__ == "__main__":
     compile_solidity_sources()
-    extract_and_save_bytecode()
+    extract_and_save_longest_bytecode()

@@ -3,6 +3,11 @@ import subprocess
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+import re
+from collections import defaultdict
+import matplotlib.pyplot as plt
+from scipy.interpolate import make_interp_spline
+import numpy as np
 
 # Directory paths
 bytecode_dir = './reentrancy/bytecode'
@@ -46,6 +51,27 @@ def clean_files(directory_path):
                 # print(f"Cleaned {filename}")
             # else:
                 # print(f"No changes made to {filename}")
+
+def plot_results(data_ethersolve, data_solidifi):
+    keys1 = sorted(data_ethersolve.keys())
+    values1 = [data_ethersolve[key] for key in keys1]
+
+    keys2 = sorted(data_solidifi.keys())
+    values2 = [data_solidifi[key] for key in keys2]
+
+    plt.figure(figsize=(12, 6))
+
+    plt.plot(keys1, values1, marker='o', label='Ethersolve', color='purple')
+    plt.plot(keys2, values2, marker='o', label='SolidiFI', color='red')
+
+    plt.xlabel('Problem ID')
+    plt.ylabel('Value')
+    plt.title('Comparison of results (re-entrancy)')
+    plt.xticks(sorted(set(keys1).union(set(keys2))))  # Show all problem IDs on x-axis
+    plt.legend()
+    plt.grid()
+
+    plt.show()
 
 #################################### EVMLiSA
 
@@ -188,7 +214,7 @@ def ethersolve():
     print(f"[ETHERSOLVE] Completed {analysis_ended}/{num_files}.")
     delete_tmp_files(bytecode_dir)
 
-def count_sstore_occurrences(directory_path):
+def results_ethersolve(directory_path):
     """
     Counts occurrences of the word "SSTORE" in files with "reentrancy" in their names 
     within the specified directory.
@@ -196,23 +222,59 @@ def count_sstore_occurrences(directory_path):
     Args:
         directory_path (str): The path to the directory containing files to search.
     """
+    sstore_counts = {}
+
     for filename in os.listdir(directory_path):
-        # Verifica se il file contiene "reentrancy" nel nome
         if "reentrancy" in filename:
             file_path = os.path.join(directory_path, filename)
             if os.path.isfile(file_path):
                 with open(file_path, 'r') as file:
                     content = file.read()
                 
-                # Conta le occorrenze di "SSTORE"
                 sstore_count = content.count("SSTORE")
                 
-                # Stampa il risultato per il file
-                print(f"{filename}: {sstore_count}")
+                # print(f"{filename}: {sstore_count}")
+                sstore_counts[filename] = sstore_count
+
+    results = defaultdict(int)
+    for file, result in sstore_counts.items():
+        match = re.match(r'buggy_(\d+)-\w+\.csv', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
+    
+    # print(results)
+    return results
+
+#################################### SolidiFI
+
+def results_solidifi(folder_path):
+    # Initialize a dictionary to store the line count for each problem ID
+    line_counts = defaultdict(int)
+
+    # Iterate over all files in the specified folder
+    for file_name in os.listdir(folder_path):
+        # Check if the file name matches the pattern "BugLog_<problem number>.csv"
+        match = re.match(r'BugLog_(\d+)\.csv', file_name)
+        if match:
+            # Extract the problem number from the file name
+            problem_id = int(match.group(1))
+            file_path = os.path.join(folder_path, file_name)
+            
+            # Count the number of lines in the file
+            with open(file_path, 'r') as file:
+                num_lines = sum(1 for _ in file)
+                
+            # Store the line count in the dictionary
+            line_counts[problem_id] = num_lines - 1
+
+    # print(line_counts)
+    return line_counts
 
 #################################### Main
 
 if __name__ == "__main__":
+    
     evmlisa_thread = threading.Thread(target=evmlisa)
     ethersolve_thread = threading.Thread(target=ethersolve)
     
@@ -222,7 +284,10 @@ if __name__ == "__main__":
     evmlisa_thread.join()
     ethersolve_thread.join()
 
-    print("Finished")
-
-    # TODO print of results
-    # count_sstore_occurrences(result_ethersolve_dir)
+    print("Finished, plotting results")
+    
+    plot_results(
+        results_ethersolve(result_ethersolve_dir),
+        results_solidifi("./SolidiFI-benchmark/buggy_contracts/Re-entrancy")
+    )
+    
