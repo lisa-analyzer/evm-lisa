@@ -190,7 +190,7 @@ public class EVMLiSA {
 
 		// Single analysis case
 		if (addressSC == null)
-			addressSC = "no-address-" + System.currentTimeMillis();;
+			addressSC = "no-address-" + System.currentTimeMillis();
 		OUTPUT_DIR += "/" + addressSC;
 		Files.createDirectories(Paths.get(OUTPUT_DIR));
 		jsonOptions.put("output-directory", OUTPUT_DIR);
