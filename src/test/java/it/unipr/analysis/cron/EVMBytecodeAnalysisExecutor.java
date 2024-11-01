@@ -96,12 +96,14 @@ public abstract class EVMBytecodeAnalysisExecutor {
 
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, conf.testDir);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, conf.testDir);
-		Path target = Paths.get(expectedPath.toString(), conf.programFile);
+		Path target = Paths.get(expectedPath.toString(), conf.testDir);
 		if (conf.testSubDir != null) {
 			expectedPath = Paths.get(expectedPath.toString(), conf.testSubDir);
 			actualPath = Paths.get(actualPath.toString(), conf.testSubDir);
+			target = Paths.get(target.toString(), conf.testSubDir);
 		}
-
+		target = Paths.get(expectedPath.toString(), conf.programFile);
+	
 		Program program = null;
 		try {
 			program = readProgram(target);
