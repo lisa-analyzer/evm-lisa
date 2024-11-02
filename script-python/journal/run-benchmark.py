@@ -243,8 +243,9 @@ def results_ethersolve(directory_path):
             id = int(match.group(1))
             results[id] += result
     
-    # print(results)
-    return results
+    sorted_data = dict(sorted(results.items()))
+    # print(sorted_data)
+    return sorted_data
 
 #################################### SolidiFI
 
@@ -268,13 +269,13 @@ def results_solidifi(folder_path):
             # Store the line count in the dictionary
             line_counts[problem_id] = num_lines - 1
 
-    # print(line_counts)
-    return line_counts
+    sorted_data = dict(sorted(line_counts.items()))
+    # print(sorted_data)
+    return sorted_data
 
 #################################### Main
 
 if __name__ == "__main__":
-    
     evmlisa_thread = threading.Thread(target=evmlisa)
     ethersolve_thread = threading.Thread(target=ethersolve)
     
@@ -285,7 +286,7 @@ if __name__ == "__main__":
     ethersolve_thread.join()
 
     print("Finished, plotting results")
-    
+
     plot_results(
         results_ethersolve(result_ethersolve_dir),
         results_solidifi("./SolidiFI-benchmark/buggy_contracts/Re-entrancy")
