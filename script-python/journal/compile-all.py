@@ -76,6 +76,15 @@ def extract_and_save_longest_bytecode():
                         bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
                     )
                     with open(bytecode_filename, 'w') as bytecode_file:
+                        # Find the first occurrence of '60406040'
+                        first_index = longest_bytecode.find('60806040')
+
+                        # Find the second occurrence of '60406040' after the first
+                        second_index = longest_bytecode.find('60806040', first_index + len('60806040'))
+                        
+                        longest_bytecode = longest_bytecode[second_index:]
+                        
+
                         bytecode_file.write("0x" + longest_bytecode)
                     # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 

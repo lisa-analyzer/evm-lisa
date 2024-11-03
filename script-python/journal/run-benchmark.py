@@ -110,7 +110,6 @@ def run_evmlisa(bytecode_file):
         f"--filepath {bytecode_file} "
         f"--stack-size 32 "
         f"--stack-set-size 8 "
-        f"--creation-code "
         f"> /dev/null 2> {result_filepath}"
     )
     
