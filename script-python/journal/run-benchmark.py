@@ -171,10 +171,10 @@ def run_ethersolve(bytecode_file):
     command = (
         f"sleep 0.9 && "
         f"java -jar EtherSolve/EtherSolve.jar "
-        f"{bytecode_file} "
-        f"--json --creation "
         f"--re-entrancy "
-        f"-o {result_filepath} 2> /dev/null && "
+        f"-o {result_filepath} "        
+        f"--creation --json "
+        f"{bytecode_file} 2> /dev/null && "
         f"mv *re-entrancy.csv {result_ethersolve_dir}/{filename}-reentrancy.csv"
     )
     
