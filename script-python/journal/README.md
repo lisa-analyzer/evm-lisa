@@ -1,12 +1,13 @@
 # Run benchmark
 
-Install solc:
+Install dependencies:
 ```
 brew install solc-select
 solc-select install 0.5.17
 solc-select use 0.5.17
 pip install tqdm
 pip install scipy
+git clone https://github.com/DependableSystemsLab/SolidiFI-benchmark
 ```
 
 Compile bytecodes:
