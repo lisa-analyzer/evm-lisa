@@ -1,15 +1,9 @@
 package it.unipr;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyCache;
-import it.unipr.analysis.MyLogger;
-import it.unipr.analysis.StackElement;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
+import it.unipr.analysis.*;
+import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
+import it.unipr.checker.ReentrancyChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -230,6 +224,7 @@ public class EVMLiSA {
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
+		conf.semanticChecks.add(new ReentrancyChecker());
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
@@ -245,6 +240,8 @@ public class EVMLiSA {
 
 			// Print the results
 			finish = System.currentTimeMillis();
+
+			jsonOptions.put("re-entrancy-warning", UniquePairCollector.getInstance().size());
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker)
 					.address(addressSC)

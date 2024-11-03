@@ -15,7 +15,7 @@ bytecode_dir = './reentrancy/bytecode'
 results_dir = './reentrancy/results'
 result_evmlisa_dir = results_dir + '/evmlisa'
 result_ethersolve_dir = results_dir + '/ethersolve'
-max_threads = os.cpu_count() / 2  # Core avaiable
+max_threads = int(os.cpu_count() / 3)  # Core avaiable
 
 #################################### Utility
 def delete_tmp_files(directory):
@@ -53,26 +53,30 @@ def clean_files(directory_path):
             # else:
                 # print(f"No changes made to {filename}")
 
-def plot_results(data_ethersolve, data_solidifi):
+def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
     keys1 = sorted(data_ethersolve.keys())
     values1 = [data_ethersolve[key] for key in keys1]
 
     keys2 = sorted(data_solidifi.keys())
     values2 = [data_solidifi[key] for key in keys2]
 
+    keys3 = sorted(data_evmlisa.keys())
+    values3 = [data_evmlisa[key] for key in keys3]
+
     plt.figure(figsize=(12, 6))
 
     plt.plot(keys1, values1, marker='o', label='Ethersolve', color='purple')
     plt.plot(keys2, values2, marker='o', label='SolidiFI', color='red')
+    plt.plot(keys3, values3, marker='o', label='EVMLiSA', color='green')
 
     plt.xlabel('Problem ID')
     plt.ylabel('Value')
     plt.title('Comparison of results (re-entrancy)')
-    plt.xticks(sorted(set(keys1).union(set(keys2))))  # Show all problem IDs on x-axis
+    plt.xticks(sorted(set(keys1).union(set(keys2).union(keys3))))  # Show all problem IDs on x-axis
     plt.legend()
     plt.grid()
 
-    # plt.show()
+    plt.show()
 
 #################################### EVMLiSA
 
@@ -153,7 +157,7 @@ def evmlisa():
     clean_files(result_evmlisa_dir)
     print(f"[EVMLISA] File cleaned.")
 
-def analyze_results_evmlisa(directory_path):
+def check_sound_analysis_evmlisa(directory_path):
     sound = True
     
     for filename in os.listdir(directory_path):
@@ -174,6 +178,39 @@ def analyze_results_evmlisa(directory_path):
     
     if sound:
         print("[EVMLiSA] All analysis are SOUND")
+
+def results_evmlisa(directory_path):
+    re_entrancy_warning_counts = {}
+    
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".json"):
+            file_path = os.path.join(directory_path, filename)
+            try:
+                with open(file_path, 'r') as file:
+                    data = json.load(file)
+                    
+                    if "re-entrancy-warning" in data:
+                        re_entrancy_warning_counts[filename] = data['re-entrancy-warning']
+                    else:
+                        print(f"[EVMLiSA] Warning: 're-entrancy-warning' not found in {filename}")
+            except Exception as e:
+                print(f"[EVMLiSA] ERROR: {filename}: {e}")            
+
+    results = defaultdict(int)
+    for file, result in re_entrancy_warning_counts.items():
+        match = re.match(r'buggy_(\d+)-\w+\.json', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
+        
+        match = re.match(r'buggy_(\d+)_(\d+)-\w+\.json', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
+    
+    sorted_data = dict(sorted(results.items()))
+    print(sorted_data)
+    return sorted_data
 
 
 #################################### EtherSolve
@@ -311,9 +348,10 @@ if __name__ == "__main__":
     evmlisa_thread.join()
     ethersolve_thread.join()
 
-    analyze_results_evmlisa(result_evmlisa_dir)
+    check_sound_analysis_evmlisa(result_evmlisa_dir)
 
     plot_results(
+        results_evmlisa(result_evmlisa_dir),
         results_ethersolve(result_ethersolve_dir),
         results_solidifi("./SolidiFI-benchmark/buggy_contracts/Re-entrancy")
     )

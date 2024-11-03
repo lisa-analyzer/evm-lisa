@@ -79,6 +79,36 @@ def extract_and_save_longest_bytecode():
                         bytecode_file.write("0x" + longest_bytecode)
                     # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 
+def extract_and_save_bytecode():
+    """
+    Extracts all bytecode from each .json file and saves it in the specified output directory.
+    """
+    # Clear and create bytecode directory
+    clear_directory(bytecode_dir)
+    os.makedirs(bytecode_dir, exist_ok=True)
+
+    for json_filename in os.listdir(json_dir):
+        if json_filename.endswith(".json"):
+            json_filepath = os.path.join(json_dir, json_filename)
+            with open(json_filepath, 'r') as json_file:
+
+                data = json.load(json_file)
+                contracts = data.get("contracts", {})
+                count = 1  # Sequential counter for each bytecode in the same JSON
+
+                for contract_name, contract_data in contracts.items():
+                    bytecode = contract_data.get("bin")
+                    if bytecode:
+                        # Add a sequential number to the filename
+                        bytecode_filename = os.path.join(
+                            bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
+                        )
+                        with open(bytecode_filename, 'w') as bytecode_file:
+                            bytecode_file.write("0x" + bytecode)
+                        print(f"Extracted bytecode to {bytecode_filename}")
+                        count += 1  # Increment counter for next bytecode
+
 if __name__ == "__main__":
     compile_solidity_sources()
+    # extract_and_save_bytecode()
     extract_and_save_longest_bytecode()
