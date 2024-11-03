@@ -208,7 +208,12 @@ public class EVMLiSA {
 		} else {
 			bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
 		}
-		jsonOptions.put("bytecode", bytecode);
+		if (useCreationCode)
+			jsonOptions.put("bytecode", bytecode);
+		else if (bytecode != null)
+			jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe"))); // runtime
+																						// code
+																						// case
 		EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
