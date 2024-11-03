@@ -8,13 +8,14 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline
 import numpy as np
+import json
 
 # Directory paths
 bytecode_dir = './reentrancy/bytecode'
 results_dir = './reentrancy/results'
 result_evmlisa_dir = results_dir + '/evmlisa'
 result_ethersolve_dir = results_dir + '/ethersolve'
-max_threads = os.cpu_count() - 3  # Core avaiable
+max_threads = os.cpu_count() / 2  # Core avaiable
 
 #################################### Utility
 def delete_tmp_files(directory):
@@ -71,7 +72,7 @@ def plot_results(data_ethersolve, data_solidifi):
     plt.legend()
     plt.grid()
 
-    plt.show()
+    # plt.show()
 
 #################################### EVMLiSA
 
@@ -104,7 +105,8 @@ def run_evmlisa(bytecode_file):
         f"./execution/evm-lisa/bin/evm-lisa "
         f"--filepath {bytecode_file} "
         f"--stack-size 32 "
-        f"--stack-set-size 10 "
+        f"--stack-set-size 8 "
+        f"--creation-code "
         f"> /dev/null 2> {result_filepath}"
     )
     
@@ -150,6 +152,29 @@ def evmlisa():
     delete_tmp_files("./execution/results")
     clean_files(result_evmlisa_dir)
     print(f"[EVMLISA] File cleaned.")
+
+def analyze_results_evmlisa(directory_path):
+    sound = True
+    
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".json"):
+            file_path = os.path.join(directory_path, filename)
+            try:
+                with open(file_path, 'r') as file:
+                    data = json.load(file)
+                    
+                    if "solved-jumps-percent" in data:
+                        if data["solved-jumps-percent"] != 1:
+                            print(f"[EVMLiSA] {filename} - solved-jumps-percent: {data['solved-jumps-percent']}")
+                            sound = False
+                    else:
+                        print(f"[EVMLiSA] Warning: 'solved-jumps-percent' not found in {filename}")
+            except Exception as e:
+                print(f"[EVMLiSA] ERROR: {filename}: {e}")
+    
+    if sound:
+        print("[EVMLiSA] All analysis are SOUND")
+
 
 #################################### EtherSolve
 
@@ -276,6 +301,7 @@ def results_solidifi(folder_path):
 #################################### Main
 
 if __name__ == "__main__":
+
     evmlisa_thread = threading.Thread(target=evmlisa)
     ethersolve_thread = threading.Thread(target=ethersolve)
     
@@ -285,7 +311,7 @@ if __name__ == "__main__":
     evmlisa_thread.join()
     ethersolve_thread.join()
 
-    print("Finished, plotting results")
+    analyze_results_evmlisa(result_evmlisa_dir)
 
     plot_results(
         results_ethersolve(result_ethersolve_dir),

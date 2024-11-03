@@ -86,7 +86,7 @@ public class EVMAbstractState
 		this.storage = new Memory();
 		this.mu_i = StackElement.ZERO;
 
-		CONTRACT_ADDRESS = contractAddress;
+		CONTRACT_ADDRESS = (contractAddress.matches("^0x[a-fA-F0-9]{40}$")) ? contractAddress : null;
 	}
 
 	/**
@@ -196,7 +196,11 @@ public class EVMAbstractState
 				}
 				case "AddressOperator": { // ADDRESS
 
-					StackElement hex = new StackElement(toBigInteger(CONTRACT_ADDRESS));
+					StackElement hex;
+					if (CONTRACT_ADDRESS == null)
+						hex = StackElement.NUMERIC_TOP;
+					else
+						hex = new StackElement(toBigInteger(CONTRACT_ADDRESS));
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
