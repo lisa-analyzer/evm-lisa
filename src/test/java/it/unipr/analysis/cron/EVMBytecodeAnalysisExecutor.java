@@ -103,7 +103,7 @@ public abstract class EVMBytecodeAnalysisExecutor {
 			target = Paths.get(target.toString(), conf.testSubDir);
 		}
 		target = Paths.get(expectedPath.toString(), conf.programFile);
-	
+
 		Program program = null;
 		try {
 			program = readProgram(target);

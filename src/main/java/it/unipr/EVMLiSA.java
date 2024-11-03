@@ -202,12 +202,14 @@ public class EVMLiSA {
 		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
 
 		String BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".opcode";
+		String bytecode;
 		if (filepath == null) {
-			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
+			bytecode = EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
 		} else {
-			String bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
-			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+			bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
 		}
+		jsonOptions.put("bytecode", bytecode);
+		EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
 
@@ -295,7 +297,7 @@ public class EVMLiSA {
 				}
 			}
 
-			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
+			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH) != null)
 				numberOfAPIEtherscanRequestOnSuccess++;
 		}
 
@@ -639,6 +641,16 @@ public class EVMLiSA {
 			log.info("{} deleted.", FAILURE_FULLPATH);
 	}
 
+	public static String readFileAsString(String filePath) {
+		try {
+			Path path = Paths.get(filePath);
+			return Files.readString(path);
+		} catch (IOException e) {
+			log.error("error: {}", e.getMessage());
+			return null;
+		}
+	}
+
 	/**
 	 * Reads smart contracts from a file and returns a list of strings.
 	 *
@@ -785,7 +797,7 @@ public class EVMLiSA {
 				File file = new File(BYTECODE_FULLPATH);
 				if (!file.exists()) {
 					numberOfAPIEtherscanRequest++;
-					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
+					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH) != null)
 						numberOfAPIEtherscanRequestOnSuccess++;
 
 					log.info("Downloading {}, remaining: {}.", address,

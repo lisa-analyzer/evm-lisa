@@ -36,7 +36,8 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 * 
 	 * @return a {@link CronConfiguration} to be performed on the test case.
 	 */
-	private static CronConfiguration createConfiguration(String testDir, String subDir, String programFile, boolean generateCfg) {
+	private static CronConfiguration createConfiguration(String testDir, String subDir, String programFile,
+			boolean generateCfg) {
 		if (GENERATE_CFG_FOR_ALL_TESTS) {
 			generateCfg = true;
 		}

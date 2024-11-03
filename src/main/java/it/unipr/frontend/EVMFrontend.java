@@ -74,18 +74,19 @@ public class EVMFrontend {
 	 * 
 	 * @throws IOException
 	 */
-	public static boolean parseContractFromEtherscan(String address, String output) throws IOException {
+	public static String parseContractFromEtherscan(String address, String output) throws IOException {
 		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 
 		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
 			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
-			return false;
+			return null;
 		}
 
 		String[] test = bytecodeRequest.split("\"");
 		String bytecode = test[9];
 
-		return opcodesFromBytecode(bytecode, output);
+		return bytecode;
+		// return opcodesFromBytecode(bytecode, output);
 	}
 
 	/**
@@ -163,9 +164,9 @@ public class EVMFrontend {
 		// Get bytecode from Etherscan
 		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
 
-		boolean parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, BYTECODE_OUTFILE_PATH);
+		String parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, BYTECODE_OUTFILE_PATH);
 
-		if (!parseResult) {
+		if (parseResult == null) {
 			return null;
 		}
 
