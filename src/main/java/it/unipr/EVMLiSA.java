@@ -190,7 +190,7 @@ public class EVMLiSA {
 		jsonOptions.put("output-directory", OUTPUT_DIR);
 
 		if (outputDir == null)
-			outputDir = OUTPUT_DIR + "/" + addressSC + "_REPORT";
+			outputDir = OUTPUT_DIR;
 
 		STATISTICS_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_STATISTICS" + ".csv";
 		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
@@ -241,7 +241,8 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			jsonOptions.put("re-entrancy-warning", UniquePairCollector.getInstance().size());
+			jsonOptions.put("re-entrancy-warning", UniqueItemCollector.getInstance().size()); // TODO
+																								// fix
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker)
 					.address(addressSC)

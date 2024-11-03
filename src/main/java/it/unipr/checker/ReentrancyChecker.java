@@ -1,12 +1,6 @@
 package it.unipr.checker;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.StackElement;
+import it.unipr.analysis.*;
 import it.unipr.cfg.Call;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
@@ -22,14 +16,22 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ReentrancyChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+
+	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		if (node instanceof Call) {
@@ -38,7 +40,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
@@ -48,11 +50,10 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 
 				// Retrieve the symbolic stack from the analysis result
 				EVMAbstractState valueState = analysisResult.getState().getValueState();
-				
+
 				Set<Statement> ns = cfg.getNodes().stream()
 						.filter(n -> n instanceof Sstore)
-						.collect(Collectors.toSet());	
-
+						.collect(Collectors.toSet());
 
 				// If the value state is bottom, the jump is definitely
 				// unreachable
@@ -60,18 +61,83 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 					// Nothing to do
 					continue;
 				} else if (valueState.isTop()) {
-					for (Statement stmt : ns)
-						if (cfg.reachableFrom(node, stmt))
-							tool.warn("Reentrancy attack from " + ((ProgramCounterLocation) node.getLocation()).getPc() + " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc());
+					for (Statement stmt : ns) {
+
+						Pair<Object, Object> myPair = new ImmutablePair<>(node, stmt);
+
+						if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
+							log.debug("[ReentrancyChecker] Value cached.");
+							if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
+								String warn = "Reentrancy attack from "
+										+ ((ProgramCounterLocation) node.getLocation()).getPc()
+										+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+								tool.warn(warn);
+								UniqueItemCollector.getInstance().add(warn); // TODO
+								// to
+								// optimize,
+								// temp
+								// solution
+							}
+						} else {
+							if (cfg.reachableFrom(node, stmt)) {
+								MyCache.getInstance().setStmtReachableFrom(myPair, true);
+								String warn = "Reentrancy attack from "
+										+ ((ProgramCounterLocation) node.getLocation()).getPc()
+										+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+								tool.warn(warn);
+								UniqueItemCollector.getInstance().add(warn); // TODO
+																				// to
+																				// optimize,
+																				// temp
+																				// solution
+
+							} else {
+								MyCache.getInstance().setStmtReachableFrom(myPair, false);
+							}
+						}
+					}
 				} else {
 					AbstractStackSet stacks = valueState.getStacks();
 					for (AbstractStack stack : stacks) {
 						StackElement topStack = stack.getSecondElement();
 
-						if (topStack.isTop() || topStack.isTopNotJumpdest()) 
-							for (Statement stmt : ns)
-								if (cfg.reachableFrom(node, stmt))
-									tool.warn("Reentrancy attack from " + ((ProgramCounterLocation) node.getLocation()).getPc() + " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc());
+						if (topStack.isTop() || topStack.isTopNotJumpdest()) {
+							for (Statement stmt : ns) {
+
+								Pair<Object, Object> myPair = new ImmutablePair<>(node, stmt);
+
+								if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
+									log.debug("[ReentrancyChecker] Value cached.");
+									if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
+										String warn = "Reentrancy attack from "
+												+ ((ProgramCounterLocation) node.getLocation()).getPc()
+												+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+										tool.warn(warn);
+										UniqueItemCollector.getInstance().add(warn); // TODO
+																						// to
+																						// optimize,
+																						// temp
+																						// solution
+									}
+								} else {
+									if (cfg.reachableFrom(node, stmt)) {
+										MyCache.getInstance().setStmtReachableFrom(myPair, true);
+										String warn = "Reentrancy attack from "
+												+ ((ProgramCounterLocation) node.getLocation()).getPc()
+												+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+										tool.warn(warn);
+										UniqueItemCollector.getInstance().add(warn); // TODO
+										// to
+										// optimize,
+										// temp
+										// solution
+
+									} else {
+										MyCache.getInstance().setStmtReachableFrom(myPair, false);
+									}
+								}
+							}
+						}
 					}
 				}
 			}

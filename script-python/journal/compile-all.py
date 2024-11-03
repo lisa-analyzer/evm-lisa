@@ -84,7 +84,6 @@ def extract_and_save_longest_bytecode():
                         
                         longest_bytecode = longest_bytecode[second_index:]
                         
-
                         bytecode_file.write("0x" + longest_bytecode)
                     # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 

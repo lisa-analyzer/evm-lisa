@@ -108,8 +108,11 @@ def run_evmlisa(bytecode_file):
     command = (
         f"./execution/evm-lisa/bin/evm-lisa "
         f"--filepath {bytecode_file} "
-        f"--stack-size 32 "
-        f"--stack-set-size 8 "
+        f"--stack-size 40 "
+        f"--stack-set-size 15 "
+        f"--creation-code "
+        # f"--dump-report "
+        # f"--output {os.path.splitext(bytecode_filename)[0]}"
         f"> /dev/null 2> {result_filepath}"
     )
     
@@ -134,7 +137,7 @@ def evmlisa():
     bytecode_files = [os.path.join(bytecode_dir, f) for f in os.listdir(bytecode_dir) if f.endswith(".bytecode")]
     num_files = len(bytecode_files)
     print(f"[EVMLISA] Found {num_files} bytecode files for analysis.")
-    print(f"[EVMLISA] Starting {max_threads} parallels analysis")
+    print(f"[EVMLISA] Starting {max_threads} parallels analysis...")
 
     analysis_ended = 0
 

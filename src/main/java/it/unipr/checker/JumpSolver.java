@@ -151,7 +151,7 @@ public class JumpSolver implements
 					}
 				}
 			}
-			
+
 			return;
 		}
 

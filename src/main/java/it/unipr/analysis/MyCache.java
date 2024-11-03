@@ -13,6 +13,7 @@ public class MyCache {
 	private static MyCache _instance = null;
 	private LRUMap<Pair<String, Number>, StackElement> _map;
 	private LRUMap<String, Long> _timeLostToGetStorage;
+	private LRUMap<Pair<Object, Object>, Boolean> _stmtReachableFrom;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -36,6 +37,7 @@ public class MyCache {
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
+		this._stmtReachableFrom = new LRUMap<Pair<Object, Object>, Boolean>(1000);
 	}
 
 	/**
@@ -113,6 +115,27 @@ public class MyCache {
 			return 0;
 		synchronized (MyCache.class) {
 			return this._timeLostToGetStorage.get(address) == null ? 0 : this._timeLostToGetStorage.get(address);
+		}
+	}
+
+	// TODO documentation
+	public boolean isStmtReachableFrom(Pair<Object, Object> stmts) {
+		synchronized (MyCache.class) {
+			return _stmtReachableFrom.get(stmts) != null && _stmtReachableFrom.get(stmts);
+		}
+	}
+
+	// TODO documentation
+	public void setStmtReachableFrom(Pair<Object, Object> stmts, Boolean value) {
+		synchronized (MyCache.class) {
+			_stmtReachableFrom.put(stmts, value);
+		}
+	}
+
+	// TODO documentation
+	public boolean existsStmtReachableFrom(Pair<Object, Object> stmts) {
+		synchronized (MyCache.class) {
+			return _stmtReachableFrom.get(stmts) != null;
 		}
 	}
 }
