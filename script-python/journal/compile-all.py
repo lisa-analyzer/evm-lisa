@@ -2,10 +2,6 @@ import os
 import subprocess
 import json
 
-source_dir = './reentrancy/source-code'
-json_dir = './reentrancy/json'
-bytecode_dir = './reentrancy/bytecode'
-
 def clear_directory(directory):
     """
     Clears all files in the specified directory.
@@ -18,7 +14,7 @@ def clear_directory(directory):
             except Exception as e:
                 print(f"Error deleting {file_path}: {e}")
 
-def compile_solidity_sources():
+def compile_solidity_sources(source_dir, json_dir):
     """
     Compiles all .sol files in the specified source directory using solc, 
     saving the bytecode for each file in JSON format in the specified output directory.
@@ -44,7 +40,7 @@ def compile_solidity_sources():
             except subprocess.CalledProcessError as e:
                 print(f"Error compiling {filename}: {e}")
 
-def extract_and_save_longest_bytecode():
+def extract_and_save_longest_bytecode(bytecode_dir, json_dir):
     """
     Extracts the longest bytecode from each .json file and saves it in the specified output directory.
     """
@@ -87,7 +83,7 @@ def extract_and_save_longest_bytecode():
                         bytecode_file.write("0x" + longest_bytecode)
                     # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 
-def extract_and_save_bytecode():
+def extract_and_save_bytecode(bytecode_dir, json_dir):
     """
     Extracts all bytecode from each .json file and saves it in the specified output directory.
     """
@@ -117,6 +113,18 @@ def extract_and_save_bytecode():
                         count += 1  # Increment counter for next bytecode
 
 if __name__ == "__main__":
-    compile_solidity_sources()
-    # extract_and_save_bytecode()
-    extract_and_save_longest_bytecode()
+
+    compile_solidity_sources('./reentrancy/source-code',
+                             './reentrancy/json')
+    # extract_and_save_bytecode('./reentrancy/bytecode',
+    #                           './reentrancy/json')
+    extract_and_save_longest_bytecode('./reentrancy/bytecode',
+                                      './reentrancy/json')
+    
+
+    compile_solidity_sources('./vanilla/source-code',
+                             './vanilla/json')
+    # extract_and_save_bytecode('./vanilla/bytecode',
+    #                           './vanilla/json')
+    extract_and_save_longest_bytecode('./vanilla/bytecode',
+                                      './vanilla/json')

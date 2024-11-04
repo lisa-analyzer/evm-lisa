@@ -11,10 +11,6 @@ import numpy as np
 import json
 
 # Directory paths
-bytecode_dir = './reentrancy/bytecode'
-results_dir = './reentrancy/results'
-result_evmlisa_dir = results_dir + '/evmlisa'
-result_ethersolve_dir = results_dir + '/ethersolve'
 max_threads = int(os.cpu_count() / 3)  # Core avaiable
 
 #################################### Utility
@@ -78,6 +74,18 @@ def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
 
     plt.show()
 
+def subtract_dicts(dict1, dict2):
+    result = {}
+    
+    for key in dict1:
+        if key in dict2:
+            result[key] = dict1[key] - dict2[key]
+        else:
+            result[key] = dict1[key]
+    
+    return result
+
+
 #################################### EVMLiSA
 
 def build_evmlisa():
@@ -91,7 +99,7 @@ def build_evmlisa():
     subprocess.run(command, shell=True, check=True)
     print("[EVMLISA] EVMLiSA built successfully.")
 
-def run_evmlisa(bytecode_file):
+def run_evmlisa(bytecode_file, result_evmlisa_dir):
     """
     Runs the EVMLiSA analysis for a given bytecode file.
     
@@ -123,7 +131,7 @@ def run_evmlisa(bytecode_file):
         print(f"[EVMLISA] Error analyzing {bytecode_file}: {e}")
         return None
 
-def evmlisa():
+def evmlisa(bytecode_dir, results_dir, result_evmlisa_dir):
     """
     Main function to run EVMLiSA analyses on multiple bytecode files.
     """
@@ -143,7 +151,7 @@ def evmlisa():
 
     # Run analyses in parallel
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
-        future_to_file = {executor.submit(run_evmlisa, file): file for file in bytecode_files}
+        future_to_file = {executor.submit(run_evmlisa, file, result_evmlisa_dir): file for file in bytecode_files}
         
         with tqdm(total=num_files, desc="[EVMLISA] Analyzing bytecode files") as pbar:
             for future in as_completed(future_to_file):
@@ -181,7 +189,7 @@ def check_sound_analysis_evmlisa(directory_path):
     if sound:
         print("[EVMLiSA] All analysis are SOUND")
 
-def results_evmlisa(directory_path):
+def results_evmlisa(directory_path, print_data):
     re_entrancy_warning_counts = {}
     
     for filename in os.listdir(directory_path):
@@ -190,7 +198,6 @@ def results_evmlisa(directory_path):
             try:
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-                    
                     if "re-entrancy-warning" in data:
                         re_entrancy_warning_counts[filename] = data['re-entrancy-warning']
                     else:
@@ -209,15 +216,23 @@ def results_evmlisa(directory_path):
         if match:
             id = int(match.group(1))
             results[id] += result
+        
+        match = re.match(r'(\d+)-\w+\.json', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
     
     sorted_data = dict(sorted(results.items()))
+    
+    print(print_data)
     print(sorted_data)
+
     return sorted_data
 
 
 #################################### EtherSolve
 
-def run_ethersolve(bytecode_file):
+def run_ethersolve(bytecode_file, result_ethersolve_dir):
     """
     Runs the EtherSolve analysis for a given bytecode file.
     
@@ -249,7 +264,7 @@ def run_ethersolve(bytecode_file):
         # print(f"[ETHERSOLVE] Error analyzing {bytecode_file}: {e}")
         return None
 
-def ethersolve():
+def ethersolve(bytecode_dir, result_ethersolve_dir):
     """
     Main function to run EtherSolve analyses on multiple bytecode files.
     """
@@ -266,7 +281,7 @@ def ethersolve():
 
     # Run analyses in parallel
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future_to_file = {executor.submit(run_ethersolve, file): file for file in bytecode_files}
+        future_to_file = {executor.submit(run_ethersolve, file, result_ethersolve_dir): file for file in bytecode_files}
         
         with tqdm(total=num_files, desc="[ETHERSOLVE] Analyzing bytecode files") as pbar:
             for future in as_completed(future_to_file):
@@ -278,7 +293,7 @@ def ethersolve():
     print(f"[ETHERSOLVE] Completed {analysis_ended}/{num_files}.")
     delete_tmp_files(bytecode_dir)
 
-def results_ethersolve(directory_path):
+def results_ethersolve(directory_path, print_data):
     """
     Counts occurrences of the word "SSTORE" in files with "reentrancy" in their names 
     within the specified directory.
@@ -308,12 +323,15 @@ def results_ethersolve(directory_path):
             results[id] += result
     
     sorted_data = dict(sorted(results.items()))
-    # print(sorted_data)
+    
+    print(print_data)
+    print(sorted_data)
+    
     return sorted_data
 
 #################################### SolidiFI
 
-def results_solidifi(folder_path):
+def results_solidifi(folder_path, print_data):
     # Initialize a dictionary to store the line count for each problem ID
     line_counts = defaultdict(int)
 
@@ -334,27 +352,39 @@ def results_solidifi(folder_path):
             line_counts[problem_id] = num_lines - 1
 
     sorted_data = dict(sorted(line_counts.items()))
-    # print(sorted_data)
+
+    print(print_data)
+    print(sorted_data)
+
     return sorted_data
 
 #################################### Main
 
 if __name__ == "__main__":
-
-    evmlisa_thread = threading.Thread(target=evmlisa)
-    ethersolve_thread = threading.Thread(target=ethersolve)
+    evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla/bytecode', 
+                                                                      'results_dir':        './vanilla/results',
+                                                                      'result_evmlisa_dir': './vanilla/results/evmlisa'})
+    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy/bytecode', 
+                                                              'results_dir':        './reentrancy/results',
+                                                              'result_evmlisa_dir': './reentrancy/results/evmlisa'})
+    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy/bytecode',
+                                                                    'result_ethersolve_dir':    './reentrancy/results/ethersolve'})
     
+    evmlisa_vanilla_thread.start()
     evmlisa_thread.start()
     ethersolve_thread.start()
 
+    evmlisa_vanilla_thread.join()
     evmlisa_thread.join()
     ethersolve_thread.join()
 
-    check_sound_analysis_evmlisa(result_evmlisa_dir)
-
+    check_sound_analysis_evmlisa('./reentrancy/results/evmlisa')
+    check_sound_analysis_evmlisa('./vanilla/results/evmlisa')
+    
     plot_results(
-        results_evmlisa(result_evmlisa_dir),
-        results_ethersolve(result_ethersolve_dir),
-        results_solidifi("./SolidiFI-benchmark/buggy_contracts/Re-entrancy")
+        subtract_dicts(     results_evmlisa('./reentrancy/results/evmlisa', 'evmlisa-buggy'),
+                            results_evmlisa('./vanilla/results/evmlisa', 'evmlisa-vanilla')),
+        results_ethersolve( './reentrancy/results/ethersolve', 'ethersolve'),
+        results_solidifi(   "./SolidiFI-benchmark/buggy_contracts/Re-entrancy", 'solidify')
     )
     
