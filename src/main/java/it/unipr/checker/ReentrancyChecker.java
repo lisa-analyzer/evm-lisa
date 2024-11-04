@@ -45,7 +45,7 @@ public class ReentrancyChecker implements
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
 				} catch (SemanticException e1) {
-					e1.printStackTrace();
+					log.error(e1.getMessage());
 				}
 
 				// Retrieve the symbolic stack from the analysis result
@@ -64,29 +64,21 @@ public class ReentrancyChecker implements
 					for (Statement stmt : ns) {
 
 						Pair<Object, Object> myPair = new ImmutablePair<>(node, stmt);
+						String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 
 						if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
 							log.debug("[ReentrancyChecker] Value cached.");
 							if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
-								String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 								tool.warn(warn);
-								UniqueItemCollector.getInstance().add(warn); // TODO
-								// to
-								// optimize,
-								// temp
-								// solution
+								// TODO to optimize, temp solution
+								UniqueItemCollector.getInstance().add(warn);
 							}
 						} else {
 							if (cfg.reachableFrom(node, stmt)) {
 								MyCache.getInstance().setStmtReachableFrom(myPair, true);
-								String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 								tool.warn(warn);
-								UniqueItemCollector.getInstance().add(warn); // TODO
-																				// to
-																				// optimize,
-																				// temp
-																				// solution
-
+								// TODO to optimize, temp solution
+								UniqueItemCollector.getInstance().add(warn);
 							} else {
 								MyCache.getInstance().setStmtReachableFrom(myPair, false);
 							}
@@ -101,29 +93,20 @@ public class ReentrancyChecker implements
 							for (Statement stmt : ns) {
 
 								Pair<Object, Object> myPair = new ImmutablePair<>(node, stmt);
+								String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 
 								if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
 									log.debug("[ReentrancyChecker] Value cached.");
 									if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
-										String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 										tool.warn(warn);
-										UniqueItemCollector.getInstance().add(warn); // TODO
-																						// to
-																						// optimize,
-																						// temp
-																						// solution
+										// TODO to optimize, temp solution
+										UniqueItemCollector.getInstance().add(warn);
 									}
 								} else {
 									if (cfg.reachableFrom(node, stmt)) {
 										MyCache.getInstance().setStmtReachableFrom(myPair, true);
-										String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 										tool.warn(warn);
-										UniqueItemCollector.getInstance().add(warn); // TODO
-										// to
-										// optimize,
-										// temp
-										// solution
-
+										UniqueItemCollector.getInstance().add(warn);
 									} else {
 										MyCache.getInstance().setStmtReachableFrom(myPair, false);
 									}

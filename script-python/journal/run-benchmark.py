@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline
 import numpy as np
 import json
+from datetime import datetime
 
 # Directory paths
 max_threads = int(os.cpu_count() / 3)  # Core avaiable
@@ -23,6 +24,18 @@ def delete_tmp_files(directory):
     """
     command = (
         f"rm -rf {directory}/no-address* "
+    )
+    subprocess.run(command, shell=True, check=True)
+
+def delete_files(directory):
+    """
+    Deletes all files in the specified directory.
+
+    Args:
+        directory (str): The path to the directory from which to delete files.
+    """
+    command = (
+        f"rm -rf {directory}/* "
     )
     subprocess.run(command, shell=True, check=True)
 
@@ -71,6 +84,10 @@ def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
     plt.xticks(sorted(set(keys1).union(set(keys2).union(keys3))))  # Show all problem IDs on x-axis
     plt.legend()
     plt.grid()
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"results_{timestamp}.png"
+    plt.savefig(filename)
 
     plt.show()
 
@@ -135,11 +152,8 @@ def evmlisa(bytecode_dir, results_dir, result_evmlisa_dir):
     """
     Main function to run EVMLiSA analyses on multiple bytecode files.
     """
-    delete_tmp_files(result_evmlisa_dir)
+    delete_files(result_evmlisa_dir)
     os.makedirs(result_evmlisa_dir, exist_ok=True)
-
-    # Build EVMLiSA
-    build_evmlisa()
     
     # Find all bytecode files
     bytecode_files = [os.path.join(bytecode_dir, f) for f in os.listdir(bytecode_dir) if f.endswith(".bytecode")]
@@ -273,7 +287,7 @@ def ethersolve(bytecode_dir, result_ethersolve_dir):
     """
     Main function to run EtherSolve analyses on multiple bytecode files.
     """
-    delete_tmp_files(result_ethersolve_dir)
+    delete_files(result_ethersolve_dir)
     os.makedirs(result_ethersolve_dir, exist_ok=True)
     
     # Find all bytecode files
@@ -326,6 +340,11 @@ def results_ethersolve(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
+        
+        match = re.match(r'(\d+)-\w+\.csv', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
     
     sorted_data = dict(sorted(results.items()))
     
@@ -366,22 +385,30 @@ def results_solidifi(folder_path, print_data):
 #################################### Main
 
 if __name__ == "__main__":
+    build_evmlisa()
+    
     evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla/bytecode', 
                                                                       'results_dir':        './vanilla/results',
                                                                       'result_evmlisa_dir': './vanilla/results/evmlisa'})
-    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy/bytecode', 
+    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy/bytecode/evmlisa', 
                                                               'results_dir':        './reentrancy/results',
                                                               'result_evmlisa_dir': './reentrancy/results/evmlisa'})
-    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy/bytecode',
+    
+    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy/bytecode/ethersolve',
                                                                     'result_ethersolve_dir':    './reentrancy/results/ethersolve'})
+    ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla/bytecode/ethersolve',
+                                                                            'result_ethersolve_dir':    './vanilla/results/ethersolve'})
     
     evmlisa_vanilla_thread.start()
     evmlisa_thread.start()
     ethersolve_thread.start()
-
+    
     evmlisa_vanilla_thread.join()
     evmlisa_thread.join()
     ethersolve_thread.join()
+    
+    ethersolve_vanilla_thread.start()
+    ethersolve_vanilla_thread.join()
 
     check_sound_analysis_evmlisa('./reentrancy/results/evmlisa')
     check_sound_analysis_evmlisa('./vanilla/results/evmlisa')
@@ -389,7 +416,8 @@ if __name__ == "__main__":
     plot_results(
         subtract_dicts(     results_evmlisa('./reentrancy/results/evmlisa', 'evmlisa-buggy'),
                             results_evmlisa('./vanilla/results/evmlisa', 'evmlisa-vanilla')),
-        results_ethersolve( './reentrancy/results/ethersolve', 'ethersolve'),
-        results_solidifi(   "./SolidiFI-benchmark/buggy_contracts/Re-entrancy", 'solidify')
+        subtract_dicts(     results_ethersolve('./reentrancy/results/ethersolve', 'ethersolve-buggy'),
+                            results_ethersolve('./vanilla/results/ethersolve', 'ethersolve-vanilla')),
+        results_solidifi(   './SolidiFI-benchmark/buggy_contracts/Re-entrancy', 'solidify')
     )
     

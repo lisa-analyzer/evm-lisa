@@ -40,7 +40,7 @@ def compile_solidity_sources(source_dir, json_dir):
             except subprocess.CalledProcessError as e:
                 print(f"Error compiling {filename}: {e}")
 
-def extract_and_save_longest_bytecode(bytecode_dir, json_dir):
+def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve):
     """
     Extracts the longest bytecode from each .json file and saves it in the specified output directory.
     """
@@ -77,13 +77,16 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir):
 
                         # Find the second occurrence of '60406040' after the first
                         second_index = longest_bytecode.find('60806040', first_index + len('60806040'))
+
+                        if is_ethersolve:
+                                second_index = first_index
                         
                         longest_bytecode = longest_bytecode[second_index:]
                         
                         bytecode_file.write("0x" + longest_bytecode)
                     print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 
-def extract_and_save_bytecode(bytecode_dir, json_dir):
+def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve):
     """
     Extracts all bytecode from each .json file and saves it in the specified output directory.
     """
@@ -113,6 +116,9 @@ def extract_and_save_bytecode(bytecode_dir, json_dir):
 
                             # Find the second occurrence of '60406040' after the first
                             second_index = bytecode.find('60806040', first_index + len('60806040'))
+
+                            if is_ethersolve:
+                                second_index = first_index
                             
                             bytecode = bytecode[second_index:]
                             
@@ -126,14 +132,16 @@ if __name__ == "__main__":
                              './reentrancy/json')
     compile_solidity_sources('./vanilla/source-code',
                              './vanilla/json')
-    """
-    extract_and_save_bytecode('./reentrancy/bytecode',
-                              './reentrancy/json')
-    extract_and_save_bytecode('./vanilla/bytecode',
-                              './vanilla/json')
-    """
    
-    extract_and_save_longest_bytecode('./vanilla/bytecode',
-                                      './vanilla/json')
-    extract_and_save_longest_bytecode('./reentrancy/bytecode',
-                                      './reentrancy/json')
+    extract_and_save_longest_bytecode('./vanilla/bytecode/evmlisa',
+                                      './vanilla/json',
+                                      False)
+    extract_and_save_longest_bytecode('./vanilla/bytecode/ethersolve',
+                                      './vanilla/json',
+                                      True)
+    extract_and_save_longest_bytecode('./reentrancy/bytecode/evmlisa',
+                                      './reentrancy/json',
+                                      False)
+    extract_and_save_longest_bytecode('./reentrancy/bytecode/ethersolve',
+                                      './reentrancy/json',
+                                      True)
