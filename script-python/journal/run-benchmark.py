@@ -403,10 +403,10 @@ if __name__ == "__main__":
     evmlisa_thread.start()
     ethersolve_thread.start()
     
+    ethersolve_thread.join()
     evmlisa_vanilla_thread.join()
     evmlisa_thread.join()
-    ethersolve_thread.join()
-    
+
     ethersolve_vanilla_thread.start()
     ethersolve_vanilla_thread.join()
 
