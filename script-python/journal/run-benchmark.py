@@ -341,11 +341,21 @@ def results_ethersolve(directory_path, print_data):
             id = int(match.group(1))
             results[id] += result
         
+        match = re.match(r'buggy_(\d+)_(\d+)-\w+\.csv', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
+        
         match = re.match(r'(\d+)-\w+\.csv', file)
         if match:
             id = int(match.group(1))
             results[id] += result
-    
+
+        match = re.match(r'(\d+)_(\d+)-\w+\.csv', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
+        
     sorted_data = dict(sorted(results.items()))
     
     print(print_data)
@@ -386,7 +396,7 @@ def results_solidifi(folder_path, print_data):
 
 if __name__ == "__main__":
     build_evmlisa()
-    
+    """
     evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla/bytecode/evmlisa', 
                                                                       'results_dir':        './vanilla/results',
                                                                       'result_evmlisa_dir': './vanilla/results/evmlisa'})
@@ -412,7 +422,7 @@ if __name__ == "__main__":
 
     check_sound_analysis_evmlisa('./reentrancy/results/evmlisa')
     check_sound_analysis_evmlisa('./vanilla/results/evmlisa')
-    
+    """
     plot_results(
         subtract_dicts(     results_evmlisa('./reentrancy/results/evmlisa', 'evmlisa-buggy'),
                             results_evmlisa('./vanilla/results/evmlisa', 'evmlisa-vanilla')),
