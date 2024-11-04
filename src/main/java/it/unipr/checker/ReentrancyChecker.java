@@ -36,16 +36,19 @@ public class ReentrancyChecker implements
 
 		if (node instanceof Call) {
 			EVMCFG cfg = ((EVMCFG) graph);
+			Call call = (Call) node;
+			ProgramCounterLocation callLoc = (ProgramCounterLocation) call.getLocation();
 
+			
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
-					analysisResult = result.getAnalysisStateBefore(node);
+					analysisResult = result.getAnalysisStateBefore(call);
 				} catch (SemanticException e1) {
-					log.error(e1.getMessage());
+					e1.printStackTrace();
 				}
 
 				// Retrieve the symbolic stack from the analysis result
@@ -60,55 +63,129 @@ public class ReentrancyChecker implements
 				if (valueState.isBottom()) {
 					// Nothing to do
 					continue;
-				} else if (valueState.isTop()) {
-					for (Statement stmt : ns) {
+				} else {
+					if (valueState.isTop()) {
+						for (Statement sstore : ns) {
+							Pair<Object, Object> myPair = new ImmutablePair<>(call, sstore);
 
-						Pair<Object, Object> myPair = new ImmutablePair<>(node, stmt);
-						String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+							
 
-						if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
-							log.debug("[ReentrancyChecker] Value cached.");
-							if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
-								tool.warn(warn);
-								// TODO to optimize, temp solution
-								UniqueItemCollector.getInstance().add(warn);
-							}
-						} else {
-							if (cfg.reachableFrom(node, stmt)) {
-								MyCache.getInstance().setStmtReachableFrom(myPair, true);
-								tool.warn(warn);
-								// TODO to optimize, temp solution
-								UniqueItemCollector.getInstance().add(warn);
+							ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) sstore.getLocation();
+							if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
+								if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
+									
+									for (Statement otherSstore : ns)
+										if (!otherSstore.equals(sstore)) 
+											if (otherSstore.getLocation().compareTo(sstoreLoc) > 0 && cfg.reachableFromSequentially(sstore, otherSstore))
+												sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+										
+									log.debug("Reentrancy attack at "
+											+ sstoreLoc.getPc() + "at line no. "
+											+ sstoreLoc.getSourceCodeLine()
+											+ "coming from line "
+											+ callLoc.getSourceCodeLine());
+									String warn = "Reentrancy attack at "
+											+ sstoreLoc.getPc();
+									tool.warn(warn);
+									UniqueItemCollector.getInstance().add(warn); // TODO
+									// to
+									// optimize,
+									// temp
+									// solution
+								}
 							} else {
-								MyCache.getInstance().setStmtReachableFrom(myPair, false);
+								if (cfg.reachableFrom(call, sstore)) {
+									
+									
+									MyCache.getInstance().setStmtReachableFrom(myPair, true);
+									
+									
+									for (Statement otherSstore : ns)
+										if (!otherSstore.equals(sstore)) 
+											if (otherSstore.getLocation().compareTo(sstoreLoc) > 0 && cfg.reachableFromSequentially(sstore, otherSstore))
+												sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+									
+									
+									log.debug("Reentrancy attack at "
+											+ sstoreLoc.getPc() + "at line no. "
+											+ sstoreLoc.getSourceCodeLine()
+											+ "coming from line "
+											+ callLoc.getSourceCodeLine());
+									String warn = "Reentrancy attack at "
+											+ sstoreLoc.getPc();
+									tool.warn(warn);
+									UniqueItemCollector.getInstance().add(warn); // TODO
+																					// to
+																					// optimize,
+																					// temp
+																					// solution
+
+								} else {
+									MyCache.getInstance().setStmtReachableFrom(myPair, false);
+								}
 							}
 						}
-					}
-				} else {
-					AbstractStackSet stacks = valueState.getStacks();
-					for (AbstractStack stack : stacks) {
-						StackElement topStack = stack.getSecondElement();
+					} else {
+						AbstractStackSet stacks = valueState.getStacks();
+						for (AbstractStack stack : stacks) {
+							StackElement topStack = stack.getSecondElement();
 
-						if (topStack.isTop() || topStack.isTopNotJumpdest()) {
-							for (Statement stmt : ns) {
+							if (topStack.isTop() || topStack.isTopNotJumpdest()) {
+								for (Statement sstore : ns) {
 
-								Pair<Object, Object> myPair = new ImmutablePair<>(node, stmt);
-								String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+									Pair<Object, Object> myPair = new ImmutablePair<>(call, sstore);
 
-								if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
-									log.debug("[ReentrancyChecker] Value cached.");
-									if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
-										tool.warn(warn);
-										// TODO to optimize, temp solution
-										UniqueItemCollector.getInstance().add(warn);
-									}
-								} else {
-									if (cfg.reachableFrom(node, stmt)) {
-										MyCache.getInstance().setStmtReachableFrom(myPair, true);
-										tool.warn(warn);
-										UniqueItemCollector.getInstance().add(warn);
+									ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) sstore.getLocation();
+									if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
+										if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
+											
+											for (Statement otherSstore : ns)
+												if (!otherSstore.equals(sstore)) 
+													if (otherSstore.getLocation().compareTo(sstoreLoc) > 0 && cfg.reachableFromSequentially(sstore, otherSstore))
+														sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+											
+											log.debug("Reentrancy attack at "
+													+ sstoreLoc.getPc() + "at line no. "
+													+ sstoreLoc.getSourceCodeLine()
+													+ "coming from line "
+													+ callLoc.getSourceCodeLine());
+											String warn = "Reentrancy attack at "
+													+ sstoreLoc.getPc();
+											tool.warn(warn);
+											UniqueItemCollector.getInstance().add(warn); // TODO
+																							// to
+																							// optimize,
+																							// temp
+																							// solution
+										}
 									} else {
-										MyCache.getInstance().setStmtReachableFrom(myPair, false);
+										if (cfg.reachableFrom(call, sstore)) {
+											
+											
+											for (Statement otherSstore : ns)
+												if (!otherSstore.equals(sstore)) 
+													if (otherSstore.compareTo(sstore) > 0 && cfg.reachableFromSequentially(sstore, otherSstore))
+														sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+											
+										
+											MyCache.getInstance().setStmtReachableFrom(myPair, true);
+											log.debug("Reentrancy attack at "
+													+ sstoreLoc.getPc() + "at line no. "
+													+ sstoreLoc.getSourceCodeLine()
+													+ "coming from line "
+													+ callLoc.getSourceCodeLine());
+											String warn = "Reentrancy attack at "
+													+ sstoreLoc.getPc();
+											tool.warn(warn);
+											UniqueItemCollector.getInstance().add(warn); // TODO
+											// to
+											// optimize,
+											// temp
+											// solution
+
+										} else {
+											MyCache.getInstance().setStmtReachableFrom(myPair, false);
+										}
 									}
 								}
 							}
