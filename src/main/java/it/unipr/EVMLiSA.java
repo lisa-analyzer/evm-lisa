@@ -224,7 +224,6 @@ public class EVMLiSA {
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
-		conf.semanticChecks.add(new ReentrancyChecker());
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
@@ -241,6 +240,11 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
+			
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new ReentrancyChecker());
+			lisa.run(program);
+			
 			jsonOptions.put("re-entrancy-warning", UniqueItemCollector.getInstance().size()); // TODO
 																								// fix
 
