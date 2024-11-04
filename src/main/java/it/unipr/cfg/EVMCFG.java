@@ -1,14 +1,5 @@
 package it.unipr.cfg;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
@@ -34,6 +25,14 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
@@ -41,6 +40,7 @@ public class EVMCFG extends CFG {
 	public Set<Number> jumpDestsNodesLocations;
 	public Set<Statement> jumpNodes;
 	public Set<Statement> pushedJumps;
+	public Set<Statement> sstores;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -49,6 +49,28 @@ public class EVMCFG extends CFG {
 
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
+	}
+
+	/**
+	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
+	 * 
+	 * @return a set of all the JUMPDEST statements in the CFG
+	 */
+	public Set<Statement> getAllSstore() {
+		if (sstores == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> sstores = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Sstore) {
+					sstores.add(statement);
+				}
+			}
+
+			return this.sstores = sstores;
+		}
+
+		return sstores;
 	}
 
 	/**
@@ -78,8 +100,8 @@ public class EVMCFG extends CFG {
 			getAllJumpdest();
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
-			.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
-			.collect(Collectors.toSet());
+					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
+					.collect(Collectors.toSet());
 		else
 			return jumpDestsNodesLocations;
 
@@ -143,7 +165,7 @@ public class EVMCFG extends CFG {
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-						: new Fixpoint<>(this, false);
+				: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A> asc = new EVMAscendingFixpoint<>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -159,14 +181,16 @@ public class EVMCFG extends CFG {
 		Map<Statement, CompoundState<A>> descending;
 		switch (conf.descendingPhaseType) {
 		case GLB:
-			//			DescendingGLBFixpoint<A> dg = new DescendingGLBFixpoint<>(this, conf.glbThreshold,
-			//					interprocedural);
-			//			descending = fix.fixpoint(starting, ws, dg, ascending);
-			//			break;
+			// DescendingGLBFixpoint<A> dg = new DescendingGLBFixpoint<>(this,
+			// conf.glbThreshold,
+			// interprocedural);
+			// descending = fix.fixpoint(starting, ws, dg, ascending);
+			// break;
 		case NARROWING:
-			//			DescendingNarrowingFixpoint<A> dn = new DescendingNarrowingFixpoint<>(this, interprocedural);
-			//			descending = fix.fixpoint(starting, ws, dn, ascending);
-			//			break;
+			// DescendingNarrowingFixpoint<A> dn = new
+			// DescendingNarrowingFixpoint<>(this, interprocedural);
+			// descending = fix.fixpoint(starting, ws, dn, ascending);
+			// break;
 		case NONE:
 		default:
 			// should never happen
@@ -178,13 +202,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-	T extends TypeDomain<T>,
-	A extends AbstractState<A>,
-	H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-			boolean isOptimized, AnalysisState<A> singleton,
-			Map<Statement, AnalysisState<A>> startingPoints,
-			InterproceduralAnalysis<A> interprocedural, ScopeId id,
-			Map<Statement, CompoundState<A>> fixpointResults) {
+			T extends TypeDomain<T>,
+			A extends AbstractState<A>,
+			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
+					boolean isOptimized, AnalysisState<A> singleton,
+					Map<Statement, AnalysisState<A>> startingPoints,
+					InterproceduralAnalysis<A> interprocedural, ScopeId id,
+					Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -195,7 +219,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override
@@ -245,10 +269,9 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	public boolean reachableFromSequentially(Statement start, Statement target) {		
+	public boolean reachableFromSequentially(Statement start, Statement target) {
 		return dfsSequential(start, target, new HashSet<>());
 	}
-
 
 	private boolean dfsSequential(Statement start, Statement target, Set<Statement> visited) {
 		Stack<Statement> stack = new Stack<>();
