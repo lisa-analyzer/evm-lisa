@@ -221,6 +221,11 @@ def results_evmlisa(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
+
+        match = re.match(r'(\d+)_(\d+)-\w+\.json', file)
+        if match:
+            id = int(match.group(1))
+            results[id] += result
     
     sorted_data = dict(sorted(results.items()))
     

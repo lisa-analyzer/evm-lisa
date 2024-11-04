@@ -81,7 +81,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir):
                         longest_bytecode = longest_bytecode[second_index:]
                         
                         bytecode_file.write("0x" + longest_bytecode)
-                    # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
+                    print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
 
 def extract_and_save_bytecode(bytecode_dir, json_dir):
     """
@@ -108,6 +108,14 @@ def extract_and_save_bytecode(bytecode_dir, json_dir):
                             bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
                         )
                         with open(bytecode_filename, 'w') as bytecode_file:
+                            # Find the first occurrence of '60406040'
+                            first_index = bytecode.find('60806040')
+
+                            # Find the second occurrence of '60406040' after the first
+                            second_index = bytecode.find('60806040', first_index + len('60806040'))
+                            
+                            bytecode = bytecode[second_index:]
+                            
                             bytecode_file.write("0x" + bytecode)
                         print(f"Extracted bytecode to {bytecode_filename}")
                         count += 1  # Increment counter for next bytecode
@@ -116,15 +124,16 @@ if __name__ == "__main__":
 
     compile_solidity_sources('./reentrancy/source-code',
                              './reentrancy/json')
-    # extract_and_save_bytecode('./reentrancy/bytecode',
-    #                           './reentrancy/json')
-    extract_and_save_longest_bytecode('./reentrancy/bytecode',
-                                      './reentrancy/json')
-    
-
     compile_solidity_sources('./vanilla/source-code',
                              './vanilla/json')
-    # extract_and_save_bytecode('./vanilla/bytecode',
-    #                           './vanilla/json')
+    """
+    extract_and_save_bytecode('./reentrancy/bytecode',
+                              './reentrancy/json')
+    extract_and_save_bytecode('./vanilla/bytecode',
+                              './vanilla/json')
+    """
+   
     extract_and_save_longest_bytecode('./vanilla/bytecode',
                                       './vanilla/json')
+    extract_and_save_longest_bytecode('./reentrancy/bytecode',
+                                      './reentrancy/json')
