@@ -387,7 +387,7 @@ def results_solidifi(folder_path, print_data):
 if __name__ == "__main__":
     build_evmlisa()
     
-    evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla/bytecode', 
+    evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla/bytecode/evmlisa', 
                                                                       'results_dir':        './vanilla/results',
                                                                       'result_evmlisa_dir': './vanilla/results/evmlisa'})
     evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy/bytecode/evmlisa', 

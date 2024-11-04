@@ -79,9 +79,10 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                         second_index = longest_bytecode.find('60806040', first_index + len('60806040'))
 
                         if is_ethersolve:
-                                second_index = first_index
+                            second_index = first_index
                         
-                        longest_bytecode = longest_bytecode[second_index:]
+                        if first_index != -1 and second_index != -1:  
+                            longest_bytecode = longest_bytecode[second_index:]
                         
                         bytecode_file.write("0x" + longest_bytecode)
                     print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
@@ -120,7 +121,8 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
                             if is_ethersolve:
                                 second_index = first_index
                             
-                            bytecode = bytecode[second_index:]
+                            if first_index != -1 and second_index != -1:  
+                                bytecode = bytecode[second_index:]
                             
                             bytecode_file.write("0x" + bytecode)
                         print(f"Extracted bytecode to {bytecode_filename}")
@@ -146,3 +148,19 @@ if __name__ == "__main__":
     extract_and_save_longest_bytecode('./reentrancy/bytecode/ethersolve',
                                       './reentrancy/json',
                                       True)
+    
+    """
+    # EVMLiSA
+    extract_and_save_bytecode('./vanilla/bytecode/evmlisa',
+                                      './vanilla/json')
+    extract_and_save_bytecode('./reentrancy/bytecode/evmlisa',
+                                      './reentrancy/json')
+    
+    # EtherSolve
+    extract_and_save_bytecode('./vanilla/bytecode/ethersolve',
+                                      './vanilla/json',
+                                      True)
+    extract_and_save_bytecode('./reentrancy/bytecode/ethersolve',
+                                      './reentrancy/json',
+                                      True)
+    """
