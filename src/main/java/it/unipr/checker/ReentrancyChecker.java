@@ -68,9 +68,7 @@ public class ReentrancyChecker implements
 						if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
 							log.debug("[ReentrancyChecker] Value cached.");
 							if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
-								String warn = "Reentrancy attack from "
-										+ ((ProgramCounterLocation) node.getLocation()).getPc()
-										+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+								String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 								tool.warn(warn);
 								UniqueItemCollector.getInstance().add(warn); // TODO
 								// to
@@ -81,9 +79,7 @@ public class ReentrancyChecker implements
 						} else {
 							if (cfg.reachableFrom(node, stmt)) {
 								MyCache.getInstance().setStmtReachableFrom(myPair, true);
-								String warn = "Reentrancy attack from "
-										+ ((ProgramCounterLocation) node.getLocation()).getPc()
-										+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+								String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 								tool.warn(warn);
 								UniqueItemCollector.getInstance().add(warn); // TODO
 																				// to
@@ -109,9 +105,7 @@ public class ReentrancyChecker implements
 								if (MyCache.getInstance().existsStmtReachableFrom(myPair)) {
 									log.debug("[ReentrancyChecker] Value cached.");
 									if (MyCache.getInstance().isStmtReachableFrom(myPair)) {
-										String warn = "Reentrancy attack from "
-												+ ((ProgramCounterLocation) node.getLocation()).getPc()
-												+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+										String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 										tool.warn(warn);
 										UniqueItemCollector.getInstance().add(warn); // TODO
 																						// to
@@ -122,9 +116,7 @@ public class ReentrancyChecker implements
 								} else {
 									if (cfg.reachableFrom(node, stmt)) {
 										MyCache.getInstance().setStmtReachableFrom(myPair, true);
-										String warn = "Reentrancy attack from "
-												+ ((ProgramCounterLocation) node.getLocation()).getPc()
-												+ " to " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
+										String warn = "Reentrancy attack at " + ((ProgramCounterLocation) stmt.getLocation()).getPc();
 										tool.warn(warn);
 										UniqueItemCollector.getInstance().add(warn); // TODO
 										// to
