@@ -394,6 +394,35 @@ def results_solidifi(folder_path, print_data):
 
     return sorted_data
 
+#################################### smartbugs
+
+def results_smartbugs(json_path, print_data):
+    """
+    Counts the number of vulnerabilities for each Solidity file in the JSON file.
+    """
+    # Initialize a dictionary to store the vulnerability count for each file
+    vulnerability_counts = defaultdict(int)
+
+    # Load JSON data
+    with open(json_path, 'r') as file:
+        data = json.load(file)
+    
+    # Iterate over each entry in the JSON data
+    for entry in data:
+        # Extract the filename without the extension
+        file_id = int(os.path.splitext(entry["name"])[0])
+        
+        # Count the vulnerabilities for the file
+        vulnerability_counts[file_id] = len(entry.get("vulnerabilities", []))
+
+    # Sort the data by file ID
+    sorted_data = dict(sorted(vulnerability_counts.items()))
+
+    print(print_data)
+    print(sorted_data)
+    
+    return sorted_data
+
 #################################### Main
 
 if __name__ == "__main__":
@@ -453,5 +482,5 @@ if __name__ == "__main__":
     plot_results(
         results_evmlisa('./reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs'),
         results_ethersolve('./reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs'),
-        { }  # Va messo il risultato del dataset di smartbugs
+        results_smartbugs('./reentrancy-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
     )

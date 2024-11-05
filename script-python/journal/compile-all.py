@@ -257,11 +257,10 @@ if __name__ == "__main__":
     """
     
     # smartbugs dataset
-    #"""
     compile_solidity_sources_with_different_version('./reentrancy-smartbugs/source-code',
                                                     './reentrancy-smartbugs/json',
                                                     './reentrancy-smartbugs/source-code/version.csv')
-    #"""
+
     extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
                               './reentrancy-smartbugs/json')
     extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
