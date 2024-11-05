@@ -31,7 +31,7 @@ def compile_solidity_sources(source_dir, json_dir):
             output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
             
             # Command to compile and save the bytecode in JSON format
-            command = f"solc --combined-json bin --pretty-json {input_file} > {output_file}"
+            command = f"solc --optimize-runs 0 --combined-json bin,abi,bin-runtime,asm,opcodes --pretty-json {input_file} > {output_file}"
             
             # Execute the command
             try:
@@ -130,37 +130,38 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
 
 if __name__ == "__main__":
 
-    compile_solidity_sources('./reentrancy/source-code',
-                             './reentrancy/json')
-    compile_solidity_sources('./vanilla/source-code',
-                             './vanilla/json')
+    compile_solidity_sources('./reentrancy-solidifi/source-code',
+                             './reentrancy-solidifi/json')
+    compile_solidity_sources('./vanilla-solidifi/source-code',
+                             './vanilla-solidifi/json')
+    
     
     # EVMLiSA
-    extract_and_save_longest_bytecode('./vanilla/bytecode/evmlisa',
-                                      './vanilla/json')
-    extract_and_save_longest_bytecode('./reentrancy/bytecode/evmlisa',
-                                      './reentrancy/json')
+    extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/evmlisa',
+                                      './vanilla-solidifi/json')
+    extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
+                                      './reentrancy-solidifi/json')
     
     # EtherSolve
-    extract_and_save_longest_bytecode('./vanilla/bytecode/ethersolve',
-                                      './vanilla/json',
+    extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
+                                      './vanilla-solidifi/json',
                                       True)
-    extract_and_save_longest_bytecode('./reentrancy/bytecode/ethersolve',
-                                      './reentrancy/json',
+    extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
+                                      './reentrancy-solidifi/json',
                                       True)
     
     """
     # EVMLiSA
-    extract_and_save_bytecode('./vanilla/bytecode/evmlisa',
-                                      './vanilla/json')
-    extract_and_save_bytecode('./reentrancy/bytecode/evmlisa',
-                                      './reentrancy/json')
+    extract_and_save_bytecode('./vanilla-solidifi/bytecode/evmlisa',
+                              './vanilla-solidifi/json')
+    extract_and_save_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
+                              './reentrancy-solidifi/json')
     
     # EtherSolve
-    extract_and_save_bytecode('./vanilla/bytecode/ethersolve',
-                                      './vanilla/json',
-                                      True)
-    extract_and_save_bytecode('./reentrancy/bytecode/ethersolve',
-                                      './reentrancy/json',
-                                      True)
+    extract_and_save_bytecode('./vanilla-solidifi/bytecode/ethersolve',
+                              './vanilla-solidifi/json',
+                              True)
+    extract_and_save_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
+                              './reentrancy-solidifi/json',
+                              True)
     """

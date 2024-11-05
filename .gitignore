@@ -12,11 +12,18 @@ evm-outputs/
 test-ground-truth-stats/
 evm-testcases/ground-truth/test/logs.txt
 evm-testcases/ground-truth/test/statistics.csv
-script-python/journal/reentrancy/results/
-script-python/journal/reentrancy/json/
+
+# Ignore benchmark results
+# SolidiFI reentrancy
+script-python/journal/reentrancy-solidifi/results/
+script-python/journal/reentrancy-solidifi/json/
+script-python/journal/reentrancy-solidifi/bytecode/
+script-python/journal/vanilla-solidifi/results/
+script-python/journal/vanilla-solidifi/json/
+script-python/journal/vanilla-solidifi/bytecode/
+
 script-python/journal/execution/
-script-python/journal/vanilla/results/
-script-python/journal/vanilla/json/
+script-python/journal/images/
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/

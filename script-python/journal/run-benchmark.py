@@ -63,6 +63,8 @@ def clean_files(directory_path):
                 # print(f"No changes made to {filename}")
 
 def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
+    os.makedirs('./images', exist_ok=True)
+
     keys1 = sorted(data_ethersolve.keys())
     values1 = [data_ethersolve[key] for key in keys1]
 
@@ -87,7 +89,7 @@ def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"results_{timestamp}.png"
-    plt.savefig(filename)
+    plt.savefig('images/' + filename)
 
     plt.show()
 
@@ -397,17 +399,17 @@ def results_solidifi(folder_path, print_data):
 if __name__ == "__main__":
     build_evmlisa()
     """
-    evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla/bytecode/evmlisa', 
-                                                                      'results_dir':        './vanilla/results',
-                                                                      'result_evmlisa_dir': './vanilla/results/evmlisa'})
-    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy/bytecode/evmlisa', 
-                                                              'results_dir':        './reentrancy/results',
-                                                              'result_evmlisa_dir': './reentrancy/results/evmlisa'})
+    evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
+                                                                      'results_dir':        './vanilla-solidifi/results',
+                                                                      'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
+    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-solidifi/bytecode/evmlisa', 
+                                                              'results_dir':        './reentrancy-solidifi/results',
+                                                              'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
     
-    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy/bytecode/ethersolve',
-                                                                    'result_ethersolve_dir':    './reentrancy/results/ethersolve'})
-    ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla/bytecode/ethersolve',
-                                                                            'result_ethersolve_dir':    './vanilla/results/ethersolve'})
+    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-solidifi/bytecode/ethersolve',
+                                                                    'result_ethersolve_dir':    './reentrancy-solidifi/results/ethersolve'})
+    ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla-solidifi/bytecode/ethersolve',
+                                                                            'result_ethersolve_dir':    './vanilla-solidifi/results/ethersolve'})
     
     evmlisa_vanilla_thread.start()
     evmlisa_thread.start()
@@ -420,14 +422,14 @@ if __name__ == "__main__":
     ethersolve_vanilla_thread.start()
     ethersolve_vanilla_thread.join()
 
-    check_sound_analysis_evmlisa('./reentrancy/results/evmlisa')
-    check_sound_analysis_evmlisa('./vanilla/results/evmlisa')
+    check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
+    check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
     """
     plot_results(
-        subtract_dicts(     results_evmlisa('./reentrancy/results/evmlisa', 'evmlisa-buggy'),
-                            results_evmlisa('./vanilla/results/evmlisa', 'evmlisa-vanilla')),
-        subtract_dicts(     results_ethersolve('./reentrancy/results/ethersolve', 'ethersolve-buggy'),
-                            results_ethersolve('./vanilla/results/ethersolve', 'ethersolve-vanilla')),
-        results_solidifi(   './SolidiFI-benchmark/buggy_contracts/Re-entrancy', 'solidify')
+        subtract_dicts(     results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
+                            results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi')),
+        subtract_dicts(     results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
+                            results_ethersolve('./vanilla-solidifi/results/ethersolve', 'ethersolve-vanilla-solidifi')),
+        results_solidifi(   './SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
     )
     
