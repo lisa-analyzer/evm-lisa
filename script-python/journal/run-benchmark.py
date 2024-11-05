@@ -398,7 +398,7 @@ def results_solidifi(folder_path, print_data):
 
 if __name__ == "__main__":
     build_evmlisa()
-    """
+    
     evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
                                                                       'results_dir':        './vanilla-solidifi/results',
                                                                       'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
@@ -424,7 +424,7 @@ if __name__ == "__main__":
 
     check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
     check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
-    """
+    
     plot_results(
         subtract_dicts(     results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
                             results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi')),
