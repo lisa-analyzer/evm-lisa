@@ -2,6 +2,7 @@ package it.unipr.checker;
 
 import java.util.Set;
 
+import it.unipr.analysis.UniqueItemCollector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -98,7 +99,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 			String warn = "Reentrancy attack at "
 					+ sstoreLoc.getPc();
 			tool.warn(warn);
-
+			UniqueItemCollector.getInstance().add(warn);
 		}
 	}
 }

@@ -1,6 +1,8 @@
 import os
 import subprocess
 import json
+import csv
+from tqdm import tqdm
 
 def clear_directory(directory):
     """
@@ -13,6 +15,78 @@ def clear_directory(directory):
                 os.remove(file_path)
             except Exception as e:
                 print(f"Error deleting {file_path}: {e}")
+
+def load_version_mapping(version_file):
+    """
+    Loads the compiler version mapping from a CSV file.
+    Returns a dictionary where the key is the file path and the value is the compiled version.
+    """
+    version_mapping = {}
+    with open(version_file, mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            version_mapping[row['file']] = row['compiled version']
+    return version_mapping
+
+def compile_solidity_sources_with_different_version(source_dir, json_dir, version_file):
+    """
+    Compiles all .sol files in the specified source directory using different versions of solc, 
+    saving the bytecode for each file in JSON format in the specified output directory.
+    """
+    version_mapping = load_version_mapping(version_file)
+    installed_versions = set()  # Set to keep track of installed versions
+    count_success = 0
+    count_failure = 0
+
+    # Clear and create JSON output directory
+    clear_directory(json_dir)
+    os.makedirs(json_dir, exist_ok=True)
+
+    # List all .sol files in the source directory
+    sol_files = [f for f in os.listdir(source_dir) if f.endswith('.sol')]
+
+    # Progress bar setup
+    with tqdm(total=len(sol_files), desc="Compiling files...") as pbar:
+        for filename in sol_files:
+            # Full paths for input and output files
+            input_file = os.path.join(source_dir, filename)
+            output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
+
+            compiled_version = version_mapping.get(filename, None)
+            
+            if compiled_version is None:
+                print(f"Version not specified for {filename} in {version_file}. Skipping file.")
+                pbar.update(1)
+                continue
+
+            # Install the version if not already installed
+            if compiled_version not in installed_versions:
+                try:
+                    install_command = f"solc-select install {compiled_version} > /dev/null"
+                    subprocess.run(install_command, shell=True, check=True)
+                    installed_versions.add(compiled_version)  # Mark version as installed
+                except subprocess.CalledProcessError as e:
+                    print(f"Error installing solc version {compiled_version}: {e}")
+                    pbar.update(1)
+                    continue
+
+            # Command to compile and save the bytecode in JSON format
+            command = (
+                f"solc-select use {compiled_version} > /dev/null && "
+                f"solc --combined-json bin {input_file} > {output_file} 2> /dev/null"
+            )
+            
+            # Execute the compilation command
+            try:
+                subprocess.run(command, shell=True, check=True)
+                count_success += 1
+            except subprocess.CalledProcessError as e:
+                count_failure += 1
+            
+            # Update the progress bar
+            pbar.update(1)
+        
+    print(f"Compiled successfully {count_success}/{count_success + count_failure} files.")
 
 def compile_solidity_sources(source_dir, json_dir):
     """
@@ -31,7 +105,7 @@ def compile_solidity_sources(source_dir, json_dir):
             output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
             
             # Command to compile and save the bytecode in JSON format
-            command = f"solc --optimize-runs 0 --combined-json bin,abi,bin-runtime,asm,opcodes --pretty-json {input_file} > {output_file}"
+            command = f"solc --optimize-runs 0 --combined-json bin --pretty-json {input_file} > {output_file}"
             
             # Execute the command
             try:
@@ -95,41 +169,56 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
     clear_directory(bytecode_dir)
     os.makedirs(bytecode_dir, exist_ok=True)
 
-    for json_filename in os.listdir(json_dir):
-        if json_filename.endswith(".json"):
-            json_filepath = os.path.join(json_dir, json_filename)
-            with open(json_filepath, 'r') as json_file:
+    # List all .sol files in the source directory
+    num_files = [f for f in os.listdir(json_dir) if f.endswith('.json')]
 
-                data = json.load(json_file)
-                contracts = data.get("contracts", {})
-                count = 1  # Sequential counter for each bytecode in the same JSON
+     # Progress bar setup
+    with tqdm(total=len(num_files), desc="Extracting files...") as pbar:
+        for json_filename in os.listdir(json_dir):
+            if json_filename.endswith(".json"):
+                json_filepath = os.path.join(json_dir, json_filename)
+                with open(json_filepath, 'r') as json_file:
+                    # Check if the file is empty by reading the first character
+                    if json_file.read(1) == "":
+                        print(f"Skipping empty file: {json_filename}")
+                        pbar.update(1)
+                        continue
+                    json_file.seek(0)  # Reset the file pointer to the beginning
+                    
+                    data = json.load(json_file)
+                    contracts = data.get("contracts", {})
+                    count = 1  # Sequential counter for each bytecode in the same JSON
 
-                for contract_name, contract_data in contracts.items():
-                    bytecode = contract_data.get("bin")
-                    if bytecode:
-                        # Add a sequential number to the filename
-                        bytecode_filename = os.path.join(
-                            bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
-                        )
-                        with open(bytecode_filename, 'w') as bytecode_file:
-                            # Find the first occurrence of '60406040'
-                            first_index = bytecode.find('60806040')
+                    for contract_name, contract_data in contracts.items():
+                        bytecode = contract_data.get("bin")
+                        if bytecode:
+                            # Add a sequential number to the filename
+                            bytecode_filename = os.path.join(
+                                bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
+                            )
+                            with open(bytecode_filename, 'w') as bytecode_file:
+                                # Find the first occurrence of '60406040'
+                                first_index = bytecode.find('60806040')
 
-                            # Find the second occurrence of '60406040' after the first
-                            second_index = bytecode.find('60806040', first_index + len('60806040'))
+                                # Find the second occurrence of '60406040' after the first
+                                second_index = bytecode.find('60806040', first_index + len('60806040'))
 
-                            if is_ethersolve:
-                                second_index = first_index
-                            
-                            if first_index != -1 and second_index != -1:  
-                                bytecode = bytecode[second_index:]
-                            
-                            bytecode_file.write("0x" + bytecode)
-                        print(f"Extracted bytecode to {bytecode_filename}")
-                        count += 1  # Increment counter for next bytecode
+                                if is_ethersolve:
+                                    second_index = first_index
+                                
+                                if first_index != -1 and second_index != -1:  
+                                    bytecode = bytecode[second_index:]
+                                
+                                bytecode_file.write("0x" + bytecode)
+                            # print(f"Extracted bytecode to {bytecode_filename}")
+                            count += 1  # Increment counter for next bytecode
+            # Update the progress bar
+            pbar.update(1)
 
 if __name__ == "__main__":
 
+    # SolidiFI dataset
+    """
     compile_solidity_sources('./reentrancy-solidifi/source-code',
                              './reentrancy-solidifi/json')
     compile_solidity_sources('./vanilla-solidifi/source-code',
@@ -151,6 +240,7 @@ if __name__ == "__main__":
                                       True)
     
     """
+    """
     # EVMLiSA
     extract_and_save_bytecode('./vanilla-solidifi/bytecode/evmlisa',
                               './vanilla-solidifi/json')
@@ -165,3 +255,15 @@ if __name__ == "__main__":
                               './reentrancy-solidifi/json',
                               True)
     """
+    
+    # smartbugs dataset
+    #"""
+    compile_solidity_sources_with_different_version('./reentrancy-smartbugs/source-code',
+                                                    './reentrancy-smartbugs/json',
+                                                    './reentrancy-smartbugs/source-code/version.csv')
+    #"""
+    extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
+                              './reentrancy-smartbugs/json')
+    extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
+                              './reentrancy-smartbugs/json',
+                              True)

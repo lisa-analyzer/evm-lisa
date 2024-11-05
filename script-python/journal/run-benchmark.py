@@ -398,7 +398,8 @@ def results_solidifi(folder_path, print_data):
 
 if __name__ == "__main__":
     build_evmlisa()
-    
+    """
+    # SolidiFI dataset
     evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
                                                                       'results_dir':        './vanilla-solidifi/results',
                                                                       'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
@@ -433,3 +434,24 @@ if __name__ == "__main__":
         results_solidifi(   './SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
     )
     
+    """
+    # Smartbugs dataset
+    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
+                                                              'results_dir':        './reentrancy-smartbugs/results',
+                                                              'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
+    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-smartbugs/bytecode/ethersolve',
+                                                                    'result_ethersolve_dir':    './reentrancy-smartbugs/results/ethersolve'})
+    
+    evmlisa_thread.start()
+    ethersolve_thread.start()
+    
+    ethersolve_thread.join()
+    evmlisa_thread.join()
+
+    check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
+
+    plot_results(
+        results_evmlisa('./reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs'),
+        results_ethersolve('./reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs'),
+        { }  # Va messo il risultato del dataset di smartbugs
+    )
