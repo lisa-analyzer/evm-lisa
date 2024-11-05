@@ -289,7 +289,7 @@ public class EVMCFG extends CFG {
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
 
 				for (Edge edge : outgoingEdges) {
-					if (edge.getSource() instanceof Jump || edge.getSource() instanceof Jumpi)
+					if (edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
 						continue;
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
