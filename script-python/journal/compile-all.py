@@ -116,50 +116,68 @@ def compile_solidity_sources(source_dir, json_dir):
 
 def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
     """
-    Extracts the longest bytecode from each .json file and saves it in the specified output directory.
+    Extracts the longest bytecode based on file size from each .json file and saves it in the specified output directory.
     """
     # Clear and create bytecode directory
     clear_directory(bytecode_dir)
     os.makedirs(bytecode_dir, exist_ok=True)
 
-    for json_filename in os.listdir(json_dir):
-        if json_filename.endswith(".json"):
-            json_filepath = os.path.join(json_dir, json_filename)
-            with open(json_filepath, 'r') as json_file:
-                data = json.load(json_file)
-                contracts = data.get("contracts", {})
+    # List all .json files in the source directory
+    num_files = [f for f in os.listdir(json_dir) if f.endswith('.json')]
+
+    # Progress bar setup
+    with tqdm(total=len(num_files), desc="Extracting longest bytecodes...") as pbar:
+        for json_filename in os.listdir(json_dir):
+            if json_filename.endswith(".json"):
+                json_filepath = os.path.join(json_dir, json_filename)
                 
-                longest_bytecode = None
-                longest_contract_name = None
+                # Check if the file is empty
+                if os.path.getsize(json_filepath) == 0:
+                    print(f"Skipping empty file: {json_filename}")
+                    pbar.update(1)
+                    continue
 
-                for contract_name, contract_data in contracts.items():
-                    bytecode = contract_data.get("bin")
-                    if bytecode:
-                        # Check if this bytecode is longer than the current longest
-                        if longest_bytecode is None or len(bytecode) > len(longest_bytecode):
-                            longest_bytecode = bytecode
-                            longest_contract_name = contract_name
+                with open(json_filepath, 'r') as json_file:
+                    data = json.load(json_file)
+                    contracts = data.get("contracts", {})
+                    
+                    longest_bytecode = None
+                    longest_contract_name = None
+                    max_bytecode_length = 0  # Variable to store the maximum file size
 
-                # Save the longest bytecode, if it exists
-                if longest_bytecode:
-                    bytecode_filename = os.path.join(
-                        bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
-                    )
-                    with open(bytecode_filename, 'w') as bytecode_file:
-                        # Find the first occurrence of '60406040'
-                        first_index = longest_bytecode.find('60806040')
+                    # Find the contract with the longest bytecode
+                    for contract_name, contract_data in contracts.items():
+                        bytecode = contract_data.get("bin")
+                        if bytecode:
+                            bytecode_length = len(bytecode)
+                            # Check if this bytecode is longer than the current longest
+                            if bytecode_length > max_bytecode_length:
+                                max_bytecode_length = bytecode_length
+                                longest_bytecode = bytecode
+                                longest_contract_name = contract_name
 
-                        # Find the second occurrence of '60406040' after the first
-                        second_index = longest_bytecode.find('60806040', first_index + len('60806040'))
+                    # Save the longest bytecode, if it exists
+                    if longest_bytecode:
+                        bytecode_filename = os.path.join(
+                            bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
+                        )
+                        with open(bytecode_filename, 'w') as bytecode_file:
+                            # Find the first occurrence of '60806040'
+                            first_index = longest_bytecode.find('60806040')
 
-                        if is_ethersolve:
-                            second_index = first_index
-                        
-                        if first_index != -1 and second_index != -1:  
-                            longest_bytecode = longest_bytecode[second_index:]
-                        
-                        bytecode_file.write("0x" + longest_bytecode)
-                    print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
+                            # Find the second occurrence of '60806040' after the first
+                            second_index = longest_bytecode.find('60806040', first_index + len('60806040'))
+
+                            if is_ethersolve:
+                                second_index = first_index
+
+                            if first_index != -1 and second_index != -1:  
+                                longest_bytecode = longest_bytecode[second_index:]
+                            
+                            bytecode_file.write("0x" + longest_bytecode)
+                        # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
+            # Update the progress bar
+            pbar.update(1)
 
 def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
     """
@@ -216,53 +234,59 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
             pbar.update(1)
 
 if __name__ == "__main__":
+    solidifi = False
+    smartbugs = True
+    longest_bytecode = False
 
-    # SolidiFI dataset
-    """
-    compile_solidity_sources('./reentrancy-solidifi/source-code',
-                             './reentrancy-solidifi/json')
-    compile_solidity_sources('./vanilla-solidifi/source-code',
-                             './vanilla-solidifi/json')
-    
-    
-    # EVMLiSA
-    extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/evmlisa',
+    if solidifi:
+        compile_solidity_sources('./reentrancy-solidifi/source-code',
+                                 './reentrancy-solidifi/json')
+        compile_solidity_sources('./vanilla-solidifi/source-code',
+                                 './vanilla-solidifi/json')
+        
+        if longest_bytecode:
+            # EVMLiSA
+            extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/evmlisa',
+                                              './vanilla-solidifi/json')
+            extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
+                                              './reentrancy-solidifi/json')
+            
+            # EtherSolve
+            extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
+                                              './vanilla-solidifi/json',
+                                              True)
+            extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
+                                              './reentrancy-solidifi/json',
+                                              True)
+        else:
+            # EVMLiSA
+            extract_and_save_bytecode('./vanilla-solidifi/bytecode/evmlisa',
                                       './vanilla-solidifi/json')
-    extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
+            extract_and_save_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
                                       './reentrancy-solidifi/json')
-    
-    # EtherSolve
-    extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
+            
+            # EtherSolve
+            extract_and_save_bytecode('./vanilla-solidifi/bytecode/ethersolve',
                                       './vanilla-solidifi/json',
                                       True)
-    extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
+            extract_and_save_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
                                       './reentrancy-solidifi/json',
                                       True)
     
-    """
-    """
-    # EVMLiSA
-    extract_and_save_bytecode('./vanilla-solidifi/bytecode/evmlisa',
-                              './vanilla-solidifi/json')
-    extract_and_save_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
-                              './reentrancy-solidifi/json')
-    
-    # EtherSolve
-    extract_and_save_bytecode('./vanilla-solidifi/bytecode/ethersolve',
-                              './vanilla-solidifi/json',
-                              True)
-    extract_and_save_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
-                              './reentrancy-solidifi/json',
-                              True)
-    """
-    
-    # smartbugs dataset
-    compile_solidity_sources_with_different_version('./reentrancy-smartbugs/source-code',
-                                                    './reentrancy-smartbugs/json',
-                                                    './reentrancy-smartbugs/source-code/version.csv')
+    if smartbugs:
+        compile_solidity_sources_with_different_version('./reentrancy-smartbugs/source-code',
+                                                        './reentrancy-smartbugs/json',
+                                                        './reentrancy-smartbugs/source-code/version.csv')
 
-    extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
-                              './reentrancy-smartbugs/json')
-    extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
-                              './reentrancy-smartbugs/json',
-                              True)
+        if longest_bytecode:
+            extract_and_save_longest_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
+                                              './reentrancy-smartbugs/json')
+            extract_and_save_longest_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
+                                              './reentrancy-smartbugs/json',
+                                              True)
+        else:
+            extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
+                                      './reentrancy-smartbugs/json')
+            extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
+                                      './reentrancy-smartbugs/json',
+                                      True)

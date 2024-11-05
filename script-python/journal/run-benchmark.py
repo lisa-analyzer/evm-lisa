@@ -426,61 +426,64 @@ def results_smartbugs(json_path, print_data):
 #################################### Main
 
 if __name__ == "__main__":
+    solidifi = False
+    smartbugs = True
+    
     build_evmlisa()
-    """
-    # SolidiFI dataset
-    evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
-                                                                      'results_dir':        './vanilla-solidifi/results',
-                                                                      'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
-    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-solidifi/bytecode/evmlisa', 
-                                                              'results_dir':        './reentrancy-solidifi/results',
-                                                              'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
-    
-    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-solidifi/bytecode/ethersolve',
-                                                                    'result_ethersolve_dir':    './reentrancy-solidifi/results/ethersolve'})
-    ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla-solidifi/bytecode/ethersolve',
-                                                                            'result_ethersolve_dir':    './vanilla-solidifi/results/ethersolve'})
-    
-    evmlisa_vanilla_thread.start()
-    evmlisa_thread.start()
-    ethersolve_thread.start()
-    
-    ethersolve_thread.join()
-    evmlisa_vanilla_thread.join()
-    evmlisa_thread.join()
 
-    ethersolve_vanilla_thread.start()
-    ethersolve_vanilla_thread.join()
+    if solidifi:
+        # SolidiFI dataset
+        evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
+                                                                        'results_dir':        './vanilla-solidifi/results',
+                                                                        'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
+        evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-solidifi/bytecode/evmlisa', 
+                                                                'results_dir':        './reentrancy-solidifi/results',
+                                                                'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
+        
+        ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-solidifi/bytecode/ethersolve',
+                                                                        'result_ethersolve_dir':    './reentrancy-solidifi/results/ethersolve'})
+        ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla-solidifi/bytecode/ethersolve',
+                                                                                'result_ethersolve_dir':    './vanilla-solidifi/results/ethersolve'})
+        
+        evmlisa_vanilla_thread.start()
+        evmlisa_thread.start()
+        ethersolve_thread.start()
+        
+        ethersolve_thread.join()
+        evmlisa_vanilla_thread.join()
+        evmlisa_thread.join()
 
-    check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
-    check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
-    
-    plot_results(
-        subtract_dicts(     results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                            results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi')),
-        subtract_dicts(     results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
-                            results_ethersolve('./vanilla-solidifi/results/ethersolve', 'ethersolve-vanilla-solidifi')),
-        results_solidifi(   './SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
-    )
-    
-    """
-    # Smartbugs dataset
-    evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
-                                                              'results_dir':        './reentrancy-smartbugs/results',
-                                                              'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
-    ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-smartbugs/bytecode/ethersolve',
-                                                                    'result_ethersolve_dir':    './reentrancy-smartbugs/results/ethersolve'})
-    
-    evmlisa_thread.start()
-    ethersolve_thread.start()
-    
-    ethersolve_thread.join()
-    evmlisa_thread.join()
+        ethersolve_vanilla_thread.start()
+        ethersolve_vanilla_thread.join()
 
-    check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
+        check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
+        check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
+        
+        plot_results(
+            subtract_dicts(     results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
+                                results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi')),
+            subtract_dicts(     results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
+                                results_ethersolve('./vanilla-solidifi/results/ethersolve', 'ethersolve-vanilla-solidifi')),
+            results_solidifi(   './SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
+        )
+    
+    if smartbugs:
+        evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
+                                                                  'results_dir':        './reentrancy-smartbugs/results',
+                                                                  'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
+        ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-smartbugs/bytecode/ethersolve',
+                                                                        'result_ethersolve_dir':    './reentrancy-smartbugs/results/ethersolve'})
+        
+        evmlisa_thread.start()
+        ethersolve_thread.start()
+        
+        ethersolve_thread.join()
+        evmlisa_thread.join()
 
-    plot_results(
-        results_evmlisa('./reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs'),
-        results_ethersolve('./reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs'),
-        results_smartbugs('./reentrancy-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
-    )
+        check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
+
+        plot_results(
+            results_evmlisa(    './reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs'),
+            results_ethersolve( './reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs'),
+            results_smartbugs(  './reentrancy-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
+        )
