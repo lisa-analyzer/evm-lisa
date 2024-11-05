@@ -22,6 +22,11 @@ script-python/journal/vanilla-solidifi/results/
 script-python/journal/vanilla-solidifi/json/
 script-python/journal/vanilla-solidifi/bytecode/
 
+# smartbugs reentrancy
+script-python/journal/reentrancy-smartbugs/results/
+script-python/journal/reentrancy-smartbugs/json/
+script-python/journal/reentrancy-smartbugs/bytecode/
+
 script-python/journal/execution/
 script-python/journal/images/
 
