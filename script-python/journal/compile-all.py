@@ -73,7 +73,7 @@ def compile_solidity_sources_with_different_version(source_dir, json_dir, versio
             # Command to compile and save the bytecode in JSON format
             command = (
                 f"solc-select use {compiled_version} > /dev/null && "
-                f"solc --combined-json bin {input_file} > {output_file} 2> /dev/null"
+                f"solc --combined-json bin-runtime {input_file} > {output_file} 2> /dev/null"
             )
             
             # Execute the compilation command
@@ -105,7 +105,7 @@ def compile_solidity_sources(source_dir, json_dir):
             output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
             
             # Command to compile and save the bytecode in JSON format
-            command = f"solc --optimize-runs 0 --combined-json bin --pretty-json {input_file} > {output_file}"
+            command = f"solc --optimize-runs 0 --combined-json bin-runtime --pretty-json {input_file} > {output_file}"
             
             # Execute the command
             try:
@@ -147,7 +147,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
 
                     # Find the contract with the longest bytecode
                     for contract_name, contract_data in contracts.items():
-                        bytecode = contract_data.get("bin")
+                        bytecode = contract_data.get("bin-runtime")
                         if bytecode:
                             bytecode_length = len(bytecode)
                             # Check if this bytecode is longer than the current longest
@@ -162,18 +162,6 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                             bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
                         )
                         with open(bytecode_filename, 'w') as bytecode_file:
-                            # Find the first occurrence of '60806040'
-                            first_index = longest_bytecode.find('60806040')
-
-                            # Find the second occurrence of '60806040' after the first
-                            second_index = longest_bytecode.find('60806040', first_index + len('60806040'))
-
-                            if is_ethersolve:
-                                second_index = first_index
-
-                            if first_index != -1 and second_index != -1:  
-                                longest_bytecode = longest_bytecode[second_index:]
-                            
                             bytecode_file.write("0x" + longest_bytecode)
                         # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
             # Update the progress bar
@@ -208,25 +196,13 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
                     count = 1  # Sequential counter for each bytecode in the same JSON
 
                     for contract_name, contract_data in contracts.items():
-                        bytecode = contract_data.get("bin")
+                        bytecode = contract_data.get("bin-runtime")
                         if bytecode:
                             # Add a sequential number to the filename
                             bytecode_filename = os.path.join(
                                 bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
                             )
-                            with open(bytecode_filename, 'w') as bytecode_file:
-                                # Find the first occurrence of '60406040'
-                                first_index = bytecode.find('60806040')
-
-                                # Find the second occurrence of '60406040' after the first
-                                second_index = bytecode.find('60806040', first_index + len('60806040'))
-
-                                if is_ethersolve:
-                                    second_index = first_index
-                                
-                                if first_index != -1 and second_index != -1:  
-                                    bytecode = bytecode[second_index:]
-                                
+                            with open(bytecode_filename, 'w') as bytecode_file:                
                                 bytecode_file.write("0x" + bytecode)
                             # print(f"Extracted bytecode to {bytecode_filename}")
                             count += 1  # Increment counter for next bytecode

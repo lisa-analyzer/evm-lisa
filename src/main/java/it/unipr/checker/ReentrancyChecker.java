@@ -2,16 +2,19 @@ package it.unipr.checker;
 
 import java.util.Set;
 
-import it.unipr.analysis.UniqueItemCollector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.StackElement;
+import it.unipr.analysis.UniqueItemCollector;
 import it.unipr.cfg.Call;
+import it.unipr.cfg.Callcode;
+import it.unipr.cfg.Delegatecall;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.cfg.Staticcall;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,7 +41,8 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		if (node instanceof Call) {
 			EVMCFG cfg = ((EVMCFG) graph);
 			Set<Statement> ns = cfg.getAllSstore();
-			Call call = (Call) node;
+			Statement call = node;
+			
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
@@ -79,7 +83,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		return true;
 	}
 
-	private void checkForReentrancy(Call call, Statement sstore, CheckToolWithAnalysisResults<
+	private void checkForReentrancy(Statement call, Statement sstore, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			Set<Statement> ns, EVMCFG cfg) {
 
@@ -88,7 +92,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		if (cfg.reachableFrom(call, sstore)) {
 			for (Statement otherSstore : ns)
 				if (!otherSstore.equals(sstore))
-					if (cfg.reachableFromSequentially(sstore, otherSstore))
+					if (cfg.reachableFrom(sstore, otherSstore))
 						sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
 
 			log.debug("Reentrancy attack at "
