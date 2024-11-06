@@ -98,22 +98,45 @@ def compile_solidity_sources(source_dir, json_dir):
     clear_directory(json_dir)
     os.makedirs(json_dir, exist_ok=True)
 
-    # Iterate through all .sol files in the source directory
-    for filename in os.listdir(source_dir):
-        if filename.endswith('.sol'):
-            # Full paths for input and output files
-            input_file = os.path.join(source_dir, filename)
-            output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
+    count_success = 0
+    count_failure = 0
+    solc_version = '0.5.12'
+
+    try:
+        print(f"Installing solc {solc_version}")
+        install_command = (
+            f"solc-select install {solc_version} > /dev/null &&"
+            f"solc-select use {solc_version} > /dev/null"
+        )
+        subprocess.run(install_command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing solc version {solc_version}: {e}")
+
+    # List all .sol files in the source directory
+    sol_files = [f for f in os.listdir(source_dir) if f.endswith('.sol')]
+
+    # Progress bar setup
+    with tqdm(total=len(sol_files), desc="Compiling files...") as pbar:
+        for filename in sol_files:
+            if filename.endswith('.sol'):
+                # Full paths for input and output files
+                input_file = os.path.join(source_dir, filename)
+                output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
+                
+                # Command to compile and save the bytecode in JSON format
+                command = f"solc --combined-json bin,bin-runtime --pretty-json {input_file} > {output_file}"
+                
+                # Execute the compilation command
+                try:
+                    subprocess.run(command, shell=True, check=True)
+                    count_success += 1
+                except subprocess.CalledProcessError as e:
+                    count_failure += 1
             
-            # Command to compile and save the bytecode in JSON format
-            command = f"solc --combined-json bin,bin-runtime --pretty-json {input_file} > {output_file}"
-            
-            # Execute the command
-            try:
-                subprocess.run(command, shell=True, check=True)
-                print(f"Compiled {filename} successfully.")
-            except subprocess.CalledProcessError as e:
-                print(f"Error compiling {filename}: {e}")
+            # Update the progress bar
+            pbar.update(1)
+        
+    print(f"Compiled successfully {count_success}/{count_success + count_failure} files.")
 
 def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
     """
