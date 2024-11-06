@@ -10,6 +10,7 @@ from scipy.interpolate import make_interp_spline
 import numpy as np
 import json
 from datetime import datetime
+import argparse
 
 # Directory paths
 max_threads = int(os.cpu_count() / 3)  # Core avaiable
@@ -77,7 +78,7 @@ def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
     plt.figure(figsize=(12, 6))
 
     plt.plot(keys1, values1, marker='o', label='Ethersolve', color='purple')
-    plt.plot(keys2, values2, marker='o', label='SolidiFI', color='red')
+    plt.plot(keys2, values2, marker='o', label='Truth', color='red')
     plt.plot(keys3, values3, marker='o', label='EVMLiSA', color='green')
 
     plt.xlabel('Problem ID')
@@ -426,12 +427,19 @@ def results_smartbugs(json_path, print_data):
 #################################### Main
 
 if __name__ == "__main__":
-    solidifi = False
-    smartbugs = True
+    parser = argparse.ArgumentParser(description="EVMLiSA and EtherSolve analysis.")
+    parser.add_argument("--solidifi", action="store_true", help="Run analysis on SolidiFI dataset")
+    parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
+
+    args = parser.parse_args()
+
+    if not args.solidifi and not args.smartbugs:
+        parser.error("At least an arg is required.")
+        exit(1)
     
     build_evmlisa()
 
-    if solidifi:
+    if args.solidifi:
         # SolidiFI dataset
         evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
                                                                         'results_dir':        './vanilla-solidifi/results',
@@ -467,7 +475,7 @@ if __name__ == "__main__":
             results_solidifi(   './SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
         )
     
-    if smartbugs:
+    if args.smartbugs:
         evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
                                                                   'results_dir':        './reentrancy-smartbugs/results',
                                                                   'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
