@@ -99,6 +99,7 @@ Options:
  -f,--filepath-bytecode <arg>   Filepath of the bytecode file.
     --html                      Export a graphic HTML report.
  -o,--output <arg>              Output directory path.
+    --reentrancy-checker        Enable re-entrancy checker.
     --serialize-inputs          Serialize inputs.
     --stack-set-size <arg>      Dimension of stack-set (default: 8).
     --stack-size <arg>          Dimension of stack (default: 32).

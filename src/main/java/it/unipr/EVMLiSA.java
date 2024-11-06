@@ -101,6 +101,7 @@ public class EVMLiSA {
 		String coresOpt = cmd.getOptionValue("cores");
 		boolean dumpReport = cmd.hasOption("dump-report");
 		boolean useCreationCode = cmd.hasOption("creation-code");
+		boolean enableReentrancyChecker = cmd.hasOption("reentrancy-checker");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
@@ -240,13 +241,14 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
-			
-			jsonOptions.put("re-entrancy-warning", UniqueItemCollector.getInstance().size()); // TODO
-																								// fix
+			if(enableReentrancyChecker){
+				conf.semanticChecks.clear();
+				conf.semanticChecks.add(new ReentrancyChecker());
+				lisa.run(program);
+
+				// TODO fix
+				jsonOptions.put("re-entrancy-warning", UniqueItemCollector.getInstance().size());
+			}
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker)
 					.address(addressSC)
@@ -928,6 +930,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option enableReentrancyCheckerOption = Option.builder()
+				.longOpt("reentrancy-checker")
+				.desc("Enable re-entrancy checker.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
@@ -944,6 +953,7 @@ public class EVMLiSA {
 		options.addOption(useCreationCodeOption);
 		options.addOption(dumpHtmlOption);
 		options.addOption(dumpDotOption);
+		options.addOption(enableReentrancyCheckerOption);
 
 		return options;
 	}
