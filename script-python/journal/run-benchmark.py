@@ -79,7 +79,7 @@ def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
 
     plt.plot(keys1, values1, marker='o', label='Ethersolve', color='purple')
     plt.plot(keys2, values2, marker='o', label='Truth', color='red')
-    plt.plot(keys3, values3, marker='o', label='EVMLiSA', color='green')
+    plt.plot(keys3, values3, marker='o', label='EVMLiSA', color='green', linestyle='--', zorder=3)
 
     plt.xlabel('Problem ID')
     plt.ylabel('Value')

@@ -358,23 +358,5 @@
                 "category": "reentrancy"
             }
         ]
-    },
-    {
-        "name": "31.sol",
-        "pragma": "0.4.23",
-        "vulnerabilities": [
-            {
-                "lines": [
-                    426
-                ],
-                "category": "reentrancy"
-            },
-            {
-                "lines": [
-                    430
-                ],
-                "category": "reentrancy"
-            }
-        ]
     }
 ]
