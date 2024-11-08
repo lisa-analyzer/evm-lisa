@@ -44,7 +44,7 @@ public class EVMAbstractState
 	/**
 	 * The address of the running contract.
 	 */
-	private static String CONTRACT_ADDRESS;
+private static String CONTRACT_ADDRESS = null;
 
 	/**
 	 * The stack memory.
@@ -63,7 +63,11 @@ public class EVMAbstractState
 
 	private final StackElement mu_i;
 
-	private static boolean USE_STORAGE_LIVE = false;
+private static boolean USE_STORAGE_LIVE = false;
+
+public static void setContractAddress(String address) {
+    CONTRACT_ADDRESS = address;
+}
 
 	/**
 	 * Builds the abstract domain.
@@ -1253,7 +1257,7 @@ public class EVMAbstractState
 							if (storage.getKeys().contains(key.getNumber()))
 								valueToPush = valueToPush.lub(storage.getState(key.getNumber()));
 							else {
-								if (USE_STORAGE_LIVE && CONTRACT_ADDRESS != null) {
+                                if (USE_STORAGE_LIVE && CONTRACT_ADDRESS != null) {
 									StackElement valueCached = MyCache.getInstance()
 											.get(Pair.of(CONTRACT_ADDRESS, key.getNumber()));
 
