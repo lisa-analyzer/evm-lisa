@@ -81,8 +81,11 @@ public class EVMLiSA {
 		Options options = new Options();
 
 		// String parameters
+Option contractAddressOption = new Option("ca", "contract-address", true, "address of the contract for live storage");
 		Option addressOption = new Option("a", "address", true, "address of an Ethereum smart contract");
 		addressOption.setRequired(false);
+contractAddressOption.setRequired(false);
+options.addOption(contractAddressOption);
 		options.addOption(addressOption);
 
 		Option outputOption = new Option("o", "output", true, "output directory path");
@@ -174,7 +177,14 @@ public class EVMLiSA {
 		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
 		boolean downloadBytecode = cmd.hasOption("download-bytecode");
-		boolean useStorageLive = cmd.hasOption("use-live-storage");
+boolean useStorageLive = cmd.hasOption("use-live-storage");
+String contractAddress = cmd.getOptionValue("contract-address");
+
+if (useStorageLive && contractAddress == null) {
+    log.error("Contract address is required when using live storage.");
+    formatter.printHelp("help", options);
+    System.exit(1);
+}
 		String filepath = cmd.getOptionValue("filepath");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
@@ -230,7 +240,8 @@ public class EVMLiSA {
 		jsonOptions.put("dump-analysis", dumpAnalysis);
 		jsonOptions.put("dump-statistics", dumpStatistics);
 		jsonOptions.put("download-bytecode", downloadBytecode);
-		jsonOptions.put("use-storage-live", useStorageLive);
+jsonOptions.put("use-storage-live", useStorageLive);
+jsonOptions.put("contract-address", contractAddress);
 		jsonOptions.put("filepath", filepath);
 		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
 		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
@@ -276,7 +287,12 @@ public class EVMLiSA {
 		} else
 			BYTECODE_FULLPATH = filepath;
 
-		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+
+// Set the contract address in EVMAbstractState if using live storage
+if (useStorageLive) {
+    EVMAbstractState.setContractAddress(contractAddress);
+}
 
 		long start = System.currentTimeMillis();
 		long finish;
