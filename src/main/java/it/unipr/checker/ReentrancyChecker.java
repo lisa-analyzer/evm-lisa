@@ -10,11 +10,8 @@ import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.StackElement;
 import it.unipr.analysis.UniqueItemCollector;
 import it.unipr.cfg.Call;
-import it.unipr.cfg.Callcode;
-import it.unipr.cfg.Delegatecall;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.cfg.Staticcall;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -42,7 +39,6 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 			EVMCFG cfg = ((EVMCFG) graph);
 			Set<Statement> ns = cfg.getAllSstore();
 			Statement call = node;
-			
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
@@ -60,21 +56,19 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 
 				// If the value state is bottom, the jump is definitely
 				// unreachable
-				if (valueState.isBottom()) {
+				if (valueState.isBottom()) 
 					// Nothing to do
 					continue;
-				} else {
-					if (valueState.isTop())
-						for (Statement sstore : ns)
-							checkForReentrancy(call, sstore, tool, ns, cfg);
-					else {
-						for (AbstractStack stack : valueState.getStacks()) {
-							StackElement topStack = stack.getSecondElement();
+				else if (valueState.isTop())
+					for (Statement sstore : ns)
+						checkForReentrancy(call, sstore, tool, ns, cfg);
+				else {
+					for (AbstractStack stack : valueState.getStacks()) {
+						StackElement sndElem = stack.getSecondElement();
 
-							if (topStack.isTop() || topStack.isTopNotJumpdest())
-								for (Statement sstore : ns)
-									checkForReentrancy(call, sstore, tool, ns, cfg);
-						}
+						if (sndElem.isTop() || sndElem.isTopNotJumpdest())
+							for (Statement sstore : ns)
+								checkForReentrancy(call, sstore, tool, ns, cfg);
 					}
 				}
 			}
@@ -92,13 +86,13 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		if (cfg.reachableFrom(call, sstore)) {
 			for (Statement otherSstore : ns)
 				if (!otherSstore.equals(sstore))
-					if (cfg.reachableFrom(sstore, otherSstore))
+					if (cfg.reachableFromSequentially(sstore, otherSstore))
 						sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
 
 			log.debug("Reentrancy attack at "
-					+ sstoreLoc.getPc() + "at line no. "
+					+ sstoreLoc.getPc() + " at line no. "
 					+ sstoreLoc.getSourceCodeLine()
-					+ "coming from line "
+					+ " coming from line "
 					+ ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
 			String warn = "Reentrancy attack at "
 					+ sstoreLoc.getPc();
