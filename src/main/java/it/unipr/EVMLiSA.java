@@ -241,7 +241,7 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			if(enableReentrancyChecker){
+			if (enableReentrancyChecker) {
 				conf.semanticChecks.clear();
 				conf.semanticChecks.add(new ReentrancyChecker());
 				lisa.run(program);

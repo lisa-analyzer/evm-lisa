@@ -443,11 +443,11 @@ if __name__ == "__main__":
     if args.solidifi:
         # SolidiFI dataset
         evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
-                                                                        'results_dir':        './vanilla-solidifi/results',
-                                                                        'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
+                                                                          'results_dir':        './vanilla-solidifi/results',
+                                                                          'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
         evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-solidifi/bytecode/evmlisa', 
-                                                                'results_dir':        './reentrancy-solidifi/results',
-                                                                'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
+                                                                  'results_dir':        './reentrancy-solidifi/results',
+                                                                  'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
         
         ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-solidifi/bytecode/ethersolve',
                                                                         'result_ethersolve_dir':    './reentrancy-solidifi/results/ethersolve'})

@@ -69,4 +69,13 @@ public class UniqueItemCollector {
 			return itemSet.contains(item);
 		}
 	}
+
+	/**
+	 * Clear the set.
+	 */
+	public void clear() {
+		synchronized (UniqueItemCollector.class) {
+			itemSet.clear();
+		}
+	}
 }

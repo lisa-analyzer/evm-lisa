@@ -44,7 +44,7 @@ public class EVMBytecodeGroundTruth {
 	@Test
 	public void testGroundTruth() throws AnalysisSetupException, IOException, Exception {
 		String GROUND_TRUTH_FILE_PATH = "evm-testcases/ground-truth/ground-truth-data.csv";
-		String RESULT_EXEC_DIR_PATH = "evm-testcases/ground-truth/test";
+		String RESULT_EXEC_DIR_PATH = "evm-testcases/ground-truth/test-ground-truth-results";
 		String RESULT_EXEC_FILE_PATH = RESULT_EXEC_DIR_PATH + "/statistics.csv";
 		String SMARTCONTRACTS_FULLPATH = "benchmark/50-ground-truth.txt";
 		AbstractStack.setStackLimit(32);

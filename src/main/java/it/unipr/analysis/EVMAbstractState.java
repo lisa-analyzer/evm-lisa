@@ -86,7 +86,10 @@ public class EVMAbstractState
 		this.storage = new Memory();
 		this.mu_i = StackElement.ZERO;
 
-		CONTRACT_ADDRESS = (contractAddress.matches("^0x[a-fA-F0-9]{40}$")) ? contractAddress : null;
+		if (contractAddress == null)
+			CONTRACT_ADDRESS = null;
+		else
+			CONTRACT_ADDRESS = (contractAddress.matches("^0x[a-fA-F0-9]{40}$")) ? contractAddress : null;
 	}
 
 	/**
@@ -454,7 +457,7 @@ public class EVMAbstractState
 
 //						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
 //								|| jmpDest.isTop())
-							result.add(resultStack);
+						result.add(resultStack);
 					}
 
 					if (result.isEmpty())

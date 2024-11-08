@@ -1,10 +1,5 @@
 package it.unipr.checker;
 
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.StackElement;
@@ -23,16 +18,19 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ReentrancyChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		if (node instanceof Call) {
@@ -43,7 +41,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(call);
@@ -56,7 +54,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 
 				// If the value state is bottom, the jump is definitely
 				// unreachable
-				if (valueState.isBottom()) 
+				if (valueState.isBottom())
 					// Nothing to do
 					continue;
 				else if (valueState.isTop())
