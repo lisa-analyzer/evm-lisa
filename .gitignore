@@ -12,7 +12,6 @@ evm-outputs/
 test-ground-truth-stats/
 evm-testcases/ground-truth/test-ground-truth-results/logs.txt
 evm-testcases/ground-truth/test-ground-truth-results/statistics.csv
-evm-testcases/ground-truth/test-reentrancy-smartbugs-truth/opcodes/
 
 # Ignore benchmark results
 # SolidiFI reentrancy

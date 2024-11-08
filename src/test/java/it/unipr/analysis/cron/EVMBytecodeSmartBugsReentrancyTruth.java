@@ -1,7 +1,5 @@
 package it.unipr.analysis.cron;
 
-import static it.unipr.frontend.EVMFrontend.opcodesFromBytecode;
-
 import it.unipr.analysis.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
@@ -16,7 +14,6 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
-import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,30 +29,24 @@ public class EVMBytecodeSmartBugsReentrancyTruth {
 
 	@Test
 	public void testSmartBugsReentrancyTruth() throws Exception {
-		String SMARTBUGS_BYTECODE_PATH = "evm-testcases/ground-truth/test-reentrancy-smartbugs-truth/bytecode/";
-		String SMARTBUGS_OPCODES_PATH = "evm-testcases/ground-truth/test-reentrancy-smartbugs-truth/opcodes/";
+		String SMARTBUGS_BYTECODES_DIR = "evm-testcases/ground-truth/test-reentrancy-smartbugs-truth/bytecode/";
 
 		EVMFrontend.setUseCreationCode();
 
-		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODE_PATH);
+		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
 		// Run the benchmark
 		for (String bytecodeFileName : bytecodes) {
+			String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
 
-			String bytecodeFullPath = SMARTBUGS_BYTECODE_PATH + bytecodeFileName;
-			String bytecode = Files.readString(Paths.get(bytecodeFullPath));
-			String opcodeFullPath = SMARTBUGS_OPCODES_PATH + bytecodeFileName;
-
-			opcodesFromBytecode(bytecode, opcodeFullPath);
-
-			Program program = EVMFrontend.generateCfgFromFile(opcodeFullPath);
+			Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
 
 			LiSAConfiguration conf = new LiSAConfiguration();
 			conf.serializeInputs = false;
 			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(null),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.jsonOutput = false;
-			conf.workdir = SMARTBUGS_BYTECODE_PATH;
+			conf.workdir = SMARTBUGS_BYTECODES_DIR;
 			conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 			JumpSolver checker = new JumpSolver();
 			conf.semanticChecks.add(checker);
