@@ -146,6 +146,11 @@ public class EVMLiSA {
 		if (useCreationCode)
 			EVMFrontend.setUseCreationCode();
 
+		if (useStorageLive && addressSC == null) {
+			System.err.println("Address must be set if live storage option is activated.");
+			System.exit(1);
+		}
+
 		// Creating json output notes
 		JSONObject jsonOptions = new JSONObject();
 		jsonOptions.put("address", addressSC);
