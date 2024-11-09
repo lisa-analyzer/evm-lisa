@@ -103,7 +103,7 @@ def compile_solidity_sources(source_dir, json_dir):
     solc_version = '0.5.12'
 
     try:
-        print(f"Installing solc {solc_version}")
+        # print(f"Installing solc {solc_version}")
         install_command = (
             f"solc-select install {solc_version} > /dev/null &&"
             f"solc-select use {solc_version} > /dev/null"
