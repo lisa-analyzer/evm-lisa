@@ -12,10 +12,10 @@ import json
 from datetime import datetime
 import argparse
 
-# Directory paths
 max_threads = int(os.cpu_count() / 3)  # Core avaiable
 
 #################################### Utility
+
 def delete_tmp_files(directory):
     """
     Deletes files in the specified directory that contain 'no-address' in their name.
@@ -105,6 +105,15 @@ def subtract_dicts(dict1, dict2):
     
     return result
 
+def calculate_average(data):
+    if not data:
+        return 0 
+
+    total = sum(data.values())
+    count = len(data)
+
+    average_precision = total / count
+    return average_precision
 
 #################################### EVMLiSA
 
@@ -207,7 +216,7 @@ def check_sound_analysis_evmlisa(directory_path):
     if sound:
         print("[EVMLiSA] All analysis are SOUND")
 
-def results_evmlisa(directory_path, print_data):
+def get_results_evmlisa(directory_path, print_data):
     re_entrancy_warning_counts = {}
     
     for filename in os.listdir(directory_path):
@@ -251,7 +260,6 @@ def results_evmlisa(directory_path, print_data):
     print(sorted_data)
 
     return sorted_data
-
 
 #################################### EtherSolve
 
@@ -316,7 +324,7 @@ def ethersolve(bytecode_dir, result_ethersolve_dir):
     print(f"[ETHERSOLVE] Completed {analysis_ended}/{num_files}.")
     delete_tmp_files(bytecode_dir)
 
-def results_ethersolve(directory_path, print_data):
+def get_results_ethersolve(directory_path, print_data):
     """
     Counts occurrences of the word "SSTORE" in files with "reentrancy" in their names 
     within the specified directory.
@@ -369,7 +377,7 @@ def results_ethersolve(directory_path, print_data):
 
 #################################### SolidiFI
 
-def results_solidifi(folder_path, print_data):
+def get_results_solidifi(folder_path, print_data):
     # Initialize a dictionary to store the line count for each problem ID
     line_counts = defaultdict(int)
 
@@ -398,7 +406,7 @@ def results_solidifi(folder_path, print_data):
 
 #################################### smartbugs
 
-def results_smartbugs(json_path, print_data):
+def get_results_smartbugs(json_path, print_data):
     """
     Counts the number of vulnerabilities for each Solidity file in the JSON file.
     """
@@ -424,6 +432,58 @@ def results_smartbugs(json_path, print_data):
     print(sorted_data)
     
     return sorted_data
+
+#################################### Statistics
+def calculate_precision(data, truth):
+    results_with_precision = {}
+    
+    for key, value in data.items():
+        diff = value - truth.get(key)
+        tp = fp = fn = 0
+
+        if diff == 0: # True positive
+            tp = value 
+        elif diff > 0: # False positive
+            fp = diff
+            tp = truth.get(key) 
+        else: # False negative
+            fn = diff * (-1)
+
+        precision = tp / (tp + fp) if (tp + fp) != 0 else 0
+        results_with_precision[key] = precision
+
+    return results_with_precision
+
+def calculate_recall(data, truth):
+    results_with_recall = {}
+    
+    for key, value in data.items():
+        diff = value - truth.get(key)
+        tp = fp = fn = 0
+
+        if diff == 0: # True positive
+            tp = value
+        elif diff > 0: # False positive
+            fp = diff
+            tp = truth.get(key)
+        else: # False negative
+            fn = diff * (-1)
+            tp = value
+
+        recall = tp / (tp + fn) if (tp + fn) != 0 else 0
+        results_with_recall[key] = recall
+    
+    return results_with_recall
+
+def calculate_f_measure(precision, recall):
+    results_with_f_measure = {}
+    
+    for key, p in precision.items():
+        r = recall.get(key)
+        f_measure = 2 * ((p * r) / (p + r)) if (p + r) != 0 else 0
+        results_with_f_measure[key] = f_measure
+    
+    return results_with_f_measure
 
 #################################### Main
 
@@ -467,14 +527,33 @@ if __name__ == "__main__":
 
         check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
         check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
+
+        results_evmlisa = subtract_dicts(get_results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
+                                         get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
+        results_ethersolve = subtract_dicts(get_results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
+                                            get_results_ethersolve('./vanilla-solidifi/results/ethersolve', 'ethersolve-vanilla-solidifi'))
+        results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
         
-        plot_results(
-            subtract_dicts(     results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi')),
-            subtract_dicts(     results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
-                                results_ethersolve('./vanilla-solidifi/results/ethersolve', 'ethersolve-vanilla-solidifi')),
-            results_solidifi(   './SolidiFI-buggy-contracts/Re-entrancy', 'solidify')
-        )
+        # Precision
+        evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
+        ethersolve_precision = calculate_precision(results_ethersolve, results_solidifi)
+        print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
+        print(f"Precision ethersolve (avg.): {calculate_average(ethersolve_precision)}")
+
+        # Recall
+        evmlisa_recall = calculate_recall(results_evmlisa, results_solidifi)
+        ethersolve_recall = calculate_recall(results_ethersolve, results_solidifi)
+        print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
+        print(f"Recall ethersolve (avg.): {calculate_average(ethersolve_recall)}")
+
+        # F-measure
+        print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
+        print(f"F-measure ethersolve (avg.): {calculate_average(calculate_f_measure(ethersolve_precision, ethersolve_recall))}")
+        
+        # Plot results
+        plot_results(results_evmlisa, 
+                     results_ethersolve,
+                     results_solidifi)
     
     if args.smartbugs:
         evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
@@ -491,8 +570,27 @@ if __name__ == "__main__":
 
         check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
 
-        plot_results(
-            results_evmlisa(    './reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs'),
-            results_ethersolve( './reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs'),
-            results_smartbugs(  './reentrancy-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
-        )
+        results_evmlisa = get_results_evmlisa('./reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs')                        
+        results_ethersolve = get_results_ethersolve('./reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs')
+        results_smartbugs = get_results_smartbugs('./reentrancy-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
+        
+        # Precision
+        evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
+        ethersolve_precision = calculate_precision(results_ethersolve, results_smartbugs)
+        print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
+        print(f"Precision ethersolve (avg.): {calculate_average(ethersolve_precision)}")
+
+        # Recall
+        evmlisa_recall = calculate_recall(results_evmlisa, results_smartbugs)
+        ethersolve_recall = calculate_recall(results_ethersolve, results_smartbugs)
+        print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
+        print(f"Recall ethersolve (avg.): {calculate_average(ethersolve_recall)}")
+
+        # F-measure
+        print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
+        print(f"F-measure ethersolve (avg.): {calculate_average(calculate_f_measure(ethersolve_precision, ethersolve_recall))}")
+        
+        # Plot results
+        plot_results(results_evmlisa, 
+                     results_ethersolve,
+                     results_smartbugs)
