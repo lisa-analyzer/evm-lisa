@@ -141,15 +141,16 @@ public class EVMLiSA {
 			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
 		}
 
+		if (useStorageLive && addressSC == null) {
+			log.warn("Address must be set if live storage option is activated.");
+			log.warn("Live storage option deactivated.");
+			useStorageLive = false;
+		}
+
 		if (useStorageLive)
 			EVMAbstractState.setUseStorageLive();
 		if (useCreationCode)
 			EVMFrontend.setUseCreationCode();
-
-		if (useStorageLive && addressSC == null) {
-			System.err.println("Address must be set if live storage option is activated.");
-			System.exit(1);
-		}
 
 		// Creating json output notes
 		JSONObject jsonOptions = new JSONObject();
