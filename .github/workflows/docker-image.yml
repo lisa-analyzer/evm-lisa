@@ -1,0 +1,23 @@
+name: 'Docker build image test'
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t evmlisa:test .
+      
+      - name: Remove Docker image
+        run: docker rmi evmlisa:test
