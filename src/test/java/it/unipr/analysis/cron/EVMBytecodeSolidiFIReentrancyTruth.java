@@ -148,7 +148,7 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 		_solidifi.put(30, 42);
 		_solidifi.put(31, 15);
 		_solidifi.put(32, 21);
-		_solidifi.put(33, 24); // added 2 from vanilla
+		_solidifi.put(33, 23); // added 2 from vanilla
 		_solidifi.put(34, 36);
 		_solidifi.put(35, 34);
 		_solidifi.put(36, 29);
