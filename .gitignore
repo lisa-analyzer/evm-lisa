@@ -27,8 +27,16 @@ script-python/journal/reentrancy-smartbugs/results/
 script-python/journal/reentrancy-smartbugs/json/
 script-python/journal/reentrancy-smartbugs/bytecode/
 
+# SliSE reentrancy
+script-python/journal/reentrancy-slise-db1/results/
+script-python/journal/reentrancy-slise-db1/json/
+script-python/journal/reentrancy-slise-db1/bytecode/
+script-python/journal/reentrancy-slise-db1/match-file-index.json
+
 script-python/journal/execution/
 script-python/journal/images/
+script-python/journal/DAppSCAN/
+script-python/journal/SliSE/
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/

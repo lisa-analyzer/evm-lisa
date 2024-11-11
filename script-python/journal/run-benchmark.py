@@ -63,7 +63,7 @@ def clean_files(directory_path):
             # else:
                 # print(f"No changes made to {filename}")
 
-def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
+def plot_results(data_evmlisa, data_ethersolve, data_solidifi, name="no-name"):
     os.makedirs('./images', exist_ok=True)
 
     keys1 = sorted(data_ethersolve.keys())
@@ -83,13 +83,13 @@ def plot_results(data_evmlisa, data_ethersolve, data_solidifi):
 
     plt.xlabel('Problem ID')
     plt.ylabel('Value')
-    plt.title('Comparison of results (re-entrancy)')
+    plt.title(f'[{name}] Comparison of results (re-entrancy)')
     plt.xticks(sorted(set(keys1).union(set(keys2).union(keys3))))  # Show all problem IDs on x-axis
     plt.legend()
     plt.grid()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"results_{timestamp}.png"
+    filename = f"results_{name}_{timestamp}.png"
     plt.savefig('images/' + filename)
 
     plt.show()
@@ -114,6 +114,23 @@ def calculate_average(data):
 
     average_precision = total / count
     return average_precision
+
+def map_file_names_to_ids(sorted_data, index_path):
+    """
+    Map the file names in sorted_data to their corresponding IDs from the index JSON.
+    """
+    
+    with open(index_path, 'r') as index_file:
+        file_index = json.load(index_file)
+
+    mapped_data = {}
+
+    for file_name, count in sorted_data.items():
+        file_id = file_index.get(file_name)
+        if file_id is not None:
+            mapped_data[file_id] = count
+
+    return mapped_data
 
 #################################### EVMLiSA
 
@@ -234,6 +251,7 @@ def get_results_evmlisa(directory_path, print_data):
 
     results = defaultdict(int)
     for file, result in re_entrancy_warning_counts.items():
+        # solidifi case
         match = re.match(r'buggy_(\d+)-\w+\.json', file)
         if match:
             id = int(match.group(1))
@@ -244,6 +262,7 @@ def get_results_evmlisa(directory_path, print_data):
             id = int(match.group(1))
             results[id] += result
         
+        # smartbug case
         match = re.match(r'(\d+)-\w+\.json', file)
         if match:
             id = int(match.group(1))
@@ -253,7 +272,9 @@ def get_results_evmlisa(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
-    
+
+        # TODO slise case
+
     sorted_data = dict(sorted(results.items()))
     
     print(print_data)
@@ -348,6 +369,7 @@ def get_results_ethersolve(directory_path, print_data):
 
     results = defaultdict(int)
     for file, result in sstore_counts.items():
+        # solidifi case
         match = re.match(r'buggy_(\d+)-\w+\.csv', file)
         if match:
             id = int(match.group(1))
@@ -358,6 +380,7 @@ def get_results_ethersolve(directory_path, print_data):
             id = int(match.group(1))
             results[id] += result
         
+        # smartbugs case
         match = re.match(r'(\d+)-\w+\.csv', file)
         if match:
             id = int(match.group(1))
@@ -367,6 +390,8 @@ def get_results_ethersolve(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
+
+        # TODO slise case
         
     sorted_data = dict(sorted(results.items()))
     
@@ -382,7 +407,7 @@ def get_results_solidifi(folder_path, print_data):
     line_counts = defaultdict(int)
 
     subtraction_values = {
-        11: 1, 12: 7, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 2, 36: 7, 37: 1, 42: 3, 48: 1
+        11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
     # Iterate over all files in the specified folder
@@ -431,6 +456,36 @@ def get_results_smartbugs(json_path, print_data):
 
     # Sort the data by file ID
     sorted_data = dict(sorted(vulnerability_counts.items()))
+
+    print(print_data)
+    print(sorted_data)
+    
+    return sorted_data
+
+#################################### slise
+
+def get_results_slise(json_path, print_data):
+    """
+    Counts the number of vulnerabilities for each Solidity file in the JSON file.
+    """
+    # Initialize a dictionary to store the vulnerability count for each file
+    vulnerability_counts = defaultdict(str)
+
+    # Load JSON data
+    with open(json_path, 'r') as file:
+        data = json.load(file)
+    
+    # Iterate over each entry in the JSON data
+    for entry in data:
+        # Extract the filename without the extension
+        file_id = str(os.path.splitext(entry["name"])[0])
+        
+        # Count the vulnerabilities for the file
+        vulnerability_counts[file_id] = len(entry.get("vulnerabilities", []))
+
+    # Sort the data by file ID
+    sorted_data = dict(sorted(vulnerability_counts.items()))
+    sorted_data = map_file_names_to_ids(sorted_data, './reentrancy-slise-db1/match-file-index.json')
 
     print(print_data)
     print(sorted_data)
@@ -495,18 +550,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="EVMLiSA and EtherSolve analysis.")
     parser.add_argument("--solidifi", action="store_true", help="Run analysis on SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
+    parser.add_argument("--slise", action="store_true", help="Run analysis on SliSE dataset")
 
     args = parser.parse_args()
-
-    if not args.solidifi and not args.smartbugs:
-        parser.error("At least an arg is required.")
-        exit(1)
     
     build_evmlisa()
 
     if args.solidifi:
         # SolidiFI dataset
-        
         evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
                                                                           'results_dir':        './vanilla-solidifi/results',
                                                                           'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
@@ -558,9 +609,11 @@ if __name__ == "__main__":
         # Plot results
         plot_results(results_evmlisa, 
                      results_ethersolve,
-                     results_solidifi)
+                     results_solidifi,
+                     'solidifi')
     
     if args.smartbugs:
+        # SmartBugs dataset
         evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
                                                                   'results_dir':        './reentrancy-smartbugs/results',
                                                                   'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
@@ -598,4 +651,11 @@ if __name__ == "__main__":
         # Plot results
         plot_results(results_evmlisa, 
                      results_ethersolve,
-                     results_smartbugs)
+                     results_smartbugs,
+                     'smartbugs')
+        
+    if args.slise:
+        results_slise = get_results_slise('./reentrancy-slise-db1/source-code/vulnerabilities.json', 'slise-db1')
+        
+
+    

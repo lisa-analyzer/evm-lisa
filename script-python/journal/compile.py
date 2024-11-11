@@ -5,6 +5,8 @@ import csv
 from tqdm import tqdm
 import argparse
 
+import re
+
 def clear_directory(directory):
     """
     Clears all files in the specified directory.
@@ -28,6 +30,63 @@ def load_version_mapping(version_file):
         for row in csv_reader:
             version_mapping[row['file']] = row['compiled version']
     return version_mapping
+
+def generate_file_index(folder_path, output_json="file_index.json"):
+    # Dizionario per mantenere la corrispondenza nome del file senza estensione - numero sequenziale
+    file_index = {}
+    
+    # Filtra solo i file con estensione .sol e ordina per nome
+    files = sorted(f for f in os.listdir(folder_path) if f.endswith(".sol") and os.path.isfile(os.path.join(folder_path, f)))
+    
+    # Genera il dizionario con il nome del file senza estensione e il numero sequenziale
+    for i, file_name in enumerate(files, start=1):
+        file_name_no_ext = os.path.splitext(file_name)[0]  # Rimuove l'estensione .sol
+        file_index[file_name_no_ext] = i
+
+    # Scrivi il dizionario in un file JSON
+    with open(output_json, 'w', encoding='utf-8') as json_file:
+        json.dump(file_index, json_file, indent=4)
+    
+    print(f"File index saved in {output_json}")
+
+def extract_solidity_versions(src_folder, output_csv="solidity_versions.csv"):
+    data = []
+    pragma_regex = re.compile(r'pragma\s+solidity\s+([^;]+);')
+
+    for root, _, files in os.walk(src_folder):
+        for file_name in files:
+            if file_name.endswith(".sol"):
+                file_path = os.path.join(root, file_name)
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    content = file.read()
+
+                    # Cerca la versione originale nella pragma solidity
+                    pragma_match = pragma_regex.search(content)
+                    if pragma_match:
+                        original_version = pragma_match.group(1).strip()
+                        
+                        # Rimuove i caratteri `^`, `=`, `>`, `<` e separa le versioni
+                        cleaned_version = re.sub(r"[^\d\.\s]", "", original_version).strip()
+                        versions = cleaned_version.split()
+
+                        # Prende l'ultima versione (la più recente) nell'intervallo
+                        compiled_version = versions[0]
+
+                        data.append({
+                            "file": file_name,
+                            "original pragma version": original_version,
+                            "compiled version": compiled_version,
+                            "notes": ""
+                        })
+
+    # Scrivi i risultati in un file CSV
+    with open(output_csv, 'w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = ["file", "original pragma version", "compiled version", "notes"]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+
+    print(f"Versions saved in {output_csv}")
 
 def compile_solidity_sources_with_different_version(source_dir, json_dir, version_file):
     """
@@ -157,7 +216,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                 
                 # Check if the file is empty
                 if os.path.getsize(json_filepath) == 0:
-                    print(f"Skipping empty file: {json_filename}")
+                    # print(f"Skipping empty file: {json_filename}")
                     pbar.update(1)
                     continue
 
@@ -213,7 +272,7 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
                 with open(json_filepath, 'r') as json_file:
                     # Check if the file is empty by reading the first character
                     if json_file.read(1) == "":
-                        print(f"Skipping empty file: {json_filename}")
+                        # print(f"Skipping empty file: {json_filename}")
                         pbar.update(1)
                         continue
                     json_file.seek(0)  # Reset the file pointer to the beginning
@@ -244,13 +303,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compile datasets.")
     parser.add_argument("--solidifi", action="store_true", help="Run analysis on SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
+    parser.add_argument("--slise", action="store_true", help="Run analysis on SliSE dataset")
     parser.add_argument("--longest-bytecode", action="store_true", help="Save only the longest bytecode")
 
     args = parser.parse_args()
-
-    if not args.solidifi and not args.smartbugs:
-        parser.error("At least an arg is required.")
-        exit(1)
 
     if args.solidifi:
         compile_solidity_sources('./reentrancy-solidifi/source-code',
@@ -303,4 +359,26 @@ if __name__ == "__main__":
                                       './reentrancy-smartbugs/json')
             extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
                                       './reentrancy-smartbugs/json',
+                                      True)
+    
+    if args.slise:
+        extract_solidity_versions('./reentrancy-slise-db1/source-code',
+                                  './reentrancy-slise-db1/source-code/version.csv')
+        generate_file_index('./reentrancy-slise-db1/source-code',
+                            './reentrancy-slise-db1/match-file-index.json')
+        compile_solidity_sources_with_different_version('./reentrancy-slise-db1/source-code',
+                                                        './reentrancy-slise-db1/json',
+                                                        './reentrancy-slise-db1/source-code/version.csv')
+        
+        if args.longest_bytecode:
+            extract_and_save_longest_bytecode('./reentrancy-slise-db1/bytecode/evmlisa',
+                                              './reentrancy-slise-db1/json')
+            extract_and_save_longest_bytecode('./reentrancy-slise-db1/bytecode/ethersolve',
+                                              './reentrancy-slise-db1/json',
+                                              True)
+        else:
+            extract_and_save_bytecode('./reentrancy-slise-db1/bytecode/evmlisa',
+                                      './reentrancy-slise-db1/json')
+            extract_and_save_bytecode('./reentrancy-slise-db1/bytecode/ethersolve',
+                                      './reentrancy-slise-db1/json',
                                       True)

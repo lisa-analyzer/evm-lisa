@@ -1,0 +1,1391 @@
+[
+    {
+        "name": "ABNB_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "ABNB_1.sol:CErc20",
+                "type": "Reentrancy",
+                "function_name": "repayBorrowBehalf(address,uint256)",
+                "function_hash": "0x2608f818",
+                "pc": "0x62d7",
+                "Line number": ""
+            },
+            {
+                "contract_name": "ABNB_1.sol:CEther",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x5ff0",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "AdminImpl_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "AdminImpl_1.sol:AdminImpl",
+                "type": "Reentrancy",
+                "function_name": "0xf9cacc4c",
+                "function_hash": "0xf9cacc4c",
+                "pc": "0x1349",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "AdminImpl_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "AdminImpl_2.sol:AdminImpl",
+                "type": "Reentrancy",
+                "function_name": "0xaa92e348",
+                "function_hash": "0xaa92e348",
+                "pc": "0x1349",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "AdminImpl_3.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "AdminImpl_3.sol:AdminImpl",
+                "type": "Reentrancy",
+                "function_name": "0x0f44e6bc",
+                "function_hash": "0x0f44e6bc",
+                "pc": "0x1349",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "AdminImpl_4.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "AdminImpl_4.sol:AdminImpl",
+                "type": "Reentrancy",
+                "function_name": "0xf9cacc4c",
+                "function_hash": "0xf9cacc4c",
+                "pc": "0x1349",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Atoken_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "Atoken_1.sol:CErc20",
+                "type": "Reentrancy",
+                "function_name": "repayBorrow(uint256)",
+                "function_hash": "0x0e752702",
+                "pc": "0x62d7",
+                "Line number": ""
+            },
+            {
+                "contract_name": "Atoken_1.sol:CEther",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x5ff0",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "BorrowerOperations_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "BorrowerOperations_1.sol:BorrowerOperations",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0xb7c",
+                "Line number": 2990
+            }
+        ]
+    },
+    {
+        "name": "BorrowerOperations_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "BorrowerOperations_2.sol:BorrowerOperations",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0xb7c",
+                "Line number": 2990
+            }
+        ]
+    },
+    {
+        "name": "BorrowerOperations_3.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "BorrowerOperations_3.sol:BorrowerOperations",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0xb7c",
+                "Line number": 2990
+            }
+        ]
+    },
+    {
+        "name": "BrickblockAccount_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "BrickblockAccount_1.sol:BrickblockAccount",
+                "type": "Reentrancy",
+                "function_name": "withdrawEthFunds(address,uint256)",
+                "function_hash": "0x771f24ec",
+                "pc": "0x9aa",
+                "Line number": 249
+            }
+        ]
+    },
+    {
+        "name": "bVault_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "bVault_1.sol:bVault",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x233a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "CGUToken_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "CGUToken_1.sol:CGUToken",
+                "type": "Reentrancy",
+                "function_name": "claimOwnership()",
+                "function_hash": "0x4e71e0c8",
+                "pc": "0x17b9",
+                "Line number": 653
+            }
+        ]
+    },
+    {
+        "name": "CommunityVault_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "CommunityVault_1.sol:CommunityVault",
+                "type": "Reentrancy",
+                "function_name": "transferOwnership(address)",
+                "function_hash": "0xf2fde38b",
+                "pc": "0x2ac",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "CommunityVault_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "CommunityVault_2.sol:CommunityVault",
+                "type": "Reentrancy",
+                "function_name": "transferOwnership(address)",
+                "function_hash": "0xf2fde38b",
+                "pc": "0x2ac",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "controller-v3_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "controller-v3_1.sol:ControllerV3",
+                "type": "Reentrancy",
+                "function_name": "0x197baa6d",
+                "function_hash": "0x197baa6d",
+                "pc": "0x192a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "controller-v3_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "controller-v3_2.sol:ControllerV3",
+                "type": "Reentrancy",
+                "function_name": "0x197baa6d",
+                "function_hash": "0x197baa6d",
+                "pc": "0x192a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "controller-v3_3.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "controller-v3_3.sol:ControllerV3",
+                "type": "Reentrancy",
+                "function_name": "0x197baa6d",
+                "function_hash": "0x197baa6d",
+                "pc": "0x192a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "controller-v3_4.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "controller-v3_4.sol:ControllerV3",
+                "type": "Reentrancy",
+                "function_name": "0x197baa6d",
+                "function_hash": "0x197baa6d",
+                "pc": "0x192a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "controller-v3_5.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "controller-v3_5.sol:ControllerV3",
+                "type": "Reentrancy",
+                "function_name": "0x197baa6d",
+                "function_hash": "0x197baa6d",
+                "pc": "0x192a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "DharmaAccountRecoveryManager_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "DharmaAccountRecoveryManager_1.sol:DharmaAccountRecoveryManager",
+                "type": "Reentrancy",
+                "function_name": "recover(address,address)",
+                "function_hash": "0x648bf774",
+                "pc": "0x8c8",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "DynamicLiquidTokenConverterFactory_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "DynamicLiquidTokenConverterFactory_1.sol:DynamicLiquidTokenConverterFactory",
+                "type": "Reentrancy",
+                "function_name": "0x596b07d2",
+                "function_hash": "0x596b07d2",
+                "pc": "0x735",
+                "Line number": 1958
+            },
+            {
+                "contract_name": "DynamicLiquidTokenConverterFactory_1.sol:TokenHolder",
+                "type": "Reentrancy",
+                "function_name": "withdrawTokens(address,address,uint256)",
+                "function_hash": "0x5e35359e",
+                "pc": "0x852",
+                "Line number": 479
+            }
+        ]
+    },
+    {
+        "name": "EMAOracle_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "EMAOracle_1.sol:EMAOracle",
+                "type": "Reentrancy",
+                "function_name": "0x85b3a931",
+                "function_hash": "0x85b3a931",
+                "pc": "0x29b",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Exchange_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "Exchange_1.sol:Exchange",
+                "type": "Reentrancy",
+                "function_name": "0x28b52bac",
+                "function_hash": "0x28b52bac",
+                "pc": "0x2c8f",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "ExchangeRateProvider_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "ExchangeRateProvider_1.sol:ExchangeRateProvider",
+                "type": "Reentrancy",
+                "function_name": "0xf41bf9ee",
+                "function_hash": "0xf41bf9ee",
+                "pc": "0x10c1",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "FixedFeeSwap_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "FixedFeeSwap_1.sol:FixedFeeSwap",
+                "type": "Reentrancy",
+                "function_name": "increaseAllowance(address,uint256)",
+                "function_hash": "0x39509351",
+                "pc": "0x1f6b",
+                "Line number": 684
+            }
+        ]
+    },
+    {
+        "name": "FlashLoanLogic_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "FlashLoanLogic_1.sol:BorrowLogic",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x8bd",
+                "Line number": 4415
+            }
+        ]
+    },
+    {
+        "name": "FlashLoanLogic_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "FlashLoanLogic_2.sol:BorrowLogic",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x8bd",
+                "Line number": 4415
+            }
+        ]
+    },
+    {
+        "name": "FlashLoanLogic_3.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "FlashLoanLogic_3.sol:BorrowLogic",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x8bd",
+                "Line number": 4415
+            }
+        ]
+    },
+    {
+        "name": "GnosisSafe_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "GnosisSafe_1.sol:BaseSafe",
+                "type": "Reentrancy",
+                "function_name": "execTransactionFromModule(address,uint256,bytes,uint8)",
+                "function_hash": "0x468721a7",
+                "pc": "0x2a33",
+                "Line number": 59
+            },
+            {
+                "contract_name": "GnosisSafe_1.sol:GnosisSafe",
+                "type": "Reentrancy",
+                "function_name": "signMessage(bytes)",
+                "function_hash": "0x85a5affe",
+                "pc": "0x56d1",
+                "Line number": 59
+            },
+            {
+                "contract_name": "GnosisSafe_1.sol:ModuleManager",
+                "type": "Reentrancy",
+                "function_name": "execTransactionFromModule(address,uint256,bytes,uint8)",
+                "function_hash": "0x468721a7",
+                "pc": "0x110d",
+                "Line number": 59
+            }
+        ]
+    },
+    {
+        "name": "GnosisSafe_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "GnosisSafe_2.sol:BaseSafe",
+                "type": "Reentrancy",
+                "function_name": "execTransactionFromModule(address,uint256,bytes,uint8)",
+                "function_hash": "0x468721a7",
+                "pc": "0x2a33",
+                "Line number": 59
+            },
+            {
+                "contract_name": "GnosisSafe_2.sol:GnosisSafe",
+                "type": "Reentrancy",
+                "function_name": "signMessage(bytes)",
+                "function_hash": "0x85a5affe",
+                "pc": "0x56d1",
+                "Line number": 59
+            },
+            {
+                "contract_name": "GnosisSafe_2.sol:ModuleManager",
+                "type": "Reentrancy",
+                "function_name": "execTransactionFromModule(address,uint256,bytes,uint8)",
+                "function_hash": "0x468721a7",
+                "pc": "0x110d",
+                "Line number": 59
+            }
+        ]
+    },
+    {
+        "name": "GnosisSafe_3.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "GnosisSafe_3.sol:BaseSafe",
+                "type": "Reentrancy",
+                "function_name": "execTransactionFromModule(address,uint256,bytes,uint8)",
+                "function_hash": "0x468721a7",
+                "pc": "0x2a33",
+                "Line number": 59
+            },
+            {
+                "contract_name": "GnosisSafe_3.sol:GnosisSafe",
+                "type": "Reentrancy",
+                "function_name": "signMessage(bytes)",
+                "function_hash": "0x85a5affe",
+                "pc": "0x56d1",
+                "Line number": 59
+            },
+            {
+                "contract_name": "GnosisSafe_3.sol:ModuleManager",
+                "type": "Reentrancy",
+                "function_name": "execTransactionFromModule(address,uint256,bytes,uint8)",
+                "function_hash": "0x468721a7",
+                "pc": "0x110d",
+                "Line number": 59
+            }
+        ]
+    },
+    {
+        "name": "GolemNetworkToken_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "GolemNetworkToken_1.sol:GolemNetworkToken",
+                "type": "Reentrancy",
+                "function_name": "finalize()",
+                "function_hash": "0x4bb278f3",
+                "pc": "0xc17",
+                "Line number": 193
+            }
+        ]
+    },
+    {
+        "name": "GovernorAlpha_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "GovernorAlpha_1.sol:GovernorAlpha",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0xe17",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_1.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_1.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_2.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_2.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_3.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_3.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_4.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_4.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_5.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_5.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_6.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_6.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "Holdefi_7.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "Holdefi_7.bin",
+                "type": "Reentrancy",
+                "function_name": "withdraw(address,address,uint256)",
+                "function_hash": "0xd9caed12",
+                "pc": "0x432",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "KyberWrapperV3_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "KyberWrapperV3_1.sol:Address",
+                "type": "Reentrancy",
+                "function_name": "0x36455e42",
+                "function_hash": "0x36455e42",
+                "pc": "0x33b",
+                "Line number": 138
+            },
+            {
+                "contract_name": "KyberWrapperV3_1.sol:AdminAuth",
+                "type": "Reentrancy",
+                "function_name": "0xc579d490",
+                "function_hash": "0xc579d490",
+                "pc": "0x405",
+                "Line number": 479
+            },
+            {
+                "contract_name": "KyberWrapperV3_1.sol:KyberWrapperV3",
+                "type": "Reentrancy",
+                "function_name": "0xc579d490",
+                "function_hash": "0xc579d490",
+                "pc": "0x1181",
+                "Line number": 479
+            }
+        ]
+    },
+    {
+        "name": "LendingPair_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "LendingPair_1.sol:LendingPair",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x124e",
+                "Line number": 445
+            }
+        ]
+    },
+    {
+        "name": "MarketOracle_1.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "MarketOracle_1.bin",
+                "type": "Reentrancy",
+                "function_name": "0xb39f9e33",
+                "function_hash": "0xb39f9e33",
+                "pc": "0x789",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "MarketOracle_2.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "MarketOracle_2.bin",
+                "type": "Reentrancy",
+                "function_name": "0xb39f9e33",
+                "function_hash": "0xb39f9e33",
+                "pc": "0x789",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "MarketOracle_3.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "MarketOracle_3.bin",
+                "type": "Reentrancy",
+                "function_name": "0xb39f9e33",
+                "function_hash": "0xb39f9e33",
+                "pc": "0x789",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "MarketOracle_4.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "MarketOracle_4.bin",
+                "type": "Reentrancy",
+                "function_name": "0xb39f9e33",
+                "function_hash": "0xb39f9e33",
+                "pc": "0x789",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "MasterShiba_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "MasterShiba_1.sol:MasterShiba",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x129e",
+                "Line number": 1239
+            },
+            {
+                "contract_name": "MasterShiba_1.sol:ShibaBonusAggregator",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x5eb",
+                "Line number": 699
+            }
+        ]
+    },
+    {
+        "name": "MultiSigWallet_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "MultiSigWallet_1.sol:MultiSigWallet",
+                "type": "Reentrancy",
+                "function_name": "submitTransaction(address,uint256,bytes)",
+                "function_hash": "0xc6427474",
+                "pc": "0x1d10",
+                "Line number": 223
+            }
+        ]
+    },
+    {
+        "name": "OneSwapBuyback_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "OneSwapBuyback_1.sol:OneSwapBuyback",
+                "type": "Reentrancy",
+                "function_name": "0x712fbfaf",
+                "function_hash": "0x712fbfaf",
+                "pc": "0xd8a",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "PancakeFactory_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "PancakeFactory_1.sol:PancakePair",
+                "type": "Reentrancy",
+                "function_name": "0x022c0d9f",
+                "function_hash": "0x022c0d9f",
+                "pc": "0xde4",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "PikaStaking_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "PikaStaking_1.sol:PikaStaking",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x133f",
+                "Line number": 142
+            }
+        ]
+    },
+    {
+        "name": "recoverable-wallet_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "recoverable-wallet_1.sol:RecoverableWalletFactory",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x191b",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RocketDAONodeTrusted_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RocketDAONodeTrusted_1.sol:RocketDAONodeTrusted",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x5337",
+                "Line number": 172
+            }
+        ]
+    },
+    {
+        "name": "RocketMinipoolDelegate_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RocketMinipoolDelegate_1.sol:RocketMinipoolDelegate",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x26e8",
+                "Line number": 744
+            }
+        ]
+    },
+    {
+        "name": "RocketTokenRETH_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RocketTokenRETH_1.sol:RocketTokenRETH",
+                "type": "Reentrancy",
+                "function_name": "totalSupply()",
+                "function_hash": "0x18160ddd",
+                "pc": "0xdc7",
+                "Line number": 903
+            }
+        ]
+    },
+    {
+        "name": "RToken_10.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_10.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_11.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_11.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_12.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_12.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_13.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_13.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_14.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_14.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_15.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_15.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_16.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_16.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_17.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_17.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_18.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_18.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_19.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_19.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_1.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_20.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_20.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_21.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_21.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_22.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_22.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_23.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_23.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_24.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_24.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_25.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_25.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_26.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_26.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_27.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_27.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_28.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_28.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_2.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_3.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_3.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_4.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_4.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_5.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_5.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_6.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_6.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_7.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_7.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_8.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_8.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "RToken_9.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "RToken_9.sol:RBinance",
+                "type": "Reentrancy",
+                "function_name": "0x00000000",
+                "function_hash": "0x00000000",
+                "pc": "0x4fa3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "StakefishERC721Wrapper_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "StakefishERC721Wrapper_1.sol:StakefishERC721Wrapper",
+                "type": "Reentrancy",
+                "function_name": "approve(address,uint256)",
+                "function_hash": "0x095ea7b3",
+                "pc": "0x9a1",
+                "Line number": 748
+            }
+        ]
+    },
+    {
+        "name": "StakingV2_1.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "StakingV2_1.bin",
+                "type": "Reentrancy",
+                "function_name": "0x41d06e08",
+                "function_hash": "0x41d06e08",
+                "pc": "0x17bb",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "StakingV2_2.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "StakingV2_2.bin",
+                "type": "Reentrancy",
+                "function_name": "initialize()",
+                "function_hash": "0x8129fc1c",
+                "pc": "0x17bb",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "strategy-curve-scrv-v3_1_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "strategy-curve-scrv-v3_1_1.sol:CRVLocker",
+                "type": "Reentrancy",
+                "function_name": "release()",
+                "function_hash": "0x86d1a69f",
+                "pc": "0xe78",
+                "Line number": ""
+            },
+            {
+                "contract_name": "strategy-curve-scrv-v3_1_1.sol:SCRVVoter",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0xf84",
+                "Line number": ""
+            },
+            {
+                "contract_name": "strategy-curve-scrv-v3_1_1.sol:StrategyCurveSCRVv3_1",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x1ec3",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "TokenDistributor_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "TokenDistributor_1.sol:TokenDistributor",
+                "type": "Reentrancy",
+                "function_name": "0x52e88c84",
+                "function_hash": "0x52e88c84",
+                "pc": "0x5bf",
+                "Line number": 357
+            }
+        ]
+    },
+    {
+        "name": "TokenDistributor_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "TokenDistributor_2.sol:TokenDistributor",
+                "type": "Reentrancy",
+                "function_name": "0x52e88c84",
+                "function_hash": "0x52e88c84",
+                "pc": "0x5bf",
+                "Line number": 357
+            }
+        ]
+    },
+    {
+        "name": "UniswapFeature_2.bin",
+        "vulnerabilities": [
+            {
+                "contract_name": "UniswapFeature_2.bin",
+                "type": "Reentrancy",
+                "function_name": "migrate()",
+                "function_hash": "0x8fd3ab80",
+                "pc": "0x9b2",
+                "Line number": ""
+            }
+        ]
+    },
+    {
+        "name": "ve_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "input/DB1/ve_2.sol:ve",
+                "type": "Reentrancy",
+                "function_name": "name()",
+                "function_hash": "0x06fdde03",
+                "pc": "0x1197",
+                "Line number": 1097
+            }
+        ]
+    },
+    {
+        "name": "VVET9_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "VVET9_1.sol:VVET9",
+                "type": "Reentrancy",
+                "function_name": "transfer(address,uint256)",
+                "function_hash": "0xa9059cbb",
+                "pc": "0xa92",
+                "Line number": 137
+            }
+        ]
+    },
+    {
+        "name": "VVET9_2.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "VVET9_2.sol:VVET9",
+                "type": "Reentrancy",
+                "function_name": "symbol()",
+                "function_hash": "0x95d89b41",
+                "pc": "0xa92",
+                "Line number": 137
+            }
+        ]
+    },
+    {
+        "name": "WusdAaveStrategy_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "input/DB1/WusdAaveStrategy_1.sol:WusdAaveStrategy",
+                "type": "Reentrancy",
+                "function_name": "0x1b3ebbd6",
+                "function_hash": "0x1b3ebbd6",
+                "pc": "0x67a",
+                "Line number": 562
+            }
+        ]
+    },
+    {
+        "name": "zAuctionAccountant_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "zAuctionAccountant_1.sol:zAuctionAccountant",
+                "type": "Reentrancy",
+                "function_name": "Exchange(address,address,uint256)",
+                "function_hash": "0x477b65cf",
+                "pc": "0x784",
+                "Line number": 255
+            }
+        ]
+    },
+    {
+        "name": "ZeroxWrapper_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "ZeroxWrapper_1.sol:AdminAuth",
+                "type": "Reentrancy",
+                "function_name": "_dispatch",
+                "function_hash": "0x00000000",
+                "pc": "0x331",
+                "Line number": 598
+            },
+            {
+                "contract_name": "ZeroxWrapper_1.sol:ZeroxWrapper",
+                "type": "Reentrancy",
+                "function_name": "0xc579d490",
+                "function_hash": "0xc579d490",
+                "pc": "0x684",
+                "Line number": 709
+            }
+        ]
+    },
+    {
+        "name": "ZrxAllowlist_1.sol",
+        "vulnerabilities": [
+            {
+                "contract_name": "ZrxAllowlist_1.sol:AdminAuth",
+                "type": "Reentrancy",
+                "function_name": "0xc579d490",
+                "function_hash": "0xc579d490",
+                "pc": "0x405",
+                "Line number": 335
+            },
+            {
+                "contract_name": "ZrxAllowlist_1.sol:ZrxAllowlist",
+                "type": "Reentrancy",
+                "function_name": "0xc579d490",
+                "function_hash": "0xc579d490",
+                "pc": "0xa26",
+                "Line number": 335
+            }
+        ]
+    }
+]
