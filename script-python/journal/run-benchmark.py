@@ -502,11 +502,11 @@ if __name__ == "__main__":
         parser.error("At least an arg is required.")
         exit(1)
     
-    # build_evmlisa()
+    build_evmlisa()
 
     if args.solidifi:
         # SolidiFI dataset
-        """
+        
         evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
                                                                           'results_dir':        './vanilla-solidifi/results',
                                                                           'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
@@ -532,7 +532,7 @@ if __name__ == "__main__":
 
         check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
         check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
-        """
+        
         results_evmlisa = subtract_dicts(get_results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
                                          get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
         results_ethersolve = subtract_dicts(get_results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
