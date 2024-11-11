@@ -381,6 +381,10 @@ def get_results_solidifi(folder_path, print_data):
     # Initialize a dictionary to store the line count for each problem ID
     line_counts = defaultdict(int)
 
+    subtraction_values = {
+        11: 1, 12: 7, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 2, 36: 7, 37: 1, 42: 3, 48: 1
+    }
+
     # Iterate over all files in the specified folder
     for file_name in os.listdir(folder_path):
         # Check if the file name matches the pattern "BugLog_<problem number>.csv"
@@ -395,7 +399,7 @@ def get_results_solidifi(folder_path, print_data):
                 num_lines = sum(1 for _ in file)
                 
             # Store the line count in the dictionary
-            line_counts[problem_id] = num_lines - 1
+            line_counts[problem_id] = num_lines - 1 - subtraction_values.get(problem_id, 0)
 
     sorted_data = dict(sorted(line_counts.items()))
 
@@ -498,10 +502,11 @@ if __name__ == "__main__":
         parser.error("At least an arg is required.")
         exit(1)
     
-    build_evmlisa()
+    # build_evmlisa()
 
     if args.solidifi:
         # SolidiFI dataset
+        """
         evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
                                                                           'results_dir':        './vanilla-solidifi/results',
                                                                           'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
@@ -527,7 +532,7 @@ if __name__ == "__main__":
 
         check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
         check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
-
+        """
         results_evmlisa = subtract_dicts(get_results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
                                          get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
         results_ethersolve = subtract_dicts(get_results_ethersolve('./reentrancy-solidifi/results/ethersolve', 'ethersolve-buggy-solidifi'),
