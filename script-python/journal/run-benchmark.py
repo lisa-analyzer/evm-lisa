@@ -262,7 +262,7 @@ def get_results_evmlisa(directory_path, print_data):
             id = int(match.group(1))
             results[id] += result
         
-        # smartbug case
+        # smartbug & slise case
         match = re.match(r'(\d+)-\w+\.json', file)
         if match:
             id = int(match.group(1))
@@ -272,8 +272,6 @@ def get_results_evmlisa(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
-
-        # TODO slise case
 
     sorted_data = dict(sorted(results.items()))
     
@@ -380,7 +378,7 @@ def get_results_ethersolve(directory_path, print_data):
             id = int(match.group(1))
             results[id] += result
         
-        # smartbugs case
+        # smartbugs & slise case
         match = re.match(r'(\d+)-\w+\.csv', file)
         if match:
             id = int(match.group(1))
@@ -390,8 +388,6 @@ def get_results_ethersolve(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
-
-        # TODO slise case
         
     sorted_data = dict(sorted(results.items()))
     
@@ -655,7 +651,43 @@ if __name__ == "__main__":
                      'smartbugs')
         
     if args.slise:
+        evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-slise-db1/bytecode/evmlisa', 
+                                                                  'results_dir':        './reentrancy-slise-db1/results',
+                                                                  'result_evmlisa_dir': './reentrancy-slise-db1/results/evmlisa'})
+        ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-slise-db1/bytecode/ethersolve',
+                                                                        'result_ethersolve_dir':    './reentrancy-slise-db1/results/ethersolve'})
+        
+        evmlisa_thread.start()
+        ethersolve_thread.start()
+        
+        ethersolve_thread.join()
+        evmlisa_thread.join()
+
+        check_sound_analysis_evmlisa('./reentrancy-slise-db1/results/evmlisa')
+
+        results_evmlisa = get_results_evmlisa('./reentrancy-slise-db1/results/evmlisa', 'evmlisa-buggy-slise-db1')                        
+        results_ethersolve = get_results_ethersolve('./reentrancy-slise-db1/results/ethersolve', 'ethersolve-buggy-slise-db1')
         results_slise = get_results_slise('./reentrancy-slise-db1/source-code/vulnerabilities.json', 'slise-db1')
         
+        # Precision
+        evmlisa_precision = calculate_precision(results_evmlisa, results_slise)
+        ethersolve_precision = calculate_precision(results_ethersolve, results_slise)
+        print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
+        print(f"Precision ethersolve (avg.): {calculate_average(ethersolve_precision)}")
 
+        # Recall
+        evmlisa_recall = calculate_recall(results_evmlisa, results_slise)
+        ethersolve_recall = calculate_recall(results_ethersolve, results_slise)
+        print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
+        print(f"Recall ethersolve (avg.): {calculate_average(ethersolve_recall)}")
+
+        # F-measure
+        print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
+        print(f"F-measure ethersolve (avg.): {calculate_average(calculate_f_measure(ethersolve_precision, ethersolve_recall))}")
+        
+        # Plot results
+        plot_results(results_evmlisa, 
+                     results_ethersolve,
+                     results_slise,
+                     'slise')
     

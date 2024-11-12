@@ -197,7 +197,7 @@ def compile_solidity_sources(source_dir, json_dir):
         
     print(f"Compiled successfully {count_success}/{count_success + count_failure} files.")
 
-def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
+def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_index=None):
     """
     Extracts the longest bytecode based on file size from each .json file and saves it in the specified output directory.
     """
@@ -247,13 +247,21 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                         bytecode_filename = os.path.join(
                             bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
                         )
+
+                        if file_index is not None:
+                            file_id = file_index.get(os.path.splitext(json_filename)[0]) # Match string name to integer
+                            # Add a sequential number to the filename
+                            bytecode_filename = os.path.join(
+                                bytecode_dir, f"{file_id}.bytecode"
+                            )
+
                         with open(bytecode_filename, 'w') as bytecode_file:
                             bytecode_file.write("0x" + longest_bytecode)
                         # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
             # Update the progress bar
             pbar.update(1)
 
-def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
+def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_index=None):
     """
     Extracts all bytecode from each .json file and saves it in the specified output directory.
     """
@@ -264,7 +272,7 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
     # List all .sol files in the source directory
     num_files = [f for f in os.listdir(json_dir) if f.endswith('.json')]
 
-     # Progress bar setup
+    # Progress bar setup
     with tqdm(total=len(num_files), desc="Extracting files...") as pbar:
         for json_filename in os.listdir(json_dir):
             if json_filename.endswith(".json"):
@@ -288,10 +296,17 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False):
                             bytecode = contract_data.get("bin-runtime")
                             
                         if bytecode:
-                            # Add a sequential number to the filename
                             bytecode_filename = os.path.join(
                                 bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
                             )
+
+                            if file_index is not None:
+                                file_id = file_index.get(os.path.splitext(json_filename)[0]) # Match string name to integer
+                                # Add a sequential number to the filename
+                                bytecode_filename = os.path.join(
+                                    bytecode_dir, f"{file_id}_{count}.bytecode"
+                                )
+
                             with open(bytecode_filename, 'w') as bytecode_file:                
                                 bytecode_file.write("0x" + bytecode)
                             # print(f"Extracted bytecode to {bytecode_filename}")
@@ -370,15 +385,25 @@ if __name__ == "__main__":
                                                         './reentrancy-slise-db1/json',
                                                         './reentrancy-slise-db1/source-code/version.csv')
         
+        with open('./reentrancy-slise-db1/match-file-index.json', 'r') as index_file:
+            match_file_index = json.load(index_file)
+
         if args.longest_bytecode:
             extract_and_save_longest_bytecode('./reentrancy-slise-db1/bytecode/evmlisa',
-                                              './reentrancy-slise-db1/json')
+                                              './reentrancy-slise-db1/json',
+                                              False,
+                                              match_file_index)
             extract_and_save_longest_bytecode('./reentrancy-slise-db1/bytecode/ethersolve',
                                               './reentrancy-slise-db1/json',
-                                              True)
+                                              True,
+                                              match_file_index)
         else:
+            
             extract_and_save_bytecode('./reentrancy-slise-db1/bytecode/evmlisa',
-                                      './reentrancy-slise-db1/json')
+                                      './reentrancy-slise-db1/json', 
+                                      False, 
+                                      match_file_index)
             extract_and_save_bytecode('./reentrancy-slise-db1/bytecode/ethersolve',
                                       './reentrancy-slise-db1/json',
-                                      True)
+                                      True,
+                                      match_file_index)
