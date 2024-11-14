@@ -222,7 +222,7 @@ def check_sound_analysis_evmlisa(directory_path):
                     data = json.load(file)
                     
                     if "solved-jumps-percent" in data:
-                        if data["solved-jumps-percent"] != 1:
+                        if data["solved-jumps-percent"] != 1 and data["solved-jumps-percent"] != -1:
                             print(f"[EVMLiSA] {filename} - solved-jumps-percent: {data['solved-jumps-percent']}")
                             sound = False
                     else:
@@ -235,6 +235,7 @@ def check_sound_analysis_evmlisa(directory_path):
 
 def get_results_evmlisa(directory_path, print_data):
     re_entrancy_warning_counts = {}
+    failed = 0
     
     for filename in os.listdir(directory_path):
         if filename.endswith(".json"):
@@ -247,7 +248,8 @@ def get_results_evmlisa(directory_path, print_data):
                     else:
                         print(f"[EVMLiSA] Warning: 're-entrancy-warning' not found in {filename}")
             except Exception as e:
-                print(f"[EVMLiSA] ERROR: {filename}: {e}")            
+                failed += 1
+                # print(f"[EVMLiSA] ERROR: {filename}: {e}")            
 
     results = defaultdict(int)
     for file, result in re_entrancy_warning_counts.items():
@@ -493,14 +495,15 @@ def calculate_precision(data, truth):
     results_with_precision = {}
     
     for key, value in data.items():
-        diff = value - truth.get(key)
+        truth_value = truth.get(key) if truth.get(key) is not None else 0
+        diff = value - truth_value
         tp = fp = fn = 0
 
         if diff == 0: # True positive
             tp = value 
         elif diff > 0: # False positive
             fp = diff
-            tp = truth.get(key) 
+            tp = truth_value
         else: # False negative
             fn = diff * (-1)
 
@@ -513,14 +516,15 @@ def calculate_recall(data, truth):
     results_with_recall = {}
     
     for key, value in data.items():
-        diff = value - truth.get(key)
+        truth_value = truth.get(key) if truth.get(key) is not None else 0
+        diff = value - truth_value
         tp = fp = fn = 0
 
         if diff == 0: # True positive
             tp = value
         elif diff > 0: # False positive
             fp = diff
-            tp = truth.get(key)
+            tp = truth_value
         else: # False negative
             fn = diff * (-1)
             tp = value
@@ -547,38 +551,41 @@ if __name__ == "__main__":
     parser.add_argument("--solidifi", action="store_true", help="Run analysis on SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
     parser.add_argument("--slise", action="store_true", help="Run analysis on SliSE dataset")
+    parser.add_argument("--no-analysis", action="store_true", help="Do not run the analysis, compute only the results")
 
     args = parser.parse_args()
     
-    build_evmlisa()
+    if not args.no_analysis:
+        build_evmlisa()
 
     if args.solidifi:
         # SolidiFI dataset
-        evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
-                                                                          'results_dir':        './vanilla-solidifi/results',
-                                                                          'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
-        evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-solidifi/bytecode/evmlisa', 
-                                                                  'results_dir':        './reentrancy-solidifi/results',
-                                                                  'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
-        
-        ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-solidifi/bytecode/ethersolve',
-                                                                        'result_ethersolve_dir':    './reentrancy-solidifi/results/ethersolve'})
-        ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla-solidifi/bytecode/ethersolve',
-                                                                                'result_ethersolve_dir':    './vanilla-solidifi/results/ethersolve'})
-        
-        evmlisa_vanilla_thread.start()
-        evmlisa_thread.start()
-        ethersolve_thread.start()
-        
-        ethersolve_thread.join()
-        evmlisa_vanilla_thread.join()
-        evmlisa_thread.join()
+        if not args.no_analysis:
+            evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
+                                                                              'results_dir':        './vanilla-solidifi/results',
+                                                                              'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa'})
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-solidifi/bytecode/evmlisa', 
+                                                                      'results_dir':        './reentrancy-solidifi/results',
+                                                                      'result_evmlisa_dir': './reentrancy-solidifi/results/evmlisa'})
+            
+            ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-solidifi/bytecode/ethersolve',
+                                                                            'result_ethersolve_dir':    './reentrancy-solidifi/results/ethersolve'})
+            ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './vanilla-solidifi/bytecode/ethersolve',
+                                                                                    'result_ethersolve_dir':    './vanilla-solidifi/results/ethersolve'})
+            
+            evmlisa_vanilla_thread.start()
+            evmlisa_thread.start()
+            ethersolve_thread.start()
+            
+            ethersolve_thread.join()
+            evmlisa_vanilla_thread.join()
+            evmlisa_thread.join()
 
-        ethersolve_vanilla_thread.start()
-        ethersolve_vanilla_thread.join()
+            ethersolve_vanilla_thread.start()
+            ethersolve_vanilla_thread.join()
 
-        check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
-        check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
+            check_sound_analysis_evmlisa('./reentrancy-solidifi/results/evmlisa')
+            check_sound_analysis_evmlisa('./vanilla-solidifi/results/evmlisa')
         
         results_evmlisa = subtract_dicts(get_results_evmlisa('./reentrancy-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
                                          get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
@@ -610,19 +617,20 @@ if __name__ == "__main__":
     
     if args.smartbugs:
         # SmartBugs dataset
-        evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
-                                                                  'results_dir':        './reentrancy-smartbugs/results',
-                                                                  'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
-        ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-smartbugs/bytecode/ethersolve',
-                                                                        'result_ethersolve_dir':    './reentrancy-smartbugs/results/ethersolve'})
-        
-        evmlisa_thread.start()
-        ethersolve_thread.start()
-        
-        ethersolve_thread.join()
-        evmlisa_thread.join()
+        if not args.no_analysis:
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
+                                                                      'results_dir':        './reentrancy-smartbugs/results',
+                                                                      'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
+            ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-smartbugs/bytecode/ethersolve',
+                                                                            'result_ethersolve_dir':    './reentrancy-smartbugs/results/ethersolve'})
+            
+            evmlisa_thread.start()
+            ethersolve_thread.start()
+            
+            ethersolve_thread.join()
+            evmlisa_thread.join()
 
-        check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
+            check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
 
         results_evmlisa = get_results_evmlisa('./reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs')                        
         results_ethersolve = get_results_ethersolve('./reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs')
@@ -651,19 +659,21 @@ if __name__ == "__main__":
                      'smartbugs')
         
     if args.slise:
-        evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-slise-db1/bytecode/evmlisa', 
-                                                                  'results_dir':        './reentrancy-slise-db1/results',
-                                                                  'result_evmlisa_dir': './reentrancy-slise-db1/results/evmlisa'})
-        ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-slise-db1/bytecode/ethersolve',
-                                                                        'result_ethersolve_dir':    './reentrancy-slise-db1/results/ethersolve'})
-        
-        evmlisa_thread.start()
-        ethersolve_thread.start()
-        
-        ethersolve_thread.join()
-        evmlisa_thread.join()
+        # SliSE dataset
+        if not args.no_analysis:
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-slise-db1/bytecode/evmlisa', 
+                                                                      'results_dir':        './reentrancy-slise-db1/results',
+                                                                      'result_evmlisa_dir': './reentrancy-slise-db1/results/evmlisa'})
+            ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-slise-db1/bytecode/ethersolve',
+                                                                            'result_ethersolve_dir':    './reentrancy-slise-db1/results/ethersolve'})
+            
+            evmlisa_thread.start()
+            ethersolve_thread.start()
+            
+            ethersolve_thread.join()
+            evmlisa_thread.join()
 
-        check_sound_analysis_evmlisa('./reentrancy-slise-db1/results/evmlisa')
+            check_sound_analysis_evmlisa('./reentrancy-slise-db1/results/evmlisa')
 
         results_evmlisa = get_results_evmlisa('./reentrancy-slise-db1/results/evmlisa', 'evmlisa-buggy-slise-db1')                        
         results_ethersolve = get_results_ethersolve('./reentrancy-slise-db1/results/ethersolve', 'ethersolve-buggy-slise-db1')

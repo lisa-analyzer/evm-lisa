@@ -1,4 +1,5 @@
 import csv
+import argparse
 
 def calculate_statistics(file_path):
     # Inizializza le variabili per memorizzare i valori delle colonne
@@ -79,15 +80,18 @@ def percentuale(numero_decimale):
     return percentuale_str
 
 if __name__ == "__main__":
-    print("statistics-20-10-cache")
-    calculate_statistics("stats/statistics-cache.csv")
-    print()
+    parser = argparse.ArgumentParser(description="Calculate statistics.")
+    parser.add_argument(
+        "--input", 
+        nargs='+', 
+        required=True, 
+        help="Path(s) of the input file(s)"
+    )
 
-    print("statistics-32-2-cache")
-    calculate_statistics("stats/statistics-cache-32-2.csv")
-    print()
+    args = parser.parse_args()
 
-    # print("statistics-notjumpdest-128-32.csv")
-    # calculate_statistics("stats/statistics-notjumpdest-128-32.csv")
-    # print()
+    for file_path in args.input:
+        print(f"Calculating statistics for {file_path}")
+        calculate_statistics(file_path)
+        print()
 
