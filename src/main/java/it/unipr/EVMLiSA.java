@@ -172,8 +172,19 @@ public class EVMLiSA {
 
 		// Run benchmark case
 		if (benchmark != null) {
-			Files.createDirectories(Paths.get(OUTPUT_DIR));
+			SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyyMMddHHmmss");
+			String timestamp = DATE_FORMAT_BENCHMARK.format(System.currentTimeMillis());
+			int ss = AbstractStack.getStackLimit();
+			int sss = AbstractStackSet.getStackSetLimit();
+			String postFix = timestamp + "-" + ss + "-" + sss;
+
+			Files.createDirectories(Paths.get(OUTPUT_DIR + "/benchmark"));
 			SMARTCONTRACTS_FULLPATH = benchmark;
+			STATISTICS_FULLPATH = OUTPUT_DIR + "/benchmark/statistics-" + postFix + ".csv";
+			STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/benchmark/statisticsZeroJumps-" + postFix + ".csv";
+			FAILURE_FULLPATH = OUTPUT_DIR + "/benchmark/failure-" + postFix + ".csv";
+			LOGS_FULLPATH = OUTPUT_DIR + "/benchmark/logs-" + postFix + ".txt";
+
 			try {
 				runBenchmark(jsonOptions);
 			} catch (FileNotFoundException e) {
@@ -205,7 +216,7 @@ public class EVMLiSA {
 		String BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".opcode";
 		String bytecode;
 		if (filepath == null) {
-			bytecode = EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
+			bytecode = EVMFrontend.parseContractFromEtherscan(addressSC);
 		} else {
 			bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
 		}
@@ -312,7 +323,8 @@ public class EVMLiSA {
 				}
 			}
 
-			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH) != null)
+			String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+			if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
 				numberOfAPIEtherscanRequestOnSuccess++;
 		}
 
@@ -812,13 +824,16 @@ public class EVMLiSA {
 				File file = new File(BYTECODE_FULLPATH);
 				if (!file.exists()) {
 					numberOfAPIEtherscanRequest++;
-					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH) != null)
+
+					String bytecode = EVMFrontend.parseContractFromEtherscan(address);
+					if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
 						numberOfAPIEtherscanRequestOnSuccess++;
 
 					log.info("Downloading {}, remaining: {}.", address,
 							(smartContracts.size() - numberOfAPIEtherscanRequest));
 				}
 			} catch (Exception e) {
+				log.warn("Bytecode not downloaded: {}, cause: {}", address, e.getMessage());
 				continue;
 			}
 		}

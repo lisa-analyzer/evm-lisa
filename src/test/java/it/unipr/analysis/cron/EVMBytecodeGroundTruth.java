@@ -148,8 +148,10 @@ public class EVMBytecodeGroundTruth {
 
 		// If the file does not exist, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists())
-			EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
+		if (!file.exists()) {
+			String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+		}
 
 		// Configuration and test run
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);

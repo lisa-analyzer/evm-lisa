@@ -65,16 +65,13 @@ public class EVMFrontend {
 	 * stores the result in {@code output}.
 	 * 
 	 * @param address the address of the smart contract to be parsed.
-	 * @param output  the directory where the EMV bytecode that correlates with
-	 *                    the smart contract stored at {@code address} is
-	 *                    stored.
 	 * 
 	 * @return {@code true} if the bytecode was successfully downloaded and
 	 *             stored, false otherwise.
 	 * 
 	 * @throws IOException
 	 */
-	public static String parseContractFromEtherscan(String address, String output) throws IOException {
+	public static String parseContractFromEtherscan(String address) throws IOException {
 		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 
 		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
@@ -86,7 +83,6 @@ public class EVMFrontend {
 		String bytecode = test[9];
 
 		return bytecode;
-		// return opcodesFromBytecode(bytecode, output);
 	}
 
 	/**
@@ -157,16 +153,16 @@ public class EVMFrontend {
 	 * @throws IOException
 	 * @throws AnalysisException
 	 */
-	public static Program generateCfgFromContraOutputctAddress(String contractAddress)
+	public static Program generateCfgFromContractAddress(String contractAddress)
 			throws IOException, AnalysisException {
 		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
 
 		// Get bytecode from Etherscan
 		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
 
-		String parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, BYTECODE_OUTFILE_PATH);
+		String bytecode = EVMFrontend.parseContractFromEtherscan(contractAddress);
 
-		if (parseResult == null) {
+		if (!EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_OUTFILE_PATH)) {
 			return null;
 		}
 
