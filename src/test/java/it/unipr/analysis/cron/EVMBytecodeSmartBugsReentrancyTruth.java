@@ -15,9 +15,8 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -25,7 +24,7 @@ import org.junit.Test;
 public class EVMBytecodeSmartBugsReentrancyTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeSmartBugsReentrancyTruth.class);
 
-	private Map<Integer, Integer> _results = new HashMap<>();
+	private ConcurrentMap<Integer, Integer> _results = new ConcurrentHashMap<>();
 
 	@Test
 	public void testSmartBugsReentrancyTruth() throws Exception {
@@ -35,72 +34,77 @@ public class EVMBytecodeSmartBugsReentrancyTruth {
 
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
-		// Run the benchmark
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		// Run the benchmark in parallel
 		for (String bytecodeFileName : bytecodes) {
-			String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
+			executor.submit(() -> {
+				try {
+					String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
 
-			Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+					Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
 
-			LiSAConfiguration conf = new LiSAConfiguration();
-			conf.serializeInputs = false;
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(null),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.jsonOutput = false;
-			conf.workdir = SMARTBUGS_BYTECODES_DIR;
-			conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-			JumpSolver checker = new JumpSolver();
-			conf.semanticChecks.add(checker);
-			conf.callGraph = new RTACallGraph();
-			conf.serializeResults = false;
-			conf.optimize = false;
+					LiSAConfiguration conf = new LiSAConfiguration();
+					conf.serializeInputs = false;
+					conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(null),
+							new TypeEnvironment<>(new InferredTypes()));
+					conf.jsonOutput = false;
+					conf.workdir = SMARTBUGS_BYTECODES_DIR;
+					conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+					JumpSolver checker = new JumpSolver();
+					conf.semanticChecks.add(checker);
+					conf.callGraph = new RTACallGraph();
+					conf.serializeResults = false;
+					conf.optimize = false;
 
-			LiSA lisa = new LiSA(conf);
-			lisa.run(program);
+					LiSA lisa = new LiSA(conf);
+					lisa.run(program);
 
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
+					conf.semanticChecks.clear();
+					conf.semanticChecks.add(new ReentrancyChecker());
+					lisa.run(program);
 
-			Integer key = Integer.parseInt(bytecodeFileName.split("_")[0]);
-			int value = UniqueItemCollector.getInstance().size();
+					Integer key = Integer.parseInt(bytecodeFileName.split("_")[0]);
+					int value = MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode());
 
-			int tmp = 0;
-			if (_results.containsKey(key))
-				tmp = _results.get(key);
-			_results.put(key, value + tmp);
+					_results.merge(key, value, Integer::sum);
+				} catch (Exception e) {
+					log.error("Error processing bytecode {}: {}", bytecodeFileName, e.getMessage(), e);
+				}
+			});
+		}
 
-			UniqueItemCollector.getInstance().clear();
-
-			Runtime.getRuntime().gc(); // Force Java Garbage Collection
+		// Shutdown the executor and wait for completion
+		executor.shutdown();
+		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+			log.error("Timeout reached while waiting for thread pool to terminate.");
+			executor.shutdownNow();
 		}
 
 		log.info("Results: {}", _results);
+
 		// Check the results
 		for (Integer key : _results.keySet()) {
 			int value = _results.get(key);
-			if (value == 1)
+			if (value == 1) {
 				continue;
-			else if (value == 0) {
+			} else if (value == 0) {
 				log.error("Unsound on {}.sol", key);
 				assert false;
 			} else {
 				log.warn("{} false positive on {}.sol", value - 1, key);
 			}
 		}
-
 	}
 
 	public static List<String> getFileNamesInDirectory(String directoryPath) {
 		List<String> fileNames = new ArrayList<>();
 		File directory = new File(directoryPath);
 
-		// Controlla se il percorso specificato è una directory
 		if (directory.isDirectory()) {
-			// Ottieni tutti i file e cartelle nella directory
 			File[] files = directory.listFiles();
 
 			if (files != null) {
-				// Aggiungi solo i nomi dei file alla lista
 				for (File file : files) {
 					if (file.isFile()) {
 						fileNames.add(file.getName());
@@ -108,7 +112,7 @@ public class EVMBytecodeSmartBugsReentrancyTruth {
 				}
 			}
 		} else {
-			System.out.println("Il percorso specificato non è una directory.");
+			log.warn("Path {} is not a directory.", directoryPath);
 		}
 
 		return fileNames;

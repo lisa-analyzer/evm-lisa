@@ -2,8 +2,8 @@ package it.unipr.checker;
 
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.MyCache;
 import it.unipr.analysis.StackElement;
-import it.unipr.analysis.UniqueItemCollector;
 import it.unipr.cfg.Call;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
@@ -95,7 +95,7 @@ public class ReentrancyChecker implements
 			String warn = "Reentrancy attack at "
 					+ sstoreLoc.getPc();
 			tool.warn(warn);
-			UniqueItemCollector.getInstance().add(warn);
+			MyCache.getInstance().addReentrancyWarning(cfg.hashCode(), warn);
 		}
 	}
 }

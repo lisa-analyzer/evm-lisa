@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -264,7 +267,8 @@ public class EVMLiSA {
 				lisa.run(program);
 
 				// TODO fix
-				jsonOptions.put("re-entrancy-warning", UniqueItemCollector.getInstance().size());
+				jsonOptions.put("re-entrancy-warning",
+						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 			}
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker)
@@ -370,51 +374,32 @@ public class EVMLiSA {
 		List<String> smartContractsTerminatedSuccessfully = new ArrayList<>();
 		List<String> smartContractsFailed = new ArrayList<>();
 
-		Runnable runnableHandler = new RunnableHandler(smartContracts, smartContractsTerminatedSuccessfully,
-				smartContractsFailed, jsonOptions);
-
 		synchronized (EVMLiSA.class) {
-			Thread handler = new Thread(runnableHandler);
-			handler.start();
+			long timeToWait = 1000 * 60 * 60 * 5; // 5 hours
 
-			long timeToWait;
-
-			timeToWait = 1000 * 60 * 60 * 24; // 1 day
-
-			String msg = "Started at " + now() + ".\n";
-			msg += "Number of cores: " + CORES + " (parallel analysis).\n";
-			msg += "Number of analyses: " + smartContracts.size() + ".\n";
-			msg += "\n"; // Blank line
-
+			String msg = "Start: " + now() + ".\n";
+			msg += "Cores: " + CORES + " (parallel analysis).\n";
+			msg += "Analysis: " + smartContracts.size() + ".\n";
 			msg += "Stack size = " + AbstractStack.getStackLimit() + ".\n";
 			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + ".\n";
-			msg += "\n"; // Blank line
-
 			msg += "Heap size: " + new Converter().getSize(Runtime.getRuntime().totalMemory()) + ".\n";
-			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + ".\n";
-			msg += "\n"; // Blank line
+			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + ".\n\n";
 
 			log.info(msg);
 			toFile(LOGS_FULLPATH, msg);
 
+			Runnable runnableHandler = new RunnableHandler(smartContracts, smartContractsTerminatedSuccessfully,
+					smartContractsFailed, jsonOptions);
+			Thread handler = new Thread(runnableHandler);
+			handler.start();
+
 			EVMLiSA.class.wait(timeToWait);
 		}
 
-		for (String smartContract : smartContracts) {
-			if (!smartContractsTerminatedSuccessfully.contains(smartContract) &&
-					!smartContractsFailed.contains(smartContract)) {
-				String msg = MyLogger.newLogger()
-						.address(smartContract)
-						.notes("Killed: timeout.")
-						.build().toString();
-				toFile(FAILURE_FULLPATH, msg);
-			}
-		}
-
-		// Print statistics to standard output and log file
-		String msg = "Total analysis: " + smartContracts.size() + ", " +
-				"successfully: " + smartContractsTerminatedSuccessfully.size() + ", " +
-				"failed: " + (smartContracts.size() - smartContractsTerminatedSuccessfully.size()) + ".";
+		String msg = "End: " + now() + ".\n";
+		msg += "Analysis: " + smartContracts.size() + ".\n";
+		msg += "Successfully: " + smartContractsTerminatedSuccessfully.size() + ".\n";
+		msg += "Failed: " + (smartContracts.size() - smartContractsTerminatedSuccessfully.size()) + ".\n";
 
 		log.info(msg);
 		toFile(LOGS_FULLPATH, msg);
@@ -424,16 +409,9 @@ public class EVMLiSA {
 	}
 
 	private class RunnableHandler implements Runnable {
-
-		private int analysesTerminated;
-		private int analysesFailed;
-		private final Object mutex = new Object();
-		private int threadsStarted;
-
 		private final List<String> smartContracts;
 		private final List<String> smartContractsTerminatedSuccessfully;
 		private final List<String> smartContractsFailed;
-
 		private final JSONObject jsonOptions;
 
 		public RunnableHandler(List<String> smartContracts, List<String> smartContractsTerminatedSuccessfully,
@@ -441,34 +419,19 @@ public class EVMLiSA {
 			this.smartContracts = smartContracts;
 			this.smartContractsTerminatedSuccessfully = smartContractsTerminatedSuccessfully;
 			this.smartContractsFailed = smartContractsFailed;
-			this.threadsStarted = 0;
-			this.analysesTerminated = 0;
-			this.analysesFailed = 0;
 			this.jsonOptions = jsonOptions;
 		}
 
 		@Override
 		public void run() {
+			ExecutorService executor = Executors.newFixedThreadPool(CORES);
+
 			for (String address : smartContracts) {
-
-				synchronized (mutex) {
-					// We optimize parallelism by running n analyzes at a
-					// time with n = CORES
-					while ((threadsStarted - analysesTerminated) > CORES) {
-						try {
-							mutex.wait();
-						} catch (InterruptedException e) {
-							log.error("error: {}", e.getMessage());
-						}
-					}
-				}
-
-				Runnable worker = () -> {
+				executor.submit(() -> {
 					try {
 						MyLogger myStats = newAnalysis(address, jsonOptions);
 
-						synchronized (mutex) {
-							analysesTerminated++;
+						synchronized (smartContractsTerminatedSuccessfully) {
 							smartContractsTerminatedSuccessfully.add(address);
 
 							if (myStats.jumpSize() == 0)
@@ -477,16 +440,12 @@ public class EVMLiSA {
 								toFile(STATISTICS_FULLPATH, myStats.toString());
 
 							toFile(LOGS_FULLPATH, buildMessage("SUCCESS", address, smartContracts.size(),
-									smartContractsTerminatedSuccessfully.size(), analysesTerminated,
-									analysesFailed, threadsStarted));
-
-							mutex.notifyAll();
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsFailed.size()));
 						}
-
 					} catch (Throwable e) {
-						synchronized (mutex) {
-							analysesTerminated++;
-							analysesFailed++;
+						synchronized (smartContractsFailed) {
 							smartContractsFailed.add(address);
 
 							String msg = MyLogger.newLogger()
@@ -498,35 +457,28 @@ public class EVMLiSA {
 							toFile(FAILURE_FULLPATH, msg);
 
 							toFile(LOGS_FULLPATH, buildMessage("FAILURE", address, smartContracts.size(),
-									smartContractsTerminatedSuccessfully.size(), analysesTerminated,
-									analysesFailed, threadsStarted));
-
-							mutex.notifyAll();
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsFailed.size()));
 						}
 					}
-				};
-
-				new Thread(worker).start();
-				threadsStarted++;
-
-				Runtime.getRuntime().gc(); // Force Java Garbage Collection
+				});
 			}
 
+			executor.shutdown();
 			try {
-				synchronized (mutex) {
-					while (analysesTerminated < smartContracts.size()) {
-						mutex.wait();
-					}
+				if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+					executor.shutdownNow();
+					log.error("Timeout while waiting for tasks to complete");
 				}
-
 			} catch (InterruptedException e) {
-				log.error("error: {}", e.getMessage());
+				log.error("Execution interrupted: {}", e.getMessage());
+				executor.shutdownNow();
 			}
 
 			synchronized (EVMLiSA.class) {
 				EVMLiSA.class.notifyAll(); // All tests are finished
 			}
-
 		}
 	}
 
@@ -755,25 +707,16 @@ public class EVMLiSA {
 	 *                                                     analyses terminated.
 	 * @param analysesFailed                           The total number of
 	 *                                                     failed analyses.
-	 * @param threadsStarted                           The total number of
-	 *                                                     threads started for
-	 *                                                     the analysis.
 	 * 
 	 * @return The constructed log message.
 	 */
 	private String buildMessage(String type, String address, int smartContractsSize,
 			int smartContractsTerminatedSuccessfullySize, int analysesTerminated,
-			int analysesFailed, int threadsStarted) {
+			int analysesFailed) {
 		return "[" + now() + " - " + Thread.currentThread().getName() + "] \t [" + type + "] "
 				+ address + ", " +
-				"analyses ended: " + (smartContractsTerminatedSuccessfullySize + analysesFailed) + ", " +
-				"analyses remaining: " + (smartContractsSize - analysesTerminated) + ", " +
-				"analyses not started yet: "
-				+ ((smartContractsSize - analysesTerminated)
-						- (threadsStarted - smartContractsTerminatedSuccessfullySize) + analysesFailed)
-				+ ", " +
-				"analysis in progress (active threads): "
-				+ (threadsStarted - smartContractsTerminatedSuccessfullySize - analysesFailed) + " \n";
+				"ended: " + (smartContractsTerminatedSuccessfullySize + analysesFailed) + ", " +
+				"remaining: " + (smartContractsSize - analysesTerminated) + " \n";
 	}
 
 	/**

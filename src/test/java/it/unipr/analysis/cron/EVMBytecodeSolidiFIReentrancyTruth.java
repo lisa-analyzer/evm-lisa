@@ -1,7 +1,7 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.UniqueItemCollector;
+import it.unipr.analysis.MyCache;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.frontend.EVMFrontend;
@@ -16,9 +16,8 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -26,8 +25,8 @@ import org.junit.Test;
 public class EVMBytecodeSolidiFIReentrancyTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeSolidiFIReentrancyTruth.class);
 
-	private Map<Integer, Integer> _results = new HashMap<>();
-	private Map<Integer, Integer> _solidifi = new HashMap<>();
+	private ConcurrentMap<Integer, Integer> _results = new ConcurrentHashMap<>();
+	private ConcurrentMap<Integer, Integer> _solidifi = new ConcurrentHashMap<>();
 
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
@@ -36,40 +35,51 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 		EVMFrontend.setUseCreationCode();
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 		// Run the benchmark
 		for (String bytecodeFileName : bytecodes) {
-			String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
+			executor.submit(() -> {
+				try {
+					String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
 
-			Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+					Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
 
-			LiSAConfiguration conf = new LiSAConfiguration();
-			conf.serializeInputs = false;
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(null),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.jsonOutput = false;
-			conf.workdir = SMARTBUGS_BYTECODES_DIR;
-			conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-			JumpSolver checker = new JumpSolver();
-			conf.semanticChecks.add(checker);
-			conf.callGraph = new RTACallGraph();
-			conf.serializeResults = false;
-			conf.optimize = false;
+					LiSAConfiguration conf = new LiSAConfiguration();
+					conf.serializeInputs = false;
+					conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(null),
+							new TypeEnvironment<>(new InferredTypes()));
+					conf.jsonOutput = false;
+					conf.workdir = SMARTBUGS_BYTECODES_DIR;
+					conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+					JumpSolver checker = new JumpSolver();
+					conf.semanticChecks.add(checker);
+					conf.callGraph = new RTACallGraph();
+					conf.serializeResults = false;
+					conf.optimize = false;
 
-			LiSA lisa = new LiSA(conf);
-			lisa.run(program);
+					LiSA lisa = new LiSA(conf);
+					lisa.run(program);
 
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
+					conf.semanticChecks.clear();
+					conf.semanticChecks.add(new ReentrancyChecker());
+					lisa.run(program);
 
-			Integer key = Integer.parseInt(bytecodeFileName.split("\\.")[0]);
-			int value = UniqueItemCollector.getInstance().size();
+					Integer key = Integer.parseInt(bytecodeFileName.split("\\.")[0]);
+					int value = MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode());
 
-			_results.put(key, value);
+					_results.put(key, value);
+				} catch (Exception e) {
+					log.error("Error processing bytecode {}: {}", bytecodeFileName, e.getMessage(), e);
+				}
+			});
+		}
 
-			UniqueItemCollector.getInstance().clear();
-
-			Runtime.getRuntime().gc(); // Force Java Garbage Collection
+		// Shutdown the executor and wait for completion
+		executor.shutdown();
+		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+			log.error("Timeout reached while waiting for thread pool to terminate.");
+			executor.shutdownNow();
 		}
 
 		log.info("Results: {}", _results);
@@ -106,7 +116,7 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 				}
 			}
 		} else {
-			log.info("Path is not a directory: " + directoryPath);
+			log.warn("Path {} is not a directory.", directoryPath);
 		}
 
 		return fileNames;

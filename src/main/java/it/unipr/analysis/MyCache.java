@@ -1,5 +1,8 @@
 package it.unipr.analysis;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -11,9 +14,9 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class MyCache {
 	private static MyCache _instance = null;
-	private LRUMap<Pair<String, Number>, StackElement> _map;
-	private LRUMap<String, Long> _timeLostToGetStorage;
-	private LRUMap<Pair<Object, Object>, Boolean> _stmtReachableFrom;
+	private final LRUMap<Pair<String, Number>, StackElement> _map;
+	private final LRUMap<String, Long> _timeLostToGetStorage;
+	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -37,7 +40,7 @@ public class MyCache {
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
-		this._stmtReachableFrom = new LRUMap<Pair<Object, Object>, Boolean>(1000);
+		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 	}
 
 	/**
@@ -64,17 +67,6 @@ public class MyCache {
 	public StackElement get(Pair<String, Number> key) {
 		synchronized (MyCache.class) {
 			return _map.get(key);
-		}
-	}
-
-	/**
-	 * Removes a key-value pair from the cache.
-	 *
-	 * @param key the key, a {@link Pair} of {@link String} and {@link Number}.
-	 */
-	public void remove(Pair<String, Number> key) {
-		synchronized (MyCache.class) {
-			_map.remove(key);
 		}
 	}
 
@@ -118,24 +110,37 @@ public class MyCache {
 		}
 	}
 
-	// TODO documentation
-	public boolean isStmtReachableFrom(Pair<Object, Object> stmts) {
+	/**
+	 * Adds a reentrancy warning for the specified key. If no warnings are
+	 * associated with the key, a new set is created and the warning is added to
+	 * it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addReentrancyWarning(Integer key, Object warning) {
 		synchronized (MyCache.class) {
-			return _stmtReachableFrom.get(stmts) != null && _stmtReachableFrom.get(stmts);
+			_reentrancyWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
 		}
 	}
 
-	// TODO documentation
-	public void setStmtReachableFrom(Pair<Object, Object> stmts, Boolean value) {
+	/**
+	 * Retrieves the number of reentrancy warnings associated with the specified
+	 * key. If no warnings are associated with the key, the method returns 0.
+	 * This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 * 
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getReentrancyWarnings(Integer key) {
 		synchronized (MyCache.class) {
-			_stmtReachableFrom.put(stmts, value);
-		}
-	}
-
-	// TODO documentation
-	public boolean existsStmtReachableFrom(Pair<Object, Object> stmts) {
-		synchronized (MyCache.class) {
-			return _stmtReachableFrom.get(stmts) != null;
+			return (_reentrancyWarnings.get(key) != null) ? _reentrancyWarnings.get(key).size() : 0;
 		}
 	}
 }

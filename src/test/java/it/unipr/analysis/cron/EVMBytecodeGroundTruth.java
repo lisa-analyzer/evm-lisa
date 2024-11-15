@@ -8,7 +8,6 @@ import it.unipr.analysis.MyCache;
 import it.unipr.analysis.MyLogger;
 import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -30,6 +29,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -39,10 +41,10 @@ import org.junit.Test;
  * VERSION OF THE TRUTH DATASET IS CHOSEN.
  */
 public class EVMBytecodeGroundTruth {
-	private static final Logger LOG = LogManager.getLogger(EVMBytecodeGroundTruth.class);
+	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruth.class);
 
 	@Test
-	public void testGroundTruth() throws AnalysisSetupException, IOException, Exception {
+	public void testGroundTruth() throws Exception {
 		String GROUND_TRUTH_FILE_PATH = "evm-testcases/ground-truth/ground-truth-data.csv";
 		String RESULT_EXEC_DIR_PATH = "evm-testcases/ground-truth/test-ground-truth-results";
 		String RESULT_EXEC_FILE_PATH = RESULT_EXEC_DIR_PATH + "/statistics.csv";
@@ -52,17 +54,33 @@ public class EVMBytecodeGroundTruth {
 		boolean changed = false;
 
 		if (new File(RESULT_EXEC_FILE_PATH).delete())
-			LOG.warn("File deleted {}\n", RESULT_EXEC_FILE_PATH);
+			log.warn("File deleted {}", RESULT_EXEC_FILE_PATH);
 
 		List<String> smartContracts = EVMLiSA.readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 		for (String address : smartContracts) {
-			MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
+			executor.submit(() -> {
+				try {
+					MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
 
-			if (myStats.jumpSize() != 0)
-				EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
+					if (myStats.jumpSize() != 0) {
+						synchronized (RESULT_EXEC_FILE_PATH) {
+							EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
+						}
+					}
+				} catch (Exception e) {
+					log.error("Error processing contract {}: {}", address, e.getMessage(), e);
+				}
+			});
+		}
 
-			Runtime.getRuntime().gc(); // Force Java Garbage Collection
+		// Shutdown the executor and wait for completion
+		executor.shutdown();
+		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+			log.error("Timeout reached while waiting for thread pool to terminate.");
+			executor.shutdownNow();
 		}
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
