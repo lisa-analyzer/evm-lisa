@@ -2401,7 +2401,7 @@ public class EVMAbstractState
 			BigInteger toHex = Number.toBigInteger(key);
 			String hexString = "0x" + toHex.toString(16);
 
-			Thread.sleep(750);
+			Thread.sleep(1000);
 
 			String getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
 

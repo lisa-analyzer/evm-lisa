@@ -146,7 +146,7 @@ public class EVMLiSA {
 			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
 		}
 
-		if (useStorageLive && addressSC == null) {
+		if (useStorageLive && addressSC == null && benchmark == null) {
 			log.warn("Address must be set if live storage option is activated.");
 			log.warn("Live storage option deactivated.");
 			useStorageLive = false;
