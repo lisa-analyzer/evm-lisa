@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
@@ -102,13 +102,14 @@ public class JumpSolver implements
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
 
 		if (fixpoint) {
 			this.unreachableJumps = new HashSet<>();
 			this.maybeUnsoundJumps = new HashSet<>();
 
 			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
+			Set<Statement> unsoundJumps = new HashSet<Statement>();
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
 
@@ -116,10 +117,11 @@ public class JumpSolver implements
 						|| !this.cfgToAnalyze.reachableFrom(entryPoint, node))
 					continue;
 
+
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(this.cfgToAnalyze)) {
 					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-							TypeEnvironment<InferredTypes>>> analysisResult = null;
+					TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -145,13 +147,40 @@ public class JumpSolver implements
 						for (AbstractStack stack : stacks) {
 							StackElement topStack = stack.getTop();
 							stacksTop.add(topStack);
+							if (topStack.isTopNumeric())
+								unsoundJumps.add(node);
 						}
 
 						topStackValuesPerJump.put(node, stacksTop);
+
+
+
 					}
 				}
 			}
 
+
+			if (!unsoundJumps.isEmpty()) {
+
+				Set<Statement> jmpdestNodes = cfgToAnalyze.getAllJumpdest();
+				for (Statement unsoundNode : unsoundJumps)
+					for (Statement jmpdest : jmpdestNodes)
+						cfgToAnalyze.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+
+				// last run
+				LiSAConfiguration conf = tool.getConfiguration();
+				LiSA lisa = new LiSA(conf);
+
+				Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+				program.addCodeMember(cfgToAnalyze);
+
+				try {
+					lisa.run(program);
+				} catch (AnalysisException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			return;
 		}
 
@@ -182,7 +211,7 @@ public class JumpSolver implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -197,9 +226,9 @@ public class JumpSolver implements
 		// one result.
 		for (AnalyzedCFG<
 				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
-						.getResultOf(this.cfgToAnalyze)) {
+				.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-					TypeEnvironment<InferredTypes>>> analysisResult = null;
+			TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
@@ -231,14 +260,14 @@ public class JumpSolver implements
 						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
 						int pcValue = pcLocation.getPc();
 						return flattenedTopStack.contains(new Number(pcValue)); // Check
-																				// if
-																				// the
-																				// value
-																				// is
-																				// in
-																				// the
-																				// flattened
-																				// set
+						// if
+						// the
+						// value
+						// is
+						// in
+						// the
+						// flattened
+						// set
 					})
 					.collect(Collectors.toSet());
 
