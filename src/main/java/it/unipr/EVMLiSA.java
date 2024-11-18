@@ -15,6 +15,7 @@ import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -155,7 +156,7 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (useCreationCode)
 			EVMFrontend.setUseCreationCode();
-		if(linkUnsoundJumpsToAllJumpdestOption)
+		if (linkUnsoundJumpsToAllJumpdestOption)
 			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 
 		// Creating json output notes
@@ -179,7 +180,7 @@ public class EVMLiSA {
 
 		// Run benchmark case
 		if (benchmark != null) {
-			SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyyMMddHHmmss");
+			SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 			String timestamp = DATE_FORMAT_BENCHMARK.format(System.currentTimeMillis());
 			int ss = AbstractStack.getStackLimit();
 			int sss = AbstractStackSet.getStackSetLimit();
@@ -262,6 +263,23 @@ public class EVMLiSA {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
 
+			if (linkUnsoundJumpsToAllJumpdestOption) {
+				int currentIteration = 0;
+				int MAX_ITER = 5;
+				do {
+					EVMCFG cfg = checker.getComputedCFG();
+					Set<Statement> jmpdestNodes = cfg.getAllJumpdest();
+					for (Statement unsoundNode : checker.getUnsoundJumps())
+						for (Statement jmpdest : jmpdestNodes)
+							cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+
+					// last run
+					program.addCodeMember(cfg);
+
+					lisa.run(program);
+				} while (checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+			}
+
 			// Print the results
 			finish = System.currentTimeMillis();
 
@@ -270,7 +288,6 @@ public class EVMLiSA {
 				conf.semanticChecks.add(new ReentrancyChecker());
 				lisa.run(program);
 
-				// TODO fix
 				jsonOptions.put("re-entrancy-warning",
 						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 			}
@@ -356,6 +373,23 @@ public class EVMLiSA {
 
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
+
+		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
+			int currentIteration = 0;
+			int MAX_ITER = 1; // We can do MAX_ITER iteration
+			do {
+				EVMCFG cfg = checker.getComputedCFG();
+				Set<Statement> jmpdestNodes = cfg.getAllJumpdest();
+				for (Statement unsoundNode : checker.getUnsoundJumps())
+					for (Statement jmpdest : jmpdestNodes)
+						cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+
+				// last run
+				program.addCodeMember(cfg);
+
+				lisa.run(program);
+			} while (checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+		}
 
 		// Print the results
 		long finish = System.currentTimeMillis();

@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
 
@@ -67,6 +67,8 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 	 */
 	private Set<Statement> maybeUnsoundJumps;
 
+	private Set<Statement> unsoundJumps;
+
 	/**
 	 * Map of top stack values per jump
 	 */
@@ -89,6 +91,10 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		return maybeUnsoundJumps;
 	}
 
+	public Set<Statement> getUnsoundJumps() {
+		return unsoundJumps;
+	}
+
 	public Set<StackElement> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
 	}
@@ -97,6 +103,10 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 
 	static public void setLinkUnsoundJumpsToAllJumpdest() {
 		LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST = true;
+	}
+
+	static public boolean getLinkUnsoundJumpsToAllJumpdest() {
+		return LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST;
 	}
 
 	/**
@@ -108,14 +118,14 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
 
 		if (fixpoint) {
 			this.unreachableJumps = new HashSet<>();
 			this.maybeUnsoundJumps = new HashSet<>();
+			this.unsoundJumps = new HashSet<>();
 
 			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
-			Set<Statement> unsoundJumps = new HashSet<Statement>();
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
 
@@ -123,11 +133,10 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 						|| !this.cfgToAnalyze.reachableFrom(entryPoint, node))
 					continue;
 
-
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(this.cfgToAnalyze)) {
 					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-					TypeEnvironment<InferredTypes>>> analysisResult = null;
+							TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -153,7 +162,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 						for (AbstractStack stack : stacks) {
 							StackElement topStack = stack.getTop();
 							stacksTop.add(topStack);
-							if (LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST && topStack.isTopNumeric())
+							if (topStack.isTopNumeric())
 								unsoundJumps.add(node);
 						}
 
@@ -163,28 +172,6 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 				}
 			}
 
-			// LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST case
-			if (LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST && !unsoundJumps.isEmpty()) {
-
-				Set<Statement> jmpdestNodes = cfgToAnalyze.getAllJumpdest();
-				for (Statement unsoundNode : unsoundJumps)
-					for (Statement jmpdest : jmpdestNodes)
-						cfgToAnalyze.addEdge(new SequentialEdge(unsoundNode, jmpdest));
-
-				// last run
-				LiSAConfiguration conf = tool.getConfiguration();
-				LiSA lisa = new LiSA(conf);
-
-				Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
-				program.addCodeMember(cfgToAnalyze);
-
-				try {
-					lisa.run(program);
-				} catch (AnalysisException e) {
-					e.printStackTrace();
-				}
-			}
-			
 			return;
 		}
 
@@ -215,7 +202,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
@@ -230,9 +217,9 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		// one result.
 		for (AnalyzedCFG<
 				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
-				.getResultOf(this.cfgToAnalyze)) {
+						.getResultOf(this.cfgToAnalyze)) {
 			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-			TypeEnvironment<InferredTypes>>> analysisResult = null;
+					TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 			try {
 				analysisResult = result.getAnalysisStateBefore(node);
