@@ -105,6 +105,7 @@ public class EVMLiSA {
 		boolean dumpReport = cmd.hasOption("dump-report");
 		boolean useCreationCode = cmd.hasOption("creation-code");
 		boolean enableReentrancyChecker = cmd.hasOption("reentrancy-checker");
+		boolean linkUnsoundJumpsToAllJumpdestOption = cmd.hasOption("link-unsound-jumps-to-all-jumpdest");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
@@ -154,6 +155,8 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (useCreationCode)
 			EVMFrontend.setUseCreationCode();
+		if(linkUnsoundJumpsToAllJumpdestOption)
+			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 
 		// Creating json output notes
 		JSONObject jsonOptions = new JSONObject();
@@ -172,6 +175,7 @@ public class EVMLiSA {
 		jsonOptions.put("cores", CORES);
 		jsonOptions.put("dump-report", dumpReport);
 		jsonOptions.put("output-directory", OUTPUT_DIR);
+		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", linkUnsoundJumpsToAllJumpdestOption);
 
 		// Run benchmark case
 		if (benchmark != null) {
@@ -880,6 +884,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option linkUnsoundJumpsToAllJumpdestOption = Option.builder()
+				.longOpt("link-unsound-jumps-to-all-jumpdest")
+				.desc("Link all the unsound jumps to all jumpdest.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		Option dumpAnalysisReport = Option.builder()
 				.longOpt("dump-report")
 				.desc("Dump analysis report.")
@@ -913,6 +924,7 @@ public class EVMLiSA {
 		options.addOption(serializeInputsOption);
 		options.addOption(downloadBytecodeOption);
 		options.addOption(useStorageLiveOption);
+		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
 		options.addOption(dumpAnalysisReport);
 		options.addOption(useCreationCodeOption);
 		options.addOption(dumpHtmlOption);

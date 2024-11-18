@@ -93,6 +93,12 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		return topStackValuesPerJump.get(node);
 	}
 
+	private static boolean LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST = false;
+
+	static public void setLinkUnsoundJumpsToAllJumpdest() {
+		LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST = true;
+	}
+
 	/**
 	 * {@inheritDoc} Checks if analysis has reached fix-point. If not, it runs
 	 * another LiSA analysis to solve the remaining jumps and reach fix-point.
@@ -147,20 +153,18 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 						for (AbstractStack stack : stacks) {
 							StackElement topStack = stack.getTop();
 							stacksTop.add(topStack);
-							if (topStack.isTopNumeric())
+							if (LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST && topStack.isTopNumeric())
 								unsoundJumps.add(node);
 						}
 
 						topStackValuesPerJump.put(node, stacksTop);
 
-
-
 					}
 				}
 			}
 
-
-			if (!unsoundJumps.isEmpty()) {
+			// LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST case
+			if (LINK_UNSOUND_JUMPS_TO_ALL_JUMPDEST && !unsoundJumps.isEmpty()) {
 
 				Set<Statement> jmpdestNodes = cfgToAnalyze.getAllJumpdest();
 				for (Statement unsoundNode : unsoundJumps)
