@@ -167,7 +167,6 @@ public class JumpSolver implements
 						}
 
 						topStackValuesPerJump.put(node, stacksTop);
-
 					}
 				}
 			}

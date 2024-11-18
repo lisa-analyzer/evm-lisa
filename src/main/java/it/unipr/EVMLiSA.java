@@ -29,6 +29,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -232,8 +233,8 @@ public class EVMLiSA {
 			jsonOptions.put("bytecode", bytecode);
 		else if (bytecode != null)
 			jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe"))); // runtime
-																						// code
-																						// case
+		// code
+		// case
 		EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
@@ -262,22 +263,30 @@ public class EVMLiSA {
 		try {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
+			Set<Statement> soundlySolved = new HashSet<>();
 
 			if (linkUnsoundJumpsToAllJumpdestOption) {
 				int currentIteration = 0;
 				int MAX_ITER = 5;
+				boolean fixpoint;
 				do {
+					fixpoint = false;
 					EVMCFG cfg = checker.getComputedCFG();
 					Set<Statement> jmpdestNodes = cfg.getAllJumpdest();
 					for (Statement unsoundNode : checker.getUnsoundJumps())
-						for (Statement jmpdest : jmpdestNodes)
-							cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+						if (!soundlySolved.contains(unsoundNode)) {
+							fixpoint = true;
+							for (Statement jmpdest : jmpdestNodes)
+								cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+						}
+
+					soundlySolved.addAll(checker.getUnsoundJumps());
 
 					// last run
 					program.addCodeMember(cfg);
 
 					lisa.run(program);
-				} while (checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+				} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
 			}
 
 			// Print the results
@@ -292,7 +301,7 @@ public class EVMLiSA {
 						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 			}
 
-			MyLogger result = EVMLiSA.dumpStatistics(checker)
+			MyLogger result = EVMLiSA.dumpStatistics(checker, soundlySolved)
 					.address(addressSC)
 					.time(finish - start)
 					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
@@ -374,27 +383,35 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
+		HashSet<Statement> soundlySolved = new HashSet<>();
 		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
 			int currentIteration = 0;
-			int MAX_ITER = 1; // We can do MAX_ITER iteration
+			int MAX_ITER = 5; // We can do MAX_ITER iteration
+			boolean fixpoint;
 			do {
+				fixpoint = false;
 				EVMCFG cfg = checker.getComputedCFG();
 				Set<Statement> jmpdestNodes = cfg.getAllJumpdest();
 				for (Statement unsoundNode : checker.getUnsoundJumps())
-					for (Statement jmpdest : jmpdestNodes)
-						cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+					if (!soundlySolved.contains(unsoundNode)) {
+						fixpoint = true;
+						for (Statement jmpdest : jmpdestNodes)
+							cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
+					}
+
+				soundlySolved.addAll(checker.getUnsoundJumps());
 
 				// last run
 				program.addCodeMember(cfg);
 
 				lisa.run(program);
-			} while (checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+			} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
 		}
 
 		// Print the results
 		long finish = System.currentTimeMillis();
 
-		return EVMLiSA.dumpStatistics(checker)
+		return EVMLiSA.dumpStatistics(checker, soundlySolved)
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
 				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
@@ -530,7 +547,7 @@ public class EVMLiSA {
 	 * @return A Triple containing the counts of precisely resolved jumps, sound
 	 *             resolved jumps, and unreachable jumps.
 	 */
-	public static MyLogger dumpStatistics(JumpSolver checker) {
+	public static MyLogger dumpStatistics(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
 
 		log.info("### Calculating statistics ###");
@@ -553,18 +570,21 @@ public class EVMLiSA {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
 
-		for (Statement jumpNode : cfg.getAllJumps()) {
-			if (pushedJumps.contains(jumpNode))
-				continue;
-			boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-			Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-			if (topStackValuesPerJump == null || !reachableFrom)
-				continue;
-			else if (topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
-				allJumpAreSound = false;
-				break;
+		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
+			allJumpAreSound = true;
+		else
+			for (Statement jumpNode : cfg.getAllJumps()) {
+				if (pushedJumps.contains(jumpNode))
+					continue;
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+				if (topStackValuesPerJump == null || !reachableFrom)
+					continue;
+				else if (topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+					allJumpAreSound = false;
+					break;
+				}
 			}
-		}
 
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
@@ -591,9 +611,13 @@ public class EVMLiSA {
 					// is definitelyFakeMissedJumps
 					resolvedJumps++;
 				} else {
-					unsoundJumps++;
-					log.error("{} not solved", jumpNode);
-					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
+					if (!soundlySolved.contains(jumpNode)) {
+						unsoundJumps++;
+						log.error("{} not solved", jumpNode);
+						log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
+					} else {
+						resolvedJumps++;
+					}
 				}
 			}
 		}
