@@ -1,10 +1,7 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.*;
 import it.unipr.analysis.Number;
-import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -44,7 +41,7 @@ import org.apache.logging.log4j.Logger;
 public class JumpSolver implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger LOG = LogManager.getLogger(JumpSolver.class);
+	private static final Logger log = LogManager.getLogger(JumpSolver.class);
 
 	/**
 	 * The CFG to be analyzed.
@@ -128,9 +125,12 @@ public class JumpSolver implements
 			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
+				int key = this.cfgToAnalyze.hashCode() + entryPoint.hashCode() + node.hashCode();
+				boolean isReachableFrom = this.cfgToAnalyze.reachableFrom(entryPoint, node);
+				MyCache.getInstance().addReachableFrom(key, isReachableFrom); // Caching
 
 				if (cfgToAnalyze.getAllPushedJumps().contains(node)
-						|| !this.cfgToAnalyze.reachableFrom(entryPoint, node))
+						|| !isReachableFrom)
 					continue;
 
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
@@ -141,33 +141,37 @@ public class JumpSolver implements
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
 					} catch (SemanticException e1) {
-						e1.printStackTrace();
+						log.error("(JumpSolver): {}", e1.getMessage());
 					}
 
 					// Retrieve the symbolic stack from the analysis result
 					EVMAbstractState valueState = analysisResult.getState().getValueState();
 
-					// If the value state is bottom, the jump is definitely
-					// unreachable
-					if (valueState.isBottom())
+					if (valueState.isBottom()) {
+						// If the value state is bottom, the jump is definitely
+						// unreachable
 						this.unreachableJumps.add(node);
-					// If the value state is top, the jump is maybe unsound
-					// (i.e., we should re-run the analysis with different
-					// parameter)
-					else if (valueState.isTop())
-						this.maybeUnsoundJumps.add(node);
-					else {
-						Set<StackElement> stacksTop = new HashSet<>();
-						AbstractStackSet stacks = valueState.getStacks();
-						for (AbstractStack stack : stacks) {
-							StackElement topStack = stack.getTop();
-							stacksTop.add(topStack);
-							if (topStack.isTopNumeric())
-								unsoundJumps.add(node);
-						}
-
-						topStackValuesPerJump.put(node, stacksTop);
+						continue;
 					}
+
+					if (valueState.isTop()) {
+						// If the value state is top, the jump is maybe unsound
+						// (i.e., we should re-run the analysis with different
+						// parameter)
+						this.maybeUnsoundJumps.add(node);
+						continue;
+					}
+
+					Set<StackElement> stacksTop = new HashSet<>();
+					AbstractStackSet stacks = valueState.getStacks();
+					for (AbstractStack stack : stacks) {
+						StackElement topStack = stack.getTop();
+						stacksTop.add(topStack);
+						if (topStack.isTopNumeric())
+							unsoundJumps.add(node);
+					}
+
+					topStackValuesPerJump.put(node, stacksTop);
 				}
 			}
 
@@ -185,7 +189,7 @@ public class JumpSolver implements
 		try {
 			lisa.run(program);
 		} catch (AnalysisException e) {
-			e.printStackTrace();
+			log.error("(JumpSolver): {}", e.getMessage());
 		}
 	}
 
@@ -224,19 +228,19 @@ public class JumpSolver implements
 				analysisResult = result.getAnalysisStateBefore(node);
 			} catch (SemanticException e1) {
 				e1.printStackTrace();
+
 			}
 
 			// Retrieve the symbolic stack from the analysis result
 			EVMAbstractState valueState = analysisResult.getState().getValueState();
 
-			// If the abstract stack is top or bottom or it is empty, we do not
-			// have enough information
-			// to solve the jump.
+			// If the abstract stack is top or bottom, or it is empty, we do not
+			// have enough information to solve the jump.
 			if (valueState.isBottom()) {
 				continue;
 			} else if (valueState.isTop()) {
-				LOG.warn("Not solved jump (state is top): " + node + "["
-						+ ((ProgramCounterLocation) node.getLocation()).getPc() + "]");
+				log.warn("Not solved jump (state is top): {} [{}]", node,
+						((ProgramCounterLocation) node.getLocation()).getPc());
 				continue;
 			}
 
@@ -249,15 +253,8 @@ public class JumpSolver implements
 					.filter(pc -> {
 						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
 						int pcValue = pcLocation.getPc();
-						return flattenedTopStack.contains(new Number(pcValue)); // Check
-						// if
-						// the
-						// value
-						// is
-						// in
-						// the
-						// flattened
-						// set
+						// Check if the value is in the flattened set
+						return flattenedTopStack.contains(new Number(pcValue));
 					})
 					.collect(Collectors.toSet());
 

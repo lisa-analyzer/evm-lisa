@@ -457,7 +457,7 @@ public class EVMAbstractState
 
 						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
 								|| jmpDest.isTop())
-						result.add(resultStack);
+							result.add(resultStack);
 					}
 
 					if (result.isEmpty())
@@ -1280,6 +1280,7 @@ public class EVMAbstractState
 												valueToPush);
 									} else {
 										valueToPush = valueCached;
+										log.debug("Value cached");
 									}
 								} else
 									valueToPush = StackElement.NUMERIC_TOP;

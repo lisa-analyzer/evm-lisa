@@ -34,7 +34,7 @@ public class EVMBytecodeSmartBugsReentrancyTruth {
 
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() / 2);
 
 		// Run the benchmark in parallel
 		for (String bytecodeFileName : bytecodes) {

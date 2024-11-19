@@ -36,7 +36,7 @@ public class ReentrancyChecker implements
 		if (node instanceof Call) {
 			EVMCFG cfg = ((EVMCFG) graph);
 			Set<Statement> ns = cfg.getAllSstore();
-			Statement call = node;
+			Statement call = node; // Renaming
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
@@ -46,7 +46,7 @@ public class ReentrancyChecker implements
 				try {
 					analysisResult = result.getAnalysisStateBefore(call);
 				} catch (SemanticException e1) {
-					e1.printStackTrace();
+					log.error("(ReentrancyChecker): {}", e1.getMessage());
 				}
 
 				// Retrieve the symbolic stack from the analysis result
@@ -87,13 +87,9 @@ public class ReentrancyChecker implements
 					if (cfg.reachableFromSequentially(sstore, otherSstore))
 						sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
 
-			log.debug("Reentrancy attack at "
-					+ sstoreLoc.getPc() + " at line no. "
-					+ sstoreLoc.getSourceCodeLine()
-					+ " coming from line "
-					+ ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
-			String warn = "Reentrancy attack at "
-					+ sstoreLoc.getPc();
+			log.debug("Reentrancy attack at {} at line no. {} coming from line {}", sstoreLoc.getPc(),
+					sstoreLoc.getSourceCodeLine(), ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
+			String warn = "Reentrancy attack at " + sstoreLoc.getPc();
 			tool.warn(warn);
 			MyCache.getInstance().addReentrancyWarning(cfg.hashCode(), warn);
 		}

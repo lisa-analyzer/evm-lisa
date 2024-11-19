@@ -336,30 +336,32 @@ public class EVMLiSA {
 	}
 
 	private MyLogger newAnalysis(String CONTRACT_ADDR, JSONObject jsonOptions) throws Exception {
-
-		String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
+		String BYTECODE_WORKDIR = OUTPUT_DIR + "/benchmark/bytecode/" + CONTRACT_ADDR;
+		String BYTECODE_FULLPATH = BYTECODE_WORKDIR + "/" + CONTRACT_ADDR
 				+ ".opcode";
 
 		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + CONTRACT_ADDR));
+		Files.createDirectories(Paths.get(BYTECODE_WORKDIR));
 
 		// If the file does not exist, we will do an API request to Etherscan
-		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists() || REGENERATE) {
-			numberOfAPIEtherscanRequest++;
+		synchronized (EVMLiSA.class) {
+			File file = new File(BYTECODE_FULLPATH);
+			if (!file.exists() || REGENERATE) {
+				numberOfAPIEtherscanRequest++;
 
-			if (numberOfAPIEtherscanRequest % 5 == 0) {
-				try {
-					// I can do max 5 API request in 1 sec to Etherscan.io
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					log.error("error: {}", e.getMessage());
+				if (numberOfAPIEtherscanRequest % 5 == 0) {
+					try {
+						// I can do max 5 API request in 1 sec to Etherscan.io
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						log.error("error: {}", e.getMessage());
+					}
 				}
-			}
 
-			String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
-			if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
-				numberOfAPIEtherscanRequestOnSuccess++;
+				String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+				if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
+					numberOfAPIEtherscanRequestOnSuccess++;
+			}
 		}
 
 		// Configuration and test run
@@ -372,7 +374,7 @@ public class EVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = false;
-		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;
+		conf.workdir = BYTECODE_WORKDIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
@@ -558,7 +560,7 @@ public class EVMLiSA {
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int unsoundJumps = 0;
-		int maybeUnsoundJumps = 0; //checker.getMaybeUnsoundJumps().size();
+		int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
 
 		boolean allJumpAreSound = true;
 
@@ -570,17 +572,14 @@ public class EVMLiSA {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
 
-		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
-			allJumpAreSound = true;
-		else
+		if (!JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
 			for (Statement jumpNode : cfg.getAllJumps()) {
 				if (pushedJumps.contains(jumpNode))
 					continue;
-				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-				if (topStackValuesPerJump == null || !reachableFrom)
-					continue;
-				else if (topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+
+				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
 					allJumpAreSound = false;
 					break;
 				}
@@ -589,38 +588,59 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+				boolean reachableFrom;
+				int key = cfg.hashCode() + entryPoint.hashCode() + jumpNode.hashCode();
+
+				if (MyCache.getInstance().existsInReachableFrom(key)) {
+					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
+					log.debug("Value cached");
+				} else {
+					reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+					MyCache.getInstance().addReachableFrom(key, reachableFrom);
+				}
+
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
-				if (pushedJumps.contains(jumpNode))
+				if (pushedJumps.contains(jumpNode)) {
 					resolvedJumps++;
-				else if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+					continue;
+				}
+				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
 					definitelyUnreachable++;
-				else if (!reachableFrom) {
+					continue;
+				}
+				if (!reachableFrom) {
 					if (allJumpAreSound)
 						definitelyUnreachable++;
 					else
 						maybeUnreachable++;
-				} else if (topStackValuesPerJump == null) {
+					continue;
+				}
+				if (topStackValuesPerJump == null) {
 					// If all stacks are bottom, then we have a
 					// maybeFakeMissedJump
 					definitelyUnreachable++;
-				} else if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+					continue;
+				}
+				if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
 					// If the elements at the top of the stacks are all
 					// different from NUMERIC_TOP, then we are sure that it
 					// is definitelyFakeMissedJumps
 					resolvedJumps++;
-				} else {
-					if (!soundlySolved.contains(jumpNode)) {
-						unsoundJumps++;
-						log.error("{} not solved", jumpNode);
-						log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
-					} else if (checker.getMaybeUnsoundJumps().contains(jumpNode)){
-						maybeUnsoundJumps++;
-					} else {
-						resolvedJumps++;
-					}
+					continue;
 				}
+				if (soundlySolved != null && !soundlySolved.contains(jumpNode)) {
+					unsoundJumps++;
+					log.error("{} not solved", jumpNode);
+					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
+					continue;
+				}
+				if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
+					maybeUnsoundJumps++;
+					continue;
+				}
+
+				resolvedJumps++;
 			}
 		}
 
@@ -664,7 +684,7 @@ public class EVMLiSA {
 					}
 				});
 			} catch (IOException e) {
-				log.error("error: {}", e.getMessage());
+				log.error("(dumpStatistics): {}", e.getMessage());
 			}
 
 		File f = new File(STATISTICS_FULLPATH);
@@ -689,7 +709,7 @@ public class EVMLiSA {
 			Path path = Paths.get(filePath);
 			return Files.readString(path);
 		} catch (IOException e) {
-			log.error("error: {}", e.getMessage());
+			log.error("(readFileAsString): {}", e.getMessage());
 			return null;
 		}
 	}
@@ -841,7 +861,6 @@ public class EVMLiSA {
 				}
 			} catch (Exception e) {
 				log.warn("Bytecode not downloaded: {}, cause: {}", address, e.getMessage());
-				continue;
 			}
 		}
 

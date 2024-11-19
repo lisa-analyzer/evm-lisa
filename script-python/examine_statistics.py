@@ -60,18 +60,18 @@ def calculate_statistics(file_path):
 
     # Stampa dei risultati
     print(f"Smart contracts examined: {rows}")
+    print(f"Smart contracts sound: {sound}")
     print(f"Total Opcodes: {total_opcodes}")
     print(f"Total Jumps: {total_jumps}")
-    print(f"Solved Jumps: {solved_jumps}")
+    print(f"Solved (reachable) Jumps: {solved_jumps}")
+    print(f"Total solved Jumps: {total_solved_jumps}")
     print(f"Definitely unreachable jumps: {definitely_unreachable_jumps}")
     print(f"Maybe unreachable jumps: {maybe_unreachable_jumps}")
-    print(f"Total solved Jumps: {total_solved_jumps}")
     print(f"Unsound jumps: {unsound_jumps}")
     print(f"Maybe unsound jumps: {maybe_unsound_jumps}")
     print(f"Average % Total unsolved: {percentuale(avg_unsolved)}")
     print(f"Average % Total Solved: {percentuale(1 - avg_unsolved)}")
     print(f"Average Time (seconds): {avg_time_millis / 1000}")
-    print(f"Smart contracts sound: {sound}")
 
 def percentuale(numero_decimale):
     if numero_decimale is None:

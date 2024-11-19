@@ -1,26 +1,5 @@
 package it.unipr.analysis.cron;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Test;
-
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
@@ -38,6 +17,24 @@ import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Test;
 
 /*
  * ground-truth-stats/ground-truth-data.csv FILE MUST BE UPDATED WHEN A NEW
@@ -55,6 +52,7 @@ public class EVMBytecodeGroundTruth {
 		AbstractStack.setStackLimit(32);
 		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
+		long smartContractListTime = System.currentTimeMillis();
 
 		if (new File(RESULT_EXEC_FILE_PATH).delete())
 			log.warn("File deleted {}", RESULT_EXEC_FILE_PATH);
@@ -85,11 +83,11 @@ public class EVMBytecodeGroundTruth {
 			log.error("Timeout reached while waiting for thread pool to terminate.");
 			executor.shutdownNow();
 		}
+		smartContractListTime = System.currentTimeMillis() - smartContractListTime;
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
 		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
 		long smartContractGroundTruthListTime = 0;
-		long smartContractListTime = 0;
 
 		assert smartContractList.size() == smartContractGroundTruthList.size();
 
@@ -99,7 +97,6 @@ public class EVMBytecodeGroundTruth {
 				if (truthSC.getAddress().equals(newSC.getAddress())) {
 
 					smartContractGroundTruthListTime += truthSC.getTimeMillis();
-					smartContractListTime += newSC.getTimeMillis();
 
 					if (!truthSC.equals(newSC)) {
 						if (!changed)
@@ -198,7 +195,7 @@ public class EVMBytecodeGroundTruth {
 		// Print the results
 		long finish = System.currentTimeMillis();
 
-		return EVMLiSA.dumpStatistics(checker, new HashSet<>())
+		return EVMLiSA.dumpStatistics(checker, null)
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
 				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
