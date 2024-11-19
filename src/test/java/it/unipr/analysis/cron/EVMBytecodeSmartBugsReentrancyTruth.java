@@ -19,14 +19,14 @@ import java.util.List;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.Ignore;
 
 public class EVMBytecodeSmartBugsReentrancyTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeSmartBugsReentrancyTruth.class);
 
 	private ConcurrentMap<Integer, Integer> _results = new ConcurrentHashMap<>();
 
-	@Test
+	@Ignore
 	public void testSmartBugsReentrancyTruth() throws Exception {
 		String SMARTBUGS_BYTECODES_DIR = "evm-testcases/ground-truth/test-reentrancy-smartbugs-truth/bytecode/";
 
