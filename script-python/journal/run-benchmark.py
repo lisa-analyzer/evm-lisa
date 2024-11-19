@@ -166,6 +166,7 @@ def run_evmlisa(bytecode_file, result_evmlisa_dir):
         f"--stack-set-size 15 "
         f"--creation-code "
         f"--reentrancy-checker "
+        f"--link-unsound-jumps-to-all-jumpdest "
         # f"--dump-report "
         # f"--output {os.path.splitext(bytecode_filename)[0]}"
         f"> /dev/null 2> {result_filepath}"
