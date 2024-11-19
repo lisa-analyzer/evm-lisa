@@ -558,7 +558,7 @@ public class EVMLiSA {
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int unsoundJumps = 0;
-		int maybeUnsoundJumps = checker.getMaybeUnsoundJumps().size();
+		int maybeUnsoundJumps = 0; //checker.getMaybeUnsoundJumps().size();
 
 		boolean allJumpAreSound = true;
 
@@ -615,6 +615,8 @@ public class EVMLiSA {
 						unsoundJumps++;
 						log.error("{} not solved", jumpNode);
 						log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
+					} else if (checker.getMaybeUnsoundJumps().contains(jumpNode)){
+						maybeUnsoundJumps++;
 					} else {
 						resolvedJumps++;
 					}
