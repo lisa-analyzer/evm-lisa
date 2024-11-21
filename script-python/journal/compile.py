@@ -32,18 +32,14 @@ def load_version_mapping(version_file):
     return version_mapping
 
 def generate_file_index(folder_path, output_json="file_index.json"):
-    # Dizionario per mantenere la corrispondenza nome del file senza estensione - numero sequenziale
     file_index = {}
     
-    # Filtra solo i file con estensione .sol e ordina per nome
     files = sorted(f for f in os.listdir(folder_path) if f.endswith(".sol") and os.path.isfile(os.path.join(folder_path, f)))
     
-    # Genera il dizionario con il nome del file senza estensione e il numero sequenziale
     for i, file_name in enumerate(files, start=1):
-        file_name_no_ext = os.path.splitext(file_name)[0]  # Rimuove l'estensione .sol
+        file_name_no_ext = os.path.splitext(file_name)[0] 
         file_index[file_name_no_ext] = i
 
-    # Scrivi il dizionario in un file JSON
     with open(output_json, 'w', encoding='utf-8') as json_file:
         json.dump(file_index, json_file, indent=4)
     
@@ -60,16 +56,13 @@ def extract_solidity_versions(src_folder, output_csv="solidity_versions.csv"):
                 with open(file_path, 'r', encoding='utf-8') as file:
                     content = file.read()
 
-                    # Cerca la versione originale nella pragma solidity
                     pragma_match = pragma_regex.search(content)
                     if pragma_match:
                         original_version = pragma_match.group(1).strip()
                         
-                        # Rimuove i caratteri `^`, `=`, `>`, `<` e separa le versioni
                         cleaned_version = re.sub(r"[^\d\.\s]", "", original_version).strip()
                         versions = cleaned_version.split()
 
-                        # Prende l'ultima versione (la più recente) nell'intervallo
                         compiled_version = versions[0]
 
                         data.append({
@@ -79,7 +72,6 @@ def extract_solidity_versions(src_folder, output_csv="solidity_versions.csv"):
                             "notes": ""
                         })
 
-    # Scrivi i risultati in un file CSV
     with open(output_csv, 'w', newline='', encoding='utf-8') as csv_file:
         fieldnames = ["file", "original pragma version", "compiled version", "notes"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)

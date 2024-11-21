@@ -2,7 +2,7 @@ import csv
 import argparse
 
 def calculate_statistics(file_path):
-    # Inizializza le variabili per memorizzare i valori delle colonne
+    
     total_opcodes = 0
     total_jumps = 0
     solved_jumps = 0
@@ -15,14 +15,11 @@ def calculate_statistics(file_path):
     time_millis = 0
     rows = 0
 
-    # Apri il file CSV in modalità lettura
     with open(file_path, newline='') as csvfile:
         reader = csv.reader(csvfile)
         
-        # Leggi l'intestazione
         header = next(reader)
         
-        # Trova gli indici delle colonne
         total_opcodes_index = header.index(" Total Opcodes")
         total_jumps_index = header.index(" Total Jumps")
         solved_jumps_index = header.index(" Solved Jumps")
@@ -35,7 +32,6 @@ def calculate_statistics(file_path):
         time_millis_index = header.index(" Time (millis)")
         sound = 0
 
-        # Leggi le righe rimanenti
         for row in reader:
             if int(row[maybe_unreachable_jumps_index]) == 0 and int(row[maybe_unsound_jumps_index]) == 0 and int(row[unsound_jumps_index]) == 0:
                 sound += 1
@@ -53,12 +49,11 @@ def calculate_statistics(file_path):
             total_solved_percent += float(row[total_solved_percent_index])
             time_millis += int(row[time_millis_index])
 
-    # Calcola le statistiche
+
     avg_total_solved_percent = total_solved_percent / rows if rows else None
     avg_time_millis = time_millis / rows if rows else None
     avg_unsolved = unsound_jumps / total_jumps
 
-    # Stampa dei risultati
     print(f"Smart contracts examined: {rows}")
     print(f"Smart contracts sound: {sound}")
     print(f"Total Opcodes: {total_opcodes}")

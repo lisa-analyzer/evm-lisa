@@ -88,22 +88,23 @@ This command will initiate the analysis process for the specified smart contract
 
 ```
 Options:
- -a,--address <arg>             Address of an Ethereum smart contract.
- -b,--benchmark <arg>           Filepath of the benchmark suite (i.e., a list of smart contract addresses).
- -c,--cores <arg>               Number of cores used in benchmark.
-    --creation-code             Parse bytecode as creation code (instead of runtime code).
-    --dot                       Export a dot-notation file.
-    --download-bytecode         Download the bytecode.
-    --dump-report               Dump analysis report.
-    --dump-stats                Dump statistics.
- -f,--filepath-bytecode <arg>   Filepath of the bytecode file.
-    --html                      Export a graphic HTML report.
- -o,--output <arg>              Output directory path.
-    --reentrancy-checker        Enable re-entrancy checker.
-    --serialize-inputs          Serialize inputs.
-    --stack-set-size <arg>      Dimension of stack-set (default: 8).
-    --stack-size <arg>          Dimension of stack (default: 32).
-    --use-live-storage          Use the live storage in SLOAD.
+ -a,--address <arg>                        Address of an Ethereum smart contract.
+ -b,--benchmark <arg>                      Filepath of the benchmark.
+ -c,--cores <arg>                          Number of cores used in benchmark.
+    --creation-code                        Parse bytecode as creation code (instead of runtime code).
+    --dot                                  Export a dot-notation file.
+    --download-bytecode                    Download the bytecode.
+    --dump-report                          Dump analysis report.
+    --dump-stats                           Dump statistics.
+ -f,--filepath-bytecode <arg>              Filepath of the bytecode file.
+    --html                                 Export a graphic HTML report.
+    --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
+ -o,--output <arg>                         Output directory path.
+    --reentrancy-checker                   Enable re-entrancy checker.
+    --serialize-inputs                     Serialize inputs.
+    --stack-set-size <arg>                 Dimension of stack-set (default: 8).
+    --stack-size <arg>                     Dimension of stack (default: 32).
+    --use-live-storage                     Use the live storage in SLOAD.
 ```
 
 # 🔍 Abstract Stack Set Domain
