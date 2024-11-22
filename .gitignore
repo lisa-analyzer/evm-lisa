@@ -15,28 +15,28 @@ evm-testcases/ground-truth/test-ground-truth-results/statistics.csv
 
 # Ignore benchmark results
 # SolidiFI reentrancy
-script-python/journal/reentrancy-solidifi/results/
-script-python/journal/reentrancy-solidifi/json/
-script-python/journal/reentrancy-solidifi/bytecode/
-script-python/journal/vanilla-solidifi/results/
-script-python/journal/vanilla-solidifi/json/
-script-python/journal/vanilla-solidifi/bytecode/
+scripts/python/journal/reentrancy-solidifi/results/
+scripts/python/journal/reentrancy-solidifi/json/
+scripts/python/journal/reentrancy-solidifi/bytecode/
+scripts/python/journal/vanilla-solidifi/results/
+scripts/python/journal/vanilla-solidifi/json/
+scripts/python/journal/vanilla-solidifi/bytecode/
 
 # smartbugs reentrancy
-script-python/journal/reentrancy-smartbugs/results/
-script-python/journal/reentrancy-smartbugs/json/
-script-python/journal/reentrancy-smartbugs/bytecode/
+scripts/python/journal/reentrancy-smartbugs/results/
+scripts/python/journal/reentrancy-smartbugs/json/
+scripts/python/journal/reentrancy-smartbugs/bytecode/
 
 # SliSE reentrancy
-script-python/journal/reentrancy-slise-db1/results/
-script-python/journal/reentrancy-slise-db1/json/
-script-python/journal/reentrancy-slise-db1/bytecode/
-script-python/journal/reentrancy-slise-db1/match-file-index.json
+scripts/python/journal/reentrancy-slise-db1/results/
+scripts/python/journal/reentrancy-slise-db1/json/
+scripts/python/journal/reentrancy-slise-db1/bytecode/
+scripts/python/journal/reentrancy-slise-db1/match-file-index.json
 
-script-python/journal/execution/
-script-python/journal/images/
-script-python/journal/DAppSCAN/
-script-python/journal/SliSE/
+scripts/python/journal/execution/
+scripts/python/journal/images/
+scripts/python/journal/DAppSCAN/
+scripts/python/journal/SliSE/
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/

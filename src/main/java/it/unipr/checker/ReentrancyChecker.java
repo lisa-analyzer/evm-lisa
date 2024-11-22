@@ -75,8 +75,6 @@ public class ReentrancyChecker implements
 		return true;
 	}
 
-
-
 	private void checkForReentrancy(Statement call, Statement sstore, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			Set<Statement> ns, EVMCFG cfg) {
