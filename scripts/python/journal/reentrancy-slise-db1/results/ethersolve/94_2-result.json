@@ -1,0 +1,611 @@
+{
+  "name": "Analysis_2024-11-14_08-18-59",
+  "address": "",
+  "binarySource": "608060405234801561001057600080fd5b506101fd806100206000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c80635733d58f1161005b5780635733d58f1461010857806372fe25aa14610126578063794e572414610144578063f24344e6146101625761007d565b80630fba7805146100825780632e86bbd8146100cc5780634870dd9a146100ea575b600080fd5b61008a610180565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100d4610186565b6040518082815260200191505060405180910390f35b6100f2610192565b6040518082815260200191505060405180910390f35b610110610197565b6040518082815260200191505060405180910390f35b61012e6101a3565b6040518082815260200191505060405180910390f35b61014c6101af565b6040518082815260200191505060405180910390f35b61016a6101bb565b6040518082815260200191505060405180910390f35b6109a581565b678ac7230489e8000081565b60c881565b6714d1120d7b16000081565b670de0b6b3a764000081565b670f43fc2c04ee000081565b6729a2241af62c00008156fea264697066735822122098410bc1082379b441b091dd60fbd0cc85093901b8b78b2608671edace19948064736f6c634300060b0033",
+  "binaryHash": "fe9d27d7",
+  "isOnlyRuntime": false,
+  "metadata": "a264697066735822122098410bc1082379b441b091dd60fbd0cc85093901b8b78b2608671edace19948064736f6c634300060b0033",
+  "solidityVersion": "0.6.11",
+  "constructorRemainingData": "",
+  "constructorCfg": {
+    "bytecode": "608060405234801561001057600080fd5b506101fd806100206000396000f3fe",
+    "remainingData": "fe",
+    "nodes": [
+      {
+        "offset": 0,
+        "length": 12,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "608060405234801561001057",
+        "parsedOpcodes": "0: PUSH1 0x80\n2: PUSH1 0x40\n4: MSTORE\n5: CALLVALUE\n6: DUP1\n7: ISZERO\n8: PUSH2 0x0010\n11: JUMPI"
+      },
+      {
+        "offset": 12,
+        "length": 4,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "600080fd",
+        "parsedOpcodes": "12: PUSH1 0x00\n14: DUP1\n15: REVERT"
+      },
+      {
+        "offset": 16,
+        "length": 15,
+        "type": "fallback",
+        "stackBalance": -1,
+        "bytecodeHex": "5b506101fd806100206000396000f3",
+        "parsedOpcodes": "16: JUMPDEST\n17: POP\n18: PUSH2 0x01fd\n21: DUP1\n22: PUSH2 0x0020\n25: PUSH1 0x00\n27: CODECOPY\n28: PUSH1 0x00\n30: RETURN"
+      },
+      {
+        "offset": 31,
+        "length": 0,
+        "type": "exit",
+        "stackBalance": 0,
+        "bytecodeHex": "",
+        "parsedOpcodes": "31: EXIT BLOCK"
+      }
+    ],
+    "successors": [
+      {
+        "from": 0,
+        "to": [
+          12,
+          16
+        ]
+      },
+      {
+        "from": 12,
+        "to": [
+          31
+        ]
+      },
+      {
+        "from": 16,
+        "to": [
+          31
+        ]
+      },
+      {
+        "from": 31,
+        "to": []
+      }
+    ],
+    "buildReport": {
+      "directJumpTargetErrors": 0,
+      "orphanJumpTargetNullErrors": 0,
+      "orphanJumpTargetUnknownErrors": 0,
+      "loopDepthExceededErrors": 0,
+      "multipleRootNodesErrors": 0,
+      "stackExceededErrors": 0,
+      "blockLimitErrors": 0,
+      "criticalErrors": 0,
+      "errorLog": "",
+      "buildTimeMillis": 18
+    }
+  },
+  "runtimeCfg": {
+    "bytecode": "608060405234801561001057600080fd5b506004361061007d5760003560e01c80635733d58f1161005b5780635733d58f1461010857806372fe25aa14610126578063794e572414610144578063f24344e6146101625761007d565b80630fba7805146100825780632e86bbd8146100cc5780634870dd9a146100ea575b600080fd5b61008a610180565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b6100d4610186565b6040518082815260200191505060405180910390f35b6100f2610192565b6040518082815260200191505060405180910390f35b610110610197565b6040518082815260200191505060405180910390f35b61012e6101a3565b6040518082815260200191505060405180910390f35b61014c6101af565b6040518082815260200191505060405180910390f35b61016a6101bb565b6040518082815260200191505060405180910390f35b6109a581565b678ac7230489e8000081565b60c881565b6714d1120d7b16000081565b670de0b6b3a764000081565b670f43fc2c04ee000081565b6729a2241af62c00008156fe",
+    "remainingData": "fe",
+    "nodes": [
+      {
+        "offset": 0,
+        "length": 12,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "608060405234801561001057",
+        "parsedOpcodes": "0: PUSH1 0x80\n2: PUSH1 0x40\n4: MSTORE\n5: CALLVALUE\n6: DUP1\n7: ISZERO\n8: PUSH2 0x0010\n11: JUMPI"
+      },
+      {
+        "offset": 12,
+        "length": 4,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "600080fd",
+        "parsedOpcodes": "12: PUSH1 0x00\n14: DUP1\n15: REVERT"
+      },
+      {
+        "offset": 16,
+        "length": 10,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b506004361061007d57",
+        "parsedOpcodes": "16: JUMPDEST\n17: POP\n18: PUSH1 0x04\n20: CALLDATASIZE\n21: LT\n22: PUSH2 0x007d\n25: JUMPI"
+      },
+      {
+        "offset": 26,
+        "length": 17,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "60003560e01c80635733d58f1161005b57",
+        "parsedOpcodes": "26: PUSH1 0x00\n28: CALLDATALOAD\n29: PUSH1 0xe0\n31: SHR\n32: DUP1\n33: PUSH4 0x5733d58f\n38: GT\n39: PUSH2 0x005b\n42: JUMPI"
+      },
+      {
+        "offset": 43,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "80635733d58f1461010857",
+        "parsedOpcodes": "43: DUP1\n44: PUSH4 0x5733d58f\n49: EQ\n50: PUSH2 0x0108\n53: JUMPI"
+      },
+      {
+        "offset": 54,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "806372fe25aa1461012657",
+        "parsedOpcodes": "54: DUP1\n55: PUSH4 0x72fe25aa\n60: EQ\n61: PUSH2 0x0126\n64: JUMPI"
+      },
+      {
+        "offset": 65,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "8063794e57241461014457",
+        "parsedOpcodes": "65: DUP1\n66: PUSH4 0x794e5724\n71: EQ\n72: PUSH2 0x0144\n75: JUMPI"
+      },
+      {
+        "offset": 76,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "8063f24344e61461016257",
+        "parsedOpcodes": "76: DUP1\n77: PUSH4 0xf24344e6\n82: EQ\n83: PUSH2 0x0162\n86: JUMPI"
+      },
+      {
+        "offset": 87,
+        "length": 4,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "61007d56",
+        "parsedOpcodes": "87: PUSH2 0x007d\n90: JUMP"
+      },
+      {
+        "offset": 91,
+        "length": 12,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "5b80630fba78051461008257",
+        "parsedOpcodes": "91: JUMPDEST\n92: DUP1\n93: PUSH4 0x0fba7805\n98: EQ\n99: PUSH2 0x0082\n102: JUMPI"
+      },
+      {
+        "offset": 103,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "80632e86bbd8146100cc57",
+        "parsedOpcodes": "103: DUP1\n104: PUSH4 0x2e86bbd8\n109: EQ\n110: PUSH2 0x00cc\n113: JUMPI"
+      },
+      {
+        "offset": 114,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "80634870dd9a146100ea57",
+        "parsedOpcodes": "114: DUP1\n115: PUSH4 0x4870dd9a\n120: EQ\n121: PUSH2 0x00ea\n124: JUMPI"
+      },
+      {
+        "offset": 125,
+        "length": 5,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "5b600080fd",
+        "parsedOpcodes": "125: JUMPDEST\n126: PUSH1 0x00\n128: DUP1\n129: REVERT"
+      },
+      {
+        "offset": 130,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b61008a61018056",
+        "parsedOpcodes": "130: JUMPDEST\n131: PUSH2 0x008a\n134: PUSH2 0x0180\n137: JUMP"
+      },
+      {
+        "offset": 138,
+        "length": 66,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f3",
+        "parsedOpcodes": "138: JUMPDEST\n139: PUSH1 0x40\n141: MLOAD\n142: DUP1\n143: DUP3\n144: PUSH20 0xffffffffffffffffffffffffffffffffffffffff\n165: AND\n166: PUSH20 0xffffffffffffffffffffffffffffffffffffffff\n187: AND\n188: DUP2\n189: MSTORE\n190: PUSH1 0x20\n192: ADD\n193: SWAP2\n194: POP\n195: POP\n196: PUSH1 0x40\n198: MLOAD\n199: DUP1\n200: SWAP2\n201: SUB\n202: SWAP1\n203: RETURN"
+      },
+      {
+        "offset": 204,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b6100d461018656",
+        "parsedOpcodes": "204: JUMPDEST\n205: PUSH2 0x00d4\n208: PUSH2 0x0186\n211: JUMP"
+      },
+      {
+        "offset": 212,
+        "length": 22,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b6040518082815260200191505060405180910390f3",
+        "parsedOpcodes": "212: JUMPDEST\n213: PUSH1 0x40\n215: MLOAD\n216: DUP1\n217: DUP3\n218: DUP2\n219: MSTORE\n220: PUSH1 0x20\n222: ADD\n223: SWAP2\n224: POP\n225: POP\n226: PUSH1 0x40\n228: MLOAD\n229: DUP1\n230: SWAP2\n231: SUB\n232: SWAP1\n233: RETURN"
+      },
+      {
+        "offset": 234,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b6100f261019256",
+        "parsedOpcodes": "234: JUMPDEST\n235: PUSH2 0x00f2\n238: PUSH2 0x0192\n241: JUMP"
+      },
+      {
+        "offset": 242,
+        "length": 22,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b6040518082815260200191505060405180910390f3",
+        "parsedOpcodes": "242: JUMPDEST\n243: PUSH1 0x40\n245: MLOAD\n246: DUP1\n247: DUP3\n248: DUP2\n249: MSTORE\n250: PUSH1 0x20\n252: ADD\n253: SWAP2\n254: POP\n255: POP\n256: PUSH1 0x40\n258: MLOAD\n259: DUP1\n260: SWAP2\n261: SUB\n262: SWAP1\n263: RETURN"
+      },
+      {
+        "offset": 264,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b61011061019756",
+        "parsedOpcodes": "264: JUMPDEST\n265: PUSH2 0x0110\n268: PUSH2 0x0197\n271: JUMP"
+      },
+      {
+        "offset": 272,
+        "length": 22,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b6040518082815260200191505060405180910390f3",
+        "parsedOpcodes": "272: JUMPDEST\n273: PUSH1 0x40\n275: MLOAD\n276: DUP1\n277: DUP3\n278: DUP2\n279: MSTORE\n280: PUSH1 0x20\n282: ADD\n283: SWAP2\n284: POP\n285: POP\n286: PUSH1 0x40\n288: MLOAD\n289: DUP1\n290: SWAP2\n291: SUB\n292: SWAP1\n293: RETURN"
+      },
+      {
+        "offset": 294,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b61012e6101a356",
+        "parsedOpcodes": "294: JUMPDEST\n295: PUSH2 0x012e\n298: PUSH2 0x01a3\n301: JUMP"
+      },
+      {
+        "offset": 302,
+        "length": 22,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b6040518082815260200191505060405180910390f3",
+        "parsedOpcodes": "302: JUMPDEST\n303: PUSH1 0x40\n305: MLOAD\n306: DUP1\n307: DUP3\n308: DUP2\n309: MSTORE\n310: PUSH1 0x20\n312: ADD\n313: SWAP2\n314: POP\n315: POP\n316: PUSH1 0x40\n318: MLOAD\n319: DUP1\n320: SWAP2\n321: SUB\n322: SWAP1\n323: RETURN"
+      },
+      {
+        "offset": 324,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b61014c6101af56",
+        "parsedOpcodes": "324: JUMPDEST\n325: PUSH2 0x014c\n328: PUSH2 0x01af\n331: JUMP"
+      },
+      {
+        "offset": 332,
+        "length": 22,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b6040518082815260200191505060405180910390f3",
+        "parsedOpcodes": "332: JUMPDEST\n333: PUSH1 0x40\n335: MLOAD\n336: DUP1\n337: DUP3\n338: DUP2\n339: MSTORE\n340: PUSH1 0x20\n342: ADD\n343: SWAP2\n344: POP\n345: POP\n346: PUSH1 0x40\n348: MLOAD\n349: DUP1\n350: SWAP2\n351: SUB\n352: SWAP1\n353: RETURN"
+      },
+      {
+        "offset": 354,
+        "length": 8,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "5b61016a6101bb56",
+        "parsedOpcodes": "354: JUMPDEST\n355: PUSH2 0x016a\n358: PUSH2 0x01bb\n361: JUMP"
+      },
+      {
+        "offset": 362,
+        "length": 22,
+        "type": "dispatcher",
+        "stackBalance": -1,
+        "bytecodeHex": "5b6040518082815260200191505060405180910390f3",
+        "parsedOpcodes": "362: JUMPDEST\n363: PUSH1 0x40\n365: MLOAD\n366: DUP1\n367: DUP3\n368: DUP2\n369: MSTORE\n370: PUSH1 0x20\n372: ADD\n373: SWAP2\n374: POP\n375: POP\n376: PUSH1 0x40\n378: MLOAD\n379: DUP1\n380: SWAP2\n381: SUB\n382: SWAP1\n383: RETURN"
+      },
+      {
+        "offset": 384,
+        "length": 6,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b6109a58156",
+        "parsedOpcodes": "384: JUMPDEST\n385: PUSH2 0x09a5\n388: DUP2\n389: JUMP"
+      },
+      {
+        "offset": 390,
+        "length": 12,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b678ac7230489e800008156",
+        "parsedOpcodes": "390: JUMPDEST\n391: PUSH8 0x8ac7230489e80000\n400: DUP2\n401: JUMP"
+      },
+      {
+        "offset": 402,
+        "length": 5,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b60c88156",
+        "parsedOpcodes": "402: JUMPDEST\n403: PUSH1 0xc8\n405: DUP2\n406: JUMP"
+      },
+      {
+        "offset": 407,
+        "length": 12,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b6714d1120d7b1600008156",
+        "parsedOpcodes": "407: JUMPDEST\n408: PUSH8 0x14d1120d7b160000\n417: DUP2\n418: JUMP"
+      },
+      {
+        "offset": 419,
+        "length": 12,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b670de0b6b3a76400008156",
+        "parsedOpcodes": "419: JUMPDEST\n420: PUSH8 0x0de0b6b3a7640000\n429: DUP2\n430: JUMP"
+      },
+      {
+        "offset": 431,
+        "length": 12,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b670f43fc2c04ee00008156",
+        "parsedOpcodes": "431: JUMPDEST\n432: PUSH8 0x0f43fc2c04ee0000\n441: DUP2\n442: JUMP"
+      },
+      {
+        "offset": 443,
+        "length": 12,
+        "type": "common",
+        "stackBalance": 1,
+        "bytecodeHex": "5b6729a2241af62c00008156",
+        "parsedOpcodes": "443: JUMPDEST\n444: PUSH8 0x29a2241af62c0000\n453: DUP2\n454: JUMP"
+      },
+      {
+        "offset": 455,
+        "length": 0,
+        "type": "exit",
+        "stackBalance": 0,
+        "bytecodeHex": "",
+        "parsedOpcodes": "455: EXIT BLOCK"
+      }
+    ],
+    "successors": [
+      {
+        "from": 0,
+        "to": [
+          12,
+          16
+        ]
+      },
+      {
+        "from": 12,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 16,
+        "to": [
+          26,
+          125
+        ]
+      },
+      {
+        "from": 26,
+        "to": [
+          43,
+          91
+        ]
+      },
+      {
+        "from": 43,
+        "to": [
+          54,
+          264
+        ]
+      },
+      {
+        "from": 54,
+        "to": [
+          65,
+          294
+        ]
+      },
+      {
+        "from": 65,
+        "to": [
+          76,
+          324
+        ]
+      },
+      {
+        "from": 76,
+        "to": [
+          87,
+          354
+        ]
+      },
+      {
+        "from": 87,
+        "to": [
+          125,
+          125
+        ]
+      },
+      {
+        "from": 91,
+        "to": [
+          103,
+          130
+        ]
+      },
+      {
+        "from": 103,
+        "to": [
+          114,
+          204
+        ]
+      },
+      {
+        "from": 114,
+        "to": [
+          125,
+          234
+        ]
+      },
+      {
+        "from": 125,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 130,
+        "to": [
+          384,
+          384
+        ]
+      },
+      {
+        "from": 138,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 204,
+        "to": [
+          390,
+          390
+        ]
+      },
+      {
+        "from": 212,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 234,
+        "to": [
+          402,
+          402
+        ]
+      },
+      {
+        "from": 242,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 264,
+        "to": [
+          407,
+          407
+        ]
+      },
+      {
+        "from": 272,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 294,
+        "to": [
+          419,
+          419
+        ]
+      },
+      {
+        "from": 302,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 324,
+        "to": [
+          431,
+          431
+        ]
+      },
+      {
+        "from": 332,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 354,
+        "to": [
+          443,
+          443
+        ]
+      },
+      {
+        "from": 362,
+        "to": [
+          455
+        ]
+      },
+      {
+        "from": 384,
+        "to": [
+          138
+        ]
+      },
+      {
+        "from": 390,
+        "to": [
+          212
+        ]
+      },
+      {
+        "from": 402,
+        "to": [
+          242
+        ]
+      },
+      {
+        "from": 407,
+        "to": [
+          272
+        ]
+      },
+      {
+        "from": 419,
+        "to": [
+          302
+        ]
+      },
+      {
+        "from": 431,
+        "to": [
+          332
+        ]
+      },
+      {
+        "from": 443,
+        "to": [
+          362
+        ]
+      },
+      {
+        "from": 455,
+        "to": []
+      }
+    ],
+    "buildReport": {
+      "directJumpTargetErrors": 0,
+      "orphanJumpTargetNullErrors": 0,
+      "orphanJumpTargetUnknownErrors": 0,
+      "loopDepthExceededErrors": 0,
+      "multipleRootNodesErrors": 0,
+      "stackExceededErrors": 0,
+      "blockLimitErrors": 0,
+      "criticalErrors": 0,
+      "errorLog": "",
+      "buildTimeMillis": 14
+    }
+  }
+}

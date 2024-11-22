@@ -1,0 +1,4 @@
+offset,opcode,detection
+4464,4464: SSTORE,Store write after unsafe call
+12358,12358: SSTORE,Store write after unsafe call
+16421,16421: SSTORE,Store write after unsafe call

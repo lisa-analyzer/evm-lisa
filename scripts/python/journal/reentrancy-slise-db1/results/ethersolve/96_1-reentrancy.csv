@@ -1,0 +1,2 @@
+offset,opcode,detection
+1371,1371: SLOAD,Store read after unsafe call

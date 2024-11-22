@@ -1,0 +1,131 @@
+{
+  "name": "Analysis_2024-11-14_08-50-52",
+  "address": "",
+  "binarySource": "6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a72315820fd74444f00c74f449cf52d7fff3db76d864d563ae63be7bd628b88d07002778c64736f6c63430005100032",
+  "binaryHash": "113bb631",
+  "isOnlyRuntime": false,
+  "metadata": "a265627a7a72315820fd74444f00c74f449cf52d7fff3db76d864d563ae63be7bd628b88d07002778c64736f6c63430005100032",
+  "solidityVersion": "0.5.16",
+  "constructorRemainingData": "",
+  "constructorCfg": {
+    "bytecode": "6080604052348015600f57600080fd5b50603e80601d6000396000f3fe",
+    "remainingData": "fe",
+    "nodes": [
+      {
+        "offset": 0,
+        "length": 11,
+        "type": "dispatcher",
+        "stackBalance": 1,
+        "bytecodeHex": "6080604052348015600f57",
+        "parsedOpcodes": "0: PUSH1 0x80\n2: PUSH1 0x40\n4: MSTORE\n5: CALLVALUE\n6: DUP1\n7: ISZERO\n8: PUSH1 0x0f\n10: JUMPI"
+      },
+      {
+        "offset": 11,
+        "length": 4,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "600080fd",
+        "parsedOpcodes": "11: PUSH1 0x00\n13: DUP1\n14: REVERT"
+      },
+      {
+        "offset": 15,
+        "length": 13,
+        "type": "fallback",
+        "stackBalance": -1,
+        "bytecodeHex": "5b50603e80601d6000396000f3",
+        "parsedOpcodes": "15: JUMPDEST\n16: POP\n17: PUSH1 0x3e\n19: DUP1\n20: PUSH1 0x1d\n22: PUSH1 0x00\n24: CODECOPY\n25: PUSH1 0x00\n27: RETURN"
+      },
+      {
+        "offset": 28,
+        "length": 0,
+        "type": "exit",
+        "stackBalance": 0,
+        "bytecodeHex": "",
+        "parsedOpcodes": "28: EXIT BLOCK"
+      }
+    ],
+    "successors": [
+      {
+        "from": 0,
+        "to": [
+          11,
+          15
+        ]
+      },
+      {
+        "from": 11,
+        "to": [
+          28
+        ]
+      },
+      {
+        "from": 15,
+        "to": [
+          28
+        ]
+      },
+      {
+        "from": 28,
+        "to": []
+      }
+    ],
+    "buildReport": {
+      "directJumpTargetErrors": 0,
+      "orphanJumpTargetNullErrors": 0,
+      "orphanJumpTargetUnknownErrors": 0,
+      "loopDepthExceededErrors": 0,
+      "multipleRootNodesErrors": 0,
+      "stackExceededErrors": 0,
+      "blockLimitErrors": 0,
+      "criticalErrors": 0,
+      "errorLog": "",
+      "buildTimeMillis": 20
+    }
+  },
+  "runtimeCfg": {
+    "bytecode": "6080604052600080fdfe",
+    "remainingData": "fe",
+    "nodes": [
+      {
+        "offset": 0,
+        "length": 9,
+        "type": "dispatcher",
+        "stackBalance": 0,
+        "bytecodeHex": "6080604052600080fd",
+        "parsedOpcodes": "0: PUSH1 0x80\n2: PUSH1 0x40\n4: MSTORE\n5: PUSH1 0x00\n7: DUP1\n8: REVERT"
+      },
+      {
+        "offset": 9,
+        "length": 0,
+        "type": "exit",
+        "stackBalance": 0,
+        "bytecodeHex": "",
+        "parsedOpcodes": "9: EXIT BLOCK"
+      }
+    ],
+    "successors": [
+      {
+        "from": 0,
+        "to": [
+          9
+        ]
+      },
+      {
+        "from": 9,
+        "to": []
+      }
+    ],
+    "buildReport": {
+      "directJumpTargetErrors": 0,
+      "orphanJumpTargetNullErrors": 0,
+      "orphanJumpTargetUnknownErrors": 0,
+      "loopDepthExceededErrors": 0,
+      "multipleRootNodesErrors": 0,
+      "stackExceededErrors": 0,
+      "blockLimitErrors": 0,
+      "criticalErrors": 0,
+      "errorLog": "",
+      "buildTimeMillis": 1
+    }
+  }
+}

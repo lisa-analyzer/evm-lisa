@@ -1,0 +1,6 @@
+offset,opcode,detection
+3784,3784: SLOAD,Store read after unsafe call
+4341,4341: SLOAD,Store read after unsafe call
+4446,4446: SLOAD,Store read after unsafe call
+4586,4586: SLOAD,Store read after unsafe call
+4832,4832: SLOAD,Store read after unsafe call
