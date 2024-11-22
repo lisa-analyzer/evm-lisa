@@ -49,14 +49,16 @@ import org.json.JSONObject;
 
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
-	private String OUTPUT_DIR = "execution/results";
 
 	// Path
-	private String STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
-	private String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
-	private String FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
-	private String LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
-	private static String SMARTCONTRACTS_FULLPATH = "";
+	private Path _outputDirPath = Paths.get("execution", "results");
+	private String OUTPUT_DIR = _outputDirPath.toString();
+
+	private String STATISTICS_FULLPATH = Paths.get("execution", "results").toString();
+	private String STATISTICSZEROJUMP_FULLPATH = _outputDirPath.resolve("statisticsZeroJumps.csv").toString();
+	private String FAILURE_FULLPATH = _outputDirPath.resolve("failure.csv").toString();
+	private String LOGS_FULLPATH = _outputDirPath.resolve("logs.txt").toString();
+	private static String SMARTCONTRACTS_FULLPATH = Paths.get("").toString();
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -111,8 +113,8 @@ public class EVMLiSA {
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
-			SMARTCONTRACTS_FULLPATH = benchmark;
-			OUTPUT_DIR = "download";
+			SMARTCONTRACTS_FULLPATH = Paths.get(benchmark).toString();
+			OUTPUT_DIR = Paths.get("download").toString();
 			saveSmartContractsFromEtherscan();
 			return;
 		}
@@ -140,11 +142,20 @@ public class EVMLiSA {
 
 		// Setting output directories
 		if (outputDir != null) {
-			OUTPUT_DIR = outputDir;
-			STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
-			STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
-			FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
-			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
+			_outputDirPath = Paths.get(outputDir);
+			OUTPUT_DIR = _outputDirPath.toString();
+			STATISTICS_FULLPATH = _outputDirPath
+					.resolve("statistics.csv")
+					.toString();
+			STATISTICSZEROJUMP_FULLPATH = _outputDirPath
+					.resolve("statisticsZeroJumps.csv")
+					.toString();
+			FAILURE_FULLPATH = _outputDirPath
+					.resolve("failure.csv")
+					.toString();
+			LOGS_FULLPATH = _outputDirPath
+					.resolve("logs.txt")
+					.toString();
 		}
 
 		if (useStorageLive && addressSC == null && benchmark == null) {
@@ -187,12 +198,23 @@ public class EVMLiSA {
 			int sss = AbstractStackSet.getStackSetLimit();
 			String postFix = timestamp + "-" + ss + "-" + sss;
 
-			Files.createDirectories(Paths.get(OUTPUT_DIR + "/benchmark"));
-			SMARTCONTRACTS_FULLPATH = benchmark;
-			STATISTICS_FULLPATH = OUTPUT_DIR + "/benchmark/statistics-" + postFix + ".csv";
-			STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/benchmark/statisticsZeroJumps-" + postFix + ".csv";
-			FAILURE_FULLPATH = OUTPUT_DIR + "/benchmark/failure-" + postFix + ".csv";
-			LOGS_FULLPATH = OUTPUT_DIR + "/benchmark/logs-" + postFix + ".txt";
+			Files.createDirectories(_outputDirPath.resolve("benchmark"));
+			SMARTCONTRACTS_FULLPATH = Paths.get(benchmark).toString();
+			STATISTICS_FULLPATH = _outputDirPath
+					.resolve("benchmark").resolve("statistics-" + postFix + ".csv")
+					.toString();
+			STATISTICSZEROJUMP_FULLPATH = _outputDirPath
+					.resolve("benchmark")
+					.resolve("statisticsZeroJumps-" + postFix + ".csv")
+					.toString();
+			FAILURE_FULLPATH = _outputDirPath
+					.resolve("benchmark")
+					.resolve("failure-" + postFix + ".csv")
+					.toString();
+			LOGS_FULLPATH = _outputDirPath
+					.resolve("benchmark")
+					.resolve("logs-" + postFix + ".txt")
+					.toString();
 
 			try {
 				runBenchmark(jsonOptions);
@@ -212,29 +234,34 @@ public class EVMLiSA {
 		// Single analysis case
 		if (addressSC == null)
 			addressSC = "no-address-" + System.currentTimeMillis();
-		OUTPUT_DIR += "/" + addressSC;
-		Files.createDirectories(Paths.get(OUTPUT_DIR));
+
+		_outputDirPath = _outputDirPath.resolve(addressSC);
+		OUTPUT_DIR = _outputDirPath.toString();
+
+		Files.createDirectories(_outputDirPath);
 		jsonOptions.put("output-directory", OUTPUT_DIR);
 
 		if (outputDir == null)
 			outputDir = OUTPUT_DIR;
 
-		STATISTICS_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_STATISTICS" + ".csv";
-		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
+		String workDir = Paths.get(outputDir).resolve(addressSC).toString();
+		STATISTICS_FULLPATH = _outputDirPath.resolve(addressSC + "_STATISTICS.csv").toString();
+		FAILURE_FULLPATH = _outputDirPath.resolve(addressSC + "_FAILURE.csv").toString();
 
-		String BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".opcode";
+		String BYTECODE_FULLPATH = _outputDirPath.resolve(addressSC + ".opcode").toString();
 		String bytecode;
 		if (filepath == null) {
 			bytecode = EVMFrontend.parseContractFromEtherscan(addressSC);
 		} else {
 			bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
 		}
-		if (useCreationCode)
+		if (useCreationCode) {
 			jsonOptions.put("bytecode", bytecode);
-		else if (bytecode != null)
-			jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe"))); // runtime
-		// code
-		// case
+		} else if (bytecode != null) {
+			// runtime code case
+			jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+		}
+
 		EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
@@ -247,7 +274,7 @@ public class EVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = dumpReport;
-		conf.workdir = outputDir + "/" + addressSC;
+		conf.workdir = workDir;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
@@ -336,12 +363,14 @@ public class EVMLiSA {
 	}
 
 	private MyLogger newAnalysis(String CONTRACT_ADDR, JSONObject jsonOptions) throws Exception {
-		String BYTECODE_WORKDIR = OUTPUT_DIR + "/benchmark/bytecode/" + CONTRACT_ADDR;
-		String BYTECODE_FULLPATH = BYTECODE_WORKDIR + "/" + CONTRACT_ADDR
-				+ ".opcode";
+		Path bytecodeWorkDir = Paths.get(OUTPUT_DIR, "benchmark", "bytecode", CONTRACT_ADDR);
+		String BYTECODE_WORKDIR = bytecodeWorkDir.toString();
+
+		Path bytecodeFullPath = bytecodeWorkDir.resolve(CONTRACT_ADDR + ".opcode");
+		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
 
 		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(BYTECODE_WORKDIR));
+		Files.createDirectories(bytecodeWorkDir);
 
 		// If the file does not exist, we will do an API request to Etherscan
 		synchronized (EVMLiSA.class) {
@@ -666,7 +695,7 @@ public class EVMLiSA {
 	 * Cleans up the directory used for bytecode benchmark outputs.
 	 */
 	public void clean() {
-		Path path = Paths.get("evm-outputs/benchmark");
+		Path path = Paths.get("evm-outputs", "benchmark");
 
 		if (Files.exists(path))
 			try {
@@ -830,8 +859,9 @@ public class EVMLiSA {
 		for (int i = 0; i < smartContracts.size(); i++) {
 			String address = smartContracts.get(i);
 
-			String BYTECODE_FULLPATH = OUTPUT_DIR + "/bytecode/" + address + "/" + address
-					+ ".sol";
+			String BYTECODE_FULLPATH = Paths
+					.get(OUTPUT_DIR, "bytecode", address, address + ".sol")
+					.toString();
 
 			if (i % 5 == 0) {
 				try {
@@ -844,7 +874,7 @@ public class EVMLiSA {
 
 			// Directory setup and bytecode retrieval
 			try {
-				Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + address));
+				Files.createDirectories(Paths.get(OUTPUT_DIR, "benchmark", address));
 
 				// If the file does not exist, we will do an API request to
 				// Etherscan

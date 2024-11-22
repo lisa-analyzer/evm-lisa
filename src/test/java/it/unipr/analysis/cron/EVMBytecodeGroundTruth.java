@@ -45,10 +45,19 @@ public class EVMBytecodeGroundTruth {
 
 	@Test
 	public void testGroundTruth() throws Exception {
-		String GROUND_TRUTH_FILE_PATH = "evm-testcases/ground-truth/ground-truth-data.csv";
-		String RESULT_EXEC_DIR_PATH = "evm-testcases/ground-truth/test-ground-truth-results";
-		String RESULT_EXEC_FILE_PATH = RESULT_EXEC_DIR_PATH + "/statistics.csv";
-		String SMARTCONTRACTS_FULLPATH = "benchmark/50-ground-truth.txt";
+		String GROUND_TRUTH_FILE_PATH = Paths
+				.get("evm-testcases", "ground-truth", "ground-truth-data.csv")
+				.toString();
+		String RESULT_EXEC_DIR_PATH = Paths
+				.get("evm-testcases", "ground-truth", "test-ground-truth-results")
+				.toString();
+		String RESULT_EXEC_FILE_PATH = Paths
+				.get("evm-testcases", "ground-truth", "test-ground-truth-results", "statistics.csv")
+				.toString();
+		String SMARTCONTRACTS_FULLPATH = Paths
+				.get("benchmark", "50-ground-truth.txt")
+				.toString();
+
 		AbstractStack.setStackLimit(32);
 		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
@@ -158,11 +167,14 @@ public class EVMBytecodeGroundTruth {
 	}
 
 	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
-		String BYTECODE_DIR = RESULT_EXEC_DIR_PATH + "/benchmark/" + CONTRACT_ADDR;
-		String BYTECODE_FULLPATH = BYTECODE_DIR + "/" + CONTRACT_ADDR + ".sol";
+		Path bytecodeDir = Paths.get(RESULT_EXEC_DIR_PATH, "benchmark", CONTRACT_ADDR);
+		String BYTECODE_DIR = bytecodeDir.toString();
+
+		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".sol");
+		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
 
 		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(RESULT_EXEC_DIR_PATH + "/" + "benchmark/" + CONTRACT_ADDR));
+		Files.createDirectories(bytecodeDir);
 
 		// If the file does not exist, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);

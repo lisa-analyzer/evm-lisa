@@ -14,6 +14,7 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -28,7 +29,9 @@ public class EVMBytecodeSmartBugsReentrancyTruth {
 
 	@Ignore
 	public void testSmartBugsReentrancyTruth() throws Exception {
-		String SMARTBUGS_BYTECODES_DIR = "evm-testcases/ground-truth/test-reentrancy-smartbugs-truth/bytecode/";
+		String SMARTBUGS_BYTECODES_DIR = Paths
+				.get("evm-testcases", "ground-truth", "test-reentrancy-smartbugs-truth", "bytecode")
+				.toString();
 
 		EVMFrontend.setUseCreationCode();
 

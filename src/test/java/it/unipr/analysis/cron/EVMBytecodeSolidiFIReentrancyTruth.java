@@ -15,6 +15,7 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -31,9 +32,11 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
-		String SMARTBUGS_BYTECODES_DIR = "evm-testcases/ground-truth/test-reentrancy-solidifi-truth/bytecode/";
+		String SOLIDIFI_BYTECODES_DIR = Paths
+				.get("evm-testcases", "ground-truth", "test-reentrancy-solidifi-truth", "bytecode")
+				.toString();
 		EVMFrontend.setUseCreationCode();
-		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
+		List<String> bytecodes = getFileNamesInDirectory(SOLIDIFI_BYTECODES_DIR);
 
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -41,7 +44,7 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 		for (String bytecodeFileName : bytecodes) {
 			executor.submit(() -> {
 				try {
-					String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
+					String bytecodeFullPath = SOLIDIFI_BYTECODES_DIR + bytecodeFileName;
 
 					Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
 
@@ -50,7 +53,7 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 					conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(null),
 							new TypeEnvironment<>(new InferredTypes()));
 					conf.jsonOutput = false;
-					conf.workdir = SMARTBUGS_BYTECODES_DIR;
+					conf.workdir = SOLIDIFI_BYTECODES_DIR;
 					conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 					JumpSolver checker = new JumpSolver();
 					conf.semanticChecks.add(checker);
