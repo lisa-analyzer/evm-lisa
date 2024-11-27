@@ -4,6 +4,7 @@ import it.unipr.analysis.*;
 import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
+import it.unipr.checker.TxOriginChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -109,6 +110,7 @@ public class EVMLiSA {
 		boolean dumpReport = cmd.hasOption("dump-report");
 		boolean useCreationCode = cmd.hasOption("creation-code");
 		boolean enableReentrancyChecker = cmd.hasOption("reentrancy-checker");
+		boolean enableTxOriginChecker = cmd.hasOption("txorigin-checker");
 		boolean linkUnsoundJumpsToAllJumpdestOption = cmd.hasOption("link-unsound-jumps-to-all-jumpdest");
 
 		// Download bytecode case
@@ -326,6 +328,15 @@ public class EVMLiSA {
 
 				jsonOptions.put("re-entrancy-warning",
 						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
+			}
+
+			if (enableTxOriginChecker) {
+				conf.semanticChecks.clear();
+				conf.semanticChecks.add(new TxOriginChecker());
+				lisa.run(program);
+
+				jsonOptions.put("tx-origin-warning",
+						MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
 			}
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker, soundlySolved)
@@ -1021,6 +1032,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option enableTxOriginCheckerOption = Option.builder()
+				.longOpt("txorigin-checker")
+				.desc("Enable tx-origin checker.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
@@ -1039,6 +1057,7 @@ public class EVMLiSA {
 		options.addOption(dumpHtmlOption);
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
+		options.addOption(enableTxOriginCheckerOption);
 
 		return options;
 	}

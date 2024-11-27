@@ -17,6 +17,7 @@ public class MyCache {
 	private final LRUMap<Pair<String, Number>, StackElement> _map;
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
+	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
 	private final LRUMap<Integer, Boolean> _reachableFrom;
 
 	/**
@@ -42,6 +43,7 @@ public class MyCache {
 		this._map = new LRUMap<Pair<String, Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._reachableFrom = new LRUMap<Integer, Boolean>(2000);
 	}
 
@@ -187,6 +189,40 @@ public class MyCache {
 	public boolean existsInReachableFrom(Integer key) {
 		synchronized (_reachableFrom) {
 			return (_reachableFrom.get(key) != null);
+		}
+	}
+
+	/**
+	 * Adds a tx origin warning for the specified key. If no warnings are
+	 * associated with the key, a new set is created and the warning is added to
+	 * it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addTxOriginWarning(Integer key, Object warning) {
+		synchronized (_txOriginWarnings) {
+			_txOriginWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of tx origin warnings associated with the specified
+	 * key. If no warnings are associated with the key, the method returns 0.
+	 * This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 * 
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getTxOriginWarnings(Integer key) {
+		synchronized (_txOriginWarnings) {
+			return (_txOriginWarnings.get(key) != null) ? _txOriginWarnings.get(key).size() : 0;
 		}
 	}
 }
