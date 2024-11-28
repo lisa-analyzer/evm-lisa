@@ -38,7 +38,8 @@ public class TxOriginChecker implements
 					ProgramCounterLocation jumploc = (ProgramCounterLocation) jump.getLocation();
 
 					log.debug("Tx. Origin attack at {} at line no. {} coming from line {}", jumploc.getPc(),
-							jumploc.getSourceCodeLine(), ((ProgramCounterLocation) origin.getLocation()).getSourceCodeLine());
+							jumploc.getSourceCodeLine(),
+							((ProgramCounterLocation) origin.getLocation()).getSourceCodeLine());
 
 					String warn = "TxOrigin attack at " + jumploc.getPc();
 					tool.warn(warn);
