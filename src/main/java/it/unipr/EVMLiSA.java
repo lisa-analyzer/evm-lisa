@@ -67,7 +67,10 @@ public class EVMLiSA {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private int CORES;
 
+	// Configuration
 	private static final boolean REGENERATE = false;
+	private static boolean ENABLE_REENTRANCY_CHECKER = false;
+	private static boolean ENABLE_TXORIGIN_CHECKER = false;
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -109,8 +112,8 @@ public class EVMLiSA {
 		String coresOpt = cmd.getOptionValue("cores");
 		boolean dumpReport = cmd.hasOption("dump-report");
 		boolean useCreationCode = cmd.hasOption("creation-code");
-		boolean enableReentrancyChecker = cmd.hasOption("reentrancy-checker");
-		boolean enableTxOriginChecker = cmd.hasOption("txorigin-checker");
+		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("reentrancy-checker");
+		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("txorigin-checker");
 		boolean linkUnsoundJumpsToAllJumpdestOption = cmd.hasOption("link-unsound-jumps-to-all-jumpdest");
 
 		// Download bytecode case
@@ -311,9 +314,7 @@ public class EVMLiSA {
 
 					soundlySolved.addAll(checker.getUnsoundJumps());
 
-					// last run
 					program.addCodeMember(cfg);
-
 					lisa.run(program);
 				} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
 			}
@@ -321,7 +322,7 @@ public class EVMLiSA {
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			if (enableReentrancyChecker) {
+			if (ENABLE_REENTRANCY_CHECKER) {
 				conf.semanticChecks.clear();
 				conf.semanticChecks.add(new ReentrancyChecker());
 				lisa.run(program);
@@ -330,7 +331,7 @@ public class EVMLiSA {
 						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 			}
 
-			if (enableTxOriginChecker) {
+			if (ENABLE_TXORIGIN_CHECKER) {
 				conf.semanticChecks.clear();
 				conf.semanticChecks.add(new TxOriginChecker());
 				lisa.run(program);
@@ -452,6 +453,24 @@ public class EVMLiSA {
 
 		// Print the results
 		long finish = System.currentTimeMillis();
+
+		if (ENABLE_REENTRANCY_CHECKER) {
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new ReentrancyChecker());
+			lisa.run(program);
+
+			jsonOptions.put("re-entrancy-warning",
+					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
+		}
+
+		if (ENABLE_TXORIGIN_CHECKER) {
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TxOriginChecker());
+			lisa.run(program);
+
+			jsonOptions.put("tx-origin-warning",
+					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
+		}
 
 		return EVMLiSA.dumpStatistics(checker, soundlySolved)
 				.address(CONTRACT_ADDR)

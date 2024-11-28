@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 public class TxOriginChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
+	private static final Logger log = LogManager.getLogger(TxOriginChecker.class);
 
 	@Override
 	public boolean visit(
@@ -30,20 +30,17 @@ public class TxOriginChecker implements
 
 		if (node instanceof Origin) {
 			EVMCFG cfg = ((EVMCFG) graph);
-			Set<Statement> nj = cfg.getAllJumps();
+			Set<Statement> jumps = cfg.getAllJumps();
 			Statement origin = node;
 
-			for (Statement jump : nj) {
+			for (Statement jump : jumps) {
 				if (cfg.reachableFrom(origin, jump)) {
 					ProgramCounterLocation jumploc = (ProgramCounterLocation) jump.getLocation();
 
-					log.debug("TxOrigin at "
-							+ jumploc.getPc() + "at line no. "
-							+ jumploc.getSourceCodeLine()
-							+ "coming from line "
-							+ ((ProgramCounterLocation) origin.getLocation()).getSourceCodeLine());
-					String warn = "TxOrigin attack at "
-							+ jumploc.getPc();
+					log.debug("Tx. Origin attack at {} at line no. {} coming from line {}", jumploc.getPc(),
+							jumploc.getSourceCodeLine(), ((ProgramCounterLocation) origin.getLocation()).getSourceCodeLine());
+
+					String warn = "TxOrigin attack at " + jumploc.getPc();
 					tool.warn(warn);
 					MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
 					break;
