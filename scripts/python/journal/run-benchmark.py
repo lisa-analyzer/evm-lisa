@@ -137,10 +137,10 @@ def map_file_names_to_ids(sorted_data, index_path):
 def build_evmlisa():
     print("[EVMLISA] Building EVMLiSA...")
     command = (
-        f"cd ../../ && "
+        f"cd ../../../ && "
         f"./gradlew build > /dev/null 2> /dev/null && "
         f"./gradlew distZip > /dev/null 2> /dev/null && "
-        f"unzip -o build/distributions/evm-lisa.zip -d script-python/journal/execution > /dev/null"
+        f"unzip -o build/distributions/evm-lisa.zip -d scripts/python/journal/execution > /dev/null"
     )
     subprocess.run(command, shell=True, check=True)
     print("[EVMLISA] EVMLiSA built successfully.")
@@ -161,11 +161,11 @@ def run_evmlisa(bytecode_file, result_evmlisa_dir):
     
     command = (
         f"./execution/evm-lisa/bin/evm-lisa "
-        f"--filepath {bytecode_file} "
+        f"--filepath-bytecode {bytecode_file} "
         f"--stack-size 40 "
         f"--stack-set-size 15 "
         f"--creation-code "
-        f"--reentrancy-checker "
+        f"--checker-reentrancy "
         f"--link-unsound-jumps-to-all-jumpdest "
         # f"--dump-report "
         # f"--output {os.path.splitext(bytecode_filename)[0]}"
