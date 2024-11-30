@@ -112,9 +112,10 @@ public class EVMLiSA {
 		String coresOpt = cmd.getOptionValue("cores");
 		boolean dumpReport = cmd.hasOption("dump-report");
 		boolean useCreationCode = cmd.hasOption("creation-code");
-		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("reentrancy-checker");
-		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("txorigin-checker");
+		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy");
+		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin");
 		boolean linkUnsoundJumpsToAllJumpdestOption = cmd.hasOption("link-unsound-jumps-to-all-jumpdest");
+		String mnemonicInputFile = cmd.getOptionValue("filepath-mnemonic");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
@@ -186,14 +187,17 @@ public class EVMLiSA {
 		jsonOptions.put("download-bytecode", downloadBytecode);
 		jsonOptions.put("use-storage-live", useStorageLive);
 		jsonOptions.put("use-creation-code", useCreationCode);
-		jsonOptions.put("filepath", filepath);
+		if (filepath != null)
+			jsonOptions.put("input-filepath", filepath);
+		else
+			jsonOptions.put("input-filepath", mnemonicInputFile);
 		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
 		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
 		jsonOptions.put("benchmark", benchmark);
 		jsonOptions.put("cores", CORES);
 		jsonOptions.put("dump-report", dumpReport);
 		jsonOptions.put("output-directory", OUTPUT_DIR);
-		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", linkUnsoundJumpsToAllJumpdestOption);
+		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
 
 		// Run benchmark case
 		if (benchmark != null) {
@@ -230,7 +234,7 @@ public class EVMLiSA {
 		}
 
 		// Error case
-		if (addressSC == null && filepath == null) {
+		if (addressSC == null && filepath == null && mnemonicInputFile == null) {
 			log.error("Address or filepath required.");
 			formatter.printHelp("help", options);
 			System.exit(1);
@@ -253,21 +257,24 @@ public class EVMLiSA {
 		STATISTICS_FULLPATH = _outputDirPath.resolve(addressSC + "_STATISTICS.csv").toString();
 		FAILURE_FULLPATH = _outputDirPath.resolve(addressSC + "_FAILURE.csv").toString();
 
-		String BYTECODE_FULLPATH = _outputDirPath.resolve(addressSC + ".opcode").toString();
-		String bytecode;
-		if (filepath == null) {
-			bytecode = EVMFrontend.parseContractFromEtherscan(addressSC);
-		} else {
-			bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
-		}
-		if (useCreationCode) {
-			jsonOptions.put("bytecode", bytecode);
-		} else if (bytecode != null) {
-			// runtime code case
-			jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
-		}
+		String BYTECODE_FULLPATH = mnemonicInputFile;
+		if (mnemonicInputFile == null) {
+			BYTECODE_FULLPATH = _outputDirPath.resolve(addressSC + ".opcode").toString();
+			String bytecode;
+			if (filepath == null) {
+				bytecode = EVMFrontend.parseContractFromEtherscan(addressSC);
+			} else {
+				bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
+			}
+			if (useCreationCode) {
+				jsonOptions.put("bytecode", bytecode);
+			} else if (bytecode != null) {
+				// runtime code case
+				jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+			}
 
-		EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+		}
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
 
@@ -295,50 +302,12 @@ public class EVMLiSA {
 		try {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
-			Set<Statement> soundlySolved = new HashSet<>();
-
-			if (linkUnsoundJumpsToAllJumpdestOption) {
-				int currentIteration = 0;
-				int MAX_ITER = 5;
-				boolean fixpoint;
-				do {
-					fixpoint = false;
-					EVMCFG cfg = checker.getComputedCFG();
-					Set<Statement> jmpdestNodes = cfg.getAllJumpdest();
-					for (Statement unsoundNode : checker.getUnsoundJumps())
-						if (!soundlySolved.contains(unsoundNode)) {
-							fixpoint = true;
-							for (Statement jmpdest : jmpdestNodes)
-								cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
-						}
-
-					soundlySolved.addAll(checker.getUnsoundJumps());
-
-					program.addCodeMember(cfg);
-					lisa.run(program);
-				} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
-			}
+			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			if (ENABLE_REENTRANCY_CHECKER) {
-				conf.semanticChecks.clear();
-				conf.semanticChecks.add(new ReentrancyChecker());
-				lisa.run(program);
-
-				jsonOptions.put("re-entrancy-warning",
-						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
-			}
-
-			if (ENABLE_TXORIGIN_CHECKER) {
-				conf.semanticChecks.clear();
-				conf.semanticChecks.add(new TxOriginChecker());
-				lisa.run(program);
-
-				jsonOptions.put("tx-origin-warning",
-						MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
-			}
+			checkers(conf, lisa, program, checker, jsonOptions);
 
 			MyLogger result = EVMLiSA.dumpStatistics(checker, soundlySolved)
 					.address(addressSC)
@@ -374,6 +343,23 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Performs a new analysis for a given smart contract. This method retrieves
+	 * the bytecode (via API requests to Etherscan.io if necessary), generates
+	 * the Control Flow Graph (CFG), configures the analysis parameters,
+	 * executes the analysis, and collects the results.
+	 *
+	 * @param CONTRACT_ADDR the address of the smart contract to analyze.
+	 * @param jsonOptions   a {@link JSONObject} containing configuration
+	 *                          options and parameters for the analysis. The
+	 *                          options may be updated during the analysis.
+	 * 
+	 * @return a {@link MyLogger} instance containing detailed statistics,
+	 *             warnings, and execution logs for the analysis.
+	 * 
+	 * @throws Exception if any error occurs during directory setup, bytecode
+	 *                       retrieval, CFG generation, or analysis execution.
+	 */
 	private MyLogger newAnalysis(String CONTRACT_ADDR, JSONObject jsonOptions) throws Exception {
 		Path bytecodeWorkDir = Paths.get(OUTPUT_DIR, "benchmark", "bytecode", CONTRACT_ADDR);
 		String BYTECODE_WORKDIR = bytecodeWorkDir.toString();
@@ -426,51 +412,11 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		HashSet<Statement> soundlySolved = new HashSet<>();
-		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
-			int currentIteration = 0;
-			int MAX_ITER = 5; // We can do MAX_ITER iteration
-			boolean fixpoint;
-			do {
-				fixpoint = false;
-				EVMCFG cfg = checker.getComputedCFG();
-				Set<Statement> jmpdestNodes = cfg.getAllJumpdest();
-				for (Statement unsoundNode : checker.getUnsoundJumps())
-					if (!soundlySolved.contains(unsoundNode)) {
-						fixpoint = true;
-						for (Statement jmpdest : jmpdestNodes)
-							cfg.addEdge(new SequentialEdge(unsoundNode, jmpdest));
-					}
+		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 
-				soundlySolved.addAll(checker.getUnsoundJumps());
-
-				// last run
-				program.addCodeMember(cfg);
-
-				lisa.run(program);
-			} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
-		}
-
-		// Print the results
 		long finish = System.currentTimeMillis();
 
-		if (ENABLE_REENTRANCY_CHECKER) {
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
-
-			jsonOptions.put("re-entrancy-warning",
-					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
-		}
-
-		if (ENABLE_TXORIGIN_CHECKER) {
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TxOriginChecker());
-			lisa.run(program);
-
-			jsonOptions.put("tx-origin-warning",
-					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
-		}
+		checkers(conf, lisa, program, checker, jsonOptions);
 
 		return EVMLiSA.dumpStatistics(checker, soundlySolved)
 				.address(CONTRACT_ADDR)
@@ -481,9 +427,95 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Runs the benchmark for analyzing smart contracts.
+	 * Computes the set of jumps that are soundly solved by the JumpSolver. This
+	 * method applies an iterative approach to resolve unsound jumps by
+	 * conservatively attaching them to all jump destinations, as per the
+	 * configuration.
 	 *
-	 * @throws Exception if an error occurs during the benchmark execution.
+	 * @param checker the {@link JumpSolver} instance responsible for resolving
+	 *                    jumps
+	 * @param lisa    the {@link LiSA} instance used to perform static analysis
+	 * @param program the {@link Program} containing the code being analyzed
+	 * 
+	 * @return a {@link Set} of {@link Statement} objects representing the
+	 *             soundly solved jumps after applying the iterative resolution
+	 *             process
+	 */
+	Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
+		HashSet<Statement> soundlySolved = new HashSet<>();
+		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
+			int currentIteration = 0;
+			int MAX_ITER = 5;
+			boolean fixpoint;
+			do {
+				fixpoint = false;
+				EVMCFG cfg = checker.getComputedCFG();
+				Set<Statement> jumpdestNodes = cfg.getAllJumpdest();
+				for (Statement unsoundNode : checker.getUnsoundJumps())
+					if (!soundlySolved.contains(unsoundNode)) {
+						fixpoint = true;
+						for (Statement jumpdest : jumpdestNodes)
+							cfg.addEdge(new SequentialEdge(unsoundNode, jumpdest));
+					}
+
+				soundlySolved.addAll(checker.getUnsoundJumps());
+
+				program.addCodeMember(cfg);
+				lisa.run(program);
+			} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+		}
+		return soundlySolved;
+	}
+
+	/**
+	 * Executes the specified semantic checkers on the provided program and
+	 * configuration, updating the JSON options with warnings generated by the
+	 * analysis. This method dynamically adds and runs semantic checks based on
+	 * the enabled configuration flags.
+	 *
+	 * @param conf        the {@link LiSAConfiguration} used for static analysis
+	 * @param lisa        the {@link LiSA} instance performing the analysis
+	 * @param program     the {@link Program} representing the analyzed code
+	 * @param checker     the {@link JumpSolver} providing CFG information for
+	 *                        the analysis
+	 * @param jsonOptions the {@link JSONObject} where the results of the
+	 *                        analysis are stored
+	 */
+	void checkers(LiSAConfiguration conf, LiSA lisa, Program program, JumpSolver checker, JSONObject jsonOptions) {
+		if (ENABLE_REENTRANCY_CHECKER) {
+			// Clear existing checks and add the ReentrancyChecker
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new ReentrancyChecker());
+			lisa.run(program);
+
+			// Store re-entrancy warnings in the JSON options
+			jsonOptions.put("re-entrancy-warning",
+					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
+		}
+
+		if (ENABLE_TXORIGIN_CHECKER) {
+			// Clear existing checks and add the TxOriginChecker
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TxOriginChecker());
+			lisa.run(program);
+
+			// Store tx-origin warnings in the JSON options
+			jsonOptions.put("tx-origin-warning",
+					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
+		}
+	}
+
+	/**
+	 * Executes the benchmark for a set of smart contracts. This method handles
+	 * the parallel execution of analyses on the smart contracts, collects the
+	 * results, and logs relevant information, including statistics and
+	 * execution logs.
+	 *
+	 * @param jsonOptions a {@link JSONObject} containing configuration options
+	 *                        and parameters for the benchmark execution.
+	 * 
+	 * @throws Exception if an error occurs during the benchmark execution or
+	 *                       analysis.
 	 */
 	private void runBenchmark(JSONObject jsonOptions) throws Exception {
 		List<String> smartContracts = readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
@@ -599,14 +631,19 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Calculates and prints statistics about the control flow graph (CFG) of
-	 * the provided EVMCFG object.
+	 * Dumps statistics related to jump resolution within a CFG (Control Flow
+	 * Graph). This method calculates and logs various statistics, such as
+	 * resolved jumps, unreachable jumps, unsound jumps, and more, based on the
+	 * analysis performed by the {@link JumpSolver}.
 	 *
-	 * @param checker The control flow graph (CFG) of the Ethereum Virtual
-	 *                    Machine (EVM) bytecode.
+	 * @param checker       the {@link JumpSolver} instance used to analyze the
+	 *                          CFG and compute jump-related information.
+	 * @param soundlySolved a set of {@link Statement} objects representing
+	 *                          jumps that were soundly solved in the CFG.
 	 * 
-	 * @return A Triple containing the counts of precisely resolved jumps, sound
-	 *             resolved jumps, and unreachable jumps.
+	 * @return a {@link MyLogger} instance containing the computed statistics
+	 *             for logging or further analysis; returns {@code null} if no
+	 *             entry points are found in the CFG.
 	 */
 	public static MyLogger dumpStatistics(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
@@ -952,6 +989,13 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
+		Option filePathMnemonicOption = Option.builder()
+				.longOpt("filepath-mnemonic")
+				.desc("Filepath of the mnemonic file.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
 		Option stackSizeOption = Option.builder()
 				.longOpt("stack-size")
 				.desc("Dimension of stack (default: 32).")
@@ -1045,14 +1089,14 @@ public class EVMLiSA {
 				.build();
 
 		Option enableReentrancyCheckerOption = Option.builder()
-				.longOpt("reentrancy-checker")
+				.longOpt("checker-reentrancy")
 				.desc("Enable re-entrancy checker.")
 				.required(false)
 				.hasArg(false)
 				.build();
 
 		Option enableTxOriginCheckerOption = Option.builder()
-				.longOpt("txorigin-checker")
+				.longOpt("checker-txorigin")
 				.desc("Enable tx-origin checker.")
 				.required(false)
 				.hasArg(false)
@@ -1061,6 +1105,7 @@ public class EVMLiSA {
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
+		options.addOption(filePathMnemonicOption);
 		options.addOption(stackSizeOption);
 		options.addOption(stackSetSizeOption);
 		options.addOption(benchmarkOption);

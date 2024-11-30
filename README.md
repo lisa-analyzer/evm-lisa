@@ -91,16 +91,18 @@ Options:
  -a,--address <arg>                        Address of an Ethereum smart contract.
  -b,--benchmark <arg>                      Filepath of the benchmark.
  -c,--cores <arg>                          Number of cores used in benchmark.
+    --checker-reentrancy                   Enable re-entrancy checker.
+    --checker-txorigin                     Enable tx-origin checker.
     --creation-code                        Parse bytecode as creation code (instead of runtime code).
     --dot                                  Export a dot-notation file.
     --download-bytecode                    Download the bytecode.
     --dump-report                          Dump analysis report.
     --dump-stats                           Dump statistics.
  -f,--filepath-bytecode <arg>              Filepath of the bytecode file.
+    --filepath-mnemonic <arg>              Filepath of the mnemonic file.
     --html                                 Export a graphic HTML report.
     --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
  -o,--output <arg>                         Output directory path.
-    --reentrancy-checker                   Enable re-entrancy checker.
     --serialize-inputs                     Serialize inputs.
     --stack-set-size <arg>                 Dimension of stack-set (default: 8).
     --stack-size <arg>                     Dimension of stack (default: 32).
