@@ -72,5 +72,16 @@ public class TaintElement implements BaseLattice<TaintElement> {
 	public TaintElement glbAux(TaintElement other) throws SemanticException {
 		return BOTTOM;
 	}
+	
+	/**
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	public static TaintElement semantics(TaintElement... elements) {
+		// TODO 
+		return null;
+		
+	}
 
 }
