@@ -1,10 +1,7 @@
 package it.unipr.analysis.taint;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.BaseLattice;
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
@@ -13,7 +10,12 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.function.Predicate;
 
 public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, BaseLattice<TaintAbstractStack> {
 
@@ -23,7 +25,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	private static final TaintAbstractStack BOTTOM = new TaintAbstractStack(null);
 
 	private final ArrayList<TaintElement> stack;
-	
+
 	/**
 	 * Builds a taint abstract stack starting from a given stack.
 	 *
@@ -32,7 +34,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	public TaintAbstractStack(ArrayList<TaintElement> stack) {
 		this.stack = stack;
 	}
-	
+
 	@Override
 	public TaintAbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
@@ -81,8 +83,12 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 	@Override
 	public StructuredRepresentation representation() {
-		// TODO Auto-generated method stub
-		return null;
+		if (isBottom())
+			return Lattice.bottomRepresentation();
+		else if (isTop())
+			return Lattice.topRepresentation();
+
+		return new StringRepresentation(stack.toString());
 	}
 
 	@Override
@@ -98,40 +104,100 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	}
 
 	@Override
-	public boolean lessOrEqual(TaintAbstractStack other) throws SemanticException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public TaintAbstractStack lub(TaintAbstractStack other) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public TaintAbstractStack top() {
-		// TODO Auto-generated method stub
-		return null;
+		return TOP;
 	}
 
 	@Override
 	public TaintAbstractStack bottom() {
-		// TODO Auto-generated method stub
-		return null;
+		return BOTTOM;
+	}
+
+	@Override
+	public TaintAbstractStack glbAux(TaintAbstractStack other) throws SemanticException {
+		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
+
+		Iterator<TaintElement> thisIterator = this.stack.iterator();
+		Iterator<TaintElement> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			TaintElement thisElement = thisIterator.next();
+			TaintElement otherElement = otherIterator.next();
+			result.add(thisElement.glb(otherElement));
+		}
+
+		return new TaintAbstractStack(result);
 	}
 
 	@Override
 	public TaintAbstractStack lubAux(TaintAbstractStack other) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
+
+		Iterator<TaintElement> thisIterator = this.stack.iterator();
+		Iterator<TaintElement> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			TaintElement thisElement = thisIterator.next();
+			TaintElement otherElement = otherIterator.next();
+			result.add(thisElement.lub(otherElement));
+		}
+
+		return new TaintAbstractStack(result);
 	}
 
 	@Override
 	public boolean lessOrEqualAux(TaintAbstractStack other) throws SemanticException {
-		// TODO Auto-generated method stub
-		return false;
+		Iterator<TaintElement> thisIterator = this.stack.iterator();
+		Iterator<TaintElement> otherIterator = other.stack.iterator();
+
+		while (thisIterator.hasNext() && otherIterator.hasNext()) {
+			if (!thisIterator.next().lessOrEqual(otherIterator.next())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
+	/**
+	 * Pushes the specified element onto the stack.
+	 *
+	 * @param target the element to be pushed onto the stack.
+	 */
+	public void push(TaintElement target) {
+		stack.remove(0);
+		stack.add(target);
+	}
 
+	/**
+	 * Pops the element from the stack.
+	 *
+	 * @return the element at the top of the stack.
+	 */
+	public TaintElement pop() {
+		TaintElement result = stack.remove(stack.size() - 1);
+		if (stack.get(0).isBottom())
+			stack.add(0, TaintElement.BOTTOM);
+		else
+			stack.add(0, TaintElement.TOP);
+
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TaintAbstractStack other = (TaintAbstractStack) obj;
+		return java.util.Objects.equals(stack, other.stack);
+	}
+
+	@Override
+	public int hashCode() {
+		return java.util.Objects.hash(stack);
+	}
 }
