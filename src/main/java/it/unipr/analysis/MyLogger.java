@@ -196,6 +196,6 @@ public class MyLogger {
 				time + divider +
 				timeLostToGetStorage + divider +
 				actualTime + divider +
-				json.toString() + "\n";
+				notes + "\n";
 	}
 }

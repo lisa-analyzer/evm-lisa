@@ -189,7 +189,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public StackElement pop() {
 		StackElement result = stack.remove(stack.size() - 1);
-		if (!stack.get(0).isTop())
+		if (stack.get(0).isBottom())
 			stack.add(0, StackElement.BOTTOM);
 		else
 			stack.add(0, StackElement.NUMERIC_TOP);

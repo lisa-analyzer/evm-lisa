@@ -650,15 +650,13 @@ public class EVMLiSA {
 
 		log.info("### Calculating statistics ###");
 
-		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
+		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps(); // LN: BOTTOM
 
-		int resolvedJumps = 0;
-		int definitelyUnreachable = 0;
-		int maybeUnreachable = 0;
-		int unsoundJumps = 0;
-		int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
-
-		boolean allJumpAreSound = true;
+		int resolved = 0; // LN: RESOLVED
+		int unreachable = 0; // LN: UNREACHABLE
+		int bottom = unreachableJumpNodes.size(); // LN: BOTTOM 
+		int conservative = 0; // LN: CONSERVATIVE
+		final int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
 
 		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
 			log.warn("There are no entrypoints.");
@@ -666,20 +664,6 @@ public class EVMLiSA {
 		}
 
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
-		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
-
-		if (!JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
-			for (Statement jumpNode : cfg.getAllJumps()) {
-				if (pushedJumps.contains(jumpNode))
-					continue;
-
-				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-
-				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
-					allJumpAreSound = false;
-					break;
-				}
-			}
 
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
@@ -696,65 +680,44 @@ public class EVMLiSA {
 				}
 
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-
-				if (pushedJumps.contains(jumpNode)) {
-					resolvedJumps++;
-					continue;
-				}
-				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
-					definitelyUnreachable++;
-					continue;
-				}
-				if (!reachableFrom) {
-					if (allJumpAreSound)
-						definitelyUnreachable++;
+				
+				if (cfg.getAllPushedJumps().contains(jumpNode))
+					resolved++;
+				else if (checker.getMaybeUnsoundJumps().contains(jumpNode))
+					conservative++;
+				else if (checker.getUnreachableJumps().contains(jumpNode) || !reachableFrom || topStackValuesPerJump.isEmpty())
+					unreachable++;
+				else {
+					boolean allBot = true, oneTop = false;
+					for (StackElement e : topStackValuesPerJump) {
+						allBot &= e.isBottom();
+						oneTop |= e.isTop();
+					}
+					
+					if (allBot)
+						bottom++;
+					else if (oneTop)
+						conservative++;
 					else
-						maybeUnreachable++;
-					continue;
+						resolved++;
 				}
-				if (topStackValuesPerJump == null) {
-					// If all stacks are bottom, then we have a
-					// maybeFakeMissedJump
-					definitelyUnreachable++;
-					continue;
-				}
-				if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
-					// If the elements at the top of the stacks are all
-					// different from NUMERIC_TOP, then we are sure that it
-					// is definitelyFakeMissedJumps
-					resolvedJumps++;
-					continue;
-				}
-				if (soundlySolved != null && !soundlySolved.contains(jumpNode)) {
-					unsoundJumps++;
-					log.error("{} not solved", jumpNode);
-					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
-					continue;
-				}
-				if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
-					maybeUnsoundJumps++;
-					continue;
-				}
-
-				resolvedJumps++;
 			}
 		}
 
 		log.info("Total opcodes: {}", cfg.getOpcodeCount());
 		log.info("Total jumps: {}", cfg.getAllJumps().size());
-		log.info("Resolved jumps: {}", resolvedJumps);
-		log.info("Definitely unreachable jumps: {}", definitelyUnreachable);
-		log.info("Maybe unreachable jumps: {}", maybeUnreachable);
-		log.info("Unsound jumps: {}", unsoundJumps);
-		log.info("Maybe unsound jumps: {}", maybeUnsoundJumps);
+		log.info("Resolved jumps: {}", resolved);
+		log.info("Unreachable jumps: {}", unreachable);
+		log.info("Bottom jumps: {}", bottom);
+		log.info("Conservative jumps: {}", conservative);
 
 		return MyLogger.newLogger()
 				.opcodes(cfg.getOpcodeCount())
 				.jumps(cfg.getAllJumps().size())
-				.preciselyResolvedJumps(resolvedJumps)
-				.definitelyUnreachableJumps(definitelyUnreachable)
-				.maybeUnreachableJumps(maybeUnreachable)
-				.unsoundJumps(unsoundJumps)
+				.preciselyResolvedJumps(resolved)
+				.definitelyUnreachableJumps(unreachable)
+				.maybeUnreachableJumps(bottom)
+				.unsoundJumps(conservative)
 				.maybeUnsoundJumps(maybeUnsoundJumps);
 	}
 
