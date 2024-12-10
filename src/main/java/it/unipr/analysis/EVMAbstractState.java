@@ -2402,9 +2402,11 @@ public class EVMAbstractState
 			BigInteger toHex = Number.toBigInteger(key);
 			String hexString = "0x" + toHex.toString(16);
 
-			Thread.sleep(1000);
-
-			String getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+			String getStorageAtRequest;
+			synchronized (MyCache.getInstance()) {
+				Thread.sleep(500);
+				getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+			}
 
 			if (getStorageAtRequest == null || getStorageAtRequest.isEmpty()) {
 				System.err.println("ERROR: couldn't download contract's storage.");
