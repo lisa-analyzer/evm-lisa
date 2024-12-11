@@ -1,20 +1,5 @@
 package it.unipr.analysis.taint;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.Memory;
-import it.unipr.analysis.MyCache;
-import it.unipr.analysis.Number;
-import it.unipr.analysis.StackElement;
-import it.unipr.cfg.EVMCFG;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -31,22 +16,35 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, BaseLattice<TaintAbstractStack> {
 
 	private static int STACK_LIMIT = 32;
 	private static final TaintAbstractStack TOP = new TaintAbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.TOP)));
+			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)));
 	private static final TaintAbstractStack BOTTOM = new TaintAbstractStack(null);
 
 	private final ArrayList<TaintElement> stack;
+
+	
+	/**
+	 * Builds an initial symbolic stack.
+	 */
+	public TaintAbstractStack() {
+		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
+	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack.
 	 *
 	 * @param stack the stack of values
 	 */
-	public TaintAbstractStack(ArrayList<TaintElement> stack) {
+	private TaintAbstractStack(ArrayList<TaintElement> stack) {
 		this.stack = stack;
 	}
 
@@ -57,6 +55,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 		return this;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public TaintAbstractStack smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
@@ -72,243 +71,98 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 			if (op != null) {
 				switch (op.getClass().getSimpleName()) {
-				case "OriginOperator":
-				{ 
+				case "TimestampOperator":
+				case "OriginOperator": {
 					TaintAbstractStack resultStack = clone();
 					resultStack.push(TaintElement.TAINT);
 					return resultStack;
 				}
+				case "CodesizeOperator":
+				case "GaspriceOperator":
+				case "ReturndatasizeOperator":
+				case "CoinbaseOperator":
+				case "NumberOperator":
+				case "DifficultyOperator": /**/
+				case "GaslimitOperator":
+				case "ChainidOperator":
+				case "SelfbalanceOperator":
+				case "PcOperator":
+				case "GasOperator":
+				case "MsizeOperator":
+				case "BasefeeOperator":
+				case "CalldatasizeOperator":
 				case "CallvalueOperator":
 				case "CallerOperator":
 				case "AddressOperator":
 				case "PushOperator":
-				case "Push0Operator": { 
+				case "Push0Operator": {
 					TaintAbstractStack resultStack = clone();
 					resultStack.push(TaintElement.CLEAN);
+					resultStack.toString();
 					return resultStack;
 				}
 
+				/*
+				 * case "JumpdestOperator": { // JUMPDEST return this; } //
+				 * Above, operators that do not perform pop() // Below,
+				 * operators that perform pop operation on the stack case
+				 * "JumpOperator": { // JUMP for (AbstractStack stack : stacks)
+				 * { if (stack.hasBottomUntil(1)) continue; AbstractStack
+				 * resultStack = stack.clone(); StackElement jmpDest =
+				 * resultStack.pop(); if (((EVMCFG)
+				 * pp.getCFG()).getAllPushedJumps().contains(pp) &&
+				 * jmpDest.isTop()) continue; if (jmpDest.isBottom() ||
+				 * jmpDest.isTopNotJumpdest()) continue; if (((EVMCFG)
+				 * pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.
+				 * getNumber()) || jmpDest.isTop()) result.add(resultStack); }
+				 * if (result.isEmpty()) return BOTTOM; else return new
+				 * EVMAbstractState(result, memory, storage, mu_i); } case
+				 * "JumpiOperator": { // JUMPI for (AbstractStack stack :
+				 * stacks) { if (stack.hasBottomUntil(2)) continue;
+				 * AbstractStack resultStack = stack.clone(); StackElement
+				 * jmpDest = resultStack.pop(); StackElement cond =
+				 * resultStack.pop(); if (jmpDest.isBottom() || cond.isBottom()
+				 * || jmpDest.isTopNotJumpdest()) continue; if (((EVMCFG)
+				 * pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.
+				 * getNumber()) || jmpDest.isTop()) result.add(resultStack); }
+				 * if (result.isEmpty()) return BOTTOM; else return new
+				 * EVMAbstractState(result, memory, storage, mu_i); }
+				 */
 
-				case "CalldatasizeOperator": { // CALLDATASIZE
-					// At the moment, we do not handle CALLDATASIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CodesizeOperator": { // CODESIZE
-					// At the moment, we do not handle CODESIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "GaspriceOperator": { // GASPRICE
-					// At the moment, we do not handle GASPRIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ReturndatasizeOperator": { // RETURNDATASIZE
-					// At the moment, we do not handle RETURNDATASIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CoinbaseOperator": { // COINBASE
-					// At the moment, we do not handle COINBASE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "TimestampOperator": { // TIMESTAMP
-					// At the moment, we do not handle TIMESTAMP
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "NumberOperator": { // NUMBER
-					// At the moment, we do not handle NUMBER
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "DifficultyOperator": { // DIFFICULTY
-					// At the moment, we do not handle DIFFICULTY
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "GaslimitOperator": { // GASLIMIT
-					// At the moment, we do not handle GASLIMIT
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ChainidOperator": { // CHAINID
-					// At the moment, we do not handle CHAINID
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SelfbalanceOperator": { // SELFBALANCE
-					// At the moment, we do not handle SELFBALANCE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "PcOperator": { // PC
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						Integer i = (Integer) ((Constant) un.getExpression()).getValue();
-						resultStack.push(new StackElement(BigInteger.valueOf(i)));
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "GasOperator": { // GAS
-					// At the moment, we do not handle GAS
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "MsizeOperator": { // MSIZE
-					// At the moment, we do not handle MSIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "BasefeeOperator": { // BASEFEE
-					// At the moment, we do not handle BASEFEE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "JumpdestOperator": { // JUMPDEST
-					return this;
-				}
-
-				// Above, operators that do not perform pop()
-				// Below, operators that perform pop operation on the stack
-
-				case "JumpOperator": { // JUMP
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-
-						AbstractStack resultStack = stack.clone();
-						StackElement jmpDest = resultStack.pop();
-						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
-							continue;
-
-						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
-							continue;
-
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
-								|| jmpDest.isTop())
-							result.add(resultStack);
-
-					}
-
-					if (result.isEmpty())
+				case "BalanceOperator":
+				case "NotOperator":
+				case "CalldataloadOperator":
+				case "CalldatacopyOperator":
+				case "MloadOperator":
+				case "SloadOperator":
+				case "IszeroOperator": { // pop 1, push 1
+					if (hasBottomUntil(1))
 						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+
+					TaintAbstractStack resultStack = clone();
+					TaintElement opnd1 = resultStack.pop();
+
+					resultStack.push(TaintElement.semantics(opnd1));
+					return resultStack;
 				}
-				case "JumpiOperator": { // JUMPI
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement jmpDest = resultStack.pop();
-						StackElement cond = resultStack.pop();
-
-						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
-							continue;
-
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
-								|| jmpDest.isTop())
-							result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ModOperator": 
+				case "ByteOperator":
+				case "ShlOperator":
+				case "ShrOperator":
+				case "SarOperator":
+				case "Sha3Operator":
+				case "AndOperator":
+				case "OrOperator":
+				case "XorOperator":
+				case "ExpOperator":
+				case "SignextendOperator":
+				case "LtOperator":
+				case "SltOperator":
+				case "GtOperator":
+				case "SgtOperator":
+				case "EqOperator":
+				case "SmodOperator":
+				case "ModOperator":
 				case "SdivOperator":
 				case "DivOperator":
 				case "MulOperator":
@@ -316,7 +170,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "AddOperator": { // pops 2, push 1
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					
+
 					TaintAbstractStack resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
 					TaintElement opnd2 = resultStack.pop();
@@ -325,1484 +179,715 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					return resultStack;
 				}
 
-				
-				case "SmodOperator": { // SMOD
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.mod(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+				case "MulmodOperator":
+				case "AddmodOperator": { // pops 3, push 1
+					if (hasBottomUntil(3))
 						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+
+					TaintAbstractStack resultStack = clone();
+					TaintElement opnd1 = resultStack.pop();
+					TaintElement opnd2 = resultStack.pop();
+					TaintElement opnd3 = resultStack.pop();
+
+					resultStack.push(TaintElement.semantics(opnd1, opnd2, opnd3));
+					return resultStack;
 				}
-				case "AddmodOperator": { // ADDMOD
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-						StackElement opnd3 = resultStack.pop();
-
-						resultStack.push(opnd1.addmod(opnd2, opnd3));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "MulmodOperator": { // MULMOD
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-						StackElement opnd3 = resultStack.pop();
-
-						resultStack.push(opnd1.mulmod(opnd2, opnd3));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ExpOperator": { // EXP
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.exp(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SignextendOperator": { // SIGNEXTEND
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd2);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "LtOperator": { // LT
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.lt(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SltOperator": { // SLT
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.lt(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "GtOperator": { // GT
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.gt(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SgtOperator": { // SGT
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.gt(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "EqOperator": { // EQ
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.eq(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "IszeroOperator": { // ISZERO
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-
-						resultStack.push(opnd1.isZero());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "AndOperator": { // AND
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.and(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "OrOperator": { // OR
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.or(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "XorOperator": { // XOR
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.xor(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "NotOperator": { // NOT
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-
-						resultStack.push(opnd1.not());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ByteOperator": { // BYTE
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement indexOfByte = resultStack.pop();
-						StackElement target = resultStack.pop();
-						StackElement resultStackElement = StackElement.ZERO;
-
-						if (target.isTop() || indexOfByte.isTop()) {
-							resultStack.push(StackElement.NUMERIC_TOP);
-						} else if (target.isTopNotJumpdest() || indexOfByte.isTopNotJumpdest()) {
-							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						} else {
-							byte[] valueAsByteArray = target.getNumber().toByteArray();
-							int intIndex = indexOfByte.getNumber().intValue();
-
-							if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
-								resultStackElement.lub(StackElement.ZERO);
-							} else {
-								int selectedByteAsInt = valueAsByteArray[intIndex];
-								resultStackElement.lub(new StackElement(selectedByteAsInt));
-							}
-
-							resultStack.push(resultStackElement);
-						}
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ShlOperator": { // SHL
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.shl(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ShrOperator": { // SHR
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.shr(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SarOperator": { // SAR
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement opnd1 = resultStack.pop();
-						StackElement opnd2 = resultStack.pop();
-
-						resultStack.push(opnd1.sar(opnd2));
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "Sha3Operator": { // SHA3
-					// At the moment, we do not handle SHA3
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "BalanceOperator": { // BALANCE
-					// At the moment, we do not handle BALANCE
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement address = resultStack.pop();
-
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CalldataloadOperator": { // CALLDATALOAD
-					// At the moment, we do not handle CALLDATALOAD
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CalldatacopyOperator": { // CALLDATACOPY
-					// At the moment, we do not handle CALLDATACOPY
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CodecopyOperator": { // CODECOPY
-					// At the moment, we do not handle CODECOPY
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ExtcodesizeOperator": { // EXTCODESIZE
-					// At the moment, we do not handle EXTCODESIZE
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement address = resultStack.pop();
-
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ExtcodecopyOperator": { // EXTCODECOPY
-					// At the moment, we do not handle EXTCODECOPY
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(4))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement address = resultStack.pop();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ReturndatacopyOperator": { // RETURNDATACOPY
-					// At the moment, we do not handle RETURNDATACOPY
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ExtcodehashOperator": { // EXTCODEHASH
-					// At the moment, we do not handle EXTCODEHASH
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement address = resultStack.pop();
-
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "BlockhashOperator": { // BLOCKHASH
-					// At the moment, we do not handle BLOCKHASH
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement blockNumber = resultStack.pop();
-
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
 				case "PopOperator": { // POP
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						resultStack.pop();
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
-				case "MloadOperator": { // MLOAD
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-
-						StackElement offset = resultStack.pop();
-
-						if (mu_i.equals(StackElement.ZERO)) {
-							// This is an error. We cannot read from memory if
-							// there is no active words saved
-							resultStack.push(StackElement.ZERO);
-						} else if (offset.isTop()) {
-							resultStack.push(StackElement.NUMERIC_TOP);
-						} else if (offset.isTopNotJumpdest()) {
-							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						} else {
-							StackElement mload = offset.mload(memory);
-							if (mload.isBottom())
-								continue;
-							resultStack.push(mload);
-						}
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "MstoreOperator": { // MSTORE
-
-					Memory memoryResult = memory;
-					StackElement new_mu_i = mu_i;
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack stackResult = stack.clone();
-
-						StackElement offset = stackResult.pop();
-						StackElement value = stackResult.pop();
-
-						if (offset.isTop()) {
-							new_mu_i = mu_i;
-							memoryResult = memory;
-						} else {
-							StackElement current_mu_i_lub = StackElement.BOTTOM;
-
-							Number thirtyTwo = new Number(32);
-							Number current_mu_i = offset.getNumber().add(thirtyTwo)
-									.divide(thirtyTwo);
-
-							memoryResult = memory.putState(offset.getNumber(), value);
-
-							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
-
-							new_mu_i = current_mu_i_lub;
-						}
-						result.add(stackResult);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
-				}
-				case "Mstore8Operator": { // MSTORE8
-
-					Memory memoryResult = memory;
-					StackElement new_mu_i = mu_i;
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack stackResult = stack.clone();
-
-						StackElement offset = stackResult.pop();
-						StackElement value = stackResult.pop();
-
-						if (offset.isTop()) {
-							new_mu_i = mu_i;
-							memoryResult = memory;
-						} else {
-							StackElement current_mu_i_lub = StackElement.BOTTOM;
-
-							Number current_mu_i = offset.getNumber().add(new Number(1))
-									.divide(new Number(32));
-
-							memoryResult = memory.putState(offset.getNumber(),
-									value.mod(new StackElement(new Number(256))));
-							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
-
-							new_mu_i = current_mu_i_lub;
-						}
-						result.add(stackResult);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
-				}
-				case "SloadOperator": { // SLOAD
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement key = resultStack.pop();
-						Memory storageCopy = storage.clone();
-
-						StackElement valueToPush = StackElement.BOTTOM;
-						if (key.isTop() || key.isTopNotJumpdest())
-							valueToPush = StackElement.NUMERIC_TOP;
-						else {
-							if (storage.getKeys().contains(key.getNumber()))
-								valueToPush = valueToPush.lub(storage.getState(key.getNumber()));
-							else {
-								if (USE_STORAGE_LIVE && CONTRACT_ADDRESS != null) {
-									StackElement valueCached = MyCache.getInstance()
-											.get(Pair.of(CONTRACT_ADDRESS, key.getNumber()));
-
-									if (valueCached == null) {
-										long start = System.currentTimeMillis();
-										valueToPush = getStorageAt(key.getNumber(), CONTRACT_ADDRESS); // API
-										// request
-										long timeLostToGetStorage = System.currentTimeMillis() - start;
-
-										MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
-												timeLostToGetStorage);
-
-										MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, key.getNumber()),
-												valueToPush);
-									} else {
-										valueToPush = valueCached;
-										log.debug("Value cached");
-									}
-								} else
-									valueToPush = StackElement.NUMERIC_TOP;
-							}
-						}
-
-						resultStack.push(valueToPush);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SstoreOperator": { // SSTORE
-
-					Memory storageResult = storage.bottom();
-
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement key = resultStack.pop();
-						StackElement value = resultStack.pop();
-
-						Memory storageCopy = storage.clone();
-
-						if (!(key.isTopNumeric() || key.isTopNotJumpdest()))
-							storageResult = storageCopy.putState(key.getNumber(), value);
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
-						return BOTTOM;
-					else
-						return new EVMAbstractState(result, memory, storageResult, mu_i);
-				}
+				/*
+				 * case "MstoreOperator": { // MSTORE Memory memoryResult =
+				 * memory; StackElement new_mu_i = mu_i; for (AbstractStack
+				 * stack : stacks) { if (stack.hasBottomUntil(2)) continue;
+				 * AbstractStack stackResult = stack.clone(); StackElement
+				 * offset = stackResult.pop(); StackElement value =
+				 * stackResult.pop(); if (offset.isTop()) { new_mu_i = mu_i;
+				 * memoryResult = memory; } else { StackElement current_mu_i_lub
+				 * = StackElement.BOTTOM; Number thirtyTwo = new Number(32);
+				 * Number current_mu_i = offset.getNumber().add(thirtyTwo)
+				 * .divide(thirtyTwo); memoryResult =
+				 * memory.putState(offset.getNumber(), value); current_mu_i_lub
+				 * = current_mu_i_lub.lub(new StackElement(current_mu_i));
+				 * new_mu_i = current_mu_i_lub; } result.add(stackResult); } if
+				 * (result.isEmpty()) return BOTTOM; else return new
+				 * EVMAbstractState(result, memoryResult, storage, new_mu_i); }
+				 * case "Mstore8Operator": { // MSTORE8 Memory memoryResult =
+				 * memory; StackElement new_mu_i = mu_i; for (AbstractStack
+				 * stack : stacks) { if (stack.hasBottomUntil(2)) continue;
+				 * AbstractStack stackResult = stack.clone(); StackElement
+				 * offset = stackResult.pop(); StackElement value =
+				 * stackResult.pop(); if (offset.isTop()) { new_mu_i = mu_i;
+				 * memoryResult = memory; } else { StackElement current_mu_i_lub
+				 * = StackElement.BOTTOM; Number current_mu_i =
+				 * offset.getNumber().add(new Number(1)) .divide(new
+				 * Number(32)); memoryResult =
+				 * memory.putState(offset.getNumber(), value.mod(new
+				 * StackElement(new Number(256)))); current_mu_i_lub =
+				 * current_mu_i_lub.lub(new StackElement(current_mu_i));
+				 * new_mu_i = current_mu_i_lub; } result.add(stackResult); } if
+				 * (result.isEmpty()) return BOTTOM; else return new
+				 * EVMAbstractState(result, memoryResult, storage, new_mu_i); }
+				 * case "SstoreOperator": { // SSTORE Memory storageResult =
+				 * storage.bottom(); for (AbstractStack stack : stacks) { if
+				 * (stack.hasBottomUntil(2)) continue; AbstractStack resultStack
+				 * = stack.clone(); StackElement key = resultStack.pop();
+				 * StackElement value = resultStack.pop(); Memory storageCopy =
+				 * storage.clone(); if (!(key.isTopNumeric() ||
+				 * key.isTopNotJumpdest())) storageResult =
+				 * storageCopy.putState(key.getNumber(), value);
+				 * result.add(resultStack); } if (result.isEmpty()) return
+				 * BOTTOM; else return new EVMAbstractState(result, memory,
+				 * storageResult, mu_i); }
+				 */
 				case "Dup1Operator": { // DUP1
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(1, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = dupX(1, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup2Operator": { // DUP2
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(2, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = dupX(2, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup3Operator": { // DUP3
+					if (hasBottomUntil(3))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(3, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = dupX(3, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup4Operator": { // DUP4
+					if (hasBottomUntil(4))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(4, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(4))
-							continue;
-						AbstractStack resultStack = dupX(4, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup5Operator": { // DUP5
+					if (hasBottomUntil(5))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(5, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(5))
-							continue;
-						AbstractStack resultStack = dupX(5, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup6Operator": { // DUP6
+					if (hasBottomUntil(6))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(6, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(6))
-							continue;
-						AbstractStack resultStack = dupX(6, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup7Operator": { // DUP7
+					if (hasBottomUntil(7))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(7, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(7))
-							continue;
-						AbstractStack resultStack = dupX(7, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup8Operator": { // DUP8
+					if (hasBottomUntil(8))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(8, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(8))
-							continue;
-						AbstractStack resultStack = dupX(8, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup9Operator": { // DUP9
+					if (hasBottomUntil(9))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(9, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(9))
-							continue;
-						AbstractStack resultStack = dupX(9, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup10Operator": { // DUP10
+					if (hasBottomUntil(10))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(10, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(10))
-							continue;
-						AbstractStack resultStack = dupX(10, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup11Operator": { // DUP11
+					if (hasBottomUntil(11))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(11, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(11))
-							continue;
-						AbstractStack resultStack = dupX(11, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup12Operator": { // DUP12
+					if (hasBottomUntil(12))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(12, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(12))
-							continue;
-						AbstractStack resultStack = dupX(12, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup13Operator": { // DUP13
+					if (hasBottomUntil(13))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(13, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(13))
-							continue;
-						AbstractStack resultStack = dupX(13, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup14Operator": { // DUP14
+					if (hasBottomUntil(14))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(14, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(14))
-							continue;
-						AbstractStack resultStack = dupX(14, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup15Operator": { // DUP15
+					if (hasBottomUntil(15))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(15, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(15))
-							continue;
-						AbstractStack resultStack = dupX(15, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Dup16Operator": { // DUP16
+					if (hasBottomUntil(16))
+						return BOTTOM;
+					TaintAbstractStack resultStack = dupX(16, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(16))
-							continue;
-						AbstractStack resultStack = dupX(16, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap1Operator": { // SWAP1
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(1, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = swapX(1, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap2Operator": { // SWAP2
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(2, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = swapX(2, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap3Operator": { // SWAP3
+					if (hasBottomUntil(3))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(3, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(4))
-							continue;
-						AbstractStack resultStack = swapX(3, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap4Operator": { // SWAP4
+					if (hasBottomUntil(4))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(4, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(5))
-							continue;
-						AbstractStack resultStack = swapX(4, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap5Operator": { // SWAP5
+					if (hasBottomUntil(5))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(5, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(6))
-							continue;
-						AbstractStack resultStack = swapX(5, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap6Operator": { // SWAP6
+					if (hasBottomUntil(6))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(6, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(7))
-							continue;
-						AbstractStack resultStack = swapX(6, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap7Operator": { // SWAP7
+					if (hasBottomUntil(7))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(7, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(8))
-							continue;
-						AbstractStack resultStack = swapX(7, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap8Operator": { // SWAP8
+					if (hasBottomUntil(8))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(8, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(9))
-							continue;
-						AbstractStack resultStack = swapX(8, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap9Operator": { // SWAP9
+					if (hasBottomUntil(9))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(9, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(10))
-							continue;
-						AbstractStack resultStack = swapX(9, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap10Operator": { // SWAP10
+					if (hasBottomUntil(10))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(10, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(11))
-							continue;
-						AbstractStack resultStack = swapX(10, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap11Operator": { // SWAP11
+					if (hasBottomUntil(11))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(11, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(12))
-							continue;
-						AbstractStack resultStack = swapX(11, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap12Operator": { // SWAP12
+					if (hasBottomUntil(12))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(12, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(13))
-							continue;
-						AbstractStack resultStack = swapX(12, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap13Operator": { // SWAP13
+					if (hasBottomUntil(13))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(13, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(14))
-							continue;
-						AbstractStack resultStack = swapX(13, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap14Operator": { // SWAP14
+					if (hasBottomUntil(14))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(14, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(15))
-							continue;
-						AbstractStack resultStack = swapX(14, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap15Operator": { // SWAP15
+					if (hasBottomUntil(15))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(15, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(16))
-							continue;
-						AbstractStack resultStack = swapX(15, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Swap16Operator": { // SWAP16
+					if (hasBottomUntil(16))
+						return BOTTOM;
+					TaintAbstractStack resultStack = swapX(16, clone());
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(17))
-							continue;
-						AbstractStack resultStack = swapX(16, stack.clone());
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Log0Operator": { // LOG0
 					// At the moment, we do not handle LOG0
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Log1Operator": { // LOG1
 					// At the moment, we do not handle LOG1
+					if (hasBottomUntil(3))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+					resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Log2Operator": { // LOG2
 					// At the moment, we do not handle LOG2
+					if (hasBottomUntil(4))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(4))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Log3Operator": { // LOG3
 					// At the moment, we do not handle LOG3
+					if (hasBottomUntil(5))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(5))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Log4Operator": { // LOG4
 					// At the moment, we do not handle LOG4
+					if (hasBottomUntil(6))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(6))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "CreateOperator": { // CREATE
 					// At the moment, we do not handle CREATE
+					if (hasBottomUntil(3))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement value = resultStack.pop();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(3))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement value = resultStack.pop();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "Create2Operator": { // CREATE2
 					// At the moment, we do not handle CREATE2
+					if (hasBottomUntil(4))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement value = resultStack.pop();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+					TaintElement salt = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(4))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement value = resultStack.pop();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						StackElement salt = resultStack.pop();
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "CallOperator": { // CALL
 					// At the moment, we do not handle CALL
+					if (hasBottomUntil(7))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement gas = resultStack.pop();
+					TaintElement to = resultStack.pop();
+					TaintElement value = resultStack.pop();
+					TaintElement inOffset = resultStack.pop();
+					TaintElement inLength = resultStack.pop();
+					TaintElement outOffset = resultStack.pop();
+					TaintElement outLength = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(7))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement value = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "CallcodeOperator": { // CALLCODE
 					// At the moment, we do not handle CALLCODE
+					if (hasBottomUntil(7))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement gas = resultStack.pop();
+					TaintElement to = resultStack.pop();
+					TaintElement value = resultStack.pop();
+					TaintElement inOffset = resultStack.pop();
+					TaintElement inLength = resultStack.pop();
+					TaintElement outOffset = resultStack.pop();
+					TaintElement outLength = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(7))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement value = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "ReturnOperator": { // RETURN
 					// At the moment, we do not handle RETURN
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "DelegatecallOperator": { // DELEGATECALL
 					// At the moment, we do not handle DELEGATECALL
+					if (hasBottomUntil(6))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement gas = resultStack.pop();
+					TaintElement to = resultStack.pop();
+					TaintElement inOffset = resultStack.pop();
+					TaintElement inLength = resultStack.pop();
+					TaintElement outOffset = resultStack.pop();
+					TaintElement outLength = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(6))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "StaticcallOperator": { // STATICCALL
 					// At the moment, we do not handle STATICCALL
+					if (hasBottomUntil(6))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement gas = resultStack.pop();
+					TaintElement to = resultStack.pop();
+					TaintElement inOffset = resultStack.pop();
+					TaintElement inLength = resultStack.pop();
+					TaintElement outOffset = resultStack.pop();
+					TaintElement outLength = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(6))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "RevertOperator": { // REVERT
 					// At the moment, we do not handle REVERT
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement length = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(2))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
 				}
 				case "InvalidOperator": { // INVALID
 					return this;
 				}
 				case "SelfdestructOperator": { // SELFDESTRUCT
 					// At the moment, we do not handle SELFDESTRUCT
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement recipient = resultStack.pop();
 
-					for (AbstractStack stack : stacks) {
-						if (stack.hasBottomUntil(1))
-							continue;
-						AbstractStack resultStack = stack.clone();
-						StackElement recipient = resultStack.pop();
-
-						result.add(resultStack);
-					}
-
-					if (result.isEmpty())
+					if (resultStack.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage, mu_i);
+						return resultStack;
+				}
+				case "CodecopyOperator": { // CODECOPY
+					// At the moment, we do not handle CODECOPY
+					if (hasBottomUntil(3))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement memOffset = resultStack.pop();
+					TaintElement dataOffset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "ExtcodesizeOperator": { // EXTCODESIZE
+					// At the moment, we do not handle EXTCODESIZE
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement address = resultStack.pop();
+
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "ExtcodecopyOperator": { // EXTCODECOPY
+					// At the moment, we do not handle EXTCODECOPY
+					if (hasBottomUntil(4))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement address = resultStack.pop();
+					TaintElement memOffset = resultStack.pop();
+					TaintElement dataOffset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "ReturndatacopyOperator": { // RETURNDATACOPY
+					// At the moment, we do not handle RETURNDATACOPY
+					if (hasBottomUntil(3))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement memOffset = resultStack.pop();
+					TaintElement dataOffset = resultStack.pop();
+					TaintElement length = resultStack.pop();
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "ExtcodehashOperator": { // EXTCODEHASH
+					// At the moment, we do not handle EXTCODEHASH
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement address = resultStack.pop();
+
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					resultStack.push(TaintElement.TOP);
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "BlockhashOperator": { // BLOCKHASH
+					// At the moment, we do not handle BLOCKHASH
+					if (hasBottomUntil(1))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement blockNumber = resultStack.pop();
+
+					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
 				}
 				}
 			}
@@ -1812,6 +897,80 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			throw new SemanticException("Reachable just with the skip node");
 
 		return top();
+	}
+
+	private TaintAbstractStack swapX(int x, TaintAbstractStack stack) {
+		List<TaintElement> clone = stack.clone().getStack();
+
+		if (stack.size() < x + 1 || x < 1)
+			return stack.bottom();
+
+		Object[] obj = clone.toArray();
+		int first;
+
+		if (stack.size() < STACK_LIMIT)
+			first = STACK_LIMIT - 1;
+		else
+			first = clone.size() - 1;
+
+		Object tmp = obj[first];
+		obj[first] = obj[first - x];
+		obj[first - x] = tmp;
+
+		ArrayList<TaintElement> result = new ArrayList<>();
+
+		for (int i = 0; i < clone.size(); i++)
+			result.add((TaintElement) obj[i]);
+
+		return new TaintAbstractStack(result);
+	}
+
+	private TaintAbstractStack dupX(int x, TaintAbstractStack stack) {
+		List<TaintElement> clone = stack.clone().getStack();
+
+		if (stack.size() < x || x < 1)
+			return stack.bottom();
+
+		Object[] obj = clone.toArray();
+
+		int first;
+		if (stack.size() < STACK_LIMIT)
+			first = STACK_LIMIT;
+		else
+			first = clone.size();
+
+		TaintElement tmp = (TaintElement) obj[first - x];
+
+		clone.add(tmp);
+		clone.remove(0);
+
+		ArrayList<TaintElement> result = new ArrayList<>();
+
+		for (int i = 0; i < clone.size(); i++)
+			result.add((TaintElement) obj[i]);
+
+		return new TaintAbstractStack(result);
+	}
+
+	private ArrayList<TaintElement> getStack() {
+		return stack;
+	}
+
+	private int size() {
+		int bottomCounter = 0;
+		for (TaintElement item : stack) {
+			if (item.isBottom()) {
+				bottomCounter++;
+			}
+		}
+		return stack.size() - bottomCounter;
+	}
+
+	private boolean isEmpty() {
+		if (!stack.isEmpty())
+			return false;
+		else
+			return true;
 	}
 
 	@Override
@@ -1854,6 +1013,16 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			return Lattice.topRepresentation();
 
 		return new StringRepresentation(stack.toString());
+	}
+	
+	@Override
+	public String toString() {
+		if (isBottom())
+			return Lattice.BOTTOM_STRING;
+		else if (isTop())
+			return Lattice.TOP_STRING;
+
+		return stack.toString();
 	}
 
 	@Override
@@ -1948,7 +1117,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 		return result;
 	}
-	
+
 	/**
 	 * Checks whether between 0 and x-positions of the stack an element is
 	 * bottom. /** Checks whether between 0 and x-positions of the stack an
@@ -1968,7 +1137,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 	@Override
 	public TaintAbstractStack clone() {
-		if (isBottom() || isTop())
+		if (isBottom())
 			return this;
 		return new TaintAbstractStack(new ArrayList<>(stack));
 	}
