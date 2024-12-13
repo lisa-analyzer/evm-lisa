@@ -615,7 +615,7 @@ public class EVMLiSA {
 
 			executor.shutdown();
 			try {
-				if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+				if (!executor.awaitTermination(5, TimeUnit.HOURS)) {
 					executor.shutdownNow();
 					log.error("Timeout while waiting for tasks to complete");
 				}
