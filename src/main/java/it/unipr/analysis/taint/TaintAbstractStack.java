@@ -941,13 +941,13 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 		TaintElement tmp = (TaintElement) obj[first - x];
 
-		clone.add(tmp);
-		clone.remove(0);
-
 		ArrayList<TaintElement> result = new ArrayList<>();
 
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
+
+		result.add(tmp);
+		result.remove(0);
 
 		return new TaintAbstractStack(result);
 	}
