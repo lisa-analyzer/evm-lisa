@@ -12,6 +12,7 @@ def calculate_statistics(file_path):
     edges = 0
     time_millis = 0
     rows = 0
+    unsound = 0
 
     with open(file_path, newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -28,6 +29,8 @@ def calculate_statistics(file_path):
         time_millis_index = header.index(" Time (millis)")
 
         for row in reader:
+            if int(row[unknown_jumps_index]) > 0:
+                unsound += 1
             rows += 1
             total_opcodes += int(row[total_opcodes_index])
             total_jumps += int(row[total_jumps_index])
@@ -50,6 +53,7 @@ def calculate_statistics(file_path):
     print(f"Erroneous jumps: {erroneous_jumps} ({percentuale(erroneous_jumps,total_jumps)}%)")
     print(f"Total jumps with classification: {classified} ({'match' if classified == total_jumps else 'mismatch'})")
     print(f"Edges: {edges}")
+    print(f"Unsound CFGs (only if linking was disabled): {unsound}")
     print(f"Average Time (seconds): {avg_time_millis / 1000}")
 
 def percentuale(num, den):
