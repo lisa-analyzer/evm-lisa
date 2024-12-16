@@ -5,13 +5,11 @@ def calculate_statistics(file_path):
     
     total_opcodes = 0
     total_jumps = 0
-    solved_jumps = 0
-    definitely_unreachable_jumps = 0
-    maybe_unreachable_jumps = 0
-    total_solved_jumps = 0
-    unsound_jumps = 0
-    maybe_unsound_jumps = 0
-    total_solved_percent = 0
+    resolved_jumps = 0
+    unknown_jumps = 0
+    unreachable_jumps = 0
+    erroneous_jumps = 0
+    edges = 0
     time_millis = 0
     rows = 0
 
@@ -22,56 +20,42 @@ def calculate_statistics(file_path):
         
         total_opcodes_index = header.index(" Total Opcodes")
         total_jumps_index = header.index(" Total Jumps")
-        solved_jumps_index = header.index(" Solved Jumps")
-        definitely_unreachable_jumps_index = header.index(" Definitely unreachable jumps")
-        maybe_unreachable_jumps_index = header.index(" Maybe unreachable jumps")
-        total_solved_jumps_index = header.index(" Total solved Jumps")
-        unsound_jumps_index = header.index(" Unsound jumps")
-        maybe_unsound_jumps_index = header.index(" Maybe unsound jumps")
-        total_solved_percent_index = header.index(" % Total Solved")
+        resolved_jumps_index = header.index(" Resolved Jumps")
+        unknown_jumps_index = header.index(" Unknown jumps")
+        unreachable_jumps_index = header.index(" Unreachable jumps")
+        erroneous_jumps_index = header.index(" Erroneous Jumps")
+        edges_index = header.index(" Edges")
         time_millis_index = header.index(" Time (millis)")
-        sound = 0
 
         for row in reader:
-            if int(row[maybe_unreachable_jumps_index]) == 0 and int(row[maybe_unsound_jumps_index]) == 0 and int(row[unsound_jumps_index]) == 0:
-                sound += 1
-                # print(row[header.index("Smart Contract")])
-
             rows += 1
             total_opcodes += int(row[total_opcodes_index])
             total_jumps += int(row[total_jumps_index])
-            solved_jumps += int(row[solved_jumps_index])
-            definitely_unreachable_jumps += int(row[definitely_unreachable_jumps_index])
-            maybe_unreachable_jumps += int(row[maybe_unreachable_jumps_index])
-            total_solved_jumps += int(row[total_solved_jumps_index])
-            unsound_jumps += int(row[unsound_jumps_index])
-            maybe_unsound_jumps += int(row[maybe_unsound_jumps_index])
-            total_solved_percent += float(row[total_solved_percent_index])
+            resolved_jumps += int(row[resolved_jumps_index])
+            unknown_jumps += int(row[unknown_jumps_index])
+            unreachable_jumps += int(row[unreachable_jumps_index])
+            erroneous_jumps += int(row[erroneous_jumps_index])
+            edges += int(row[edges_index])
             time_millis += int(row[time_millis_index])
 
-
-    avg_total_solved_percent = total_solved_percent / rows if rows else None
     avg_time_millis = time_millis / rows if rows else None
-    avg_unsolved = unsound_jumps / total_jumps
+    classified = resolved_jumps + unknown_jumps + unreachable_jumps + erroneous_jumps
 
     print(f"Smart contracts examined: {rows}")
-    print(f"Smart contracts sound: {sound}")
     print(f"Total Opcodes: {total_opcodes}")
     print(f"Total Jumps: {total_jumps}")
-    print(f"Solved (reachable) Jumps: {solved_jumps}")
-    print(f"Total solved Jumps: {total_solved_jumps}")
-    print(f"Definitely unreachable jumps: {definitely_unreachable_jumps}")
-    print(f"Maybe unreachable jumps: {maybe_unreachable_jumps}")
-    print(f"Unsound jumps: {unsound_jumps}")
-    print(f"Maybe unsound jumps: {maybe_unsound_jumps}")
-    print(f"Average % Total unsolved: {percentuale(avg_unsolved)}")
-    print(f"Average % Total Solved: {percentuale(1 - avg_unsolved)}")
+    print(f"Resolved Jumps: {resolved_jumps} ({percentuale(resolved_jumps,total_jumps)}%)")
+    print(f"Unknown jumps: {unknown_jumps} ({percentuale(unknown_jumps,total_jumps)}%)")
+    print(f"Unreachable jumps: {unreachable_jumps} ({percentuale(unreachable_jumps,total_jumps)}%)")
+    print(f"Erroneous jumps: {erroneous_jumps} ({percentuale(erroneous_jumps,total_jumps)}%)")
+    print(f"Total jumps with classification: {classified} ({'match' if classified == total_jumps else 'mismatch'})")
+    print(f"Edges: {edges}")
     print(f"Average Time (seconds): {avg_time_millis / 1000}")
 
-def percentuale(numero_decimale):
-    if numero_decimale is None:
+def percentuale(num, den):
+    if num is None or den is None or den == 0:
         return "N/A"
-    percentuale_str = "{:.4f}%".format(numero_decimale * 100)
+    percentuale_str = "{:.4f}%".format((num/den) * 100)
     return percentuale_str
 
 if __name__ == "__main__":

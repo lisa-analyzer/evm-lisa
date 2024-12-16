@@ -11,14 +11,11 @@ public class MyLogger {
 	private String address;
 	private int opcodes;
 	private int jumps;
-	private int preciselyResolvedJumps;
-	private int soundResolvedJumps;
-	private int definitelyUnreachableJumps;
-	private int maybeUnreachableJumps;
-	private int totalResolvedJumps;
-	private double solvedJumpsPercent;
-	private int unsoundJumps;
-	private int maybeUnsoundJumps;
+	private int resolvedJumps;
+	private int unknownJumps;
+	private int unreachableJumps;
+	private int erroneousJumps;
+	private int edges;
 	private long time;
 	private long timeLostToGetStorage;
 	private long actualTime;
@@ -30,13 +27,11 @@ public class MyLogger {
 		this.address = null;
 		this.opcodes = 0;
 		this.jumps = 0;
-		this.preciselyResolvedJumps = 0;
-		this.soundResolvedJumps = 0;
-		this.definitelyUnreachableJumps = 0;
-		this.maybeUnreachableJumps = 0;
-		this.solvedJumpsPercent = 0;
-		this.unsoundJumps = 0;
-		this.maybeUnsoundJumps = 0;
+		this.resolvedJumps = 0;
+		this.unknownJumps = 0;
+		this.unreachableJumps = 0;
+		this.erroneousJumps = 0;
+		this.edges = 0;
 		this.time = 0;
 		this.timeLostToGetStorage = 0;
 		this.actualTime = 0;
@@ -45,31 +40,18 @@ public class MyLogger {
 		this.json = new JSONObject();
 	}
 
-	private MyLogger(String address, int opcodes, int jumps, int preciselyResolvedJumps, int soundResolvedJumps,
-			int definitelyUnreachableJumps, int maybeUnreachableJumps, int totalResolvedJumps,
-			int unsoundJumps, int maybeUnsoundJumps, double solvedJumpsPercent,
+	private MyLogger(String address, int opcodes, int jumps, int resolvedJumps, int unknownJumps,
+			int unreachableJumps, int erroneousJumps, int edges,
 			long time, long timeLostToGetStorage,
 			JSONObject json, String notes) {
 		this.address = address;
 		this.opcodes = opcodes;
 		this.jumps = jumps;
-		this.preciselyResolvedJumps = preciselyResolvedJumps;
-		this.soundResolvedJumps = soundResolvedJumps;
-		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
-		this.maybeUnreachableJumps = maybeUnreachableJumps;
-		if (jumps != 0) {
-			if (solvedJumpsPercent == 0)
-				this.solvedJumpsPercent = ((double) (preciselyResolvedJumps + soundResolvedJumps
-						+ definitelyUnreachableJumps + maybeUnreachableJumps)
-						/ (jumps));
-		} else {
-			if (solvedJumpsPercent == 0)
-				this.solvedJumpsPercent = -1;
-		}
-		this.totalResolvedJumps = preciselyResolvedJumps + soundResolvedJumps + definitelyUnreachableJumps
-				+ maybeUnreachableJumps;
-		this.unsoundJumps = unsoundJumps;
-		this.maybeUnsoundJumps = maybeUnsoundJumps;
+		this.resolvedJumps = resolvedJumps;
+		this.unknownJumps = unknownJumps;
+		this.unreachableJumps = unreachableJumps;
+		this.erroneousJumps = erroneousJumps;
+		this.edges = edges;
 		this.notes = notes;
 		this.time = time;
 		this.timeLostToGetStorage = timeLostToGetStorage;
@@ -80,12 +62,11 @@ public class MyLogger {
 		this.json.put("address", this.address);
 		this.json.put("opcodes", this.opcodes);
 		this.json.put("jumps", this.jumps);
-		this.json.put("resolved-jumps", this.totalResolvedJumps);
-		this.json.put("definitely-unreachable-jumps", this.definitelyUnreachableJumps);
-		this.json.put("maybe-unreachable-jumps", this.maybeUnreachableJumps);
-		this.json.put("unsound-jumps", this.unsoundJumps);
-		this.json.put("maybe-unsound-jumps", this.maybeUnsoundJumps);
-		this.json.put("solved-jumps-percent", this.solvedJumpsPercent);
+		this.json.put("resolved-jumps", this.resolvedJumps);
+		this.json.put("unknown-jumps", this.unknownJumps);
+		this.json.put("unreachable-jumps", this.unreachableJumps);
+		this.json.put("erroneous-jumps", this.erroneousJumps);
+		this.json.put("edges", this.edges);
 		this.json.put("time", this.time);
 		this.json.put("time-lost-to-get-storage", this.timeLostToGetStorage);
 		this.json.put("actual-time", this.actualTime);
@@ -111,38 +92,28 @@ public class MyLogger {
 		return this;
 	}
 
-	public MyLogger preciselyResolvedJumps(int preciselyResolvedJumps) {
-		this.preciselyResolvedJumps = preciselyResolvedJumps;
+	public MyLogger resolvedJumps(int resolvedJumps) {
+		this.resolvedJumps = resolvedJumps;
 		return this;
 	}
 
-	public MyLogger soundResolvedJumps(int soundResolvedJumps) {
-		this.soundResolvedJumps = soundResolvedJumps;
+	public MyLogger unknownJumps(int unknownJumps) {
+		this.unknownJumps = unknownJumps;
 		return this;
 	}
 
-	public MyLogger maybeUnreachableJumps(int maybeUnreachableJumps) {
-		this.maybeUnreachableJumps = maybeUnreachableJumps;
+	public MyLogger erroneousJumps(int erroneousJumps) {
+		this.erroneousJumps = erroneousJumps;
 		return this;
 	}
 
-	public MyLogger definitelyUnreachableJumps(int definitelyUnreachableJumps) {
-		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
+	public MyLogger unreachableJumps(int unreachableJumps) {
+		this.unreachableJumps = unreachableJumps;
 		return this;
 	}
-
-	public MyLogger unsoundJumps(int unsoundJumps) {
-		this.unsoundJumps = unsoundJumps;
-		return this;
-	}
-
-	public MyLogger maybeUnsoundJumps(int maybeUnsoundJumps) {
-		this.maybeUnsoundJumps = maybeUnsoundJumps;
-		return this;
-	}
-
-	public MyLogger solvedJumpsPercent(double solvedJumpsPercent) {
-		this.solvedJumpsPercent = solvedJumpsPercent;
+	
+	public MyLogger edges(int edges) {
+		this.edges = edges;
 		return this;
 	}
 
@@ -167,9 +138,8 @@ public class MyLogger {
 	}
 
 	public MyLogger build() {
-		return new MyLogger(address, opcodes, jumps, preciselyResolvedJumps, soundResolvedJumps,
-				definitelyUnreachableJumps, maybeUnreachableJumps, totalResolvedJumps,
-				unsoundJumps, maybeUnsoundJumps, solvedJumpsPercent,
+		return new MyLogger(address, opcodes, jumps, resolvedJumps, unknownJumps,
+				unreachableJumps, erroneousJumps, edges,
 				time, timeLostToGetStorage, json, notes);
 	}
 
@@ -186,13 +156,11 @@ public class MyLogger {
 		return address + divider +
 				opcodes + divider +
 				jumps + divider +
-				(soundResolvedJumps + preciselyResolvedJumps) + divider +
-				definitelyUnreachableJumps + divider +
-				maybeUnreachableJumps + divider +
-				totalResolvedJumps + divider +
-				unsoundJumps + divider +
-				maybeUnsoundJumps + divider +
-				solvedJumpsPercent + divider +
+				resolvedJumps + divider +
+				unknownJumps + divider +
+				unreachableJumps + divider +
+				erroneousJumps + divider +
+				edges + divider +
 				time + divider +
 				timeLostToGetStorage + divider +
 				actualTime + divider +

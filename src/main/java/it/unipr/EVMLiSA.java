@@ -650,75 +650,59 @@ public class EVMLiSA {
 
 		log.info("### Calculating statistics ###");
 
-		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps(); // LN: BOTTOM
-
-		int resolved = 0; // LN: RESOLVED
-		int unreachable = 0; // LN: UNREACHABLE
-		int bottom = unreachableJumpNodes.size(); // LN: BOTTOM 
-		int conservative = 0; // LN: CONSERVATIVE
-		final int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
-
 		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
 			log.warn("There are no entrypoints.");
 			return null;
 		}
 
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
+		int total = cfg.getAllJumps().size();
+		int resolved = 0;
+		int unreachable = 0;
+		int erroneous = 0; 
+		int unknown = 0; 
 
 		// we are safe supposing that we have a single entry point
-		for (Statement jumpNode : cfg.getAllJumps()) {
-			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-				boolean reachableFrom;
-				int key = cfg.hashCode() + entryPoint.hashCode() + jumpNode.hashCode();
-
-				if (MyCache.getInstance().existsInReachableFrom(key)) {
-					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
-					log.debug("Value cached");
-				} else {
-					reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-					MyCache.getInstance().addReachableFrom(key, reachableFrom);
-				}
-
-				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-				
-				if (cfg.getAllPushedJumps().contains(jumpNode))
-					resolved++;
-				else if (checker.getMaybeUnsoundJumps().contains(jumpNode))
-					conservative++;
-				else if (checker.getUnreachableJumps().contains(jumpNode) || !reachableFrom || topStackValuesPerJump.isEmpty())
+		for (Statement jumpNode : cfg.getAllJumps()) 
+			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) 
+				if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
+					// getUnreachableJumps() contains jumps where the whole value state went to bottom
 					unreachable++;
+				else if (checker.getMaybeUnsoundJumps().contains(jumpNode))
+					// getMaybeUnsoundJumps() contains jumps where the whole value state went to top
+					unknown++;
+				else if (cfg.getAllPushedJumps().contains(jumpNode))
+					// stacks of pushed jumps are not stored for optimization
+					resolved++;
 				else {
-					boolean allBot = true, oneTop = false;
-					for (StackElement e : topStackValuesPerJump) {
-						allBot &= e.isBottom();
-						oneTop |= e.isTop();
-					}
-					
-					if (allBot)
-						bottom++;
-					else if (oneTop)
-						conservative++;
+					Set<StackElement> topStacks = checker.getTopStackValuesPerJump(jumpNode);
+					if (topStacks.isEmpty())
+						unreachable++;
+					else if (topStacks.stream().allMatch(StackElement::isBottom))
+						erroneous++;
+					else if (topStacks.stream().anyMatch(StackElement::isTop))
+						unknown++;
 					else
 						resolved++;
 				}
-			}
-		}
 
 		log.info("Total opcodes: {}", cfg.getOpcodeCount());
-		log.info("Total jumps: {}", cfg.getAllJumps().size());
+		log.info("Total jumps: {}", total);
 		log.info("Resolved jumps: {}", resolved);
+		log.info("Unknown jumps: {}", unknown);
 		log.info("Unreachable jumps: {}", unreachable);
-		log.info("Bottom jumps: {}", bottom);
-		log.info("Conservative jumps: {}", conservative);
+		log.info("Erroneous jumps: {}", erroneous);
+		int edges = cfg.getEdgesCount();
+		log.info("Edges: {}", edges);
 
 		return MyLogger.newLogger()
 				.opcodes(cfg.getOpcodeCount())
-				.jumps(cfg.getAllJumps().size())
-				.preciselyResolvedJumps(resolved)
-				.definitelyUnreachableJumps(unreachable)
-				.maybeUnreachableJumps(bottom)
-				.unsoundJumps(conservative)
-				.maybeUnsoundJumps(maybeUnsoundJumps);
+				.jumps(total)
+				.resolvedJumps(resolved)
+				.unreachableJumps(unreachable)
+				.erroneousJumps(erroneous)
+				.unknownJumps(unknown)
+				.edges(edges);
 	}
 
 	/**
@@ -812,10 +796,20 @@ public class EVMLiSA {
 				if (!idea.exists()) {
 					FileWriter myWriter = new FileWriter(idea, true);
 
-					String init = "Smart Contract, Total Opcodes, Total Jumps, Solved Jumps, Definitely unreachable jumps, Maybe unreachable jumps, Total solved Jumps, "
-							+ "Unsound jumps, Maybe unsound jumps, % Total Solved, Time (millis), Time lost to get Storage, Actual time, Notes \n";
+					String header = "Smart Contract, "
+							+ "Total Opcodes, "
+							+ "Total Jumps, "
+							+ "Resolved Jumps, "
+							+ "Unknown jumps, "
+							+ "Unreachable jumps, "
+							+ "Erroneous Jumps, "
+							+ "Edges, "
+							+ "Time (millis), "
+							+ "Time lost to get Storage, "
+							+ "Actual time, "
+							+ "Notes";
 
-					myWriter.write(init + stats);
+					myWriter.write(header + "\n" + stats);
 					myWriter.close();
 
 				} else {
