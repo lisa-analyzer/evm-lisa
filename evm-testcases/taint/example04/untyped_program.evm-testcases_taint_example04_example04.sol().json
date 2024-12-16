@@ -1,0 +1,303 @@
+{
+  "name": "untyped program::evm-testcases/taint/example04/example04.sol()",
+  "description": null,
+  "nodes": [
+    {
+      "id": 0,
+      "subNodes": [
+        1
+      ],
+      "text": "PUSH1 0x20"
+    },
+    {
+      "id": 1,
+      "text": "0x20"
+    },
+    {
+      "id": 2,
+      "subNodes": [
+        3
+      ],
+      "text": "PUSH1 0x20"
+    },
+    {
+      "id": 3,
+      "text": "0x20"
+    },
+    {
+      "id": 4,
+      "text": "EXTCODEHASH"
+    },
+    {
+      "id": 5,
+      "text": "DUP2"
+    },
+    {
+      "id": 6,
+      "text": "AND"
+    },
+    {
+      "id": 7,
+      "subNodes": [
+        8
+      ],
+      "text": "PUSH1 0x20"
+    },
+    {
+      "id": 8,
+      "text": "0x20"
+    },
+    {
+      "id": 9,
+      "text": "ADDMOD"
+    },
+    {
+      "id": 10,
+      "text": "SMOD"
+    },
+    {
+      "id": 11,
+      "text": "CREATE"
+    },
+    {
+      "id": 12,
+      "text": "NOT"
+    },
+    {
+      "id": 13,
+      "text": "ret"
+    }
+  ],
+  "edges": [
+    {
+      "sourceId": 0,
+      "destId": 2,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 2,
+      "destId": 4,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 4,
+      "destId": 5,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 5,
+      "destId": 6,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 6,
+      "destId": 7,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 7,
+      "destId": 9,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 9,
+      "destId": 10,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 10,
+      "destId": 11,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 11,
+      "destId": 12,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 12,
+      "destId": 13,
+      "kind": "SequentialEdge"
+    }
+  ],
+  "descriptions": [
+    {
+      "nodeId": 0,
+      "description": {
+        "expressions": [
+          "push \"0x20\""
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C]"
+        }
+      }
+    },
+    {
+      "nodeId": 1,
+      "description": {
+        "expressions": [
+          "\"0x20\""
+        ],
+        "state": "#TOP#"
+      }
+    },
+    {
+      "nodeId": 2,
+      "description": {
+        "expressions": [
+          "push \"0x20\""
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C]"
+        }
+      }
+    },
+    {
+      "nodeId": 3,
+      "description": {
+        "expressions": [
+          "\"0x20\""
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C]"
+        }
+      }
+    },
+    {
+      "nodeId": 4,
+      "description": {
+        "expressions": [
+          "extcodehash 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, #TOP#]"
+        }
+      }
+    },
+    {
+      "nodeId": 5,
+      "description": {
+        "expressions": [
+          "dup2 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, #TOP#, C]"
+        }
+      }
+    },
+    {
+      "nodeId": 6,
+      "description": {
+        "expressions": [
+          "and 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, #TOP#]"
+        }
+      }
+    },
+    {
+      "nodeId": 7,
+      "description": {
+        "expressions": [
+          "push \"0x20\""
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, #TOP#, C]"
+        }
+      }
+    },
+    {
+      "nodeId": 8,
+      "description": {
+        "expressions": [
+          "\"0x20\""
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, #TOP#]"
+        }
+      }
+    },
+    {
+      "nodeId": 9,
+      "description": {
+        "expressions": [
+          "addmod 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, #TOP#]"
+        }
+      }
+    },
+    {
+      "nodeId": 10,
+      "description": {
+        "expressions": [
+          "smod 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "_|_"
+        }
+      }
+    },
+    {
+      "nodeId": 11,
+      "description": {
+        "expressions": [
+          "create 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "_|_"
+        }
+      }
+    },
+    {
+      "nodeId": 12,
+      "description": {
+        "expressions": [
+          "not 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "_|_"
+        }
+      }
+    },
+    {
+      "nodeId": 13,
+      "description": {
+        "expressions": [
+          "skip"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "_|_"
+        }
+      }
+    }
+  ]
+}

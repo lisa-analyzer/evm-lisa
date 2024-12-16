@@ -1,5 +1,5 @@
 {
-  "name": "untyped program::evm-testcases/taint/example/example.sol()",
+  "name": "untyped program::evm-testcases/taint/example02/example02.sol()",
   "description": null,
   "nodes": [
     {
@@ -26,10 +26,18 @@
     },
     {
       "id": 4,
-      "text": "ORIGIN"
+      "text": "AND"
     },
     {
       "id": 5,
+      "text": "ORIGIN"
+    },
+    {
+      "id": 6,
+      "text": "ADD"
+    },
+    {
+      "id": 7,
       "text": "ret"
     }
   ],
@@ -47,6 +55,16 @@
     {
       "sourceId": 4,
       "destId": 5,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 5,
+      "destId": 6,
+      "kind": "SequentialEdge"
+    },
+    {
+      "sourceId": 6,
+      "destId": 7,
       "kind": "SequentialEdge"
     }
   ],
@@ -103,17 +121,43 @@
       "nodeId": 4,
       "description": {
         "expressions": [
-          "origin 1"
+          "and 1"
         ],
         "state": {
           "heap": "monolith",
           "type": "#TOP#",
-          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, T]"
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C]"
         }
       }
     },
     {
       "nodeId": 5,
+      "description": {
+        "expressions": [
+          "origin 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, T]"
+        }
+      }
+    },
+    {
+      "nodeId": 6,
+      "description": {
+        "expressions": [
+          "add 1"
+        ],
+        "state": {
+          "heap": "monolith",
+          "type": "#TOP#",
+          "value": "[_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, T]"
+        }
+      }
+    },
+    {
+      "nodeId": 7,
       "description": {
         "expressions": [
           "skip"
