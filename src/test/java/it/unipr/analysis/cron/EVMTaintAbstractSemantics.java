@@ -1,11 +1,6 @@
 package it.unipr.analysis.cron;
 
-import java.io.IOException;
-
-import org.junit.Test;
-
 import it.unipr.analysis.taint.TaintAbstractStack;
-import it.unipr.checker.JumpSolver;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -14,6 +9,8 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such
@@ -52,9 +49,10 @@ public class EVMTaintAbstractSemantics extends EVMBytecodeAnalysisExecutor {
 		if (generateCfg) {
 			conf.analysisGraphs = GraphType.DOT;
 		}
-		conf.abstractState = new SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>(
-				new MonolithicHeap(), new TaintAbstractStack(),
-				new TypeEnvironment<>(new InferredTypes()));
+		conf.abstractState = new SimpleAbstractState<MonolithicHeap, TaintAbstractStack,
+				TypeEnvironment<InferredTypes>>(
+						new MonolithicHeap(), new TaintAbstractStack(),
+						new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 //		conf.semanticChecks.add(new JumpSolver());
@@ -90,6 +88,60 @@ public class EVMTaintAbstractSemantics extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testTaint05() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint", "example05", "example05.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint06() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example06", "example06.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint07() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example07", "example07.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint08() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example08", "example08.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint09() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example09", "example09.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint10() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example10", "example10.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint11() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example11", "example11.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint12() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example12", "example12.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint13() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example13", "example13.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint14() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example14", "example14.sol", false);
 		perform(conf);
 	}
 }

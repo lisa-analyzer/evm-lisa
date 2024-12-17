@@ -11,19 +11,20 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
 
 public class TimestampDependencyChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> {
-
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> {
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool) {
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool) {
 		// TODO Auto-generated method stub
 		SemanticCheck.super.beforeExecution(tool);
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		// TODO Auto-generated method stub
 		return SemanticCheck.super.visit(tool, graph, node);
@@ -31,7 +32,8 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnviro
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool) {
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool) {
 		// TODO Auto-generated method stub
 		SemanticCheck.super.afterExecution(tool);
 	}

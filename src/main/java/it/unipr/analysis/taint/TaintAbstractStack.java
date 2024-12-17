@@ -31,7 +31,6 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 	private final ArrayList<TaintElement> stack;
 
-	
 	/**
 	 * Builds an initial symbolic stack.
 	 */
@@ -205,50 +204,45 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 						return resultStack;
 				}
 
-				/*
-				 * case "MstoreOperator": { // MSTORE Memory memoryResult =
-				 * memory; StackElement new_mu_i = mu_i; for (AbstractStack
-				 * stack : stacks) { if (stack.hasBottomUntil(2)) continue;
-				 * AbstractStack stackResult = stack.clone(); StackElement
-				 * offset = stackResult.pop(); StackElement value =
-				 * stackResult.pop(); if (offset.isTop()) { new_mu_i = mu_i;
-				 * memoryResult = memory; } else { StackElement current_mu_i_lub
-				 * = StackElement.BOTTOM; Number thirtyTwo = new Number(32);
-				 * Number current_mu_i = offset.getNumber().add(thirtyTwo)
-				 * .divide(thirtyTwo); memoryResult =
-				 * memory.putState(offset.getNumber(), value); current_mu_i_lub
-				 * = current_mu_i_lub.lub(new StackElement(current_mu_i));
-				 * new_mu_i = current_mu_i_lub; } result.add(stackResult); } if
-				 * (result.isEmpty()) return BOTTOM; else return new
-				 * EVMAbstractState(result, memoryResult, storage, new_mu_i); }
-				 * case "Mstore8Operator": { // MSTORE8 Memory memoryResult =
-				 * memory; StackElement new_mu_i = mu_i; for (AbstractStack
-				 * stack : stacks) { if (stack.hasBottomUntil(2)) continue;
-				 * AbstractStack stackResult = stack.clone(); StackElement
-				 * offset = stackResult.pop(); StackElement value =
-				 * stackResult.pop(); if (offset.isTop()) { new_mu_i = mu_i;
-				 * memoryResult = memory; } else { StackElement current_mu_i_lub
-				 * = StackElement.BOTTOM; Number current_mu_i =
-				 * offset.getNumber().add(new Number(1)) .divide(new
-				 * Number(32)); memoryResult =
-				 * memory.putState(offset.getNumber(), value.mod(new
-				 * StackElement(new Number(256)))); current_mu_i_lub =
-				 * current_mu_i_lub.lub(new StackElement(current_mu_i));
-				 * new_mu_i = current_mu_i_lub; } result.add(stackResult); } if
-				 * (result.isEmpty()) return BOTTOM; else return new
-				 * EVMAbstractState(result, memoryResult, storage, new_mu_i); }
-				 * case "SstoreOperator": { // SSTORE Memory storageResult =
-				 * storage.bottom(); for (AbstractStack stack : stacks) { if
-				 * (stack.hasBottomUntil(2)) continue; AbstractStack resultStack
-				 * = stack.clone(); StackElement key = resultStack.pop();
-				 * StackElement value = resultStack.pop(); Memory storageCopy =
-				 * storage.clone(); if (!(key.isTopNumeric() ||
-				 * key.isTopNotJumpdest())) storageResult =
-				 * storageCopy.putState(key.getNumber(), value);
-				 * result.add(resultStack); } if (result.isEmpty()) return
-				 * BOTTOM; else return new EVMAbstractState(result, memory,
-				 * storageResult, mu_i); }
-				 */
+				case "MstoreOperator": { // MSTORE
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+
+					TaintElement offset = resultStack.pop();
+					TaintElement value = resultStack.pop();
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "Mstore8Operator": { // MSTORE8
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+
+					TaintElement offset = resultStack.pop();
+					TaintElement value = resultStack.pop();
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "SstoreOperator": { // SSTORE
+					if (hasBottomUntil(2))
+						return BOTTOM;
+					TaintAbstractStack resultStack = clone();
+					TaintElement key = resultStack.pop();
+					TaintElement value = resultStack.pop();
+
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+
 				case "Dup1Operator": { // DUP1
 					if (hasBottomUntil(1))
 						return BOTTOM;
@@ -1014,7 +1008,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 		return new StringRepresentation(stack.toString());
 	}
-	
+
 	@Override
 	public String toString() {
 		if (isBottom())
