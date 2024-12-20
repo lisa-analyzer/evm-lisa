@@ -144,4 +144,22 @@ public class EVMTaintAbstractSemantics extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("taint", "example14", "example14.sol", false);
 		perform(conf);
 	}
+
+	@Test
+	public void testTaint15() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example15", "example15.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint16() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example16", "example16.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTaint17() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint", "example17", "example17.sol", false);
+		perform(conf);
+	}
 }
