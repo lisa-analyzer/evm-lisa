@@ -57,7 +57,7 @@ public class TaintElement implements BaseLattice<TaintElement> {
 	 * 
 	 * @return {@code true} if this value is taint, {@code false} otherwise
 	 */
-	private boolean isTaint() {
+	public boolean isTaint() {
 		return this == TAINT;
 	}
 

@@ -1,5 +1,6 @@
 package it.unipr.analysis.taint;
 
+import it.unipr.analysis.StackElement;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -1151,5 +1152,21 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	@Override
 	public int hashCode() {
 		return java.util.Objects.hash(stack);
+	}
+
+	public TaintElement getSecondElement() {
+		if (isBottom())
+			return TaintElement.BOTTOM;
+		else if (isTop())
+			return TaintElement.TOP;
+		return this.stack.get(STACK_LIMIT - 2);
+	}
+
+	public TaintElement getFirstElement() {
+		if (isBottom())
+			return TaintElement.BOTTOM;
+		else if (isTop())
+			return TaintElement.TOP;
+		return this.stack.get(STACK_LIMIT - 1);
 	}
 }
