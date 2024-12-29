@@ -320,6 +320,12 @@ if __name__ == "__main__":
                                  './reentrancy-solidifi/json')
         compile_solidity_sources('./vanilla-solidifi/source-code',
                                  './vanilla-solidifi/json')
+        # TX-ORIGIN
+        # extract_solidity_versions('./tx-origin-solidifi/source-code',
+        #                           './tx-origin-solidifi/source-code/versions.csv')
+        compile_solidity_sources_with_different_version('./tx-origin-solidifi/source-code',
+                                                        './tx-origin-solidifi/json',
+                                                        './tx-origin-solidifi/source-code/versions.csv')
         
         if args.longest_bytecode:
             # EVMLiSA
@@ -327,6 +333,9 @@ if __name__ == "__main__":
                                               './vanilla-solidifi/json')
             extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
                                               './reentrancy-solidifi/json')
+                # TX-ORIGIN
+            extract_and_save_longest_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
+                                              './tx-origin-solidifi/json')
             
             # EtherSolve
             extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
@@ -341,6 +350,9 @@ if __name__ == "__main__":
                                       './vanilla-solidifi/json')
             extract_and_save_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
                                       './reentrancy-solidifi/json')
+                # TX-ORIGIN
+            extract_and_save_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
+                                      './tx-origin-solidifi/json')
             
             # EtherSolve
             extract_and_save_bytecode('./vanilla-solidifi/bytecode/ethersolve',
