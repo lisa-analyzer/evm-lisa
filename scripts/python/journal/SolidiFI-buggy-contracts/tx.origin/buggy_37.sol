@@ -2,7 +2,7 @@
  * Source Code first verified at https://etherscan.io on Thursday, March 28, 2019
  (UTC) */
 
-pragma solidity ^0.5.00;
+pragma solidity ^0.5.0;
 
 // ----------------------------------------------------------------------------
 // 'August Coin' token contract
