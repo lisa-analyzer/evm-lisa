@@ -106,7 +106,7 @@ public class TaintElement implements BaseLattice<TaintElement> {
 			else if (t == TOP)
 				checkTop = true;
 
-		if (checkTop == true)
+		if (checkTop)
 			return TOP;
 
 		return CLEAN;

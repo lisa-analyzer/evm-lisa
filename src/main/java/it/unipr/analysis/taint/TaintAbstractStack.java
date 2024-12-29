@@ -245,324 +245,100 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				}
 
 				case "Dup1Operator": { // DUP1
-					if (hasBottomUntil(1))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(1, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(1, clone());
 				}
 				case "Dup2Operator": { // DUP2
-					if (hasBottomUntil(2))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(2, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(2, clone());
 				}
 				case "Dup3Operator": { // DUP3
-					if (hasBottomUntil(3))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(3, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(3, clone());
 				}
 				case "Dup4Operator": { // DUP4
-					if (hasBottomUntil(4))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(4, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(4, clone());
 				}
 				case "Dup5Operator": { // DUP5
-					if (hasBottomUntil(5))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(5, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(5, clone());
 				}
 				case "Dup6Operator": { // DUP6
-					if (hasBottomUntil(6))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(6, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(6, clone());
 				}
 				case "Dup7Operator": { // DUP7
-					if (hasBottomUntil(7))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(7, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(7, clone());
 				}
 				case "Dup8Operator": { // DUP8
-					if (hasBottomUntil(8))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(8, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(8, clone());
 				}
 				case "Dup9Operator": { // DUP9
-					if (hasBottomUntil(9))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(9, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(9, clone());
 				}
 				case "Dup10Operator": { // DUP10
-					if (hasBottomUntil(10))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(10, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(10, clone());
 				}
 				case "Dup11Operator": { // DUP11
-					if (hasBottomUntil(11))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(11, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(11, clone());
 				}
 				case "Dup12Operator": { // DUP12
-					if (hasBottomUntil(12))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(12, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(12, clone());
 				}
 				case "Dup13Operator": { // DUP13
-					if (hasBottomUntil(13))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(13, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(13, clone());
 				}
 				case "Dup14Operator": { // DUP14
-					if (hasBottomUntil(14))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(14, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(14, clone());
 				}
 				case "Dup15Operator": { // DUP15
-					if (hasBottomUntil(15))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(15, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(15, clone());
 				}
 				case "Dup16Operator": { // DUP16
-					if (hasBottomUntil(16))
-						return BOTTOM;
-					TaintAbstractStack resultStack = dupX(16, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return dupXoperator(16, clone());
 				}
 				case "Swap1Operator": { // SWAP1
-					if (hasBottomUntil(1))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(1, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(1, clone());
 				}
 				case "Swap2Operator": { // SWAP2
-					if (hasBottomUntil(2))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(2, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(2, clone());
 				}
 				case "Swap3Operator": { // SWAP3
-					if (hasBottomUntil(3))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(3, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(3, clone());
 				}
 				case "Swap4Operator": { // SWAP4
-					if (hasBottomUntil(4))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(4, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(4, clone());
 				}
 				case "Swap5Operator": { // SWAP5
-					if (hasBottomUntil(5))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(5, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(5, clone());
 				}
 				case "Swap6Operator": { // SWAP6
-					if (hasBottomUntil(6))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(6, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(6, clone());
 				}
 				case "Swap7Operator": { // SWAP7
-					if (hasBottomUntil(7))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(7, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(7, clone());
 				}
 				case "Swap8Operator": { // SWAP8
-					if (hasBottomUntil(8))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(8, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(8, clone());
 				}
 				case "Swap9Operator": { // SWAP9
-					if (hasBottomUntil(9))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(9, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(9, clone());
 				}
 				case "Swap10Operator": { // SWAP10
-					if (hasBottomUntil(10))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(10, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(10, clone());
 				}
 				case "Swap11Operator": { // SWAP11
-					if (hasBottomUntil(11))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(11, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(11, clone());
 				}
 				case "Swap12Operator": { // SWAP12
-					if (hasBottomUntil(12))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(12, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(12, clone());
 				}
 				case "Swap13Operator": { // SWAP13
-					if (hasBottomUntil(13))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(13, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(13, clone());
 				}
 				case "Swap14Operator": { // SWAP14
-					if (hasBottomUntil(14))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(14, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(14, clone());
 				}
 				case "Swap15Operator": { // SWAP15
-					if (hasBottomUntil(15))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(15, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(15, clone());
 				}
 				case "Swap16Operator": { // SWAP16
-					if (hasBottomUntil(16))
-						return BOTTOM;
-					TaintAbstractStack resultStack = swapX(16, clone());
-
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					return swapXoperator(16, clone());
 				}
 				case "Log0Operator": { // LOG0
 					// At the moment, we do not handle LOG0
@@ -892,6 +668,18 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			throw new SemanticException("Reachable just with the skip node");
 
 		return top();
+	}
+
+	private TaintAbstractStack dupXoperator(int x, TaintAbstractStack stack) {
+		if (stack.isEmpty() || stack.hasBottomUntil(x))
+			return BOTTOM;
+		return dupX(x, stack.clone());
+	}
+
+	private TaintAbstractStack swapXoperator(int x, TaintAbstractStack stack) {
+		if (stack.isEmpty() || stack.hasBottomUntil(x))
+			return BOTTOM;
+		return swapX(x, stack.clone());
 	}
 
 	private TaintAbstractStack swapX(int x, TaintAbstractStack stack) {
