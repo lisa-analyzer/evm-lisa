@@ -34,6 +34,11 @@ scripts/python/journal/reentrancy-slise-db1/json/
 scripts/python/journal/reentrancy-slise-db1/bytecode/
 scripts/python/journal/reentrancy-slise-db1/match-file-index.json
 
+# SolidiFI tx-origin
+scripts/python/journal/tx-origin-solidifi/results/
+scripts/python/journal/tx-origin-solidifi/json/
+scripts/python/journal/tx-origin-solidifi/bytecode/
+
 scripts/python/journal/execution/
 scripts/python/journal/images/
 scripts/python/journal/DAppSCAN/
