@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_taint_example08_example08.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_taint_example18_example18.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "107ms",
-    "end" : "2024-12-29T10:31:09.534+01:00",
-    "expressions" : "5",
+    "duration" : "1ms",
+    "end" : "2024-12-29T10:37:41.616+01:00",
+    "expressions" : "4",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-12-29T10:31:09.427+01:00",
-    "statements" : "12",
+    "start" : "2024-12-29T10:37:41.615+01:00",
+    "statements" : "11",
     "units" : "0",
     "version" : "0.1",
     "warnings" : "0"
@@ -33,6 +33,6 @@
     "syntacticChecks" : "",
     "useWideningPoints" : "false",
     "wideningThreshold" : "5",
-    "workdir" : "evm-outputs/taint/example08"
+    "workdir" : "evm-outputs/taint/example18"
   }
 }
