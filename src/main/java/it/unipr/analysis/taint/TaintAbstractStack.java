@@ -1,6 +1,5 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.StackElement;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -27,25 +26,37 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 	private static int STACK_LIMIT = 32;
 	private static final TaintAbstractStack TOP = new TaintAbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)));
-	private static final TaintAbstractStack BOTTOM = new TaintAbstractStack(null);
+			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), new ArrayList<>());
+	private static final TaintAbstractStack BOTTOM = new TaintAbstractStack(null, new ArrayList<>());
 
 	private final ArrayList<TaintElement> stack;
+	
+	private final ArrayList<String> pushTaintList;
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TaintAbstractStack() {
 		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
+		this.pushTaintList = new ArrayList<>();
+	}
+	
+	/**
+	 * Builds a taint abstract stack starting from a given list of elements that push taint .
+	 */
+	public TaintAbstractStack(ArrayList<String> pushTaintList) {
+		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
+		this.pushTaintList = pushTaintList;
 	}
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack.
+	 * Builds a taint abstract stack starting from a given stack and a list of elements that push taint.
 	 *
 	 * @param stack the stack of values
 	 */
-	private TaintAbstractStack(ArrayList<TaintElement> stack) {
+	private TaintAbstractStack(ArrayList<TaintElement> stack, ArrayList<String> pushTaintList) {
 		this.stack = stack;
+		this.pushTaintList = pushTaintList;
 	}
 
 	@Override
@@ -72,11 +83,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			if (op != null) {
 				switch (op.getClass().getSimpleName()) {
 				case "TimestampOperator":
-				case "OriginOperator": {
-					TaintAbstractStack resultStack = clone();
-					resultStack.push(TaintElement.TAINT);
-					return resultStack;
-				}
+				case "OriginOperator":
 				case "CodesizeOperator":
 				case "GaspriceOperator":
 				case "ReturndatasizeOperator":
@@ -97,37 +104,44 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "PushOperator":
 				case "Push0Operator": {
 					TaintAbstractStack resultStack = clone();
-					resultStack.push(TaintElement.CLEAN);
+					if(this.pushTaintList.contains(op.getClass().getSimpleName()))
+						resultStack.push(TaintElement.TAINT);
+					else resultStack.push(TaintElement.CLEAN);
 					resultStack.toString();
 					return resultStack;
 				}
 
-				/*
-				 * case "JumpdestOperator": { // JUMPDEST return this; } //
-				 * Above, operators that do not perform pop() // Below,
-				 * operators that perform pop operation on the stack case
-				 * "JumpOperator": { // JUMP for (AbstractStack stack : stacks)
-				 * { if (stack.hasBottomUntil(1)) continue; AbstractStack
-				 * resultStack = stack.clone(); StackElement jmpDest =
-				 * resultStack.pop(); if (((EVMCFG)
-				 * pp.getCFG()).getAllPushedJumps().contains(pp) &&
-				 * jmpDest.isTop()) continue; if (jmpDest.isBottom() ||
-				 * jmpDest.isTopNotJumpdest()) continue; if (((EVMCFG)
-				 * pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.
-				 * getNumber()) || jmpDest.isTop()) result.add(resultStack); }
-				 * if (result.isEmpty()) return BOTTOM; else return new
-				 * EVMAbstractState(result, memory, storage, mu_i); } case
-				 * "JumpiOperator": { // JUMPI for (AbstractStack stack :
-				 * stacks) { if (stack.hasBottomUntil(2)) continue;
-				 * AbstractStack resultStack = stack.clone(); StackElement
-				 * jmpDest = resultStack.pop(); StackElement cond =
-				 * resultStack.pop(); if (jmpDest.isBottom() || cond.isBottom()
-				 * || jmpDest.isTopNotJumpdest()) continue; if (((EVMCFG)
-				 * pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.
-				 * getNumber()) || jmpDest.isTop()) result.add(resultStack); }
-				 * if (result.isEmpty()) return BOTTOM; else return new
-				 * EVMAbstractState(result, memory, storage, mu_i); }
-				 */
+				case "JumpdestOperator": { // JUMPDEST
+					return this;
+				}
+
+				// Above, operators that do not perform pop()
+				// Below, operators that perform pop operation on the stack
+
+				case "JumpOperator": { // JUMP
+					if (hasBottomUntil(1))
+							return BOTTOM;
+
+					TaintAbstractStack resultStack = clone();
+					TaintElement jmpDest = resultStack.pop();
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
+				case "JumpiOperator": { // JUMPI
+
+					if (hasBottomUntil(2))
+						return BOTTOM;
+
+					TaintAbstractStack resultStack = clone();
+					TaintElement jmpDest = resultStack.pop();
+					TaintElement cond = resultStack.pop();
+					if (resultStack.isEmpty())
+						return BOTTOM;
+					else
+						return resultStack;
+				}
 
 				case "BalanceOperator":
 				case "NotOperator":
@@ -705,7 +719,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
 
-		return new TaintAbstractStack(result);
+		return new TaintAbstractStack(result, this.pushTaintList);
 	}
 
 	private TaintAbstractStack dupX(int x, TaintAbstractStack stack) {
@@ -732,7 +746,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 		result.add(tmp);
 		result.remove(0);
 
-		return new TaintAbstractStack(result);
+		return new TaintAbstractStack(result, this.pushTaintList);
 	}
 
 	private ArrayList<TaintElement> getStack() {
@@ -843,7 +857,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			result.add(thisElement.glb(otherElement));
 		}
 
-		return new TaintAbstractStack(result);
+		return new TaintAbstractStack(result, this.pushTaintList);
 	}
 
 	@Override
@@ -859,7 +873,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			result.add(thisElement.lub(otherElement));
 		}
 
-		return new TaintAbstractStack(result);
+		return new TaintAbstractStack(result, this.pushTaintList);
 	}
 
 	@Override
@@ -922,7 +936,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	public TaintAbstractStack clone() {
 		if (isBottom())
 			return this;
-		return new TaintAbstractStack(new ArrayList<>(stack));
+		return new TaintAbstractStack(new ArrayList<>(stack), new ArrayList<>(pushTaintList));
 	}
 
 	@Override
