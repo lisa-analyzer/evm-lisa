@@ -2,6 +2,7 @@ package it.unipr;
 
 import it.unipr.analysis.*;
 import it.unipr.analysis.taint.TaintAbstractDomain;
+import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
@@ -498,9 +499,7 @@ public class EVMLiSA {
 			// Clear existing checks and add the TxOriginChecker
 			conf.semanticChecks.clear();
 			conf.semanticChecks.add(new TxOriginChecker());
-			HashSet<String> list = new HashSet<String>();
-			list.add("OriginOperator");
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TaintAbstractDomain(list),
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
 

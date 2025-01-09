@@ -1,6 +1,7 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
+import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -51,7 +52,7 @@ public class EVMTaintAbstractSemantics extends EVMBytecodeAnalysisExecutor {
 		}
 		conf.abstractState = new SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 				TypeEnvironment<InferredTypes>>(
-						new MonolithicHeap(), new TaintAbstractDomain(),
+						new MonolithicHeap(), new TxOriginAbstractDomain(),
 						new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();

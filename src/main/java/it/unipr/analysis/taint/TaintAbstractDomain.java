@@ -8,8 +8,10 @@ import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.Operator;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
@@ -21,45 +23,26 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
-public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
+public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
-	private static int STACK_LIMIT = 32;
-	private static final TaintAbstractDomain TOP = new TaintAbstractDomain(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), new HashSet<String>());
-	private static final TaintAbstractDomain BOTTOM = new TaintAbstractDomain(null, new HashSet<String>());
+	static int STACK_LIMIT = 32;
+	
 
 	private final ArrayList<TaintElement> stack;
 	
-	private final HashSet<String> pushTaintList;
-
-	/**
-	 * Builds an initial symbolic stack.
-	 */
-	public TaintAbstractDomain() {
-		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
-		this.pushTaintList = new HashSet<String>();
-	}
-	
-	/**
-	 * Builds a taint abstract stack starting from a given list of elements that push taint .
-	 */
-	public TaintAbstractDomain(HashSet<String> pushTaintList) {
-		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
-		this.pushTaintList = pushTaintList;
-	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of elements that push taint.
 	 *
 	 * @param stack the stack of values
 	 */
-	private TaintAbstractDomain(ArrayList<TaintElement> stack, HashSet<String> pushTaintList) {
+	protected TaintAbstractDomain(ArrayList<TaintElement> stack) {
 		this.stack = stack;
-		this.pushTaintList = pushTaintList;
 	}
-
+	
 	@Override
 	public TaintAbstractDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
@@ -105,7 +88,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "PushOperator":
 				case "Push0Operator": {
 					TaintAbstractDomain resultStack = clone();
-					if(this.pushTaintList.contains(op.getClass().getSimpleName()))
+					if(this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else resultStack.push(TaintElement.CLEAN);
 					resultStack.toString();
@@ -121,7 +104,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 
 				case "JumpOperator": { // JUMP
 					if (hasBottomUntil(1))
-							return BOTTOM;
+							return bottom();
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
@@ -131,7 +114,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "JumpiOperator": { // JUMPI
 
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
@@ -148,7 +131,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "SloadOperator":
 				case "IszeroOperator": { // pop 1, push 1
 					if (hasBottomUntil(1))
-						return BOTTOM;
+						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
@@ -180,7 +163,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "SubOperator":
 				case "AddOperator": { // pops 2, push 1
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
@@ -193,7 +176,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "MulmodOperator":
 				case "AddmodOperator": { // pops 3, push 1
 					if (hasBottomUntil(3))
-						return BOTTOM;
+						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
@@ -206,51 +189,51 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 
 				case "PopOperator": { // POP
 					if (hasBottomUntil(1))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 
 				case "MstoreOperator": { // MSTORE
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 
 					TaintElement offset = resultStack.pop();
 					TaintElement value = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "Mstore8Operator": { // MSTORE8
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 
 					TaintElement offset = resultStack.pop();
 					TaintElement value = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "SstoreOperator": { // SSTORE
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement key = resultStack.pop();
 					TaintElement value = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
@@ -354,34 +337,34 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "Log0Operator": { // LOG0
 					// At the moment, we do not handle LOG0
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "Log1Operator": { // LOG1
 					// At the moment, we do not handle LOG1
 					if (hasBottomUntil(3))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 					resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "Log2Operator": { // LOG2
 					// At the moment, we do not handle LOG2
 					if (hasBottomUntil(4))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -389,14 +372,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "Log3Operator": { // LOG3
 					// At the moment, we do not handle LOG3
 					if (hasBottomUntil(5))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -405,14 +388,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "Log4Operator": { // LOG4
 					// At the moment, we do not handle LOG4
 					if (hasBottomUntil(6))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -422,14 +405,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "CreateOperator": { // CREATE
 					// At the moment, we do not handle CREATE
 					if (hasBottomUntil(3))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement value = resultStack.pop();
 					TaintElement offset = resultStack.pop();
@@ -439,14 +422,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "Create2Operator": { // CREATE2
 					// At the moment, we do not handle CREATE2
 					if (hasBottomUntil(4))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement value = resultStack.pop();
 					TaintElement offset = resultStack.pop();
@@ -457,14 +440,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "CallOperator": { // CALL
 					// At the moment, we do not handle CALL
 					if (hasBottomUntil(7))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
@@ -478,14 +461,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "CallcodeOperator": { // CALLCODE
 					// At the moment, we do not handle CALLCODE
 					if (hasBottomUntil(7))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
@@ -499,27 +482,27 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "ReturnOperator": { // RETURN
 					// At the moment, we do not handle RETURN
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "DelegatecallOperator": { // DELEGATECALL
 					// At the moment, we do not handle DELEGATECALL
 					if (hasBottomUntil(6))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
@@ -532,14 +515,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "StaticcallOperator": { // STATICCALL
 					// At the moment, we do not handle STATICCALL
 					if (hasBottomUntil(6))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
@@ -552,20 +535,20 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "RevertOperator": { // REVERT
 					// At the moment, we do not handle REVERT
 					if (hasBottomUntil(2))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
@@ -575,33 +558,33 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 				case "SelfdestructOperator": { // SELFDESTRUCT
 					// At the moment, we do not handle SELFDESTRUCT
 					if (hasBottomUntil(1))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement recipient = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "CodecopyOperator": { // CODECOPY
 					// At the moment, we do not handle CODECOPY
 					if (hasBottomUntil(3))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement memOffset = resultStack.pop();
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "ExtcodesizeOperator": { // EXTCODESIZE
 					// At the moment, we do not handle EXTCODESIZE
 					if (hasBottomUntil(1))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
@@ -609,14 +592,14 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "ExtcodecopyOperator": { // EXTCODECOPY
 					// At the moment, we do not handle EXTCODECOPY
 					if (hasBottomUntil(4))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 					TaintElement memOffset = resultStack.pop();
@@ -624,28 +607,28 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					TaintElement length = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
 					// At the moment, we do not handle RETURNDATACOPY
 					if (hasBottomUntil(3))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement memOffset = resultStack.pop();
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "ExtcodehashOperator": { // EXTCODEHASH
 					// At the moment, we do not handle EXTCODEHASH
 					if (hasBottomUntil(1))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
@@ -653,21 +636,21 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
 				case "BlockhashOperator": { // BLOCKHASH
 					// At the moment, we do not handle BLOCKHASH
 					if (hasBottomUntil(1))
-						return BOTTOM;
+						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					TaintElement blockNumber = resultStack.pop();
 
 					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 
 					if (resultStack.isEmpty())
-						return BOTTOM;
+						return bottom();
 					else
 						return resultStack;
 				}
@@ -683,13 +666,13 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 
 	private TaintAbstractDomain dupXoperator(int x, TaintAbstractDomain stack) {
 		if (stack.isEmpty() || stack.hasBottomUntil(x))
-			return BOTTOM;
+			return bottom();
 		return dupX(x, stack.clone());
 	}
 
 	private TaintAbstractDomain swapXoperator(int x, TaintAbstractDomain stack) {
 		if (stack.isEmpty() || stack.hasBottomUntil(x))
-			return BOTTOM;
+			return bottom();
 		return swapX(x, stack.clone());
 	}
 
@@ -716,7 +699,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
 
-		return new TaintAbstractDomain(result, this.pushTaintList);
+		return mk(result);
 	}
 
 	private TaintAbstractDomain dupX(int x, TaintAbstractDomain stack) {
@@ -743,7 +726,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 		result.add(tmp);
 		result.remove(0);
 
-		return new TaintAbstractDomain(result, this.pushTaintList);
+		return mk(result);
 	}
 
 	private ArrayList<TaintElement> getStack() {
@@ -831,15 +814,6 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 		return this;
 	}
 
-	@Override
-	public TaintAbstractDomain top() {
-		return TOP;
-	}
-
-	@Override
-	public TaintAbstractDomain bottom() {
-		return BOTTOM;
-	}
 
 	@Override
 	public TaintAbstractDomain glbAux(TaintAbstractDomain other) throws SemanticException {
@@ -854,7 +828,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 			result.add(thisElement.glb(otherElement));
 		}
 
-		return new TaintAbstractDomain(result, this.pushTaintList);
+		return mk(result);
 	}
 
 	@Override
@@ -870,7 +844,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 			result.add(thisElement.lub(otherElement));
 		}
 
-		return new TaintAbstractDomain(result, this.pushTaintList);
+		return mk(result);
 	}
 
 	@Override
@@ -933,7 +907,7 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 	public TaintAbstractDomain clone() {
 		if (isBottom())
 			return this;
-		return new TaintAbstractDomain(new ArrayList<>(stack), new HashSet<String>(pushTaintList));
+		return mk(new ArrayList<>(stack));
 	}
 
 	@Override
@@ -968,4 +942,9 @@ public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, Ba
 			return TaintElement.TOP;
 		return this.stack.get(STACK_LIMIT - 1);
 	}
+	
+	public abstract Set<Operator> getTaintedOpcode();
+	
+	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list);
+
 }
