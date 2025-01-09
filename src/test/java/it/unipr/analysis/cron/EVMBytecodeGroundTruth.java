@@ -68,7 +68,8 @@ public class EVMBytecodeGroundTruth {
 
 		List<String> smartContracts = EVMLiSA.readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
+		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		for (String address : smartContracts) {
 			executor.submit(() -> {
