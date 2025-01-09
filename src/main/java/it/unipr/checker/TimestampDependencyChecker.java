@@ -1,7 +1,5 @@
 package it.unipr.checker;
 
-import java.util.Set;
-
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.cfg.Balance;
 import it.unipr.cfg.Blockhash;
@@ -16,6 +14,7 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Set;
 
 public class TimestampDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
@@ -33,21 +32,20 @@ public class TimestampDependencyChecker implements
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
-		
-		if (node instanceof Timestamp || node instanceof Blockhash || node instanceof Difficulty || node instanceof Balance) {
+
+		if (node instanceof Timestamp || node instanceof Blockhash || node instanceof Difficulty
+				|| node instanceof Balance) {
 			EVMCFG cfg = ((EVMCFG) graph);
 			Set<Statement> nsh = cfg.getAllSha3();
 			Set<Statement> ns = cfg.getAllSstore();
-			// The function cfg.getAllJumps() returns all jumps, whether being jump or jumpi
-			// if you want to separete the jumps, a different function need to be done
+			// The function cfg.getAllJumps() returns all jumps, whether being
+			// jump or jumpi
+			// if you want to separete the jumps, a different function need to
+			// be done
 			Set<Statement> nj = cfg.getAllJumps();
-			
-			
+
 		}
-		
-		
-		
-		
+
 		return SemanticCheck.super.visit(tool, graph, node);
 	}
 
