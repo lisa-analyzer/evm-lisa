@@ -1,0 +1,5 @@
+offset,opcode,detection
+705,705: SLOAD,Store read after unsafe call
+843,843: SLOAD,Store read after unsafe call
+1021,1021: SLOAD,Store read after unsafe call
+1162,1162: SLOAD,Store read after unsafe call

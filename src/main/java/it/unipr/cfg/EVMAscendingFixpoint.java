@@ -2,9 +2,6 @@ package it.unipr.cfg;
 
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint;
@@ -13,10 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EVMAscendingFixpoint<A extends AbstractState<A, H, V, T>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>,
-		T extends TypeDomain<T>> extends CFGFixpoint<A, H, V, T> {
+public class EVMAscendingFixpoint<A extends AbstractState<A>> extends CFGFixpoint<A> {
 
 	private final int widenAfter;
 	private final Map<Statement, Integer> lubs;
@@ -30,7 +24,7 @@ public class EVMAscendingFixpoint<A extends AbstractState<A, H, V, T>,
 	 * @param interprocedural the {@link InterproceduralAnalysis} to use for
 	 *                            semantics computations
 	 */
-	public EVMAscendingFixpoint(CFG graph, InterproceduralAnalysis<A, H, V, T> interprocedural, int widenAfter) {
+	public EVMAscendingFixpoint(CFG graph, InterproceduralAnalysis<A> interprocedural, int widenAfter) {
 		super(graph, interprocedural);
 		this.widenAfter = widenAfter;
 		this.lubs = new HashMap<>(graph.getNodesCount());
@@ -38,9 +32,9 @@ public class EVMAscendingFixpoint<A extends AbstractState<A, H, V, T>,
 	}
 
 	@Override
-	public CompoundState<A, H, V, T> operation(Statement node,
-			CompoundState<A, H, V, T> approx,
-			CompoundState<A, H, V, T> old) throws SemanticException {
+	public CompoundState<A> operation(Statement node,
+			CompoundState<A> approx,
+			CompoundState<A> old) throws SemanticException {
 		// optimization: never apply widening on normal instructions,
 		// save time and precision and only apply to widening points
 		if (widenAfter < 0)
@@ -60,8 +54,8 @@ public class EVMAscendingFixpoint<A extends AbstractState<A, H, V, T>,
 	}
 
 	@Override
-	public boolean equality(Statement node, CompoundState<A, H, V, T> approx,
-			CompoundState<A, H, V, T> old) throws SemanticException {
+	public boolean equality(Statement node, CompoundState<A> approx,
+			CompoundState<A> old) throws SemanticException {
 		return approx.lessOrEqual(old);
 	}
 }

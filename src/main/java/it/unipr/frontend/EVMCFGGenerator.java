@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Provides methods to generate a CFG from a smart contract.
@@ -90,8 +91,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 	public CFG visitProgram(ProgramContext ctx) {
 		// Create a descriptor for the initial CFG.
 		ClassUnit unit = new ClassUnit(new ProgramCounterLocation(-1, -1), program, "program", false);
+		String normalizedFilePath = FilenameUtils.separatorsToUnix(filePath);
 		CodeMemberDescriptor cfgDesc = new CodeMemberDescriptor(new ProgramCounterLocation(-1, -1), unit, false,
-				filePath, new Parameter[] {});
+				normalizedFilePath, new Parameter[] {});
 
 		// Save the CFG in the class variable.
 		this.cfg = new EVMCFG(cfgDesc);

@@ -31,6 +31,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
  */
 public class EVMFrontend {
 
+	private static boolean USE_CREATION_CODE = false;
+
+	static public void setUseCreationCode() {
+		USE_CREATION_CODE = true;
+	}
+
 	/**
 	 * Verifies the syntactic correctness of the smart contract bytecode stored
 	 * in {@code filePath} and returns its {@code ProgramContext}.
@@ -59,25 +65,53 @@ public class EVMFrontend {
 	 * stores the result in {@code output}.
 	 * 
 	 * @param address the address of the smart contract to be parsed.
-	 * @param output  the directory where the EMV bytecode that correlates with
-	 *                    the smart contract stored at {@code address} is
-	 *                    stored.
 	 * 
 	 * @return {@code true} if the bytecode was successfully downloaded and
 	 *             stored, false otherwise.
 	 * 
 	 * @throws IOException
 	 */
-	public static boolean parseContractFromEtherscan(String address, String output) throws IOException {
+	public static String parseContractFromEtherscan(String address) throws IOException {
 		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 
 		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
 			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
-			return false;
+			return null;
 		}
 
 		String[] test = bytecodeRequest.split("\"");
 		String bytecode = test[9];
+
+		return bytecode;
+	}
+
+	/**
+	 * Processes the given bytecode string to extract opcodes and writes them to
+	 * an output file.
+	 * <p>
+	 * This method reads the bytecode, identifies opcodes and their associated
+	 * push data, and writes the results to the specified output file. If the
+	 * bytecode string is null or empty, the method logs an error message and
+	 * returns false, indicating that the output file will not be created.
+	 * </p>
+	 *
+	 * @param bytecode the bytecode string to be processed, must not be null or
+	 *                     empty
+	 * @param output   the path to the output file where the extracted opcodes
+	 *                     will be written
+	 * 
+	 * @return {@code true} if the processing is successful and the output file
+	 *             is created, {@code false} if the bytecode is null or empty
+	 * 
+	 * @throws IOException if an I/O error occurs while writing to the output
+	 *                         file
+	 */
+	public static boolean opcodesFromBytecode(String bytecode, String output) throws IOException {
+
+		if (bytecode == null || bytecode.isEmpty()) {
+			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
+			return false;
+		}
 
 		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 
@@ -119,16 +153,16 @@ public class EVMFrontend {
 	 * @throws IOException
 	 * @throws AnalysisException
 	 */
-	public static Program generateCfgFromContraOutputctAddress(String contractAddress)
+	public static Program generateCfgFromContractAddress(String contractAddress)
 			throws IOException, AnalysisException {
 		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
 
 		// Get bytecode from Etherscan
 		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
 
-		boolean parseResult = EVMFrontend.parseContractFromEtherscan(contractAddress, BYTECODE_OUTFILE_PATH);
+		String bytecode = EVMFrontend.parseContractFromEtherscan(contractAddress);
 
-		if (!parseResult) {
+		if (!EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_OUTFILE_PATH)) {
 			return null;
 		}
 
@@ -506,7 +540,10 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-			return false;
+			if (USE_CREATION_CODE)
+				break;
+			else
+				return false;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;

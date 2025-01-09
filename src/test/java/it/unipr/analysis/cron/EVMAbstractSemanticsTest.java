@@ -36,13 +36,15 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 * 
 	 * @return a {@link CronConfiguration} to be performed on the test case.
 	 */
-	private static CronConfiguration createConfiguration(String testDir, String programFile, boolean generateCfg) {
+	private static CronConfiguration createConfiguration(String testDir, String subDir, String programFile,
+			boolean generateCfg) {
 		if (GENERATE_CFG_FOR_ALL_TESTS) {
 			generateCfg = true;
 		}
 
 		CronConfiguration conf = new CronConfiguration();
 		conf.testDir = testDir;
+		conf.testSubDir = subDir;
 		conf.programFile = programFile;
 		conf.serializeResults = true;
 		if (generateCfg) {
@@ -54,55 +56,56 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.semanticChecks.add(new JumpSolver());
+		conf.useWideningPoints = false;
 
 		return conf;
 	}
 
 	@Test
 	public void testIf() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if", "if_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "if", "if_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testIfElse() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if_else", "if_else_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "if_else", "if_else_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testWhile() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while", "while_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "while", "while_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testIfElseNPBJ() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/if_else_npbj", "if_else_npbj_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "if_else_npbj", "if_else_npbj_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testWhileNPBJ() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/while_npbj", "while_npbj_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "while_npbj", "while_npbj_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testMstore() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mstore", "mstore_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "mstore", "mstore_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testMstore8() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mstore8", "mstore8_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "mstore8", "mstore8_eth.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testLT() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/lt", "lt_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "lt", "lt_eth.sol", false);
 		perform(conf);
 	}
 
@@ -111,7 +114,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testAnd() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/and", "and_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "and", "and_eth.sol", false);
 		perform(conf);
 	}
 
@@ -120,7 +123,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testOr() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/or", "or_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "or", "or_eth.sol", false);
 		perform(conf);
 	}
 
@@ -129,7 +132,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testXor() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/xor", "xor_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "xor", "xor_eth.sol", false);
 		perform(conf);
 	}
 
@@ -138,7 +141,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testNot() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/not", "not_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "not", "not_eth.sol", false);
 		perform(conf);
 	}
 
@@ -147,7 +150,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testShl() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/shl", "shl_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "shl", "shl_eth.sol", false);
 		perform(conf);
 	}
 
@@ -156,7 +159,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testShr() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/shr", "shr_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "shr", "shr_eth.sol", false);
 		perform(conf);
 	}
 
@@ -165,7 +168,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testSar() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sar", "sar_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "sar", "sar_eth.sol", false);
 		perform(conf);
 	}
 
@@ -174,7 +177,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testDiv() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/div", "div_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "div", "div_eth.sol", false);
 		perform(conf);
 	}
 
@@ -183,7 +186,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testSdiv() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sdiv", "sdiv_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "sdiv", "sdiv_eth.sol", false);
 		perform(conf);
 	}
 
@@ -192,7 +195,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testMod() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mod", "mod_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "mod", "mod_eth.sol", false);
 		perform(conf);
 	}
 
@@ -201,7 +204,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testSmod() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/smod", "smod_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "smod", "smod_eth.sol", false);
 		perform(conf);
 	}
 
@@ -210,7 +213,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testAddmod() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/addmod", "addmod_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "addmod", "addmod_eth.sol", false);
 		perform(conf);
 	}
 
@@ -219,7 +222,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testMulmod() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/mulmod", "mulmod_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "mulmod", "mulmod_eth.sol", false);
 		perform(conf);
 	}
 
@@ -228,7 +231,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testAdd() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/add", "add_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "add", "add_eth.sol", false);
 		perform(conf);
 	}
 
@@ -237,7 +240,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testSub() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sub", "sub_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "sub", "sub_eth.sol", false);
 		perform(conf);
 	}
 
@@ -246,7 +249,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testByte() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/byte", "byte_eth.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "byte", "byte_eth.sol", false);
 		perform(conf);
 	}
 
@@ -255,7 +258,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 */
 	@Test
 	public void testSloadSstore() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("cfs/sload_sstore", "sload_sstore.sol", false);
+		CronConfiguration conf = createConfiguration("cfs", "sload_sstore", "sload_sstore.sol", false);
 		perform(conf);
 	}
 }

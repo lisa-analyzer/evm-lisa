@@ -3,6 +3,8 @@ package it.unipr.analysis;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.math.BigInteger;
 import java.util.Objects;
 
@@ -628,5 +630,10 @@ public class StackElement implements BaseLattice<StackElement> {
 				&& !((StackElement) obj).isTopNotJumpdest())
 			return this.n.equals(((StackElement) obj).n);
 		return false;
+	}
+
+	@Override
+	public StructuredRepresentation representation() {
+		return new StringRepresentation(toString());
 	}
 }

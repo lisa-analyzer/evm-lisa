@@ -1,0 +1,4 @@
+offset,opcode,detection
+4324,4324: SLOAD,Store read after unsafe call
+4338,4338: SSTORE,Store write after unsafe call
+4421,4421: SLOAD,Store read after unsafe call

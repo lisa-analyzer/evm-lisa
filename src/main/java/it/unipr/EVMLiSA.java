@@ -1,15 +1,10 @@
 package it.unipr;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyCache;
-import it.unipr.analysis.MyLogger;
-import it.unipr.analysis.StackElement;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
+import it.unipr.analysis.*;
+import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
+import it.unipr.checker.ReentrancyChecker;
+import it.unipr.checker.TxOriginChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -21,6 +16,7 @@ import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,9 +30,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -50,14 +50,16 @@ import org.json.JSONObject;
 
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
-	private String OUTPUT_DIR = "execution/results";
 
 	// Path
-	private String STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
-	private String STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
-	private String FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
-	private String LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
-	private static String SMARTCONTRACTS_FULLPATH = "";
+	private Path _outputDirPath = Paths.get("execution", "results");
+	private String OUTPUT_DIR = _outputDirPath.toString();
+
+	private String STATISTICS_FULLPATH = Paths.get("execution", "results").toString();
+	private String STATISTICSZEROJUMP_FULLPATH = _outputDirPath.resolve("statisticsZeroJumps.csv").toString();
+	private String FAILURE_FULLPATH = _outputDirPath.resolve("failure.csv").toString();
+	private String LOGS_FULLPATH = _outputDirPath.resolve("logs.txt").toString();
+	private static String SMARTCONTRACTS_FULLPATH = Paths.get("").toString();
 
 	// Statistics
 	private int numberOfAPIEtherscanRequest = 0;
@@ -65,7 +67,10 @@ public class EVMLiSA {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 	private int CORES;
 
+	// Configuration
 	private static final boolean REGENERATE = false;
+	private static boolean ENABLE_REENTRANCY_CHECKER = false;
+	private static boolean ENABLE_TXORIGIN_CHECKER = false;
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -78,83 +83,7 @@ public class EVMLiSA {
 	}
 
 	public void go(String[] args) throws Exception {
-		Options options = new Options();
-
-		// String parameters
-		Option addressOption = new Option("a", "address", true, "address of an Ethereum smart contract");
-		addressOption.setRequired(false);
-		options.addOption(addressOption);
-
-		Option outputOption = new Option("o", "output", true, "output directory path");
-		outputOption.setRequired(false);
-		options.addOption(outputOption);
-
-		Option dumpAnalysisOption = new Option("d", "dump-analysis", true, "dump the analysis (html, dot)");
-		dumpAnalysisOption.setRequired(false);
-		options.addOption(dumpAnalysisOption);
-
-		Option filePathOption = new Option("f", "filepath", true, "filepath of the Etherem smart contract");
-		filePathOption.setRequired(false);
-		options.addOption(filePathOption);
-
-		Option stackSizeOption = new Option("q", "stack-size", true, "dimension of stack");
-		stackSizeOption.setRequired(false);
-		options.addOption(stackSizeOption);
-
-		Option stackSetSizeOption = new Option("w", "stack-set-size", true, "dimension of stack-set");
-		stackSetSizeOption.setRequired(false);
-		options.addOption(stackSetSizeOption);
-
-		Option benchmarkOption = new Option("b", "benchmark", true, "filepath of the benchmark");
-		benchmarkOption.setRequired(false);
-		options.addOption(benchmarkOption);
-
-		Option coresOption = new Option("C", "cores", true, "number of cores used");
-		coresOption.setRequired(false);
-		options.addOption(coresOption);
-
-		// Boolean parameters
-		Option dumpStatisticsOption = Option.builder("s")
-				.longOpt("dump-stats")
-				.desc("dump statistics")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option dumpCFGOption = Option.builder("c")
-				.longOpt("dump-cfg")
-				.desc("dump the CFG")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option downloadBytecodeOption = Option.builder("D")
-				.longOpt("download-bytecode")
-				.desc("download the bytecode")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option useStorageLiveOption = Option.builder("S")
-				.longOpt("use-live-storage")
-				.desc("use the live storage in SLOAD")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		Option dumpAnalysisReport = Option.builder("r")
-				.longOpt("dump-report")
-				.desc("dump analysis report")
-				.required(false)
-				.hasArg(false)
-				.build();
-
-		options.addOption(dumpStatisticsOption);
-		options.addOption(dumpCFGOption);
-		options.addOption(downloadBytecodeOption);
-		options.addOption(useStorageLiveOption);
-		options.addOption(dumpAnalysisReport);
-
+		Options options = getOptions();
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -170,22 +99,28 @@ public class EVMLiSA {
 
 		String addressSC = cmd.getOptionValue("address");
 		String outputDir = cmd.getOptionValue("output");
-		boolean dumpCFG = cmd.hasOption("dumpcfg");
-		String dumpAnalysis = cmd.getOptionValue("dump-analysis");
+		boolean serializeInputs = cmd.hasOption("serialize-inputs");
+		boolean dumpHTML = cmd.hasOption("html");
+		boolean dumpDot = cmd.hasOption("dot");
 		boolean dumpStatistics = cmd.hasOption("dump-stats");
 		boolean downloadBytecode = cmd.hasOption("download-bytecode");
 		boolean useStorageLive = cmd.hasOption("use-live-storage");
-		String filepath = cmd.getOptionValue("filepath");
+		String filepath = cmd.getOptionValue("filepath-bytecode");
 		String stackSize = cmd.getOptionValue("stack-size");
 		String stackSetSize = cmd.getOptionValue("stack-set-size");
 		String benchmark = cmd.getOptionValue("benchmark");
 		String coresOpt = cmd.getOptionValue("cores");
 		boolean dumpReport = cmd.hasOption("dump-report");
+		boolean useCreationCode = cmd.hasOption("creation-code");
+		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy");
+		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin");
+		boolean linkUnsoundJumpsToAllJumpdestOption = cmd.hasOption("link-unsound-jumps-to-all-jumpdest");
+		String mnemonicInputFile = cmd.getOptionValue("filepath-mnemonic");
 
 		// Download bytecode case
 		if (downloadBytecode && benchmark != null) {
-			SMARTCONTRACTS_FULLPATH = benchmark;
-			OUTPUT_DIR = "download";
+			SMARTCONTRACTS_FULLPATH = Paths.get(benchmark).toString();
+			OUTPUT_DIR = Paths.get("download").toString();
 			saveSmartContractsFromEtherscan();
 			return;
 		}
@@ -213,36 +148,83 @@ public class EVMLiSA {
 
 		// Setting output directories
 		if (outputDir != null) {
-			OUTPUT_DIR = outputDir;
-			STATISTICS_FULLPATH = OUTPUT_DIR + "/statistics.csv";
-			STATISTICSZEROJUMP_FULLPATH = OUTPUT_DIR + "/statisticsZeroJumps.csv";
-			FAILURE_FULLPATH = OUTPUT_DIR + "/failure.csv";
-			LOGS_FULLPATH = OUTPUT_DIR + "/logs.txt";
+			_outputDirPath = Paths.get(outputDir);
+			OUTPUT_DIR = _outputDirPath.toString();
+			STATISTICS_FULLPATH = _outputDirPath
+					.resolve("statistics.csv")
+					.toString();
+			STATISTICSZEROJUMP_FULLPATH = _outputDirPath
+					.resolve("statisticsZeroJumps.csv")
+					.toString();
+			FAILURE_FULLPATH = _outputDirPath
+					.resolve("failure.csv")
+					.toString();
+			LOGS_FULLPATH = _outputDirPath
+					.resolve("logs.txt")
+					.toString();
+		}
+
+		if (useStorageLive && addressSC == null && benchmark == null) {
+			log.warn("Address must be set if live storage option is activated.");
+			log.warn("Live storage option deactivated.");
+			useStorageLive = false;
 		}
 
 		if (useStorageLive)
 			EVMAbstractState.setUseStorageLive();
+		if (useCreationCode)
+			EVMFrontend.setUseCreationCode();
+		if (linkUnsoundJumpsToAllJumpdestOption)
+			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 
 		// Creating json output notes
 		JSONObject jsonOptions = new JSONObject();
 		jsonOptions.put("address", addressSC);
-		jsonOptions.put("dump-CFG", dumpCFG);
-		jsonOptions.put("dump-analysis", dumpAnalysis);
+		jsonOptions.put("serialize-inputs", serializeInputs);
+		jsonOptions.put("dump-html", dumpHTML);
+		jsonOptions.put("dump-dot", dumpDot);
 		jsonOptions.put("dump-statistics", dumpStatistics);
 		jsonOptions.put("download-bytecode", downloadBytecode);
 		jsonOptions.put("use-storage-live", useStorageLive);
-		jsonOptions.put("filepath", filepath);
+		jsonOptions.put("use-creation-code", useCreationCode);
+		if (filepath != null)
+			jsonOptions.put("input-filepath", filepath);
+		else
+			jsonOptions.put("input-filepath", mnemonicInputFile);
 		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
 		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
 		jsonOptions.put("benchmark", benchmark);
 		jsonOptions.put("cores", CORES);
 		jsonOptions.put("dump-report", dumpReport);
 		jsonOptions.put("output-directory", OUTPUT_DIR);
+		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
 
 		// Run benchmark case
 		if (benchmark != null) {
-			Files.createDirectories(Paths.get(OUTPUT_DIR));
-			SMARTCONTRACTS_FULLPATH = benchmark;
+			SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			String timestamp = DATE_FORMAT_BENCHMARK.format(System.currentTimeMillis());
+			int ss = AbstractStack.getStackLimit();
+			int sss = AbstractStackSet.getStackSetLimit();
+			String postFix = timestamp + "-" + ss + "-" + sss;
+
+			Files.createDirectories(_outputDirPath.resolve("benchmark"));
+			SMARTCONTRACTS_FULLPATH = Paths.get(benchmark).toString();
+			STATISTICS_FULLPATH = _outputDirPath
+					.resolve("benchmark").resolve("statistics-" + postFix + ".csv")
+					.toString();
+			STATISTICSZEROJUMP_FULLPATH = _outputDirPath
+					.resolve("benchmark")
+					.resolve("statisticsZeroJumps-" + postFix + ".csv")
+					.toString();
+			FAILURE_FULLPATH = _outputDirPath
+					.resolve("benchmark")
+					.resolve("failure-" + postFix + ".csv")
+					.toString();
+			LOGS_FULLPATH = _outputDirPath
+					.resolve("benchmark")
+					.resolve("logs-" + postFix + ".txt")
+					.toString();
+
 			try {
 				runBenchmark(jsonOptions);
 			} catch (FileNotFoundException e) {
@@ -252,29 +234,47 @@ public class EVMLiSA {
 		}
 
 		// Error case
-		if (addressSC == null && filepath == null) {
+		if (addressSC == null && filepath == null && mnemonicInputFile == null) {
 			log.error("Address or filepath required.");
 			formatter.printHelp("help", options);
 			System.exit(1);
 		}
 
 		// Single analysis case
-		OUTPUT_DIR += "/" + addressSC;
-		Files.createDirectories(Paths.get(OUTPUT_DIR));
+		if (addressSC == null)
+			addressSC = "no-address-" + System.currentTimeMillis();
+
+		_outputDirPath = _outputDirPath.resolve(addressSC);
+		OUTPUT_DIR = _outputDirPath.toString();
+
+		Files.createDirectories(_outputDirPath);
 		jsonOptions.put("output-directory", OUTPUT_DIR);
 
 		if (outputDir == null)
-			outputDir = OUTPUT_DIR + "/" + addressSC + "_REPORT";
+			outputDir = OUTPUT_DIR;
 
-		STATISTICS_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_STATISTICS" + ".csv";
-		FAILURE_FULLPATH = OUTPUT_DIR + "/" + addressSC + "_FAILURE" + ".csv";
+		String workDir = Paths.get(outputDir).resolve(addressSC).toString();
+		STATISTICS_FULLPATH = _outputDirPath.resolve(addressSC + "_STATISTICS.csv").toString();
+		FAILURE_FULLPATH = _outputDirPath.resolve(addressSC + "_FAILURE.csv").toString();
 
-		String BYTECODE_FULLPATH;
-		if (filepath == null) {
-			BYTECODE_FULLPATH = OUTPUT_DIR + "/" + addressSC + ".sol";
-			EVMFrontend.parseContractFromEtherscan(addressSC, BYTECODE_FULLPATH);
-		} else
-			BYTECODE_FULLPATH = filepath;
+		String BYTECODE_FULLPATH = mnemonicInputFile;
+		if (mnemonicInputFile == null) {
+			BYTECODE_FULLPATH = _outputDirPath.resolve(addressSC + ".opcode").toString();
+			String bytecode;
+			if (filepath == null) {
+				bytecode = EVMFrontend.parseContractFromEtherscan(addressSC);
+			} else {
+				bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
+			}
+			if (useCreationCode) {
+				jsonOptions.put("bytecode", bytecode);
+			} else if (bytecode != null) {
+				// runtime code case
+				jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+			}
+
+			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+		}
 
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
 
@@ -282,33 +282,34 @@ public class EVMLiSA {
 		long finish;
 
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.serializeInputs = dumpCFG;
+		conf.serializeInputs = serializeInputs;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = dumpReport;
-		conf.workdir = outputDir + "/" + addressSC;
+		conf.workdir = workDir;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
-
-		if (dumpAnalysis != null) {
-			if (dumpAnalysis.equals("dot"))
-				conf.analysisGraphs = GraphType.DOT;
-			else if (dumpAnalysis.equals("html"))
-				conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
-		}
+		conf.useWideningPoints = false;
+		if (dumpHTML)
+			conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+		else if (dumpDot)
+			conf.analysisGraphs = GraphType.DOT;
 
 		try {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
+			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 
 			// Print the results
 			finish = System.currentTimeMillis();
 
-			MyLogger result = EVMLiSA.dumpStatistics(checker)
+			checkers(conf, lisa, program, checker, jsonOptions);
+
+			MyLogger result = EVMLiSA.dumpStatistics(checker, soundlySolved)
 					.address(addressSC)
 					.time(finish - start)
 					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
@@ -342,30 +343,52 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Performs a new analysis for a given smart contract. This method retrieves
+	 * the bytecode (via API requests to Etherscan.io if necessary), generates
+	 * the Control Flow Graph (CFG), configures the analysis parameters,
+	 * executes the analysis, and collects the results.
+	 *
+	 * @param CONTRACT_ADDR the address of the smart contract to analyze.
+	 * @param jsonOptions   a {@link JSONObject} containing configuration
+	 *                          options and parameters for the analysis. The
+	 *                          options may be updated during the analysis.
+	 * 
+	 * @return a {@link MyLogger} instance containing detailed statistics,
+	 *             warnings, and execution logs for the analysis.
+	 * 
+	 * @throws Exception if any error occurs during directory setup, bytecode
+	 *                       retrieval, CFG generation, or analysis execution.
+	 */
 	private MyLogger newAnalysis(String CONTRACT_ADDR, JSONObject jsonOptions) throws Exception {
+		Path bytecodeWorkDir = Paths.get(OUTPUT_DIR, "benchmark", "bytecode", CONTRACT_ADDR);
+		String BYTECODE_WORKDIR = bytecodeWorkDir.toString();
 
-		String BYTECODE_FULLPATH = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR + "/" + CONTRACT_ADDR
-				+ ".sol";
+		Path bytecodeFullPath = bytecodeWorkDir.resolve(CONTRACT_ADDR + ".opcode");
+		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
 
 		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + CONTRACT_ADDR));
+		Files.createDirectories(bytecodeWorkDir);
 
 		// If the file does not exist, we will do an API request to Etherscan
-		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists() || REGENERATE) {
-			numberOfAPIEtherscanRequest++;
+		synchronized (EVMLiSA.class) {
+			File file = new File(BYTECODE_FULLPATH);
+			if (!file.exists() || REGENERATE) {
+				numberOfAPIEtherscanRequest++;
 
-			if (numberOfAPIEtherscanRequest % 5 == 0) {
-				try {
-					// I can do max 5 API request in 1 sec to Etherscan.io
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					log.error("error: {}", e.getMessage());
+				if (numberOfAPIEtherscanRequest % 5 == 0) {
+					try {
+						// I can do max 5 API request in 1 sec to Etherscan.io
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						log.error("error: {}", e.getMessage());
+					}
 				}
-			}
 
-			if (EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH))
-				numberOfAPIEtherscanRequestOnSuccess++;
+				String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+				if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
+					numberOfAPIEtherscanRequestOnSuccess++;
+			}
 		}
 
 		// Configuration and test run
@@ -378,7 +401,7 @@ public class EVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.jsonOutput = false;
-		conf.workdir = OUTPUT_DIR + "/benchmark/" + CONTRACT_ADDR;
+		conf.workdir = BYTECODE_WORKDIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
@@ -389,10 +412,13 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		// Print the results
+		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
+
 		long finish = System.currentTimeMillis();
 
-		return EVMLiSA.dumpStatistics(checker)
+		checkers(conf, lisa, program, checker, jsonOptions);
+
+		return EVMLiSA.dumpStatistics(checker, soundlySolved)
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
 				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
@@ -401,60 +427,127 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Runs the benchmark for analyzing smart contracts.
+	 * Computes the set of jumps that are soundly solved by the JumpSolver. This
+	 * method applies an iterative approach to resolve unsound jumps by
+	 * conservatively attaching them to all jump destinations, as per the
+	 * configuration.
 	 *
-	 * @throws Exception if an error occurs during the benchmark execution.
+	 * @param checker the {@link JumpSolver} instance responsible for resolving
+	 *                    jumps
+	 * @param lisa    the {@link LiSA} instance used to perform static analysis
+	 * @param program the {@link Program} containing the code being analyzed
+	 * 
+	 * @return a {@link Set} of {@link Statement} objects representing the
+	 *             soundly solved jumps after applying the iterative resolution
+	 *             process
+	 */
+	Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
+		HashSet<Statement> soundlySolved = new HashSet<>();
+		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
+			int currentIteration = 0;
+			int MAX_ITER = 5;
+			boolean fixpoint;
+			do {
+				fixpoint = false;
+				EVMCFG cfg = checker.getComputedCFG();
+				Set<Statement> jumpdestNodes = cfg.getAllJumpdest();
+				for (Statement unsoundNode : checker.getUnsoundJumps())
+					if (!soundlySolved.contains(unsoundNode)) {
+						fixpoint = true;
+						for (Statement jumpdest : jumpdestNodes)
+							cfg.addEdge(new SequentialEdge(unsoundNode, jumpdest));
+					}
+
+				soundlySolved.addAll(checker.getUnsoundJumps());
+
+				program.addCodeMember(cfg);
+				lisa.run(program);
+			} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+		}
+		return soundlySolved;
+	}
+
+	/**
+	 * Executes the specified semantic checkers on the provided program and
+	 * configuration, updating the JSON options with warnings generated by the
+	 * analysis. This method dynamically adds and runs semantic checks based on
+	 * the enabled configuration flags.
+	 *
+	 * @param conf        the {@link LiSAConfiguration} used for static analysis
+	 * @param lisa        the {@link LiSA} instance performing the analysis
+	 * @param program     the {@link Program} representing the analyzed code
+	 * @param checker     the {@link JumpSolver} providing CFG information for
+	 *                        the analysis
+	 * @param jsonOptions the {@link JSONObject} where the results of the
+	 *                        analysis are stored
+	 */
+	void checkers(LiSAConfiguration conf, LiSA lisa, Program program, JumpSolver checker, JSONObject jsonOptions) {
+		if (ENABLE_REENTRANCY_CHECKER) {
+			// Clear existing checks and add the ReentrancyChecker
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new ReentrancyChecker());
+			lisa.run(program);
+
+			// Store re-entrancy warnings in the JSON options
+			jsonOptions.put("re-entrancy-warning",
+					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
+		}
+
+		if (ENABLE_TXORIGIN_CHECKER) {
+			// Clear existing checks and add the TxOriginChecker
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TxOriginChecker());
+			lisa.run(program);
+
+			// Store tx-origin warnings in the JSON options
+			jsonOptions.put("tx-origin-warning",
+					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
+		}
+	}
+
+	/**
+	 * Executes the benchmark for a set of smart contracts. This method handles
+	 * the parallel execution of analyses on the smart contracts, collects the
+	 * results, and logs relevant information, including statistics and
+	 * execution logs.
+	 *
+	 * @param jsonOptions a {@link JSONObject} containing configuration options
+	 *                        and parameters for the benchmark execution.
+	 * 
+	 * @throws Exception if an error occurs during the benchmark execution or
+	 *                       analysis.
 	 */
 	private void runBenchmark(JSONObject jsonOptions) throws Exception {
 		List<String> smartContracts = readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 		List<String> smartContractsTerminatedSuccessfully = new ArrayList<>();
 		List<String> smartContractsFailed = new ArrayList<>();
 
-		Runnable runnableHandler = new RunnableHandler(smartContracts, smartContractsTerminatedSuccessfully,
-				smartContractsFailed, jsonOptions);
-
 		synchronized (EVMLiSA.class) {
-			Thread handler = new Thread(runnableHandler);
-			handler.start();
+			long timeToWait = 1000 * 60 * 60 * 5; // 5 hours
 
-			long timeToWait;
-
-			timeToWait = 1000 * 60 * 60 * 24; // 1 day
-
-			String msg = "Started at " + now() + ".\n";
-			msg += "Number of cores: " + CORES + " (parallel analysis).\n";
-			msg += "Number of analyses: " + smartContracts.size() + ".\n";
-			msg += "\n"; // Blank line
-
+			String msg = "Start: " + now() + ".\n";
+			msg += "Cores: " + CORES + " (parallel analysis).\n";
+			msg += "Analysis: " + smartContracts.size() + ".\n";
 			msg += "Stack size = " + AbstractStack.getStackLimit() + ".\n";
 			msg += "Stack set size = " + AbstractStackSet.getStackSetLimit() + ".\n";
-			msg += "\n"; // Blank line
-
 			msg += "Heap size: " + new Converter().getSize(Runtime.getRuntime().totalMemory()) + ".\n";
-			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + ".\n";
-			msg += "\n"; // Blank line
+			msg += "Heap Max size: " + new Converter().getSize(Runtime.getRuntime().maxMemory()) + ".\n\n";
 
 			log.info(msg);
 			toFile(LOGS_FULLPATH, msg);
 
+			Runnable runnableHandler = new RunnableHandler(smartContracts, smartContractsTerminatedSuccessfully,
+					smartContractsFailed, jsonOptions);
+			Thread handler = new Thread(runnableHandler);
+			handler.start();
+
 			EVMLiSA.class.wait(timeToWait);
 		}
 
-		for (String smartContract : smartContracts) {
-			if (!smartContractsTerminatedSuccessfully.contains(smartContract) &&
-					!smartContractsFailed.contains(smartContract)) {
-				String msg = MyLogger.newLogger()
-						.address(smartContract)
-						.notes("Killed: timeout.")
-						.build().toString();
-				toFile(FAILURE_FULLPATH, msg);
-			}
-		}
-
-		// Print statistics to standard output and log file
-		String msg = "Total analysis: " + smartContracts.size() + ", " +
-				"successfully: " + smartContractsTerminatedSuccessfully.size() + ", " +
-				"failed: " + (smartContracts.size() - smartContractsTerminatedSuccessfully.size()) + ".";
+		String msg = "End: " + now() + ".\n";
+		msg += "Analysis: " + smartContracts.size() + ".\n";
+		msg += "Successfully: " + smartContractsTerminatedSuccessfully.size() + ".\n";
+		msg += "Failed: " + (smartContracts.size() - smartContractsTerminatedSuccessfully.size()) + ".\n";
 
 		log.info(msg);
 		toFile(LOGS_FULLPATH, msg);
@@ -464,16 +557,9 @@ public class EVMLiSA {
 	}
 
 	private class RunnableHandler implements Runnable {
-
-		private int analysesTerminated;
-		private int analysesFailed;
-		private final Object mutex = new Object();
-		private int threadsStarted;
-
 		private final List<String> smartContracts;
 		private final List<String> smartContractsTerminatedSuccessfully;
 		private final List<String> smartContractsFailed;
-
 		private final JSONObject jsonOptions;
 
 		public RunnableHandler(List<String> smartContracts, List<String> smartContractsTerminatedSuccessfully,
@@ -481,34 +567,19 @@ public class EVMLiSA {
 			this.smartContracts = smartContracts;
 			this.smartContractsTerminatedSuccessfully = smartContractsTerminatedSuccessfully;
 			this.smartContractsFailed = smartContractsFailed;
-			this.threadsStarted = 0;
-			this.analysesTerminated = 0;
-			this.analysesFailed = 0;
 			this.jsonOptions = jsonOptions;
 		}
 
 		@Override
 		public void run() {
+			ExecutorService executor = Executors.newFixedThreadPool(CORES);
+
 			for (String address : smartContracts) {
-
-				synchronized (mutex) {
-					// We optimize parallelism by running n analyzes at a
-					// time with n = CORES
-					while ((threadsStarted - analysesTerminated) > CORES) {
-						try {
-							mutex.wait();
-						} catch (InterruptedException e) {
-							log.error("error: {}", e.getMessage());
-						}
-					}
-				}
-
-				Runnable worker = () -> {
+				executor.submit(() -> {
 					try {
 						MyLogger myStats = newAnalysis(address, jsonOptions);
 
-						synchronized (mutex) {
-							analysesTerminated++;
+						synchronized (smartContractsTerminatedSuccessfully) {
 							smartContractsTerminatedSuccessfully.add(address);
 
 							if (myStats.jumpSize() == 0)
@@ -517,16 +588,12 @@ public class EVMLiSA {
 								toFile(STATISTICS_FULLPATH, myStats.toString());
 
 							toFile(LOGS_FULLPATH, buildMessage("SUCCESS", address, smartContracts.size(),
-									smartContractsTerminatedSuccessfully.size(), analysesTerminated,
-									analysesFailed, threadsStarted));
-
-							mutex.notifyAll();
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsFailed.size()));
 						}
-
 					} catch (Throwable e) {
-						synchronized (mutex) {
-							analysesTerminated++;
-							analysesFailed++;
+						synchronized (smartContractsFailed) {
 							smartContractsFailed.add(address);
 
 							String msg = MyLogger.newLogger()
@@ -538,49 +605,47 @@ public class EVMLiSA {
 							toFile(FAILURE_FULLPATH, msg);
 
 							toFile(LOGS_FULLPATH, buildMessage("FAILURE", address, smartContracts.size(),
-									smartContractsTerminatedSuccessfully.size(), analysesTerminated,
-									analysesFailed, threadsStarted));
-
-							mutex.notifyAll();
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsTerminatedSuccessfully.size(),
+									smartContractsFailed.size()));
 						}
 					}
-				};
-
-				new Thread(worker).start();
-				threadsStarted++;
-
-				Runtime.getRuntime().gc(); // Force Java Garbage Collection
+				});
 			}
 
+			executor.shutdown();
 			try {
-				synchronized (mutex) {
-					while (analysesTerminated < smartContracts.size()) {
-						mutex.wait();
-					}
+				if (!executor.awaitTermination(5, TimeUnit.HOURS)) {
+					executor.shutdownNow();
+					log.error("Timeout while waiting for tasks to complete");
 				}
-
 			} catch (InterruptedException e) {
-				log.error("error: {}", e.getMessage());
+				log.error("Execution interrupted: {}", e.getMessage());
+				executor.shutdownNow();
 			}
 
 			synchronized (EVMLiSA.class) {
 				EVMLiSA.class.notifyAll(); // All tests are finished
 			}
-
 		}
 	}
 
 	/**
-	 * Calculates and prints statistics about the control flow graph (CFG) of
-	 * the provided EVMCFG object.
+	 * Dumps statistics related to jump resolution within a CFG (Control Flow
+	 * Graph). This method calculates and logs various statistics, such as
+	 * resolved jumps, unreachable jumps, unsound jumps, and more, based on the
+	 * analysis performed by the {@link JumpSolver}.
 	 *
-	 * @param checker The control flow graph (CFG) of the Ethereum Virtual
-	 *                    Machine (EVM) bytecode.
+	 * @param checker       the {@link JumpSolver} instance used to analyze the
+	 *                          CFG and compute jump-related information.
+	 * @param soundlySolved a set of {@link Statement} objects representing
+	 *                          jumps that were soundly solved in the CFG.
 	 * 
-	 * @return A Triple containing the counts of precisely resolved jumps, sound
-	 *             resolved jumps, and unreachable jumps.
+	 * @return a {@link MyLogger} instance containing the computed statistics
+	 *             for logging or further analysis; returns {@code null} if no
+	 *             entry points are found in the CFG.
 	 */
-	public static MyLogger dumpStatistics(JumpSolver checker) {
+	public static MyLogger dumpStatistics(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
 
 		log.info("### Calculating statistics ###");
@@ -591,7 +656,7 @@ public class EVMLiSA {
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int unsoundJumps = 0;
-		int maybeUnsoundJumps = checker.getMaybeUnsoundJumps().size();
+		int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
 
 		boolean allJumpAreSound = true;
 
@@ -603,48 +668,75 @@ public class EVMLiSA {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
 
-		for (Statement jumpNode : cfg.getAllJumps()) {
-			if (pushedJumps.contains(jumpNode))
-				continue;
-			boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-			Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
-			if (topStackValuesPerJump == null || !reachableFrom)
-				continue;
-			else if (topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
-				allJumpAreSound = false;
-				break;
+		if (!JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
+			for (Statement jumpNode : cfg.getAllJumps()) {
+				if (pushedJumps.contains(jumpNode))
+					continue;
+
+				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+
+				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+					allJumpAreSound = false;
+					break;
+				}
 			}
-		}
 
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+				boolean reachableFrom;
+				int key = cfg.hashCode() + entryPoint.hashCode() + jumpNode.hashCode();
+
+				if (MyCache.getInstance().existsInReachableFrom(key)) {
+					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
+					log.debug("Value cached");
+				} else {
+					reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+					MyCache.getInstance().addReachableFrom(key, reachableFrom);
+				}
+
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
-				if (pushedJumps.contains(jumpNode))
+				if (pushedJumps.contains(jumpNode)) {
 					resolvedJumps++;
-				else if (reachableFrom && unreachableJumpNodes.contains(jumpNode))
+					continue;
+				}
+				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
 					definitelyUnreachable++;
-				else if (!reachableFrom) {
+					continue;
+				}
+				if (!reachableFrom) {
 					if (allJumpAreSound)
 						definitelyUnreachable++;
 					else
 						maybeUnreachable++;
-				} else if (topStackValuesPerJump == null) {
+					continue;
+				}
+				if (topStackValuesPerJump == null) {
 					// If all stacks are bottom, then we have a
 					// maybeFakeMissedJump
 					definitelyUnreachable++;
-				} else if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+					continue;
+				}
+				if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
 					// If the elements at the top of the stacks are all
 					// different from NUMERIC_TOP, then we are sure that it
 					// is definitelyFakeMissedJumps
 					resolvedJumps++;
-				} else {
+					continue;
+				}
+				if (soundlySolved != null && !soundlySolved.contains(jumpNode)) {
 					unsoundJumps++;
 					log.error("{} not solved", jumpNode);
 					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
+					continue;
 				}
+				if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
+					maybeUnsoundJumps++;
+					continue;
+				}
+
+				resolvedJumps++;
 			}
 		}
 
@@ -670,7 +762,7 @@ public class EVMLiSA {
 	 * Cleans up the directory used for bytecode benchmark outputs.
 	 */
 	public void clean() {
-		Path path = Paths.get("evm-outputs/benchmark");
+		Path path = Paths.get("evm-outputs", "benchmark");
 
 		if (Files.exists(path))
 			try {
@@ -688,7 +780,7 @@ public class EVMLiSA {
 					}
 				});
 			} catch (IOException e) {
-				log.error("error: {}", e.getMessage());
+				log.error("(dumpStatistics): {}", e.getMessage());
 			}
 
 		File f = new File(STATISTICS_FULLPATH);
@@ -706,6 +798,16 @@ public class EVMLiSA {
 		f = new File(FAILURE_FULLPATH);
 		if (f.delete())
 			log.info("{} deleted.", FAILURE_FULLPATH);
+	}
+
+	public static String readFileAsString(String filePath) {
+		try {
+			Path path = Paths.get(filePath);
+			return Files.readString(path);
+		} catch (IOException e) {
+			log.error("(readFileAsString): {}", e.getMessage());
+			return null;
+		}
 	}
 
 	/**
@@ -785,25 +887,16 @@ public class EVMLiSA {
 	 *                                                     analyses terminated.
 	 * @param analysesFailed                           The total number of
 	 *                                                     failed analyses.
-	 * @param threadsStarted                           The total number of
-	 *                                                     threads started for
-	 *                                                     the analysis.
 	 * 
 	 * @return The constructed log message.
 	 */
 	private String buildMessage(String type, String address, int smartContractsSize,
 			int smartContractsTerminatedSuccessfullySize, int analysesTerminated,
-			int analysesFailed, int threadsStarted) {
+			int analysesFailed) {
 		return "[" + now() + " - " + Thread.currentThread().getName() + "] \t [" + type + "] "
 				+ address + ", " +
-				"analyses ended: " + (smartContractsTerminatedSuccessfullySize + analysesFailed) + ", " +
-				"analyses remaining: " + (smartContractsSize - analysesTerminated) + ", " +
-				"analyses not started yet: "
-				+ ((smartContractsSize - analysesTerminated)
-						- (threadsStarted - smartContractsTerminatedSuccessfullySize) + analysesFailed)
-				+ ", " +
-				"analysis in progress (active threads): "
-				+ (threadsStarted - smartContractsTerminatedSuccessfullySize - analysesFailed) + " \n";
+				"ended: " + (smartContractsTerminatedSuccessfullySize + analysesFailed) + ", " +
+				"remaining: " + (smartContractsSize - analysesTerminated) + " \n";
 	}
 
 	/**
@@ -833,8 +926,9 @@ public class EVMLiSA {
 		for (int i = 0; i < smartContracts.size(); i++) {
 			String address = smartContracts.get(i);
 
-			String BYTECODE_FULLPATH = OUTPUT_DIR + "/bytecode/" + address + "/" + address
-					+ ".sol";
+			String BYTECODE_FULLPATH = Paths
+					.get(OUTPUT_DIR, "bytecode", address, address + ".sol")
+					.toString();
 
 			if (i % 5 == 0) {
 				try {
@@ -847,25 +941,189 @@ public class EVMLiSA {
 
 			// Directory setup and bytecode retrieval
 			try {
-				Files.createDirectories(Paths.get(OUTPUT_DIR + "/" + "benchmark/" + address));
+				Files.createDirectories(Paths.get(OUTPUT_DIR, "benchmark", address));
 
 				// If the file does not exist, we will do an API request to
 				// Etherscan
 				File file = new File(BYTECODE_FULLPATH);
 				if (!file.exists()) {
 					numberOfAPIEtherscanRequest++;
-					if (EVMFrontend.parseContractFromEtherscan(address, BYTECODE_FULLPATH))
+
+					String bytecode = EVMFrontend.parseContractFromEtherscan(address);
+					if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
 						numberOfAPIEtherscanRequestOnSuccess++;
 
 					log.info("Downloading {}, remaining: {}.", address,
 							(smartContracts.size() - numberOfAPIEtherscanRequest));
 				}
 			} catch (Exception e) {
-				continue;
+				log.warn("Bytecode not downloaded: {}, cause: {}", address, e.getMessage());
 			}
 		}
 
 		log.info("Downloaded {} smart contract.", numberOfAPIEtherscanRequestOnSuccess);
+	}
+
+	private Options getOptions() {
+		Options options = new Options();
+
+		// String parameters
+		Option addressOption = Option.builder("a")
+				.longOpt("address")
+				.desc("Address of an Ethereum smart contract.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option outputOption = Option.builder("o")
+				.longOpt("output")
+				.desc("Output directory path.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option filePathOption = Option.builder("f")
+				.longOpt("filepath-bytecode")
+				.desc("Filepath of the bytecode file.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option filePathMnemonicOption = Option.builder()
+				.longOpt("filepath-mnemonic")
+				.desc("Filepath of the mnemonic file.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option stackSizeOption = Option.builder()
+				.longOpt("stack-size")
+				.desc("Dimension of stack (default: 32).")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option stackSetSizeOption = Option.builder()
+				.longOpt("stack-set-size")
+				.desc("Dimension of stack-set (default: 8).")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option benchmarkOption = Option.builder("b")
+				.longOpt("benchmark")
+				.desc("Filepath of the benchmark.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option coresOption = Option.builder("c")
+				.longOpt("cores")
+				.desc("Number of cores used in benchmark.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		// Boolean parameters
+		Option dumpStatisticsOption = Option.builder()
+				.longOpt("dump-stats")
+				.desc("Dump statistics.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option dumpHtmlOption = Option.builder()
+				.longOpt("html")
+				.desc("Export a graphic HTML report.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option dumpDotOption = Option.builder()
+				.longOpt("dot")
+				.desc("Export a dot-notation file.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option serializeInputsOption = Option.builder()
+				.longOpt("serialize-inputs")
+				.desc("Serialize inputs.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option downloadBytecodeOption = Option.builder()
+				.longOpt("download-bytecode")
+				.desc("Download the bytecode.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option useStorageLiveOption = Option.builder()
+				.longOpt("use-live-storage")
+				.desc("Use the live storage in SLOAD.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option linkUnsoundJumpsToAllJumpdestOption = Option.builder()
+				.longOpt("link-unsound-jumps-to-all-jumpdest")
+				.desc("Link all the unsound jumps to all jumpdest.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option dumpAnalysisReport = Option.builder()
+				.longOpt("dump-report")
+				.desc("Dump analysis report.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option useCreationCodeOption = Option.builder()
+				.longOpt("creation-code")
+				.desc("Parse bytecode as creation code (instead of runtime code).")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option enableReentrancyCheckerOption = Option.builder()
+				.longOpt("checker-reentrancy")
+				.desc("Enable re-entrancy checker.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option enableTxOriginCheckerOption = Option.builder()
+				.longOpt("checker-txorigin")
+				.desc("Enable tx-origin checker.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		options.addOption(addressOption);
+		options.addOption(outputOption);
+		options.addOption(filePathOption);
+		options.addOption(filePathMnemonicOption);
+		options.addOption(stackSizeOption);
+		options.addOption(stackSetSizeOption);
+		options.addOption(benchmarkOption);
+		options.addOption(coresOption);
+
+		options.addOption(dumpStatisticsOption);
+		options.addOption(serializeInputsOption);
+		options.addOption(downloadBytecodeOption);
+		options.addOption(useStorageLiveOption);
+		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
+		options.addOption(dumpAnalysisReport);
+		options.addOption(useCreationCodeOption);
+		options.addOption(dumpHtmlOption);
+		options.addOption(dumpDotOption);
+		options.addOption(enableReentrancyCheckerOption);
+		options.addOption(enableTxOriginCheckerOption);
+
+		return options;
 	}
 
 	public static class Converter {

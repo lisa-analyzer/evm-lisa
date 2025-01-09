@@ -7,8 +7,8 @@ import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -19,6 +19,8 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -84,7 +86,10 @@ public class EVMAbstractState
 		this.storage = new Memory();
 		this.mu_i = StackElement.ZERO;
 
-		CONTRACT_ADDRESS = contractAddress;
+		if (contractAddress == null)
+			CONTRACT_ADDRESS = null;
+		else
+			CONTRACT_ADDRESS = (contractAddress.matches("^0x[a-fA-F0-9]{40}$")) ? contractAddress : null;
 	}
 
 	/**
@@ -147,14 +152,15 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp) {
+	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) {
 		// nothing to do here
 		return this;
 	}
 
 	@SuppressWarnings("unused")
 	@Override
-	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// bottom state is propagated
 		if (this.isBottom())
 			return this;
@@ -193,7 +199,11 @@ public class EVMAbstractState
 				}
 				case "AddressOperator": { // ADDRESS
 
-					StackElement hex = new StackElement(toBigInteger(CONTRACT_ADDRESS));
+					StackElement hex;
+					if (CONTRACT_ADDRESS == null)
+						hex = StackElement.NUMERIC_TOP;
+					else
+						hex = new StackElement(toBigInteger(CONTRACT_ADDRESS));
 
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
@@ -1270,6 +1280,7 @@ public class EVMAbstractState
 												valueToPush);
 									} else {
 										valueToPush = valueCached;
+										log.debug("Value cached");
 									}
 								} else
 									valueToPush = StackElement.NUMERIC_TOP;
@@ -2132,7 +2143,8 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+			SemanticOracle oracle)
 			throws SemanticException {
 		// Ensures BOTTOM and TOP propagation
 		if (this.isBottom() || this.isTop())
@@ -2195,7 +2207,7 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) {
 		// nothing to do here
 		return Satisfiability.UNKNOWN;
 	}
@@ -2213,7 +2225,7 @@ public class EVMAbstractState
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isBottom())
 			return Lattice.bottomRepresentation();
 		else if (isTop())
@@ -2390,9 +2402,11 @@ public class EVMAbstractState
 			BigInteger toHex = Number.toBigInteger(key);
 			String hexString = "0x" + toHex.toString(16);
 
-			Thread.sleep(750);
-
-			String getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+			String getStorageAtRequest;
+			synchronized (MyCache.getInstance()) {
+				Thread.sleep(500);
+				getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+			}
 
 			if (getStorageAtRequest == null || getStorageAtRequest.isEmpty()) {
 				System.err.println("ERROR: couldn't download contract's storage.");
@@ -2412,5 +2426,10 @@ public class EVMAbstractState
 		}
 
 		return StackElement.NUMERIC_TOP;
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return true;
 	}
 }

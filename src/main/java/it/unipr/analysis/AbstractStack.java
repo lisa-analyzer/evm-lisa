@@ -4,12 +4,14 @@ import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -43,13 +45,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	@Override
-	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public AbstractStack smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public AbstractStack smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -67,7 +71,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// nothing to do here
 		return Satisfiability.UNKNOWN;
 	}
@@ -85,7 +90,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isBottom())
 			return Lattice.bottomRepresentation();
 		else if (isTop())
@@ -146,7 +151,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	@Override
-	public AbstractStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+	public AbstractStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
 			throws SemanticException {
 		throw new RuntimeException("assume method in abstract stack should never be called.");
 	}
@@ -314,5 +319,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			if (this.stack.get((STACK_LIMIT - 1) - i).isBottom())
 				return true;
 		return false;
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return true;
 	}
 }

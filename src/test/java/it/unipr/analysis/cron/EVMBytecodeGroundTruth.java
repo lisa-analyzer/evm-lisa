@@ -8,7 +8,6 @@ import it.unipr.analysis.MyCache;
 import it.unipr.analysis.MyLogger;
 import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
-import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -30,6 +29,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -39,36 +41,62 @@ import org.junit.Test;
  * VERSION OF THE TRUTH DATASET IS CHOSEN.
  */
 public class EVMBytecodeGroundTruth {
-	private static final Logger LOG = LogManager.getLogger(EVMBytecodeGroundTruth.class);
+	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruth.class);
 
 	@Test
-	public void testGroundTruth() throws AnalysisSetupException, IOException, Exception {
-		String GROUND_TRUTH_FILE_PATH = "evm-testcases/ground-truth/ground-truth-data.csv";
-		String RESULT_EXEC_DIR_PATH = "evm-testcases/ground-truth/test";
-		String RESULT_EXEC_FILE_PATH = RESULT_EXEC_DIR_PATH + "/statistics.csv";
-		String SMARTCONTRACTS_FULLPATH = "benchmark/50-ground-truth.txt";
+	public void testGroundTruth() throws Exception {
+		String GROUND_TRUTH_FILE_PATH = Paths
+				.get("evm-testcases", "ground-truth", "ground-truth-data.csv")
+				.toString();
+		String RESULT_EXEC_DIR_PATH = Paths
+				.get("evm-testcases", "ground-truth", "test-ground-truth-results")
+				.toString();
+		String RESULT_EXEC_FILE_PATH = Paths
+				.get("evm-testcases", "ground-truth", "test-ground-truth-results", "statistics.csv")
+				.toString();
+		String SMARTCONTRACTS_FULLPATH = Paths
+				.get("benchmark", "50-ground-truth.txt")
+				.toString();
+
 		AbstractStack.setStackLimit(32);
 		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
+		long smartContractListTime = System.currentTimeMillis();
 
 		if (new File(RESULT_EXEC_FILE_PATH).delete())
-			LOG.warn("File deleted {}\n", RESULT_EXEC_FILE_PATH);
+			log.warn("File deleted {}", RESULT_EXEC_FILE_PATH);
 
 		List<String> smartContracts = EVMLiSA.readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 
+		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 		for (String address : smartContracts) {
-			MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
+			executor.submit(() -> {
+				try {
+					MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
 
-			if (myStats.jumpSize() != 0)
-				EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
-
-			Runtime.getRuntime().gc(); // Force Java Garbage Collection
+					if (myStats.jumpSize() != 0) {
+						synchronized (RESULT_EXEC_FILE_PATH) {
+							EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
+						}
+					}
+				} catch (Exception e) {
+					log.error("Error processing contract {}: {}", address, e.getMessage(), e);
+				}
+			});
 		}
+
+		// Shutdown the executor and wait for completion
+		executor.shutdown();
+		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
+			log.error("Timeout reached while waiting for thread pool to terminate.");
+			executor.shutdownNow();
+		}
+		smartContractListTime = System.currentTimeMillis() - smartContractListTime;
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
 		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
 		long smartContractGroundTruthListTime = 0;
-		long smartContractListTime = 0;
 
 		assert smartContractList.size() == smartContractGroundTruthList.size();
 
@@ -78,7 +106,6 @@ public class EVMBytecodeGroundTruth {
 				if (truthSC.getAddress().equals(newSC.getAddress())) {
 
 					smartContractGroundTruthListTime += truthSC.getTimeMillis();
-					smartContractListTime += newSC.getTimeMillis();
 
 					if (!truthSC.equals(newSC)) {
 						if (!changed)
@@ -140,16 +167,21 @@ public class EVMBytecodeGroundTruth {
 	}
 
 	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
-		String BYTECODE_DIR = RESULT_EXEC_DIR_PATH + "/benchmark/" + CONTRACT_ADDR;
-		String BYTECODE_FULLPATH = BYTECODE_DIR + "/" + CONTRACT_ADDR + ".sol";
+		Path bytecodeDir = Paths.get(RESULT_EXEC_DIR_PATH, "benchmark", CONTRACT_ADDR);
+		String BYTECODE_DIR = bytecodeDir.toString();
+
+		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".sol");
+		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
 
 		// Directory setup and bytecode retrieval
-		Files.createDirectories(Paths.get(RESULT_EXEC_DIR_PATH + "/" + "benchmark/" + CONTRACT_ADDR));
+		Files.createDirectories(bytecodeDir);
 
 		// If the file does not exist, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists())
-			EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR, BYTECODE_FULLPATH);
+		if (!file.exists()) {
+			String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+		}
 
 		// Configuration and test run
 		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
@@ -175,7 +207,7 @@ public class EVMBytecodeGroundTruth {
 		// Print the results
 		long finish = System.currentTimeMillis();
 
-		return EVMLiSA.dumpStatistics(checker)
+		return EVMLiSA.dumpStatistics(checker, null)
 				.address(CONTRACT_ADDR)
 				.time(finish - start)
 				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))

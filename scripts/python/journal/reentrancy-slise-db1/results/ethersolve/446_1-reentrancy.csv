@@ -1,0 +1,3 @@
+offset,opcode,detection
+7564,7564: SLOAD,Store read after unsafe call
+7578,7578: SSTORE,Store write after unsafe call

@@ -47,7 +47,7 @@ public abstract class EVMBytecodeAnalysisExecutor {
 	 * execution or the one used as baseline) cannot be found or cannot be
 	 * opened</li>
 	 * <li>The two json reports are different</li>
-	 * <li>The external files mentioned in the reports are difzzferent</li>
+	 * <li>The external files mentioned in the reports are different</li>
 	 * </ul>
 	 * 
 	 * @param conf the configuration of the test to run (note that the workdir
@@ -56,7 +56,38 @@ public abstract class EVMBytecodeAnalysisExecutor {
 	 * 
 	 * @throws IOException
 	 */
-	public void perform(CronConfiguration conf) throws IOException {
+	public void perform(
+			CronConfiguration conf) throws IOException {
+		perform(conf, false);
+	}
+
+	/**
+	 * Performs a test, running an analysis. The test will fail if:
+	 * <ul>
+	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
+	 * thrown)</li>
+	 * <li>The previous working directory using for the test execution cannot be
+	 * deleted</li>
+	 * <li>The analysis run terminates with an {@link AnalysisException}</li>
+	 * <li>One of the json reports (either the one generated during the test
+	 * execution or the one used as baseline) cannot be found or cannot be
+	 * opened</li>
+	 * <li>The two json reports are different</li>
+	 * <li>The external files mentioned in the reports are different</li>
+	 * </ul>
+	 * 
+	 * @param conf       the configuration of the test to run (note that the
+	 *                       workdir present into the configuration will be
+	 *                       ignored, as it will be overwritten by the computed
+	 *                       workdir)
+	 * @param allMethods whether or not all IMP methods should be added as
+	 *                       entrypoints
+	 * 
+	 * @throws IOException
+	 */
+	public void perform(
+			CronConfiguration conf,
+			boolean allMethods) throws IOException {
 		String testMethod = getCaller();
 		System.out.println("### Testing " + testMethod);
 		Objects.requireNonNull(conf);
@@ -65,13 +96,21 @@ public abstract class EVMBytecodeAnalysisExecutor {
 
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, conf.testDir);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, conf.testDir);
-		Path target = Paths.get(expectedPath.toString(), conf.programFile);
+		Path target = Paths.get(expectedPath.toString(), conf.testDir);
 		if (conf.testSubDir != null) {
 			expectedPath = Paths.get(expectedPath.toString(), conf.testSubDir);
 			actualPath = Paths.get(actualPath.toString(), conf.testSubDir);
+			target = Paths.get(target.toString(), conf.testSubDir);
 		}
+		target = Paths.get(expectedPath.toString(), conf.programFile);
 
-		Program program = readProgram(target);
+		Program program = null;
+		try {
+			program = readProgram(target);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		setupWorkdir(conf, actualPath);
 
@@ -109,11 +148,11 @@ public abstract class EVMBytecodeAnalysisExecutor {
 			actualPath = Paths.get(actualPath.toString(), "optimized");
 			conf.workdir = actualPath.toFile().toString();
 			conf.dumpForcesUnwinding = true;
-			conf.optimize = false;
+
 			run(conf, program);
 
 			actFile = Paths.get(actualPath.toString(), LiSA.REPORT_NAME).toFile();
-			compare(conf, expectedPath, actualPath, expFile, actFile, false);
+			compare(conf, expectedPath, actualPath, expFile, actFile, true);
 		}
 	}
 
@@ -194,7 +233,12 @@ public abstract class EVMBytecodeAnalysisExecutor {
 		}
 	}
 
-	private void regen(Path expectedPath, Path actualPath, File expFile, File actFile, Accumulator acc)
+	private void regen(
+			Path expectedPath,
+			Path actualPath,
+			File expFile,
+			File actFile,
+			Accumulator acc)
 			throws IOException {
 		boolean updateReport = acc.changedWarnings || acc.changedConf || acc.changedInfos
 				|| !acc.addedFilePaths.isEmpty() || !acc.removedFilePaths.isEmpty()
@@ -224,12 +268,12 @@ public abstract class EVMBytecodeAnalysisExecutor {
 	}
 
 	private Program readProgram(Path target) throws IOException {
-		Program program = null;
-		program = EVMFrontend.generateCfgFromFile(target.toString());
-		return program;
+		return EVMFrontend.generateCfgFromFile(target.toString());
 	}
 
-	private void run(LiSAConfiguration configuration, Program program) {
+	private void run(
+			LiSAConfiguration configuration,
+			Program program) {
 		LiSA lisa = new LiSA(configuration);
 		try {
 			lisa.run(program);
@@ -239,7 +283,9 @@ public abstract class EVMBytecodeAnalysisExecutor {
 		}
 	}
 
-	private void setupWorkdir(LiSAConfiguration configuration, Path actualPath) {
+	private void setupWorkdir(
+			LiSAConfiguration configuration,
+			Path actualPath) {
 		File workdir = actualPath.toFile();
 		try {
 			FileManager.forceDeleteFolder(workdir.toString());
@@ -261,12 +307,16 @@ public abstract class EVMBytecodeAnalysisExecutor {
 
 		private final Path exp;
 
-		public Accumulator(Path exp) {
+		public Accumulator(
+				Path exp) {
 			this.exp = exp;
 		}
 
 		@Override
-		public void report(REPORTED_COMPONENT component, REPORT_TYPE type, Collection<?> reported) {
+		public void report(
+				REPORTED_COMPONENT component,
+				REPORT_TYPE type,
+				Collection<?> reported) {
 			switch (type) {
 			case ONLY_FIRST:
 				switch (component) {
@@ -312,18 +362,27 @@ public abstract class EVMBytecodeAnalysisExecutor {
 		}
 
 		@Override
-		public void fileDiff(String first, String second, String message) {
+		public void fileDiff(
+				String first,
+				String second,
+				String message) {
 			Path file = Paths.get(first);
 			changedFileName.add(exp.relativize(file));
 		}
 
 		@Override
-		public void infoDiff(String key, String first, String second) {
+		public void infoDiff(
+				String key,
+				String first,
+				String second) {
 			changedInfos = true;
 		}
 
 		@Override
-		public void configurationDiff(String key, String first, String second) {
+		public void configurationDiff(
+				String key,
+				String first,
+				String second) {
 			changedConf = true;
 		}
 	}

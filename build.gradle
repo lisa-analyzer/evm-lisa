@@ -34,10 +34,10 @@ dependencies {
  	// Apache Commons CLI
  	implementation 'commons-cli:commons-cli:1.4'
   
- 	implementation 'io.github.lisa-analyzer:lisa-program:0.1b8'
- 	implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8'
- 	implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8'
- 	implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8'
+ 	implementation 'io.github.lisa-analyzer:lisa-program:0.1'
+ 	implementation 'io.github.lisa-analyzer:lisa-analyses:0.1'
+ 	implementation 'io.github.lisa-analyzer:lisa-sdk:0.1'
+ 	implementation 'io.github.lisa-analyzer:lisa-imp:0.1'
  	implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
  	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
  	
