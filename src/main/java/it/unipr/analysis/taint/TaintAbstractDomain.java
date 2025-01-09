@@ -18,33 +18,34 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, BaseLattice<TaintAbstractStack> {
+public class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	private static int STACK_LIMIT = 32;
-	private static final TaintAbstractStack TOP = new TaintAbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), new ArrayList<>());
-	private static final TaintAbstractStack BOTTOM = new TaintAbstractStack(null, new ArrayList<>());
+	private static final TaintAbstractDomain TOP = new TaintAbstractDomain(
+			new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), new HashSet<String>());
+	private static final TaintAbstractDomain BOTTOM = new TaintAbstractDomain(null, new HashSet<String>());
 
 	private final ArrayList<TaintElement> stack;
 	
-	private final ArrayList<String> pushTaintList;
+	private final HashSet<String> pushTaintList;
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public TaintAbstractStack() {
+	public TaintAbstractDomain() {
 		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
-		this.pushTaintList = new ArrayList<>();
+		this.pushTaintList = new HashSet<String>();
 	}
 	
 	/**
 	 * Builds a taint abstract stack starting from a given list of elements that push taint .
 	 */
-	public TaintAbstractStack(ArrayList<String> pushTaintList) {
+	public TaintAbstractDomain(HashSet<String> pushTaintList) {
 		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM));
 		this.pushTaintList = pushTaintList;
 	}
@@ -54,13 +55,13 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	 *
 	 * @param stack the stack of values
 	 */
-	private TaintAbstractStack(ArrayList<TaintElement> stack, ArrayList<String> pushTaintList) {
+	private TaintAbstractDomain(ArrayList<TaintElement> stack, HashSet<String> pushTaintList) {
 		this.stack = stack;
 		this.pushTaintList = pushTaintList;
 	}
 
 	@Override
-	public TaintAbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public TaintAbstractDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		// nothing to do here
 		return this;
@@ -68,7 +69,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 
 	@SuppressWarnings("unused")
 	@Override
-	public TaintAbstractStack smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public TaintAbstractDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		// bottom state is propagated
 		if (this.isBottom())
@@ -103,7 +104,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "AddressOperator":
 				case "PushOperator":
 				case "Push0Operator": {
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					if(this.pushTaintList.contains(op.getClass().getSimpleName()))
 						resultStack.push(TaintElement.TAINT);
 					else resultStack.push(TaintElement.CLEAN);
@@ -122,25 +123,21 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					if (hasBottomUntil(1))
 							return BOTTOM;
 
-					TaintAbstractStack resultStack = clone();
-					TaintElement jmpDest = resultStack.pop();
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					TaintAbstractDomain resultStack = clone();
+					TaintElement opnd1 = resultStack.pop();
+					
+					return resultStack;
 				}
 				case "JumpiOperator": { // JUMPI
 
 					if (hasBottomUntil(2))
 						return BOTTOM;
 
-					TaintAbstractStack resultStack = clone();
-					TaintElement jmpDest = resultStack.pop();
-					TaintElement cond = resultStack.pop();
-					if (resultStack.isEmpty())
-						return BOTTOM;
-					else
-						return resultStack;
+					TaintAbstractDomain resultStack = clone();
+					TaintElement opnd1 = resultStack.pop();
+					TaintElement opnd2 = resultStack.pop();
+					
+					return resultStack;
 				}
 
 				case "BalanceOperator":
@@ -153,7 +150,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					if (hasBottomUntil(1))
 						return BOTTOM;
 
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
 
 					resultStack.push(TaintElement.semantics(opnd1));
@@ -185,7 +182,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					if (hasBottomUntil(2))
 						return BOTTOM;
 
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
 					TaintElement opnd2 = resultStack.pop();
 
@@ -198,7 +195,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					if (hasBottomUntil(3))
 						return BOTTOM;
 
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
 					TaintElement opnd2 = resultStack.pop();
 					TaintElement opnd3 = resultStack.pop();
@@ -210,7 +207,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "PopOperator": { // POP
 					if (hasBottomUntil(1))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					resultStack.pop();
 
 					if (resultStack.isEmpty())
@@ -222,7 +219,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "MstoreOperator": { // MSTORE
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 
 					TaintElement offset = resultStack.pop();
 					TaintElement value = resultStack.pop();
@@ -235,7 +232,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "Mstore8Operator": { // MSTORE8
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 
 					TaintElement offset = resultStack.pop();
 					TaintElement value = resultStack.pop();
@@ -248,7 +245,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 				case "SstoreOperator": { // SSTORE
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement key = resultStack.pop();
 					TaintElement value = resultStack.pop();
 
@@ -358,7 +355,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle LOG0
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
@@ -371,7 +368,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle LOG1
 					if (hasBottomUntil(3))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 					resultStack.pop();
@@ -385,7 +382,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle LOG2
 					if (hasBottomUntil(4))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 					resultStack.pop();
@@ -400,7 +397,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle LOG3
 					if (hasBottomUntil(5))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 					resultStack.pop();
@@ -416,7 +413,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle LOG4
 					if (hasBottomUntil(6))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 					resultStack.pop();
@@ -433,7 +430,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle CREATE
 					if (hasBottomUntil(3))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement value = resultStack.pop();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -450,7 +447,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle CREATE2
 					if (hasBottomUntil(4))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement value = resultStack.pop();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -468,7 +465,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle CALL
 					if (hasBottomUntil(7))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
 					TaintElement value = resultStack.pop();
@@ -489,7 +486,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle CALLCODE
 					if (hasBottomUntil(7))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
 					TaintElement value = resultStack.pop();
@@ -510,7 +507,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle RETURN
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
@@ -523,7 +520,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle DELEGATECALL
 					if (hasBottomUntil(6))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
 					TaintElement inOffset = resultStack.pop();
@@ -543,7 +540,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle STATICCALL
 					if (hasBottomUntil(6))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement gas = resultStack.pop();
 					TaintElement to = resultStack.pop();
 					TaintElement inOffset = resultStack.pop();
@@ -563,7 +560,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle REVERT
 					if (hasBottomUntil(2))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
@@ -579,7 +576,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle SELFDESTRUCT
 					if (hasBottomUntil(1))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement recipient = resultStack.pop();
 
 					if (resultStack.isEmpty())
@@ -591,7 +588,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle CODECOPY
 					if (hasBottomUntil(3))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement memOffset = resultStack.pop();
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -605,7 +602,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle EXTCODESIZE
 					if (hasBottomUntil(1))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
 					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
@@ -620,7 +617,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle EXTCODECOPY
 					if (hasBottomUntil(4))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 					TaintElement memOffset = resultStack.pop();
 					TaintElement dataOffset = resultStack.pop();
@@ -635,7 +632,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle RETURNDATACOPY
 					if (hasBottomUntil(3))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement memOffset = resultStack.pop();
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
@@ -649,7 +646,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle EXTCODEHASH
 					if (hasBottomUntil(1))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
 					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
@@ -664,7 +661,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 					// At the moment, we do not handle BLOCKHASH
 					if (hasBottomUntil(1))
 						return BOTTOM;
-					TaintAbstractStack resultStack = clone();
+					TaintAbstractDomain resultStack = clone();
 					TaintElement blockNumber = resultStack.pop();
 
 					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
@@ -684,19 +681,19 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 		return top();
 	}
 
-	private TaintAbstractStack dupXoperator(int x, TaintAbstractStack stack) {
+	private TaintAbstractDomain dupXoperator(int x, TaintAbstractDomain stack) {
 		if (stack.isEmpty() || stack.hasBottomUntil(x))
 			return BOTTOM;
 		return dupX(x, stack.clone());
 	}
 
-	private TaintAbstractStack swapXoperator(int x, TaintAbstractStack stack) {
+	private TaintAbstractDomain swapXoperator(int x, TaintAbstractDomain stack) {
 		if (stack.isEmpty() || stack.hasBottomUntil(x))
 			return BOTTOM;
 		return swapX(x, stack.clone());
 	}
 
-	private TaintAbstractStack swapX(int x, TaintAbstractStack stack) {
+	private TaintAbstractDomain swapX(int x, TaintAbstractDomain stack) {
 		List<TaintElement> clone = stack.clone().getStack();
 
 		if (stack.size() < x + 1 || x < 1)
@@ -719,10 +716,10 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
 
-		return new TaintAbstractStack(result, this.pushTaintList);
+		return new TaintAbstractDomain(result, this.pushTaintList);
 	}
 
-	private TaintAbstractStack dupX(int x, TaintAbstractStack stack) {
+	private TaintAbstractDomain dupX(int x, TaintAbstractDomain stack) {
 		List<TaintElement> clone = stack.clone().getStack();
 
 		if (stack.size() < x || x < 1)
@@ -746,7 +743,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 		result.add(tmp);
 		result.remove(0);
 
-		return new TaintAbstractStack(result, this.pushTaintList);
+		return new TaintAbstractDomain(result, this.pushTaintList);
 	}
 
 	private ArrayList<TaintElement> getStack() {
@@ -771,7 +768,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	}
 
 	@Override
-	public TaintAbstractStack assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+	public TaintAbstractDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
 			SemanticOracle oracle) throws SemanticException {
 		// nothing to do here
 		return this;
@@ -784,13 +781,13 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	}
 
 	@Override
-	public TaintAbstractStack forgetIdentifier(Identifier id) throws SemanticException {
+	public TaintAbstractDomain forgetIdentifier(Identifier id) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public TaintAbstractStack forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+	public TaintAbstractDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -823,29 +820,29 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	}
 
 	@Override
-	public TaintAbstractStack pushScope(ScopeToken token) throws SemanticException {
+	public TaintAbstractDomain pushScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public TaintAbstractStack popScope(ScopeToken token) throws SemanticException {
+	public TaintAbstractDomain popScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public TaintAbstractStack top() {
+	public TaintAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public TaintAbstractStack bottom() {
+	public TaintAbstractDomain bottom() {
 		return BOTTOM;
 	}
 
 	@Override
-	public TaintAbstractStack glbAux(TaintAbstractStack other) throws SemanticException {
+	public TaintAbstractDomain glbAux(TaintAbstractDomain other) throws SemanticException {
 		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
 
 		Iterator<TaintElement> thisIterator = this.stack.iterator();
@@ -857,11 +854,11 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			result.add(thisElement.glb(otherElement));
 		}
 
-		return new TaintAbstractStack(result, this.pushTaintList);
+		return new TaintAbstractDomain(result, this.pushTaintList);
 	}
 
 	@Override
-	public TaintAbstractStack lubAux(TaintAbstractStack other) throws SemanticException {
+	public TaintAbstractDomain lubAux(TaintAbstractDomain other) throws SemanticException {
 		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
 
 		Iterator<TaintElement> thisIterator = this.stack.iterator();
@@ -873,11 +870,11 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			result.add(thisElement.lub(otherElement));
 		}
 
-		return new TaintAbstractStack(result, this.pushTaintList);
+		return new TaintAbstractDomain(result, this.pushTaintList);
 	}
 
 	@Override
-	public boolean lessOrEqualAux(TaintAbstractStack other) throws SemanticException {
+	public boolean lessOrEqualAux(TaintAbstractDomain other) throws SemanticException {
 		Iterator<TaintElement> thisIterator = this.stack.iterator();
 		Iterator<TaintElement> otherIterator = other.stack.iterator();
 
@@ -933,10 +930,10 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 	}
 
 	@Override
-	public TaintAbstractStack clone() {
+	public TaintAbstractDomain clone() {
 		if (isBottom())
 			return this;
-		return new TaintAbstractStack(new ArrayList<>(stack), new ArrayList<>(pushTaintList));
+		return new TaintAbstractDomain(new ArrayList<>(stack), new HashSet<String>(pushTaintList));
 	}
 
 	@Override
@@ -947,7 +944,7 @@ public class TaintAbstractStack implements ValueDomain<TaintAbstractStack>, Base
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TaintAbstractStack other = (TaintAbstractStack) obj;
+		TaintAbstractDomain other = (TaintAbstractDomain) obj;
 		return java.util.Objects.equals(stack, other.stack);
 	}
 

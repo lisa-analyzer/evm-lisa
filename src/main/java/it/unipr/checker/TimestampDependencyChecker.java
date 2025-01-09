@@ -1,6 +1,6 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.taint.TaintAbstractStack;
+import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
@@ -11,12 +11,12 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
 
 public class TimestampDependencyChecker implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	@Override
 	public void beforeExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool) {
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool) {
 		// TODO Auto-generated method stub
 		SemanticCheck.super.beforeExecution(tool);
 	}
@@ -24,7 +24,7 @@ public class TimestampDependencyChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		// TODO Auto-generated method stub
 		return SemanticCheck.super.visit(tool, graph, node);
@@ -33,7 +33,7 @@ public class TimestampDependencyChecker implements
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractStack, TypeEnvironment<InferredTypes>>> tool) {
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool) {
 		// TODO Auto-generated method stub
 		SemanticCheck.super.afterExecution(tool);
 	}

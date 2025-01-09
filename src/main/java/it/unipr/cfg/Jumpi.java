@@ -49,38 +49,32 @@ public class Jumpi extends Statement {
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
-		if(entryState.getState().getDomainInstance(EVMAbstractState.class) != null) {
-			EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
-
-			// Split here
-			Set<AbstractStack> trueStacks = new HashSet<>();
-			Set<AbstractStack> falseStacks = new HashSet<>();
-			if (!valueState.isBottom() && !valueState.isTop()) {
-				for (AbstractStack st : valueState.getStacks()) {
-					AbstractStack result = st.clone();
-					result.pop();
-					StackElement condition = result.pop();
-					if (condition.isDefinitelyTrue())
-						trueStacks.add(result);
-					else if (condition.isDefinitelyFalse())
-						falseStacks.add(result);
-					else if (condition.isUnknown()) {
-						trueStacks.add(result);
-						falseStacks.add(result);
-					}
+		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
+		
+		if(valueState == null) return entryState;
+		
+		// Split here
+		Set<AbstractStack> trueStacks = new HashSet<>();
+		Set<AbstractStack> falseStacks = new HashSet<>();
+		if (!valueState.isBottom() && !valueState.isTop()) {
+			for (AbstractStack st : valueState.getStacks()) {
+				AbstractStack result = st.clone();
+				result.pop();
+				StackElement condition = result.pop();
+				if (condition.isDefinitelyTrue())
+					trueStacks.add(result);
+				else if (condition.isDefinitelyFalse())
+					falseStacks.add(result);
+				else if (condition.isUnknown()) {
+					trueStacks.add(result);
+					falseStacks.add(result);
 				}
 			}
+		}
 
-			Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
-			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
-					JumpiOperator.INSTANCE, getLocation()), this);
-		}
-		else {
-			// TODO: Fare il caso TAINT
-			Constant c = new Constant(Untyped.INSTANCE, 0, getLocation());
-			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
-					JumpiOperator.INSTANCE, getLocation()), this);
-		}
+		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
+		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
+				JumpiOperator.INSTANCE, getLocation()), this);
 	}
 
 	@Override
