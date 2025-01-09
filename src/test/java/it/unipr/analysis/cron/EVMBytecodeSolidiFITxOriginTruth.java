@@ -2,7 +2,6 @@ package it.unipr.analysis.cron;
 
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyCache;
-import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.TxOriginChecker;

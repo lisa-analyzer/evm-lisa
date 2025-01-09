@@ -8,7 +8,6 @@ import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Operator;
@@ -19,28 +18,28 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
+public abstract class TaintAbstractDomain
+		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	static int STACK_LIMIT = 32;
-	
 
 	private final ArrayList<TaintElement> stack;
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack.
+	 * Builds a taint abstract stack starting from a given stack and a list of
+	 * elements that push taint.
 	 *
 	 * @param stack the stack of values
 	 */
 	protected TaintAbstractDomain(ArrayList<TaintElement> stack) {
 		this.stack = stack;
 	}
-	
+
 	@Override
 	public TaintAbstractDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
@@ -64,12 +63,8 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 
 			if (op != null) {
 				switch (op.getClass().getSimpleName()) {
-				case "OriginOperator": {
-					TaintAbstractDomain resultStack = clone();
-					resultStack.push(TaintElement.TAINT);
-					return resultStack;
-				}
 				case "TimestampOperator":
+				case "OriginOperator":
 				case "CodesizeOperator":
 				case "GaspriceOperator":
 				case "ReturndatasizeOperator":
@@ -90,11 +85,10 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 				case "PushOperator":
 				case "Push0Operator": {
 					TaintAbstractDomain resultStack = clone();
-					if(this.getTaintedOpcode().contains(op))
+					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
-					else resultStack.push(TaintElement.CLEAN);
-					resultStack.toString();
-
+					else
+						resultStack.push(TaintElement.CLEAN);
 					return resultStack;
 				}
 
@@ -107,11 +101,10 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 
 				case "JumpOperator": { // JUMP
 					if (hasBottomUntil(1))
-							return bottom();
-
+						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
-					resultStack.pop();
+					TaintElement opnd1 = resultStack.pop();
 
 					return resultStack;
 				}
@@ -120,8 +113,8 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
-					resultStack.pop();
-					resultStack.pop();
+					TaintElement opnd1 = resultStack.pop();
+					TaintElement opnd2 = resultStack.pop();
 
 					return resultStack;
 				}
@@ -702,7 +695,6 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
 
-
 		return mk(result);
 	}
 
@@ -818,7 +810,6 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 		return this;
 	}
 
-
 	@Override
 	public TaintAbstractDomain glbAux(TaintAbstractDomain other) throws SemanticException {
 		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
@@ -911,7 +902,6 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 	public TaintAbstractDomain clone() {
 		if (isBottom())
 			return this;
-
 		return mk(new ArrayList<>(stack));
 	}
 
@@ -947,10 +937,9 @@ public abstract class TaintAbstractDomain implements ValueDomain<TaintAbstractDo
 			return TaintElement.TOP;
 		return this.stack.get(STACK_LIMIT - 1);
 	}
-	
+
 	public abstract Set<Operator> getTaintedOpcode();
-	
+
 	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list);
 
 }
-

@@ -1,7 +1,6 @@
 package it.unipr;
 
 import it.unipr.analysis.*;
-import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
