@@ -14,6 +14,8 @@ import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +31,26 @@ public class EVMBytecodeSmartBugsReentrancyTruth {
 
 	@Ignore
 	public void testSmartBugsReentrancyTruth() throws Exception {
-		String SMARTBUGS_BYTECODES_DIR = Paths
-				.get("evm-testcases", "ground-truth", "test-reentrancy-smartbugs-truth", "bytecode")
-				.toString();
+		Path smartbugsBytecodesDirPath = Paths
+				.get("evm-testcases", "ground-truth", "test-reentrancy-smartbugs-truth", "bytecode");
+		String SMARTBUGS_BYTECODES_DIR = smartbugsBytecodesDirPath.toString();
 
 		EVMFrontend.setUseCreationCode();
 
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
-		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() / 2);
+		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
+		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		// Run the benchmark in parallel
 		for (String bytecodeFileName : bytecodes) {
 			executor.submit(() -> {
 				try {
-					String bytecodeFullPath = SMARTBUGS_BYTECODES_DIR + bytecodeFileName;
+					String bytecodeFullPath = smartbugsBytecodesDirPath.resolve(bytecodeFileName).toString();
+
+					String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
+					if (bytecode.startsWith("0x"))
+						EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
 
 					Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
 

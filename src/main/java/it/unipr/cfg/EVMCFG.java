@@ -73,7 +73,7 @@ public class EVMCFG extends CFG {
 
 		return sstores;
 	}
-	
+
 	/**
 	 * Returns a set of all the SHA3 statements in the CFG. SHA3
 	 * 
@@ -150,7 +150,7 @@ public class EVMCFG extends CFG {
 
 		return jumpNodes;
 	}
-	
+
 	/**
 	 * Returns a set of all the JUMPI statements in the CFG.
 	 * 

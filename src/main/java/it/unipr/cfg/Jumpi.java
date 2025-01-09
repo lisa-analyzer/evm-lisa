@@ -50,9 +50,10 @@ public class Jumpi extends Statement {
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
 		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
-		
-		if(valueState == null) return entryState;
-		
+
+		if (valueState == null)
+			return entryState;
+
 		// Split here
 		Set<AbstractStack> trueStacks = new HashSet<>();
 		Set<AbstractStack> falseStacks = new HashSet<>();
