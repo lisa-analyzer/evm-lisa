@@ -195,38 +195,14 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 
-				case "MstoreOperator": { // MSTORE
+				case "MstoreOperator":
+				case "Mstore8Operator":
+				case "SstoreOperator": { // pops 2
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-
-					TaintElement offset = resultStack.pop();
-					TaintElement value = resultStack.pop();
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
-				}
-				case "Mstore8Operator": { // MSTORE8
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-
-					TaintElement offset = resultStack.pop();
-					TaintElement value = resultStack.pop();
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
-				}
-				case "SstoreOperator": { // SSTORE
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement key = resultStack.pop();
-					TaintElement value = resultStack.pop();
+					resultStack.pop();
+					resultStack.pop();
 
 					if (resultStack.isEmpty())
 						return bottom();
@@ -440,8 +416,8 @@ public abstract class TaintAbstractDomain
 					else
 						return resultStack;
 				}
-				case "CallOperator": { // CALL
-					// At the moment, we do not handle CALL
+				case "CallOperator":
+				case "CallcodeOperator": { // pops 7, push 1
 					if (hasBottomUntil(7))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -453,28 +429,6 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
-				}
-				case "CallcodeOperator": { // CALLCODE
-					// At the moment, we do not handle CALLCODE
-					if (hasBottomUntil(7))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement gas = resultStack.pop();
-					TaintElement to = resultStack.pop();
-					TaintElement value = resultStack.pop();
-					TaintElement inOffset = resultStack.pop();
-					TaintElement inLength = resultStack.pop();
-					TaintElement outOffset = resultStack.pop();
-					TaintElement outLength = resultStack.pop();
-
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
@@ -495,8 +449,8 @@ public abstract class TaintAbstractDomain
 					else
 						return resultStack;
 				}
-				case "DelegatecallOperator": { // DELEGATECALL
-					// At the moment, we do not handle DELEGATECALL
+				case "DelegatecallOperator":
+				case "StaticcallOperator": { // pops 6, push 1
 					if (hasBottomUntil(6))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -506,28 +460,7 @@ public abstract class TaintAbstractDomain
 					TaintElement inLength = resultStack.pop();
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
-
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
-				}
-				case "StaticcallOperator": { // STATICCALL
-					// At the moment, we do not handle STATICCALL
-					if (hasBottomUntil(6))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement gas = resultStack.pop();
-					TaintElement to = resultStack.pop();
-					TaintElement inOffset = resultStack.pop();
-					TaintElement inLength = resultStack.pop();
-					TaintElement outOffset = resultStack.pop();
-					TaintElement outLength = resultStack.pop();
-
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+					
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
