@@ -1,0 +1,38 @@
+PUSH20 0x0000000000000000000000000000000000000000
+ADDRESS
+EQ
+PUSH1 0x80
+PUSH1 0x40
+MSTORE
+PUSH1 0x00
+DUP1
+REVERT
+INVALID
+LOG2
+PUSH6 0x627a7a723158
+SHA3
+'a8'(Unknown Opcode)
+DUP3
+'ac'(Unknown Opcode)
+'ee'(Unknown Opcode)
+'c5'(Unknown Opcode)
+'4d'(Unknown Opcode)
+ADDMOD
+SWAP5
+'d1'(Unknown Opcode)
+PUSH13 0x3bed263c3e90dc6c170d10dfce
+GT
+SWAP5
+'b0'(Unknown Opcode)
+SHL
+DUP9
+'be'(Unknown Opcode)
+SWAP9
+BASEFEE
+OR
+PUSH5 0x736f6c6343
+STOP
+SDIV
+SIGNEXTEND
+STOP
+ORIGIN
