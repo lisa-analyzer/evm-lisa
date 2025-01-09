@@ -41,6 +41,7 @@ public class EVMCFG extends CFG {
 	public Set<Statement> jumpNodes;
 	public Set<Statement> pushedJumps;
 	public Set<Statement> sstores;
+	public Set<Statement> sha3s;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -54,7 +55,7 @@ public class EVMCFG extends CFG {
 	/**
 	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
 	 * 
-	 * @return a set of all the JUMPDEST statements in the CFG
+	 * @return a set of all the SSTORE statements in the CFG
 	 */
 	public Set<Statement> getAllSstore() {
 		if (sstores == null) {
@@ -71,6 +72,28 @@ public class EVMCFG extends CFG {
 		}
 
 		return sstores;
+	}
+	
+	/**
+	 * Returns a set of all the SHA3 statements in the CFG. SHA3
+	 * 
+	 * @return a set of all the SHA3 statements in the CFG
+	 */
+	public Set<Statement> getAllSha3() {
+		if (sha3s == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> sha3s = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Sha3) {
+					sha3s.add(statement);
+				}
+			}
+
+			return this.sha3s = sha3s;
+		}
+
+		return sha3s;
 	}
 
 	/**
@@ -321,5 +344,4 @@ public class EVMCFG extends CFG {
 
 		return false;
 	}
-
 }
