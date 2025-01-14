@@ -172,6 +172,26 @@ public class EVMCFG extends CFG {
 		return jumpNodes;
 	}
 
+	/**
+	 * Returns a set of all the JUMP statements in the CFG.
+	 *
+	 * @return a set of all the JUMP statements in the CFG
+	 */
+	public Set<Statement> getAllJump() {
+		if (jumpNodes == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> jumpStatements = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Jump)
+					jumpStatements.add(statement);
+
+			return jumpNodes = jumpStatements;
+		}
+
+		return jumpNodes;
+	}
+
 	public int getOpcodeCount() {
 		// -1 for the return statement
 		return this.getNodesCount() - 1;
