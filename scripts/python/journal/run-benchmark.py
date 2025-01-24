@@ -593,8 +593,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-    if not args.no_analysis:
-        build_evmlisa()
+    # if not args.no_analysis:
+        # build_evmlisa()
 
     if args.tx_origin:
         if args.solidifi:
@@ -603,13 +603,21 @@ if __name__ == "__main__":
                                                                           'results_dir':        './tx-origin-solidifi/results',
                                                                           'result_evmlisa_dir': './tx-origin-solidifi/results/evmlisa',
                                                                           'type':               'txorigin'})
+                evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa', 
+                                                                                  'results_dir':        './vanilla-solidifi/results',
+                                                                                  'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa',
+                                                                                  'type':               'txorigin'})
+                
+                evmlisa_vanilla_thread.start()
                 evmlisa_thread.start()
                 evmlisa_thread.join()
+                evmlisa_vanilla_thread.join()
 
                 check_sound_analysis_evmlisa('./tx-origin-solidifi/results/evmlisa')
-
-            results_evmlisa = get_results_evmlisa('./tx-origin-solidifi/results/evmlisa', 'evmlisa-buggy-tx-origin-solidifi')                        
+                  
             results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/tx.origin', 'tx-origin', 'solidify')
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./tx-origin-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
+                                             get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
             
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
@@ -625,7 +633,7 @@ if __name__ == "__main__":
             # Plot results
             plot_results(results_evmlisa, 
                         results_solidifi,
-                        'solidifi tx-origin')
+                        'solidifi_tx-origin')
 
 
     if args.reentrancy:
