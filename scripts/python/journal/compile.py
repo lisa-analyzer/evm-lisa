@@ -320,12 +320,6 @@ if __name__ == "__main__":
                                  './reentrancy-solidifi/json')
         compile_solidity_sources('./vanilla-solidifi/source-code',
                                  './vanilla-solidifi/json')
-        # TX-ORIGIN
-        # extract_solidity_versions('./tx-origin-solidifi/source-code',
-        #                           './tx-origin-solidifi/source-code/versions.csv')
-        # compile_solidity_sources_with_different_version('./tx-origin-solidifi/source-code',
-        #                                                 './tx-origin-solidifi/json',
-        #                                                 './tx-origin-solidifi/source-code/versions.csv')
         compile_solidity_sources('./tx-origin-solidifi/source-code',
                                  './tx-origin-solidifi/json')
         

@@ -67,39 +67,19 @@ function sendto_txorigin17(address payable receiver, uint amount,address owner_t
 
 contract Token {
     function totalSupply() public view returns (uint256);
-function sendto_txorigin37(address payable receiver, uint amount,address owner_txorigin37) public {
-	require (tx.origin == owner_txorigin37);
-	receiver.transfer(amount);
-}
+
     function actualBalanceOf(address _owner) public view returns (uint256 balance);
-function transferTo_txorigin3(address to, uint amount,address owner_txorigin3) public {
-  require(tx.origin == owner_txorigin3);
-  to.call.value(amount);
-}
+
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
-function sendto_txorigin9(address payable receiver, uint amount,address owner_txorigin9) public {
-	require (tx.origin == owner_txorigin9);
-	receiver.transfer(amount);
-}
+
     function renounceOwnership() public;
-function sendto_txorigin25(address payable receiver, uint amount,address owner_txorigin25) public {
-	require (tx.origin == owner_txorigin25);
-	receiver.transfer(amount);
-}
+
     function transferOwnership(address _newOwner) public;
-function transferTo_txorigin19(address to, uint amount,address owner_txorigin19) public {
-  require(tx.origin == owner_txorigin19);
-  to.call.value(amount);
-}
+
     function pause() public;
-function withdrawAll_txorigin26(address payable _recipient,address owner_txorigin26) public {
-        require(tx.origin == owner_txorigin26);
-        _recipient.transfer(address(this).balance);
-    }
+
     function unpause() public;
-function bug_txorigin20(address owner_txorigin20) public{
-        require(tx.origin == owner_txorigin20);
-    }
+
 }
 
 

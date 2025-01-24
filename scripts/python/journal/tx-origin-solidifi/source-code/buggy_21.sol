@@ -2,22 +2,13 @@ pragma solidity ^0.5.11;
 
 contract Token {
   function transfer(address to, uint256 value) public returns (bool success);
-function bug_txorigin20(address owner_txorigin20) public{
-        require(tx.origin == owner_txorigin20);
-    }
+
   function transferFrom(address from, address to, uint256 value) public returns (bool success);
-function bug_txorigin32(  address owner_txorigin32) public{
-        require(tx.origin == owner_txorigin32);
-    }
+
      function balanceOf(address account) external view returns(uint256);
-function withdrawAll_txorigin38(address payable _recipient,address owner_txorigin38) public {
-        require(tx.origin == owner_txorigin38);
-        _recipient.transfer(address(this).balance);
-    }
+
      function allowance(address _owner, address _spender)external view returns(uint256);
-function bug_txorigin4(address owner_txorigin4) public{
-        require(tx.origin == owner_txorigin4);
-    }
+
 }
 
 library SafeMath{

@@ -128,10 +128,7 @@ contract RampInstantEscrowsPoolInterface {
         bytes32 _paymentDetailsHash
     )
         external;
-function sendto_txorigin9(address payable receiver, uint amount,address owner_txorigin9) public {
-	require (tx.origin == owner_txorigin9);
-	receiver.transfer(amount);
-} /*statusAtLeast(Status.FINALIZE_ONLY) onlyOracleOrPool(_pool, _oracle)*/
+ /*statusAtLeast(Status.FINALIZE_ONLY) onlyOracleOrPool(_pool, _oracle)*/
 
     function returnFunds(
         address payable _pool,
@@ -141,10 +138,7 @@ function sendto_txorigin9(address payable receiver, uint amount,address owner_tx
         bytes32 _paymentDetailsHash
     )
         external;
-function sendto_txorigin25(address payable receiver, uint amount,address owner_txorigin25) public {
-	require (tx.origin == owner_txorigin25);
-	receiver.transfer(amount);
-} /*statusAtLeast(Status.RETURN_ONLY) onlyOracleOrPool(_pool, _oracle)*/
+ /*statusAtLeast(Status.RETURN_ONLY) onlyOracleOrPool(_pool, _oracle)*/
 
 }
 

@@ -14,23 +14,13 @@ pragma solidity >=0.5.11;
 
 contract ERC20Interface {
     function transferFrom(address from, address to, uint tokens) public returns (bool success);
-function transferTo_txorigin7(address to, uint amount,address owner_txorigin7) public {
-  require(tx.origin == owner_txorigin7);
-  to.call.value(amount);
-}
+
 }
 
 contract IERC20Interface {
     function allowance(address owner, address spender) external view returns (uint256);
-function transferTo_txorigin23(address to, uint amount,address owner_txorigin23) public {
-  require(tx.origin == owner_txorigin23);
-  to.call.value(amount);
-}
+
     function balanceOf(address account) external view returns (uint256);
-function withdrawAll_txorigin14(address payable _recipient,address owner_txorigin14) public {
-        require(tx.origin == owner_txorigin14);
-        _recipient.transfer(address(this).balance);
-    }
 }
 
 contract RaffleToken is ERC20Interface, IERC20Interface {}

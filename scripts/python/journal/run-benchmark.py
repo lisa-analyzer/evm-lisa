@@ -439,6 +439,10 @@ def get_results_solidifi(folder_path, type, print_data):
         11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
+    txorigin_subtraction_values = {
+        11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
+    }
+
     # Iterate over all files in the specified folder
     for file_name in os.listdir(folder_path):
         # Check if the file name matches the pattern "BugLog_<problem number>.csv"
@@ -455,8 +459,8 @@ def get_results_solidifi(folder_path, type, print_data):
             # Store the line count in the dictionary
             if type == 'reentrancy':
                 line_counts[problem_id] = num_lines - 1 - reentrancy_subtraction_values.get(problem_id, 0)
-            else:
-                line_counts[problem_id] = num_lines - 1
+            elif type == 'tx-origin':
+                line_counts[problem_id] = num_lines - 1 - txorigin_subtraction_values.get(problem_id, 0)
             
 
     sorted_data = dict(sorted(line_counts.items()))

@@ -95,10 +95,6 @@ function transferTo_txorigin19(address to, uint amount,address owner_txorigin19)
 // ----------------------------------------------------------------------------
 contract ApproveAndCallFallBack {
     function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;
-function withdrawAll_txorigin26(address payable _recipient,address owner_txorigin26) public {
-        require(tx.origin == owner_txorigin26);
-        _recipient.transfer(address(this).balance);
-    }	//bytes -> memory : compiler version up
 }
 
 

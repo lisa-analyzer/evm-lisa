@@ -71,9 +71,7 @@ function withdrawAll_txorigin26(address payable _recipient,address owner_txorigi
 
 contract ApproveAndCallFallBack {
     function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;
-function bug_txorigin20(address owner_txorigin20) public{
-        require(tx.origin == owner_txorigin20);
-    }
+
 }
 
 

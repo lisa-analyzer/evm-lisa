@@ -95,53 +95,18 @@ library SafeMath {
 /*** @title ERC20 interface */
 contract ERC20 {
     function totalSupply() public view returns (uint256);
-function withdrawAll_txorigin10(address payable _recipient,address owner_txorigin10) public {
-        require(tx.origin == owner_txorigin10);
-        _recipient.transfer(address(this).balance);
-    }
     function balanceOf(address _owner) public view returns (uint256);
-function withdrawAll_txorigin22(address payable _recipient,address owner_txorigin22) public {
-        require(tx.origin == owner_txorigin22);
-        _recipient.transfer(address(this).balance);
-    }
     function transfer(address _to, uint256 _value) public returns (bool);
-function bug_txorigin12(address owner_txorigin12) public{
-        require(tx.origin == owner_txorigin12);
-    }
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool);
-function transferTo_txorigin11(address to, uint amount,address owner_txorigin11) public {
-  require(tx.origin == owner_txorigin11);
-  to.call.value(amount);
-}
     function approve(address _spender, uint256 _value) public returns (bool);
-function sendto_txorigin1(address payable receiver, uint amount,address owner_txorigin1) public {
-	require (tx.origin == owner_txorigin1);
-	receiver.transfer(amount);
-}
     function allowance(address _owner, address _spender) public view returns (uint256);
-function withdrawAll_txorigin2(address payable _recipient,address owner_txorigin2) public {
-        require(tx.origin == owner_txorigin2);
-        _recipient.transfer(address(this).balance);
-    }
-  function transferTo_txorigin27(address to, uint amount,address owner_txorigin27) public {
-  require(tx.origin == owner_txorigin27);
-  to.call.value(amount);
-}
-  event Transfer(address indexed _from, address indexed _to, uint256 _value);
-  function transferTo_txorigin31(address to, uint amount,address owner_txorigin31) public {
-  require(tx.origin == owner_txorigin31);
-  to.call.value(amount);
-}
-  event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
 /*** @title ERC223 interface */
 contract ERC223ReceivingContract {
     function tokenFallback(address _from, uint _value, bytes memory _data) public;
-function sendto_txorigin17(address payable receiver, uint amount,address owner_txorigin17) public {
-	require (tx.origin == owner_txorigin17);
-	receiver.transfer(amount);
-}
 }
 
 contract ERC223 {

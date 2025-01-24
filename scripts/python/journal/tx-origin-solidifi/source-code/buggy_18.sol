@@ -108,10 +108,6 @@ function bug_txorigin12(address owner_txorigin12) public{
 contract ApproveAndCallFallBack {
 
     function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;
-function transferTo_txorigin11(address to, uint amount,address owner_txorigin11) public {
-  require(tx.origin == owner_txorigin11);
-  to.call.value(amount);
-}
 
 }
 

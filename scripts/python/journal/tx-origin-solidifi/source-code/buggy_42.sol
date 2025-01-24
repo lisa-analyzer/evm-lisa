@@ -78,19 +78,11 @@ library SafeMath {
 
 contract Token{
     function balanceOf(address who) external view returns (uint256);
-function bug_txorigin4(address owner_txorigin4) public{
-        require(tx.origin == owner_txorigin4);
-    }
+
     function transferFrom(address from, address to, uint256 value) external returns (bool);
-function transferTo_txorigin7(address to, uint amount,address owner_txorigin7) public {
-  require(tx.origin == owner_txorigin7);
-  to.call.value(amount);
-}
+
     function transfer(address to, uint256 value) external returns (bool);
-function transferTo_txorigin23(address to, uint amount,address owner_txorigin23) public {
-  require(tx.origin == owner_txorigin23);
-  to.call.value(amount);
-}
+
 }
 
 contract Staking is Owned{
