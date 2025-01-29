@@ -56,5 +56,4 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	public TaintAbstractDomain mk(ArrayList<TaintElement> list) {
 		return new TxOriginAbstractDomain(list);
 	}
-
 }

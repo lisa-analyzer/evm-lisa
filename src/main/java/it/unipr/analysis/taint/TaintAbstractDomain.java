@@ -460,7 +460,7 @@ public abstract class TaintAbstractDomain
 					TaintElement inLength = resultStack.pop();
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
-					
+
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
