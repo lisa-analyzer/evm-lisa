@@ -83,211 +83,290 @@ public class EVMLiSA {
 		new EVMLiSA().go(args);
 	}
 
-	public void go(String[] args) throws Exception {
-		Options options = getOptions();
-		CommandLineParser parser = new DefaultParser();
-		HelpFormatter formatter = new HelpFormatter();
-		CommandLine cmd = null;
-
-		try {
-			cmd = parser.parse(options, args);
-		} catch (ParseException e) {
-			log.error(e.getMessage());
-			formatter.printHelp("help", options);
-
-			System.exit(1);
-		}
-
-		String addressSC = cmd.getOptionValue("address");
-		String outputDir = cmd.getOptionValue("output");
-		boolean serializeInputs = cmd.hasOption("serialize-inputs");
-		boolean dumpHTML = cmd.hasOption("html");
-		boolean dumpDot = cmd.hasOption("dot");
-		boolean dumpStatistics = cmd.hasOption("dump-stats");
-		boolean downloadBytecode = cmd.hasOption("download-bytecode");
-		boolean useStorageLive = cmd.hasOption("use-live-storage");
-		String filepath = cmd.getOptionValue("filepath-bytecode");
-		String stackSize = cmd.getOptionValue("stack-size");
-		String stackSetSize = cmd.getOptionValue("stack-set-size");
-		String benchmark = cmd.getOptionValue("benchmark");
-		String coresOpt = cmd.getOptionValue("cores");
-		boolean dumpReport = cmd.hasOption("dump-report");
-		boolean useCreationCode = cmd.hasOption("creation-code");
-		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy");
-		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin");
-		boolean linkUnsoundJumpsToAllJumpdestOption = cmd.hasOption("link-unsound-jumps-to-all-jumpdest");
-		String mnemonicInputFile = cmd.getOptionValue("filepath-mnemonic");
-
-		// Download bytecode case
-		if (downloadBytecode && benchmark != null) {
-			SMARTCONTRACTS_FULLPATH = Paths.get(benchmark).toString();
-			OUTPUT_DIR = Paths.get("download").toString();
-			saveSmartContractsFromEtherscan();
+	private void go(String[] args) throws Exception {
+		CommandLine cmd = parseCommandLine(args);
+		if (cmd == null)
 			return;
-		}
 
-		// Setting cores
-		if (coresOpt != null && Integer.parseInt(coresOpt) > 0)
-			CORES = Integer.parseInt(coresOpt);
-		else
-			CORES = 1;
-
-		// Setting AbstractStack size and AbstractStackSet size
-		try {
-			if (stackSize != null && Integer.parseInt(stackSize) > 0)
-				AbstractStack.setStackLimit(Integer.parseInt(stackSize));
-
-			if (stackSetSize != null && Integer.parseInt(stackSetSize) > 0)
-				AbstractStackSet.setStackSetSize(Integer.parseInt(stackSetSize));
-
-		} catch (NumberFormatException e) {
-			log.error("Size must be an integer.");
-			formatter.printHelp("help", options);
-
-			System.exit(1);
-		}
-
-		// Setting output directories
-		if (outputDir != null) {
-			_outputDirPath = Paths.get(outputDir);
-			OUTPUT_DIR = _outputDirPath.toString();
-			STATISTICS_FULLPATH = _outputDirPath
-					.resolve("statistics.csv")
-					.toString();
-			STATISTICSZEROJUMP_FULLPATH = _outputDirPath
-					.resolve("statisticsZeroJumps.csv")
-					.toString();
-			FAILURE_FULLPATH = _outputDirPath
-					.resolve("failure.csv")
-					.toString();
-			LOGS_FULLPATH = _outputDirPath
-					.resolve("logs.txt")
-					.toString();
-		}
-
-		if (useStorageLive && addressSC == null && benchmark == null) {
-			log.warn("Address must be set if live storage option is activated.");
-			log.warn("Live storage option deactivated.");
-			useStorageLive = false;
-		}
-
-		if (useStorageLive)
-			EVMAbstractState.setUseStorageLive();
-		if (useCreationCode)
-			EVMFrontend.setUseCreationCode();
-		if (linkUnsoundJumpsToAllJumpdestOption)
-			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
-
-		// Creating json output notes
-		JSONObject jsonOptions = new JSONObject();
-		jsonOptions.put("address", addressSC);
-		jsonOptions.put("serialize-inputs", serializeInputs);
-		jsonOptions.put("dump-html", dumpHTML);
-		jsonOptions.put("dump-dot", dumpDot);
-		jsonOptions.put("dump-statistics", dumpStatistics);
-		jsonOptions.put("download-bytecode", downloadBytecode);
-		jsonOptions.put("use-storage-live", useStorageLive);
-		jsonOptions.put("use-creation-code", useCreationCode);
-		if (filepath != null)
-			jsonOptions.put("input-filepath", filepath);
-		else
-			jsonOptions.put("input-filepath", mnemonicInputFile);
-		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
-		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
-		jsonOptions.put("benchmark", benchmark);
-		jsonOptions.put("cores", CORES);
-		jsonOptions.put("dump-report", dumpReport);
-		jsonOptions.put("output-directory", OUTPUT_DIR);
-		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
-
-		// Run benchmark case
-		if (benchmark != null) {
-			SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-			String timestamp = DATE_FORMAT_BENCHMARK.format(System.currentTimeMillis());
-			int ss = AbstractStack.getStackLimit();
-			int sss = AbstractStackSet.getStackSetLimit();
-			String postFix = timestamp + "-" + ss + "-" + sss;
-
-			Files.createDirectories(_outputDirPath.resolve("benchmark"));
-			SMARTCONTRACTS_FULLPATH = Paths.get(benchmark).toString();
-			STATISTICS_FULLPATH = _outputDirPath
-					.resolve("benchmark").resolve("statistics-" + postFix + ".csv")
-					.toString();
-			STATISTICSZEROJUMP_FULLPATH = _outputDirPath
-					.resolve("benchmark")
-					.resolve("statisticsZeroJumps-" + postFix + ".csv")
-					.toString();
-			FAILURE_FULLPATH = _outputDirPath
-					.resolve("benchmark")
-					.resolve("failure-" + postFix + ".csv")
-					.toString();
-			LOGS_FULLPATH = _outputDirPath
-					.resolve("benchmark")
-					.resolve("logs-" + postFix + ".txt")
-					.toString();
-
-			try {
-				runBenchmark(jsonOptions);
-			} catch (FileNotFoundException e) {
-				log.error("File {} not found.", benchmark);
-			}
-			return;
-		}
-
-		// Error case
-		if (addressSC == null && filepath == null && mnemonicInputFile == null) {
+		// Ensure that at least one valid option is provided to specify the
+		// bytecode source
+		if (!cmd.hasOption("address") && !cmd.hasOption("filepath-bytecode") && !cmd.hasOption("mnemonic-bytecode")) {
 			log.error("Address or filepath required.");
-			formatter.printHelp("help", options);
 			System.exit(1);
+		}
+
+		setupGlobalOptions(cmd);
+		setupOutputDirectories(cmd);
+
+		// Initialize a JSON object to store analysis metadata
+		JSONObject json = setupJSON(cmd);
+
+		// Download bytecode (with no analysis) case
+		if (cmd.hasOption("download-bytecode") && cmd.hasOption("benchmark")) {
+			downloadBytecode(cmd);
+			return;
+		}
+
+		// Benchmark case
+		if (cmd.hasOption("benchmark")) {
+			setupBenchmark(cmd.getOptionValue("benchmark"), json);
+			return;
 		}
 
 		// Single analysis case
-		if (addressSC == null)
-			addressSC = "no-address-" + System.currentTimeMillis();
+		String address = setupAnalysisDirectories(cmd);
+		json.put("output-directory", OUTPUT_DIR);
 
-		_outputDirPath = _outputDirPath.resolve(addressSC);
-		OUTPUT_DIR = _outputDirPath.toString();
+		String bytecodeFullPath = setupBytecode(cmd);
+		String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
 
-		Files.createDirectories(_outputDirPath);
-		jsonOptions.put("output-directory", OUTPUT_DIR);
+		if (cmd.hasOption("creation-code"))
+			json.put("bytecode", bytecode);
+		else
+			json.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
 
-		if (outputDir == null)
-			outputDir = OUTPUT_DIR;
-
-		String workDir = Paths.get(outputDir).resolve(addressSC).toString();
-		STATISTICS_FULLPATH = _outputDirPath.resolve(addressSC + "_STATISTICS.csv").toString();
-		FAILURE_FULLPATH = _outputDirPath.resolve(addressSC + "_FAILURE.csv").toString();
-
-		String BYTECODE_FULLPATH = mnemonicInputFile;
-		if (mnemonicInputFile == null) {
-			BYTECODE_FULLPATH = _outputDirPath.resolve(addressSC + ".opcode").toString();
-			String bytecode;
-			if (filepath == null) {
-				bytecode = EVMFrontend.parseContractFromEtherscan(addressSC);
-			} else {
-				bytecode = new String(Files.readAllBytes(Paths.get(filepath)));
-			}
-			if (useCreationCode) {
-				jsonOptions.put("bytecode", bytecode);
-			} else if (bytecode != null) {
-				// runtime code case
-				jsonOptions.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
-			}
-
-			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
-		}
-
-		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
 
 		long start = System.currentTimeMillis();
-		long finish;
 
+		LiSAConfiguration conf = createLiSAConfig(address, cmd);
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+
+		try {
+			LiSA lisa = new LiSA(conf);
+			lisa.run(program);
+			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
+
+			long finish = System.currentTimeMillis();
+
+			checkers(conf, lisa, program, checker, json);
+
+			MyLogger result = EVMLiSA.dumpStatistics(checker, soundlySolved)
+					.address(address)
+					.time(finish - start)
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(address))
+					.buildJson(json)
+					.build();
+
+			if (cmd.hasOption("dump-stats")) {
+				toFile(STATISTICS_FULLPATH, result.toString());
+				log.info("Statistics written in {}.", STATISTICS_FULLPATH);
+			}
+
+			System.err.println(result.getJson());
+
+		} catch (Throwable e) {
+			long finish = System.currentTimeMillis();
+
+			String msg = MyLogger.newLogger()
+					.address(address)
+					.notes("failure: " + e + " - details: " + e.getMessage())
+					.time(finish - start)
+					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(address))
+					.buildJson(json)
+					.build().toString();
+
+			log.error(msg);
+
+			if (cmd.hasOption("dump-stats")) {
+				toFile(FAILURE_FULLPATH, msg);
+				log.info("Failure written in {}.", FAILURE_FULLPATH);
+			}
+		}
+	}
+
+	private CommandLine parseCommandLine(String[] args) {
+		Options options = getOptions();
+		CommandLineParser parser = new DefaultParser();
+		HelpFormatter formatter = new HelpFormatter();
+
+		try {
+			return parser.parse(options, args);
+		} catch (ParseException e) {
+			log.error(e.getMessage());
+			formatter.printHelp("help", options);
+			System.exit(1);
+			return null;
+		}
+	}
+
+	private void setupGlobalOptions(CommandLine cmd) {
+		try {
+			CORES = cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1;
+		} catch (Exception e) {
+			log.warn("Cores set to 1: {}", e.getMessage());
+			CORES = 1;
+		}
+
+		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy");
+		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin");
+
+		try {
+			if (cmd.hasOption("stack-size"))
+				AbstractStack.setStackLimit(Integer.parseInt(cmd.getOptionValue("stack-size")));
+
+			if (cmd.hasOption("stack-set-size"))
+				AbstractStackSet.setStackSetSize(Integer.parseInt(cmd.getOptionValue("stack-set-size")));
+		} catch (NumberFormatException e) {
+			log.error("Size must be an integer.");
+			System.exit(1);
+		}
+
+		if (cmd.hasOption("creation-code"))
+			EVMFrontend.setUseCreationCode();
+		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
+			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
+			EVMAbstractState.setUseStorageLive();
+	}
+
+	private void setupOutputDirectories(CommandLine cmd) {
+		if (cmd.hasOption("output")) {
+			_outputDirPath = Paths.get(cmd.getOptionValue("output"));
+			OUTPUT_DIR = _outputDirPath.toString();
+			STATISTICS_FULLPATH = _outputDirPath.resolve("statistics.csv").toString();
+			STATISTICSZEROJUMP_FULLPATH = _outputDirPath.resolve("statisticsZeroJumps.csv").toString();
+			FAILURE_FULLPATH = _outputDirPath.resolve("failure.csv").toString();
+			LOGS_FULLPATH = _outputDirPath.resolve("logs.txt").toString();
+		}
+	}
+
+	private JSONObject setupJSON(CommandLine cmd) {
+		JSONObject jsonOptions = new JSONObject();
+		jsonOptions.put("address", cmd.getOptionValue("address"));
+		jsonOptions.put("serialize-inputs", cmd.hasOption("serialize-inputs"));
+		jsonOptions.put("dump-html", cmd.hasOption("html"));
+		jsonOptions.put("dump-dot", cmd.hasOption("dot"));
+		jsonOptions.put("dump-statistics", cmd.hasOption("dump-stats"));
+		jsonOptions.put("download-bytecode", cmd.hasOption("download-bytecode"));
+		jsonOptions.put("use-storage-live", cmd.hasOption("use-live-storage"));
+		jsonOptions.put("use-creation-code", cmd.hasOption("creation-code"));
+		if (cmd.getOptionValue("filepath-bytecode") != null)
+			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-bytecode"));
+		else
+			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-mnemonic"));
+		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
+		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
+		jsonOptions.put("benchmark", cmd.getOptionValue("benchmark"));
+		jsonOptions.put("cores", CORES);
+		jsonOptions.put("dump-report", cmd.hasOption("dump-report"));
+		jsonOptions.put("output-directory", OUTPUT_DIR);
+		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
+		return jsonOptions;
+	}
+
+	private void setupBenchmark(String benchmarkPath, JSONObject json) {
+		SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+		String timestamp = DATE_FORMAT_BENCHMARK.format(System.currentTimeMillis());
+		String postFix = timestamp + "-" + AbstractStack.getStackLimit() + "-" + AbstractStackSet.getStackSetLimit();
+
+		try {
+			Files.createDirectories(_outputDirPath.resolve("benchmark"));
+		} catch (IOException e) {
+			log.error("Could not create output directory \"benchmark\".");
+			System.exit(1);
+		}
+
+		SMARTCONTRACTS_FULLPATH = Paths.get(benchmarkPath).toString();
+		STATISTICS_FULLPATH = _outputDirPath
+				.resolve("benchmark").resolve("statistics-" + postFix + ".csv")
+				.toString();
+		STATISTICSZEROJUMP_FULLPATH = _outputDirPath
+				.resolve("benchmark")
+				.resolve("statisticsZeroJumps-" + postFix + ".csv")
+				.toString();
+		FAILURE_FULLPATH = _outputDirPath
+				.resolve("benchmark")
+				.resolve("failure-" + postFix + ".csv")
+				.toString();
+		LOGS_FULLPATH = _outputDirPath
+				.resolve("benchmark")
+				.resolve("logs-" + postFix + ".txt")
+				.toString();
+
+		try {
+			runBenchmark(json);
+		} catch (FileNotFoundException e) {
+			log.error("File {} not found.", benchmarkPath);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void downloadBytecode(CommandLine cmd) {
+		SMARTCONTRACTS_FULLPATH = Paths.get(cmd.getOptionValue("benchmark")).toString();
+		OUTPUT_DIR = Paths.get("download").toString();
+		try {
+			saveSmartContractsFromEtherscan();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+	}
+
+	private String setupAnalysisDirectories(CommandLine cmd) {
+		String address;
+		if (!cmd.hasOption("address"))
+			address = "no-address-" + System.currentTimeMillis();
+		else
+			address = cmd.getOptionValue("address");
+
+		_outputDirPath = _outputDirPath.resolve(address);
+		OUTPUT_DIR = _outputDirPath.toString();
+
+		try {
+			Files.createDirectories(_outputDirPath);
+		} catch (IOException e) {
+			log.error("Could not create output directory {}.", OUTPUT_DIR);
+			System.exit(1);
+		}
+
+		STATISTICS_FULLPATH = _outputDirPath.resolve(address + "_STATISTICS.csv").toString();
+		FAILURE_FULLPATH = _outputDirPath.resolve(address + "_FAILURE.csv").toString();
+
+		return address;
+	}
+
+	private String setupBytecode(CommandLine cmd) {
+		if (cmd.hasOption("mnemonic-bytecode"))
+			return cmd.getOptionValue("mnemonic-bytecode");
+
+		String bytecodePath = _outputDirPath.resolve(cmd.getOptionValue("address") + ".opcode").toString();
+		String bytecode = null;
+
+		if (cmd.hasOption("filepath-bytecode")) {
+			try {
+				bytecode = new String(Files.readAllBytes(Paths.get(cmd.getOptionValue("filepath-bytecode"))));
+			} catch (IOException e) {
+				log.error("Could not read bytecode file {}.", cmd.getOptionValue("filepath-bytecode"));
+				System.exit(1);
+			}
+		} else {
+			try {
+				bytecode = EVMFrontend.parseContractFromEtherscan(cmd.getOptionValue("address"));
+			} catch (IOException e) {
+				log.error("Could not parse bytecode from Etherscan {}.", cmd.getOptionValue("address"));
+				System.exit(1);
+			}
+		}
+
+		try {
+			EVMFrontend.opcodesFromBytecode(bytecode, bytecodePath);
+		} catch (Exception e) {
+			log.error("Could not parse opcodes from bytecode {}.", bytecodePath);
+			System.exit(1);
+		}
+
+		return bytecodePath;
+	}
+
+	private LiSAConfiguration createLiSAConfig(String address, CommandLine cmd) {
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.serializeInputs = serializeInputs;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(addressSC),
+		conf.serializeInputs = cmd.hasOption("serialize-inputs");
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(address),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.jsonOutput = dumpReport;
-		conf.workdir = workDir;
+		conf.jsonOutput = cmd.hasOption("dump-report");
+		conf.workdir = OUTPUT_DIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
@@ -295,53 +374,12 @@ public class EVMLiSA {
 		conf.serializeResults = false;
 		conf.optimize = false;
 		conf.useWideningPoints = false;
-		if (dumpHTML)
+		if (cmd.hasOption("html"))
 			conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
-		else if (dumpDot)
+		else if (cmd.hasOption("dot"))
 			conf.analysisGraphs = GraphType.DOT;
 
-		try {
-			LiSA lisa = new LiSA(conf);
-			lisa.run(program);
-			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
-
-			// Print the results
-			finish = System.currentTimeMillis();
-
-			checkers(conf, lisa, program, checker, jsonOptions);
-
-			MyLogger result = EVMLiSA.dumpStatistics(checker, soundlySolved)
-					.address(addressSC)
-					.time(finish - start)
-					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
-					.buildJson(jsonOptions)
-					.build();
-
-			if (dumpStatistics) {
-				toFile(STATISTICS_FULLPATH, result.toString());
-				log.info("Statistics successfully written in {}.", STATISTICS_FULLPATH);
-			}
-
-			System.err.println(result.getJson());
-
-		} catch (Throwable e) {
-			finish = System.currentTimeMillis();
-
-			String msg = MyLogger.newLogger()
-					.address(addressSC)
-					.notes("failure: " + e + " - details: " + e.getMessage())
-					.time(finish - start)
-					.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(addressSC))
-					.buildJson(jsonOptions)
-					.build().toString();
-
-			log.error(msg);
-
-			if (dumpStatistics) {
-				toFile(FAILURE_FULLPATH, msg);
-				log.info("Failures successfully written in {}.", FAILURE_FULLPATH);
-			}
-		}
+		return conf;
 	}
 
 	/**
