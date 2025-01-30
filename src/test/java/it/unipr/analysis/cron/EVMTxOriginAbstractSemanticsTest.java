@@ -1,9 +1,5 @@
 package it.unipr.analysis.cron;
 
-import java.io.IOException;
-
-import org.junit.Test;
-
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unive.lisa.AnalysisSetupException;
@@ -14,6 +10,8 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such
