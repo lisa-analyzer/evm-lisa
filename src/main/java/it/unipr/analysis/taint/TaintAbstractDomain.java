@@ -131,8 +131,10 @@ public abstract class TaintAbstractDomain
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
-
-					resultStack.push(TaintElement.semantics(opnd1));
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.semantics(opnd1));
 					return resultStack;
 				}
 
