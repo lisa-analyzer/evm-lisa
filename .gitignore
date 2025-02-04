@@ -19,14 +19,17 @@ evm-testcases/ground-truth/test/*
 scripts/python/journal/reentrancy-solidifi/results/
 scripts/python/journal/reentrancy-solidifi/json/
 scripts/python/journal/reentrancy-solidifi/bytecode/
+scripts/python/journal/reentrancy-solidifi/abi/
 scripts/python/journal/vanilla-solidifi/results/
 scripts/python/journal/vanilla-solidifi/json/
 scripts/python/journal/vanilla-solidifi/bytecode/
+scripts/python/journal/vanilla-solidifi/abi/
 
 # smartbugs reentrancy
 scripts/python/journal/reentrancy-smartbugs/results/
 scripts/python/journal/reentrancy-smartbugs/json/
 scripts/python/journal/reentrancy-smartbugs/bytecode/
+scripts/python/journal/reentrancy-smartbugs/abi/
 
 # SliSE reentrancy
 scripts/python/journal/reentrancy-slise-db1/results/
@@ -38,6 +41,7 @@ scripts/python/journal/reentrancy-slise-db1/match-file-index.json
 scripts/python/journal/tx-origin-solidifi/results/
 scripts/python/journal/tx-origin-solidifi/json/
 scripts/python/journal/tx-origin-solidifi/bytecode/
+scripts/python/journal/tx-origin-solidifi/abi/
 
 scripts/python/journal/execution/
 scripts/python/journal/images/
