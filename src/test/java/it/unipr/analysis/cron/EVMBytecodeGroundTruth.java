@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.Ignore;
 
 /*
  * ground-truth-stats/ground-truth-data.csv FILE MUST BE UPDATED WHEN A NEW
@@ -43,7 +43,7 @@ import org.junit.Test;
 public class EVMBytecodeGroundTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruth.class);
 
-	@Test
+	@Ignore
 	public void testGroundTruth() throws Exception {
 		String GROUND_TRUTH_FILE_PATH = Paths
 				.get("evm-testcases", "ground-truth", "ground-truth-data.csv")

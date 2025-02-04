@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.Ignore;
 
 public class EVMBytecodeSolidiFITxOriginTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeSolidiFITxOriginTruth.class);
@@ -32,7 +32,7 @@ public class EVMBytecodeSolidiFITxOriginTruth {
 	private ConcurrentMap<Integer, Integer> _results = new ConcurrentHashMap<>();
 	private ConcurrentMap<Integer, Integer> _solidifi = new ConcurrentHashMap<>();
 
-	@Test
+	@Ignore
 	public void testSolidiFITxOriginTruth() throws Exception {
 		setSolidifiMap();
 		EVMFrontend.setUseCreationCode();

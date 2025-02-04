@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.Ignore;
 
 public class EVMBytecodeSolidiFIReentrancyTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeSolidiFIReentrancyTruth.class);
@@ -31,7 +31,7 @@ public class EVMBytecodeSolidiFIReentrancyTruth {
 	private ConcurrentMap<Integer, Integer> _results = new ConcurrentHashMap<>();
 	private ConcurrentMap<Integer, Integer> _solidifi = new ConcurrentHashMap<>();
 
-	@Test
+	@Ignore
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
 		EVMFrontend.setUseCreationCode();

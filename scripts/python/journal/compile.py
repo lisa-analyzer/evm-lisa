@@ -175,7 +175,7 @@ def compile_solidity_sources(source_dir, json_dir):
                 output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
                 
                 # Command to compile and save the bytecode in JSON format
-                command = f"solc --combined-json bin,bin-runtime --pretty-json {input_file} > {output_file} 2> /dev/null"
+                command = f"solc --combined-json bin,bin-runtime,abi --pretty-json {input_file} > {output_file} 2> /dev/null"
                 
                 # Execute the compilation command
                 try:
@@ -189,13 +189,16 @@ def compile_solidity_sources(source_dir, json_dir):
         
     print(f"Compiled successfully {count_success}/{count_success + count_failure} files.")
 
-def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_index=None):
+def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_index=None, abi_dir=None):
     """
     Extracts the longest bytecode based on file size from each .json file and saves it in the specified output directory.
     """
     # Clear and create bytecode directory
     clear_directory(bytecode_dir)
     os.makedirs(bytecode_dir, exist_ok=True)
+    if abi_dir is not None:
+        clear_directory(abi_dir)
+        os.makedirs(abi_dir, exist_ok=True)
 
     # List all .json files in the source directory
     num_files = [f for f in os.listdir(json_dir) if f.endswith('.json')]
@@ -219,6 +222,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                     longest_bytecode = None
                     longest_contract_name = None
                     max_bytecode_length = 0  # Variable to store the maximum file size
+                    abi = None
 
                     # Find the contract with the longest bytecode
                     for contract_name, contract_data in contracts.items():
@@ -233,23 +237,26 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                                 max_bytecode_length = bytecode_length
                                 longest_bytecode = bytecode
                                 longest_contract_name = contract_name
+                                abi = contract_data.get("abi")
 
                     # Save the longest bytecode, if it exists
                     if longest_bytecode:
-                        bytecode_filename = os.path.join(
-                            bytecode_dir, f"{os.path.splitext(json_filename)[0]}.bytecode"
-                        )
-
+                        base_filename = os.path.splitext(json_filename)[0]
+                        
                         if file_index is not None:
-                            file_id = file_index.get(os.path.splitext(json_filename)[0]) # Match string name to integer
-                            # Add a sequential number to the filename
-                            bytecode_filename = os.path.join(
-                                bytecode_dir, f"{file_id}.bytecode"
-                            )
-
+                            file_id = file_index.get(base_filename)  # Match string name to integer
+                            base_filename = str(file_id) if file_id is not None else base_filename
+                        
+                        bytecode_filename = os.path.join(bytecode_dir, f"{base_filename}.bytecode")
+                        
                         with open(bytecode_filename, 'w') as bytecode_file:
                             bytecode_file.write("0x" + longest_bytecode)
-                        # print(f"Extracted longest bytecode from {longest_contract_name} to {bytecode_filename}")
+                        
+                        # Save ABI if available
+                        if abi and abi_dir is not None:
+                            abi_filename = os.path.join(abi_dir, f"{base_filename}.abi.json")
+                            with open(abi_filename, 'w') as abi_file:
+                                json.dump(json.loads(abi), abi_file, indent=4)
             # Update the progress bar
             pbar.update(1)
 
@@ -326,12 +333,15 @@ if __name__ == "__main__":
         if args.longest_bytecode:
             # EVMLiSA
             extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/evmlisa',
-                                              './vanilla-solidifi/json')
+                                              './vanilla-solidifi/json',
+                                              abi_dir='./vanilla-solidifi/abi/evmlisa')
             extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
-                                              './reentrancy-solidifi/json')
+                                              './reentrancy-solidifi/json',
+                                              abi_dir='./reentrancy-solidifi/abi/evmlisa')
                 # TX-ORIGIN
             extract_and_save_longest_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
-                                              './tx-origin-solidifi/json')
+                                              './tx-origin-solidifi/json',
+                                              abi_dir='./tx-origin-solidifi/abi/evmlisa')
             
             # EtherSolve
             extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
