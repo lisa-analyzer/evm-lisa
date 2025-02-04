@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -17,17 +16,20 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Utility class for handling Ethereum smart contract ABIs.
- *
- * This class provides methods to:
- * - Extract function selectors from function signatures.
- * - Parse a contract's ABI to retrieve function signatures and their corresponding selectors.
- * - Verify the presence of function selectors within a contract's compiled bytecode.
- *
- * <p>References:
+ * Utility class for handling Ethereum smart contract ABIs. This class provides
+ * methods to: - Extract function selectors from function signatures. - Parse a
+ * contract's ABI to retrieve function signatures and their corresponding
+ * selectors. - Verify the presence of function selectors within a contract's
+ * compiled bytecode.
+ * <p>
+ * References:
  * <ul>
- *     <li><a href="https://www.cyfrin.io/blog/what-is-a-smart-contract-abi-and-how-to-get-it">What is a smart contract ABI?</a></li>
- *     <li><a href="https://ethereum.stackexchange.com/questions/234/what-is-an-abi-and-why-is-it-needed-to-interact-with-contracts?rq=1">Ethereum StackExchange: What is an ABI?</a></li>
+ * <li><a href=
+ * "https://www.cyfrin.io/blog/what-is-a-smart-contract-abi-and-how-to-get-it">What
+ * is a smart contract ABI?</a></li>
+ * <li><a href=
+ * "https://ethereum.stackexchange.com/questions/234/what-is-an-abi-and-why-is-it-needed-to-interact-with-contracts?rq=1">Ethereum
+ * StackExchange: What is an ABI?</a></li>
  * </ul>
  * </p>
  */
@@ -35,13 +37,15 @@ public class AbiFunctionSelector {
 	private static final Logger log = LogManager.getLogger(AbiFunctionSelector.class);
 
 	/**
-	 * Computes the function selector for a given function signature.
-	 *
-	 * The function selector is derived by applying Keccak-256 hashing to the
+	 * Computes the function selector for a given function signature. The
+	 * function selector is derived by applying Keccak-256 hashing to the
 	 * function signature and taking the first 4 bytes of the resulting hash.
 	 *
-	 * @param functionSignature The function signature (e.g., "transfer(address,uint256)").
-	 * @return The first 4 bytes of the Keccak-256 hash, formatted as a hexadecimal string.
+	 * @param functionSignature The function signature (e.g.,
+	 *                              "transfer(address,uint256)").
+	 * 
+	 * @return The first 4 bytes of the Keccak-256 hash, formatted as a
+	 *             hexadecimal string.
 	 */
 	public static String getFunctionSelector(String functionSignature) {
 		Keccak.Digest256 digest = new Keccak.Digest256();
@@ -52,13 +56,15 @@ public class AbiFunctionSelector {
 	}
 
 	/**
-	 * Parses a smart contract ABI and extracts function signatures along with their selectors.
-	 *
-	 * This method reads a JSON ABI file and retrieves the function definitions,
-	 * computing the function selector for each function.
+	 * Parses a smart contract ABI and extracts function signatures along with
+	 * their selectors. This method reads a JSON ABI file and retrieves the
+	 * function definitions, computing the function selector for each function.
 	 *
 	 * @param abi Path to the ABI JSON file.
-	 * @return A set of pairs where each pair contains the function signature and its corresponding selector.
+	 * 
+	 * @return A set of pairs where each pair contains the function signature
+	 *             and its corresponding selector.
+	 * 
 	 * @throws IOException If an error occurs while reading the ABI file.
 	 */
 	public static Set<Pair<String, String>> parseAbi(Path abi) throws IOException {
@@ -74,7 +80,8 @@ public class AbiFunctionSelector {
 
 				StringBuilder signature = new StringBuilder(functionName + "(");
 				for (int j = 0; j < inputs.length(); j++) {
-					if (j > 0) signature.append(",");
+					if (j > 0)
+						signature.append(",");
 					signature.append(inputs.getJSONObject(j).getString("type"));
 				}
 				signature.append(")");
@@ -89,16 +96,18 @@ public class AbiFunctionSelector {
 	}
 
 	/**
-	 * Verifies the presence of function selectors in the bytecode.
+	 * Verifies the presence of function selectors in the bytecode. This method
+	 * checks if the function selectors extracted from the ABI are present in
+	 * the compiled smart contract bytecode.
 	 *
-	 * This method checks if the function selectors extracted from the ABI are
-	 * present in the compiled smart contract bytecode.
-	 *
-	 * @param functionSet A set of function signature-selector pairs extracted from the ABI.
+	 * @param functionSet  A set of function signature-selector pairs extracted
+	 *                         from the ABI.
 	 * @param bytecodePath Path to the smart contract's compiled bytecode.
+	 * 
 	 * @throws IOException If an error occurs while reading the bytecode file.
 	 */
-	public static void verifyFunctionSelectors(Set<Pair<String, String>> functionSet, Path bytecodePath) throws IOException {
+	public static void verifyFunctionSelectors(Set<Pair<String, String>> functionSet, Path bytecodePath)
+			throws IOException {
 		int counter = 0;
 		String bytecode = Files.readString(bytecodePath, StandardCharsets.UTF_8);
 		for (Pair<String, String> entry : functionSet) {
@@ -107,7 +116,8 @@ public class AbiFunctionSelector {
 			if (occurrences > 0) {
 				counter++;
 				if (occurrences > 1)
-					log.info("Function selector {} ({}) is present {} times in the bytecode.", entry.getValue(), entry.getKey(), occurrences);
+					log.info("Function selector {} ({}) is present {} times in the bytecode.", entry.getValue(),
+							entry.getKey(), occurrences);
 			} else {
 				log.warn("Function selector {} ({}) is NOT present in the bytecode.", entry.getValue(), entry.getKey());
 			}
