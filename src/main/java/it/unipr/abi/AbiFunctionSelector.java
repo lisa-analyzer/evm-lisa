@@ -51,7 +51,6 @@ public class AbiFunctionSelector {
 		Keccak.Digest256 digest = new Keccak.Digest256();
 		byte[] hash = digest.digest(functionSignature.getBytes(StandardCharsets.UTF_8));
 
-		// Prendiamo i primi 4 byte dell'hash
 		return String.format("%02x%02x%02x%02x", hash[0], hash[1], hash[2], hash[3]);
 	}
 
@@ -125,9 +124,10 @@ public class AbiFunctionSelector {
 		log.info("Total function selectors found: {}/{}", counter, functionSet.size());
 	}
 
+	// Test
 	public static void main(String[] args) {
-		Path abi = Paths.get("test-cross-chain-analysis", "buggy_1.abi.json");
-		Path bytecode = Paths.get("test-cross-chain-analysis", "buggy_1.bytecode");
+		Path abi = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_1.abi.json");
+		Path bytecode = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_1.bytecode");
 
 		try {
 			Set<Pair<String, String>> functionSet = parseAbi(abi);

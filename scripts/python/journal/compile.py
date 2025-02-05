@@ -125,7 +125,7 @@ def compile_solidity_sources_with_different_version(source_dir, json_dir, versio
             # Command to compile and save the bytecode in JSON format
             command = (
                 f"solc-select use {compiled_version} > /dev/null && "
-                f"solc --combined-json bin,bin-runtime {input_file} > {output_file} 2> /dev/null" 
+                f"solc --combined-json bin,bin-runtime,abi {input_file} > {output_file} 2> /dev/null" 
             )
             
             # Execute the compilation command
@@ -256,7 +256,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                         if abi and abi_dir is not None:
                             abi_filename = os.path.join(abi_dir, f"{base_filename}.abi.json")
                             with open(abi_filename, 'w') as abi_file:
-                                json.dump(json.loads(abi), abi_file, indent=4)
+                                json.dump(abi, abi_file, indent=4)
             # Update the progress bar
             pbar.update(1)
 
@@ -319,8 +319,20 @@ if __name__ == "__main__":
     parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
     parser.add_argument("--slise", action="store_true", help="Run analysis on SliSE dataset")
     parser.add_argument("--longest-bytecode", action="store_true", help="Save only the longest bytecode")
+    parser.add_argument("--manual", action="store_true", help="Manual mode")
 
     args = parser.parse_args()
+
+    if args.manual:
+        # Test ThorChain Bridge
+        extract_solidity_versions(src_folder='./THORChain-bridge/source-code',
+                                  output_csv='./THORChain-bridge/source-code/version.csv')
+        compile_solidity_sources_with_different_version(source_dir='./THORChain-bridge/source-code',
+                                                        json_dir='./THORChain-bridge/json',
+                                                        version_file='./THORChain-bridge/source-code/version.csv')
+        extract_and_save_longest_bytecode(bytecode_dir='./THORChain-bridge/bytecode/',
+                                          json_dir='./THORChain-bridge/json',
+                                          abi_dir='./THORChain-bridge/abi/')
 
     if args.solidifi:
         compile_solidity_sources('./reentrancy-solidifi/source-code',
