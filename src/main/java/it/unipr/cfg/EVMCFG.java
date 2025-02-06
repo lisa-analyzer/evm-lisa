@@ -33,8 +33,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMCFG extends CFG {
+	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	public Set<Statement> jumpDestsNodes;
 	public Set<Number> jumpDestsNodesLocations;
@@ -42,6 +46,7 @@ public class EVMCFG extends CFG {
 	public Set<Statement> pushedJumps;
 	public Set<Statement> sstores;
 	public Set<Statement> sha3s;
+	public Set<Statement> logxs;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -53,7 +58,29 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
+	 * Returns a set of all the LOGx statements in the CFG.
+	 *
+	 * @return a set of all the LOGx statements in the CFG
+	 */
+	public Set<Statement> getAllLogX() {
+		if (logxs == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> logxs = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Log) {
+					logxs.add(statement);
+				}
+			}
+
+			return this.logxs = logxs;
+		}
+
+		return logxs;
+	}
+
+	/**
+	 * Returns a set of all the SSTORE statements in the CFG.
 	 * 
 	 * @return a set of all the SSTORE statements in the CFG
 	 */
@@ -75,7 +102,7 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the SHA3 statements in the CFG. SHA3
+	 * Returns a set of all the SHA3 statements in the CFG.
 	 * 
 	 * @return a set of all the SHA3 statements in the CFG
 	 */
@@ -363,5 +390,46 @@ public class EVMCFG extends CFG {
 		}
 
 		return false;
+	}
+
+	/**
+	 * The method performs a depth-first search (DFS) and identifies `Push`
+	 * statements containing function selectors.
+	 *
+	 * @param start          The starting statement for the search.
+	 * @param abiFunctionSet A set of function signatures and their
+	 *                           corresponding function selectors.
+	 * 
+	 * @return A set of pairs where each pair consists of a function signature
+	 *             (from the ABI) and the corresponding statement in the CFG.
+	 */
+	public Set<Pair<String, Statement>> findMatchingStatements(Statement start,
+			Set<Pair<String, String>> abiFunctionSet) {
+		Set<Pair<String, Statement>> matchingStatements = new HashSet<>();
+		Set<Statement> visited = new HashSet<>();
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				if (current instanceof Push)
+					for (Pair<String, String> abiFunction : abiFunctionSet)
+						if (current.toString().contains(abiFunction.getRight()))
+							matchingStatements.add(Pair.of(abiFunction.getLeft(), current));
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return matchingStatements;
 	}
 }

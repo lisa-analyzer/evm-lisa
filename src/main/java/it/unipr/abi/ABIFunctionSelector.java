@@ -33,8 +33,8 @@ import org.json.JSONObject;
  * </ul>
  * </p>
  */
-public class AbiFunctionSelector {
-	private static final Logger log = LogManager.getLogger(AbiFunctionSelector.class);
+public class ABIFunctionSelector {
+	private static final Logger log = LogManager.getLogger(ABIFunctionSelector.class);
 
 	/**
 	 * Computes the function selector for a given function signature. The
@@ -63,12 +63,18 @@ public class AbiFunctionSelector {
 	 * 
 	 * @return A set of pairs where each pair contains the function signature
 	 *             and its corresponding selector.
-	 * 
-	 * @throws IOException If an error occurs while reading the ABI file.
 	 */
-	public static Set<Pair<String, String>> parseAbi(Path abi) throws IOException {
+	public static Set<Pair<String, String>> parseABI(Path abi) {
 		Set<Pair<String, String>> functionSet = new HashSet<>();
-		String abiJson = Files.readString(abi, StandardCharsets.UTF_8);
+		String abiJson;
+
+		try {
+			abiJson = Files.readString(abi, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			log.error("Unable to read abi json {}: {}", abi.toString(), e.getMessage());
+			return functionSet;
+		}
+
 		JSONArray abiArray = new JSONArray(abiJson);
 
 		for (int i = 0; i < abiArray.length(); i++) {
@@ -88,7 +94,7 @@ public class AbiFunctionSelector {
 				String functionSelector = getFunctionSelector(signature.toString());
 				functionSet.add(Pair.of(signature.toString(), functionSelector));
 
-				log.debug("{} -> {}", signature, functionSelector);
+//				log.debug("{} -> {}", signature, functionSelector);
 			}
 		}
 		return functionSet;
@@ -102,13 +108,18 @@ public class AbiFunctionSelector {
 	 * @param functionSet  A set of function signature-selector pairs extracted
 	 *                         from the ABI.
 	 * @param bytecodePath Path to the smart contract's compiled bytecode.
-	 * 
-	 * @throws IOException If an error occurs while reading the bytecode file.
 	 */
-	public static void verifyFunctionSelectors(Set<Pair<String, String>> functionSet, Path bytecodePath)
-			throws IOException {
+	public static void verifyFunctionSelectors(Set<Pair<String, String>> functionSet, Path bytecodePath) {
 		int counter = 0;
-		String bytecode = Files.readString(bytecodePath, StandardCharsets.UTF_8);
+		String bytecode;
+
+		try {
+			bytecode = Files.readString(bytecodePath, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			log.error("Unable to read bytecode {}: {}", bytecodePath.toString(), e.getMessage());
+			return;
+		}
+
 		for (Pair<String, String> entry : functionSet) {
 			int occurrences = StringUtils.countMatches(bytecode, entry.getValue());
 
@@ -118,6 +129,9 @@ public class AbiFunctionSelector {
 					log.info("Function selector {} ({}) is present {} times in the bytecode.", entry.getValue(),
 							entry.getKey(), occurrences);
 			} else {
+				// TODO (bug) functions with array in parameters are not
+				// recognised, e.g.,
+				// `returnVaultAssets(address,address,tuple[],string)`
 				log.warn("Function selector {} ({}) is NOT present in the bytecode.", entry.getValue(), entry.getKey());
 			}
 		}
@@ -130,9 +144,10 @@ public class AbiFunctionSelector {
 		Path bytecode = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_1.bytecode");
 
 		try {
-			Set<Pair<String, String>> functionSet = parseAbi(abi);
+			Set<Pair<String, String>> functionSet = parseABI(abi);
+			assert functionSet != null;
 			verifyFunctionSelectors(functionSet, bytecode);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("Error reading ABI or bytecode file", e);
 		}
 	}
