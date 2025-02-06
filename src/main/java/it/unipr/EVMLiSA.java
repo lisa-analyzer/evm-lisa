@@ -6,6 +6,7 @@ import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TxOriginChecker;
+import it.unipr.crossChainAnalysis.BridgeAnalysis;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -87,6 +88,15 @@ public class EVMLiSA {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
 			return;
+
+		// Cross chain analysis
+		if (cmd.hasOption("cross-chain-abi") && cmd.hasOption("cross-chain-bytecode")) {
+			new BridgeAnalysis(
+					Path.of(cmd.getOptionValue("cross-chain-abi")),
+					Path.of(cmd.getOptionValue("cross-chain-bytecode")))
+					.run();
+			return;
+		}
 
 		// Ensure that at least one valid option is provided to specify the
 		// bytecode source
@@ -176,6 +186,16 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * This method sets up the available options and attempts to parse the
+	 * provided arguments. If parsing fails, it logs the error, prints the help
+	 * message, and terminates the program.
+	 *
+	 * @param args The command-line arguments to be parsed.
+	 * 
+	 * @return A {@link CommandLine} object containing the parsed options, or
+	 *             {@code null} if parsing fails.
+	 */
 	private CommandLine parseCommandLine(String[] args) {
 		Options options = getOptions();
 		CommandLineParser parser = new DefaultParser();
@@ -191,6 +211,12 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Configures global options based on the parsed command-line arguments.
+	 *
+	 * @param cmd The parsed {@link CommandLine} object containing the provided
+	 *                options.
+	 */
 	private void setupGlobalOptions(CommandLine cmd) {
 		try {
 			CORES = cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1;
@@ -221,6 +247,13 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 	}
 
+	/**
+	 * Configures the output directories based on the parsed command-line
+	 * arguments.
+	 *
+	 * @param cmd The parsed {@link CommandLine} object containing the provided
+	 *                options.
+	 */
 	private void setupOutputDirectories(CommandLine cmd) {
 		if (cmd.hasOption("output")) {
 			_outputDirPath = Paths.get(cmd.getOptionValue("output"));
@@ -232,6 +265,15 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Sets up a JSONObject with the values derived from the command line
+	 * options. The method collects the options related to the execution and
+	 * populates them into a JSON object.
+	 *
+	 * @param cmd The command line object containing the options.
+	 * 
+	 * @return A JSONObject containing the options parsed from the command line.
+	 */
 	private JSONObject setupJSON(CommandLine cmd) {
 		JSONObject jsonOptions = new JSONObject();
 		jsonOptions.put("address", cmd.getOptionValue("address"));
@@ -256,6 +298,17 @@ public class EVMLiSA {
 		return jsonOptions;
 	}
 
+	/**
+	 * Sets up the benchmark environment by creating necessary directories and
+	 * setting file paths for the benchmark data (such as statistics, logs, and
+	 * failures). The method generates file paths based on the current timestamp
+	 * and stack limits, and attempts to create the necessary directories for
+	 * saving benchmark results.
+	 *
+	 * @param benchmarkPath The path to the benchmark file to be processed.
+	 * @param json          A JSONObject containing the configuration options
+	 *                          for the benchmark.
+	 */
 	private void setupBenchmark(String benchmarkPath, JSONObject json) {
 		SimpleDateFormat DATE_FORMAT_BENCHMARK = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 		String timestamp = DATE_FORMAT_BENCHMARK.format(System.currentTimeMillis());
@@ -294,6 +347,14 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Downloads the smart contract bytecode from Etherscan based on the
+	 * benchmark path provided via the command line. The method retrieves the
+	 * smart contract file and saves it to the "download" directory.
+	 *
+	 * @param cmd The CommandLine object containing the options, specifically
+	 *                the "benchmark" option that defines the path.
+	 */
 	private void downloadBytecode(CommandLine cmd) {
 		SMARTCONTRACTS_FULLPATH = Paths.get(cmd.getOptionValue("benchmark")).toString();
 		OUTPUT_DIR = Paths.get("download").toString();
@@ -304,6 +365,18 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Sets up the analysis directories based on the provided command line
+	 * options. If an "address" option is provided, it is used to create the
+	 * output directory. Otherwise, a default address is generated based on the
+	 * current timestamp. The method creates the necessary directories and sets
+	 * file paths for statistics and failure files.
+	 *
+	 * @param cmd The CommandLine object containing the options, specifically
+	 *                the "address" option.
+	 * 
+	 * @return The address used to set up the output directory.
+	 */
 	private String setupAnalysisDirectories(CommandLine cmd) {
 		String address;
 		if (!cmd.hasOption("address"))
@@ -327,6 +400,20 @@ public class EVMLiSA {
 		return address;
 	}
 
+	/**
+	 * Sets up the bytecode by either reading it from a file or fetching it from
+	 * Etherscan, depending on the command line options. If the
+	 * "mnemonic-bytecode" option is provided, it returns the path of the
+	 * mnemonic-bytecode directly. Otherwise, the bytecode is fetched either
+	 * from the specified bytecode file or from Etherscan, and the opcodes are
+	 * parsed from the bytecode and saved to a file.
+	 *
+	 * @param cmd The CommandLine object containing the options, specifically
+	 *                the "mnemonic-bytecode", "filepath-bytecode", and
+	 *                "address" options.
+	 * 
+	 * @return The path to the bytecode file where the opcodes are stored.
+	 */
 	private String setupBytecode(CommandLine cmd) {
 		if (cmd.hasOption("mnemonic-bytecode"))
 			return cmd.getOptionValue("mnemonic-bytecode");
@@ -360,6 +447,20 @@ public class EVMLiSA {
 		return bytecodePath;
 	}
 
+	/**
+	 * Creates and configures a LiSAConfiguration object based on the provided
+	 * command line options. This method initializes various properties of the
+	 * configuration, such as serialization options, analysis type, output
+	 * settings, and others based on the command line options.
+	 *
+	 * @param address The address of the smart contract to analyze, used for
+	 *                    setting up the abstract state.
+	 * @param cmd     The CommandLine object containing the options for
+	 *                    configuring the analysis.
+	 * 
+	 * @return A configured LiSAConfiguration object ready for use in the
+	 *             analysis.
+	 */
 	private LiSAConfiguration createLiSAConfig(String address, CommandLine cmd) {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeInputs = cmd.hasOption("serialize-inputs");
@@ -480,7 +581,7 @@ public class EVMLiSA {
 	 *             soundly solved jumps after applying the iterative resolution
 	 *             process
 	 */
-	Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
+	public static Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
 		HashSet<Statement> soundlySolved = new HashSet<>();
 		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
 			int currentIteration = 0;
@@ -1143,6 +1244,20 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option crossChainABIOption = Option.builder()
+				.longOpt("cross-chain-abi")
+				.desc("Path of the folder containing the ABIs of the cross chain smart contracts")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option crossChainBytecodeOption = Option.builder()
+				.longOpt("cross-chain-bytecode")
+				.desc("Path of the folder containing the bytecodes of the cross chain smart contracts")
+				.required(false)
+				.hasArg(true)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
@@ -1163,6 +1278,8 @@ public class EVMLiSA {
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
+		options.addOption(crossChainABIOption);
+		options.addOption(crossChainBytecodeOption);
 
 		return options;
 	}
