@@ -255,6 +255,10 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                         # Save ABI if available
                         if abi and abi_dir is not None:
                             abi_filename = os.path.join(abi_dir, f"{base_filename}.abi.json")
+                            
+                            if isinstance(abi, str):  
+                                abi = json.loads(abi)
+                            
                             with open(abi_filename, 'w') as abi_file:
                                 json.dump(abi, abi_file, indent=4)
             # Update the progress bar
