@@ -1,5 +1,6 @@
 package it.unipr.crossChainAnalysis;
 
+import it.unipr.EVMLiSA;
 import it.unipr.analysis.*;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -196,10 +198,15 @@ public class CrossChainAnalysis {
 					contract.setCFG(checker.getComputedCFG());
 					contract.computeFunctionEntrypoints();
 
-					// TODO we must check the soundness
-//					Set<Statement> soundlySolved = EVMLiSA.getSoundlySolvedJumps(checker, lisa, program);
-//					MyLogger myLogger = EVMLiSA.dumpStatistics(checker, soundlySolved);
+					// check soundness
+					if (!Objects.requireNonNull(
+							EVMLiSA.dumpStatistics(checker,
+									EVMLiSA.getSoundlySolvedJumps(checker, lisa, program)))
+							.isSound())
+						log.warn("UNSOUND on {}", contract.getName());
 
+				} catch (NullPointerException npe) {
+					log.error("Error checking soundness in bytecode {}: {}", contract.getName(), npe.getMessage());
 				} catch (Exception e) {
 					log.error("Error processing bytecode {}: {}", contract.getName(), e.getMessage());
 				}

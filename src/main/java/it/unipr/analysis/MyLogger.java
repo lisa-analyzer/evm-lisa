@@ -181,6 +181,10 @@ public class MyLogger {
 		return json.toString(4);
 	}
 
+	public boolean isSound() {
+		return unsoundJumps == 0 && maybeUnsoundJumps == 0;
+	}
+
 	@Override
 	public String toString() {
 		return address + divider +
