@@ -6,7 +6,7 @@ import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TxOriginChecker;
-import it.unipr.crossChainAnalysis.BridgeAnalysis;
+import it.unipr.crossChainAnalysis.CrossChainAnalysis;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -91,7 +91,7 @@ public class EVMLiSA {
 
 		// Cross chain analysis
 		if (cmd.hasOption("cross-chain-abi") && cmd.hasOption("cross-chain-bytecode")) {
-			new BridgeAnalysis(
+			new CrossChainAnalysis(
 					Path.of(cmd.getOptionValue("cross-chain-abi")),
 					Path.of(cmd.getOptionValue("cross-chain-bytecode")))
 					.run();
@@ -584,6 +584,12 @@ public class EVMLiSA {
 	public static Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
 		HashSet<Statement> soundlySolved = new HashSet<>();
 		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
+
+			// If we have no unsound jumps and no maybe unsound jumps, we don't
+			// need to re-run the analysis because we are sound
+			if (checker.getUnsoundJumps().isEmpty() && checker.getMaybeUnsoundJumps().isEmpty())
+				return soundlySolved;
+
 			int currentIteration = 0;
 			int MAX_ITER = 5;
 			boolean fixpoint;

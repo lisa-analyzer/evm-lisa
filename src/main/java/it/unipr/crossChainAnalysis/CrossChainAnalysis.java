@@ -32,8 +32,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BridgeAnalysis {
-	private static final Logger log = LogManager.getLogger(BridgeAnalysis.class);
+public class CrossChainAnalysis {
+	private static final Logger log = LogManager.getLogger(CrossChainAnalysis.class);
 
 	private final Path _abiFolder;
 	private final Path _bytecodeFolder;
@@ -41,7 +41,7 @@ public class BridgeAnalysis {
 	private EVMCFG _xCFG;
 	private Set<Edge> _crossChainEdges;
 
-	public BridgeAnalysis(Path abi, Path bytecode) {
+	public CrossChainAnalysis(Path abi, Path bytecode) {
 		this._abiFolder = abi;
 		this._bytecodeFolder = bytecode;
 		this._bridge = new Bridge(abi, bytecode);
