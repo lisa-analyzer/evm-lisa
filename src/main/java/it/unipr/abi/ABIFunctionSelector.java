@@ -71,7 +71,7 @@ public class ABIFunctionSelector {
 		try {
 			abiJson = Files.readString(abi, StandardCharsets.UTF_8);
 		} catch (IOException e) {
-			log.error("Unable to read abi json {}: {}", abi.toString(), e.getMessage());
+			log.error("Unable to read ABI JSON {}: {}", abi.toString(), e.getMessage());
 			return functionSet;
 		}
 
@@ -87,14 +87,39 @@ public class ABIFunctionSelector {
 				for (int j = 0; j < inputs.length(); j++) {
 					if (j > 0)
 						signature.append(",");
-					signature.append(inputs.getJSONObject(j).getString("type"));
+
+					String paramType = inputs.getJSONObject(j).getString("type");
+
+					// Handle tuple (struct) parameters
+					if (paramType.equals("tuple") || paramType.endsWith("[]")) {
+						JSONObject component = inputs.getJSONObject(j);
+						JSONArray components = component.optJSONArray("components");
+
+						if (components != null) {
+							StringBuilder tupleSignature = new StringBuilder("(");
+							for (int k = 0; k < components.length(); k++) {
+								if (k > 0)
+									tupleSignature.append(",");
+								tupleSignature.append(components.getJSONObject(k).getString("type"));
+							}
+							tupleSignature.append(")");
+
+							if (paramType.endsWith("[]")) {
+								tupleSignature.append("[]");
+							}
+
+							paramType = tupleSignature.toString();
+						}
+					}
+
+					signature.append(paramType);
 				}
 				signature.append(")");
 
 				String functionSelector = getFunctionSelector(signature.toString());
 				functionSet.add(Pair.of(signature.toString(), functionSelector));
 
-//				log.debug("{} -> {}", signature, functionSelector);
+				log.debug("{} -> {}", signature, functionSelector);
 			}
 		}
 		return functionSet;
@@ -129,9 +154,6 @@ public class ABIFunctionSelector {
 					log.info("Function selector {} ({}) is present {} times in the bytecode.", entry.getValue(),
 							entry.getKey(), occurrences);
 			} else {
-				// TODO (bug) functions with array in parameters are not
-				// recognised, e.g.,
-				// `returnVaultAssets(address,address,tuple[],string)`
 				log.warn("Function selector {} ({}) is NOT present in the bytecode.", entry.getValue(), entry.getKey());
 			}
 		}
@@ -140,8 +162,14 @@ public class ABIFunctionSelector {
 
 	// Test
 	public static void main(String[] args) {
-		Path abi = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_1.abi.json");
-		Path bytecode = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_1.bytecode");
+		Path abi = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_2.abi.json");
+		Path bytecode = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_2.bytecode");
+
+		String signature = "returnVaultAssets(address,address,(address,uint256)[],string)";
+		String functionSelector = getFunctionSelector(signature);
+		Set<Pair<String, String>> set = new HashSet<>();
+		set.add(Pair.of(signature, functionSelector));
+		verifyFunctionSelectors(set, bytecode);
 
 		try {
 			Set<Pair<String, String>> functionSet = parseABI(abi);
