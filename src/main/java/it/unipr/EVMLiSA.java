@@ -586,7 +586,7 @@ public class EVMLiSA {
 		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
 
 			// If we have no unsound jumps and no maybe unsound jumps, we don't
-			// need to re-run the analysis because we are sound
+			// need to re-run the analysis because we are already sound
 			if (checker.getUnsoundJumps().isEmpty() && checker.getMaybeUnsoundJumps().isEmpty())
 				return soundlySolved;
 
