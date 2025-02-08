@@ -17,21 +17,10 @@ import org.json.JSONObject;
 
 /**
  * Utility class for handling Ethereum smart contract ABIs. This class provides
- * methods to: - Extract function selectors from function signatures. - Parse a
- * contract's ABI to retrieve function signatures and their corresponding
- * selectors. - Verify the presence of function selectors within a contract's
- * compiled bytecode.
- * <p>
- * References:
- * <ul>
- * <li><a href=
- * "https://www.cyfrin.io/blog/what-is-a-smart-contract-abi-and-how-to-get-it">What
- * is a smart contract ABI?</a></li>
- * <li><a href=
- * "https://ethereum.stackexchange.com/questions/234/what-is-an-abi-and-why-is-it-needed-to-interact-with-contracts?rq=1">Ethereum
- * StackExchange: What is an ABI?</a></li>
- * </ul>
- * </p>
+ * methods to: (1) extract function selectors from function signatures; (2)
+ * parse a contract's ABI to retrieve function signatures and their
+ * corresponding selectors; (3) verify the presence of function selectors within
+ * a contract's compiled bytecode.
  */
 public class ABIFunctionSelector {
 	private static final Logger log = LogManager.getLogger(ABIFunctionSelector.class);
