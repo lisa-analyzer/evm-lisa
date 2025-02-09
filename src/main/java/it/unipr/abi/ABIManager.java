@@ -25,8 +25,8 @@ import org.json.JSONObject;
  * corresponding selectors; (3) verify the presence of function selectors within
  * a contract's compiled bytecode.
  */
-public class ABIFunctionSelector {
-	private static final Logger log = LogManager.getLogger(ABIFunctionSelector.class);
+public class ABIManager {
+	private static final Logger log = LogManager.getLogger(ABIManager.class);
 
 	/**
 	 * Computes the function selector for a given function signature. The

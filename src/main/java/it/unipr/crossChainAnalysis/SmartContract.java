@@ -1,6 +1,6 @@
 package it.unipr.crossChainAnalysis;
 
-import it.unipr.abi.ABIFunctionSelector;
+import it.unipr.abi.ABIManager;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -30,8 +30,8 @@ public class SmartContract {
 		this._bytecodePath = bytecodePath;
 		this._cfg = null;
 
-		this._functionsSignature = ABIFunctionSelector.parseFunctionsFromABI(abiPath);
-		this._eventsSignature = ABIFunctionSelector.parseEventsFromABI(abiPath);
+		this._functionsSignature = ABIManager.parseFunctionsFromABI(abiPath);
+		this._eventsSignature = ABIManager.parseEventsFromABI(abiPath);
 
 		this._emittingBlocksSignature = new HashSet<>();
 		this._informationBlocksSignature = new HashSet<>();
@@ -101,6 +101,9 @@ public class SmartContract {
 						signature.addEntrypoint(node);
 	}
 
+	/**
+	 * Categorizes event signatures into emitting or information blocks based on their type.
+	 */
 	public void computeKnowledgeBlocks() {
 		for (Signature event : _eventsSignature) {
 			EventKnowledge.EventType eventType = EventKnowledge.getKnowledge(event.getName());
