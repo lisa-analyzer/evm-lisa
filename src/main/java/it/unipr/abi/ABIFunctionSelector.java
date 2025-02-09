@@ -1,5 +1,6 @@
 package it.unipr.abi;
 
+import it.unipr.crossChainAnalysis.EventKnowledge;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,8 +34,7 @@ public class ABIFunctionSelector {
 	 * @param functionSignature The function signature (e.g.,
 	 *                              "transfer(address,uint256)").
 	 * 
-	 * @return The first 4 bytes of the Keccak-256 hash, formatted as a
-	 *             hexadecimal string.
+	 * @return The first 4 bytes of the hash, formatted as a hexadecimal string.
 	 */
 	public static String getFunctionSelector(String functionSignature) {
 		Keccak.Digest256 digest = new Keccak.Digest256();
@@ -49,26 +49,44 @@ public class ABIFunctionSelector {
 	 * function definitions, computing the function selector for each function.
 	 *
 	 * @param abi Path to the ABI JSON file.
-	 * 
+	 *
 	 * @return A set of pairs where each pair contains the function signature
 	 *             and its corresponding selector.
 	 */
-	public static Set<Pair<String, String>> parseABI(Path abi) {
-		Set<Pair<String, String>> functionSet = new HashSet<>();
+	public static Set<Pair<String, String>> parseFunctionsFromABI(Path abi) {
+		return parseABI(abi, "function");
+	}
+
+	/**
+	 * Parses a smart contract ABI and extracts event signatures along with
+	 * their selectors. This method reads a JSON ABI file and retrieves the
+	 * event definitions, computing the event selector for each event.
+	 *
+	 * @param abi Path to the ABI JSON file.
+	 *
+	 * @return A set of pairs where each pair contains the event signature and
+	 *             its corresponding selector.
+	 */
+	public static Set<Pair<String, String>> parseEventsFromABI(Path abi) {
+		return parseABI(abi, "event");
+	}
+
+	private static Set<Pair<String, String>> parseABI(Path abi, String type) {
+		Set<Pair<String, String>> set = new HashSet<>();
 		String abiJson;
 
 		try {
 			abiJson = Files.readString(abi, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			log.error("Unable to read ABI JSON {}: {}", abi.toString(), e.getMessage());
-			return functionSet;
+			return set;
 		}
 
 		JSONArray abiArray = new JSONArray(abiJson);
 
 		for (int i = 0; i < abiArray.length(); i++) {
 			JSONObject obj = abiArray.getJSONObject(i);
-			if (obj.has("type") && obj.getString("type").equals("function")) {
+			if (obj.has("type") && obj.getString("type").equals(type)) {
 				String functionName = obj.getString("name");
 				JSONArray inputs = obj.getJSONArray("inputs");
 
@@ -105,13 +123,13 @@ public class ABIFunctionSelector {
 				}
 				signature.append(")");
 
-				String functionSelector = getFunctionSelector(signature.toString());
-				functionSet.add(Pair.of(signature.toString(), functionSelector));
+				String selector = getFunctionSelector(signature.toString());
+				set.add(Pair.of(signature.toString(), selector));
 
-				log.debug("{} -> {}", signature, functionSelector);
+				log.debug("[{}] {} -> {}", type, signature, selector);
 			}
 		}
-		return functionSet;
+		return set;
 	}
 
 	/**
@@ -140,13 +158,13 @@ public class ABIFunctionSelector {
 			if (occurrences > 0) {
 				counter++;
 				if (occurrences > 1)
-					log.info("Function selector {} ({}) is present {} times in the bytecode.", entry.getValue(),
+					log.info("Selector {} ({}) is present {} times in the bytecode.", entry.getValue(),
 							entry.getKey(), occurrences);
 			} else {
-				log.warn("Function selector {} ({}) is NOT present in the bytecode.", entry.getValue(), entry.getKey());
+				log.warn("Selector {} ({}) is NOT present in the bytecode.", entry.getValue(), entry.getKey());
 			}
 		}
-		log.info("Total function selectors found: {}/{}", counter, functionSet.size());
+		log.info("Total selectors found: {}/{}", counter, functionSet.size());
 	}
 
 	// Test
@@ -161,9 +179,18 @@ public class ABIFunctionSelector {
 		verifyFunctionSelectors(set, bytecode);
 
 		try {
-			Set<Pair<String, String>> functionSet = parseABI(abi);
-			assert functionSet != null;
-			verifyFunctionSelectors(functionSet, bytecode);
+			log.info("Parsing functions");
+			Set<Pair<String, String>> functions = parseFunctionsFromABI(abi);
+			verifyFunctionSelectors(functions, bytecode);
+
+			log.info("Parsing events");
+			Set<Pair<String, String>> events = parseEventsFromABI(abi);
+			verifyFunctionSelectors(events, bytecode);
+
+			log.info("Computing events knowledge");
+			for (Pair<String, String> event : events) {
+				log.debug("{}: {}", event.getKey(), EventKnowledge.getKnowledge(event.getKey()));
+			}
 		} catch (Exception e) {
 			log.error("Error reading ABI or bytecode file", e);
 		}

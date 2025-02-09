@@ -396,15 +396,15 @@ public class EVMCFG extends CFG {
 	 * The method performs a depth-first search (DFS) and identifies `Push`
 	 * statements containing function selectors.
 	 *
-	 * @param start          The starting statement for the search.
-	 * @param abiFunctionSet A set of function signatures and their
-	 *                           corresponding function selectors.
+	 * @param start      The starting statement for the search.
+	 * @param signatures A set of signatures and their corresponding function
+	 *                       selectors.
 	 * 
 	 * @return A set of pairs where each pair consists of a function signature
 	 *             (from the ABI) and the corresponding statement in the CFG.
 	 */
 	public Set<Pair<String, Statement>> findMatchingStatements(Statement start,
-			Set<Pair<String, String>> abiFunctionSet) {
+			Set<Pair<String, String>> signatures) {
 		Set<Pair<String, Statement>> matchingStatements = new HashSet<>();
 		Set<Statement> visited = new HashSet<>();
 		Stack<Statement> stack = new Stack<>();
@@ -417,9 +417,9 @@ public class EVMCFG extends CFG {
 				visited.add(current);
 
 				if (current instanceof Push)
-					for (Pair<String, String> abiFunction : abiFunctionSet)
-						if (current.toString().contains(abiFunction.getRight()))
-							matchingStatements.add(Pair.of(abiFunction.getLeft(), current));
+					for (Pair<String, String> signature : signatures)
+						if (current.toString().contains(signature.getRight()))
+							matchingStatements.add(Pair.of(signature.getLeft(), current));
 
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
 				for (Edge edge : outgoingEdges) {
