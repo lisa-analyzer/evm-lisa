@@ -12,8 +12,13 @@ public class Bridge implements Iterable<SmartContract> {
 	private static final Logger log = LogManager.getLogger(Bridge.class);
 	private final Set<SmartContract> _contracts;
 
+	private final List<Signature> _functions;
+	private final List<Signature> _events;
+
 	public Bridge() {
 		this._contracts = new HashSet<>();
+		this._functions = new ArrayList<>();
+		this._events = new ArrayList<>();
 	}
 
 	/**
@@ -36,6 +41,14 @@ public class Bridge implements Iterable<SmartContract> {
 				log.warn("Cannot find ABI file: {}", name);
 			}
 		}
+	}
+
+	public List<Signature> getFunctions() {
+		return _functions;
+	}
+
+	public List<Signature> getEvents() {
+		return _events;
 	}
 
 	/**
@@ -62,6 +75,21 @@ public class Bridge implements Iterable<SmartContract> {
 			log.error("Error reading directory: {}", e.getMessage());
 		}
 		return fileMap;
+	}
+
+	public void computeFunctionsAndEvents() {
+		computeFunctions();
+		computeEvents();
+	}
+
+	public void computeFunctions() {
+		for (SmartContract contract : _contracts)
+			_functions.addAll(contract.getFunctionsSignature());
+	}
+
+	public void computeEvents() {
+		for (SmartContract contract : _contracts)
+			_events.addAll(contract.getEventsSignature());
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package it.unipr.crossChainAnalysis;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Signature {
 	private final String _name;
@@ -59,6 +60,24 @@ public class Signature {
 	public void addEntrypoint(Statement entrypoint) {
 		if (entrypoint != null)
 			this._entrypoints.add(entrypoint);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		Signature other = (Signature) obj;
+		return Objects.equals(_name, other._name) &&
+				Objects.equals(_type, other._type) &&
+				Objects.equals(_fullSignature, other._fullSignature) &&
+				Objects.equals(_selector, other._selector);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(_name, _type, _fullSignature, _selector);
 	}
 
 	@Override

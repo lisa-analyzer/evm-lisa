@@ -25,13 +25,8 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +41,7 @@ public class EVMCFG extends CFG {
 	public Set<Statement> pushedJumps;
 	public Set<Statement> sstores;
 	public Set<Statement> sha3s;
-	public Set<Statement> logxs;
+	public List<Statement> logxs;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -58,14 +53,14 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the LOGx statements in the CFG.
+	 * Returns a list of all the LOGx statements in the CFG.
 	 *
-	 * @return a set of all the LOGx statements in the CFG
+	 * @return a list of all the LOGx statements in the CFG
 	 */
-	public Set<Statement> getAllLogX() {
+	public List<Statement> getAllLogX() {
 		if (logxs == null) {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> logxs = new HashSet<>();
+			List<Statement> logxs = new ArrayList<>();
 
 			for (Statement statement : cfgNodeList.getNodes()) {
 				if (statement instanceof Log) {

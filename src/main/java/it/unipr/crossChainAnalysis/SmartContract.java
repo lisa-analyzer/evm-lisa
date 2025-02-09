@@ -102,7 +102,8 @@ public class SmartContract {
 	}
 
 	/**
-	 * Categorizes event signatures into emitting or information blocks based on their type.
+	 * Categorizes event signatures into emitting or information blocks based on
+	 * their type.
 	 */
 	public void computeKnowledgeBlocks() {
 		for (Signature event : _eventsSignature) {
