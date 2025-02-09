@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,8 +72,8 @@ public class CrossChainAnalysis {
 		for (SmartContract sc : _bridge) {
 			log.info("Smart contract: {}", sc.getName());
 			log.debug("Events: {}", sc.getEventsSignature().size());
-			log.debug("Emitting blocks: {}", sc.getEmittingBlocksSignatureEntrypoints().size());
-			log.debug("Information blocks: {}", sc.getInformationBlocksSignatureEntrypoints().size());
+			log.debug("Emitting blocks: {}", sc.getEmittingBlocksSignature().size());
+			log.debug("Information blocks: {}", sc.getInformationBlocksSignature().size());
 		}
 	}
 
@@ -89,13 +88,12 @@ public class CrossChainAnalysis {
 
 		for (Statement logx : _xCFG.getAllLogX())
 			for (SmartContract contract : _bridge)
-				for (Pair<String, Statement> functionEntrypoint : contract.getFunctionsSignatureEntrypoints()) {
-					Statement target = functionEntrypoint.getRight();
-
-					Edge crossChainEdge = new SequentialEdge(logx, target);
-					_xCFG.addEdge(crossChainEdge);
-					crossChainEdges.add(crossChainEdge);
-				}
+				for (Signature signature : contract.getFunctionsSignature())
+					for (Statement target : signature.getEntrypoints()) {
+						Edge crossChainEdge = new SequentialEdge(logx, target);
+						_xCFG.addEdge(crossChainEdge);
+						crossChainEdges.add(crossChainEdge);
+					}
 
 		log.debug("Added {} cross chain edges using functions entrypoint", crossChainEdges.size());
 		return crossChainEdges;
@@ -110,17 +108,23 @@ public class CrossChainAnalysis {
 	private Set<Edge> addCrossChainEdgesUsingEventsEntrypoint() {
 		Set<Edge> crossChainEdges = new HashSet<>();
 
-		for (SmartContract contract : _bridge)
-			for (Pair<String, Statement> emit : contract.getEmittingBlocksSignatureEntrypoints())
-				for (Pair<String, Statement> info : contract.getInformationBlocksSignatureEntrypoints()) {
-					Statement source = emit.getRight();
-					Statement target = info.getRight();
+		Set<Statement> emittingBlocks = new HashSet<>();
+		Set<Statement> informationBlocks = new HashSet<>();
 
-					Edge crossChainEdge = new SequentialEdge(source, target);
+		for (SmartContract contract : _bridge) {
+			for (Signature signature : contract.getEmittingBlocksSignature())
+				emittingBlocks.addAll(signature.getEntrypoints());
 
-					_xCFG.addEdge(crossChainEdge);
-					crossChainEdges.add(crossChainEdge);
-				}
+			for (Signature signature : contract.getInformationBlocksSignature())
+				informationBlocks.addAll(signature.getEntrypoints());
+		}
+
+		for (Statement source : emittingBlocks)
+			for (Statement target : informationBlocks) {
+				Edge crossChainEdge = new SequentialEdge(source, target);
+				_xCFG.addEdge(crossChainEdge);
+				crossChainEdges.add(crossChainEdge);
+			}
 
 		log.debug("Added {} cross chain edges using events entrypoint", crossChainEdges.size());
 		return crossChainEdges;
@@ -231,9 +235,9 @@ public class CrossChainAnalysis {
 					contract.computeEventsSignatureEntrypoints();
 					contract.computeKnowledgeBlocks();
 
-					log.info("Computing events knowledge of {}", contract.getName());
-					for (Pair<String, String> event : contract.getEventsSignature()) {
-						log.debug("{}: {}", event.getKey(), EventKnowledge.getKnowledge(event.getKey()));
+					log.debug("Computing events knowledge of {}", contract.getName());
+					for (Signature event : contract.getEventsSignature()) {
+						log.debug("{}: {}", event.getName(), EventKnowledge.getKnowledge(event.getName()));
 					}
 
 					// check soundness

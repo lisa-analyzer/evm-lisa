@@ -1,15 +1,17 @@
 package it.unipr.abi;
 
 import it.unipr.crossChainAnalysis.EventKnowledge;
+import it.unipr.crossChainAnalysis.Signature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jcajce.provider.digest.Keccak;
@@ -53,7 +55,7 @@ public class ABIFunctionSelector {
 	 * @return A set of pairs where each pair contains the function signature
 	 *             and its corresponding selector.
 	 */
-	public static Set<Pair<String, String>> parseFunctionsFromABI(Path abi) {
+	public static Set<Signature> parseFunctionsFromABI(Path abi) {
 		return parseABI(abi, "function");
 	}
 
@@ -67,19 +69,19 @@ public class ABIFunctionSelector {
 	 * @return A set of pairs where each pair contains the event signature and
 	 *             its corresponding selector.
 	 */
-	public static Set<Pair<String, String>> parseEventsFromABI(Path abi) {
+	public static Set<Signature> parseEventsFromABI(Path abi) {
 		return parseABI(abi, "event");
 	}
 
-	private static Set<Pair<String, String>> parseABI(Path abi, String type) {
-		Set<Pair<String, String>> set = new HashSet<>();
+	private static Set<Signature> parseABI(Path abi, String type) {
+		Set<Signature> signatures = new HashSet<>();
 		String abiJson;
 
 		try {
 			abiJson = Files.readString(abi, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			log.error("Unable to read ABI JSON {}: {}", abi.toString(), e.getMessage());
-			return set;
+			return signatures;
 		}
 
 		JSONArray abiArray = new JSONArray(abiJson);
@@ -90,10 +92,12 @@ public class ABIFunctionSelector {
 				String functionName = obj.getString("name");
 				JSONArray inputs = obj.getJSONArray("inputs");
 
-				StringBuilder signature = new StringBuilder(functionName + "(");
+				List<String> paramTypes = new ArrayList<>();
+				StringBuilder signatureBuilder = new StringBuilder(functionName).append("(");
+
 				for (int j = 0; j < inputs.length(); j++) {
 					if (j > 0)
-						signature.append(",");
+						signatureBuilder.append(",");
 
 					String paramType = inputs.getJSONObject(j).getString("type");
 
@@ -119,17 +123,21 @@ public class ABIFunctionSelector {
 						}
 					}
 
-					signature.append(paramType);
+					paramTypes.add(paramType);
+					signatureBuilder.append(paramType);
 				}
-				signature.append(")");
+				signatureBuilder.append(")");
 
-				String selector = getFunctionSelector(signature.toString());
-				set.add(Pair.of(signature.toString(), selector));
+				String fullSignature = signatureBuilder.toString();
+				String selector = getFunctionSelector(fullSignature);
 
-				log.debug("[{}] {} -> {}", type, signature, selector);
+				signatures
+						.add(new Signature(functionName, type, paramTypes.size(), paramTypes, fullSignature, selector));
+
+				log.debug("[{}] {} -> {}", type, fullSignature, selector);
 			}
 		}
-		return set;
+		return signatures;
 	}
 
 	/**
@@ -137,11 +145,11 @@ public class ABIFunctionSelector {
 	 * checks if the function selectors extracted from the ABI are present in
 	 * the compiled smart contract bytecode.
 	 *
-	 * @param functionSet  A set of function signature-selector pairs extracted
+	 * @param signatures   A set of function signature-selector pairs extracted
 	 *                         from the ABI.
 	 * @param bytecodePath Path to the smart contract's compiled bytecode.
 	 */
-	public static void verifyFunctionSelectors(Set<Pair<String, String>> functionSet, Path bytecodePath) {
+	public static void verifyFunctionSelectors(Set<Signature> signatures, Path bytecodePath) {
 		int counter = 0;
 		String bytecode;
 
@@ -152,19 +160,20 @@ public class ABIFunctionSelector {
 			return;
 		}
 
-		for (Pair<String, String> entry : functionSet) {
-			int occurrences = StringUtils.countMatches(bytecode, entry.getValue());
+		for (Signature entry : signatures) {
+			int occurrences = StringUtils.countMatches(bytecode, entry.getSelector());
 
 			if (occurrences > 0) {
 				counter++;
 				if (occurrences > 1)
-					log.info("Selector {} ({}) is present {} times in the bytecode.", entry.getValue(),
-							entry.getKey(), occurrences);
+					log.info("Selector {} ({}) is present {} times in the bytecode.", entry.getSelector(),
+							entry.getFullSignature(), occurrences);
 			} else {
-				log.warn("Selector {} ({}) is NOT present in the bytecode.", entry.getValue(), entry.getKey());
+				log.warn("Selector {} ({}) is NOT present in the bytecode.", entry.getSelector(),
+						entry.getFullSignature());
 			}
 		}
-		log.info("Total selectors found: {}/{}", counter, functionSet.size());
+		log.info("Total selectors found: {}/{}", counter, signatures.size());
 	}
 
 	// Test
@@ -172,24 +181,26 @@ public class ABIFunctionSelector {
 		Path abi = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_2.abi.json");
 		Path bytecode = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_2.bytecode");
 
+		log.info(parseABI(abi, "function"));
+
 		String signature = "returnVaultAssets(address,address,(address,uint256)[],string)";
 		String functionSelector = getFunctionSelector(signature);
-		Set<Pair<String, String>> set = new HashSet<>();
-		set.add(Pair.of(signature, functionSelector));
-		verifyFunctionSelectors(set, bytecode);
+		Set<Signature> signatures = new HashSet<>();
+		signatures.add(new Signature("returnVaultAssets", "function", 4, null, signature, functionSelector));
+		verifyFunctionSelectors(signatures, bytecode);
 
 		try {
 			log.info("Parsing functions");
-			Set<Pair<String, String>> functions = parseFunctionsFromABI(abi);
+			Set<Signature> functions = parseFunctionsFromABI(abi);
 			verifyFunctionSelectors(functions, bytecode);
 
 			log.info("Parsing events");
-			Set<Pair<String, String>> events = parseEventsFromABI(abi);
+			Set<Signature> events = parseEventsFromABI(abi);
 			verifyFunctionSelectors(events, bytecode);
 
 			log.info("Computing events knowledge");
-			for (Pair<String, String> event : events) {
-				log.debug("{}: {}", event.getKey(), EventKnowledge.getKnowledge(event.getKey()));
+			for (Signature event : events) {
+				log.debug("{}: {}", event.getFullSignature(), EventKnowledge.getKnowledge(event.getName()));
 			}
 		} catch (Exception e) {
 			log.error("Error reading ABI or bytecode file", e);

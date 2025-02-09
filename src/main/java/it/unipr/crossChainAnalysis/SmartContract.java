@@ -7,7 +7,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,29 +18,23 @@ public class SmartContract {
 	private final String _name;
 	private EVMCFG _cfg;
 
-	private final Set<Pair<String, String>> _functionsSignature;
-	private final Set<Pair<String, String>> _eventsSignature;
-	private final Set<Pair<String, Statement>> _functionsSignatureEntrypoints;
-	private final Set<Pair<String, Statement>> _eventsSignatureEntrypoints;
+	private final Set<Signature> _functionsSignature;
+	private final Set<Signature> _eventsSignature;
 
-	private final Set<Pair<String, String>> _emittingBlocksSignature;
-	private final Set<Pair<String, String>> _informationBlocksSignature;
-	private final Set<Pair<String, Statement>> _emittingBlocksSignatureEntrypoints;
-	private final Set<Pair<String, Statement>> _informationBlocksSignatureEntrypoints;
+	private final Set<Signature> _emittingBlocksSignature;
+	private final Set<Signature> _informationBlocksSignature;
 
 	public SmartContract(String name, Path abiPath, Path bytecodePath) {
 		this._name = name;
 		this._abiPath = abiPath;
 		this._bytecodePath = bytecodePath;
 		this._cfg = null;
+
 		this._functionsSignature = ABIFunctionSelector.parseFunctionsFromABI(abiPath);
 		this._eventsSignature = ABIFunctionSelector.parseEventsFromABI(abiPath);
-		this._functionsSignatureEntrypoints = new HashSet<>();
-		this._eventsSignatureEntrypoints = new HashSet<>();
+
 		this._emittingBlocksSignature = new HashSet<>();
 		this._informationBlocksSignature = new HashSet<>();
-		this._emittingBlocksSignatureEntrypoints = new HashSet<>();
-		this._informationBlocksSignatureEntrypoints = new HashSet<>();
 	}
 
 	public Path getAbiPath() {
@@ -60,32 +53,20 @@ public class SmartContract {
 		return this._cfg;
 	}
 
-	public Set<Pair<String, String>> getFunctionsSignature() {
+	public Set<Signature> getFunctionsSignature() {
 		return this._functionsSignature;
 	}
 
-	public Set<Pair<String, String>> getEventsSignature() {
+	public Set<Signature> getEventsSignature() {
 		return this._eventsSignature;
 	}
 
-	public Set<Pair<String, Statement>> getFunctionsSignatureEntrypoints() {
-		return this._functionsSignatureEntrypoints;
-	}
-
-	public Set<Pair<String, String>> getEmittingBlocksSignature() {
+	public Set<Signature> getEmittingBlocksSignature() {
 		return this._emittingBlocksSignature;
 	}
 
-	public Set<Pair<String, String>> getInformationBlocksSignature() {
+	public Set<Signature> getInformationBlocksSignature() {
 		return this._informationBlocksSignature;
-	}
-
-	public Set<Pair<String, Statement>> getEmittingBlocksSignatureEntrypoints() {
-		return this._emittingBlocksSignatureEntrypoints;
-	}
-
-	public Set<Pair<String, Statement>> getInformationBlocksSignatureEntrypoints() {
-		return this._informationBlocksSignatureEntrypoints;
 	}
 
 	public void setCFG(EVMCFG cfg) {
@@ -101,9 +82,9 @@ public class SmartContract {
 	public void computeFunctionsSignatureEntrypoints() {
 		for (Statement node : _cfg.getNodes())
 			if (node instanceof Push)
-				for (Pair<String, String> signature : _functionsSignature)
-					if (node.toString().contains(signature.getRight()))
-						_functionsSignatureEntrypoints.add(Pair.of(signature.getLeft(), node));
+				for (Signature signature : _functionsSignature)
+					if (node.toString().contains(signature.getSelector()))
+						signature.addEntrypoint(node);
 	}
 
 	/**
@@ -115,14 +96,14 @@ public class SmartContract {
 	public void computeEventsSignatureEntrypoints() {
 		for (Statement node : _cfg.getNodes())
 			if (node instanceof Push)
-				for (Pair<String, String> signature : _eventsSignature)
-					if (node.toString().contains(signature.getRight()))
-						_eventsSignatureEntrypoints.add(Pair.of(signature.getLeft(), node));
+				for (Signature signature : _eventsSignature)
+					if (node.toString().contains(signature.getSelector()))
+						signature.addEntrypoint(node);
 	}
 
 	public void computeKnowledgeBlocks() {
-		for (Pair<String, String> event : _eventsSignature) {
-			EventKnowledge.EventType eventType = EventKnowledge.getKnowledge(event.getKey());
+		for (Signature event : _eventsSignature) {
+			EventKnowledge.EventType eventType = EventKnowledge.getKnowledge(event.getName());
 
 			switch (eventType) {
 			case DEPOSIT:
@@ -140,19 +121,6 @@ public class SmartContract {
 				break;
 			}
 		}
-
-		for (Statement node : _cfg.getNodes()) {
-			if (node instanceof Push) {
-				// Emitting blocks
-				for (Pair<String, String> signature : _emittingBlocksSignature)
-					if (node.toString().contains(signature.getRight()))
-						_emittingBlocksSignatureEntrypoints.add(Pair.of(signature.getLeft(), node));
-				// Information blocks
-				for (Pair<String, String> signature : _informationBlocksSignature)
-					if (node.toString().contains(signature.getRight()))
-						_informationBlocksSignatureEntrypoints.add(Pair.of(signature.getLeft(), node));
-			}
-		}
 	}
 
 	@Override
@@ -160,28 +128,48 @@ public class SmartContract {
 		StringBuilder sb = new StringBuilder();
 		String indent = "  ";
 
-		sb.append("{\n")
-				.append(indent).append("\"name\": \"").append(_name).append("\",\n")
-				.append(indent).append("\"abiPath\": \"").append(_abiPath).append("\",\n")
-				.append(indent).append("\"bytecodePath\": \"").append(_bytecodePath).append("\",\n")
-				.append(indent).append("\"cfgNodeCount\": ").append(_cfg.getNodes().size()).append(",\n")
-				.append(indent).append("\"cfgEdgeCount\": ").append(_cfg.getEdges().size()).append(",\n")
-				.append(indent).append("\"functionsCount\": ").append(_functionsSignature.size()).append(",\n")
-				.append(indent).append("\"eventsCount\": ").append(_eventsSignature.size()).append(",\n")
-				.append(indent).append("\"functionEntrypointsCount\": ").append(_functionsSignatureEntrypoints.size())
-				.append(",\n")
-				.append(indent).append("\"eventEntrypointsCount\": ").append(_eventsSignatureEntrypoints.size())
-				.append(",\n")
-				.append(indent).append("\"emittingBlocksCount\": ").append(_emittingBlocksSignature.size())
-				.append(",\n")
-				.append(indent).append("\"informationBlocksCount\": ").append(_informationBlocksSignature.size())
-				.append(",\n")
-				.append(indent).append("\"emittingBlocksEntrypointsCount\": ")
-				.append(_emittingBlocksSignatureEntrypoints.size()).append(",\n")
-				.append(indent).append("\"informationBlocksEntrypointsCount\": ")
-				.append(_informationBlocksSignatureEntrypoints.size()).append("\n")
-				.append("}");
+		sb.append("{\n");
+		sb.append(indent).append("\"name\": \"").append(_name).append("\",\n");
+		sb.append(indent).append("\"abiPath\": \"").append(_abiPath).append("\",\n");
+		sb.append(indent).append("\"bytecodePath\": \"").append(_bytecodePath).append("\",\n");
 
+		sb.append(indent).append("\"cfg\": {\n");
+		sb.append(indent).append(indent).append("\"nodes\": ").append(_cfg.getNodes().size()).append(",\n");
+		sb.append(indent).append(indent).append("\"edges\": ").append(_cfg.getEdges().size()).append("\n");
+		sb.append(indent).append("},\n");
+
+		sb.append(indent).append("\"functions\": ").append(formatSignatureSet(_functionsSignature)).append(",\n");
+		sb.append(indent).append("\"events\": ").append(formatSignatureSet(_eventsSignature)).append(",\n");
+		sb.append(indent).append("\"emittingBlocks\": ").append(formatSignatureSet(_emittingBlocksSignature))
+				.append(",\n");
+		sb.append(indent).append("\"informationBlocks\": ").append(formatSignatureSet(_informationBlocksSignature))
+				.append("\n");
+
+		sb.append("}");
+		return sb.toString();
+	}
+
+	/**
+	 * Formats a set of Signature objects as a JSON-like array.
+	 */
+	private String formatSignatureSet(Set<Signature> signatures) {
+		StringBuilder sb = new StringBuilder();
+		String indent = "  ";
+
+		sb.append("[");
+		if (!signatures.isEmpty()) {
+			sb.append("\n");
+			int count = 0;
+			for (Signature sig : signatures) {
+				sb.append(indent).append(indent).append(sig.toString());
+				if (++count < signatures.size()) {
+					sb.append(",");
+				}
+				sb.append("\n");
+			}
+			sb.append(indent);
+		}
+		sb.append("]");
 		return sb.toString();
 	}
 }
