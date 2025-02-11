@@ -392,8 +392,10 @@ public abstract class TaintAbstractDomain
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-					resultStack.push(TaintElement.TOP);
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();
@@ -410,8 +412,10 @@ public abstract class TaintAbstractDomain
 					TaintElement length = resultStack.pop();
 					TaintElement salt = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-					resultStack.push(TaintElement.TOP);
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();
@@ -431,7 +435,10 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					resultStack.push(TaintElement.TOP);
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();
@@ -463,7 +470,10 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					resultStack.push(TaintElement.TOP);
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();
@@ -519,8 +529,10 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-					resultStack.push(TaintElement.TOP);
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();
@@ -563,8 +575,10 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-					resultStack.push(TaintElement.TOP);
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
+					else
+						resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();

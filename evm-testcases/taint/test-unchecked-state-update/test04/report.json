@@ -1,0 +1,40 @@
+{
+  "warnings" : [ {
+    "message" : "[GENERIC] Unchecked State Update vulnerability at 10"
+  } ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_taint_test-unchecked-state-update_test04_test04.sol().json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "4ms",
+    "end" : "2025-02-11T17:37:12.159+01:00",
+    "expressions" : "12",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "1",
+    "programs" : "1",
+    "start" : "2025-02-11T17:37:12.155+01:00",
+    "statements" : "17",
+    "units" : "0",
+    "version" : "0.1",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "JumpSolver, UncheckedStateUpdateChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "false",
+    "wideningThreshold" : "5",
+    "workdir" : "evm-outputs/taint/test-unchecked-state-update/test04"
+  }
+}

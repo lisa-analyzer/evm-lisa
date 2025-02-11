@@ -42,6 +42,7 @@ public class EVMCFG extends CFG {
 	public Set<Statement> sstores;
 	public Set<Statement> sha3s;
 	public List<Statement> logxs;
+	public List<Statement> calls;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -50,6 +51,34 @@ public class EVMCFG extends CFG {
 
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
+	}
+
+	/**
+	 * Returns a list of all the CALL, STATICCALL and DELEGATECALL statements in
+	 * the CFG.
+	 *
+	 * @return a list of all the CALL, STATICCALL and DELEGATECALL statements in
+	 *             the CFG
+	 */
+	public List<Statement> getAllCall() {
+		if (this.calls == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			List<Statement> calls = new ArrayList<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Call) {
+					calls.add(statement);
+				} else if (statement instanceof Staticcall) {
+					calls.add(statement);
+				} else if (statement instanceof Delegatecall) {
+					calls.add(statement);
+				}
+			}
+
+			return this.calls = calls;
+		}
+
+		return this.calls;
 	}
 
 	/**
@@ -492,5 +521,37 @@ public class EVMCFG extends CFG {
 		}
 
 		return foundTarget;
+	}
+
+	public boolean reachableFromWithoutJumpI(Statement start, Statement target) {
+		return dfsWithoutJumpI(start, target, new HashSet<>());
+	}
+
+	private boolean dfsWithoutJumpI(Statement start, Statement target, Set<Statement> visited) {
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target))
+				return true;
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					if (edge.getSource() instanceof Jumpi)
+						continue;
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return false;
 	}
 }

@@ -2,10 +2,12 @@ package it.unipr.crossChainAnalysis;
 
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.*;
+import it.unipr.analysis.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
+import it.unipr.checker.UncheckedStateUpdateChecker;
 import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMTypeSystem;
@@ -68,18 +70,18 @@ public class CrossChainAnalysis {
 
 		_bridge.computeFunctionsAndEvents();
 
-		_xCFG = buildPartialXCFG();
-
-		// _crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); //
-		// SmartAxe solution
-		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
-
-		// Add edges to xCFG
-		for (Edge edge : _crossChainEdges)
-			_xCFG.addEdge(edge);
-
-		log.debug("Final xCFG");
-		printInfo(_xCFG);
+//		_xCFG = buildPartialXCFG();
+//
+//		// _crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); //
+//		// SmartAxe solution
+//		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
+//
+//		// Add edges to xCFG
+//		for (Edge edge : _crossChainEdges)
+//			_xCFG.addEdge(edge);
+//
+//		log.debug("Final xCFG");
+//		printInfo(_xCFG);
 
 		runCheckers();
 
@@ -96,6 +98,7 @@ public class CrossChainAnalysis {
 		for (SmartContract contract : _bridge) {
 			futures.add(_executor.submit(() -> runReentrancyChecker(contract)));
 			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
+			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 		}
 
 		try {
@@ -115,7 +118,31 @@ public class CrossChainAnalysis {
 			if (MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()) > 0)
 				log.warn("{} event order warning",
 						MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
+
+			if (MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()) > 0)
+				log.warn("{} unchecked state update warning",
+						MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()));
 		}
+	}
+
+	/**
+	 * Runs the unchecked state update checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	private void runUncheckedStateUpdateChecker(SmartContract contract) {
+		// Setup configuration
+		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Unchecked state update checker
+		UncheckedStateUpdateChecker checker = new UncheckedStateUpdateChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
 	}
 
 	/**
