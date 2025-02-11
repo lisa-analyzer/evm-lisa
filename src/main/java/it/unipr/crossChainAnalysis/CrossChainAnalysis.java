@@ -5,7 +5,10 @@ import it.unipr.analysis.*;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.JumpSolver;
+import it.unipr.checker.ReentrancyChecker;
+import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.frontend.EVMTypeSystem;
 import it.unipr.utils.EthereumUtils;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -66,8 +69,8 @@ public class CrossChainAnalysis {
 
 		_xCFG = buildPartialXCFG();
 
-//		_crossChainEdges = getCrossChainEdgesUsingFunctionsEntrypoint();
-//		_crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); // SmartAxe solution
+		// _crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); //
+		// SmartAxe solution
 		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
 
 		// Add edges to xCFG
@@ -77,7 +80,89 @@ public class CrossChainAnalysis {
 		log.debug("Final xCFG");
 		printInfo(_xCFG);
 
+		runCheckers();
+
 		shutdownExecutor();
+	}
+
+	private void runCheckers() {
+		List<Future<?>> futures = new ArrayList<>();
+
+		for (SmartContract contract : _bridge) {
+			futures.add(_executor.submit(() -> runReentrancyChecker(contract)));
+			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
+		}
+
+		try {
+			waitForCompletion(futures);
+		} catch (InterruptedException e) {
+			log.error("Thread pool interrupted: {}", e.getMessage());
+		}
+
+		log.warn("Vulnerabilities");
+		for (SmartContract contract : _bridge) {
+			log.info("Contract {} analyzed", contract.getName());
+
+			if (MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()) > 0)
+				log.warn("{} reentrancy warning",
+						MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()));
+
+			if (MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()) > 0)
+				log.warn("{} event order warning",
+						MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
+		}
+	}
+
+	private void runReentrancyChecker(SmartContract contract) {
+		// Setup configuration
+		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Reentrancy checker
+		ReentrancyChecker checker = new ReentrancyChecker();
+		conf.semanticChecks.add(checker);
+		lisa.run(program);
+	}
+
+	private void runEventOrderChecker(SmartContract contract) {
+		List<Statement> functionsEntrypoints = new ArrayList<>();
+
+		for (Signature function : contract.getFunctionsSignature())
+			functionsEntrypoints.addAll(function.getEntrypoints());
+
+		EVMCFG cfg = contract.getCFG();
+		Set<Statement> sstoreSet = cfg.getAllSstore();
+		List<Statement> logSet = cfg.getAllLogX();
+
+		log.debug("Contract: {}", contract.getName());
+		log.debug("Functions: {}", contract.getFunctionsSignature().size());
+		log.debug("Functions entry points: {}", functionsEntrypoints.size());
+		log.debug("Sstore set: {}", sstoreSet.size());
+		log.debug("Log set: {}", logSet.size());
+
+		for (Statement functionEntrypoint : functionsEntrypoints) {
+			for (Statement emitEvent : logSet) {
+				if (cfg.reachableFrom(functionEntrypoint, emitEvent)) {
+					if (!cfg.reachableFromCrossing(functionEntrypoint, emitEvent, sstoreSet)) {
+
+						ProgramCounterLocation functionEntrypointLocation = (ProgramCounterLocation) functionEntrypoint
+								.getLocation();
+						ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
+
+						String warn = "Contract: " + contract.getName() + " - [EventOrderChecker] Vulnerability at "
+								+ emitEventLocation;
+
+						log.warn("Contract: {} - [EventOrderChecker] Vulnerability from {} to {}", contract.getName(),
+								functionEntrypointLocation,
+								emitEventLocation);
+
+						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
+					}
+				}
+			}
+		}
 	}
 
 	/**

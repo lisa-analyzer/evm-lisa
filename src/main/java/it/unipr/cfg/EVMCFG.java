@@ -427,4 +427,70 @@ public class EVMCFG extends CFG {
 
 		return matchingStatements;
 	}
+
+	public boolean reachableFromCrossing(Statement start, Statement target, Set<Statement> statements) {
+		return dfsCrossing(start, target, new HashSet<>(), statements);
+	}
+
+	/**
+	 * Check whether all paths from {@code start} to {@code target} contain at
+	 * least one {@code statements} statement. This method explores all possible
+	 * paths using a depth-first search (DFS). If there is at least one path
+	 * where a required statement is missing, the method returns {@code false}.
+	 *
+	 * @param start      The starting statement of the search.
+	 * @param target     The target statement.
+	 * @param visited    A set of visited statements to avoid cycles.
+	 * @param statements The set of statements that must be present in all
+	 *                       paths.
+	 * 
+	 * @return {@code true} if all paths contain all statements, otherwise
+	 *             {@code false}.
+	 */
+	private boolean dfsCrossing(Statement start, Statement target, Set<Statement> visited, Set<Statement> statements) {
+		boolean foundTarget = false;
+		Set<Statement> pathStatements = new HashSet<>();
+
+		Stack<List<Statement>> stack = new Stack<>();
+		stack.push(Collections.singletonList(start));
+
+		while (!stack.isEmpty()) {
+			List<Statement> path = stack.pop();
+			Statement current = path.get(path.size() - 1);
+
+			if (visited.contains(current)) {
+				continue;
+			}
+
+			visited.add(current);
+			pathStatements.add(current);
+
+			if (current.equals(target)) {
+				foundTarget = true;
+
+				// Check if this specific path contains at least a statement
+				boolean contains = false;
+				for (Statement statement : statements) {
+					if (pathStatements.contains(statement)) {
+						contains = true;
+						break;
+					}
+				}
+				if (!contains)
+					return false;
+			}
+
+			Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+			for (Edge edge : outgoingEdges) {
+				Statement next = edge.getDestination();
+				if (!visited.contains(next)) {
+					List<Statement> newPath = new ArrayList<>(path);
+					newPath.add(next);
+					stack.push(newPath);
+				}
+			}
+		}
+
+		return foundTarget;
+	}
 }

@@ -19,6 +19,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
 	private final LRUMap<Integer, Boolean> _reachableFrom;
+	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -45,6 +46,7 @@ public class MyCache {
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._reachableFrom = new LRUMap<Integer, Boolean>(2000);
+		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
 	}
 
 	/**
@@ -145,6 +147,40 @@ public class MyCache {
 	public int getReentrancyWarnings(Integer key) {
 		synchronized (_reentrancyWarnings) {
 			return (_reentrancyWarnings.get(key) != null) ? _reentrancyWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds an event order warning for the specified key. If no warnings are
+	 * associated with the key, a new set is created and the warning is added to
+	 * it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addEventOrderWarning(Integer key, Object warning) {
+		synchronized (_eventOrderWarnings) {
+			_eventOrderWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of event order warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getEventOrderWarnings(Integer key) {
+		synchronized (_eventOrderWarnings) {
+			return (_eventOrderWarnings.get(key) != null) ? _eventOrderWarnings.get(key).size() : 0;
 		}
 	}
 
