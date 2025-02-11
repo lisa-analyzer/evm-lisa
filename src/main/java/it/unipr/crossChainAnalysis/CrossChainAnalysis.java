@@ -6,6 +6,7 @@ import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.EthereumUtils;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -24,9 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +38,8 @@ public class CrossChainAnalysis {
 	private final Bridge _bridge;
 	private EVMCFG _xCFG;
 	private List<Edge> _crossChainEdges;
+	private final int _cores;
+	private ExecutorService _executor;
 
 	public CrossChainAnalysis(Path abi, Path bytecode) {
 		this._abiFolder = abi;
@@ -46,6 +47,8 @@ public class CrossChainAnalysis {
 		this._bridge = new Bridge(abi, bytecode);
 		this._xCFG = null;
 		this._crossChainEdges = new ArrayList<>();
+		this._cores = Runtime.getRuntime().availableProcessors() - 1;
+		this._executor = Executors.newFixedThreadPool(_cores > 0 ? _cores : 1);
 	}
 
 	/**
@@ -73,6 +76,24 @@ public class CrossChainAnalysis {
 
 		log.debug("Final xCFG");
 		printInfo(_xCFG);
+
+		shutdownExecutor();
+	}
+
+	/**
+	 * Shuts down the executor service and waits for tasks to complete.
+	 */
+	private void shutdownExecutor() {
+		_executor.shutdown();
+		try {
+			if (!_executor.awaitTermination(1, TimeUnit.HOURS)) {
+				log.error("Timeout reached while waiting for thread pool to terminate.");
+				_executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			log.error("Executor shutdown interrupted: {}", e.getMessage());
+			_executor.shutdownNow();
+		}
 	}
 
 	private List<Edge> addEdges(List<Statement> sources, List<Statement> targets) {
@@ -93,8 +114,6 @@ public class CrossChainAnalysis {
 	 */
 	private List<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint() {
 		List<Edge> crossChainEdges = new ArrayList<>();
-
-		// Debug
 		List<Signature> eventsWithoutMatch = new ArrayList<>();
 		List<Signature> functionsWithoutMatch = new ArrayList<>();
 
@@ -126,26 +145,7 @@ public class CrossChainAnalysis {
 				++matchCounter;
 		}
 
-		/////////////////////////////////////// DEBUG
-		for (Signature function : _bridge.getFunctions()) {
-			match = false;
-			for (Signature event : _bridge.getEvents())
-				if (event.getName().equalsIgnoreCase(function.getName())) {
-					match = true;
-					break;
-				}
-			if (!match)
-				functionsWithoutMatch.add(function);
-		}
-		/////////////////////////////////////// DEBUG
-
-		log.info("Events without match:");
-		for (Signature event : new HashSet<>(eventsWithoutMatch))
-			log.debug("Event: {}/{} -> {}", event.getName(), event.getParamCount(), event.getSelector());
-
-		log.info("Functions without match:");
-		for (Signature function : new HashSet<>(functionsWithoutMatch))
-			log.debug("Function: {}/{} -> {}", function.getName(), function.getParamCount(), function.getSelector());
+		// debugPrint(eventsWithoutMatch, functionsWithoutMatch);
 
 		log.info("Perfect match on {}/{} events", matchCounter, _bridge.getEvents().size());
 		log.info("Conservative match on {}/{} events", eventsWithoutMatch.size(), _bridge.getEvents().size());
@@ -254,10 +254,36 @@ public class CrossChainAnalysis {
 	}
 
 	/**
-	 * Starts the smart contract analysis process, setting up the execution
-	 * environment and running the analysis in parallel using a thread pool.
+	 * Creates a LiSA configuration for analyzing the given smart contract.
 	 *
-	 * @throws InterruptedException If the thread pool execution is interrupted.
+	 * @param contract The smart contract to be analyzed.
+	 * 
+	 * @return A configured instance of {@link LiSAConfiguration}.
+	 */
+	private LiSAConfiguration createConfiguration(SmartContract contract) {
+		String address = EthereumUtils.isValidEVMAddress(contract.getName()) ? contract.getName() : null;
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new EVMAbstractState(address),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.workdir = contract.getBytecodePath().toString();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+		conf.useWideningPoints = false;
+
+		return conf;
+	}
+
+	/**
+	 * Starts the analysis of smart contracts in parallel using a thread pool.
+	 * It submits each contract analysis task to the executor and waits for all
+	 * tasks to complete before proceeding.
+	 *
+	 * @throws InterruptedException If the execution is interrupted while
+	 *                                  waiting for tasks to complete.
 	 */
 	private void startAnalysis() throws InterruptedException {
 		log.info("Starting analysis");
@@ -267,73 +293,86 @@ public class CrossChainAnalysis {
 		AbstractStack.setStackLimit(32);
 		AbstractStackSet.setStackSetSize(16);
 		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
-		int cores = Runtime.getRuntime().availableProcessors() - 1;
-		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
-		// Run the analysis in parallel
+		List<Future<?>> futures = new ArrayList<>();
+
 		for (SmartContract contract : _bridge) {
-			executor.submit(() -> {
-				try {
-					String bytecodeFullPath = contract.getBytecodePath().toString();
-
-					String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
-					if (bytecode.startsWith("0x"))
-						EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
-
-					Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
-
-					LiSAConfiguration conf = new LiSAConfiguration();
-					conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-							new EVMAbstractState(contract.getName()),
-							new TypeEnvironment<>(new InferredTypes()));
-					conf.workdir = contract.getBytecodePath().toString();
-					conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-					JumpSolver checker = new JumpSolver();
-					conf.semanticChecks.add(checker);
-					conf.callGraph = new RTACallGraph();
-					conf.serializeResults = false;
-					conf.optimize = false;
-					conf.useWideningPoints = false;
-
-					LiSA lisa = new LiSA(conf);
-					lisa.run(program);
-
-					contract.setCFG(checker.getComputedCFG());
-					contract.computeFunctionsSignatureEntrypoints();
-					contract.computeEventsSignatureEntrypoints();
-					contract.computeKnowledgeBlocks();
-
-					log.debug("Computing events knowledge of {}", contract.getName());
-					for (Signature event : contract.getEventsSignature()) {
-						log.debug("{}: {}", event.getName(), EventKnowledge.getKnowledge(event.getName()));
-					}
-
-					// check soundness
-					if (!Objects.requireNonNull(
-							EVMLiSA.dumpStatistics(checker,
-									EVMLiSA.getSoundlySolvedJumps(checker, lisa, program)))
-							.isSound())
-						log.warn("UNSOUND on {}", contract.getName());
-
-				} catch (NullPointerException npe) {
-					log.error("Error checking soundness in bytecode {}: {}", contract.getName(), npe.getMessage());
-				} catch (Exception e) {
-					log.error("Error processing bytecode {}: {}", contract.getName(), e.getMessage());
-				}
-			});
+			Future<?> future = _executor.submit(() -> analyzeContract(contract));
+			futures.add(future);
 		}
 
-		// Shutdown the executor and wait for completion
-		executor.shutdown();
-		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
-			log.error("Timeout reached while waiting for thread pool to terminate.");
-			executor.shutdownNow();
-		}
+		// Wait for all the analyses to be completed
+		waitForCompletion(futures);
 
 		log.info("Finished analysis");
 	}
 
-	void printInfo(EVMCFG xCFG) {
+	/**
+	 * Waits for all submitted tasks in the given list of futures to complete.
+	 *
+	 * @param futures A list of {@link Future} objects representing running
+	 *                    tasks.
+	 * 
+	 * @throws InterruptedException If the thread is interrupted while waiting.
+	 */
+	private void waitForCompletion(List<Future<?>> futures) throws InterruptedException {
+		for (Future<?> future : futures)
+			try {
+				future.get();
+			} catch (ExecutionException e) {
+				log.error("Error during task execution: {}", e.getMessage());
+			}
+	}
+
+	/**
+	 * Performs the analysis of a single smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public void analyzeContract(SmartContract contract) {
+		try {
+			log.info("[{}] Analyzing contract: {}", Thread.currentThread().getName(), contract.getName());
+
+			String bytecodeFullPath = contract.getBytecodePath().toString();
+			String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
+
+			if (bytecode.startsWith("0x"))
+				EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
+
+			Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+			LiSAConfiguration conf = createConfiguration(contract);
+			JumpSolver checker = new JumpSolver();
+			conf.semanticChecks.add(checker);
+
+			LiSA lisa = new LiSA(conf);
+			lisa.run(program);
+
+			contract.setCFG(checker.getComputedCFG());
+			contract.computeFunctionsSignatureEntrypoints();
+			contract.computeEventsSignatureEntrypoints();
+			contract.computeKnowledgeBlocks();
+
+			log.debug("Computing events knowledge of {}", contract.getName());
+			for (Signature event : contract.getEventsSignature()) {
+				log.debug("{}: {}", event.getName(), EventKnowledge.getKnowledge(event.getName()));
+			}
+
+			// Check soundness
+			if (!Objects
+					.requireNonNull(
+							EVMLiSA.dumpStatistics(checker, EVMLiSA.getSoundlySolvedJumps(checker, lisa, program)))
+					.isSound()) {
+				log.warn("UNSOUND on {}", contract.getName());
+			}
+
+		} catch (NullPointerException npe) {
+			log.error("Error checking soundness in bytecode {}: {}", contract.getName(), npe.getMessage());
+		} catch (Exception e) {
+			log.error("Error processing contract {}: {}", contract.getName(), e.getMessage());
+		}
+	}
+
+	private void printInfo(EVMCFG xCFG) {
 		log.info("Nodes count: {}", xCFG.getNodesCount());
 		log.info("Edge count: {}", xCFG.getEdgesCount());
 		log.info("Opcode count: {}", xCFG.getOpcodeCount());
@@ -341,13 +380,27 @@ public class CrossChainAnalysis {
 		log.info("xCFG LOGx opcodes: {}", xCFG.getAllLogX().size());
 	}
 
-	private void getCFGHashCode() {
-		log.debug("CFG hashcode");
-		for (SmartContract contract : _bridge) {
-			if (contract.getCFG() == null)
-				log.debug("{}: null", contract.getName());
-			else
-				log.debug("{}: {}", contract.getName(), contract.getCFG().hashCode());
+	private void debugPrint(List<Signature> eventsWithoutMatch, List<Signature> functionsWithoutMatch) {
+		boolean match = false;
+
+		for (Signature function : _bridge.getFunctions()) {
+			match = false;
+			for (Signature event : _bridge.getEvents())
+				if (event.getName().equalsIgnoreCase(function.getName())) {
+					match = true;
+					break;
+				}
+			if (!match)
+				functionsWithoutMatch.add(function);
 		}
+
+		log.info("Events without match:");
+		for (Signature event : new HashSet<>(eventsWithoutMatch))
+			log.debug("Event: {}/{} -> {}", event.getName(), event.getParamCount(), event.getSelector());
+
+		log.info("Functions without match:");
+		for (Signature function : new HashSet<>(functionsWithoutMatch))
+			log.debug("Function: {}/{} -> {}", function.getName(), function.getParamCount(), function.getSelector());
+
 	}
 }
