@@ -10,6 +10,7 @@ import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMTypeSystem;
 import it.unipr.utils.EthereumUtils;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -41,8 +42,7 @@ public class CrossChainAnalysis {
 	private final Bridge _bridge;
 	private EVMCFG _xCFG;
 	private List<Edge> _crossChainEdges;
-	private final int _cores;
-	private ExecutorService _executor;
+	private final ExecutorService _executor;
 
 	public CrossChainAnalysis(Path abi, Path bytecode) {
 		this._abiFolder = abi;
@@ -50,7 +50,8 @@ public class CrossChainAnalysis {
 		this._bridge = new Bridge(abi, bytecode);
 		this._xCFG = null;
 		this._crossChainEdges = new ArrayList<>();
-		this._cores = Runtime.getRuntime().availableProcessors() - 1;
+
+		int _cores = Runtime.getRuntime().availableProcessors() - 1;
 		this._executor = Executors.newFixedThreadPool(_cores > 0 ? _cores : 1);
 	}
 
@@ -85,7 +86,11 @@ public class CrossChainAnalysis {
 		shutdownExecutor();
 	}
 
-	private void runCheckers() {
+	/**
+	 * Executes all security checkers in parallel on the smart contracts in the
+	 * bridge.
+	 */
+	public void runCheckers() {
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : _bridge) {
@@ -113,6 +118,11 @@ public class CrossChainAnalysis {
 		}
 	}
 
+	/**
+	 * Runs the reentrancy checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
 	private void runReentrancyChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
@@ -126,6 +136,14 @@ public class CrossChainAnalysis {
 		lisa.run(program);
 	}
 
+	/**
+	 * Runs the event order checker on the given smart contract. This method
+	 * verifies whether events are emitted before state modifications (SSTORE
+	 * instructions). It identifies vulnerabilities where an event is emitted
+	 * without prior state changes, potentially leading to inconsistencies.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
 	private void runEventOrderChecker(SmartContract contract) {
 		List<Statement> functionsEntrypoints = new ArrayList<>();
 

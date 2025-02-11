@@ -1,5 +1,7 @@
-package it.unipr.analysis;
+package it.unipr.utils;
 
+import it.unipr.analysis.Number;
+import it.unipr.analysis.StackElement;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,12 +11,12 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Singleton class implementing a cache with an LRU (Least Recently Used)
  * eviction policy. The cache uses a {@link LRUMap} to store key-value pairs
- * where the key is a {@link Pair} of {@link String} and {@link Number}, and the
- * value is a {@link StackElement}.
+ * where the key is a {@link Pair} of {@link String} and
+ * {@link it.unipr.analysis.Number}, and the value is a {@link StackElement}.
  */
 public class MyCache {
 	private static MyCache _instance = null;
-	private final LRUMap<Pair<String, Number>, StackElement> _map;
+	private final LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement> _map;
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
@@ -41,7 +43,7 @@ public class MyCache {
 	 * a maximum size of 500.
 	 */
 	private MyCache() {
-		this._map = new LRUMap<Pair<String, Number>, StackElement>(500);
+		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
@@ -53,10 +55,10 @@ public class MyCache {
 	 * Puts a key-value pair into the cache.
 	 *
 	 * @param key   the key, a {@link Pair} of {@link String} and
-	 *                  {@link Number}.
+	 *                  {@link it.unipr.analysis.Number}.
 	 * @param value the value, a {@link StackElement}.
 	 */
-	public void put(Pair<String, Number> key, StackElement value) {
+	public void put(Pair<String, it.unipr.analysis.Number> key, StackElement value) {
 		synchronized (_map) {
 			_map.put(key, value);
 		}
@@ -65,7 +67,8 @@ public class MyCache {
 	/**
 	 * Retrieves a value from the cache by its key.
 	 *
-	 * @param key the key, a {@link Pair} of {@link String} and {@link Number}.
+	 * @param key the key, a {@link Pair} of {@link String} and
+	 *                {@link it.unipr.analysis.Number}.
 	 * 
 	 * @return the value associated with the key, or {@code null} if the key is
 	 *             not in the cache.

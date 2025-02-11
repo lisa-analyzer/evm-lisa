@@ -8,6 +8,8 @@ import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.crossChainAnalysis.CrossChainAnalysis;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.MyCache;
+import it.unipr.utils.MyLogger;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;

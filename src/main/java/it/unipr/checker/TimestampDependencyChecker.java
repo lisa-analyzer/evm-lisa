@@ -1,11 +1,9 @@
 package it.unipr.checker;
 
-import static org.reflections.Reflections.log;
-
-import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;

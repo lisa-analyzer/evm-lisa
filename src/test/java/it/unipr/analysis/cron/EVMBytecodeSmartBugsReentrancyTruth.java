@@ -4,6 +4,7 @@ import it.unipr.analysis.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;

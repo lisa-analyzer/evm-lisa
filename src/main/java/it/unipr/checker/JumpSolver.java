@@ -8,6 +8,7 @@ import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMTypeSystem;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.AnalysisState;
