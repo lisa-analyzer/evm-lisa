@@ -70,18 +70,18 @@ public class CrossChainAnalysis {
 
 		_bridge.computeFunctionsAndEvents();
 
-//		_xCFG = buildPartialXCFG();
-//
-//		// _crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); //
-//		// SmartAxe solution
-//		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
-//
-//		// Add edges to xCFG
-//		for (Edge edge : _crossChainEdges)
-//			_xCFG.addEdge(edge);
-//
-//		log.debug("Final xCFG");
-//		printInfo(_xCFG);
+		_xCFG = buildPartialXCFG();
+
+		// _crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); //
+		// SmartAxe solution
+		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
+
+		// Add edges to xCFG
+		for (Edge edge : _crossChainEdges)
+			_xCFG.addEdge(edge);
+
+		log.debug("Final xCFG");
+		printInfo(_xCFG);
 
 		runCheckers();
 
@@ -196,12 +196,11 @@ public class CrossChainAnalysis {
 								.getLocation();
 						ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
 
-						String warn = "Contract: " + contract.getName() + " - [EventOrderChecker] Vulnerability at "
-								+ emitEventLocation;
+						String warn = "Event Order vulnerability at " + emitEventLocation.getPc();
 
-						log.warn("Contract: {} - [EventOrderChecker] Vulnerability from {} to {}", contract.getName(),
-								functionEntrypointLocation,
-								emitEventLocation);
+						log.warn("Event Order vulnerability at {} at line no. {} coming from line {}",
+								emitEventLocation.getPc(),
+								emitEventLocation.getSourceCodeLine(), functionEntrypointLocation.getSourceCodeLine());
 
 						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
 					}

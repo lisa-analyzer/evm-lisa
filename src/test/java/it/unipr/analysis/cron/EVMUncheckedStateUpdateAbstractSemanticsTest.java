@@ -66,14 +66,12 @@ public class EVMUncheckedStateUpdateAbstractSemanticsTest extends EVMBytecodeAna
 	}
 
 	@Test
-	public void testTaint01() throws AnalysisSetupException, IOException {
+	public void testUncheckedStateUpdate01() throws AnalysisSetupException, IOException {
 		// Vulnerability present
 		CronConfiguration conf = createConfiguration("taint/test-unchecked-state-update", "test01", "test01.sol",
 				false);
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
-		perform(conf);
-
 		conf.semanticChecks.add(new UncheckedStateUpdateChecker());
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
@@ -86,14 +84,12 @@ public class EVMUncheckedStateUpdateAbstractSemanticsTest extends EVMBytecodeAna
 	}
 
 	@Test
-	public void testTaint02() throws AnalysisSetupException, IOException {
+	public void testUncheckedStateUpdate02() throws AnalysisSetupException, IOException {
 		// Vulnerability NOT present
 		CronConfiguration conf = createConfiguration("taint/test-unchecked-state-update", "test02", "test02.sol",
 				false);
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
-		perform(conf);
-
 		conf.semanticChecks.add(new UncheckedStateUpdateChecker());
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
@@ -106,14 +102,12 @@ public class EVMUncheckedStateUpdateAbstractSemanticsTest extends EVMBytecodeAna
 	}
 
 	@Test
-	public void testTaint03() throws AnalysisSetupException, IOException {
+	public void testUncheckedStateUpdate03() throws AnalysisSetupException, IOException {
 		// Vulnerability NOT present
 		CronConfiguration conf = createConfiguration("taint/test-unchecked-state-update", "test03", "test03.sol",
 				false);
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
-		perform(conf);
-
 		conf.semanticChecks.add(new UncheckedStateUpdateChecker());
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
@@ -126,14 +120,12 @@ public class EVMUncheckedStateUpdateAbstractSemanticsTest extends EVMBytecodeAna
 	}
 
 	@Test
-	public void testTaint04() throws AnalysisSetupException, IOException {
+	public void testUncheckedStateUpdate04() throws AnalysisSetupException, IOException {
 		// Vulnerability present
 		CronConfiguration conf = createConfiguration("taint/test-unchecked-state-update", "test04", "test04.sol",
 				false);
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
-		perform(conf);
-
 		conf.semanticChecks.add(new UncheckedStateUpdateChecker());
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
