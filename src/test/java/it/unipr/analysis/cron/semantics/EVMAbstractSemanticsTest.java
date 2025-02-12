@@ -1,6 +1,8 @@
-package it.unipr.analysis.cron;
+package it.unipr.analysis.cron.semantics;
 
 import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.cron.CronConfiguration;
+import it.unipr.analysis.cron.EVMBytecodeAnalysisExecutor;
 import it.unipr.checker.JumpSolver;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
