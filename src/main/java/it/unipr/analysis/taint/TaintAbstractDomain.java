@@ -120,6 +120,7 @@ public abstract class TaintAbstractDomain
 				}
 
 				case "BalanceOperator":
+				case "BlockhashOperator":
 				case "NotOperator":
 				case "CalldataloadOperator":
 				case "CalldatacopyOperator":
@@ -519,7 +520,6 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 					resultStack.push(TaintElement.TOP);
 
 					if (resultStack.isEmpty())
@@ -563,22 +563,7 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
-				}
-				case "BlockhashOperator": { // BLOCKHASH
-					// At the moment, we do not handle BLOCKHASH
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement blockNumber = resultStack.pop();
-
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 
 					if (resultStack.isEmpty())
 						return bottom();
