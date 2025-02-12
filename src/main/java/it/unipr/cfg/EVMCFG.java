@@ -41,8 +41,8 @@ public class EVMCFG extends CFG {
 	public Set<Statement> pushedJumps;
 	public Set<Statement> sstores;
 	public Set<Statement> sha3s;
-	public List<Statement> logxs;
-	public List<Statement> calls;
+	public Set<Statement> logxs;
+	public Set<Statement> calls;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -54,16 +54,16 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a list of all the CALL, STATICCALL and DELEGATECALL statements in
+	 * Returns a set of all the CALL, STATICCALL and DELEGATECALL statements in
 	 * the CFG.
 	 *
-	 * @return a list of all the CALL, STATICCALL and DELEGATECALL statements in
+	 * @return a set of all the CALL, STATICCALL and DELEGATECALL statements in
 	 *             the CFG
 	 */
-	public List<Statement> getAllCall() {
+	public Set<Statement> getAllCall() {
 		if (this.calls == null) {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			List<Statement> calls = new ArrayList<>();
+			Set<Statement> calls = new HashSet<>();
 
 			for (Statement statement : cfgNodeList.getNodes()) {
 				if (statement instanceof Call) {
@@ -82,14 +82,14 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a list of all the LOGx statements in the CFG.
+	 * Returns a set of all the LOGx statements in the CFG.
 	 *
-	 * @return a list of all the LOGx statements in the CFG
+	 * @return a set of all the LOGx statements in the CFG
 	 */
-	public List<Statement> getAllLogX() {
+	public Set<Statement> getAllLogX() {
 		if (logxs == null) {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			List<Statement> logxs = new ArrayList<>();
+			Set<Statement> logxs = new HashSet<>();
 
 			for (Statement statement : cfgNodeList.getNodes()) {
 				if (statement instanceof Log) {

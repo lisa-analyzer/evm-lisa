@@ -10,15 +10,34 @@ public class ProgramCounterLocation implements CodeLocation {
 
 	private final int pc;
 	private final int sourceCodeLine;
+	private final int cfgHashCode;
 
 	/**
-	 * Default constructor.
-	 * 
-	 * @param pc integer representing the code location of the opcode
+	 * Constructs a {@code ProgramCounterLocation} with the specified program
+	 * counter (PC) and source code line.
+	 *
+	 * @param pc             the integer representing the code location of the
+	 *                           opcode
+	 * @param sourceCodeLine the corresponding line number in the source code
 	 */
 	public ProgramCounterLocation(int pc, int sourceCodeLine) {
+		this(pc, sourceCodeLine, 0);
+	}
+
+	/**
+	 * Constructs a {@code ProgramCounterLocation} with the specified program
+	 * counter (PC), source code line, and control flow graph (CFG) hash code.
+	 *
+	 * @param pc             the integer representing the code location of the
+	 *                           opcode
+	 * @param sourceCodeLine the corresponding line number in the source code
+	 * @param cfgHashCode    the hash code of the associated control flow graph
+	 *                           (CFG)
+	 */
+	public ProgramCounterLocation(int pc, int sourceCodeLine, int cfgHashCode) {
 		this.pc = pc;
 		this.sourceCodeLine = sourceCodeLine;
+		this.cfgHashCode = cfgHashCode;
 	}
 
 	@Override
@@ -45,7 +64,7 @@ public class ProgramCounterLocation implements CodeLocation {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(pc);
+		return Objects.hash(pc) + Objects.hash(sourceCodeLine) + Objects.hash(cfgHashCode);
 	}
 
 	@Override
@@ -62,7 +81,7 @@ public class ProgramCounterLocation implements CodeLocation {
 		if (getClass() != obj.getClass())
 			return false;
 		ProgramCounterLocation other = (ProgramCounterLocation) obj;
-		return pc == other.pc;
+		return pc == other.pc && cfgHashCode == other.cfgHashCode && sourceCodeLine == other.sourceCodeLine;
 	}
 
 	/**

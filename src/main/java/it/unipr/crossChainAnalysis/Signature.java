@@ -1,9 +1,7 @@
 package it.unipr.crossChainAnalysis;
 
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Signature {
 	private final String _name;
@@ -12,7 +10,7 @@ public class Signature {
 	private final List<String> _paramTypes;
 	private final String _fullSignature;
 	private final String _selector;
-	private List<Statement> _entrypoints;
+	private Set<Statement> _entrypoints;
 
 	public Signature(String name, String type, int paramCount, List<String> paramTypes, String fullSignature,
 			String selector) {
@@ -22,7 +20,7 @@ public class Signature {
 		this._paramTypes = paramTypes;
 		this._fullSignature = fullSignature;
 		this._selector = selector;
-		this._entrypoints = new ArrayList<>();
+		this._entrypoints = new HashSet<>();
 	}
 
 	public String getName() {
@@ -49,11 +47,11 @@ public class Signature {
 		return _selector;
 	}
 
-	public List<Statement> getEntrypoints() {
+	public Set<Statement> getEntrypoints() {
 		return _entrypoints;
 	}
 
-	public void setEntrypoints(List<Statement> entrypoints) {
+	public void setEntrypoints(Set<Statement> entrypoints) {
 		this._entrypoints = entrypoints;
 	}
 
@@ -110,9 +108,11 @@ public class Signature {
 		sb.append(indent).append("\"entrypoints\": [");
 		if (!_entrypoints.isEmpty()) {
 			sb.append("\n");
-			for (int i = 0; i < _entrypoints.size(); i++) {
-				sb.append(indent).append(indent).append("\"").append(_entrypoints.get(i).toString()).append("\"");
-				if (i < _entrypoints.size() - 1) {
+			Iterator<Statement> iterator = _entrypoints.iterator();
+
+			while (iterator.hasNext()) {
+				sb.append(indent).append(indent).append("\"").append(iterator.next().toString()).append("\"");
+				if (iterator.hasNext()) {
 					sb.append(",");
 				}
 				sb.append("\n");

@@ -1,10 +1,11 @@
 package it.unipr.checker;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.taint.TaintAbstractDomain;
-import it.unipr.analysis.taint.TaintElement;
+import it.unipr.cfg.Calldataload;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.cfg.Sstore;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -21,50 +22,45 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class UncheckedStateUpdateChecker implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+public class CallDataLoadChecker implements
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger log = LogManager.getLogger(UncheckedStateUpdateChecker.class);
+	private static final Logger log = LogManager.getLogger(CallDataLoadChecker.class);
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Sstore) {
+		if (node instanceof Calldataload) {
 			EVMCFG cfg = ((EVMCFG) graph);
-			Statement sstore = node;
+			Statement callDataLoad = node;
 
-			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
-				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
-					analysisResult = result.getAnalysisStateBefore(sstore);
+					analysisResult = result.getAnalysisStateBefore(callDataLoad);
 				} catch (SemanticException e1) {
-					log.error("(UncheckedStateUpdateChecker): {}", e1.getMessage());
+					log.error("(CallDataLoadChecker): {}", e1.getMessage());
 				}
 
 				// Retrieve the symbolic stack from the analysis result
-				TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
+				EVMAbstractState valueState = analysisResult.getState().getValueState();
 
-				if (taintedStack.isBottom())
+				// If the value state is bottom, the jump is definitely
+				// unreachable
+				if (valueState.isBottom())
 					// Nothing to do
 					continue;
+				else if (valueState.isTop())
+					continue;
 				else {
-					TaintElement firstStackElement = taintedStack.getFirstElement();
-					TaintElement secondStackElement = taintedStack.getSecondElement();
-					if (secondStackElement.isBottom())
-						// Nothing to do
-						continue;
-					else {
-						// Checks if either first or second element in the
-						// stack is tainted
-						if (firstStackElement.isTaint() || secondStackElement.isTaint()) {
-							checkForUncheckedStateUpdate(sstore, tool, cfg);
-						}
+					for (AbstractStack stack : valueState.getStacks()) {
+						log.debug(stack);
 					}
 				}
 			}

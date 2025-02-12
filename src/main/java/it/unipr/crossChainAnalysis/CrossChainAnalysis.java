@@ -5,6 +5,7 @@ import it.unipr.analysis.*;
 import it.unipr.analysis.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.checker.CallDataLoadChecker;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.UncheckedStateUpdateChecker;
@@ -43,7 +44,7 @@ public class CrossChainAnalysis {
 	private final Path _bytecodeFolder;
 	private final Bridge _bridge;
 	private EVMCFG _xCFG;
-	private List<Edge> _crossChainEdges;
+	private Set<Edge> _crossChainEdges;
 	private final ExecutorService _executor;
 
 	public CrossChainAnalysis(Path abi, Path bytecode) {
@@ -51,7 +52,7 @@ public class CrossChainAnalysis {
 		this._bytecodeFolder = bytecode;
 		this._bridge = new Bridge(abi, bytecode);
 		this._xCFG = null;
-		this._crossChainEdges = new ArrayList<>();
+		this._crossChainEdges = new HashSet<>();
 
 		int _cores = Runtime.getRuntime().availableProcessors() - 1;
 		this._executor = Executors.newFixedThreadPool(_cores > 0 ? _cores : 1);
@@ -65,15 +66,14 @@ public class CrossChainAnalysis {
 		try {
 			startAnalysis();
 		} catch (InterruptedException e) {
-			log.error("Thread pool interrupted: {}", e.getMessage());
+			log.error("Thread pool interrupted during single analysis: {}", e.getMessage());
 		}
 
 		_bridge.computeFunctionsAndEvents();
 
 		_xCFG = buildPartialXCFG();
 
-		// _crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); //
-		// SmartAxe solution
+//		_crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); // SmartAxe solution
 		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
 
 		// Add edges to xCFG
@@ -99,6 +99,7 @@ public class CrossChainAnalysis {
 			futures.add(_executor.submit(() -> runReentrancyChecker(contract)));
 			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
+//			futures.add(_executor.submit(() -> runCallDataLoadChecker(contract))); // debug
 		}
 
 		try {
@@ -123,6 +124,19 @@ public class CrossChainAnalysis {
 				log.warn("{} unchecked state update warning",
 						MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()));
 		}
+	}
+
+	// Debug
+	private void runCallDataLoadChecker(SmartContract contract) {
+		// Setup configuration
+		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		CallDataLoadChecker checker = new CallDataLoadChecker();
+		conf.semanticChecks.add(checker);
+		lisa.run(program);
 	}
 
 	/**
@@ -172,14 +186,14 @@ public class CrossChainAnalysis {
 	 * @param contract The smart contract to analyze.
 	 */
 	private void runEventOrderChecker(SmartContract contract) {
-		List<Statement> functionsEntrypoints = new ArrayList<>();
+		Set<Statement> functionsEntrypoints = new HashSet<>();
 
 		for (Signature function : contract.getFunctionsSignature())
 			functionsEntrypoints.addAll(function.getEntrypoints());
 
 		EVMCFG cfg = contract.getCFG();
 		Set<Statement> sstoreSet = cfg.getAllSstore();
-		List<Statement> logSet = cfg.getAllLogX();
+		Set<Statement> logSet = cfg.getAllLogX();
 
 		log.debug("Contract: {}", contract.getName());
 		log.debug("Functions: {}", contract.getFunctionsSignature().size());
@@ -225,8 +239,8 @@ public class CrossChainAnalysis {
 		}
 	}
 
-	private List<Edge> addEdges(List<Statement> sources, List<Statement> targets) {
-		List<Edge> edges = new ArrayList<>();
+	private Set<Edge> addEdges(Set<Statement> sources, Set<Statement> targets) {
+		Set<Edge> edges = new HashSet<>();
 
 		for (Statement source : sources)
 			for (Statement target : targets)
@@ -241,10 +255,10 @@ public class CrossChainAnalysis {
 	 *
 	 * @return A list of added cross-chain edges.
 	 */
-	private List<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint() {
-		List<Edge> crossChainEdges = new ArrayList<>();
-		List<Signature> eventsWithoutMatch = new ArrayList<>();
-		List<Signature> functionsWithoutMatch = new ArrayList<>();
+	private Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint() {
+		Set<Edge> crossChainEdges = new HashSet<>();
+		Set<Signature> eventsWithoutMatch = new HashSet<>();
+		Set<Signature> functionsWithoutMatch = new HashSet<>();
 
 		log.info("Functions count: {}", _bridge.getFunctions().size());
 		log.info("Events count: {}", _bridge.getEvents().size());
@@ -274,7 +288,7 @@ public class CrossChainAnalysis {
 				++matchCounter;
 		}
 
-		// debugPrint(eventsWithoutMatch, functionsWithoutMatch);
+		debugPrint(eventsWithoutMatch, functionsWithoutMatch);
 
 		log.info("Perfect match on {}/{} events", matchCounter, _bridge.getEvents().size());
 		log.info("Conservative match on {}/{} events", eventsWithoutMatch.size(), _bridge.getEvents().size());
@@ -289,8 +303,8 @@ public class CrossChainAnalysis {
 	 *
 	 * @return A list of added cross-chain edges.
 	 */
-	private List<Edge> getCrossChainEdgesUsingFunctionsEntrypoint() {
-		List<Edge> crossChainEdges = new ArrayList<>();
+	private Set<Edge> getCrossChainEdgesUsingFunctionsEntrypoint() {
+		Set<Edge> crossChainEdges = new HashSet<>();
 
 		for (SmartContract contract : _bridge)
 			for (Signature signature : contract.getFunctionsSignature())
@@ -306,11 +320,11 @@ public class CrossChainAnalysis {
 	 *
 	 * @return A list of added cross-chain edges.
 	 */
-	private List<Edge> getCrossChainEdgesUsingEventsEntrypoint() {
-		List<Edge> crossChainEdges = new ArrayList<>();
+	private Set<Edge> getCrossChainEdgesUsingEventsEntrypoint() {
+		Set<Edge> crossChainEdges = new HashSet<>();
 
-		List<Statement> emittingBlocks = new ArrayList<>();
-		List<Statement> informationBlocks = new ArrayList<>();
+		Set<Statement> emittingBlocks = new HashSet<>();
+		Set<Statement> informationBlocks = new HashSet<>();
 
 		for (SmartContract contract : _bridge) {
 			for (Signature signature : contract.getEmittingBlocksSignature())
@@ -346,10 +360,6 @@ public class CrossChainAnalysis {
 		log.debug("xCFG generated");
 		printInfo(xCFG);
 
-		// Debug variables
-		int sumNodes = 0;
-		int sumEdges = 0;
-
 		for (SmartContract contract : _bridge) {
 			for (Statement n : contract.getCFG().getNodes())
 				xCFG.addNode(n);
@@ -360,23 +370,11 @@ public class CrossChainAnalysis {
 			for (Statement log : contract.getCFG().getAllLogX())
 				xCFG.getAllLogX().add(log);
 
-			for (Statement entry : contract.getCFG().getEntrypoints()) {
-				// TODO (bug) entrypoint is always one, we should have
-				// _bridge.size() entrypoint
+			for (Statement entry : contract.getCFG().getEntrypoints())
 				xCFG.getEntrypoints().add(entry);
-			}
 
 			log.debug("xCFG updated adding {}", contract.getName());
 			printInfo(xCFG);
-
-			// TODO (bug) these results must be the same, this does not happen
-			// because some nodes and edges of different CFG could have the same
-			// hashcode
-			sumNodes += contract.getCFG().getNodesCount();
-			sumEdges += contract.getCFG().getEdgesCount();
-			log.warn("Real Nodes count: {}", sumNodes);
-			log.warn("Real Edge count: {}", sumEdges);
-
 		}
 
 		return xCFG;
@@ -509,7 +507,7 @@ public class CrossChainAnalysis {
 		log.info("xCFG LOGx opcodes: {}", xCFG.getAllLogX().size());
 	}
 
-	private void debugPrint(List<Signature> eventsWithoutMatch, List<Signature> functionsWithoutMatch) {
+	private void debugPrint(Set<Signature> eventsWithoutMatch, Set<Signature> functionsWithoutMatch) {
 		boolean match = false;
 
 		for (Signature function : _bridge.getFunctions()) {
