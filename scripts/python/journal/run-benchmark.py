@@ -194,7 +194,7 @@ def build_evmlisa():
     print("[EVMLISA] Building EVMLiSA...")
     command = (
         f"cd ../../../ && "
-        f"./gradlew build > /dev/null 2> /dev/null && "
+        f"./gradlew assemble > /dev/null 2> /dev/null && "
         f"./gradlew distZip > /dev/null 2> /dev/null && "
         f"unzip -o build/distributions/evm-lisa.zip -d scripts/python/journal/execution > /dev/null"
     )
