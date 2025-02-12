@@ -1,4 +1,4 @@
-package it.unipr.analysis.cron;
+package it.unipr.analysis.cron.checker;
 
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyCache;
