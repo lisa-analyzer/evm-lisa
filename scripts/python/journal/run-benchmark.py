@@ -634,8 +634,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-    # if not args.no_analysis:
-        # build_evmlisa()
+    if not args.no_analysis:
+        build_evmlisa()
 
     if args.tx_origin:
         if args.solidifi:
@@ -676,44 +676,44 @@ if __name__ == "__main__":
                         results_solidifi,
                         'solidifi_tx-origin')
 
-if args.timestamp_dependency:
-    if args.solidifi:
-        if not args.no_analysis:
-            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './timestamp-dependency-solidifi/bytecode/evmlisa',
-                                                                      'results_dir':        './timestamp-dependency-solidifi/results',
-                                                                      'result_evmlisa_dir': './timestamp-dependency-solidifi/results/evmlisa',
-                                                                      'type':               'timestampdependency'})
-            evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa',
-                                                                              'results_dir':        './vanilla-solidifi/results',
-                                                                              'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa',
-                                                                              'type':               'timestampdependency'})
+    if args.timestamp_dependency:
+        if args.solidifi:
+            if not args.no_analysis:
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './timestamp-dependency-solidifi/bytecode/evmlisa',
+                                                                          'results_dir':        './timestamp-dependency-solidifi/results',
+                                                                          'result_evmlisa_dir': './timestamp-dependency-solidifi/results/evmlisa',
+                                                                          'type':               'timestampdependency'})
+                evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa',
+                                                                                  'results_dir':        './vanilla-solidifi/results',
+                                                                                  'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa',
+                                                                                  'type':               'timestampdependency'})
 
-            evmlisa_vanilla_thread.start()
-            evmlisa_thread.start()
-            evmlisa_thread.join()
-            evmlisa_vanilla_thread.join()
+                evmlisa_vanilla_thread.start()
+                evmlisa_thread.start()
+                evmlisa_thread.join()
+                evmlisa_vanilla_thread.join()
 
-            check_sound_analysis_evmlisa('./timestamp-dependency-solidifi/results/evmlisa')
+                check_sound_analysis_evmlisa('./timestamp-dependency-solidifi/results/evmlisa')
 
-        results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/tx.origin', 'timestamp-dependency', 'solidify')
-        results_evmlisa = subtract_dicts(get_results_evmlisa('./timestamp-dependency-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                         get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
+            results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/tx.origin', 'timestamp-dependency', 'solidify')
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./timestamp-dependency-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
+                                             get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
 
-        # Precision
-        evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
-        print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
+            # Precision
+            evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
+            print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
 
-        # Recall
-        evmlisa_recall = calculate_recall(results_evmlisa, results_solidifi)
-        print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
+            # Recall
+            evmlisa_recall = calculate_recall(results_evmlisa, results_solidifi)
+            print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
 
-        # F-measure
-        print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
+            # F-measure
+            print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
 
-        # Plot results
-        plot_results(results_evmlisa,
-                     results_solidifi,
-                     'solidifi_timestamp-dependency')
+            # Plot results
+            plot_results(results_evmlisa,
+                         results_solidifi,
+                         'solidifi_timestamp-dependency')
 
 
     if args.reentrancy:
