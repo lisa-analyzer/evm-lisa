@@ -122,6 +122,34 @@ def plot_results(data_evmlisa, data_solidifi, name="no-name"):
 
     plt.show()
 
+def plot_results(data_evmlisa, data_solidifi, name="no-name"):
+    os.makedirs('./images', exist_ok=True)
+
+
+    keys2 = sorted(data_solidifi.keys())
+    values2 = [data_solidifi[key] for key in keys2]
+
+    keys3 = sorted(data_evmlisa.keys())
+    values3 = [data_evmlisa[key] for key in keys3]
+
+    plt.figure(figsize=(12, 6))
+
+    plt.plot(keys2, values2, marker='o', label='Truth', color='red')
+    plt.plot(keys3, values3, marker='o', label='EVMLiSA', color='green', linestyle='--', zorder=3)
+
+    plt.xlabel('Problem ID')
+    plt.ylabel('Value')
+    plt.title(f'[{name}] Comparison of results (timestamp-dependency)')
+    plt.xticks(sorted(set(keys2).union(keys3)))  # Show all problem IDs on x-axis
+    plt.legend()
+    plt.grid()
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"results_{name}_{timestamp}.png"
+    plt.savefig('images/' + filename)
+
+    plt.show()
+
 def subtract_dicts(dict1, dict2):
     result = {}
     
@@ -276,8 +304,10 @@ def get_results_evmlisa(directory_path, print_data):
                         warnings_counts[filename] = data['re-entrancy-warning']
                     elif "tx-origin-warning" in data:
                         warnings_counts[filename] = data['tx-origin-warning']
+                    elif "timestamp-dependency-warning" in data:
+                        warnings_counts[filename] = data['timestamp-dependency-warning']
                     else:
-                        print(f"[EVMLiSA] Warning: 're-entrancy-warning' and 'tx-origin-warning' not found in {filename}")
+                        print(f"[EVMLiSA] Warning: 're-entrancy-warning', 'tx-origin-warning' and 'timestamp-dependency-warning' not found in {filename}")
             except Exception as e:
                 failed += 1
                 # print(f"[EVMLiSA] ERROR: {filename}: {e}")            
@@ -443,6 +473,10 @@ def get_results_solidifi(folder_path, type, print_data):
         11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
+    timestampdependency_subtraction_values = {
+        11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
+    }
+
     # Iterate over all files in the specified folder
     for file_name in os.listdir(folder_path):
         # Check if the file name matches the pattern "BugLog_<problem number>.csv"
@@ -461,6 +495,8 @@ def get_results_solidifi(folder_path, type, print_data):
                 line_counts[problem_id] = num_lines - 1 - reentrancy_subtraction_values.get(problem_id, 0)
             elif type == 'tx-origin':
                 line_counts[problem_id] = num_lines - 1 - txorigin_subtraction_values.get(problem_id, 0)
+            elif type == 'timestamp-dependency':
+                line_counts[problem_id] = num_lines - 1 - timestampdependency_subtraction_values.get(problem_id, 0)
             
 
     sorted_data = dict(sorted(line_counts.items()))
@@ -594,6 +630,7 @@ if __name__ == "__main__":
     parser.add_argument("--no-analysis", action="store_true", help="Do not run the analysis, compute only the results")
     parser.add_argument("--reentrancy", action="store_true", help="Run analysis on reentrancy contracts")
     parser.add_argument("--tx-origin", action="store_true", help="Run analysis on tx-origin contracts")
+    parser.add_argument("--timestamp-dependency", action="store_true", help="Run analysis on timestamp-dependency contracts")
 
     args = parser.parse_args()
     
@@ -638,6 +675,45 @@ if __name__ == "__main__":
             plot_results(results_evmlisa, 
                         results_solidifi,
                         'solidifi_tx-origin')
+
+if args.timestamp_dependency:
+    if args.solidifi:
+        if not args.no_analysis:
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './timestamp-dependency-solidifi/bytecode/evmlisa',
+                                                                      'results_dir':        './timestamp-dependency-solidifi/results',
+                                                                      'result_evmlisa_dir': './timestamp-dependency-solidifi/results/evmlisa',
+                                                                      'type':               'timestampdependency'})
+            evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './vanilla-solidifi/bytecode/evmlisa',
+                                                                              'results_dir':        './vanilla-solidifi/results',
+                                                                              'result_evmlisa_dir': './vanilla-solidifi/results/evmlisa',
+                                                                              'type':               'timestampdependency'})
+
+            evmlisa_vanilla_thread.start()
+            evmlisa_thread.start()
+            evmlisa_thread.join()
+            evmlisa_vanilla_thread.join()
+
+            check_sound_analysis_evmlisa('./timestamp-dependency-solidifi/results/evmlisa')
+
+        results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/tx.origin', 'timestamp-dependency', 'solidify')
+        results_evmlisa = subtract_dicts(get_results_evmlisa('./timestamp-dependency-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
+                                         get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
+
+        # Precision
+        evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
+        print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
+
+        # Recall
+        evmlisa_recall = calculate_recall(results_evmlisa, results_solidifi)
+        print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
+
+        # F-measure
+        print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
+
+        # Plot results
+        plot_results(results_evmlisa,
+                     results_solidifi,
+                     'solidifi_timestamp-dependency')
 
 
     if args.reentrancy:

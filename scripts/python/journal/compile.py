@@ -322,6 +322,8 @@ if __name__ == "__main__":
                                  './vanilla-solidifi/json')
         compile_solidity_sources('./tx-origin-solidifi/source-code',
                                  './tx-origin-solidifi/json')
+        compile_solidity_sources('./timestamp-dependency-solidifi/source-code',
+                                 './timestamp-dependency-solidifi/json')
         
         if args.longest_bytecode:
             # EVMLiSA
@@ -332,6 +334,10 @@ if __name__ == "__main__":
                 # TX-ORIGIN
             extract_and_save_longest_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
                                               './tx-origin-solidifi/json')
+
+                # Timestamp-dependency
+            extract_and_save_longest_bytecode('./timestamp-dependency-solidifi/bytecode/evmlisa',
+                                              './timestamp-dependency-solidifi/json')
             
             # EtherSolve
             extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
@@ -349,6 +355,10 @@ if __name__ == "__main__":
                 # TX-ORIGIN
             extract_and_save_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
                                       './tx-origin-solidifi/json')
+
+                # Timestamp-dependency
+            extract_and_save_bytecode('./timestamp-dependency-solidifi/bytecode/evmlisa',
+                                      './timestamp-dependency-solidifi/json')
             
             # EtherSolve
             extract_and_save_bytecode('./vanilla-solidifi/bytecode/ethersolve',
