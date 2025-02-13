@@ -24,6 +24,7 @@ public class MyCache {
 	private final LRUMap<Integer, Boolean> _reachableFrom;
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
+	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	public final LRUMap<Statement, Set<String>> _eventsExitPoints;
 
 	/**
@@ -52,6 +53,7 @@ public class MyCache {
 		this._reachableFrom = new LRUMap<Integer, Boolean>(2000);
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
 	}
 
@@ -222,6 +224,42 @@ public class MyCache {
 	public int getUncheckedStateUpdateWarnings(Integer key) {
 		synchronized (_uncheckedStateUpdateWarnings) {
 			return (_uncheckedStateUpdateWarnings.get(key) != null) ? _uncheckedStateUpdateWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds an unchecked external influence warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addUncheckedExternalInfluenceWarning(Integer key, Object warning) {
+		synchronized (_uncheckedExternalInfluenceWarnings) {
+			_uncheckedExternalInfluenceWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of unchecked external influence warnings associated
+	 * with the specified key. If no warnings are associated with the key, the
+	 * method returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getUncheckedExternalInfluenceWarnings(Integer key) {
+		synchronized (_uncheckedExternalInfluenceWarnings) {
+			return (_uncheckedExternalInfluenceWarnings.get(key) != null)
+					? _uncheckedExternalInfluenceWarnings.get(key).size()
+					: 0;
 		}
 	}
 

@@ -43,6 +43,7 @@ public class EVMCFG extends CFG {
 	public Set<Statement> sha3s;
 	public Set<Statement> logxs;
 	public Set<Statement> calls;
+	public Set<Statement> externalData;
 
 	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
 			NodeList<CFG, Statement, Edge> list) {
@@ -51,6 +52,36 @@ public class EVMCFG extends CFG {
 
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
+	}
+
+	/**
+	 * Returns a set of all the CALLDATA, CALLVALUE, CALLER and ORIGIN
+	 * statements in the CFG.
+	 *
+	 * @return a set of all the CALLDATA, CALLVALUE, CALLER and ORIGIN
+	 *             statements in the CFG
+	 */
+	public Set<Statement> getExternalData() {
+		if (this.externalData == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> externalData = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Calldataload) {
+					externalData.add(statement);
+				} else if (statement instanceof Callvalue) {
+					externalData.add(statement);
+				} else if (statement instanceof Caller) {
+					externalData.add(statement);
+				} else if (statement instanceof Origin) {
+					externalData.add(statement);
+				}
+			}
+
+			return this.externalData = externalData;
+		}
+
+		return this.externalData;
 	}
 
 	/**

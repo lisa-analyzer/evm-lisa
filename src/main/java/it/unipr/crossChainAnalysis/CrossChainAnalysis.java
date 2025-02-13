@@ -2,11 +2,13 @@ package it.unipr.crossChainAnalysis;
 
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.*;
+import it.unipr.analysis.taint.UncheckedExternalInfluenceAbstractDomain;
 import it.unipr.analysis.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
+import it.unipr.checker.UncheckedExternalInfluenceChecker;
 import it.unipr.checker.UncheckedStateUpdateChecker;
 import it.unipr.crossChainAnalysis.edges.ConservativeCrossChainEdge;
 import it.unipr.crossChainAnalysis.edges.CrossChainEdge;
@@ -75,6 +77,7 @@ public class CrossChainAnalysis {
 		_xCFG = buildPartialXCFG();
 
 //		_crossChainEdges = getCrossChainEdgesUsingEventsEntrypoint(); // SmartAxe solution
+		CONSERVATIVE_LINK = false;
 		_crossChainEdges = getCrossChainEdgesUsingEventsAndFunctionsEntrypoint();
 
 		// Add edges to xCFG
@@ -102,6 +105,7 @@ public class CrossChainAnalysis {
 			futures.add(_executor.submit(() -> runReentrancyChecker(contract)));
 			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
+			futures.add(_executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 		}
 
 		try {
@@ -125,6 +129,10 @@ public class CrossChainAnalysis {
 			if (MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()) > 0)
 				log.warn("{} unchecked state update warning",
 						MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()));
+
+			if (MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()) > 0)
+				log.warn("{} unchecked external influence warning",
+						MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
 		}
 	}
 
@@ -146,6 +154,27 @@ public class CrossChainAnalysis {
 
 		EventsExitPointsComputer checker = new EventsExitPointsComputer();
 		conf.semanticChecks.add(checker);
+		lisa.run(program);
+	}
+
+	/**
+	 * Runs the unchecked state update checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	private void runUncheckedExternalInfluenceChecker(SmartContract contract) {
+		// Setup configuration
+		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Unchecked external influence checker
+		UncheckedExternalInfluenceChecker checker = new UncheckedExternalInfluenceChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new UncheckedExternalInfluenceAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 	}
 
