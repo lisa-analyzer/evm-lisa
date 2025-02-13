@@ -1,12 +1,29 @@
 package it.unipr.analysis.taint;
 
 import it.unipr.analysis.operator.*;
+import it.unipr.checker.UncheckedStateUpdateChecker;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This abstract domain represents the taint analysis for detecting unchecked
+ * state updates in smart contracts. It extends TaintAbstractDomain to track whether
+ * values derived from external calls (CALL, DELEGATECALL, STATICCALL) influence
+ * the contract's state without validation.
+ *
+ * <p><b>Purpose:</b></p>
+ * <ul>
+ *   <li>Identifies operations that introduce tainted values from external contract calls.</li>
+ *   <li>Tracks symbolic execution to determine if tainted values propagate to SSTORE.</li>
+ *   <li>Detects vulnerabilities where external calls modify the contract state without verification.</li>
+ * </ul>
+ *
+ * @see TaintAbstractDomain
+ * @see UncheckedStateUpdateChecker
+ */
 public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 
 	private static final UncheckedStateUpdateAbstractDomain TOP = new UncheckedStateUpdateAbstractDomain(

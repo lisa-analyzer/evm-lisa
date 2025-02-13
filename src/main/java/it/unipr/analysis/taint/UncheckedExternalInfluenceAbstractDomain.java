@@ -24,16 +24,6 @@ import java.util.Set;
  * <li>Helps in detecting vulnerabilities where external inputs modify contract
  * state without verification.</li>
  * </ul>
- * <p>
- * <b>Implementation Details:</b>
- * </p>
- * <ul>
- * <li>Maintains an abstract stack where tainted values are tracked.</li>
- * <li>Defines tainted operators corresponding to EVM opcodes that introduce
- * untrusted values.</li>
- * <li>Provides methods to create TOP (fully tainted) and BOTTOM (untainted)
- * states.</li>
- * </ul>
  *
  * @see TaintAbstractDomain
  * @see UncheckedExternalInfluenceChecker

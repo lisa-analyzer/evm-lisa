@@ -106,6 +106,7 @@ public class CrossChainAnalysis {
 			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
+			// TODO add tx.origin and timestamp dependency checker
 		}
 
 		try {
