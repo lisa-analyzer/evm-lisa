@@ -56,7 +56,6 @@ public class EVMTxOriginAbstractSemanticsTest extends EVMBytecodeAnalysisExecuto
 						new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-//		conf.semanticChecks.add(new JumpSolver());
 		conf.useWideningPoints = false;
 
 		return conf;
