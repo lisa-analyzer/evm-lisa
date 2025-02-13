@@ -131,9 +131,11 @@ public class CrossChainAnalysis {
 	/**
 	 * Computes and registers event exit points for the given smart contract.
 	 * This method sets up a LiSA analysis environment and runs the
-	 * {@code EventsExitPointsComputer} to identify statements where events exit.
+	 * {@code EventsExitPointsComputer} to identify statements where events
+	 * exit.
 	 *
-	 * @param contract The smart contract whose event exit points are to be computed.
+	 * @param contract The smart contract whose event exit points are to be
+	 *                     computed.
 	 */
 	private void computeEventsExitPoints(SmartContract contract) {
 		// Setup configuration
@@ -232,11 +234,14 @@ public class CrossChainAnalysis {
 	}
 
 	/**
-	 * Creates cross-chain edges between a set of source statements and a set of target statements.
+	 * Creates cross-chain edges between a set of source statements and a set of
+	 * target statements.
 	 *
 	 * @param sources The set of source statements.
 	 * @param targets The set of target statements.
-	 * @return A set of cross-chain edges connecting the given sources to the targets.
+	 * 
+	 * @return A set of cross-chain edges connecting the given sources to the
+	 *             targets.
 	 */
 	private Set<Edge> addCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();
@@ -249,11 +254,14 @@ public class CrossChainAnalysis {
 	}
 
 	/**
-	 * Creates conservative cross-chain edges between a set of source statements and a set of target statements.
+	 * Creates conservative cross-chain edges between a set of source statements
+	 * and a set of target statements.
 	 *
 	 * @param sources The set of source statements.
 	 * @param targets The set of target statements.
-	 * @return A set of conservative cross-chain edges connecting the given sources to the targets.
+	 * 
+	 * @return A set of conservative cross-chain edges connecting the given
+	 *             sources to the targets.
 	 */
 	private Set<Edge> addConservativeCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();

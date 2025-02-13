@@ -68,9 +68,10 @@ public class EventsExitPointsComputer implements
 	}
 
 	/**
-	 * Extracts and stores event signatures from the EVM stack based on LOG instructions.
-	 * Depending on the LOG opcode type (LOG1, LOG2, LOG3, LOG4), it retrieves the corresponding
-	 * topics from the stack and stores their first 4 bytes as event exit points.
+	 * Extracts and stores event signatures from the EVM stack based on LOG
+	 * instructions. Depending on the LOG opcode type (LOG1, LOG2, LOG3, LOG4),
+	 * it retrieves the corresponding topics from the stack and stores their
+	 * first 4 bytes as event exit points.
 	 *
 	 * @param node   The statement representing the LOG instruction.
 	 * @param stacks The abstract stack set containing stack states to analyze.
@@ -130,11 +131,14 @@ public class EventsExitPointsComputer implements
 	}
 
 	/**
-	 * Converts a stack element to its hexadecimal representation and returns only the first 4 bytes.
-	 * If the value represents a special case (e.g., bottom, top, topNumeric), it returns a corresponding string.
+	 * Converts a stack element to its hexadecimal representation and returns
+	 * only the first 4 bytes. If the value represents a special case (e.g.,
+	 * bottom, top, topNumeric), it returns a corresponding string.
 	 *
 	 * @param value The stack element to convert.
-	 * @return A lowercase hexadecimal string of the first 4 bytes or a special identifier if applicable.
+	 * 
+	 * @return A lowercase hexadecimal string of the first 4 bytes or a special
+	 *             identifier if applicable.
 	 */
 	public static String toHexFirst4Bytes(StackElement value) {
 		if (value.isBottom())
@@ -153,10 +157,13 @@ public class EventsExitPointsComputer implements
 	}
 
 	/**
-	 * Converts a stack element's numeric value to its full hexadecimal representation.
+	 * Converts a stack element's numeric value to its full hexadecimal
+	 * representation.
 	 *
 	 * @param value The stack element to convert.
-	 * @return A hexadecimal string representing the numeric value of the stack element.
+	 * 
+	 * @return A hexadecimal string representing the numeric value of the stack
+	 *             element.
 	 */
 	public static String toHex(StackElement value) {
 		return Number.toBigInteger(value.getNumber()).toString(16);
