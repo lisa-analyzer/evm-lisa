@@ -5,10 +5,11 @@ import it.unipr.analysis.*;
 import it.unipr.analysis.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.checker.CallDataLoadChecker;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.UncheckedStateUpdateChecker;
+import it.unipr.crossChainAnalysis.edges.ConservativeCrossChainEdge;
+import it.unipr.crossChainAnalysis.edges.CrossChainEdge;
 import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMTypeSystem;
@@ -26,7 +27,6 @@ import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,6 +46,7 @@ public class CrossChainAnalysis {
 	private EVMCFG _xCFG;
 	private Set<Edge> _crossChainEdges;
 	private final ExecutorService _executor;
+	private boolean CONSERVATIVE_LINK = false;
 
 	public CrossChainAnalysis(Path abi, Path bytecode) {
 		this._abiFolder = abi;
@@ -80,7 +81,7 @@ public class CrossChainAnalysis {
 		for (Edge edge : _crossChainEdges)
 			_xCFG.addEdge(edge);
 
-		log.debug("Final xCFG");
+		log.info("Final xCFG");
 		printInfo(_xCFG);
 
 		runCheckers();
@@ -93,13 +94,14 @@ public class CrossChainAnalysis {
 	 * bridge.
 	 */
 	public void runCheckers() {
+		log.info("Running checkers");
+
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : _bridge) {
 			futures.add(_executor.submit(() -> runReentrancyChecker(contract)));
 			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
-//			futures.add(_executor.submit(() -> runCallDataLoadChecker(contract))); // debug
 		}
 
 		try {
@@ -126,15 +128,21 @@ public class CrossChainAnalysis {
 		}
 	}
 
-	// Debug
-	private void runCallDataLoadChecker(SmartContract contract) {
+	/**
+	 * Computes and registers event exit points for the given smart contract.
+	 * This method sets up a LiSA analysis environment and runs the
+	 * {@code EventsExitPointsComputer} to identify statements where events exit.
+	 *
+	 * @param contract The smart contract whose event exit points are to be computed.
+	 */
+	private void computeEventsExitPoints(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(contract.getCFG());
 		LiSAConfiguration conf = createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		CallDataLoadChecker checker = new CallDataLoadChecker();
+		EventsExitPointsComputer checker = new EventsExitPointsComputer();
 		conf.semanticChecks.add(checker);
 		lisa.run(program);
 	}
@@ -195,11 +203,11 @@ public class CrossChainAnalysis {
 		Set<Statement> sstoreSet = cfg.getAllSstore();
 		Set<Statement> logSet = cfg.getAllLogX();
 
-		log.debug("Contract: {}", contract.getName());
-		log.debug("Functions: {}", contract.getFunctionsSignature().size());
-		log.debug("Functions entry points: {}", functionsEntrypoints.size());
-		log.debug("Sstore set: {}", sstoreSet.size());
-		log.debug("Log set: {}", logSet.size());
+//		log.debug("Contract: {}", contract.getName());
+//		log.debug("Functions: {}", contract.getFunctionsSignature().size());
+//		log.debug("Functions entry points: {}", functionsEntrypoints.size());
+//		log.debug("Sstore set: {}", sstoreSet.size());
+//		log.debug("Log set: {}", logSet.size());
 
 		for (Statement functionEntrypoint : functionsEntrypoints) {
 			for (Statement emitEvent : logSet) {
@@ -224,22 +232,13 @@ public class CrossChainAnalysis {
 	}
 
 	/**
-	 * Shuts down the executor service and waits for tasks to complete.
+	 * Creates cross-chain edges between a set of source statements and a set of target statements.
+	 *
+	 * @param sources The set of source statements.
+	 * @param targets The set of target statements.
+	 * @return A set of cross-chain edges connecting the given sources to the targets.
 	 */
-	private void shutdownExecutor() {
-		_executor.shutdown();
-		try {
-			if (!_executor.awaitTermination(1, TimeUnit.HOURS)) {
-				log.error("Timeout reached while waiting for thread pool to terminate.");
-				_executor.shutdownNow();
-			}
-		} catch (InterruptedException e) {
-			log.error("Executor shutdown interrupted: {}", e.getMessage());
-			_executor.shutdownNow();
-		}
-	}
-
-	private Set<Edge> addEdges(Set<Statement> sources, Set<Statement> targets) {
+	private Set<Edge> addCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();
 
 		for (Statement source : sources)
@@ -250,12 +249,86 @@ public class CrossChainAnalysis {
 	}
 
 	/**
-	 * Gets cross-chain edges by linking events entry points to function entry
+	 * Creates conservative cross-chain edges between a set of source statements and a set of target statements.
+	 *
+	 * @param sources The set of source statements.
+	 * @param targets The set of target statements.
+	 * @return A set of conservative cross-chain edges connecting the given sources to the targets.
+	 */
+	private Set<Edge> addConservativeCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
+		Set<Edge> edges = new HashSet<>();
+
+		for (Statement source : sources)
+			for (Statement target : targets)
+				edges.add(new ConservativeCrossChainEdge(source, target));
+
+		return edges;
+	}
+
+	/**
+	 * Gets cross-chain edges by linking events exit points to function entry
 	 * points in different contracts.
 	 *
 	 * @return A list of added cross-chain edges.
 	 */
 	private Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint() {
+		Set<Edge> crossChainEdges = new HashSet<>();
+
+		log.info("Computing cross chain edges");
+		log.info("Functions count: {}", _bridge.getFunctions().size());
+		log.info("Events count: {}", _bridge.getEvents().size());
+		log.info("Log count: {}", _xCFG.getAllLogX().size());
+
+		boolean match = false;
+
+		for (Statement logStatement : _xCFG.getAllLogX()) {
+
+			Set<String> selectorsInLOG = MyCache.getInstance().getEventExitPoints(logStatement);
+			match = false;
+
+			if (selectorsInLOG.isEmpty())
+				continue;
+
+			for (String selector : selectorsInLOG) {
+				for (Signature event : _bridge.getEvents()) {
+					if (selector.equals(event.getSelector())) {
+						for (Signature function : _bridge.getFunctions()) {
+							if (event.getName().equalsIgnoreCase(function.getName())) {
+								match = true;
+								crossChainEdges.addAll(
+										addCrossChainEdges(event.getEntrypoints(), function.getEntrypoints()));
+								log.debug(
+										"Perfect match! Event: {}/{} from LOG source-code line: {}, to Function: {}/{}",
+										event.getName(), event.getParamCount(),
+										((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
+										function.getName(), function.getParamCount());
+							}
+						}
+					}
+				}
+			}
+
+			if (!match && CONSERVATIVE_LINK) {
+				// We link this event to all functions entry points
+				for (Signature function : _bridge.getFunctions())
+					crossChainEdges.addAll(addConservativeCrossChainEdges(Collections.singleton(logStatement),
+							function.getEntrypoints()));
+
+				log.warn("No match! LOG at source-code line {} conservative linked to {} functions",
+						((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
+						_bridge.getFunctions().size());
+			}
+		}
+
+		log.debug("Added {} cross chain edges using events exit points and functions entry points",
+				crossChainEdges.size());
+		log.info("Cross chain edges computed");
+
+		return crossChainEdges;
+	}
+
+	// Old version
+	private Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypointOld() {
 		Set<Edge> crossChainEdges = new HashSet<>();
 		Set<Signature> eventsWithoutMatch = new HashSet<>();
 		Set<Signature> functionsWithoutMatch = new HashSet<>();
@@ -272,14 +345,14 @@ public class CrossChainAnalysis {
 				if (event.getName().equalsIgnoreCase(function.getName())) {
 					match = true;
 //					log.debug("Perfect match! Event: {}/{}, Function: {}/{}", event.getName(), event.getParamCount(), function.getName(), function.getParamCount());
-					crossChainEdges.addAll(addEdges(event.getEntrypoints(), function.getEntrypoints()));
+					crossChainEdges.addAll(addCrossChainEdges(event.getEntrypoints(), function.getEntrypoints()));
 				}
 			}
 
 			if (!match) {
 				// We link this event to all functions entry points
 				for (Signature function : _bridge.getFunctions())
-					crossChainEdges.addAll(addEdges(event.getEntrypoints(), function.getEntrypoints()));
+					crossChainEdges.addAll(addCrossChainEdges(event.getEntrypoints(), function.getEntrypoints()));
 
 				eventsWithoutMatch.add(event);
 				log.warn("No match! Event {}/{} (0x{}) linked to {} functions", event.getName(), event.getParamCount(),
@@ -308,7 +381,7 @@ public class CrossChainAnalysis {
 
 		for (SmartContract contract : _bridge)
 			for (Signature signature : contract.getFunctionsSignature())
-				crossChainEdges.addAll(addEdges(_xCFG.getAllLogX(), signature.getEntrypoints()));
+				crossChainEdges.addAll(addConservativeCrossChainEdges(_xCFG.getAllLogX(), signature.getEntrypoints()));
 
 		log.debug("Added {} cross chain edges using functions entrypoint", crossChainEdges.size());
 		return crossChainEdges;
@@ -334,7 +407,7 @@ public class CrossChainAnalysis {
 				informationBlocks.addAll(signature.getEntrypoints());
 		}
 
-		crossChainEdges.addAll(addEdges(emittingBlocks, informationBlocks));
+		crossChainEdges.addAll(addCrossChainEdges(emittingBlocks, informationBlocks));
 
 		log.debug("Added {} cross chain edges using events entrypoint", crossChainEdges.size());
 		return crossChainEdges;
@@ -357,9 +430,6 @@ public class CrossChainAnalysis {
 
 		EVMCFG xCFG = new EVMCFG(cfgDesc);
 
-		log.debug("xCFG generated");
-		printInfo(xCFG);
-
 		for (SmartContract contract : _bridge) {
 			for (Statement n : contract.getCFG().getNodes())
 				xCFG.addNode(n);
@@ -367,41 +437,23 @@ public class CrossChainAnalysis {
 			for (Edge e : contract.getCFG().getEdges())
 				xCFG.addEdge(e);
 
-			for (Statement log : contract.getCFG().getAllLogX())
-				xCFG.getAllLogX().add(log);
+			xCFG.getAllSha3().addAll(contract.getCFG().getAllSha3());
+			xCFG.getAllLogX().addAll(contract.getCFG().getAllLogX());
+			xCFG.getAllCall().addAll(contract.getCFG().getAllCall());
+			xCFG.getAllSstore().addAll(contract.getCFG().getAllSstore());
+			xCFG.getEntrypoints().addAll(contract.getCFG().getEntrypoints());
+			xCFG.getAllJumpdest().addAll(contract.getCFG().getAllJumpdest());
+			xCFG.getAllJumpdestLocations().addAll(contract.getCFG().getAllJumpdestLocations());
+			xCFG.getAllJumpI().addAll(contract.getCFG().getAllJumpI());
+			xCFG.getAllJumps().addAll(contract.getCFG().getAllJumps());
+			xCFG.getAllPushedJumps().addAll(contract.getCFG().getAllPushedJumps());
 
-			for (Statement entry : contract.getCFG().getEntrypoints())
-				xCFG.getEntrypoints().add(entry);
-
-			log.debug("xCFG updated adding {}", contract.getName());
-			printInfo(xCFG);
+//			log.debug("xCFG updated adding {}", contract.getName());
+//			printInfo(xCFG);
 		}
 
+		log.info("Partial xCFG built");
 		return xCFG;
-	}
-
-	/**
-	 * Creates a LiSA configuration for analyzing the given smart contract.
-	 *
-	 * @param contract The smart contract to be analyzed.
-	 * 
-	 * @return A configured instance of {@link LiSAConfiguration}.
-	 */
-	private LiSAConfiguration createConfiguration(SmartContract contract) {
-		String address = EthereumUtils.isValidEVMAddress(contract.getName()) ? contract.getName() : null;
-
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new EVMAbstractState(address),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.workdir = contract.getBytecodePath().toString();
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.callGraph = new RTACallGraph();
-		conf.serializeResults = false;
-		conf.optimize = false;
-		conf.useWideningPoints = false;
-
-		return conf;
 	}
 
 	/**
@@ -424,8 +476,7 @@ public class CrossChainAnalysis {
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : _bridge) {
-			Future<?> future = _executor.submit(() -> analyzeContract(contract));
-			futures.add(future);
+			futures.add(_executor.submit(() -> analyzeContract(contract)));
 		}
 
 		// Wait for all the analyses to be completed
@@ -435,30 +486,13 @@ public class CrossChainAnalysis {
 	}
 
 	/**
-	 * Waits for all submitted tasks in the given list of futures to complete.
-	 *
-	 * @param futures A list of {@link Future} objects representing running
-	 *                    tasks.
-	 * 
-	 * @throws InterruptedException If the thread is interrupted while waiting.
-	 */
-	private void waitForCompletion(List<Future<?>> futures) throws InterruptedException {
-		for (Future<?> future : futures)
-			try {
-				future.get();
-			} catch (ExecutionException e) {
-				log.error("Error during task execution: {}", e.getMessage());
-			}
-	}
-
-	/**
 	 * Performs the analysis of a single smart contract.
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
 	public void analyzeContract(SmartContract contract) {
 		try {
-			log.info("[{}] Analyzing contract: {}", Thread.currentThread().getName(), contract.getName());
+			log.debug("[{}] Analyzing contract: {}", Thread.currentThread().getName(), contract.getName());
 
 			String bytecodeFullPath = contract.getBytecodePath().toString();
 			String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
@@ -474,16 +508,6 @@ public class CrossChainAnalysis {
 			LiSA lisa = new LiSA(conf);
 			lisa.run(program);
 
-			contract.setCFG(checker.getComputedCFG());
-			contract.computeFunctionsSignatureEntrypoints();
-			contract.computeEventsSignatureEntrypoints();
-			contract.computeKnowledgeBlocks();
-
-			log.debug("Computing events knowledge of {}", contract.getName());
-			for (Signature event : contract.getEventsSignature()) {
-				log.debug("{}: {}", event.getName(), EventKnowledge.getKnowledge(event.getName()));
-			}
-
 			// Check soundness
 			if (!Objects
 					.requireNonNull(
@@ -492,6 +516,12 @@ public class CrossChainAnalysis {
 				log.warn("UNSOUND on {}", contract.getName());
 			}
 
+			contract.setCFG(checker.getComputedCFG());
+			contract.computeFunctionsSignatureEntrypoints();
+			contract.computeEventsSignatureEntrypoints();
+			contract.computeKnowledgeBlocks();
+			computeEventsExitPoints(contract);
+
 		} catch (NullPointerException npe) {
 			log.error("Error checking soundness in bytecode {}: {}", contract.getName(), npe.getMessage());
 		} catch (Exception e) {
@@ -499,12 +529,69 @@ public class CrossChainAnalysis {
 		}
 	}
 
+	/**
+	 * Creates a LiSA configuration for analyzing the given smart contract.
+	 *
+	 * @param contract The smart contract to be analyzed.
+	 *
+	 * @return A configured instance of {@link LiSAConfiguration}.
+	 */
+	private LiSAConfiguration createConfiguration(SmartContract contract) {
+		String address = EthereumUtils.isValidEVMAddress(contract.getName()) ? contract.getName() : null;
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new EVMAbstractState(address),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.workdir = contract.getBytecodePath().toString();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+		conf.useWideningPoints = false;
+
+		return conf;
+	}
+
+	/**
+	 * Waits for all submitted tasks in the given list of futures to complete.
+	 *
+	 * @param futures A list of {@link Future} objects representing running
+	 *                    tasks.
+	 *
+	 * @throws InterruptedException If the thread is interrupted while waiting.
+	 */
+	private void waitForCompletion(List<Future<?>> futures) throws InterruptedException {
+		for (Future<?> future : futures)
+			try {
+				future.get();
+			} catch (ExecutionException e) {
+				log.error("Error during task execution: {}", e.getMessage());
+			}
+	}
+
+	/**
+	 * Shuts down the executor service and waits for tasks to complete.
+	 */
+	private void shutdownExecutor() {
+		_executor.shutdown();
+		try {
+			if (!_executor.awaitTermination(1, TimeUnit.HOURS)) {
+				log.error("Timeout reached while waiting for thread pool to terminate.");
+				_executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			log.error("Executor shutdown interrupted: {}", e.getMessage());
+			_executor.shutdownNow();
+		}
+	}
+
 	private void printInfo(EVMCFG xCFG) {
 		log.info("Nodes count: {}", xCFG.getNodesCount());
 		log.info("Edge count: {}", xCFG.getEdgesCount());
 		log.info("Opcode count: {}", xCFG.getOpcodeCount());
-		log.info("xCFG entrypoints: {}", xCFG.getEntrypoints());
-		log.info("xCFG LOGx opcodes: {}", xCFG.getAllLogX().size());
+//		log.info("xCFG entrypoints: {}", xCFG.getEntrypoints());
+//		log.info("xCFG LOGx opcodes: {}", xCFG.getAllLogX().size());
 	}
 
 	private void debugPrint(Set<Signature> eventsWithoutMatch, Set<Signature> functionsWithoutMatch) {

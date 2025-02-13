@@ -2,6 +2,7 @@ package it.unipr.utils;
 
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
+import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,7 @@ public class MyCache {
 	private final LRUMap<Integer, Boolean> _reachableFrom;
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
+	public final LRUMap<Statement, Set<String>> _eventsExitPoints;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -40,8 +42,7 @@ public class MyCache {
 	}
 
 	/**
-	 * Private constructor to prevent instantiation. Initializes the LRUMap with
-	 * a maximum size of 500.
+	 * Private constructor to prevent instantiation.
 	 */
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
@@ -51,6 +52,7 @@ public class MyCache {
 		this._reachableFrom = new LRUMap<Integer, Boolean>(2000);
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
 	}
 
 	/**
@@ -220,6 +222,53 @@ public class MyCache {
 	public int getUncheckedStateUpdateWarnings(Integer key) {
 		synchronized (_uncheckedStateUpdateWarnings) {
 			return (_uncheckedStateUpdateWarnings.get(key) != null) ? _uncheckedStateUpdateWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds an event exit point associated with a given statement. If the
+	 * statement does not already have an associated set of event exit points, a
+	 * new synchronized HashSet is created. This method is thread-safe.
+	 *
+	 * @param key       The statement representing the exit point.
+	 * @param signature The event signature to associate with the statement.
+	 */
+	public void addEventExitPoint(Statement key, String signature) {
+		synchronized (_eventsExitPoints) {
+			_eventsExitPoints
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(signature);
+		}
+	}
+
+	/**
+	 * Retrieves the set of event exit points associated with a given statement.
+	 * If the statement has no associated exit points, an empty set is returned.
+	 * This method is thread-safe.
+	 *
+	 * @param key The statement whose event exit points are being queried.
+	 * 
+	 * @return A set of event signatures associated with the given statement, or
+	 *             an empty set if none exist.
+	 */
+	public Set<String> getEventExitPoints(Statement key) {
+		synchronized (_eventsExitPoints) {
+			return _eventsExitPoints.get(key) == null ? new HashSet<>() : _eventsExitPoints.get(key);
+		}
+	}
+
+	/**
+	 * Checks whether there are event exit points associated with a given
+	 * statement.
+	 *
+	 * @param key The statement to check.
+	 * 
+	 * @return {@code true} if the statement has associated event exit points,
+	 *             {@code false} otherwise.
+	 */
+	public boolean containsEventExitPoints(Statement key) {
+		synchronized (_eventsExitPoints) {
+			return _eventsExitPoints.get(key) != null;
 		}
 	}
 
