@@ -1,8 +1,5 @@
 package it.unipr.checker;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
@@ -20,16 +17,18 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TxOriginChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(TxOriginChecker.class);
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		if (node instanceof Jumpi) {
@@ -38,7 +37,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
@@ -69,9 +68,10 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 							log.debug("Tx. Origin attack at {} at line no. {}", jumploc.getPc(),
 									jumploc.getSourceCodeLine());
 
-							String warn = "TxOrigin attack at " + ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
+							String warn = "TxOrigin attack at "
+									+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
 							tool.warn(warn);
-							MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);				
+							MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
 						}
 					}
 				}
