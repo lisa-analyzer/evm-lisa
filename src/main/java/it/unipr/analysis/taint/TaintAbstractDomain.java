@@ -424,7 +424,8 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
+						resultStack
+								.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
 					return resultStack;
 				}
 				case "ReturnOperator": { // RETURN

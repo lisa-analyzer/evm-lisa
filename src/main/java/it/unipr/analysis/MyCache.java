@@ -229,9 +229,9 @@ public class MyCache {
 	}
 
 	/**
-	 * Adds a timestamp dependency warning for the specified key. If no warnings are
-	 * associated with the key, a new set is created and the warning is added to
-	 * it. This method is thread-safe.
+	 * Adds a timestamp dependency warning for the specified key. If no warnings
+	 * are associated with the key, a new set is created and the warning is
+	 * added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
 	 *                    the warning applies
@@ -246,9 +246,9 @@ public class MyCache {
 	}
 
 	/**
-	 * Retrieves the number of timestamp dependency warnings associated with the specified
-	 * key. If no warnings are associated with the key, the method returns 0.
-	 * This method is thread-safe.
+	 * Retrieves the number of timestamp dependency warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
 	 *                warnings are to be retrieved

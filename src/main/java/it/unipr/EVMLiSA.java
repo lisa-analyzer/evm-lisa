@@ -553,7 +553,8 @@ public class EVMLiSA {
 			// Clear existing checks and add the TimestampdependencyChecker
 			conf.semanticChecks.clear();
 			conf.semanticChecks.add(new TimestampDependencyChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TimestampDependencyAbstractDomain(),
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new TimestampDependencyAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
 
@@ -1188,7 +1189,6 @@ public class EVMLiSA {
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
-
 
 		return options;
 	}
