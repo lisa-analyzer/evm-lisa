@@ -33,13 +33,6 @@ public class TimestampDependencyChecker implements
 	private final Set<Statement> sinks = new HashSet<>();
 
 	@Override
-	public void beforeExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool) {
-
-	}
-
-	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
