@@ -1,11 +1,5 @@
 package it.unipr.checker;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
@@ -26,25 +20,29 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TimestampDependencyChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
-
 
 	private final Set<Statement> sinks = new HashSet<>();
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool) {
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool) {
 
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		EVMCFG cfg = ((EVMCFG) graph);
@@ -57,12 +55,11 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 			this.sinks.addAll(cfg.getAllJumpI());
 		}
 
-
 		if (sinks.contains(node))
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
@@ -82,7 +79,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 					if (node instanceof Sha3 || node instanceof Sstore || node instanceof Jumpi) {
 						if (checkTaintTwoPops(taintedStack))
 							raiseWarning(node, tool, cfg);
-					}  else if (node instanceof Jump) {
+					} else if (node instanceof Jump) {
 						if (checkTaintOnePop(taintedStack))
 							raiseWarning(node, tool, cfg);
 					}
@@ -104,7 +101,6 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 		return false;
 	}
 
-
 	// 1 pop()
 	private boolean checkTaintOnePop(TaintAbstractDomain taintedStack) {
 		TaintElement firstStackElement = taintedStack.getFirstElement();
@@ -115,7 +111,6 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 			return true;
 		return false;
 	}
-
 
 	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,

@@ -20,7 +20,7 @@ import org.junit.Test;
  * as if, if-else, while, etc. Operations with orphan jumps, marked as NPBJ (No
  * Push Before Jump), are also tested in specific test cases.
  */
-public class EVMTimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
+public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
 
 	/**
