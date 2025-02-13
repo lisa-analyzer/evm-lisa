@@ -14,35 +14,22 @@ evm-testcases/ground-truth/test-ground-truth-results/logs.txt
 evm-testcases/ground-truth/test-ground-truth-results/statistics.csv
 evm-testcases/ground-truth/test/*
 
-# Ignore benchmark results
-# SolidiFI reentrancy
-scripts/python/journal/reentrancy-solidifi/results/
-scripts/python/journal/reentrancy-solidifi/json/
-scripts/python/journal/reentrancy-solidifi/bytecode/
-scripts/python/journal/vanilla-solidifi/results/
-scripts/python/journal/vanilla-solidifi/json/
-scripts/python/journal/vanilla-solidifi/bytecode/
+# Ignore everything inside
+scripts/python/journal/*
 
-# smartbugs reentrancy
-scripts/python/journal/reentrancy-smartbugs/results/
-scripts/python/journal/reentrancy-smartbugs/json/
-scripts/python/journal/reentrancy-smartbugs/bytecode/
+# Allow Python files in scripts/python/journal/
+!scripts/python/journal/*.py
+!scripts/python/journal/*.md
 
-# SliSE reentrancy
-scripts/python/journal/reentrancy-slise-db1/results/
-scripts/python/journal/reentrancy-slise-db1/json/
-scripts/python/journal/reentrancy-slise-db1/bytecode/
-scripts/python/journal/reentrancy-slise-db1/match-file-index.json
-
-# SolidiFI tx-origin
-scripts/python/journal/tx-origin-solidifi/results/
-scripts/python/journal/tx-origin-solidifi/json/
-scripts/python/journal/tx-origin-solidifi/bytecode/
-
-scripts/python/journal/execution/
-scripts/python/journal/images/
-scripts/python/journal/DAppSCAN/
-scripts/python/journal/SliSE/
+# Allow only the source-code directory and its contents
+!scripts/python/journal/reentrancy-solidifi/source-code/**
+!scripts/python/journal/vanilla-solidifi/source-code/**
+!scripts/python/journal/reentrancy-smartbugs/source-code/**
+!scripts/python/journal/reentrancy-slise-db1/source-code/**
+!scripts/python/journal/tx-origin-solidifi/source-code/**
+!scripts/python/journal/timestamp-dependency-solidifi/source-code/**
+# Allow Ethersolve tool
+!scripts/python/journal/EtherSolve/**
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/
