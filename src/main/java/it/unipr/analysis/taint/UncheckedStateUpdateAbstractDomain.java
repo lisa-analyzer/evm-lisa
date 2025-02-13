@@ -10,15 +10,19 @@ import java.util.Set;
 
 /**
  * This abstract domain represents the taint analysis for detecting unchecked
- * state updates in smart contracts. It extends TaintAbstractDomain to track whether
- * values derived from external calls (CALL, DELEGATECALL, STATICCALL) influence
- * the contract's state without validation.
- *
- * <p><b>Purpose:</b></p>
+ * state updates in smart contracts. It extends TaintAbstractDomain to track
+ * whether values derived from external calls (CALL, DELEGATECALL, STATICCALL)
+ * influence the contract's state without validation.
+ * <p>
+ * <b>Purpose:</b>
+ * </p>
  * <ul>
- *   <li>Identifies operations that introduce tainted values from external contract calls.</li>
- *   <li>Tracks symbolic execution to determine if tainted values propagate to SSTORE.</li>
- *   <li>Detects vulnerabilities where external calls modify the contract state without verification.</li>
+ * <li>Identifies operations that introduce tainted values from external
+ * contract calls.</li>
+ * <li>Tracks symbolic execution to determine if tainted values propagate to
+ * SSTORE.</li>
+ * <li>Detects vulnerabilities where external calls modify the contract state
+ * without verification.</li>
  * </ul>
  *
  * @see TaintAbstractDomain
