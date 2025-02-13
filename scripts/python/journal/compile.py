@@ -338,7 +338,7 @@ if __name__ == "__main__":
                 # Timestamp-dependency
             extract_and_save_longest_bytecode('./timestamp-dependency-solidifi/bytecode/evmlisa',
                                               './timestamp-dependency-solidifi/json')
-            
+
             # EtherSolve
             extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
                                               './vanilla-solidifi/json',
