@@ -387,14 +387,11 @@ public abstract class TaintAbstractDomain
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					// FIXME: we should check if the concrete class flags
-					// this opcode as tainted
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
 					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(value, offset, length));
+					return resultStack;
 				}
 				case "Create2Operator": { // CREATE2
 					if (hasBottomUntil(4))
@@ -405,14 +402,11 @@ public abstract class TaintAbstractDomain
 					TaintElement length = resultStack.pop();
 					TaintElement salt = resultStack.pop();
 
-					// FIXME: we should check if the concrete class flags
-					// this opcode as tainted
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
 					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(value, offset, length, salt));
+					return resultStack;
 				}
 				case "CallOperator":
 				case "CallcodeOperator": { // pops 7, push 1
@@ -457,14 +451,11 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					// FIXME: we should check if the concrete class flags
-					// this opcode as tainted
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
 					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(gas, to, inOffset, inLength, outOffset, outLength));
+					return resultStack;
 				}
 				case "RevertOperator": { // REVERT
 					if (hasBottomUntil(2))
