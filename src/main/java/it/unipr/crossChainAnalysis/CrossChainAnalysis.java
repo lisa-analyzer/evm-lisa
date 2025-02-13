@@ -244,7 +244,7 @@ public class CrossChainAnalysis {
 
 		for (Statement source : sources)
 			for (Statement target : targets)
-				edges.add(new SequentialEdge(source, target));
+				edges.add(new CrossChainEdge(source, target));
 
 		return edges;
 	}
