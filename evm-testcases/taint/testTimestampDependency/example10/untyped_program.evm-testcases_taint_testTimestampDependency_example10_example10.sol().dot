@@ -1,0 +1,36 @@
+digraph {
+	labelloc="t";
+	label="untyped program::evm-testcases/taint/testTimestampDependency/example10/example10.sol()";
+	"node0" [shape="rect",color="black",label=<PUSH1 0x10<BR/><BR/>{ expressions: [push &quot;0x10&quot;],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C] }<BR/> }<BR/>>];
+	"node2" [shape="rect",color="gray",label=<PUSH1 0x20<BR/><BR/>{ expressions: [push &quot;0x20&quot;],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C] }<BR/> }<BR/>>];
+	"node4" [shape="rect",color="gray",label=<PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF<BR/><BR/>{ expressions: [push &quot;0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C] }<BR/> }<BR/>>];
+	"node6" [shape="rect",color="gray",label=<PUSH1 0x08<BR/><BR/>{ expressions: [push &quot;0x08&quot;],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, C] }<BR/> }<BR/>>];
+	"node8" [shape="rect",color="gray",label=<AND<BR/><BR/>{ expressions: [and 1],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C] }<BR/> }<BR/>>];
+	"node9" [shape="rect",color="gray",label=<DIFFICULTY<BR/><BR/>{ expressions: [difficulty 1],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, T] }<BR/> }<BR/>>];
+	"node10" [shape="rect",color="gray",label=<ORIGIN<BR/><BR/>{ expressions: [origin 1],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, T, C] }<BR/> }<BR/>>];
+	"node11" [shape="rect",color="gray",label=<GASPRICE<BR/><BR/>{ expressions: [gasprice 1],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, T, C, C] }<BR/> }<BR/>>];
+	"node12" [shape="rect",color="gray",label=<PUSH1 0x20<BR/><BR/>{ expressions: [push &quot;0x20&quot;],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, T, C, C, C] }<BR/> }<BR/>>];
+	"node14" [shape="rect",color="gray",label=<AND<BR/><BR/>{ expressions: [and 1],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, T, C, C] }<BR/> }<BR/>>];
+	"node15" [shape="rect",color="gray",label=<PUSH1 0x30<BR/><BR/>{ expressions: [push &quot;0x30&quot;],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, C, C, C, T, C, C, C] }<BR/> }<BR/>>];
+	"node17" [shape="rect",color="gray",label=<CALL<BR/><BR/>{ expressions: [call 1],<BR/>state: { heap: monolith,<BR/>type: #TOP#,<BR/>value: [_|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, _|_, T] }<BR/> }<BR/>>];
+	"node18" [shape="rect",color="black",peripheries="2",label=<ret<BR/><BR/>{ expressions: [skip],<BR/>state: #TOP# }<BR/>>];
+	"node0" -> "node2" [color="black"];
+	"node2" -> "node4" [color="black"];
+	"node4" -> "node6" [color="black"];
+	"node6" -> "node8" [color="black"];
+	"node8" -> "node9" [color="black"];
+	"node9" -> "node10" [color="black"];
+	"node10" -> "node11" [color="black"];
+	"node11" -> "node12" [color="black"];
+	"node12" -> "node14" [color="black"];
+	"node14" -> "node15" [color="black"];
+	"node15" -> "node17" [color="black"];
+	"node17" -> "node18" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

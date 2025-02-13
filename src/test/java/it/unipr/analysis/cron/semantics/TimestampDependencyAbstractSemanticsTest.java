@@ -21,7 +21,7 @@ import org.junit.Test;
  * Push Before Jump), are also tested in specific test cases.
  */
 public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
-	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
+	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = true;
 
 	/**
 	 * Helper method to create a {@link CronConfiguration} object for the test
@@ -56,132 +56,123 @@ public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysi
 						new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-//		conf.semanticChecks.add(new JumpSolver());
 		conf.useWideningPoints = false;
-
 		return conf;
 	}
 
 	@Test
-	public void testTaint01() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency01() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example", "example.sol", false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint02() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency02() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example02", "example02.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint03() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency03() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example03", "example03.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint04() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example04", "example04.sol",
-				false);
-		perform(conf);
-	}
-
-	@Test
-	public void testTaint05() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency04() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example05", "example05.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint06() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency05() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example06", "example06.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint07() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency06() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example07", "example07.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint08() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency07() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example08", "example08.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint09() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency08() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example09", "example09.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint10() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency09() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example10", "example10.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint11() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency10() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example11", "example11.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint12() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency11() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example12", "example12.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint13() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency12() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example13", "example13.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint14() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency13() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example14", "example14.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint15() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency14() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example15", "example15.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint16() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency15() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example16", "example16.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint17() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency16() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example17", "example17.sol",
 				false);
 		perform(conf);
 	}
 
 	@Test
-	public void testTaint18() throws AnalysisSetupException, IOException {
+	public void testTimestampDependency17() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example18", "example18.sol",
 				false);
 		perform(conf);

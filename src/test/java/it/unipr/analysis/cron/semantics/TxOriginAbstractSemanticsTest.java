@@ -57,7 +57,6 @@ public class TxOriginAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.useWideningPoints = false;
-
 		return conf;
 	}
 
@@ -87,49 +86,49 @@ public class TxOriginAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 
 	@Test
 	public void testTxOrigin05() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example06", "example06.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example05", "example06.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin06() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example07", "example07.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example06", "example07.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin07() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example08", "example08.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example07", "example08.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin08() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example09", "example09.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example08", "example09.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin09() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example10", "example10.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example09", "example10.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin10() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example13", "example13.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example10", "example13.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin11() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example14", "example14.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example11", "example14.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testTxOrigin12() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example15", "example15.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example12", "example15.sol", false);
 		perform(conf);
 	}
 }
