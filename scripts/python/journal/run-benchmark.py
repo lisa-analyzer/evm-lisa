@@ -194,10 +194,8 @@ def build_evmlisa():
     print("[EVMLISA] Building EVMLiSA...")
     command = (
         f"cd ../../../ && "
-        f"./gradlew build > /dev/null 2> /dev/null && "
+        f"./gradlew assemble > /dev/null 2> /dev/null && "
         f"cp -r build/libs/evm-lisa-all.jar scripts/python/journal/execution/evm-lisa.jar > /dev/null"
-        # f"./gradlew distZip > /dev/null 2> /dev/null && "
-        # f"unzip -o build/distributions/evm-lisa.zip -d scripts/python/journal/execution > /dev/null"
     )
     subprocess.run(command, shell=True, check=True)
     print("[EVMLISA] EVMLiSA built successfully.")
@@ -217,7 +215,6 @@ def run_evmlisa(bytecode_file, result_evmlisa_dir, type="reentrancy"):
     result_filepath = os.path.join(result_evmlisa_dir, result_filename)
     
     command = (
-        # f"./execution/evm-lisa/bin/evm-lisa "
         f"java -jar execution/evm-lisa.jar "
         f"--filepath-bytecode {bytecode_file} "
         f"--stack-size 40 "
