@@ -695,7 +695,7 @@ if __name__ == "__main__":
 
                 check_sound_analysis_evmlisa('./timestamp-dependency-solidifi/results/evmlisa')
 
-            results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/tx.origin', 'timestamp-dependency', 'solidify')
+            results_solidifi = get_results_solidifi('./SolidiFI-buggy-contracts/Timestamp-Dependency', 'timestamp-dependency', 'solidify')
             results_evmlisa = subtract_dicts(get_results_evmlisa('./timestamp-dependency-solidifi/results/evmlisa', 'evmlisa-buggy-solidifi'),
                                              get_results_evmlisa('./vanilla-solidifi/results/evmlisa', 'evmlisa-vanilla-solidifi'))
 
