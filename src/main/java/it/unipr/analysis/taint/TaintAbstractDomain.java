@@ -427,14 +427,11 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					// FIXME: we should check if the concrete class flags
-					// this opcode as tainted
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
 					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
+					return resultStack;
 				}
 				case "ReturnOperator": { // RETURN
 					if (hasBottomUntil(2))
@@ -553,14 +550,11 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					// FIXME: we should check if the concrete class flags
-					// this opcode as tainted
-					resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
+					if (this.getTaintedOpcode().contains(op))
+						resultStack.push(TaintElement.TAINT);
 					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(address));
+					return resultStack;
 				}
 				}
 			}
