@@ -15,21 +15,21 @@ evm-testcases/ground-truth/test-ground-truth-results/statistics.csv
 evm-testcases/ground-truth/test/*
 
 # Ignore everything inside
-scripts/python/journal/*
+scripts/python/benchmark-checkers/*
 
 # Allow Python files in scripts/python/journal/
-!scripts/python/journal/*.py
-!scripts/python/journal/*.md
+!scripts/python/benchmark-checkers/*.py
+!scripts/python/benchmark-checkers/*.md
 
 # Allow only the source-code directory and its contents
-!scripts/python/journal/reentrancy-solidifi/source-code/**
-!scripts/python/journal/vanilla-solidifi/source-code/**
-!scripts/python/journal/reentrancy-smartbugs/source-code/**
-!scripts/python/journal/reentrancy-slise-db1/source-code/**
-!scripts/python/journal/tx-origin-solidifi/source-code/**
-!scripts/python/journal/timestamp-dependency-solidifi/source-code/**
+!scripts/python/benchmark-checkers/reentrancy-solidifi/source-code/**
+!scripts/python/benchmark-checkers/vanilla-solidifi/source-code/**
+!scripts/python/benchmark-checkers/reentrancy-smartbugs/source-code/**
+!scripts/python/benchmark-checkers/reentrancy-slise-db1/source-code/**
+!scripts/python/benchmark-checkers/tx-origin-solidifi/source-code/**
+!scripts/python/benchmark-checkers/timestamp-dependency-solidifi/source-code/**
 # Allow Ethersolve tool
-!scripts/python/journal/EtherSolve/**
+!scripts/python/benchmark-checkers/EtherSolve/**
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/
