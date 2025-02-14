@@ -195,7 +195,7 @@ def build_evmlisa():
     command = (
         f"cd ../../../ && "
         f"./gradlew assemble > /dev/null 2> /dev/null && "
-        f"cp -r build/libs/evm-lisa-all.jar scripts/python/journal/execution/evm-lisa.jar > /dev/null"
+        f"cp -r build/libs/evm-lisa-all.jar scripts/python/benchmark-checkers/execution/evm-lisa.jar > /dev/null"
     )
     subprocess.run(command, shell=True, check=True)
     print("[EVMLISA] EVMLiSA built successfully.")
