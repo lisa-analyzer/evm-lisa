@@ -1,0 +1,362 @@
+[
+    {
+        "name": "1.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    54
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "2.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    38
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "3.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    55
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "4.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    54
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "5.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    54
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "6.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    94
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "7.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    29
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "8.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    52
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "9.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    29
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "10.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    41
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "11.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    29
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "12.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    44
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "13.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    63
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "14.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    54
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "15.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    40
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "16.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    38
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "17.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    41
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "18.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    63
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "19.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    29
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "20.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    29
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "21.sol",
+        "pragma": "0.4.0",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    21
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "22.sol",
+        "pragma": "0.4.10",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    27
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "23.sol",
+        "pragma": "0.4.24",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    15
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "24.sol",
+        "pragma": "0.4.18",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    24
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "25.sol",
+        "pragma": "0.4.24",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    28
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "26.sol",
+        "pragma": "0.4.24",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    24
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "27.sol",
+        "pragma": "0.4.19",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    18
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "28.sol",
+        "pragma": "0.5.0",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    17
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "29.sol",
+        "pragma": "0.4.15",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    24
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    },
+    {
+        "name": "30.sol",
+        "pragma": "0.4.2",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    19
+                ],
+                "category": "reentrancy"
+            }
+        ]
+    }
+]

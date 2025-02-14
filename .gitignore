@@ -14,26 +14,17 @@ evm-testcases/ground-truth/test-ground-truth-results/logs.txt
 evm-testcases/ground-truth/test-ground-truth-results/statistics.csv
 evm-testcases/ground-truth/test/*
 
-# Ignore everything inside
-scripts/python/benchmark-checkers/*
+# Ignore benchmark file
+scripts/python/benchmark-checkers/**/bytecode/**
+scripts/python/benchmark-checkers/**/abi/**
+scripts/python/benchmark-checkers/**/json/**
+scripts/python/benchmark-checkers/**/results/**
+scripts/python/benchmark-checkers/images/**
 
-# Allow Python files in scripts/python/benchmark-checkers/
-!scripts/python/benchmark-checkers/*.py
-!scripts/python/benchmark-checkers/*.md
-
-# Allow only the source-code directory and its contents
-!scripts/python/benchmark-checkers/reentrancy-solidifi/source-code/**
-!scripts/python/benchmark-checkers/vanilla-solidifi/source-code/**
-!scripts/python/benchmark-checkers/reentrancy-smartbugs/source-code/**
-!scripts/python/benchmark-checkers/reentrancy-slise-db1/source-code/**
-!scripts/python/benchmark-checkers/tx-origin-solidifi/source-code/**
-!scripts/python/benchmark-checkers/timestamp-dependency-solidifi/source-code/**
-
-!scripts/python/benchmark-checkers/cross-chain/XGuard/MeterBridge/source-code/**
-!scripts/python/benchmark-checkers/cross-chain/XGuard/QBridge/source-code/**
-
-# Allow Ethersolve tool
-!scripts/python/benchmark-checkers/EtherSolve/**
+scripts/python/benchmark-checkers/cross-chain/**/bytecode/**
+scripts/python/benchmark-checkers/cross-chain/**/abi/**
+scripts/python/benchmark-checkers/cross-chain/**/json/**
+scripts/python/benchmark-checkers/cross-chain/**/results/**
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/
