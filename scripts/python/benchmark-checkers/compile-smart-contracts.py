@@ -175,7 +175,7 @@ def compile_solidity_sources(source_dir, json_dir):
                 output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
                 
                 # Command to compile and save the bytecode in JSON format
-                command = f"solc --combined-json bin,bin-runtime,abi --pretty-json {input_file} > {output_file} " # 2> /dev/null
+                command = f"solc --combined-json bin,bin-runtime,abi --pretty-json {input_file} > {output_file} 2> /dev/null "
                 
                 # Execute the compilation command
                 try:
