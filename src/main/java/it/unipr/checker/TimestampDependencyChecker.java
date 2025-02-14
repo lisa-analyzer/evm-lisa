@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 public class TimestampDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
+	private static final Logger log = LogManager.getLogger(TimestampDependencyChecker.class);
 
 	private final Set<Statement> sinks = new HashSet<>();
 
