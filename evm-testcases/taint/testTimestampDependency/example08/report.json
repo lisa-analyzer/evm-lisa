@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_taint_testTimestampDependency_example08_example08.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_taint_testTimestampDependency_example08_example09.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "640ms",
-    "end" : "2025-01-30T17:14:58.136+01:00",
-    "expressions" : "5",
+    "duration" : "12ms",
+    "end" : "2025-02-13T20:05:37.724+01:00",
+    "expressions" : "2",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2025-01-30T17:14:57.496+01:00",
-    "statements" : "12",
+    "start" : "2025-02-13T20:05:37.712+01:00",
+    "statements" : "8",
     "units" : "0",
     "version" : "0.1",
     "warnings" : "0"

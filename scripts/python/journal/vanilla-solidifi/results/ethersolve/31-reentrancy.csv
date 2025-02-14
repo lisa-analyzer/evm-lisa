@@ -1,3 +1,0 @@
-offset,opcode,detection
-2181,2181: SLOAD,Store read after unsafe call
-2440,2440: SLOAD,Store read after unsafe call

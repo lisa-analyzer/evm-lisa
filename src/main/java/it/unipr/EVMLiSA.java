@@ -1,10 +1,12 @@
 package it.unipr;
 
 import it.unipr.analysis.*;
+import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.*;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
+import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.crossChainAnalysis.CrossChainAnalysis;
 import it.unipr.frontend.EVMFrontend;
@@ -75,6 +77,7 @@ public class EVMLiSA {
 	private static final boolean REGENERATE = false;
 	private static boolean ENABLE_REENTRANCY_CHECKER = false;
 	private static boolean ENABLE_TXORIGIN_CHECKER = false;
+	private static boolean ENABLE_TIMESTAMPDEPENDENCY_CHECKER = false;
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -229,6 +232,7 @@ public class EVMLiSA {
 
 		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy");
 		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin");
+		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = cmd.hasOption("checker-timestampdependency");
 
 		try {
 			if (cmd.hasOption("stack-size"))
@@ -652,6 +656,20 @@ public class EVMLiSA {
 			// Store tx-origin warnings in the JSON options
 			jsonOptions.put("tx-origin-warning",
 					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
+		}
+
+		if (ENABLE_TIMESTAMPDEPENDENCY_CHECKER) {
+			// Clear existing checks and add the TimestampdependencyChecker
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TimestampDependencyChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new TimestampDependencyAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+
+			// Store timestamp-dependency warnings in the JSON options
+			jsonOptions.put("timestamp-dependency-warning",
+					MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
 		}
 	}
 
@@ -1252,6 +1270,7 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+<<<<<<< HEAD
 		Option crossChainABIOption = Option.builder()
 				.longOpt("cross-chain-abi")
 				.desc("Path of the folder containing the ABIs of the cross chain smart contracts")
@@ -1264,6 +1283,13 @@ public class EVMLiSA {
 				.desc("Path of the folder containing the bytecodes of the cross chain smart contracts")
 				.required(false)
 				.hasArg(true)
+=======
+		Option enableTimestampDependencyCheckerOption = Option.builder()
+				.longOpt("checker-timestampdependency")
+				.desc("Enable timestamp-dependency checker.")
+				.required(false)
+				.hasArg(false)
+>>>>>>> c586a1a6c50a9388c6e4ac5ba93f92bdfd3160ad
 				.build();
 
 		options.addOption(addressOption);
@@ -1286,8 +1312,12 @@ public class EVMLiSA {
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
+<<<<<<< HEAD
 		options.addOption(crossChainABIOption);
 		options.addOption(crossChainBytecodeOption);
+=======
+		options.addOption(enableTimestampDependencyCheckerOption);
+>>>>>>> c586a1a6c50a9388c6e4ac5ba93f92bdfd3160ad
 
 		return options;
 	}

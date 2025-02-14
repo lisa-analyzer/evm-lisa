@@ -70,7 +70,7 @@ public abstract class TaintAbstractDomain
 				case "ReturndatasizeOperator":
 				case "CoinbaseOperator":
 				case "NumberOperator":
-				case "DifficultyOperator": /**/
+				case "DifficultyOperator":
 				case "GaslimitOperator":
 				case "ChainidOperator":
 				case "SelfbalanceOperator":
@@ -120,6 +120,7 @@ public abstract class TaintAbstractDomain
 				}
 
 				case "BalanceOperator":
+				case "BlockhashOperator":
 				case "NotOperator":
 				case "CalldataloadOperator":
 				case "CalldatacopyOperator":
@@ -309,7 +310,6 @@ public abstract class TaintAbstractDomain
 					return swapXoperator(16, clone());
 				}
 				case "Log0Operator": { // LOG0
-					// At the moment, we do not handle LOG0
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -322,7 +322,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "Log1Operator": { // LOG1
-					// At the moment, we do not handle LOG1
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -336,7 +335,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "Log2Operator": { // LOG2
-					// At the moment, we do not handle LOG2
 					if (hasBottomUntil(4))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -351,7 +349,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "Log3Operator": { // LOG3
-					// At the moment, we do not handle LOG3
 					if (hasBottomUntil(5))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -367,7 +364,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "Log4Operator": { // LOG4
-					// At the moment, we do not handle LOG4
 					if (hasBottomUntil(6))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -384,7 +380,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "CreateOperator": { // CREATE
-					// At the moment, we do not handle CREATE
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -395,15 +390,10 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(value, offset, length));
+					return resultStack;
 				}
 				case "Create2Operator": { // CREATE2
-					// At the moment, we do not handle CREATE2
 					if (hasBottomUntil(4))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -415,12 +405,8 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(value, offset, length, salt));
+					return resultStack;
 				}
 				case "CallOperator":
 				case "CallcodeOperator": { // pops 7, push 1
@@ -438,15 +424,11 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+						resultStack
+								.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
+					return resultStack;
 				}
 				case "ReturnOperator": { // RETURN
-					// At the moment, we do not handle RETURN
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -473,15 +455,10 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(gas, to, inOffset, inLength, outOffset, outLength));
+					return resultStack;
 				}
 				case "RevertOperator": { // REVERT
-					// At the moment, we do not handle REVERT
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -497,7 +474,6 @@ public abstract class TaintAbstractDomain
 					return this;
 				}
 				case "SelfdestructOperator": { // SELFDESTRUCT
-					// At the moment, we do not handle SELFDESTRUCT
 					if (hasBottomUntil(1))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -509,7 +485,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "CodecopyOperator": { // CODECOPY
-					// At the moment, we do not handle CODECOPY
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -523,7 +498,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "ExtcodesizeOperator": { // EXTCODESIZE
-					// At the moment, we do not handle EXTCODESIZE
 					if (hasBottomUntil(1))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -532,15 +506,10 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(address));
+					return resultStack;
 				}
 				case "ExtcodecopyOperator": { // EXTCODECOPY
-					// At the moment, we do not handle EXTCODECOPY
 					if (hasBottomUntil(4))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -555,7 +524,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
-					// At the moment, we do not handle RETURNDATACOPY
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -569,7 +537,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 				case "ExtcodehashOperator": { // EXTCODEHASH
-					// At the moment, we do not handle EXTCODEHASH
 					if (hasBottomUntil(1))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
@@ -578,26 +545,8 @@ public abstract class TaintAbstractDomain
 					if (this.getTaintedOpcode().contains(op))
 						resultStack.push(TaintElement.TAINT);
 					else
-						resultStack.push(TaintElement.TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
-				}
-				case "BlockhashOperator": { // BLOCKHASH
-					// At the moment, we do not handle BLOCKHASH
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement blockNumber = resultStack.pop();
-
-					// resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+						resultStack.push(TaintElement.semantics(address));
+					return resultStack;
 				}
 				}
 			}

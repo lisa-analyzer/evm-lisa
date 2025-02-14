@@ -1,3 +1,0 @@
-offset,opcode,detection
-625,625: SLOAD,Store read after unsafe call
-632,632: SSTORE,Store write after unsafe call

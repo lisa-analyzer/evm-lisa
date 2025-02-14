@@ -1,3 +1,0 @@
-offset,opcode,detection
-2421,2421: SLOAD,Store read after unsafe call
-2428,2428: SSTORE,Store write after unsafe call

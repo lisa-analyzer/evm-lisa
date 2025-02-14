@@ -1,3 +1,0 @@
-offset,opcode,detection
-2823,2823: SSTORE,Store write after unsafe call
-2830,2830: SLOAD,Store read after unsafe call
