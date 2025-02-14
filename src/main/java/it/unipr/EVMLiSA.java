@@ -1270,7 +1270,6 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-<<<<<<< HEAD
 		Option crossChainABIOption = Option.builder()
 				.longOpt("cross-chain-abi")
 				.desc("Path of the folder containing the ABIs of the cross chain smart contracts")
@@ -1283,13 +1282,11 @@ public class EVMLiSA {
 				.desc("Path of the folder containing the bytecodes of the cross chain smart contracts")
 				.required(false)
 				.hasArg(true)
-=======
 		Option enableTimestampDependencyCheckerOption = Option.builder()
 				.longOpt("checker-timestampdependency")
 				.desc("Enable timestamp-dependency checker.")
 				.required(false)
 				.hasArg(false)
->>>>>>> c586a1a6c50a9388c6e4ac5ba93f92bdfd3160ad
 				.build();
 
 		options.addOption(addressOption);
@@ -1312,12 +1309,9 @@ public class EVMLiSA {
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
-<<<<<<< HEAD
 		options.addOption(crossChainABIOption);
 		options.addOption(crossChainBytecodeOption);
-=======
 		options.addOption(enableTimestampDependencyCheckerOption);
->>>>>>> c586a1a6c50a9388c6e4ac5ba93f92bdfd3160ad
 
 		return options;
 	}
