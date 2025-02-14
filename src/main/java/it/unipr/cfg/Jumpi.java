@@ -3,6 +3,7 @@ package it.unipr.cfg;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.StackElement;
+import it.unipr.analysis.operator.JumpOperator;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -52,7 +53,11 @@ public class Jumpi extends Statement {
 		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
 
 		if (valueState == null)
-			return entryState;
+		{
+			Constant c = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
+			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
+					JumpiOperator.INSTANCE, getLocation()), this);
+		}
 
 		// Split here
 		Set<AbstractStack> trueStacks = new HashSet<>();

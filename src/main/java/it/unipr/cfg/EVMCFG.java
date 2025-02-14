@@ -158,18 +158,9 @@ public class EVMCFG extends CFG {
 	 */
 	public Set<Statement> getAllJumpI() {
 		if (jumpNodes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Jumpi) {
-					jumpStatements.add(statement);
-				}
-			}
-			return jumpNodes = jumpStatements;
+			getAllJumps();
 		}
-
-		return jumpNodes;
+		return jumpNodes.stream().filter(s->s instanceof Jumpi).collect(Collectors.toSet());
 	}
 
 	/**
@@ -179,17 +170,9 @@ public class EVMCFG extends CFG {
 	 */
 	public Set<Statement> getAllJump() {
 		if (jumpNodes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Jump)
-					jumpStatements.add(statement);
-
-			return jumpNodes = jumpStatements;
+			getAllJumps();
 		}
-
-		return jumpNodes;
+		return jumpNodes.stream().filter(s->s instanceof Jump).collect(Collectors.toSet());
 	}
 
 	public int getOpcodeCount() {
