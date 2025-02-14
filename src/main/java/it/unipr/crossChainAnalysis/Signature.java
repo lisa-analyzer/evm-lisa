@@ -10,7 +10,7 @@ public class Signature {
 	private final List<String> _paramTypes;
 	private final String _fullSignature;
 	private final String _selector;
-	private Set<Statement> _entrypoints;
+	private Set<Statement> _entryPoints;
 
 	public Signature(String name, String type, int paramCount, List<String> paramTypes, String fullSignature,
 			String selector) {
@@ -20,7 +20,7 @@ public class Signature {
 		this._paramTypes = paramTypes;
 		this._fullSignature = fullSignature;
 		this._selector = selector;
-		this._entrypoints = new HashSet<>();
+		this._entryPoints = new HashSet<>();
 	}
 
 	public String getName() {
@@ -47,17 +47,17 @@ public class Signature {
 		return _selector;
 	}
 
-	public Set<Statement> getEntrypoints() {
-		return _entrypoints;
+	public Set<Statement> getEntryPoints() {
+		return _entryPoints;
 	}
 
-	public void setEntrypoints(Set<Statement> entrypoints) {
-		this._entrypoints = entrypoints;
+	public void setEntryPoints(Set<Statement> entryPoints) {
+		this._entryPoints = entryPoints;
 	}
 
-	public void addEntrypoint(Statement entrypoint) {
-		if (entrypoint != null)
-			this._entrypoints.add(entrypoint);
+	public void addEntryPoint(Statement entryPoint) {
+		if (entryPoint != null)
+			this._entryPoints.add(entryPoint);
 	}
 
 	@Override
@@ -106,9 +106,9 @@ public class Signature {
 		sb.append(indent).append("\"selector\": \"").append(_selector).append("\",\n");
 
 		sb.append(indent).append("\"entrypoints\": [");
-		if (!_entrypoints.isEmpty()) {
+		if (!_entryPoints.isEmpty()) {
 			sb.append("\n");
-			Iterator<Statement> iterator = _entrypoints.iterator();
+			Iterator<Statement> iterator = _entryPoints.iterator();
 
 			while (iterator.hasNext()) {
 				sb.append(indent).append(indent).append("\"").append(iterator.next().toString()).append("\"");

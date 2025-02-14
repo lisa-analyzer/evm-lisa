@@ -2,20 +2,19 @@ package it.unipr.crossChainAnalysis;
 
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.*;
+import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
+import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.analysis.taint.UncheckedExternalInfluenceAbstractDomain;
 import it.unipr.analysis.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.checker.JumpSolver;
-import it.unipr.checker.ReentrancyChecker;
-import it.unipr.checker.UncheckedExternalInfluenceChecker;
-import it.unipr.checker.UncheckedStateUpdateChecker;
+import it.unipr.checker.*;
 import it.unipr.crossChainAnalysis.edges.ConservativeCrossChainEdge;
 import it.unipr.crossChainAnalysis.edges.CrossChainEdge;
 import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMTypeSystem;
-import it.unipr.utils.EthereumUtils;
+import it.unipr.utils.LiSAConfigurationManager;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -23,8 +22,6 @@ import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -87,9 +84,25 @@ public class CrossChainAnalysis {
 		log.info("Final xCFG");
 		printInfo(_xCFG);
 
-		runCheckers();
+		_bridge.printVulnerabilities();
 
 		shutdownExecutor();
+	}
+
+	/**
+	 * Runs a series of intra-chain security checkers on a given smart contract.
+	 * Each checker is executed asynchronously using the thread pool.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	private void runIntraChainCheckersPerContract(SmartContract contract) {
+		log.info("Running checkers for contract: {}", contract.getName());
+		_executor.submit(() -> runReentrancyChecker(contract));
+		_executor.submit(() -> runEventOrderChecker(contract));
+		_executor.submit(() -> runUncheckedStateUpdateChecker(contract));
+		_executor.submit(() -> runUncheckedExternalInfluenceChecker(contract));
+		_executor.submit(() -> runTxOriginChecker(contract));
+		_executor.submit(() -> runTimestampDependencyChecker(contract));
 	}
 
 	/**
@@ -106,7 +119,8 @@ public class CrossChainAnalysis {
 			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(_executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
-			// TODO add tx.origin and timestamp dependency checker
+			futures.add(_executor.submit(() -> runTxOriginChecker(contract)));
+			futures.add(_executor.submit(() -> runTimestampDependencyChecker(contract)));
 		}
 
 		try {
@@ -114,47 +128,47 @@ public class CrossChainAnalysis {
 		} catch (InterruptedException e) {
 			log.error("Thread pool interrupted: {}", e.getMessage());
 		}
-
-		log.warn("Vulnerabilities");
-		for (SmartContract contract : _bridge) {
-			log.info("Contract {} analyzed", contract.getName());
-
-			if (MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()) > 0)
-				log.warn("{} reentrancy warning",
-						MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()));
-
-			if (MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()) > 0)
-				log.warn("{} event order warning",
-						MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
-
-			if (MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()) > 0)
-				log.warn("{} unchecked state update warning",
-						MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()));
-
-			if (MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()) > 0)
-				log.warn("{} unchecked external influence warning",
-						MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
-		}
 	}
 
 	/**
-	 * Computes and registers event exit points for the given smart contract.
-	 * This method sets up a LiSA analysis environment and runs the
-	 * {@code EventsExitPointsComputer} to identify statements where events
-	 * exit.
+	 * Runs the timestamp dependency checker on the given smart contract.
 	 *
-	 * @param contract The smart contract whose event exit points are to be
-	 *                     computed.
+	 * @param contract The smart contract to analyze.
 	 */
-	private void computeEventsExitPoints(SmartContract contract) {
+	private void runTimestampDependencyChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = createConfiguration(contract);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		EventsExitPointsComputer checker = new EventsExitPointsComputer();
+		// Timestamp dependency checker
+		TimestampDependencyChecker checker = new TimestampDependencyChecker();
 		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new TimestampDependencyAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+	}
+
+	/**
+	 * Runs the tx. origin checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	private void runTxOriginChecker(SmartContract contract) {
+		// Setup configuration
+		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Tx. Origin checker
+		TxOriginChecker checker = new TxOriginChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new TxOriginAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 	}
 
@@ -167,7 +181,7 @@ public class CrossChainAnalysis {
 		// Setup configuration
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = createConfiguration(contract);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
 		// Unchecked external influence checker
@@ -188,7 +202,7 @@ public class CrossChainAnalysis {
 		// Setup configuration
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = createConfiguration(contract);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
 		// Unchecked state update checker
@@ -208,7 +222,7 @@ public class CrossChainAnalysis {
 		// Setup configuration
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = createConfiguration(contract);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
 		// Reentrancy checker
@@ -229,7 +243,7 @@ public class CrossChainAnalysis {
 		Set<Statement> functionsEntrypoints = new HashSet<>();
 
 		for (Signature function : contract.getFunctionsSignature())
-			functionsEntrypoints.addAll(function.getEntrypoints());
+			functionsEntrypoints.addAll(function.getEntryPoints());
 
 		EVMCFG cfg = contract.getCFG();
 		Set<Statement> sstoreSet = cfg.getAllSstore();
@@ -334,7 +348,7 @@ public class CrossChainAnalysis {
 							if (event.getName().equalsIgnoreCase(function.getName())) {
 								match = true;
 								crossChainEdges.addAll(
-										addCrossChainEdges(event.getEntrypoints(), function.getEntrypoints()));
+										addCrossChainEdges(event.getEntryPoints(), function.getEntryPoints()));
 								log.debug(
 										"Perfect match! Event: {}/{} from LOG source-code line: {}, to Function: {}/{}",
 										event.getName(), event.getParamCount(),
@@ -350,7 +364,7 @@ public class CrossChainAnalysis {
 				// We link this event to all functions entry points
 				for (Signature function : _bridge.getFunctions())
 					crossChainEdges.addAll(addConservativeCrossChainEdges(Collections.singleton(logStatement),
-							function.getEntrypoints()));
+							function.getEntryPoints()));
 
 				log.warn("No match! LOG at source-code line {} conservative linked to {} functions",
 						((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
@@ -383,14 +397,14 @@ public class CrossChainAnalysis {
 				if (event.getName().equalsIgnoreCase(function.getName())) {
 					match = true;
 //					log.debug("Perfect match! Event: {}/{}, Function: {}/{}", event.getName(), event.getParamCount(), function.getName(), function.getParamCount());
-					crossChainEdges.addAll(addCrossChainEdges(event.getEntrypoints(), function.getEntrypoints()));
+					crossChainEdges.addAll(addCrossChainEdges(event.getEntryPoints(), function.getEntryPoints()));
 				}
 			}
 
 			if (!match) {
 				// We link this event to all functions entry points
 				for (Signature function : _bridge.getFunctions())
-					crossChainEdges.addAll(addCrossChainEdges(event.getEntrypoints(), function.getEntrypoints()));
+					crossChainEdges.addAll(addCrossChainEdges(event.getEntryPoints(), function.getEntryPoints()));
 
 				eventsWithoutMatch.add(event);
 				log.warn("No match! Event {}/{} (0x{}) linked to {} functions", event.getName(), event.getParamCount(),
@@ -419,7 +433,7 @@ public class CrossChainAnalysis {
 
 		for (SmartContract contract : _bridge)
 			for (Signature signature : contract.getFunctionsSignature())
-				crossChainEdges.addAll(addConservativeCrossChainEdges(_xCFG.getAllLogX(), signature.getEntrypoints()));
+				crossChainEdges.addAll(addConservativeCrossChainEdges(_xCFG.getAllLogX(), signature.getEntryPoints()));
 
 		log.debug("Added {} cross chain edges using functions entrypoint", crossChainEdges.size());
 		return crossChainEdges;
@@ -439,10 +453,10 @@ public class CrossChainAnalysis {
 
 		for (SmartContract contract : _bridge) {
 			for (Signature signature : contract.getEmittingBlocksSignature())
-				emittingBlocks.addAll(signature.getEntrypoints());
+				emittingBlocks.addAll(signature.getEntryPoints());
 
 			for (Signature signature : contract.getInformationBlocksSignature())
-				informationBlocks.addAll(signature.getEntrypoints());
+				informationBlocks.addAll(signature.getEntryPoints());
 		}
 
 		crossChainEdges.addAll(addCrossChainEdges(emittingBlocks, informationBlocks));
@@ -514,7 +528,10 @@ public class CrossChainAnalysis {
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : _bridge) {
-			futures.add(_executor.submit(() -> analyzeContract(contract)));
+			futures.add(_executor.submit(() -> {
+				analyzeContract(contract);
+				runIntraChainCheckersPerContract(contract);
+			}));
 		}
 
 		// Wait for all the analyses to be completed
@@ -539,7 +556,7 @@ public class CrossChainAnalysis {
 				EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
 
 			Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
-			LiSAConfiguration conf = createConfiguration(contract);
+			LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 			JumpSolver checker = new JumpSolver();
 			conf.semanticChecks.add(checker);
 
@@ -555,40 +572,16 @@ public class CrossChainAnalysis {
 			}
 
 			contract.setCFG(checker.getComputedCFG());
-			contract.computeFunctionsSignatureEntrypoints();
-			contract.computeEventsSignatureEntrypoints();
+			contract.computeFunctionsSignatureEntryPoints();
+			contract.computeEventsSignatureEntryPoints();
 			contract.computeKnowledgeBlocks();
-			computeEventsExitPoints(contract);
+			contract.computeEventsExitPoints();
 
 		} catch (NullPointerException npe) {
 			log.error("Error checking soundness in bytecode {}: {}", contract.getName(), npe.getMessage());
 		} catch (Exception e) {
 			log.error("Error processing contract {}: {}", contract.getName(), e.getMessage());
 		}
-	}
-
-	/**
-	 * Creates a LiSA configuration for analyzing the given smart contract.
-	 *
-	 * @param contract The smart contract to be analyzed.
-	 *
-	 * @return A configured instance of {@link LiSAConfiguration}.
-	 */
-	private LiSAConfiguration createConfiguration(SmartContract contract) {
-		String address = EthereumUtils.isValidEVMAddress(contract.getName()) ? contract.getName() : null;
-
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new EVMAbstractState(address),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.workdir = contract.getBytecodePath().toString();
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.callGraph = new RTACallGraph();
-		conf.serializeResults = false;
-		conf.optimize = false;
-		conf.useWideningPoints = false;
-
-		return conf;
 	}
 
 	/**

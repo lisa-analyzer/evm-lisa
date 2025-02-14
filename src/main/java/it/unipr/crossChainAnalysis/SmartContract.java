@@ -1,8 +1,15 @@
 package it.unipr.crossChainAnalysis;
 
-import it.unipr.abi.ABIManager;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
+import it.unipr.frontend.EVMFeatures;
+import it.unipr.frontend.EVMTypeSystem;
+import it.unipr.utils.ABIManager;
+import it.unipr.utils.LiSAConfigurationManager;
+import it.unipr.utils.MyCache;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -76,29 +83,29 @@ public class SmartContract {
 	/**
 	 * This method iterates over all known entry points in the CFG and searches
 	 * for corresponding function selectors in the bytecode. The results are
-	 * stored in `_functionsSignatureEntrypoints`, which maps function
+	 * stored in `_functionsSignatureEntryPoints`, which maps function
 	 * signatures to their corresponding statement nodes.
 	 */
-	public void computeFunctionsSignatureEntrypoints() {
+	public void computeFunctionsSignatureEntryPoints() {
 		for (Statement node : _cfg.getNodes())
 			if (node instanceof Push)
 				for (Signature signature : _functionsSignature)
 					if (node.toString().contains(signature.getSelector()))
-						signature.addEntrypoint(node);
+						signature.addEntryPoint(node);
 	}
 
 	/**
 	 * This method iterates over all known entry points in the CFG and searches
 	 * for corresponding event selectors in the bytecode. The results are stored
-	 * in `_eventsSignatureEntrypoints`, which maps function signatures to their
+	 * in `_eventsSignatureEntryPoints`, which maps function signatures to their
 	 * corresponding statement nodes.
 	 */
-	public void computeEventsSignatureEntrypoints() {
+	public void computeEventsSignatureEntryPoints() {
 		for (Statement node : _cfg.getNodes())
 			if (node instanceof Push)
 				for (Signature signature : _eventsSignature)
 					if (node.toString().contains(signature.getSelector()))
-						signature.addEntrypoint(node);
+						signature.addEntryPoint(node);
 	}
 
 	/**
@@ -125,6 +132,58 @@ public class SmartContract {
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Computes and registers event exit points for this smart contract. This
+	 * method sets up a LiSA analysis environment and runs the
+	 * {@code EventsExitPointsComputer} to identify statements where events
+	 * exit.
+	 */
+	public void computeEventsExitPoints() {
+		// Setup configuration
+		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		program.addCodeMember(this._cfg);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
+		LiSA lisa = new LiSA(conf);
+
+		EventsExitPointsComputer checker = new EventsExitPointsComputer();
+		conf.semanticChecks.add(checker);
+		lisa.run(program);
+	}
+
+	/**
+	 * Prints the detected vulnerabilities for this smart contract.
+	 */
+	public void printVulnerabilities() {
+		if (this._cfg == null)
+			return;
+
+		int key = this._cfg.hashCode();
+
+		if (MyCache.getInstance().getReentrancyWarnings(key) > 0)
+			log.warn("{} reentrancy warning",
+					MyCache.getInstance().getReentrancyWarnings(key));
+
+		if (MyCache.getInstance().getEventOrderWarnings(key) > 0)
+			log.warn("{} event order warning",
+					MyCache.getInstance().getEventOrderWarnings(key));
+
+		if (MyCache.getInstance().getUncheckedStateUpdateWarnings(key) > 0)
+			log.warn("{} unchecked state update warning",
+					MyCache.getInstance().getUncheckedStateUpdateWarnings(key));
+
+		if (MyCache.getInstance().getUncheckedExternalInfluenceWarnings(key) > 0)
+			log.warn("{} unchecked external influence warning",
+					MyCache.getInstance().getUncheckedExternalInfluenceWarnings(key));
+
+		if (MyCache.getInstance().getTimestampDependencyWarnings(key) > 0)
+			log.warn("{} timestamp dependency warning",
+					MyCache.getInstance().getTimestampDependencyWarnings(key));
+
+		if (MyCache.getInstance().getTxOriginWarnings(key) > 0)
+			log.warn("{} tx. origin warning",
+					MyCache.getInstance().getTxOriginWarnings(key));
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package it.unipr.abi;
+package it.unipr.utils;
 
 import it.unipr.crossChainAnalysis.EventKnowledge;
 import it.unipr.crossChainAnalysis.Signature;

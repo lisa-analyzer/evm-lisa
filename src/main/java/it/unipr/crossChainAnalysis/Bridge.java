@@ -77,19 +77,42 @@ public class Bridge implements Iterable<SmartContract> {
 		return fileMap;
 	}
 
+	/**
+	 * Computes and collects both function and event signatures from all smart
+	 * contracts.
+	 */
 	public void computeFunctionsAndEvents() {
 		computeFunctions();
 		computeEvents();
 	}
 
+	/**
+	 * Collects function signatures from all smart contracts and stores them in
+	 * the function set.
+	 */
 	public void computeFunctions() {
 		for (SmartContract contract : _contracts)
 			_functions.addAll(contract.getFunctionsSignature());
 	}
 
+	/**
+	 * Collects event signatures from all smart contracts and stores them in the
+	 * event set.
+	 */
 	public void computeEvents() {
 		for (SmartContract contract : _contracts)
 			_events.addAll(contract.getEventsSignature());
+	}
+
+	/**
+	 * Prints the detected vulnerabilities of this bridge.
+	 */
+	public void printVulnerabilities() {
+		log.warn("Vulnerabilities in the bridge");
+		for (SmartContract contract : _contracts) {
+			log.info("Contract {} analyzed", contract.getName());
+			contract.printVulnerabilities();
+		}
 	}
 
 	@Override

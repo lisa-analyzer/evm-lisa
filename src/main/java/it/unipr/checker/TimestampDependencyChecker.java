@@ -1,6 +1,5 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.EVMCFG;
@@ -9,6 +8,7 @@ import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.cfg.Sha3;
 import it.unipr.cfg.Sstore;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 public class TimestampDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
+	private static final Logger log = LogManager.getLogger(TimestampDependencyChecker.class);
 
 	private final Set<Statement> sinks = new HashSet<>();
 
@@ -77,7 +77,6 @@ public class TimestampDependencyChecker implements
 							raiseWarning(node, tool, cfg);
 					}
 				}
-
 			}
 
 		return true;
@@ -110,12 +109,12 @@ public class TimestampDependencyChecker implements
 			EVMCFG cfg) {
 		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		log.debug("Timestamp attack at {} at line no. {}", sinkLoc.getPc(),
+		log.warn("Timestamp dependency vulnerability at {} at line no. {}", sinkLoc.getPc(),
 				sinkLoc.getSourceCodeLine());
 
-		String warn = "Timestamp attack at " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
+		String warn = "Timestamp dependency vulnerability at "
+				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
-		MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
+		MyCache.getInstance().addTimestampDependencyWarning(cfg.hashCode(), warn);
 	}
-
 }
