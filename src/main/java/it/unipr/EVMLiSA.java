@@ -1282,6 +1282,8 @@ public class EVMLiSA {
 				.desc("Path of the folder containing the bytecodes of the cross chain smart contracts")
 				.required(false)
 				.hasArg(true)
+				.build();
+
 		Option enableTimestampDependencyCheckerOption = Option.builder()
 				.longOpt("checker-timestampdependency")
 				.desc("Enable timestamp-dependency checker.")

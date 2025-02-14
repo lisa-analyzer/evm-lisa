@@ -13,7 +13,7 @@ import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import java.io.IOException;
-import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such
