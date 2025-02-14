@@ -28,6 +28,10 @@ scripts/python/benchmark-checkers/*
 !scripts/python/benchmark-checkers/reentrancy-slise-db1/source-code/**
 !scripts/python/benchmark-checkers/tx-origin-solidifi/source-code/**
 !scripts/python/benchmark-checkers/timestamp-dependency-solidifi/source-code/**
+
+!scripts/python/benchmark-checkers/cross-chain/XGuard/MeterBridge/source-code/**
+!scripts/python/benchmark-checkers/cross-chain/XGuard/QBridge/source-code/**
+
 # Allow Ethersolve tool
 !scripts/python/benchmark-checkers/EtherSolve/**
 

@@ -175,7 +175,7 @@ def compile_solidity_sources(source_dir, json_dir):
                 output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
                 
                 # Command to compile and save the bytecode in JSON format
-                command = f"solc --combined-json bin,bin-runtime,abi --pretty-json {input_file} > {output_file} 2> /dev/null"
+                command = f"solc --combined-json bin,bin-runtime,abi --pretty-json {input_file} > {output_file} " # 2> /dev/null
                 
                 # Execute the compilation command
                 try:
@@ -264,13 +264,16 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
             # Update the progress bar
             pbar.update(1)
 
-def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_index=None):
+def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_index=None, abi_dir=None):
     """
     Extracts all bytecode from each .json file and saves it in the specified output directory.
     """
     # Clear and create bytecode directory
     clear_directory(bytecode_dir)
     os.makedirs(bytecode_dir, exist_ok=True)
+    if abi_dir is not None:
+        clear_directory(abi_dir)
+        os.makedirs(abi_dir, exist_ok=True)
 
     # List all .sol files in the source directory
     num_files = [f for f in os.listdir(json_dir) if f.endswith('.json')]
@@ -291,12 +294,14 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
                     data = json.load(json_file)
                     contracts = data.get("contracts", {})
                     count = 1  # Sequential counter for each bytecode in the same JSON
+                    abi = None
 
                     for contract_name, contract_data in contracts.items():
                         if(is_ethersolve):
                             bytecode = contract_data.get("bin")
                         else:
                             bytecode = contract_data.get("bin-runtime")
+                        abi = contract_data.get("abi")
                             
                         if bytecode:
                             bytecode_filename = os.path.join(
@@ -312,20 +317,56 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
 
                             with open(bytecode_filename, 'w') as bytecode_file:                
                                 bytecode_file.write("0x" + bytecode)
+
+                            # Save ABI if available
+                            if abi and abi_dir is not None:
+                                abi_filename = os.path.join(abi_dir, f"{file_id}_{count}.abi.json")
+                                
+                                if isinstance(abi, str):  
+                                    abi = json.loads(abi)
+                                
+                                with open(abi_filename, 'w') as abi_file:
+                                    json.dump(abi, abi_file, indent=4)
+
                             # print(f"Extracted bytecode to {bytecode_filename}")
                             count += 1  # Increment counter for next bytecode
             # Update the progress bar
             pbar.update(1)
 
+def compile_bridge(name):
+    extract_solidity_versions(src_folder=f'./{name}/source-code',
+                              output_csv=f'./{name}/source-code/version.csv')
+    
+    compile_solidity_sources_with_different_version(source_dir=f'./{name}/source-code',
+                                                    json_dir=f'./{name}/json',
+                                                    version_file=f'./{name}/source-code/version.csv')
+    
+    generate_file_index(folder_path=f'./{name}/source-code',
+                        output_json=f'./{name}/match-file-index.json')
+    
+    with open(f'./{name}/match-file-index.json', 'r') as index_file:
+        match_file_index = json.load(index_file)
+
+    extract_and_save_bytecode(bytecode_dir=f'./{name}/bytecode',
+                                json_dir=f'./{name}/json',
+                                abi_dir=f'./{name}/abi',
+                                file_index=match_file_index)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compile datasets.")
-    parser.add_argument("--solidifi", action="store_true", help="Run analysis on SolidiFI dataset")
-    parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
-    parser.add_argument("--slise", action="store_true", help="Run analysis on SliSE dataset")
+    parser.add_argument("--solidifi", action="store_true", help="Compile SolidiFI dataset")
+    parser.add_argument("--smartbugs", action="store_true", help="Compile SmartBugs dataset")
+    parser.add_argument("--slise", action="store_true", help="Compile SliSE dataset")
     parser.add_argument("--longest-bytecode", action="store_true", help="Save only the longest bytecode")
     parser.add_argument("--manual", action="store_true", help="Manual mode")
+    parser.add_argument("--cross-chain-xguard", action="store_true", help="Compile XGuard dataset")
 
     args = parser.parse_args()
+
+    if args.cross_chain_xguard:
+        compile_bridge('cross-chain/XGuard/QBridge') # QBridge
+        compile_bridge('cross-chain/XGuard/MeterBridge') # MeterBridge
 
     if args.manual:
         # Test ThorChain Bridge
