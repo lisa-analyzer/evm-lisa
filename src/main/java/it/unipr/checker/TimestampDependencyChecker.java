@@ -115,7 +115,7 @@ public class TimestampDependencyChecker implements
 
 		String warn = "Timestamp attack at " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
-		MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
+		MyCache.getInstance().addTimestampDependencyWarning(cfg.hashCode(), warn);
 	}
 
 }
