@@ -157,10 +157,9 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumpI() {
-		if (jumpNodes == null) {
+		if (jumpNodes == null)
 			getAllJumps();
-		}
-		return jumpNodes.stream().filter(s->s instanceof Jumpi).collect(Collectors.toSet());
+		return jumpNodes.stream().filter(s -> s instanceof Jumpi).collect(Collectors.toSet());
 	}
 
 	/**
@@ -169,10 +168,9 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMP statements in the CFG
 	 */
 	public Set<Statement> getAllJump() {
-		if (jumpNodes == null) {
+		if (jumpNodes == null)
 			getAllJumps();
-		}
-		return jumpNodes.stream().filter(s->s instanceof Jump).collect(Collectors.toSet());
+		return jumpNodes.stream().filter(s -> s instanceof Jump).collect(Collectors.toSet());
 	}
 
 	public int getOpcodeCount() {

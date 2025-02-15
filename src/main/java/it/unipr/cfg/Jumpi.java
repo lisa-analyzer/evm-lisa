@@ -3,7 +3,6 @@ package it.unipr.cfg;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.StackElement;
-import it.unipr.analysis.operator.JumpOperator;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -52,8 +51,10 @@ public class Jumpi extends Statement {
 
 		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
 
-		if (valueState == null)
-		{
+		if (valueState == null) {
+			// if EVMLiSA is not using EVMAbstractState, we just return the
+			// small-step
+			// semantics of the JUMPI operator
 			Constant c = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
 			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
 					JumpiOperator.INSTANCE, getLocation()), this);
