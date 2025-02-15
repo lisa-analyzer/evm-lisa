@@ -36,20 +36,25 @@ import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
-	public Set<Statement> jumpDestsNodes;
-	public Set<Number> jumpDestsNodesLocations;
-	public Set<Statement> jumpNodes;
-	public Set<Statement> pushedJumps;
-	public Set<Statement> sstores;
-	public Set<Statement> sha3s;
+	private Set<Statement> jumpDestsNodes;
+	private Set<Number> jumpDestsNodesLocations;
+	private Set<Statement> jumpNodes;
+	private Set<Statement> pushedJumps;
+	private Set<Statement> sstores;
+	private Set<Statement> sha3s;
 
-	public EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
-			NodeList<CFG, Statement, Edge> list) {
-		super(descriptor, entrypoints, list);
-	}
-
+	/**
+	 * Builds a EVMCFG starting from its description.
+	 * 
+	 * @param cfgDesc the EVMCFG description
+	 */
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
+	}
+
+	private EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
+			NodeList<CFG, Statement, Edge> list) {
+		super(descriptor, entrypoints, list);
 	}
 
 	/**
@@ -84,11 +89,9 @@ public class EVMCFG extends CFG {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 			Set<Statement> sha3s = new HashSet<>();
 
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Sha3) {
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Sha3)
 					sha3s.add(statement);
-				}
-			}
 
 			return this.sha3s = sha3s;
 		}
@@ -106,11 +109,9 @@ public class EVMCFG extends CFG {
 			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 			Set<Statement> jumpdestStatements = new HashSet<>();
 
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Jumpdest) {
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Jumpdest)
 					jumpdestStatements.add(statement);
-				}
-			}
 
 			return this.jumpDestsNodes = jumpdestStatements;
 		}
@@ -118,6 +119,11 @@ public class EVMCFG extends CFG {
 		return jumpDestsNodes;
 	}
 
+	/**
+	 * Yields the program counters of all JUMPDEST statements.
+	 * 
+	 * @return the program counters of all JUMPDEST statements
+	 */
 	public Set<Number> getAllJumpdestLocations() {
 		if (jumpDestsNodes == null)
 			getAllJumpdest();
@@ -174,7 +180,8 @@ public class EVMCFG extends CFG {
 	}
 
 	public int getOpcodeCount() {
-		// -1 for the return statement
+		// -1 for the return statement, that it does not correspond to an actual
+		// statement of the smart contract, but it is added by EVMLiSA
 		return this.getNodesCount() - 1;
 	}
 
@@ -199,6 +206,7 @@ public class EVMCFG extends CFG {
 		return pushedJumps;
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalyzedCFG<A> fixpoint(
 			AnalysisState<A> singleton, Map<Statement, AnalysisState<A>> startingPoints,
 			InterproceduralAnalysis<A> interprocedural, WorkingSet<Statement> ws,
