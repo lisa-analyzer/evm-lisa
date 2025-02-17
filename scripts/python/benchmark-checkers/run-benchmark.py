@@ -713,7 +713,35 @@ if __name__ == "__main__":
             plot_results(results_evmlisa,
                          results_solidifi,
                          'solidifi_timestamp-dependency')
+        if args.smartbugs:
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './timestamp-dependency-smartbugs/bytecode/evmlisa', 
+                                                                        'results_dir':        './timestamp-dependency-smartbugs/results',
+                                                                        'result_evmlisa_dir': './timestamp-dependency-smartbugs/results/evmlisa'})
+                
+            evmlisa_thread.start()
+                
+            evmlisa_thread.join()
 
+            check_sound_analysis_evmlisa('./timestamp-dependency-smartbugs/results/evmlisa')
+
+            results_evmlisa = get_results_evmlisa('./timestamp-dependency-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs')                        
+            results_smartbugs = get_results_smartbugs('./timestamp-dependency-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
+            
+            # Precision
+            evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
+            print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
+
+            # Recall
+            evmlisa_recall = calculate_recall(results_evmlisa, results_smartbugs)
+            print(f"Recall evmlisa (avg.): {calculate_average(evmlisa_recall)}")
+
+            # F-measure
+            print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
+            
+            # Plot results
+            plot_results(results_evmlisa, 
+                        results_smartbugs,
+                        'smartbugs')
 
     if args.reentrancy:
         if args.solidifi:

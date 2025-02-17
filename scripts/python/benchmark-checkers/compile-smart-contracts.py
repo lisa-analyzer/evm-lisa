@@ -439,15 +439,23 @@ if __name__ == "__main__":
                                                         './reentrancy-smartbugs/json',
                                                         './reentrancy-smartbugs/source-code/version.csv')
 
+        compile_solidity_sources_with_different_version('./timestamp-dependency-smartbugs/source-code',
+                                                        './timestamp-dependency-smartbugs/json',
+                                                        './timestamp-dependency-smartbugs/source-code/version.csv')
+
         if args.longest_bytecode:
             extract_and_save_longest_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
                                               './reentrancy-smartbugs/json')
+            extract_and_save_longest_bytecode('./timestamp-dependency-smartbugs/bytecode/evmlisa',
+                                              './timestamp-dependency-smartbugs/json')
             extract_and_save_longest_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
                                               './reentrancy-smartbugs/json',
                                               True)
         else:
             extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
                                       './reentrancy-smartbugs/json')
+            extract_and_save_bytecode('./timestamp-dependency-smartbugs/bytecode/evmlisa',
+                                      './timestamp-dependency-smartbugs/json')
             extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
                                       './reentrancy-smartbugs/json',
                                       True)
