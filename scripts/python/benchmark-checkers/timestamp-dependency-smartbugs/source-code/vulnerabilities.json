@@ -1,0 +1,74 @@
+[
+    {
+        "name": "1.sol",
+        "pragma": "0.4.15",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    43
+                ],
+                "category": "time_manipulation"
+            }
+        ]
+    },
+    {
+        "name": "2.sol",
+        "pragma": "0.4.0",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    27
+                ],
+                "category": "time_manipulation"
+            }
+        ]
+    },
+    {
+        "name": "3.sol",
+        "pragma": "0.4.0",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    13
+                ],
+                "category": "time_manipulation"
+            },
+            {
+                "lines": [
+                    27
+                ],
+                "category": "time_manipulation"
+            }
+        ]
+    },
+    {
+        "name": "4.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    18
+                ],
+                "category": "time_manipulation"
+            },
+            {
+                "lines": [
+                    20
+                ],
+                "category": "time_manipulation"
+            }
+        ]
+    },
+    {
+        "name": "5.sol",
+        "pragma": "0.4.25",
+        "vulnerabilities": [
+            {
+                "lines": [
+                    13
+                ],
+                "category": "time_manipulation"
+            }
+        ]
+    }
+]
