@@ -1,5 +1,8 @@
 package it.unipr.checker;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
@@ -20,17 +23,11 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.util.HashSet;
-import java.util.Set;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class TimestampDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(TimestampDependencyChecker.class);
-
-	private final Set<Statement> sinks = new HashSet<>();
 
 	@Override
 	public boolean visit(
@@ -40,15 +37,7 @@ public class TimestampDependencyChecker implements
 
 		EVMCFG cfg = ((EVMCFG) graph);
 
-		// Combine all sinks
-		if (sinks.isEmpty()) {
-			this.sinks.addAll(cfg.getAllSha3());
-			this.sinks.addAll(cfg.getAllSstore());
-			this.sinks.addAll(cfg.getAllJump());
-			this.sinks.addAll(cfg.getAllJumpI());
-		}
-
-		if (sinks.contains(node))
+		if (node instanceof Jump || node instanceof Jumpi || node instanceof Sstore || node instanceof Sha3)
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -117,5 +106,4 @@ public class TimestampDependencyChecker implements
 		tool.warn(warn);
 		MyCache.getInstance().addTimestampDependencyWarning(cfg.hashCode(), warn);
 	}
-
 }
