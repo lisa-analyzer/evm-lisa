@@ -716,10 +716,10 @@ if __name__ == "__main__":
         if args.smartbugs:
             evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './timestamp-dependency-smartbugs/bytecode/evmlisa', 
                                                                         'results_dir':        './timestamp-dependency-smartbugs/results',
-                                                                        'result_evmlisa_dir': './timestamp-dependency-smartbugs/results/evmlisa'})
+                                                                        'result_evmlisa_dir': './timestamp-dependency-smartbugs/results/evmlisa',
+                                                                        'type':               'timestampdependency'})
                 
             evmlisa_thread.start()
-                
             evmlisa_thread.join()
 
             check_sound_analysis_evmlisa('./timestamp-dependency-smartbugs/results/evmlisa')
