@@ -12,8 +12,10 @@ import java.util.Set;
 
 public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
-	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null, TaintElement.BOTTOM);
+			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
+			TaintElement.CLEAN);
+	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
+			TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.

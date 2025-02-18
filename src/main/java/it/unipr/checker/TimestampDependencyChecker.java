@@ -1,8 +1,5 @@
 package it.unipr.checker;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
@@ -10,6 +7,7 @@ import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.cfg.Return;
 import it.unipr.cfg.Sha3;
 import it.unipr.cfg.Sstore;
 import it.unive.lisa.analysis.AnalysisState;
@@ -23,6 +21,8 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TimestampDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
@@ -37,7 +37,8 @@ public class TimestampDependencyChecker implements
 
 		EVMCFG cfg = ((EVMCFG) graph);
 
-		if (node instanceof Jump || node instanceof Jumpi || node instanceof Sstore || node instanceof Sha3)
+		if (node instanceof Jump || node instanceof Return || node instanceof Jumpi || node instanceof Sstore
+				|| node instanceof Sha3)
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -58,7 +59,8 @@ public class TimestampDependencyChecker implements
 					// Nothing to do
 					continue;
 				else {
-					if (node instanceof Sha3 || node instanceof Sstore || node instanceof Jumpi) {
+					if (node instanceof Sha3 || node instanceof Sstore || node instanceof Jumpi
+							|| node instanceof Return) {
 						if (checkTaintTwoPops(taintedStack))
 							raiseWarning(node, tool, cfg);
 					} else if (node instanceof Jump) {
@@ -66,7 +68,6 @@ public class TimestampDependencyChecker implements
 							raiseWarning(node, tool, cfg);
 					}
 				}
-
 			}
 
 		return true;
@@ -93,7 +94,7 @@ public class TimestampDependencyChecker implements
 			return true;
 		return false;
 	}
-	
+
 	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {

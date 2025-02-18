@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class TaintAbstractDomain
-implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
+		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	static int STACK_LIMIT = 32;
 
@@ -34,12 +34,11 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	 */
 	private final ArrayList<TaintElement> stack;
 
-	
 	/**
 	 * The local memory, tracking if it is clean or tainted.
 	 */
 	private final TaintElement memory;
-	
+
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
@@ -158,10 +157,10 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 						resultStack.push(TaintElement.TAINT);
 					else if (memory.isClean())
 						resultStack.push(TaintElement.CLEAN);
-					
+
 					return resultStack;
 				}
-				
+
 				case "MstoreOperator":
 				case "Mstore8Operator": { // pops 2
 					if (hasBottomUntil(2))
@@ -175,7 +174,6 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 					else if (value.isClean())
 						return resultStack;
 				}
-
 
 				case "ByteOperator":
 				case "ShlOperator":
