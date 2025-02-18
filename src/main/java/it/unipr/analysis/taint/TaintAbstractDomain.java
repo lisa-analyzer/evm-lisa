@@ -27,10 +27,13 @@ import java.util.function.Predicate;
 public abstract class TaintAbstractDomain
 		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
-	static int STACK_LIMIT = 32;
+	/**
+	 * The stack limit.
+	 */
+	protected static int STACK_LIMIT = 32;
 
 	/**
-	 * The abstract stack domain
+	 * The abstract stack domain.
 	 */
 	private final ArrayList<TaintElement> stack;
 
@@ -870,8 +873,22 @@ public abstract class TaintAbstractDomain
 		return this.stack.get(STACK_LIMIT - 1);
 	}
 
+	/**
+	 * Yields the set of opcodes that push taint elements.
+	 * 
+	 * @return the set of opcodes that push taint elements
+	 */
 	public abstract Set<Operator> getTaintedOpcode();
 
+	/**
+	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
+	 * given the stack and the memory.
+	 * 
+	 * @param list   the stack
+	 * @param memory the memory
+	 * 
+	 * @return a new concrete instance of {@link TaintAbstractDomain}
+	 */
 	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory);
 
 }
