@@ -9,14 +9,14 @@ import java.util.Set;
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)));
-	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null);
+			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
+	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TxOriginAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)));
+		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
 	}
 
 	/**
@@ -25,8 +25,8 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TxOriginAbstractDomain(ArrayList<TaintElement> stack) {
-		super(stack);
+	protected TxOriginAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list) {
-		return new TxOriginAbstractDomain(list);
+	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory) {
+		return new TxOriginAbstractDomain(list, memory);
 	}
 }

@@ -20,24 +20,35 @@ import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class TaintAbstractDomain
-		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
+implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	static int STACK_LIMIT = 32;
 
+	/**
+	 * The abstract stack domain
+	 */
 	private final ArrayList<TaintElement> stack;
 
+	
+	/**
+	 * The local memory, tracking if it is clean or tainted.
+	 */
+	private final TaintElement memory;
+	
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TaintAbstractDomain(ArrayList<TaintElement> stack) {
+	protected TaintAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
 		this.stack = stack;
+		this.memory = memory;
 	}
 
 	@Override
@@ -124,7 +135,6 @@ public abstract class TaintAbstractDomain
 				case "NotOperator":
 				case "CalldataloadOperator":
 				case "CalldatacopyOperator":
-				case "MloadOperator":
 				case "SloadOperator":
 				case "IszeroOperator": { // pop 1, push 1
 					if (hasBottomUntil(1))
@@ -138,6 +148,34 @@ public abstract class TaintAbstractDomain
 						resultStack.push(TaintElement.semantics(opnd1));
 					return resultStack;
 				}
+
+				case "MloadOperator": { // pop 1, push 1
+					if (hasBottomUntil(1))
+						return bottom();
+					TaintAbstractDomain resultStack = clone();
+					resultStack.pop();
+					if (memory.isTaint())
+						resultStack.push(TaintElement.TAINT);
+					else if (memory.isClean())
+						resultStack.push(TaintElement.CLEAN);
+					
+					return resultStack;
+				}
+				
+				case "MstoreOperator":
+				case "Mstore8Operator": { // pops 2
+					if (hasBottomUntil(2))
+						return bottom();
+					TaintAbstractDomain resultStack = clone();
+					TaintElement offset = resultStack.pop();
+					TaintElement value = resultStack.pop();
+
+					if (value.isTaint())
+						return mk(resultStack.stack, TaintElement.TAINT);
+					else if (value.isClean())
+						return resultStack;
+				}
+
 
 				case "ByteOperator":
 				case "ShlOperator":
@@ -198,8 +236,6 @@ public abstract class TaintAbstractDomain
 						return resultStack;
 				}
 
-				case "MstoreOperator":
-				case "Mstore8Operator":
 				case "SstoreOperator": { // pops 2
 					if (hasBottomUntil(2))
 						return bottom();
@@ -593,7 +629,7 @@ public abstract class TaintAbstractDomain
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
 
-		return mk(result);
+		return mk(result, stack.memory);
 	}
 
 	private TaintAbstractDomain dupX(int x, TaintAbstractDomain stack) {
@@ -620,7 +656,7 @@ public abstract class TaintAbstractDomain
 		result.add(tmp);
 		result.remove(0);
 
-		return mk(result);
+		return mk(result, stack.memory);
 	}
 
 	private ArrayList<TaintElement> getStack() {
@@ -721,7 +757,7 @@ public abstract class TaintAbstractDomain
 			result.add(thisElement.glb(otherElement));
 		}
 
-		return mk(result);
+		return mk(result, this.memory.glb(other.memory));
 	}
 
 	@Override
@@ -737,7 +773,7 @@ public abstract class TaintAbstractDomain
 			result.add(thisElement.lub(otherElement));
 		}
 
-		return mk(result);
+		return mk(result, this.memory.lub(other.memory));
 	}
 
 	@Override
@@ -800,7 +836,7 @@ public abstract class TaintAbstractDomain
 	public TaintAbstractDomain clone() {
 		if (isBottom())
 			return this;
-		return mk(new ArrayList<>(stack));
+		return mk(new ArrayList<>(stack), this.memory);
 	}
 
 	@Override
@@ -812,12 +848,12 @@ public abstract class TaintAbstractDomain
 		if (getClass() != obj.getClass())
 			return false;
 		TaintAbstractDomain other = (TaintAbstractDomain) obj;
-		return java.util.Objects.equals(stack, other.stack);
+		return Objects.equals(memory, other.memory) && Objects.equals(stack, other.stack);
 	}
 
 	@Override
 	public int hashCode() {
-		return java.util.Objects.hash(stack);
+		return Objects.hash(memory, stack);
 	}
 
 	public TaintElement getSecondElement() {
@@ -838,6 +874,6 @@ public abstract class TaintAbstractDomain
 
 	public abstract Set<Operator> getTaintedOpcode();
 
-	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list);
+	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory);
 
 }

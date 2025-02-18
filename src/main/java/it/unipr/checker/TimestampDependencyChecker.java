@@ -93,7 +93,7 @@ public class TimestampDependencyChecker implements
 			return true;
 		return false;
 	}
-
+	
 	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {

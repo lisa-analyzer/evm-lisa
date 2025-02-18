@@ -12,14 +12,14 @@ import java.util.Set;
 
 public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)));
-	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null);
+			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
+	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TimestampDependencyAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)));
+		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
 	}
 
 	/**
@@ -28,8 +28,8 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TimestampDependencyAbstractDomain(ArrayList<TaintElement> stack) {
-		super(stack);
+	protected TimestampDependencyAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list) {
-		return new TimestampDependencyAbstractDomain(list);
+	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory) {
+		return new TimestampDependencyAbstractDomain(list, memory);
 	}
 
 }
