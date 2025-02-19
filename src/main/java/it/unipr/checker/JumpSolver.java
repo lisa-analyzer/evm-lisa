@@ -127,13 +127,8 @@ public class JumpSolver implements
 			this.maybeUnsoundJumps = new HashSet<>();
 			this.unsoundJumps = new HashSet<>();
 
-			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
-
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				boolean isReachableFrom = this.cfgToAnalyze.reachableFrom(entryPoint, node);
-
-				if (cfgToAnalyze.getAllPushedJumps().contains(node)
-						|| !isReachableFrom)
+				if (cfgToAnalyze.getAllPushedJumps().contains(node))
 					continue;
 
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
