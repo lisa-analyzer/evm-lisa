@@ -81,26 +81,6 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the SHA3 statements in the CFG. SHA3
-	 *
-	 * @return a set of all the SHA3 statements in the CFG
-//	 */
-//	public Set<Statement> getAllSha3() {
-//		if (sha3s == null) {
-//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-//			Set<Statement> sha3s = new HashSet<>();
-//
-//			for (Statement statement : cfgNodeList.getNodes())
-//				if (statement instanceof Sha3)
-//					sha3s.add(statement);
-//
-//			return this.sha3s = sha3s;
-//		}
-//
-//		return sha3s;
-//	}
-
-	/**
 	 * Returns a set of all the JUMPDEST statements in the CFG.
 	 *
 	 * @return a set of all the JUMPDEST statements in the CFG
@@ -157,28 +137,6 @@ public class EVMCFG extends CFG {
 
 		return jumpNodes;
 	}
-//
-//	/**
-//	 * Returns a set of all the JUMPI statements in the CFG.
-//	 *
-//	 * @return a set of all the JUMPI statements in the CFG
-//	 */
-//	public Set<Statement> getAllJumpI() {
-//		if (jumpNodes == null)
-//			getAllJumps();
-//		return jumpNodes.stream().filter(s -> s instanceof Jumpi).collect(Collectors.toSet());
-//	}
-//
-//	/**
-//	 * Returns a set of all the JUMP statements in the CFG.
-//	 *
-//	 * @return a set of all the JUMP statements in the CFG
-//	 */
-//	public Set<Statement> getAllJump() {
-//		if (jumpNodes == null)
-//			getAllJumps();
-//		return jumpNodes.stream().filter(s -> s instanceof Jump).collect(Collectors.toSet());
-//	}
 
 	public int getOpcodeCount() {
 		// -1 for the return statement, that it does not correspond to an actual

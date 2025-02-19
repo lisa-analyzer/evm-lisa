@@ -1,5 +1,7 @@
 package it.unipr.cfg.push;
 
+import java.math.BigInteger;
+
 import it.unipr.analysis.operator.PushOperator;
 import it.unipr.cfg.HexDecimalLiteral;
 import it.unive.lisa.analysis.AbstractState;
@@ -16,7 +18,6 @@ import it.unive.lisa.program.cfg.statement.evaluation.EvaluationOrder;
 import it.unive.lisa.program.cfg.statement.evaluation.LeftToRightEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
-import java.math.BigInteger;
 
 /**
  * A Push opcode with a single sub-expression.
@@ -49,19 +50,18 @@ public abstract class Push extends UnaryExpression {
 	}
 
 	/**
-	 * Return the value of the bytes pushed into the stack by the Push opcode.
+	 * Returns the value of the bytes pushed into the stack by the PUSH opcode.
 	 * 
 	 * @return the BigInteger value
 	 */
 	public BigInteger getInt() {
 		String hexadecimal = ((HexDecimalLiteral) getSubExpression()).getValue().substring(2);
-		// return BigInteger.parseInt(hexadecimal, 16);
 		return new BigInteger(hexadecimal, 16);
 	}
 
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
-		// TODO Auto-generated method stub
+		// we cannot have more than one statement on the same code location
 		return 0;
 	}
 }

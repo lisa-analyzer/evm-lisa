@@ -1,12 +1,13 @@
 package it.unipr.analysis;
 
+import java.math.BigInteger;
+import java.util.Objects;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.math.BigInteger;
-import java.util.Objects;
 
 public class StackElement implements BaseLattice<StackElement> {
 	private static final Number ZERO_INT = new Number(0);

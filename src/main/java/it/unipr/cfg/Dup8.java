@@ -8,10 +8,7 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * Dup8 opcode of the program to analyze.

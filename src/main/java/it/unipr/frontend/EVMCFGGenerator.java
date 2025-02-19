@@ -1,5 +1,13 @@
 package it.unipr.frontend;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.io.FilenameUtils;
+
 import it.unipr.cfg.*;
 import it.unipr.cfg.Byte;
 import it.unipr.cfg.Number;
@@ -50,12 +58,6 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Provides methods to generate a CFG from a smart contract.

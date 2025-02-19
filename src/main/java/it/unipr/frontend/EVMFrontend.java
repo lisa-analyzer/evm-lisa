@@ -1,12 +1,5 @@
 package it.unipr.frontend;
 
-import io.github.cdimascio.dotenv.Dotenv;
-import it.unipr.evm.antlr.EVMBLexer;
-import it.unipr.evm.antlr.EVMBParser;
-import it.unipr.evm.antlr.EVMBParser.ProgramContext;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFG;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,8 +12,17 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+
+import io.github.cdimascio.dotenv.Dotenv;
+import it.unipr.evm.antlr.EVMBLexer;
+import it.unipr.evm.antlr.EVMBParser;
+import it.unipr.evm.antlr.EVMBParser.ProgramContext;
+import it.unive.lisa.AnalysisException;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.CFG;
 
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract

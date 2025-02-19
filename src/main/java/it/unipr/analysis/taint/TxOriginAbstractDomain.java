@@ -1,10 +1,11 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.operator.OriginOperator;
-import it.unive.lisa.symbolic.value.Operator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
+
+import it.unipr.analysis.operator.OriginOperator;
+import it.unive.lisa.symbolic.value.Operator;
 
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
