@@ -285,13 +285,7 @@ public class EVMCFG extends CFG {
 	}
 
 	public boolean reachableFromSequentially(Statement start, Statement target) {
-		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
-		if (MyCache.getInstance().existsInReachableFrom(key))
-			return MyCache.getInstance().isReachableFrom(key);
-
-		boolean result = dfsSequential(start, target, new HashSet<>());
-		MyCache.getInstance().addReachableFrom(key, result);
-		return result;
+		return dfsSequential(start, target, new HashSet<>());
 	}
 
 	private boolean dfsSequential(Statement start, Statement target, Set<Statement> visited) {

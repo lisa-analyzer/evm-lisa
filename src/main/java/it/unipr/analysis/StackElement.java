@@ -616,15 +616,15 @@ public class StackElement implements BaseLattice<StackElement> {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		else if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		else if (getClass() != obj.getClass())
 			return false;
-		if (isBottom() && ((StackElement) obj).isBottom())
+		else if (isBottom() && ((StackElement) obj).isBottom())
 			return true;
-		if (isTopNumeric() && ((StackElement) obj).isTopNumeric())
+		else if (isTopNumeric() && ((StackElement) obj).isTopNumeric())
 			return true;
-		if (isTopNotJumpdest() && ((StackElement) obj).isTopNotJumpdest())
+		else if (isTopNotJumpdest() && ((StackElement) obj).isTopNotJumpdest())
 			return true;
 		if (!isBottom() && !isTopNumeric() && !isTopNotJumpdest() &&
 				!((StackElement) obj).isBottom() && !((StackElement) obj).isTopNumeric()

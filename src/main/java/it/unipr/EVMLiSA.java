@@ -724,7 +724,7 @@ public class EVMLiSA {
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int unsoundJumps = 0;
-		int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
+		int maybeUnsoundJumps = 0;
 
 		boolean allJumpAreSound = true;
 
@@ -752,23 +752,14 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-//				 reachableFrom;
-////				String key = cfg.hashCode() + "" + entryPoint.hashCode() + "" + jumpNode.hashCode();
-//
-//				if (MyCache.getInstance().existsInReachableFrom(key)) {
-//					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
-//					log.debug("Value cached");
-//				} else {
-//					MyCache.getInstance().addReachableFrom(key, reachableFrom);
-//				}
-
-				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
 				if (pushedJumps.contains(jumpNode)) {
 					resolvedJumps++;
 					continue;
 				}
+				
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
 					definitelyUnreachable++;
 					continue;
