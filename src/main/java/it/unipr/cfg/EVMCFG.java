@@ -43,7 +43,6 @@ public class EVMCFG extends CFG {
 	private Set<Statement> jumpNodes;
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
-	private Set<Statement> sha3s;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
