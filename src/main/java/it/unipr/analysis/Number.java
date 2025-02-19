@@ -82,7 +82,7 @@ public class Number implements Comparable<Number> {
 			return new Number(i + other.getInt());
 		if (this.getType() == other.getType() && other.getType() == Type.LONG)
 			return new Number((long) l - other.getLong());
-		
+
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 

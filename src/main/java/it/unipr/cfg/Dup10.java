@@ -38,5 +38,5 @@ public class Dup10 extends Dup {
 				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 						Dup10Operator.INSTANCE, getLocation()),
 				this);
-	}	
+	}
 }

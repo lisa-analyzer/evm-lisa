@@ -26,7 +26,7 @@ public abstract class Swap extends Statement {
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
 		return visitor.visit(tool, getCFG(), this);
 	}
-	
+
 	@Override
 	protected int compareSameClass(Statement o) {
 		// we cannot have more than one statement on the same code location

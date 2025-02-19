@@ -11,7 +11,7 @@ import it.unive.lisa.type.Untyped;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class HexDecimalLiteral extends Literal<String> {
-	
+
 	/**
 	 * The string value representing a hexadecimal number.
 	 */

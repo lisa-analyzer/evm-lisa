@@ -1,14 +1,5 @@
 package it.unipr.cfg;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
@@ -35,6 +26,14 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
@@ -52,32 +51,32 @@ public class EVMCFG extends CFG {
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
 	}
-	
+
 	public void computeHotspotNodes() {
 		this.jumpDestsNodes = new HashSet<Statement>();
 		this.jumpNodes = new HashSet<Statement>();
 		this.pushedJumps = new HashSet<Statement>();
 		this.sstores = new HashSet<Statement>();
-		
+
 		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 
 		for (Statement statement : cfgNodeList.getNodes()) {
-			if (statement instanceof Sstore) 
+			if (statement instanceof Sstore)
 				sstores.add(statement);
-			else if  (statement instanceof Jumpdest)
+			else if (statement instanceof Jumpdest)
 				jumpDestsNodes.add(statement);
 			else if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
 				jumpNodes.add(statement);
 			}
-			
+
 		}
-		
+
 		for (Edge edge : cfgNodeList.getEdges())
 			if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
 					&& (edge.getSource() instanceof Push))
 				pushedJumps.add(edge.getDestination());
 	}
-	
+
 	/**
 	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
 	 *
@@ -164,22 +163,22 @@ public class EVMCFG extends CFG {
 		fix = conf.optimize ? new OptimizedFixpoint<>(this, true, conf.hotspots) : new Fixpoint<>(this, true);
 		Map<Statement, CompoundState<A>> descending;
 		switch (conf.descendingPhaseType) {
-			case GLB:
-				// DescendingGLBFixpoint<A> dg = new DescendingGLBFixpoint<>(this,
-				// conf.glbThreshold,
-				// interprocedural);
-				// descending = fix.fixpoint(starting, ws, dg, ascending);
-				// break;
-			case NARROWING:
-				// DescendingNarrowingFixpoint<A> dn = new
-				// DescendingNarrowingFixpoint<>(this, interprocedural);
-				// descending = fix.fixpoint(starting, ws, dn, ascending);
-				// break;
-			case NONE:
-			default:
-				// should never happen
-				descending = ascending;
-				break;
+		case GLB:
+			// DescendingGLBFixpoint<A> dg = new DescendingGLBFixpoint<>(this,
+			// conf.glbThreshold,
+			// interprocedural);
+			// descending = fix.fixpoint(starting, ws, dg, ascending);
+			// break;
+		case NARROWING:
+			// DescendingNarrowingFixpoint<A> dn = new
+			// DescendingNarrowingFixpoint<>(this, interprocedural);
+			// descending = fix.fixpoint(starting, ws, dn, ascending);
+			// break;
+		case NONE:
+		default:
+			// should never happen
+			descending = ascending;
+			break;
 		}
 
 		return flatten(conf.optimize, singleton, startingPoints, interprocedural, id, descending);
@@ -189,10 +188,10 @@ public class EVMCFG extends CFG {
 			T extends TypeDomain<T>,
 			A extends AbstractState<A>,
 			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-			boolean isOptimized, AnalysisState<A> singleton,
-			Map<Statement, AnalysisState<A>> startingPoints,
-			InterproceduralAnalysis<A> interprocedural, ScopeId id,
-			Map<Statement, CompoundState<A>> fixpointResults) {
+					boolean isOptimized, AnalysisState<A> singleton,
+					Map<Statement, AnalysisState<A>> startingPoints,
+					InterproceduralAnalysis<A> interprocedural, ScopeId id,
+					Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -202,7 +201,7 @@ public class EVMCFG extends CFG {
 
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
-				interprocedural)
+						interprocedural)
 				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 

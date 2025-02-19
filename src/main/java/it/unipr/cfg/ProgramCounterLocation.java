@@ -1,8 +1,7 @@
 package it.unipr.cfg;
 
-import java.util.Objects;
-
 import it.unive.lisa.program.cfg.CodeLocation;
+import java.util.Objects;
 
 /**
  * Represent the code location of an opcode in the control flow graph.

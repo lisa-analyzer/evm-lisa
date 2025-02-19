@@ -1,8 +1,5 @@
 package it.unipr.checker;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
@@ -23,6 +20,8 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TimestampDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
@@ -93,7 +92,7 @@ public class TimestampDependencyChecker implements
 			return true;
 		return false;
 	}
-	
+
 	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {

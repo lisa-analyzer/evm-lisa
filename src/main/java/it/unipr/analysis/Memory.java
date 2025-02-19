@@ -1,9 +1,8 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.lattices.FunctionalLattice;
 import java.util.HashMap;
 import java.util.Map;
-
-import it.unive.lisa.analysis.lattices.FunctionalLattice;
 
 public class Memory extends FunctionalLattice<Memory, Number, StackElement> {
 

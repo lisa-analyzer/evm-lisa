@@ -1,14 +1,5 @@
 package it.unipr.checker;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -38,6 +29,13 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A semantic checker that aims at solving JUMP and JUMPI destinations by
@@ -180,7 +178,7 @@ public class JumpSolver implements
 
 		LiSAConfiguration conf = tool.getConfiguration();
 		LiSA lisa = new LiSA(conf);
-				
+
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
 

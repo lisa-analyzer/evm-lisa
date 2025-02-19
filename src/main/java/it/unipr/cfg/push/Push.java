@@ -1,7 +1,5 @@
 package it.unipr.cfg.push;
 
-import java.math.BigInteger;
-
 import it.unipr.analysis.operator.PushOperator;
 import it.unipr.cfg.HexDecimalLiteral;
 import it.unive.lisa.analysis.AbstractState;
@@ -18,6 +16,7 @@ import it.unive.lisa.program.cfg.statement.evaluation.EvaluationOrder;
 import it.unive.lisa.program.cfg.statement.evaluation.LeftToRightEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
+import java.math.BigInteger;
 
 /**
  * A Push opcode with a single sub-expression.

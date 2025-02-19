@@ -27,7 +27,6 @@ public abstract class Log extends Statement {
 		return visitor.visit(tool, getCFG(), this);
 	}
 
-	
 	@Override
 	protected int compareSameClass(Statement o) {
 		// we cannot have more than one statement on the same code location

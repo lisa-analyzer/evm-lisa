@@ -42,8 +42,10 @@ public class Jump extends Statement {
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
-				JumpOperator.INSTANCE, getLocation()), this);
+		return entryState.smallStepSemantics(
+				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
+						JumpOperator.INSTANCE, getLocation()),
+				this);
 	}
 
 	@Override

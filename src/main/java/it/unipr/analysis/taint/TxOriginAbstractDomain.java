@@ -1,16 +1,16 @@
 package it.unipr.analysis.taint;
 
+import it.unipr.analysis.operator.OriginOperator;
+import it.unive.lisa.symbolic.value.Operator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
-import it.unipr.analysis.operator.OriginOperator;
-import it.unive.lisa.symbolic.value.Operator;
-
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
+			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
+			TaintElement.CLEAN);
 	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
 
 	/**

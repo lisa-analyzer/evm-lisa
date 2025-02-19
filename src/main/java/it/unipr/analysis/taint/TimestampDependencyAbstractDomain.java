@@ -1,20 +1,21 @@
 package it.unipr.analysis.taint;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unipr.analysis.operator.BalanceOperator;
 import it.unipr.analysis.operator.BlockhashOperator;
 import it.unipr.analysis.operator.DifficultyOperator;
 import it.unipr.analysis.operator.TimestampOperator;
 import it.unive.lisa.symbolic.value.Operator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
-	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null, TaintElement.BOTTOM);
+			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
+			TaintElement.CLEAN);
+	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
+			TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
