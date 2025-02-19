@@ -26,6 +26,7 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -33,9 +34,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMCFG extends CFG {
+	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<Statement> jumpDestsNodes;
 	private Set<Statement> jumpNodes;
@@ -227,7 +232,7 @@ public class EVMCFG extends CFG {
 		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
 
-		boolean result = dfs(start, target, new HashSet<>());
+		boolean result = bidirectionalSearch(start, target);
 		MyCache.getInstance().addReachableFrom(key, result);
 		return result;
 	}
@@ -251,6 +256,110 @@ public class EVMCFG extends CFG {
 			}
 		}
 
+		return false;
+	}
+
+	private boolean reverseDfs(Statement start, Statement target, Set<Statement> visited) {
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target))
+				return true;
+
+			if (visited.add(current)) {
+				for (Edge edge : list.getIngoingEdges(current)) {
+					Statement next = edge.getSource();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public boolean bidirectionalSearch(Statement start, Statement target) {
+		if (start.equals(target))
+			return true;
+
+		Set<Statement> visitedFromStart = new HashSet<>();
+		Set<Statement> visitedFromTarget = new HashSet<>();
+
+		return dfsForBidirectionalSearch(start, target, visitedFromStart, visitedFromTarget) ||
+				reverseDfsForBidirectionalSearch(target, start, visitedFromTarget, visitedFromStart);
+	}
+
+	private boolean dfsForBidirectionalSearch(Statement start, Statement target, Set<Statement> visitedFromStart,
+			Set<Statement> visitedFromTarget) {
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target) || visitedFromTarget.contains(current))
+				return true;
+
+			if (visitedFromStart.add(current)) {
+				for (Edge edge : list.getOutgoingEdges(current)) {
+					Statement next = edge.getDestination();
+					if (!visitedFromStart.contains(next)) {
+						if (visitedFromTarget.contains(next))
+							return true;
+
+						stack.push(next);
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean reverseDfsForBidirectionalSearch(Statement start, Statement target,
+			Set<Statement> visitedFromTarget, Set<Statement> visitedFromStart) {
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target) || visitedFromStart.contains(current))
+				return true;
+
+			if (visitedFromTarget.add(current)) {
+				for (Edge edge : list.getIngoingEdges(current)) {
+					Statement next = edge.getSource();
+					if (!visitedFromTarget.contains(next)) {
+						if (visitedFromStart.contains(next))
+							return true;
+
+						stack.push(next);
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
+		Deque<Statement> queue = new ArrayDeque<>();
+		queue.add(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+			if (current.equals(target))
+				return true;
+
+			for (Edge edge : list.getOutgoingEdges(current)) {
+				Statement next = edge.getDestination();
+				if (visited.add(next))
+					queue.add(next);
+			}
+		}
 		return false;
 	}
 
