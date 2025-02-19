@@ -58,15 +58,17 @@ public class ReentrancyChecker implements
 					// Nothing to do
 					continue;
 				else if (valueState.isTop())
-					for (Statement sstore : ns)
-						checkForReentrancy(call, sstore, tool, ns, cfg);
+//					for (Statement sstore : ns)
+//						checkForReentrancy(call, sstore, tool, ns, cfg);
+						checkForReentrancy2(call, tool, cfg);
 				else {
 					for (AbstractStack stack : valueState.getStacks()) {
 						StackElement sndElem = stack.getSecondElement();
 
 						if (sndElem.isTop() || sndElem.isTopNotJumpdest())
-							for (Statement sstore : ns)
-								checkForReentrancy(call, sstore, tool, ns, cfg);
+//							for (Statement sstore : ns)
+//								checkForReentrancy(call, sstore, tool, ns, cfg);
+								checkForReentrancy2(call, tool, cfg);
 					}
 				}
 			}
@@ -93,5 +95,22 @@ public class ReentrancyChecker implements
 			tool.warn(warn);
 			MyCache.getInstance().addReentrancyWarning(cfg.hashCode(), warn);
 		}
+	}
+
+	private void checkForReentrancy2(Statement call, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg) {
+
+		Statement otherSstore = cfg.getFurthestSstore(call);
+
+		if(otherSstore == null)
+			return;
+
+		ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+
+		log.debug("Reentrancy attack at {} at line no. {} coming from line {}", sstoreLoc.getPc(),
+				sstoreLoc.getSourceCodeLine(), ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
+		String warn = "Reentrancy attack at " + sstoreLoc.getPc();
+		tool.warn(warn);
+		MyCache.getInstance().addReentrancyWarning(cfg.hashCode(), warn);
 	}
 }
