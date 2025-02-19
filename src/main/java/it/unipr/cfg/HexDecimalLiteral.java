@@ -6,10 +6,15 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
 import it.unive.lisa.type.Untyped;
 
 /**
- * Represent an hexadecimal number with a string.
+ * This class represent a hexadecimal number with a string.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class HexDecimalLiteral extends Literal<String> {
-
+	
+	/**
+	 * The string value representing a hexadecimal number.
+	 */
 	private final String value;
 
 	/**
@@ -26,11 +31,11 @@ public class HexDecimalLiteral extends Literal<String> {
 	}
 
 	/**
-	 * Convert the {@code hexadecimal} string into is hexadecimal value.
+	 * Converts the {@code hexadecimal} string into its hexadecimal value.
 	 * 
 	 * @return the int value of the hexadecimal literal
 	 */
-	public int ConvertFromHexToInt() {
+	public int convertFromHexToInt() {
 		String hexadecimal = value.substring(2);
 		return Integer.parseInt(hexadecimal, 16);
 	}

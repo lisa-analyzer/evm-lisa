@@ -1,10 +1,5 @@
 package it.unipr.cfg;
 
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -32,9 +27,10 @@ public abstract class Log extends Statement {
 		return visitor.visit(tool, getCFG(), this);
 	}
 
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
-			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
-
-		return entryState.top();
+	
+	@Override
+	protected int compareSameClass(Statement o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -372,8 +372,8 @@ public class EVMLiSA {
 		conf.jsonOutput = cmd.hasOption("dump-report");
 		conf.workdir = OUTPUT_DIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		JumpSolver checker = new JumpSolver();
-		conf.semanticChecks.add(checker);
+//		JumpSolver checker = new JumpSolver();
+//		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
@@ -743,17 +743,17 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-				boolean reachableFrom;
-				int key = cfg.hashCode() + entryPoint.hashCode() + jumpNode.hashCode();
+//				 reachableFrom;
+////				String key = cfg.hashCode() + "" + entryPoint.hashCode() + "" + jumpNode.hashCode();
+//
+//				if (MyCache.getInstance().existsInReachableFrom(key)) {
+//					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
+//					log.debug("Value cached");
+//				} else {
+//					MyCache.getInstance().addReachableFrom(key, reachableFrom);
+//				}
 
-				if (MyCache.getInstance().existsInReachableFrom(key)) {
-					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
-					log.debug("Value cached");
-				} else {
-					reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-					MyCache.getInstance().addReachableFrom(key, reachableFrom);
-				}
-
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
 				if (pushedJumps.contains(jumpNode)) {

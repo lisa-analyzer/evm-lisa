@@ -1,5 +1,10 @@
 package it.unipr.cfg;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.StackElement;
@@ -16,9 +21,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.HashSet;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Jumpi opcode of the program to analyze.
@@ -46,6 +48,7 @@ public class Jumpi extends Statement {
 		return "JUMPI";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
@@ -86,7 +89,7 @@ public class Jumpi extends Statement {
 
 	@Override
 	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
+		// we cannot have more than one statement on the same code location
 		return 0;
 	}
 }

@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -19,7 +20,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
 	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
-	private final LRUMap<Integer, Boolean> _reachableFrom;
+	private final LRUMap<String, Boolean> _reachableFrom;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -46,7 +47,7 @@ public class MyCache {
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._reachableFrom = new LRUMap<Integer, Boolean>(2000);
+		this._reachableFrom = new LRUMap<String, Boolean>(2000);
 	}
 
 	/**
@@ -158,7 +159,7 @@ public class MyCache {
 	 * @param isReachableFrom {@code true} if the element is reachable,
 	 *                            {@code false} otherwise
 	 */
-	public void addReachableFrom(Integer key, boolean isReachableFrom) {
+	public void addReachableFrom(String key, boolean isReachableFrom) {
 		synchronized (_reachableFrom) {
 			_reachableFrom.put(key, isReachableFrom);
 		}
@@ -174,7 +175,7 @@ public class MyCache {
 	 * 
 	 * @throws NullPointerException if the key does not exist in the map
 	 */
-	public boolean isReachableFrom(Integer key) {
+	public boolean isReachableFrom(String key) {
 		synchronized (_reachableFrom) {
 			return _reachableFrom.get(key);
 		}
@@ -188,7 +189,7 @@ public class MyCache {
 	 * @return {@code true} if the key exists in the map, {@code false}
 	 *             otherwise
 	 */
-	public boolean existsInReachableFrom(Integer key) {
+	public boolean existsInReachableFrom(String key) {
 		synchronized (_reachableFrom) {
 			return (_reachableFrom.get(key) != null);
 		}

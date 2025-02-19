@@ -125,7 +125,7 @@ public class JumpSolver implements
 			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				int key = this.cfgToAnalyze.hashCode() + entryPoint.hashCode() + node.hashCode();
+				String key = this.cfgToAnalyze.hashCode() + "" + entryPoint.hashCode() + "" + node.hashCode();
 				boolean isReachableFrom = this.cfgToAnalyze.reachableFrom(entryPoint, node);
 				MyCache.getInstance().addReachableFrom(key, isReachableFrom); // Caching
 

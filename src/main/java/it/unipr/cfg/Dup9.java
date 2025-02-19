@@ -30,11 +30,6 @@ public class Dup9 extends Dup {
 	}
 
 	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		return visitor.visit(tool, getCFG(), this);
-	}
-
-	@Override
 	public String toString() {
 		return "DUP9";
 	}
@@ -46,11 +41,5 @@ public class Dup9 extends Dup {
 				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 						Dup9Operator.INSTANCE, getLocation()),
 				this);
-	}
-
-	@Override
-	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

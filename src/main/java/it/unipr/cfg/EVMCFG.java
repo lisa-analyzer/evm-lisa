@@ -1,5 +1,14 @@
 package it.unipr.cfg;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
@@ -26,14 +35,6 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
@@ -84,21 +85,21 @@ public class EVMCFG extends CFG {
 	 * Returns a set of all the SHA3 statements in the CFG. SHA3
 	 *
 	 * @return a set of all the SHA3 statements in the CFG
-	 */
-	public Set<Statement> getAllSha3() {
-		if (sha3s == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sha3s = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Sha3)
-					sha3s.add(statement);
-
-			return this.sha3s = sha3s;
-		}
-
-		return sha3s;
-	}
+//	 */
+//	public Set<Statement> getAllSha3() {
+//		if (sha3s == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> sha3s = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Sha3)
+//					sha3s.add(statement);
+//
+//			return this.sha3s = sha3s;
+//		}
+//
+//		return sha3s;
+//	}
 
 	/**
 	 * Returns a set of all the JUMPDEST statements in the CFG.
@@ -157,28 +158,28 @@ public class EVMCFG extends CFG {
 
 		return jumpNodes;
 	}
-
-	/**
-	 * Returns a set of all the JUMPI statements in the CFG.
-	 *
-	 * @return a set of all the JUMPI statements in the CFG
-	 */
-	public Set<Statement> getAllJumpI() {
-		if (jumpNodes == null)
-			getAllJumps();
-		return jumpNodes.stream().filter(s -> s instanceof Jumpi).collect(Collectors.toSet());
-	}
-
-	/**
-	 * Returns a set of all the JUMP statements in the CFG.
-	 *
-	 * @return a set of all the JUMP statements in the CFG
-	 */
-	public Set<Statement> getAllJump() {
-		if (jumpNodes == null)
-			getAllJumps();
-		return jumpNodes.stream().filter(s -> s instanceof Jump).collect(Collectors.toSet());
-	}
+//
+//	/**
+//	 * Returns a set of all the JUMPI statements in the CFG.
+//	 *
+//	 * @return a set of all the JUMPI statements in the CFG
+//	 */
+//	public Set<Statement> getAllJumpI() {
+//		if (jumpNodes == null)
+//			getAllJumps();
+//		return jumpNodes.stream().filter(s -> s instanceof Jumpi).collect(Collectors.toSet());
+//	}
+//
+//	/**
+//	 * Returns a set of all the JUMP statements in the CFG.
+//	 *
+//	 * @return a set of all the JUMP statements in the CFG
+//	 */
+//	public Set<Statement> getAllJump() {
+//		if (jumpNodes == null)
+//			getAllJumps();
+//		return jumpNodes.stream().filter(s -> s instanceof Jump).collect(Collectors.toSet());
+//	}
 
 	public int getOpcodeCount() {
 		// -1 for the return statement, that it does not correspond to an actual
@@ -298,7 +299,7 @@ public class EVMCFG extends CFG {
 	}*/
 
 	public boolean reachableFrom(Statement start, Statement target) {
-		int key = this.hashCode() + start.hashCode() + target.hashCode() + 1;
+		String key = this.hashCode() + "" + start.hashCode() + "" +target.hashCode();
 		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
 
@@ -338,7 +339,7 @@ public class EVMCFG extends CFG {
 	}*/
 
 	public boolean reachableFromSequentially(Statement start, Statement target) {
-		int key = this.hashCode() + start.hashCode() + target.hashCode() + 2;
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
 		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
 

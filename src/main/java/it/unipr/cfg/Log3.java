@@ -32,6 +32,7 @@ public class Log3 extends Log {
 		return "LOG3";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
@@ -39,11 +40,5 @@ public class Log3 extends Log {
 				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 						Log3Operator.INSTANCE, getLocation()),
 				this);
-	}
-
-	@Override
-	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
