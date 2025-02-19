@@ -1,7 +1,6 @@
 package it.unipr.cfg;
 
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,10 +39,10 @@ import it.unive.lisa.util.datastructures.graph.code.NodeList;
 public class EVMCFG extends CFG {
 
 	private Set<Statement> jumpDestsNodes;
-	private Set<Number> jumpDestsNodesLocations;
 	private Set<Statement> jumpNodes;
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
+	private Set<Number> jumpDestsNodesLocations;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -53,31 +52,38 @@ public class EVMCFG extends CFG {
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
 	}
+	
+	public void computeHotspotNodes() {
+		this.jumpDestsNodes = new HashSet<Statement>();
+		this.jumpNodes = new HashSet<Statement>();
+		this.pushedJumps = new HashSet<Statement>();
+		this.sstores = new HashSet<Statement>();
+		
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 
-	private EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
-				   NodeList<CFG, Statement, Edge> list) {
-		super(descriptor, entrypoints, list);
+		for (Statement statement : cfgNodeList.getNodes()) {
+			if (statement instanceof Sstore) 
+				sstores.add(statement);
+			else if  (statement instanceof Jumpdest)
+				jumpDestsNodes.add(statement);
+			else if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
+				jumpNodes.add(statement);
+			}
+			
+		}
+		
+		for (Edge edge : cfgNodeList.getEdges())
+			if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
+					&& (edge.getSource() instanceof Push))
+				pushedJumps.add(edge.getDestination());
 	}
-
+	
 	/**
 	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
 	 *
 	 * @return a set of all the SSTORE statements in the CFG
 	 */
 	public Set<Statement> getAllSstore() {
-		if (sstores == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sstores = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Sstore) {
-					sstores.add(statement);
-				}
-			}
-
-			return this.sstores = sstores;
-		}
-
 		return sstores;
 	}
 
@@ -87,17 +93,6 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMPDEST statements in the CFG
 	 */
 	public Set<Statement> getAllJumpdest() {
-		if (jumpDestsNodes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpdestStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Jumpdest)
-					jumpdestStatements.add(statement);
-
-			return this.jumpDestsNodes = jumpdestStatements;
-		}
-
 		return jumpDestsNodes;
 	}
 
@@ -107,8 +102,6 @@ public class EVMCFG extends CFG {
 	 * @return the program counters of all JUMPDEST statements
 	 */
 	public Set<Number> getAllJumpdestLocations() {
-		if (jumpDestsNodes == null)
-			getAllJumpdest();
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
 					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
@@ -124,18 +117,6 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMP and JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumps() {
-		if (jumpNodes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
-					jumpStatements.add(statement);
-				}
-			}
-			return jumpNodes = jumpStatements;
-		}
-
 		return jumpNodes;
 	}
 
@@ -153,16 +134,6 @@ public class EVMCFG extends CFG {
 	 *             the CFG
 	 */
 	public Set<Statement> getAllPushedJumps() {
-		if (pushedJumps == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			pushedJumps = new HashSet<>();
-
-			for (Edge edge : cfgNodeList.getEdges())
-				if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
-						&& (edge.getSource() instanceof Push))
-					pushedJumps.add(edge.getDestination());
-		}
-
 		return pushedJumps;
 	}
 
