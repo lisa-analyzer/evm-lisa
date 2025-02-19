@@ -1,5 +1,6 @@
 package it.unipr.cfg;
 
+import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
@@ -45,7 +46,7 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Builds a EVMCFG starting from its description.
-	 * 
+	 *
 	 * @param cfgDesc the EVMCFG description
 	 */
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
@@ -53,13 +54,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
-			NodeList<CFG, Statement, Edge> list) {
+				   NodeList<CFG, Statement, Edge> list) {
 		super(descriptor, entrypoints, list);
 	}
 
 	/**
 	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
-	 * 
+	 *
 	 * @return a set of all the SSTORE statements in the CFG
 	 */
 	public Set<Statement> getAllSstore() {
@@ -81,7 +82,7 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Returns a set of all the SHA3 statements in the CFG. SHA3
-	 * 
+	 *
 	 * @return a set of all the SHA3 statements in the CFG
 	 */
 	public Set<Statement> getAllSha3() {
@@ -121,7 +122,7 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Yields the program counters of all JUMPDEST statements.
-	 * 
+	 *
 	 * @return the program counters of all JUMPDEST statements
 	 */
 	public Set<Number> getAllJumpdestLocations() {
@@ -138,7 +139,7 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Returns a set of all the JUMP and JUMPI statements in the CFG.
-	 * 
+	 *
 	 * @return a set of all the JUMP and JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumps() {
@@ -159,7 +160,7 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Returns a set of all the JUMPI statements in the CFG.
-	 * 
+	 *
 	 * @return a set of all the JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumpI() {
@@ -188,7 +189,7 @@ public class EVMCFG extends CFG {
 	/**
 	 * Returns a set of all the JUMP statements preceded by a PUSH statement in
 	 * the CFG.
-	 * 
+	 *
 	 * @return a set of all the JUMP statements preceded by a PUSH statement in
 	 *             the CFG
 	 */
@@ -233,22 +234,22 @@ public class EVMCFG extends CFG {
 		fix = conf.optimize ? new OptimizedFixpoint<>(this, true, conf.hotspots) : new Fixpoint<>(this, true);
 		Map<Statement, CompoundState<A>> descending;
 		switch (conf.descendingPhaseType) {
-		case GLB:
-			// DescendingGLBFixpoint<A> dg = new DescendingGLBFixpoint<>(this,
-			// conf.glbThreshold,
-			// interprocedural);
-			// descending = fix.fixpoint(starting, ws, dg, ascending);
-			// break;
-		case NARROWING:
-			// DescendingNarrowingFixpoint<A> dn = new
-			// DescendingNarrowingFixpoint<>(this, interprocedural);
-			// descending = fix.fixpoint(starting, ws, dn, ascending);
-			// break;
-		case NONE:
-		default:
-			// should never happen
-			descending = ascending;
-			break;
+			case GLB:
+				// DescendingGLBFixpoint<A> dg = new DescendingGLBFixpoint<>(this,
+				// conf.glbThreshold,
+				// interprocedural);
+				// descending = fix.fixpoint(starting, ws, dg, ascending);
+				// break;
+			case NARROWING:
+				// DescendingNarrowingFixpoint<A> dn = new
+				// DescendingNarrowingFixpoint<>(this, interprocedural);
+				// descending = fix.fixpoint(starting, ws, dn, ascending);
+				// break;
+			case NONE:
+			default:
+				// should never happen
+				descending = ascending;
+				break;
 		}
 
 		return flatten(conf.optimize, singleton, startingPoints, interprocedural, id, descending);
@@ -258,10 +259,10 @@ public class EVMCFG extends CFG {
 			T extends TypeDomain<T>,
 			A extends AbstractState<A>,
 			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-					boolean isOptimized, AnalysisState<A> singleton,
-					Map<Statement, AnalysisState<A>> startingPoints,
-					InterproceduralAnalysis<A> interprocedural, ScopeId id,
-					Map<Statement, CompoundState<A>> fixpointResults) {
+			boolean isOptimized, AnalysisState<A> singleton,
+			Map<Statement, AnalysisState<A>> startingPoints,
+			InterproceduralAnalysis<A> interprocedural, ScopeId id,
+			Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -271,7 +272,7 @@ public class EVMCFG extends CFG {
 
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
-						interprocedural)
+				interprocedural)
 				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
@@ -292,8 +293,18 @@ public class EVMCFG extends CFG {
 					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
 	}
 
-	public boolean reachableFrom(Statement start, Statement target) {
+	/*public boolean reachableFrom(Statement start, Statement target) {
 		return dfs(start, target, new HashSet<>());
+	}*/
+
+	public boolean reachableFrom(Statement start, Statement target) {
+		int key = this.hashCode() + start.hashCode() + target.hashCode() + 1;
+		if (MyCache.getInstance().existsInReachableFrom(key))
+			return MyCache.getInstance().isReachableFrom(key);
+
+		boolean result = dfs(start, target, new HashSet<>());
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
 	}
 
 	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
@@ -322,8 +333,18 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	public boolean reachableFromSequentially(Statement start, Statement target) {
+	/*public boolean reachableFromSequentially(Statement start, Statement target) {
 		return dfsSequential(start, target, new HashSet<>());
+	}*/
+
+	public boolean reachableFromSequentially(Statement start, Statement target) {
+		int key = this.hashCode() + start.hashCode() + target.hashCode() + 2;
+		if (MyCache.getInstance().existsInReachableFrom(key))
+			return MyCache.getInstance().isReachableFrom(key);
+
+		boolean result = dfsSequential(start, target, new HashSet<>());
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
 	}
 
 	private boolean dfsSequential(Statement start, Statement target, Set<Statement> visited) {
