@@ -33,7 +33,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * Builds an initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this.stack = new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.BOTTOM));
+		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.BOTTOM)));
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	/**
-	 * Getter for the StackElement at the top of the stack.
+	 * Yields the last element of the stack (i.e., the top of the stack).
 	 *
 	 * @return the StackElement at the top of the stack.
 	 */

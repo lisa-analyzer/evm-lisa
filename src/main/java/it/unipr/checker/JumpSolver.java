@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
@@ -131,9 +130,7 @@ public class JumpSolver implements
 			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
 
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				String key = this.cfgToAnalyze.hashCode() + "" + entryPoint.hashCode() + "" + node.hashCode();
 				boolean isReachableFrom = this.cfgToAnalyze.reachableFrom(entryPoint, node);
-				MyCache.getInstance().addReachableFrom(key, isReachableFrom); // Caching
 
 				if (cfgToAnalyze.getAllPushedJumps().contains(node)
 						|| !isReachableFrom)
@@ -188,7 +185,7 @@ public class JumpSolver implements
 
 		LiSAConfiguration conf = tool.getConfiguration();
 		LiSA lisa = new LiSA(conf);
-
+				
 		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
 		program.addCodeMember(cfgToAnalyze);
 

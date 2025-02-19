@@ -1,12 +1,13 @@
 package it.unipr.cfg;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 import it.unipr.analysis.MyCache;
@@ -251,12 +252,8 @@ public class EVMCFG extends CFG {
 					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
 	}
 
-	/*public boolean reachableFrom(Statement start, Statement target) {
-		return dfs(start, target, new HashSet<>());
-	}*/
-
 	public boolean reachableFrom(Statement start, Statement target) {
-		String key = this.hashCode() + "" + start.hashCode() + "" +target.hashCode();
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
 		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
 
@@ -266,7 +263,7 @@ public class EVMCFG extends CFG {
 	}
 
 	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
-		Stack<Statement> stack = new Stack<>();
+		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
 
 		while (!stack.isEmpty()) {
@@ -275,12 +272,8 @@ public class EVMCFG extends CFG {
 			if (current.equals(target))
 				return true;
 
-			if (!visited.contains(current)) {
-				visited.add(current);
-
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
-
-				for (Edge edge : outgoingEdges) {
+			if (visited.add(current)) {
+				for (Edge edge : list.getOutgoingEdges(current)) {
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
 						stack.push(next);
@@ -290,10 +283,6 @@ public class EVMCFG extends CFG {
 
 		return false;
 	}
-
-	/*public boolean reachableFromSequentially(Statement start, Statement target) {
-		return dfsSequential(start, target, new HashSet<>());
-	}*/
 
 	public boolean reachableFromSequentially(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
@@ -306,7 +295,7 @@ public class EVMCFG extends CFG {
 	}
 
 	private boolean dfsSequential(Statement start, Statement target, Set<Statement> visited) {
-		Stack<Statement> stack = new Stack<>();
+		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
 
 		while (!stack.isEmpty()) {
@@ -315,12 +304,8 @@ public class EVMCFG extends CFG {
 			if (current.equals(target))
 				return true;
 
-			if (!visited.contains(current)) {
-				visited.add(current);
-
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
-
-				for (Edge edge : outgoingEdges) {
+			if (visited.add(current)) {
+				for (Edge edge : list.getOutgoingEdges(current)) {
 					if (edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
 						continue;
 					Statement next = edge.getDestination();

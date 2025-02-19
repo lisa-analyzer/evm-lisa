@@ -47,7 +47,7 @@ public class MyCache {
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._reachableFrom = new LRUMap<String, Boolean>(2000);
+		this._reachableFrom = new LRUMap<String, Boolean>(20000);
 	}
 
 	/**
