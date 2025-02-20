@@ -48,6 +48,8 @@ public class EVMCFG extends CFG {
 	private Set<Statement> sstores;
 	private Set<Number> jumpDestsNodesLocations;
 
+	private static final ExecutorService _executor = Executors.newFixedThreadPool(10);
+
 	/**
 	 * Builds a EVMCFG starting from its description.
 	 *
@@ -227,10 +229,17 @@ public class EVMCFG extends CFG {
 					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
 	}
 
+	/**
+	 * Checks if the target statement is reachable from the start statement using depth-first search (DFS).
+	 * Caches results to avoid redundant computations.
+	 *
+	 * @param start The starting statement.
+	 * @param target The target statement.
+	 * @return True if the target is reachable from the start, false otherwise.
+	 */
 	public boolean reachableFrom(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
 		if (MyCache.getInstance().existsInReachableFrom(key)) {
-			log.debug("Value cached");
 			return MyCache.getInstance().isReachableFrom(key);
 		}
 
@@ -239,6 +248,14 @@ public class EVMCFG extends CFG {
 		return result;
 	}
 
+	/**
+	 * Performs a depth-first search (DFS) to determine if the target statement is reachable from the start statement.
+	 *
+	 * @param start The starting statement.
+	 * @param target The target statement.
+	 * @param visited A set of visited statements to avoid cycles.
+	 * @return True if the target is reachable from the start, false otherwise.
+	 */
 	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
 		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
@@ -261,91 +278,14 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	private boolean reverseDfs(Statement start, Statement target, Set<Statement> visited) {
-		Deque<Statement> stack = new ArrayDeque<>();
-		stack.push(start);
-
-		while (!stack.isEmpty()) {
-			Statement current = stack.pop();
-
-			if (current.equals(target))
-				return true;
-
-			if (visited.add(current)) {
-				for (Edge edge : list.getIngoingEdges(current)) {
-					Statement next = edge.getSource();
-					if (!visited.contains(next))
-						stack.push(next);
-				}
-			}
-		}
-
-		return false;
-	}
-
-	public boolean bidirectionalSearch(Statement start, Statement target) {
-		if (start.equals(target))
-			return true;
-
-		Set<Statement> visitedFromStart = new HashSet<>();
-		Set<Statement> visitedFromTarget = new HashSet<>();
-
-		return dfsForBidirectionalSearch(start, target, visitedFromStart, visitedFromTarget) ||
-				reverseDfsForBidirectionalSearch(target, start, visitedFromTarget, visitedFromStart);
-	}
-
-	private boolean dfsForBidirectionalSearch(Statement start, Statement target, Set<Statement> visitedFromStart,
-			Set<Statement> visitedFromTarget) {
-		Deque<Statement> stack = new ArrayDeque<>();
-		stack.push(start);
-
-		while (!stack.isEmpty()) {
-			Statement current = stack.pop();
-
-			if (current.equals(target) || visitedFromTarget.contains(current))
-				return true;
-
-			if (visitedFromStart.add(current)) {
-				for (Edge edge : list.getOutgoingEdges(current)) {
-					Statement next = edge.getDestination();
-					if (!visitedFromStart.contains(next)) {
-						if (visitedFromTarget.contains(next))
-							return true;
-
-						stack.push(next);
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean reverseDfsForBidirectionalSearch(Statement start, Statement target,
-			Set<Statement> visitedFromTarget, Set<Statement> visitedFromStart) {
-		Deque<Statement> stack = new ArrayDeque<>();
-		stack.push(start);
-
-		while (!stack.isEmpty()) {
-			Statement current = stack.pop();
-
-			if (current.equals(target) || visitedFromStart.contains(current))
-				return true;
-
-			if (visitedFromTarget.add(current)) {
-				for (Edge edge : list.getIngoingEdges(current)) {
-					Statement next = edge.getSource();
-					if (!visitedFromTarget.contains(next)) {
-						if (visitedFromStart.contains(next))
-							return true;
-
-						stack.push(next);
-					}
-				}
-			}
-		}
-		return false;
-	}
-
+	/**
+	 * Performs a breadth-first search (BFS) to determine if the target statement is reachable from the start statement.
+	 *
+	 * @param start The starting statement.
+	 * @param target The target statement.
+	 * @param visited A set of visited statements to avoid cycles.
+	 * @return True if the target is reachable from the start, false otherwise.
+	 */
 	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
 		Deque<Statement> queue = new ArrayDeque<>();
 		queue.add(start);
@@ -365,55 +305,37 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	public Statement getFurthestSstore(Statement start) {
+	/**
+	 * Finds the furthest reachable SSTORE statements from a given start statement using BFS.
+	 *
+	 * @param start The starting statement.
+	 * @return A set of the furthest reachable SSTORE statements.
+	 */
+	public Set<Statement> getFurthestSstores(Statement start) {
 		Deque<Statement> queue = new ArrayDeque<>();
 		Set<Statement> visited = new HashSet<>();
-		Statement last = null;
-		int currentDepth = 0;
-		int depth = currentDepth;
+		Set<Statement> last = new HashSet<>();
 
 		queue.add(start);
 		visited.add(start);
 
 		while (!queue.isEmpty()) {
 			Statement current = queue.poll();
-			if (current instanceof Sstore)
-				if(currentDepth > depth) { // Update only if it is furthest
-					last = current;
-					currentDepth = depth;
-				}
+			if (current instanceof Sstore) {
+				last.add(current);
+			}
 
 			for (Edge edge : list.getOutgoingEdges(current)) {
+				// With this statement we are sound on 29.sol, but unsound on
+				// 21.sol
+//				if ((edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
+//					&& !last.isEmpty())
+//					continue;
+
 				Statement next = edge.getDestination();
 				if (visited.add(next)) {
 					queue.add(next);
-					++currentDepth;
 				}
-			}
-		}
-		return last;
-	}
-
-	public Statement getFurthestSstoreSequentially(Statement start) {
-		Deque<Statement> queue = new ArrayDeque<>();
-		Set<Statement> visited = new HashSet<>();
-		Statement last = null;
-
-		queue.add(start);
-		visited.add(start);
-
-		while (!queue.isEmpty()) {
-			Statement current = queue.poll();
-			if (current instanceof Sstore)
-				last = current;
-
-			for (Edge edge : list.getOutgoingEdges(current)) {
-				if (edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
-					continue;
-
-				Statement next = edge.getDestination();
-				if (visited.add(next))
-					queue.add(next);
 			}
 		}
 		return last;
@@ -422,7 +344,6 @@ public class EVMCFG extends CFG {
 	public boolean reachableFromSequentially(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "sequentially";
 		if (MyCache.getInstance().existsInReachableFrom(key)) {
-			log.debug("Value cached");
 			return MyCache.getInstance().isReachableFrom(key);
 		}
 
@@ -452,73 +373,6 @@ public class EVMCFG extends CFG {
 			}
 		}
 
-		return false;
-	}
-
-	public boolean sequentialBidirectionalSearch(Statement start, Statement target) {
-		if (start.equals(target))
-			return true;
-
-		Set<Statement> visitedFromStart = new HashSet<>();
-		Set<Statement> visitedFromTarget = new HashSet<>();
-
-		return dfsSequentialForBidirectionalSearch(start, target, visitedFromStart, visitedFromTarget) ||
-				reverseDfsSequentialForBidirectionalSearch(target, start, visitedFromTarget, visitedFromStart);
-	}
-
-	private boolean dfsSequentialForBidirectionalSearch(Statement start, Statement target, Set<Statement> visitedFromStart,
-											  Set<Statement> visitedFromTarget) {
-		Deque<Statement> stack = new ArrayDeque<>();
-		stack.push(start);
-
-		while (!stack.isEmpty()) {
-			Statement current = stack.pop();
-
-			if (current.equals(target) || visitedFromTarget.contains(current))
-				return true;
-
-			if (visitedFromStart.add(current)) {
-				for (Edge edge : list.getOutgoingEdges(current)) {
-					if (edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
-						continue;
-					Statement next = edge.getDestination();
-					if (!visitedFromStart.contains(next)) {
-						if (visitedFromTarget.contains(next))
-							return true;
-
-						stack.push(next);
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean reverseDfsSequentialForBidirectionalSearch(Statement start, Statement target,
-													 Set<Statement> visitedFromTarget, Set<Statement> visitedFromStart) {
-		Deque<Statement> stack = new ArrayDeque<>();
-		stack.push(start);
-
-		while (!stack.isEmpty()) {
-			Statement current = stack.pop();
-
-			if (current.equals(target) || visitedFromStart.contains(current))
-				return true;
-
-			if (visitedFromTarget.add(current)) {
-				for (Edge edge : list.getIngoingEdges(current)) {
-					if (edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
-						continue;
-					Statement next = edge.getSource();
-					if (!visitedFromTarget.contains(next)) {
-						if (visitedFromStart.contains(next))
-							return true;
-
-						stack.push(next);
-					}
-				}
-			}
-		}
 		return false;
 	}
 }

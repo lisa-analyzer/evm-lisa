@@ -58,17 +58,13 @@ public class ReentrancyChecker implements
 					// Nothing to do
 					continue;
 				else if (valueState.isTop())
-//					for (Statement sstore : ns)
-//						checkForReentrancy(call, sstore, tool, ns, cfg);
-						checkForReentrancy2(call, tool, cfg);
+					checkForReentrancy(call, tool, cfg);
 				else {
 					for (AbstractStack stack : valueState.getStacks()) {
 						StackElement sndElem = stack.getSecondElement();
 
 						if (sndElem.isTop() || sndElem.isTopNotJumpdest())
-//							for (Statement sstore : ns)
-//								checkForReentrancy(call, sstore, tool, ns, cfg);
-								checkForReentrancy2(call, tool, cfg);
+							checkForReentrancy(call, tool, cfg);
 					}
 				}
 			}
@@ -77,17 +73,31 @@ public class ReentrancyChecker implements
 		return true;
 	}
 
-	private void checkForReentrancy(Statement call, Statement sstore, CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
-			Set<Statement> ns, EVMCFG cfg) {
+	/**
+	 * Checks for potential reentrancy vulnerabilities in the contract by analyzing
+	 * the flow from a CALL instruction to the furthest reachable SSTORE instructions.
+	 * If multiple SSTORE instructions are found, it verifies if they are sequentially
+	 * reachable from each other to determine the furthest modification to the contract's state.
+	 *
+	 * @param call The CALL instruction being analyzed.
+	 * @param tool The analysis tool used to track and report vulnerabilities.
+	 * @param cfg The control flow graph of the contract being analyzed.
+	 */
+	private void checkForReentrancy(Statement call, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg) {
 
-		ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) sstore.getLocation();
+		Set<Statement> otherSstores = cfg.getFurthestSstores(call);
 
-		if (cfg.reachableFrom(call, sstore)) {
-			for (Statement otherSstore : ns)
-				if (!otherSstore.equals(sstore))
-					if (cfg.reachableFromSequentially(sstore, otherSstore))
-						sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+		if (otherSstores.isEmpty())
+			return;
+
+		for (Statement otherSstore : otherSstores) {
+			ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+
+			for (Statement otherSstore2 : otherSstores)
+				if (!otherSstore2.equals(otherSstore))
+					if (cfg.reachableFromSequentially(otherSstore, otherSstore2))
+						sstoreLoc = (ProgramCounterLocation) otherSstore2.getLocation();
 
 			log.debug("Reentrancy attack at {} at line no. {} coming from line {}", sstoreLoc.getPc(),
 					sstoreLoc.getSourceCodeLine(), ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
@@ -95,22 +105,5 @@ public class ReentrancyChecker implements
 			tool.warn(warn);
 			MyCache.getInstance().addReentrancyWarning(cfg.hashCode(), warn);
 		}
-	}
-
-	private void checkForReentrancy2(Statement call, CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg) {
-
-		Statement otherSstore = cfg.getFurthestSstore(call);
-
-		if(otherSstore == null)
-			return;
-
-		ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
-
-		log.debug("Reentrancy attack at {} at line no. {} coming from line {}", sstoreLoc.getPc(),
-				sstoreLoc.getSourceCodeLine(), ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
-		String warn = "Reentrancy attack at " + sstoreLoc.getPc();
-		tool.warn(warn);
-		MyCache.getInstance().addReentrancyWarning(cfg.hashCode(), warn);
 	}
 }
