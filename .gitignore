@@ -20,6 +20,7 @@ scripts/python/benchmark-checkers/**/abi/**
 scripts/python/benchmark-checkers/**/json/**
 scripts/python/benchmark-checkers/**/results/**
 scripts/python/benchmark-checkers/images/**
+scripts/python/benchmark-checkers/jars/evm-lisa.jar
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/
