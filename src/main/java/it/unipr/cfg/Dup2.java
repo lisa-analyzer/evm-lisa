@@ -40,10 +40,4 @@ public class Dup2 extends Dup {
 						Dup2Operator.INSTANCE, getLocation()),
 				this);
 	}
-
-	@Override
-	protected int compareSameClass(Statement o) {
-		// we cannot have more than one statement on the same code location
-		return 0;
-	}
 }
