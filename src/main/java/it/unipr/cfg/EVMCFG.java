@@ -27,13 +27,17 @@ import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMCFG extends CFG {
 
@@ -361,5 +365,58 @@ public class EVMCFG extends CFG {
 		}
 
 		return false;
+	}
+
+	public List<Pair<Integer, Integer>> bb() {
+		return bb(this.getEntrypoints().stream().findFirst().get());
+	}
+
+	private List<Pair<Integer, Integer>> bb(Statement start) {
+		Set<Statement> visited = new HashSet<Statement>();
+		List<Pair<Integer, Integer>> basicBlocks = new ArrayList<>();
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+			if (visited.contains(current))
+				continue;
+
+			Statement blockStart = current;
+			Statement blockEnd = current;
+
+			while (true) {
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
+				if (outgoingEdges.isEmpty() || blockEnd instanceof Jump || blockEnd instanceof Invalid
+						|| blockEnd instanceof it.unive.lisa.program.cfg.statement.Return ||
+						blockEnd instanceof Stop || blockEnd instanceof Revert || blockEnd instanceof Selfdestruct
+						|| blockEnd instanceof Jumpi) {
+					break;
+				}
+
+				Statement next = outgoingEdges.iterator().next().getDestination();
+				if (visited.contains(next))
+					break;
+
+				blockEnd = next;
+				visited.add(blockEnd);
+			}
+
+			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
+			for (Edge edge : getOutgoingEdges(blockEnd)) {
+				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
+				if (startPc != endPc) {
+					System.err.println(blockStart + ", " + edge.getDestination() + " " + Pair.of(startPc, endPc));
+					basicBlocks.add(Pair.of(startPc, endPc));
+				}
+			}
+
+			// Push next statements to visit
+			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
+				stack.push(edge.getDestination());
+			}
+		}
+
+		return basicBlocks;
 	}
 }
