@@ -31,6 +31,7 @@ public class Dup2 extends Dup {
 		return "DUP2";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
@@ -38,5 +39,11 @@ public class Dup2 extends Dup {
 				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 						Dup2Operator.INSTANCE, getLocation()),
 				this);
+	}
+
+	@Override
+	protected int compareSameClass(Statement o) {
+		// we cannot have more than one statement on the same code location
+		return 0;
 	}
 }

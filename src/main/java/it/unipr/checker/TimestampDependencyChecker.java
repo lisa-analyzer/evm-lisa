@@ -7,6 +7,7 @@ import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.cfg.Return;
 import it.unipr.cfg.Sha3;
 import it.unipr.cfg.Sstore;
 import it.unive.lisa.analysis.AnalysisState;
@@ -36,7 +37,8 @@ public class TimestampDependencyChecker implements
 
 		EVMCFG cfg = ((EVMCFG) graph);
 
-		if (node instanceof Jump || node instanceof Jumpi || node instanceof Sstore || node instanceof Sha3)
+		if (node instanceof Jump || node instanceof Return || node instanceof Jumpi || node instanceof Sstore
+				|| node instanceof Sha3)
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -57,7 +59,8 @@ public class TimestampDependencyChecker implements
 					// Nothing to do
 					continue;
 				else {
-					if (node instanceof Sha3 || node instanceof Sstore || node instanceof Jumpi) {
+					if (node instanceof Sha3 || node instanceof Sstore || node instanceof Jumpi
+							|| node instanceof Return) {
 						if (checkTaintTwoPops(taintedStack))
 							raiseWarning(node, tool, cfg);
 					} else if (node instanceof Jump) {
@@ -65,7 +68,6 @@ public class TimestampDependencyChecker implements
 							raiseWarning(node, tool, cfg);
 					}
 				}
-
 			}
 
 		return true;
