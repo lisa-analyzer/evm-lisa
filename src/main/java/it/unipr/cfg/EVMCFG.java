@@ -1,5 +1,14 @@
 package it.unipr.cfg;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
@@ -26,29 +35,14 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.*;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class EVMCFG extends CFG {
-	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<Statement> jumpDestsNodes;
 	private Set<Statement> jumpNodes;
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
 	private Set<Number> jumpDestsNodesLocations;
-
-	private static final ExecutorService _executor = Executors.newFixedThreadPool(10);
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -279,33 +273,6 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Performs a breadth-first search (BFS) to determine if the target statement is reachable from the start statement.
-	 *
-	 * @param start The starting statement.
-	 * @param target The target statement.
-	 * @param visited A set of visited statements to avoid cycles.
-	 * @return True if the target is reachable from the start, false otherwise.
-	 */
-	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
-		Deque<Statement> queue = new ArrayDeque<>();
-		queue.add(start);
-		visited.add(start);
-
-		while (!queue.isEmpty()) {
-			Statement current = queue.poll();
-			if (current.equals(target))
-				return true;
-
-			for (Edge edge : list.getOutgoingEdges(current)) {
-				Statement next = edge.getDestination();
-				if (visited.add(next))
-					queue.add(next);
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Finds the furthest reachable SSTORE statements from a given start statement using BFS.
 	 *
 	 * @param start The starting statement.
@@ -326,12 +293,6 @@ public class EVMCFG extends CFG {
 			}
 
 			for (Edge edge : list.getOutgoingEdges(current)) {
-				// With this statement we are sound on 29.sol, but unsound on
-				// 21.sol
-//				if ((edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
-//					&& !last.isEmpty())
-//					continue;
-
 				Statement next = edge.getDestination();
 				if (visited.add(next)) {
 					queue.add(next);
