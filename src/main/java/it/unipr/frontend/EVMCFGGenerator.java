@@ -62,7 +62,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
-	private CFG cfg;
+	private EVMCFG cfg;
 	private int pc = 0; // Program counter
 
 	private final String filePath;
@@ -173,6 +173,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 		unit.addCodeMember(cfg);
 
+		cfg.computeHotspotNodes();
 		return cfg;
 	}
 

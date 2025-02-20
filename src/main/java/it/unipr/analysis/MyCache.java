@@ -18,7 +18,8 @@ public class MyCache {
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
-	private final LRUMap<Integer, Boolean> _reachableFrom;
+	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
+	private final LRUMap<String, Boolean> _reachableFrom;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -44,7 +45,8 @@ public class MyCache {
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._reachableFrom = new LRUMap<Integer, Boolean>(2000);
+		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._reachableFrom = new LRUMap<String, Boolean>(20000);
 	}
 
 	/**
@@ -156,7 +158,7 @@ public class MyCache {
 	 * @param isReachableFrom {@code true} if the element is reachable,
 	 *                            {@code false} otherwise
 	 */
-	public void addReachableFrom(Integer key, boolean isReachableFrom) {
+	public void addReachableFrom(String key, boolean isReachableFrom) {
 		synchronized (_reachableFrom) {
 			_reachableFrom.put(key, isReachableFrom);
 		}
@@ -172,7 +174,7 @@ public class MyCache {
 	 * 
 	 * @throws NullPointerException if the key does not exist in the map
 	 */
-	public boolean isReachableFrom(Integer key) {
+	public boolean isReachableFrom(String key) {
 		synchronized (_reachableFrom) {
 			return _reachableFrom.get(key);
 		}
@@ -186,7 +188,7 @@ public class MyCache {
 	 * @return {@code true} if the key exists in the map, {@code false}
 	 *             otherwise
 	 */
-	public boolean existsInReachableFrom(Integer key) {
+	public boolean existsInReachableFrom(String key) {
 		synchronized (_reachableFrom) {
 			return (_reachableFrom.get(key) != null);
 		}
@@ -223,6 +225,40 @@ public class MyCache {
 	public int getTxOriginWarnings(Integer key) {
 		synchronized (_txOriginWarnings) {
 			return (_txOriginWarnings.get(key) != null) ? _txOriginWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds a timestamp dependency warning for the specified key. If no warnings
+	 * are associated with the key, a new set is created and the warning is
+	 * added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addTimestampDependencyWarning(Integer key, Object warning) {
+		synchronized (_timestampDependencyWarnings) {
+			_timestampDependencyWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of timestamp dependency warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getTimestampDependencyWarnings(Integer key) {
+		synchronized (_timestampDependencyWarnings) {
+			return (_timestampDependencyWarnings.get(key) != null) ? _timestampDependencyWarnings.get(key).size() : 0;
 		}
 	}
 }

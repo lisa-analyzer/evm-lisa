@@ -46,10 +46,20 @@ public class Jumpi extends Statement {
 		return "JUMPI";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
 		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
+
+		if (valueState == null) {
+			// if EVMLiSA is not using EVMAbstractState, we just return the
+			// small-step
+			// semantics of the JUMPI operator
+			Constant c = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
+			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
+					JumpiOperator.INSTANCE, getLocation()), this);
+		}
 
 		// Split here
 		Set<AbstractStack> trueStacks = new HashSet<>();
@@ -77,7 +87,7 @@ public class Jumpi extends Statement {
 
 	@Override
 	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
+		// we cannot have more than one statement on the same code location
 		return 0;
 	}
 }

@@ -35,7 +35,6 @@ public class ReentrancyChecker implements
 
 		if (node instanceof Call) {
 			EVMCFG cfg = ((EVMCFG) graph);
-			Set<Statement> ns = cfg.getAllSstore();
 			Statement call = node; // Renaming
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
@@ -58,15 +57,12 @@ public class ReentrancyChecker implements
 					// Nothing to do
 					continue;
 				else if (valueState.isTop())
-					for (Statement sstore : ns)
-						checkForReentrancy(call, sstore, tool, ns, cfg);
+					checkForReentrancy(call, tool, cfg);
 				else {
 					for (AbstractStack stack : valueState.getStacks()) {
 						StackElement sndElem = stack.getSecondElement();
-
 						if (sndElem.isTop() || sndElem.isTopNotJumpdest())
-							for (Statement sstore : ns)
-								checkForReentrancy(call, sstore, tool, ns, cfg);
+							checkForReentrancy(call, tool, cfg);
 					}
 				}
 			}
@@ -75,17 +71,31 @@ public class ReentrancyChecker implements
 		return true;
 	}
 
-	private void checkForReentrancy(Statement call, Statement sstore, CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
-			Set<Statement> ns, EVMCFG cfg) {
+	/**
+	 * Checks for potential reentrancy vulnerabilities in the contract by
+	 * analyzing the flow from a CALL instruction to the furthest reachable
+	 * SSTORE instructions. If multiple SSTORE instructions are found, it
+	 * verifies if they are sequentially reachable from each other to determine
+	 * the furthest modification to the contract's state.
+	 *
+	 * @param call The CALL instruction being analyzed.
+	 * @param tool The analysis tool used to track and report vulnerabilities.
+	 * @param cfg  The control flow graph of the contract being analyzed.
+	 */
+	private void checkForReentrancy(Statement call, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg) {
 
-		ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) sstore.getLocation();
+		Set<Statement> otherSstores = cfg.getFurthestSstores(call);
 
-		if (cfg.reachableFrom(call, sstore)) {
-			for (Statement otherSstore : ns)
-				if (!otherSstore.equals(sstore))
-					if (cfg.reachableFromSequentially(sstore, otherSstore))
-						sstoreLoc = (ProgramCounterLocation) otherSstore.getLocation();
+		if (otherSstores.isEmpty())
+			return;
+
+		for (Statement ss1 : otherSstores) {
+			ProgramCounterLocation sstoreLoc = (ProgramCounterLocation) ss1.getLocation();
+
+			for (Statement ss2 : otherSstores)
+				if (!ss2.equals(ss1) && cfg.reachableFromSequentially(ss1, ss2))
+					sstoreLoc = (ProgramCounterLocation) ss2.getLocation();
 
 			log.debug("Reentrancy attack at {} at line no. {} coming from line {}", sstoreLoc.getPc(),
 					sstoreLoc.getSourceCodeLine(), ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());

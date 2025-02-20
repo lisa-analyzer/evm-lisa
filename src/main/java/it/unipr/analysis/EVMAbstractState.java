@@ -213,31 +213,24 @@ public class EVMAbstractState
 
 					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
-				case "OriginOperator": { // ORIGIN
-					// At the moment, we do not handle ORIGIN
 
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CallerOperator": { // CALLER
-					// At the moment, we do not handle CALLER
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
+				case "GasOperator": // GAS
+				case "MsizeOperator": // MSIZE
+				case "BasefeeOperator": // BASEFEE
+				case "CoinbaseOperator": // COINBASE
+				case "TimestampOperator": // TIMESTAMP
+				case "NumberOperator": // NUMBER
+				case "DifficultyOperator": // DIFFICULTY
+				case "GaslimitOperator": // GASLIMIT
+				case "ChainidOperator": // CHAINID
+				case "SelfbalanceOperator": // SELFBALANCE
+				case "ReturndatasizeOperator": // RETURNDATASIZE
+				case "GaspriceOperator": // GASPRICE
+				case "CodesizeOperator": // CODESIZE
+				case "OriginOperator": // ORIGIN
+				case "CallerOperator": // CALLER
+				case "CalldatasizeOperator": // CALLDATASIZE
 				case "CallvalueOperator": { // CALLVALUE
-					// At the moment, we do not handle CALLVALUE
-
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
@@ -246,129 +239,8 @@ public class EVMAbstractState
 
 					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
-				case "CalldatasizeOperator": { // CALLDATASIZE
-					// At the moment, we do not handle CALLDATASIZE
 
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CodesizeOperator": { // CODESIZE
-					// At the moment, we do not handle CODESIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "GaspriceOperator": { // GASPRICE
-					// At the moment, we do not handle GASPRIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ReturndatasizeOperator": { // RETURNDATASIZE
-					// At the moment, we do not handle RETURNDATASIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "CoinbaseOperator": { // COINBASE
-					// At the moment, we do not handle COINBASE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "TimestampOperator": { // TIMESTAMP
-					// At the moment, we do not handle TIMESTAMP
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "NumberOperator": { // NUMBER
-					// At the moment, we do not handle NUMBER
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "DifficultyOperator": { // DIFFICULTY
-					// At the moment, we do not handle DIFFICULTY
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "GaslimitOperator": { // GASLIMIT
-					// At the moment, we do not handle GASLIMIT
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "ChainidOperator": { // CHAINID
-					// At the moment, we do not handle CHAINID
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "SelfbalanceOperator": { // SELFBALANCE
-					// At the moment, we do not handle SELFBALANCE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
 				case "PcOperator": { // PC
-
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
 						Integer i = (Integer) ((Constant) un.getExpression()).getValue();
@@ -378,39 +250,7 @@ public class EVMAbstractState
 
 					return new EVMAbstractState(result, memory, storage, mu_i);
 				}
-				case "GasOperator": { // GAS
-					// At the moment, we do not handle GAS
 
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "MsizeOperator": { // MSIZE
-					// At the moment, we do not handle MSIZE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
-				case "BasefeeOperator": { // BASEFEE
-					// At the moment, we do not handle BASEFEE
-
-					for (AbstractStack stack : stacks) {
-						AbstractStack resultStack = stack.clone();
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						result.add(resultStack);
-					}
-
-					return new EVMAbstractState(result, memory, storage, mu_i);
-				}
 				case "JumpdestOperator": { // JUMPDEST
 					return this;
 				}
@@ -520,7 +360,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "DivOperator": { // DIV
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -542,7 +381,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SdivOperator": { // SDIV
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -564,7 +402,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ModOperator": { // MOD
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -582,7 +419,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SmodOperator": { // SMOD
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -600,7 +436,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "AddmodOperator": { // ADDMOD
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -612,14 +447,12 @@ public class EVMAbstractState
 						resultStack.push(opnd1.addmod(opnd2, opnd3));
 						result.add(resultStack);
 					}
-
 					if (result.isEmpty())
 						return BOTTOM;
 					else
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MulmodOperator": { // MULMOD
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -638,7 +471,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExpOperator": { // EXP
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -656,7 +488,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SignextendOperator": { // SIGNEXTEND
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -674,7 +505,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "LtOperator": { // LT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -692,7 +522,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SltOperator": { // SLT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -710,7 +539,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "GtOperator": { // GT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -728,7 +556,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "SgtOperator": { // SGT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -746,7 +573,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "EqOperator": { // EQ
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -764,7 +590,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "IszeroOperator": { // ISZERO
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -781,7 +606,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "AndOperator": { // AND
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -799,7 +623,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "OrOperator": { // OR
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -817,7 +640,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "XorOperator": { // XOR
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -835,7 +657,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "NotOperator": { // NOT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -852,7 +673,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ByteOperator": { // BYTE
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -888,7 +708,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ShlOperator": { // SHL
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -906,7 +725,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ShrOperator": { // SHR
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -942,8 +760,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Sha3Operator": { // SHA3
-					// At the moment, we do not handle SHA3
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -961,8 +777,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "BalanceOperator": { // BALANCE
-					// At the moment, we do not handle BALANCE
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -979,8 +793,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CalldataloadOperator": { // CALLDATALOAD
-					// At the moment, we do not handle CALLDATALOAD
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -997,8 +809,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CalldatacopyOperator": { // CALLDATACOPY
-					// At the moment, we do not handle CALLDATACOPY
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -1016,8 +826,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CodecopyOperator": { // CODECOPY
-					// At the moment, we do not handle CODECOPY
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -1035,8 +843,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExtcodesizeOperator": { // EXTCODESIZE
-					// At the moment, we do not handle EXTCODESIZE
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -1053,8 +859,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExtcodecopyOperator": { // EXTCODECOPY
-					// At the moment, we do not handle EXTCODECOPY
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(4))
 							continue;
@@ -1073,8 +877,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
-					// At the moment, we do not handle RETURNDATACOPY
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -1092,8 +894,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ExtcodehashOperator": { // EXTCODEHASH
-					// At the moment, we do not handle EXTCODEHASH
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -1110,8 +910,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "BlockhashOperator": { // BLOCKHASH
-					// At the moment, we do not handle BLOCKHASH
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -1128,7 +926,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "PopOperator": { // POP
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -1143,7 +940,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MloadOperator": { // MLOAD
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -1175,7 +971,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MstoreOperator": { // MSTORE
-
 					Memory memoryResult = memory;
 					StackElement new_mu_i = mu_i;
 
@@ -1212,7 +1007,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
 				}
 				case "Mstore8Operator": { // MSTORE8
-
 					Memory memoryResult = memory;
 					StackElement new_mu_i = mu_i;
 
@@ -1769,8 +1563,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log0Operator": { // LOG0
-					// At the moment, we do not handle LOG0
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -1787,8 +1579,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log1Operator": { // LOG1
-					// At the moment, we do not handle LOG1
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -1806,8 +1596,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log2Operator": { // LOG2
-					// At the moment, we do not handle LOG2
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(4))
 							continue;
@@ -1826,8 +1614,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log3Operator": { // LOG3
-					// At the moment, we do not handle LOG3
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(5))
 							continue;
@@ -1847,8 +1633,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Log4Operator": { // LOG4
-					// At the moment, we do not handle LOG4
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(6))
 							continue;
@@ -1869,8 +1653,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CreateOperator": { // CREATE
-					// At the moment, we do not handle CREATE
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
@@ -1889,8 +1671,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "Create2Operator": { // CREATE2
-					// At the moment, we do not handle CREATE2
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(4))
 							continue;
@@ -1910,8 +1690,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CallOperator": { // CALL
-					// At the moment, we do not handle CALL
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(7))
 							continue;
@@ -1934,8 +1712,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "CallcodeOperator": { // CALLCODE
-					// At the moment, we do not handle CALLCODE
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(7))
 							continue;
@@ -1958,8 +1734,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "ReturnOperator": { // RETURN
-					// At the moment, we do not handle RETURN
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -1976,8 +1750,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "DelegatecallOperator": { // DELEGATECALL
-					// At the moment, we do not handle DELEGATECALL
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(6))
 							continue;
@@ -1999,8 +1771,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "StaticcallOperator": { // STATICCALL
-					// At the moment, we do not handle STATICCALL
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(6))
 							continue;
@@ -2022,8 +1792,6 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "RevertOperator": { // REVERT
-					// At the moment, we do not handle REVERT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
@@ -2043,8 +1811,6 @@ public class EVMAbstractState
 					return this;
 				}
 				case "SelfdestructOperator": { // SELFDESTRUCT
-					// At the moment, we do not handle SELFDESTRUCT
-
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
@@ -2144,8 +1910,7 @@ public class EVMAbstractState
 
 	@Override
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
-			SemanticOracle oracle)
-			throws SemanticException {
+			SemanticOracle oracle) {
 		// Ensures BOTTOM and TOP propagation
 		if (this.isBottom() || this.isTop())
 			return this;
@@ -2299,7 +2064,7 @@ public class EVMAbstractState
 	 * @return the interval value at the top of the stack.
 	 */
 	public Set<StackElement> getTop() {
-		Set<StackElement> result = new HashSet<StackElement>();
+		Set<StackElement> result = new HashSet<>();
 		for (AbstractStack stack : stacks)
 			result.add(stack.getTop());
 
@@ -2307,7 +2072,7 @@ public class EVMAbstractState
 	}
 
 	public Set<StackElement> getSecondElement() {
-		Set<StackElement> result = new HashSet<StackElement>();
+		Set<StackElement> result = new HashSet<>();
 		for (AbstractStack stack : stacks)
 			result.add(stack.getSecondElement());
 
@@ -2392,10 +2157,6 @@ public class EVMAbstractState
 	 * @return a {@link StackElement} containing the storage value if the
 	 *             request is successful, or {@link StackElement#NUMERIC_TOP} if
 	 *             an error occurs.
-	 * 
-	 * @throws IOException          if an I/O error occurs while making the API
-	 *                                  request.
-	 * @throws InterruptedException if the thread is interrupted while sleeping.
 	 */
 	public StackElement getStorageAt(Number key, String address) {
 		try {
@@ -2419,9 +2180,7 @@ public class EVMAbstractState
 			BigInteger decimal = new BigInteger(bytecode, 16);
 
 			return new StackElement(decimal);
-		} catch (IOException e) {
-			log.error(e.getMessage());
-		} catch (InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			log.error(e.getMessage());
 		}
 
