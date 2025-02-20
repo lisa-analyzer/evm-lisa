@@ -92,9 +92,6 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) throws Exception {
 		new EVMLiSA().go(args);
-
-//		String bytecode = "0x60806040 ...";
-//		List<Pair<Integer, Integer>> basicBlocks = new EVMLiSA().computeBasicBlocks(bytecode);
 	}
 
 	/**
