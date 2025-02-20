@@ -14,8 +14,8 @@ EVMLiSA is based on the peer-reviewed publication
 
 # 🛠 Building EVMLiSA
 Compiling EVMLiSA requires:
-- JDK >= 11
-- [Gradle](https://gradle.org/releases/) >= 6.6
+- JDK >= 11 (optional using Docker)
+- [Gradle](https://gradle.org/releases/) >= 8.0 (optional using Docker)
 - [Etherscan API key](https://etherscan.io/myapikey)
 
 You need to:
@@ -53,38 +53,22 @@ docker run --rm -it \
 -v $(pwd)/.env:/app/.env \
 -v $(pwd)/execution/docker:/app/execution/results \
 evm-lisa:latest \
--a <smart_contract_address> [options]
+[options]
 ```
 
 - `-v $(pwd)/.env:/app/.env`: mount the `.env` file.
 - `-v $(pwd)/execution/docker:/app/execution/results`: share the results' folder.
 
-> Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
-
 ## Via Bash
 Build the Project:
 ```bash
-./gradlew build
-```
-
-Create Distribution Zip:
-```bash
-./gradlew distZip
-```
-
-Unzip the Distribution:
-```bash
-unzip build/distributions/evm-lisa.zip -d execution
+./gradlew assemble
 ```
 
 Then you can run EVMLiSA with:
 ```bash
-./execution/evm-lisa/bin/evm-lisa \
--a <smart_contract_address> [options]
+java -jar build/libs/evm-lisa-all.jar [options]
 ```
-> Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
-
-This command will initiate the analysis process for the specified smart contract, providing insights and results based on the EVM bytecode of the contract.
 
 ```
 Options:
@@ -92,6 +76,7 @@ Options:
  -b,--benchmark <arg>                      Filepath of the benchmark.
  -c,--cores <arg>                          Number of cores used in benchmark.
     --checker-reentrancy                   Enable re-entrancy checker.
+    --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
     --creation-code                        Parse bytecode as creation code (instead of runtime code).
     --dot                                  Export a dot-notation file.
@@ -99,7 +84,6 @@ Options:
     --dump-report                          Dump analysis report.
     --dump-stats                           Dump statistics.
  -f,--filepath-bytecode <arg>              Filepath of the bytecode file.
-    --filepath-mnemonic <arg>              Filepath of the mnemonic file.
     --html                                 Export a graphic HTML report.
     --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
  -o,--output <arg>                         Output directory path.
@@ -119,12 +103,12 @@ Here is an example of how to run EVMLiSA. In this example, we will analyze a sma
 
 - Bash:
 ```bash
-./execution/evm-lisa/bin/evm-lisa \
+java -jar build/libs/evm-lisa-all.jar \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---dump-stats \
---use-live-storage
+--creation-code \
+--link-unsound-jumps-to-all-jumpdest
 ```
 
 - Docker:
@@ -136,8 +120,8 @@ evm-lisa:latest \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---dump-stats \
---use-live-storage
+--creation-code \
+--link-unsound-jumps-to-all-jumpdest
 ```
 
 > Use `docker run -a stderr` to dump only the json report as standard output.
