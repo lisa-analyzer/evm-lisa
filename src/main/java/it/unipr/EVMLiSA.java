@@ -379,8 +379,6 @@ public class EVMLiSA {
 		conf.jsonOutput = cmd.hasOption("dump-report");
 		conf.workdir = OUTPUT_DIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-//		JumpSolver checker = new JumpSolver();
-//		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
