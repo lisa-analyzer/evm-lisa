@@ -380,114 +380,114 @@ if __name__ == "__main__":
                                           abi_dir='./cross-chain/THORChain-bridge/abi/')
 
     if args.solidifi:
-        compile_solidity_sources('./reentrancy-solidifi/source-code',
-                                 './reentrancy-solidifi/json')
-        compile_solidity_sources('./vanilla-solidifi/source-code',
-                                 './vanilla-solidifi/json')
-        compile_solidity_sources('./tx-origin-solidifi/source-code',
-                                 './tx-origin-solidifi/json')
-        compile_solidity_sources('./timestamp-dependency-solidifi/source-code',
-                                 './timestamp-dependency-solidifi/json')
+        compile_solidity_sources('./solidifi/reentrancy/source-code',
+                                 './solidifi/reentrancy/json')
+        compile_solidity_sources('./solidifi/vanilla/source-code',
+                                 './solidifi/vanilla/json')
+        compile_solidity_sources('./solidifi/tx-origin/source-code',
+                                 './solidifi/tx-origin/json')
+        compile_solidity_sources('./solidifi/timestamp-dependency/source-code',
+                                 './solidifi/timestamp-dependency/json')
         
         if args.longest_bytecode:
             # EVMLiSA
-            extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/evmlisa',
-                                              './vanilla-solidifi/json',
-                                              abi_dir='./vanilla-solidifi/abi/evmlisa')
-            extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
-                                              './reentrancy-solidifi/json',
-                                              abi_dir='./reentrancy-solidifi/abi/evmlisa')
+            extract_and_save_longest_bytecode('./solidifi/vanilla/bytecode/evmlisa',
+                                              './solidifi/vanilla/json',
+                                              abi_dir='./solidifi/vanilla/abi/evmlisa')
+            extract_and_save_longest_bytecode('./solidifi/reentrancy/bytecode/evmlisa',
+                                              './solidifi/reentrancy/json',
+                                              abi_dir='./solidifi/reentrancy/abi/evmlisa')
                 # TX-ORIGIN
-            extract_and_save_longest_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
-                                              './tx-origin-solidifi/json')
+            extract_and_save_longest_bytecode('./solidifi/tx-origin/bytecode/evmlisa',
+                                              './solidifi/tx-origin/json')
 
                 # Timestamp-dependency
-            extract_and_save_longest_bytecode('./timestamp-dependency-solidifi/bytecode/evmlisa',
-                                              './timestamp-dependency-solidifi/json')
+            extract_and_save_longest_bytecode('./solidifi/timestamp-dependency/bytecode/evmlisa',
+                                              './solidifi/timestamp-dependency/json')
 
             # EtherSolve
-            extract_and_save_longest_bytecode('./vanilla-solidifi/bytecode/ethersolve',
-                                              './vanilla-solidifi/json',
+            extract_and_save_longest_bytecode('./solidifi/vanilla/bytecode/ethersolve',
+                                              './solidifi/vanilla/json',
                                               True)
-            extract_and_save_longest_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
-                                              './reentrancy-solidifi/json',
+            extract_and_save_longest_bytecode('./solidifi/reentrancy/bytecode/ethersolve',
+                                              './solidifi/reentrancy/json',
                                               True)
         else:
             # EVMLiSA
-            extract_and_save_bytecode('./vanilla-solidifi/bytecode/evmlisa',
-                                      './vanilla-solidifi/json')
-            extract_and_save_bytecode('./reentrancy-solidifi/bytecode/evmlisa',
-                                      './reentrancy-solidifi/json')
+            extract_and_save_bytecode('./solidifi/vanilla/bytecode/evmlisa',
+                                      './solidifi/vanilla/json')
+            extract_and_save_bytecode('./solidifi/reentrancy/bytecode/evmlisa',
+                                      './solidifi/reentrancy/json')
                 # TX-ORIGIN
-            extract_and_save_bytecode('./tx-origin-solidifi/bytecode/evmlisa',
-                                      './tx-origin-solidifi/json')
+            extract_and_save_bytecode('./solidifi/tx-origin/bytecode/evmlisa',
+                                      './solidifi/tx-origin/json')
 
                 # Timestamp-dependency
-            extract_and_save_bytecode('./timestamp-dependency-solidifi/bytecode/evmlisa',
-                                      './timestamp-dependency-solidifi/json')
+            extract_and_save_bytecode('./solidifi/timestamp-dependency/bytecode/evmlisa',
+                                      './solidifi/timestamp-dependency/json')
             
             # EtherSolve
-            extract_and_save_bytecode('./vanilla-solidifi/bytecode/ethersolve',
-                                      './vanilla-solidifi/json',
+            extract_and_save_bytecode('./solidifi/vanilla/bytecode/ethersolve',
+                                      './solidifi/vanilla/json',
                                       True)
-            extract_and_save_bytecode('./reentrancy-solidifi/bytecode/ethersolve',
-                                      './reentrancy-solidifi/json',
+            extract_and_save_bytecode('./solidifi/reentrancy/bytecode/ethersolve',
+                                      './solidifi/reentrancy/json',
                                       True)
     
     if args.smartbugs:
-        compile_solidity_sources_with_different_version('./reentrancy-smartbugs/source-code',
-                                                        './reentrancy-smartbugs/json',
-                                                        './reentrancy-smartbugs/source-code/version.csv')
+        compile_solidity_sources_with_different_version('./smartbugs/reentrancy/source-code',
+                                                        './smartbugs/reentrancy/json',
+                                                        './smartbugs/reentrancy/source-code/version.csv')
 
-        compile_solidity_sources_with_different_version('./timestamp-dependency-smartbugs/source-code',
-                                                        './timestamp-dependency-smartbugs/json',
-                                                        './timestamp-dependency-smartbugs/source-code/version.csv')
+        compile_solidity_sources_with_different_version('./smartbugs/timestamp-dependency/source-code',
+                                                        './smartbugs/timestamp-dependency/json',
+                                                        './smartbugs/timestamp-dependency/source-code/version.csv')
 
         if args.longest_bytecode:
-            extract_and_save_longest_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
-                                              './reentrancy-smartbugs/json')
-            extract_and_save_longest_bytecode('./timestamp-dependency-smartbugs/bytecode/evmlisa',
-                                              './timestamp-dependency-smartbugs/json')
-            extract_and_save_longest_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
-                                              './reentrancy-smartbugs/json',
+            extract_and_save_longest_bytecode('./smartbugs/reentrancy/bytecode/evmlisa',
+                                              './smartbugs/reentrancy/json')
+            extract_and_save_longest_bytecode('./smartbugs/timestamp-dependency/bytecode/evmlisa',
+                                              './smartbugs/timestamp-dependency/json')
+            extract_and_save_longest_bytecode('./smartbugs/reentrancy/bytecode/ethersolve',
+                                              './smartbugs/reentrancy/json',
                                               True)
         else:
-            extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/evmlisa',
-                                      './reentrancy-smartbugs/json')
-            extract_and_save_bytecode('./timestamp-dependency-smartbugs/bytecode/evmlisa',
-                                      './timestamp-dependency-smartbugs/json')
-            extract_and_save_bytecode('./reentrancy-smartbugs/bytecode/ethersolve',
-                                      './reentrancy-smartbugs/json',
+            extract_and_save_bytecode('./smartbugs/reentrancy/bytecode/evmlisa',
+                                      './smartbugs/reentrancy/json')
+            extract_and_save_bytecode('./smartbugs/timestamp-dependency/bytecode/evmlisa',
+                                      './smartbugs/timestamp-dependency/json')
+            extract_and_save_bytecode('./smartbugs/reentrancy/bytecode/ethersolve',
+                                      './smartbugs/reentrancy/json',
                                       True)
     
     if args.slise:
-        extract_solidity_versions('./reentrancy-slise-db1/source-code',
-                                  './reentrancy-slise-db1/source-code/version.csv')
-        generate_file_index('./reentrancy-slise-db1/source-code',
-                            './reentrancy-slise-db1/match-file-index.json')
-        compile_solidity_sources_with_different_version('./reentrancy-slise-db1/source-code',
-                                                        './reentrancy-slise-db1/json',
-                                                        './reentrancy-slise-db1/source-code/version.csv')
+        extract_solidity_versions('./slise/reentrancy-db1/source-code',
+                                  './slise/reentrancy-db1/source-code/version.csv')
+        generate_file_index('./slise/reentrancy-db1/source-code',
+                            './slise/reentrancy-db1/match-file-index.json')
+        compile_solidity_sources_with_different_version('./slise/reentrancy-db1/source-code',
+                                                        './slise/reentrancy-db1/json',
+                                                        './slise/reentrancy-db1/source-code/version.csv')
         
-        with open('./reentrancy-slise-db1/match-file-index.json', 'r') as index_file:
+        with open('./slise/reentrancy-db1/match-file-index.json', 'r') as index_file:
             match_file_index = json.load(index_file)
 
         if args.longest_bytecode:
-            extract_and_save_longest_bytecode('./reentrancy-slise-db1/bytecode/evmlisa',
-                                              './reentrancy-slise-db1/json',
+            extract_and_save_longest_bytecode('./slise/reentrancy-db1/bytecode/evmlisa',
+                                              './slise/reentrancy-db1/json',
                                               False,
                                               match_file_index)
-            extract_and_save_longest_bytecode('./reentrancy-slise-db1/bytecode/ethersolve',
-                                              './reentrancy-slise-db1/json',
+            extract_and_save_longest_bytecode('./slise/reentrancy-db1/bytecode/ethersolve',
+                                              './slise/reentrancy-db1/json',
                                               True,
                                               match_file_index)
         else:
             
-            extract_and_save_bytecode('./reentrancy-slise-db1/bytecode/evmlisa',
-                                      './reentrancy-slise-db1/json', 
+            extract_and_save_bytecode('./slise/reentrancy-db1/bytecode/evmlisa',
+                                      './slise/reentrancy-db1/json', 
                                       False, 
                                       match_file_index)
-            extract_and_save_bytecode('./reentrancy-slise-db1/bytecode/ethersolve',
-                                      './reentrancy-slise-db1/json',
+            extract_and_save_bytecode('./slise/reentrancy-db1/bytecode/ethersolve',
+                                      './slise/reentrancy-db1/json',
                                       True,
                                       match_file_index)

@@ -24,7 +24,6 @@ public class Push19 extends Push {
 	 */
 	public Push19(CFG cfg, CodeLocation location, HexDecimalLiteral expression) {
 		super(cfg, location, "PUSH19", expression);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

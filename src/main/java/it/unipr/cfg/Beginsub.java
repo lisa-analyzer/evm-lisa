@@ -45,7 +45,7 @@ public class Beginsub extends Statement {
 
 	@Override
 	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
+		// we cannot have more than one statement on the same code location
 		return 0;
 	}
 }

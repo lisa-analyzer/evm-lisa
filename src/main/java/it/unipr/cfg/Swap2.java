@@ -39,6 +39,7 @@ public class Swap2 extends Swap {
 		return "SWAP2";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
@@ -46,11 +47,5 @@ public class Swap2 extends Swap {
 				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 						Swap2Operator.INSTANCE, getLocation()),
 				this);
-	}
-
-	@Override
-	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

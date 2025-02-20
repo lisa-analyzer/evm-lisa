@@ -40,6 +40,7 @@ public class Push0 extends Statement {
 		return "PUSH0";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
@@ -51,7 +52,7 @@ public class Push0 extends Statement {
 
 	@Override
 	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
+		// we cannot have more than one statement on the same code location
 		return 0;
 	}
 

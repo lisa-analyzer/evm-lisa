@@ -1,7 +1,10 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.*;
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.Number;
+import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
@@ -122,15 +125,8 @@ public class JumpSolver implements
 			this.maybeUnsoundJumps = new HashSet<>();
 			this.unsoundJumps = new HashSet<>();
 
-			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
-
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				int key = this.cfgToAnalyze.hashCode() + entryPoint.hashCode() + node.hashCode();
-				boolean isReachableFrom = this.cfgToAnalyze.reachableFrom(entryPoint, node);
-				MyCache.getInstance().addReachableFrom(key, isReachableFrom); // Caching
-
-				if (cfgToAnalyze.getAllPushedJumps().contains(node)
-						|| !isReachableFrom)
+				if (cfgToAnalyze.getAllPushedJumps().contains(node))
 					continue;
 
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,

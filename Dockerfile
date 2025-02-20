@@ -2,7 +2,7 @@
 FROM openjdk:11-jdk-slim
 
 # Specify the version of Gradle to install
-ARG GRADLE_VERSION=6.6
+ARG GRADLE_VERSION=8.0
 
 # Install Gradle
 RUN apt-get update && apt-get install -y wget unzip git && \
@@ -23,14 +23,10 @@ WORKDIR /app
 COPY . .
 
 # Build the project with Gradle
-RUN gradle build
-
-# Extract the project ZIP file for distribution
-RUN gradle distZip && \
-    unzip -o build/distributions/evm-lisa.zip -d /app/execution
+RUN gradle assemble
 
 # Create results directory
 RUN mkdir -p /app/execution/results
 
 # Set the entry point of the container
-ENTRYPOINT ["/app/execution/evm-lisa/bin/evm-lisa"]
+ENTRYPOINT ["java", "-jar", "/app/build/libs/evm-lisa-all.jar"]

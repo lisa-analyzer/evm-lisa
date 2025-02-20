@@ -1,5 +1,6 @@
 package it.unipr.cfg;
 
+import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
@@ -25,78 +26,64 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
 	private Set<Statement> jumpDestsNodes;
-	private Set<Number> jumpDestsNodesLocations;
 	private Set<Statement> jumpNodes;
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
-	private Set<Statement> sha3s;
+	private Set<Number> jumpDestsNodesLocations;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
-	 * 
+	 *
 	 * @param cfgDesc the EVMCFG description
 	 */
 	public EVMCFG(CodeMemberDescriptor cfgDesc) {
 		super(cfgDesc);
 	}
 
-	private EVMCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
-			NodeList<CFG, Statement, Edge> list) {
-		super(descriptor, entrypoints, list);
+	public void computeHotspotNodes() {
+		this.jumpDestsNodes = new HashSet<Statement>();
+		this.jumpNodes = new HashSet<Statement>();
+		this.pushedJumps = new HashSet<Statement>();
+		this.sstores = new HashSet<Statement>();
+
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+
+		for (Statement statement : cfgNodeList.getNodes()) {
+			if (statement instanceof Sstore)
+				sstores.add(statement);
+			else if (statement instanceof Jumpdest)
+				jumpDestsNodes.add(statement);
+			else if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
+				jumpNodes.add(statement);
+			}
+
+		}
+
+		for (Edge edge : cfgNodeList.getEdges())
+			if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
+					&& (edge.getSource() instanceof Push))
+				pushedJumps.add(edge.getDestination());
 	}
 
 	/**
 	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
-	 * 
+	 *
 	 * @return a set of all the SSTORE statements in the CFG
 	 */
 	public Set<Statement> getAllSstore() {
-		if (sstores == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sstores = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Sstore) {
-					sstores.add(statement);
-				}
-			}
-
-			return this.sstores = sstores;
-		}
-
 		return sstores;
-	}
-
-	/**
-	 * Returns a set of all the SHA3 statements in the CFG. SHA3
-	 * 
-	 * @return a set of all the SHA3 statements in the CFG
-	 */
-	public Set<Statement> getAllSha3() {
-		if (sha3s == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sha3s = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Sha3)
-					sha3s.add(statement);
-
-			return this.sha3s = sha3s;
-		}
-
-		return sha3s;
 	}
 
 	/**
@@ -105,28 +92,15 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMPDEST statements in the CFG
 	 */
 	public Set<Statement> getAllJumpdest() {
-		if (jumpDestsNodes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpdestStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Jumpdest)
-					jumpdestStatements.add(statement);
-
-			return this.jumpDestsNodes = jumpdestStatements;
-		}
-
 		return jumpDestsNodes;
 	}
 
 	/**
 	 * Yields the program counters of all JUMPDEST statements.
-	 * 
+	 *
 	 * @return the program counters of all JUMPDEST statements
 	 */
 	public Set<Number> getAllJumpdestLocations() {
-		if (jumpDestsNodes == null)
-			getAllJumpdest();
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
 					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
@@ -138,45 +112,11 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Returns a set of all the JUMP and JUMPI statements in the CFG.
-	 * 
+	 *
 	 * @return a set of all the JUMP and JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumps() {
-		if (jumpNodes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
-					jumpStatements.add(statement);
-				}
-			}
-			return jumpNodes = jumpStatements;
-		}
-
 		return jumpNodes;
-	}
-
-	/**
-	 * Returns a set of all the JUMPI statements in the CFG.
-	 * 
-	 * @return a set of all the JUMPI statements in the CFG
-	 */
-	public Set<Statement> getAllJumpI() {
-		if (jumpNodes == null)
-			getAllJumps();
-		return jumpNodes.stream().filter(s -> s instanceof Jumpi).collect(Collectors.toSet());
-	}
-
-	/**
-	 * Returns a set of all the JUMP statements in the CFG.
-	 *
-	 * @return a set of all the JUMP statements in the CFG
-	 */
-	public Set<Statement> getAllJump() {
-		if (jumpNodes == null)
-			getAllJumps();
-		return jumpNodes.stream().filter(s -> s instanceof Jump).collect(Collectors.toSet());
 	}
 
 	public int getOpcodeCount() {
@@ -188,21 +128,11 @@ public class EVMCFG extends CFG {
 	/**
 	 * Returns a set of all the JUMP statements preceded by a PUSH statement in
 	 * the CFG.
-	 * 
+	 *
 	 * @return a set of all the JUMP statements preceded by a PUSH statement in
 	 *             the CFG
 	 */
 	public Set<Statement> getAllPushedJumps() {
-		if (pushedJumps == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			pushedJumps = new HashSet<>();
-
-			for (Edge edge : cfgNodeList.getEdges())
-				if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
-						&& (edge.getSource() instanceof Push))
-					pushedJumps.add(edge.getDestination());
-		}
-
 		return pushedJumps;
 	}
 
@@ -292,12 +222,39 @@ public class EVMCFG extends CFG {
 					+ new HashSet<>(entrypoints).retainAll(list.getNodes()));
 	}
 
+	/**
+	 * Checks if the target statement is reachable from the start statement
+	 * using depth-first search (DFS). Caches results to avoid redundant
+	 * computations.
+	 *
+	 * @param start  The starting statement.
+	 * @param target The target statement.
+	 * 
+	 * @return True if the target is reachable from the start, false otherwise.
+	 */
 	public boolean reachableFrom(Statement start, Statement target) {
-		return dfs(start, target, new HashSet<>());
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
+		if (MyCache.getInstance().existsInReachableFrom(key)) {
+			return MyCache.getInstance().isReachableFrom(key);
+		}
+
+		boolean result = dfs(start, target, new HashSet<>());
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
 	}
 
+	/**
+	 * Performs a depth-first search (DFS) to determine if the target statement
+	 * is reachable from the start statement.
+	 *
+	 * @param start   The starting statement.
+	 * @param target  The target statement.
+	 * @param visited A set of visited statements to avoid cycles.
+	 * 
+	 * @return True if the target is reachable from the start, false otherwise.
+	 */
 	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
-		Stack<Statement> stack = new Stack<>();
+		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
 
 		while (!stack.isEmpty()) {
@@ -306,12 +263,8 @@ public class EVMCFG extends CFG {
 			if (current.equals(target))
 				return true;
 
-			if (!visited.contains(current)) {
-				visited.add(current);
-
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
-
-				for (Edge edge : outgoingEdges) {
+			if (visited.add(current)) {
+				for (Edge edge : list.getOutgoingEdges(current)) {
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
 						stack.push(next);
@@ -322,12 +275,72 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	public boolean reachableFromSequentially(Statement start, Statement target) {
-		return dfsSequential(start, target, new HashSet<>());
+	/**
+	 * Finds the furthest reachable SSTORE statements from a given start
+	 * statement using BFS.
+	 *
+	 * @param start The starting statement.
+	 * 
+	 * @return A set of the furthest reachable SSTORE statements.
+	 */
+	public Set<Statement> getFurthestSstores(Statement start) {
+		Deque<Statement> queue = new ArrayDeque<>();
+		Set<Statement> visited = new HashSet<>();
+		Set<Statement> last = new HashSet<>();
+
+		queue.add(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+			if (current instanceof Sstore) {
+				last.add(current);
+			}
+
+			for (Edge edge : list.getOutgoingEdges(current)) {
+				Statement next = edge.getDestination();
+				if (visited.add(next)) {
+					queue.add(next);
+				}
+			}
+		}
+		return last;
 	}
 
+	/**
+	 * Checks if the target statement is reachable from the start statement
+	 * following only sequential edges. Ignores jumps.
+	 *
+	 * @param start  The starting statement.
+	 * @param target The target statement.
+	 * 
+	 * @return True if the target is sequentially reachable from the start,
+	 *             false otherwise.
+	 */
+	public boolean reachableFromSequentially(Statement start, Statement target) {
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "sequentially";
+		if (MyCache.getInstance().existsInReachableFrom(key)) {
+			return MyCache.getInstance().isReachableFrom(key);
+		}
+
+		boolean result = dfsSequential(start, target, new HashSet<>());
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
+	}
+
+	/**
+	 * Performs a depth-first search (DFS) to determine if the target statement
+	 * is sequentially reachable from the start statement. Ignores jumps.
+	 *
+	 * @param start   The starting statement.
+	 * @param target  The target statement.
+	 * @param visited A set of visited statements to avoid cycles.
+	 * 
+	 * @return True if the target is sequentially reachable from the start,
+	 *             false otherwise.
+	 */
 	private boolean dfsSequential(Statement start, Statement target, Set<Statement> visited) {
-		Stack<Statement> stack = new Stack<>();
+		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
 
 		while (!stack.isEmpty()) {
@@ -336,12 +349,8 @@ public class EVMCFG extends CFG {
 			if (current.equals(target))
 				return true;
 
-			if (!visited.contains(current)) {
-				visited.add(current);
-
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
-
-				for (Edge edge : outgoingEdges) {
+			if (visited.add(current)) {
+				for (Edge edge : list.getOutgoingEdges(current)) {
 					if (edge.getSource() instanceof Jumpi || edge.getSource() instanceof Jump)
 						continue;
 					Statement next = edge.getDestination();

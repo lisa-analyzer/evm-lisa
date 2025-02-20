@@ -20,7 +20,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -42,7 +46,7 @@ public class SolidiFIReentrancyTruth {
 
 		List<String> bytecodes = getFileNamesInDirectory(SOLIDIFI_BYTECODES_DIR);
 
-		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
+		int cores = Runtime.getRuntime().availableProcessors() - 1;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		// Run the benchmark
@@ -104,7 +108,7 @@ public class SolidiFIReentrancyTruth {
 			if (value == valueSolidifi)
 				continue;
 			else if (value < valueSolidifi) {
-				log.error("Unsound on {}.sol", key);
+				log.error("Unsound on {}.sol, {} false negative", key, valueSolidifi - value);
 				soundness = false;
 			} else {
 				log.warn("{} false positive on {}.sol", value - valueSolidifi, key);

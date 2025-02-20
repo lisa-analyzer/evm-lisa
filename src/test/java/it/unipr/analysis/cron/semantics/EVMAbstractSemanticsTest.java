@@ -59,7 +59,6 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.semanticChecks.add(new JumpSolver());
 		conf.useWideningPoints = false;
-
 		return conf;
 	}
 

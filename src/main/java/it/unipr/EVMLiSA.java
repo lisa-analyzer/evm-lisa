@@ -1,9 +1,16 @@
 package it.unipr;
 
-import it.unipr.analysis.*;
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
+import it.unipr.analysis.EVMAbstractState;
+import it.unipr.analysis.MyCache;
+import it.unipr.analysis.MyLogger;
+import it.unipr.analysis.StackElement;
 import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
-import it.unipr.cfg.*;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.Jump;
+import it.unipr.cfg.Jumpi;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TimestampDependencyChecker;
@@ -93,7 +100,7 @@ public class EVMLiSA {
 
 		// Ensure that at least one valid option is provided to specify the
 		// bytecode source
-		if (!cmd.hasOption("address") && !cmd.hasOption("filepath-bytecode") && !cmd.hasOption("mnemonic-bytecode")) {
+		if (!cmd.hasOption("address") && !cmd.hasOption("filepath-bytecode")) {
 			log.error("Address or filepath required.");
 			System.exit(1);
 		}
@@ -248,8 +255,6 @@ public class EVMLiSA {
 		jsonOptions.put("use-creation-code", cmd.hasOption("creation-code"));
 		if (cmd.getOptionValue("filepath-bytecode") != null)
 			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-bytecode"));
-		else
-			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-mnemonic"));
 		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
 		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
 		jsonOptions.put("benchmark", cmd.getOptionValue("benchmark"));
@@ -332,9 +337,6 @@ public class EVMLiSA {
 	}
 
 	private String setupBytecode(CommandLine cmd) {
-		if (cmd.hasOption("mnemonic-bytecode"))
-			return cmd.getOptionValue("mnemonic-bytecode");
-
 		String bytecodePath = _outputDirPath.resolve(cmd.getOptionValue("address") + ".opcode").toString();
 		String bytecode = null;
 
@@ -372,8 +374,6 @@ public class EVMLiSA {
 		conf.jsonOutput = cmd.hasOption("dump-report");
 		conf.workdir = OUTPUT_DIR;
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		JumpSolver checker = new JumpSolver();
-		conf.semanticChecks.add(checker);
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
@@ -715,7 +715,7 @@ public class EVMLiSA {
 		int definitelyUnreachable = 0;
 		int maybeUnreachable = 0;
 		int unsoundJumps = 0;
-		int maybeUnsoundJumps = 0; // checker.getMaybeUnsoundJumps().size();
+		int maybeUnsoundJumps = 0;
 
 		boolean allJumpAreSound = true;
 
@@ -743,23 +743,14 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) {
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
-				boolean reachableFrom;
-				int key = cfg.hashCode() + entryPoint.hashCode() + jumpNode.hashCode();
-
-				if (MyCache.getInstance().existsInReachableFrom(key)) {
-					reachableFrom = MyCache.getInstance().isReachableFrom(key); // Caching
-					log.debug("Value cached");
-				} else {
-					reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
-					MyCache.getInstance().addReachableFrom(key, reachableFrom);
-				}
-
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
 				if (pushedJumps.contains(jumpNode)) {
 					resolvedJumps++;
 					continue;
 				}
+
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
 				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
 					definitelyUnreachable++;
 					continue;
@@ -1048,13 +1039,6 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
-		Option filePathMnemonicOption = Option.builder()
-				.longOpt("filepath-mnemonic")
-				.desc("Filepath of the mnemonic file.")
-				.required(false)
-				.hasArg(true)
-				.build();
-
 		Option stackSizeOption = Option.builder()
 				.longOpt("stack-size")
 				.desc("Dimension of stack (default: 32).")
@@ -1171,7 +1155,6 @@ public class EVMLiSA {
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
-		options.addOption(filePathMnemonicOption);
 		options.addOption(stackSizeOption);
 		options.addOption(stackSetSizeOption);
 		options.addOption(benchmarkOption);
