@@ -1,14 +1,5 @@
 package it.unipr.cfg;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
@@ -35,6 +26,14 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EVMCFG extends CFG {
 
@@ -224,11 +223,13 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Checks if the target statement is reachable from the start statement using depth-first search (DFS).
-	 * Caches results to avoid redundant computations.
+	 * Checks if the target statement is reachable from the start statement
+	 * using depth-first search (DFS). Caches results to avoid redundant
+	 * computations.
 	 *
-	 * @param start The starting statement.
+	 * @param start  The starting statement.
 	 * @param target The target statement.
+	 * 
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
 	public boolean reachableFrom(Statement start, Statement target) {
@@ -243,11 +244,13 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Performs a depth-first search (DFS) to determine if the target statement is reachable from the start statement.
+	 * Performs a depth-first search (DFS) to determine if the target statement
+	 * is reachable from the start statement.
 	 *
-	 * @param start The starting statement.
-	 * @param target The target statement.
+	 * @param start   The starting statement.
+	 * @param target  The target statement.
 	 * @param visited A set of visited statements to avoid cycles.
+	 * 
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
 	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
@@ -273,9 +276,11 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Finds the furthest reachable SSTORE statements from a given start statement using BFS.
+	 * Finds the furthest reachable SSTORE statements from a given start
+	 * statement using BFS.
 	 *
 	 * @param start The starting statement.
+	 * 
 	 * @return A set of the furthest reachable SSTORE statements.
 	 */
 	public Set<Statement> getFurthestSstores(Statement start) {
@@ -302,6 +307,16 @@ public class EVMCFG extends CFG {
 		return last;
 	}
 
+	/**
+	 * Checks if the target statement is reachable from the start statement
+	 * following only sequential edges. Ignores jumps.
+	 *
+	 * @param start  The starting statement.
+	 * @param target The target statement.
+	 * 
+	 * @return True if the target is sequentially reachable from the start,
+	 *             false otherwise.
+	 */
 	public boolean reachableFromSequentially(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "sequentially";
 		if (MyCache.getInstance().existsInReachableFrom(key)) {
@@ -313,6 +328,17 @@ public class EVMCFG extends CFG {
 		return result;
 	}
 
+	/**
+	 * Performs a depth-first search (DFS) to determine if the target statement
+	 * is sequentially reachable from the start statement. Ignores jumps.
+	 *
+	 * @param start   The starting statement.
+	 * @param target  The target statement.
+	 * @param visited A set of visited statements to avoid cycles.
+	 * 
+	 * @return True if the target is sequentially reachable from the start,
+	 *             false otherwise.
+	 */
 	private boolean dfsSequential(Statement start, Statement target, Set<Statement> visited) {
 		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);

@@ -100,7 +100,7 @@ public class EVMLiSA {
 
 		// Ensure that at least one valid option is provided to specify the
 		// bytecode source
-		if (!cmd.hasOption("address") && !cmd.hasOption("filepath-bytecode") && !cmd.hasOption("mnemonic-bytecode")) {
+		if (!cmd.hasOption("address") && !cmd.hasOption("filepath-bytecode")) {
 			log.error("Address or filepath required.");
 			System.exit(1);
 		}
@@ -255,8 +255,6 @@ public class EVMLiSA {
 		jsonOptions.put("use-creation-code", cmd.hasOption("creation-code"));
 		if (cmd.getOptionValue("filepath-bytecode") != null)
 			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-bytecode"));
-		else
-			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-mnemonic"));
 		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
 		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
 		jsonOptions.put("benchmark", cmd.getOptionValue("benchmark"));
@@ -339,9 +337,6 @@ public class EVMLiSA {
 	}
 
 	private String setupBytecode(CommandLine cmd) {
-		if (cmd.hasOption("mnemonic-bytecode"))
-			return cmd.getOptionValue("mnemonic-bytecode");
-
 		String bytecodePath = _outputDirPath.resolve(cmd.getOptionValue("address") + ".opcode").toString();
 		String bytecode = null;
 
@@ -1044,13 +1039,6 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
-		Option filePathMnemonicOption = Option.builder()
-				.longOpt("filepath-mnemonic")
-				.desc("Filepath of the mnemonic file.")
-				.required(false)
-				.hasArg(true)
-				.build();
-
 		Option stackSizeOption = Option.builder()
 				.longOpt("stack-size")
 				.desc("Dimension of stack (default: 32).")
@@ -1167,7 +1155,6 @@ public class EVMLiSA {
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
-		options.addOption(filePathMnemonicOption);
 		options.addOption(stackSizeOption);
 		options.addOption(stackSetSizeOption);
 		options.addOption(benchmarkOption);

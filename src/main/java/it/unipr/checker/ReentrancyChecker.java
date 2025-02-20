@@ -1,10 +1,5 @@
 package it.unipr.checker;
 
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyCache;
@@ -23,16 +18,19 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ReentrancyChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(ReentrancyChecker.class);
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		if (node instanceof Call) {
@@ -42,7 +40,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(call);
@@ -74,14 +72,15 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 	}
 
 	/**
-	 * Checks for potential reentrancy vulnerabilities in the contract by analyzing
-	 * the flow from a CALL instruction to the furthest reachable SSTORE instructions.
-	 * If multiple SSTORE instructions are found, it verifies if they are sequentially
-	 * reachable from each other to determine the furthest modification to the contract's state.
+	 * Checks for potential reentrancy vulnerabilities in the contract by
+	 * analyzing the flow from a CALL instruction to the furthest reachable
+	 * SSTORE instructions. If multiple SSTORE instructions are found, it
+	 * verifies if they are sequentially reachable from each other to determine
+	 * the furthest modification to the contract's state.
 	 *
 	 * @param call The CALL instruction being analyzed.
 	 * @param tool The analysis tool used to track and report vulnerabilities.
-	 * @param cfg The control flow graph of the contract being analyzed.
+	 * @param cfg  The control flow graph of the contract being analyzed.
 	 */
 	private void checkForReentrancy(Statement call, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg) {
