@@ -367,10 +367,25 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
+	/**
+	 * Computes the basic blocks of the control flow graph (CFG) by starting
+	 * from the first available entry point.
+	 *
+	 * @return A list of pairs where each pair represents the start and end
+	 *             program counter of a basic block.
+	 */
 	public List<Pair<Integer, Integer>> bb() {
 		return bb(this.getEntrypoints().stream().findFirst().get());
 	}
 
+	/**
+	 * Performs a depth-first search (DFS) to compute basic blocks in the CFG.
+	 *
+	 * @param start The starting statement of the CFG traversal.
+	 * 
+	 * @return A list of pairs where each pair represents the start and end
+	 *             program counter of a basic block.
+	 */
 	private List<Pair<Integer, Integer>> bb(Statement start) {
 		Set<Statement> visited = new HashSet<Statement>();
 		List<Pair<Integer, Integer>> basicBlocks = new ArrayList<>();
@@ -387,10 +402,14 @@ public class EVMCFG extends CFG {
 
 			while (true) {
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
-				if (outgoingEdges.isEmpty() || blockEnd instanceof Jump || blockEnd instanceof Invalid
-						|| blockEnd instanceof it.unive.lisa.program.cfg.statement.Return ||
-						blockEnd instanceof Stop || blockEnd instanceof Revert || blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Jumpi) {
+				if (outgoingEdges.isEmpty()
+						|| blockEnd instanceof Jump
+						|| blockEnd instanceof Jumpi
+						|| blockEnd instanceof Invalid
+						|| blockEnd instanceof Stop
+						|| blockEnd instanceof Revert
+						|| blockEnd instanceof Selfdestruct
+						|| blockEnd instanceof it.unive.lisa.program.cfg.statement.Return) {
 					break;
 				}
 
@@ -406,7 +425,6 @@ public class EVMCFG extends CFG {
 			for (Edge edge : getOutgoingEdges(blockEnd)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
 				if (startPc != endPc) {
-					System.err.println(blockStart + ", " + edge.getDestination() + " " + Pair.of(startPc, endPc));
 					basicBlocks.add(Pair.of(startPc, endPc));
 				}
 			}

@@ -54,6 +54,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -91,6 +92,57 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) throws Exception {
 		new EVMLiSA().go(args);
+
+//		String bytecode = "0x60806040 ...";
+//		List<Pair<Integer, Integer>> basicBlocks = new EVMLiSA().computeBasicBlocks(bytecode);
+	}
+
+	/**
+	 * Computes the basic blocks of the CFG of a given EVM bytecode.
+	 *
+	 * @param bytecode The EVM bytecode to analyze.
+	 * 
+	 * @return A list of pairs where each pair represents the start and end
+	 *             program counter of a basic block.
+	 * 
+	 * @throws IOException If an error occurs while writing the bytecode to a
+	 *                         file.
+	 */
+	public List<Pair<Integer, Integer>> computeBasicBlocks(String bytecode) throws IOException {
+		EVMFrontend.setUseCreationCode();
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+		String address = setupAnalysisDirectories(null);
+		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
+
+		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
+			writer.write(bytecode);
+		} catch (IOException e) {
+			log.error("Error during writing on file {}", bytecodeFullPath, e);
+			return null;
+		}
+
+		EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(address),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.workdir = OUTPUT_DIR;
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+		conf.useWideningPoints = false;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		log.info("Basic blocks: {}", checker.getComputedCFG().bb().toString());
+
+		return checker.getComputedCFG().bb();
 	}
 
 	private void go(String[] args) throws Exception {
@@ -149,6 +201,9 @@ public class EVMLiSA {
 			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 
 			long finish = System.currentTimeMillis();
+
+			if (cmd.hasOption("basic-blocks"))
+				json.put("basic-blocks", checker.getComputedCFG().bb().toString());
 
 			checkers(conf, lisa, program, checker, json);
 
@@ -315,7 +370,7 @@ public class EVMLiSA {
 
 	private String setupAnalysisDirectories(CommandLine cmd) {
 		String address;
-		if (!cmd.hasOption("address"))
+		if (cmd == null || !cmd.hasOption("address"))
 			address = "no-address-" + System.currentTimeMillis();
 		else
 			address = cmd.getOptionValue("address");
@@ -1152,6 +1207,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option generateBasicBlocksOption = Option.builder()
+				.longOpt("basic-blocks")
+				.desc("Generate basic blocks.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
@@ -1172,6 +1234,7 @@ public class EVMLiSA {
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(generateBasicBlocksOption);
 
 		return options;
 	}
