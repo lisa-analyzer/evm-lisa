@@ -234,7 +234,7 @@ public class EVMCFG extends CFG {
 			return MyCache.getInstance().isReachableFrom(key);
 		}
 
-		boolean result = bidirectionalSearch(start, target);
+		boolean result = dfs(start, target, new HashSet<>());
 		MyCache.getInstance().addReachableFrom(key, result);
 		return result;
 	}
@@ -369,6 +369,8 @@ public class EVMCFG extends CFG {
 		Deque<Statement> queue = new ArrayDeque<>();
 		Set<Statement> visited = new HashSet<>();
 		Statement last = null;
+		int currentDepth = 0;
+		int depth = currentDepth;
 
 		queue.add(start);
 		visited.add(start);
@@ -376,12 +378,17 @@ public class EVMCFG extends CFG {
 		while (!queue.isEmpty()) {
 			Statement current = queue.poll();
 			if (current instanceof Sstore)
-				last = current;
+				if(currentDepth > depth) { // Update only if it is furthest
+					last = current;
+					currentDepth = depth;
+				}
 
 			for (Edge edge : list.getOutgoingEdges(current)) {
 				Statement next = edge.getDestination();
-				if (visited.add(next))
+				if (visited.add(next)) {
 					queue.add(next);
+					++currentDepth;
+				}
 			}
 		}
 		return last;
