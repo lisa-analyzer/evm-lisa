@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class EVMCFG extends CFG {
 
@@ -374,7 +373,7 @@ public class EVMCFG extends CFG {
 	 * @return A list of pairs where each pair represents the start and end
 	 *             program counter of a basic block.
 	 */
-	public List<Pair<Integer, Integer>> bb() {
+	public List<Long[]> bb() {
 		return bb(this.getEntrypoints().stream().findFirst().get());
 	}
 
@@ -386,9 +385,9 @@ public class EVMCFG extends CFG {
 	 * @return A list of pairs where each pair represents the start and end
 	 *             program counter of a basic block.
 	 */
-	private List<Pair<Integer, Integer>> bb(Statement start) {
+	private List<Long[]> bb(Statement start) {
 		Set<Statement> visited = new HashSet<Statement>();
-		List<Pair<Integer, Integer>> basicBlocks = new ArrayList<>();
+		List<Long[]> basicBlocks = new ArrayList<>();
 		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
 
@@ -425,7 +424,7 @@ public class EVMCFG extends CFG {
 			for (Edge edge : getOutgoingEdges(blockEnd)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
 				if (startPc != endPc) {
-					basicBlocks.add(Pair.of(startPc, endPc));
+					basicBlocks.add(new Long[] { (long) startPc, (long) endPc });
 				}
 			}
 

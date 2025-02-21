@@ -54,7 +54,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -105,7 +104,7 @@ public class EVMLiSA {
 	 * @throws IOException If an error occurs while writing the bytecode to a
 	 *                         file.
 	 */
-	public List<Pair<Integer, Integer>> computeBasicBlocks(String bytecode) throws IOException {
+	public List<Long[]> computeBasicBlocks(String bytecode) throws IOException {
 		EVMFrontend.setUseCreationCode();
 		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		String address = setupAnalysisDirectories(null);
