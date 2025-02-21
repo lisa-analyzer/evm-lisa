@@ -7,6 +7,11 @@ import it.unive.lisa.type.Untyped;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * The MLOAD symbolic operator.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class MloadOperator implements UnaryOperator {
 
 	/**
