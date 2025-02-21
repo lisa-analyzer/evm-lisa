@@ -436,4 +436,21 @@ public class EVMCFG extends CFG {
 
 		return basicBlocks;
 	}
+
+	public String bbToString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+
+		boolean first = true;
+		for (Long[] l : bb()) {
+			if (!first)
+				sb.append(", ");
+
+			sb.append("(").append(l[0]).append(",").append(l[1]).append(")");
+			first = false;
+		}
+
+		sb.append("]");
+		return sb.toString();
+	}
 }
