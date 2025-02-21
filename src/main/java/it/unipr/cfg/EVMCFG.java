@@ -21,6 +21,7 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint.CompoundState;
 import it.unive.lisa.program.cfg.fixpoints.OptimizedFixpoint;
+import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
@@ -106,8 +107,8 @@ public class EVMCFG extends CFG {
 	public Set<Number> getAllJumpdestLocations() {
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
-					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
-					.collect(Collectors.toSet());
+			.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
+			.collect(Collectors.toSet());
 		else
 			return jumpDestsNodesLocations;
 
@@ -151,7 +152,7 @@ public class EVMCFG extends CFG {
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-				: new Fixpoint<>(this, false);
+						: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A> asc = new EVMAscendingFixpoint<>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -188,13 +189,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-			T extends TypeDomain<T>,
-			A extends AbstractState<A>,
-			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-					boolean isOptimized, AnalysisState<A> singleton,
-					Map<Statement, AnalysisState<A>> startingPoints,
-					InterproceduralAnalysis<A> interprocedural, ScopeId id,
-					Map<Statement, CompoundState<A>> fixpointResults) {
+	T extends TypeDomain<T>,
+	A extends AbstractState<A>,
+	H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
+			boolean isOptimized, AnalysisState<A> singleton,
+			Map<Statement, AnalysisState<A>> startingPoints,
+			InterproceduralAnalysis<A> interprocedural, ScopeId id,
+			Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -205,7 +206,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override
@@ -408,7 +409,7 @@ public class EVMCFG extends CFG {
 						|| blockEnd instanceof Stop
 						|| blockEnd instanceof Revert
 						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof it.unive.lisa.program.cfg.statement.Return) {
+						|| blockEnd instanceof Ret) {
 					break;
 				}
 
@@ -423,9 +424,8 @@ public class EVMCFG extends CFG {
 			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
 			for (Edge edge : getOutgoingEdges(blockEnd)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
-				if (startPc != endPc) {
+				if (startPc != endPc && !(edge.getDestination() instanceof Ret))
 					basicBlocks.add(new Long[] { (long) startPc, (long) endPc });
-				}
 			}
 
 			// Push next statements to visit
