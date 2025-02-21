@@ -91,53 +91,68 @@ public class ABIManager {
 			if (obj.has("type") && obj.getString("type").equals(type)) {
 				String functionName = obj.getString("name");
 				JSONArray inputs = obj.getJSONArray("inputs");
+				JSONArray outputs = obj.optJSONArray("outputs"); // Recupera
+																	// outputs
+																	// se
+																	// presenti
 
 				List<String> paramTypes = new ArrayList<>();
+				List<String> outputTypes = new ArrayList<>();
 				StringBuilder signatureBuilder = new StringBuilder(functionName).append("(");
 
 				for (int j = 0; j < inputs.length(); j++) {
 					if (j > 0)
 						signatureBuilder.append(",");
 
-					String paramType = inputs.getJSONObject(j).getString("type");
-
-					// Handle tuple (struct) parameters
-					if (paramType.equals("tuple") || paramType.endsWith("[]")) {
-						JSONObject component = inputs.getJSONObject(j);
-						JSONArray components = component.optJSONArray("components");
-
-						if (components != null) {
-							StringBuilder tupleSignature = new StringBuilder("(");
-							for (int k = 0; k < components.length(); k++) {
-								if (k > 0)
-									tupleSignature.append(",");
-								tupleSignature.append(components.getJSONObject(k).getString("type"));
-							}
-							tupleSignature.append(")");
-
-							if (paramType.endsWith("[]")) {
-								tupleSignature.append("[]");
-							}
-
-							paramType = tupleSignature.toString();
-						}
-					}
-
+					String paramType = parseParameterType(inputs.getJSONObject(j));
 					paramTypes.add(paramType);
 					signatureBuilder.append(paramType);
 				}
 				signatureBuilder.append(")");
 
+				if (outputs != null) {
+					for (int j = 0; j < outputs.length(); j++) {
+						String outputType = parseParameterType(outputs.getJSONObject(j));
+						outputTypes.add(outputType);
+					}
+				}
+
 				String fullSignature = signatureBuilder.toString();
 				String selector = getFunctionSelector(fullSignature);
 
-				signatures
-						.add(new Signature(functionName, type, paramTypes.size(), paramTypes, fullSignature, selector));
+				signatures.add(new Signature(functionName, type, paramTypes, outputTypes, fullSignature, selector));
 
 				log.debug("[{}] {} -> {}", type, fullSignature, selector);
 			}
 		}
 		return signatures;
+	}
+
+	/**
+	 * Parses a parameter type, handling tuples and arrays properly.
+	 */
+	private static String parseParameterType(JSONObject param) {
+		String paramType = param.getString("type");
+
+		if (paramType.equals("tuple") || paramType.endsWith("[]")) {
+			JSONArray components = param.optJSONArray("components");
+			if (components != null) {
+				StringBuilder tupleSignature = new StringBuilder("(");
+				for (int k = 0; k < components.length(); k++) {
+					if (k > 0)
+						tupleSignature.append(",");
+					tupleSignature.append(components.getJSONObject(k).getString("type"));
+				}
+				tupleSignature.append(")");
+
+				if (paramType.endsWith("[]")) {
+					tupleSignature.append("[]");
+				}
+
+				paramType = tupleSignature.toString();
+			}
+		}
+		return paramType;
 	}
 
 	/**
@@ -186,7 +201,8 @@ public class ABIManager {
 		String signature = "returnVaultAssets(address,address,(address,uint256)[],string)";
 		String functionSelector = getFunctionSelector(signature);
 		Set<Signature> signatures = new HashSet<>();
-		signatures.add(new Signature("returnVaultAssets", "function", 4, null, signature, functionSelector));
+		signatures.add(
+				new Signature("returnVaultAssets", "function", new ArrayList<>(4), null, signature, functionSelector));
 		verifyFunctionSelectors(signatures, bytecode);
 
 		try {

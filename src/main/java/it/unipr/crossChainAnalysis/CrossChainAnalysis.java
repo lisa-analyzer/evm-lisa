@@ -536,8 +536,6 @@ public class CrossChainAnalysis {
 
 		// Wait for all the analyses to be completed
 		waitForCompletion(futures);
-
-		log.info("Finished analysis");
 	}
 
 	/**
@@ -573,6 +571,7 @@ public class CrossChainAnalysis {
 
 			contract.setCFG(checker.getComputedCFG());
 			contract.computeFunctionsSignatureEntryPoints();
+			contract.computeFunctionsSignatureExitPoints();
 			contract.computeEventsSignatureEntryPoints();
 			contract.computeKnowledgeBlocks();
 			contract.computeEventsExitPoints();

@@ -6,21 +6,23 @@ import java.util.*;
 public class Signature {
 	private final String _name;
 	private final String _type;
-	private final int _paramCount;
-	private final List<String> _paramTypes;
+	private final List<String> _inputParamTypes;
+	private final List<String> _outputParamTypes;
 	private final String _fullSignature;
 	private final String _selector;
 	private Set<Statement> _entryPoints;
+	private Set<Statement> _exitPoints;
 
-	public Signature(String name, String type, int paramCount, List<String> paramTypes, String fullSignature,
-			String selector) {
+	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
+			String fullSignature, String selector) {
 		this._name = name;
 		this._type = type;
-		this._paramCount = paramCount;
-		this._paramTypes = paramTypes;
+		this._inputParamTypes = inputParamTypes;
+		this._outputParamTypes = outputParamTypes;
 		this._fullSignature = fullSignature;
 		this._selector = selector;
 		this._entryPoints = new HashSet<>();
+		this._exitPoints = new HashSet<>();
 	}
 
 	public String getName() {
@@ -32,11 +34,15 @@ public class Signature {
 	}
 
 	public int getParamCount() {
-		return _paramCount;
+		return _inputParamTypes.size();
+	}
+
+	public int getOutputParamCount() {
+		return _outputParamTypes.size();
 	}
 
 	public List<String> getParamTypes() {
-		return _paramTypes;
+		return _inputParamTypes;
 	}
 
 	public String getFullSignature() {
@@ -58,6 +64,19 @@ public class Signature {
 	public void addEntryPoint(Statement entryPoint) {
 		if (entryPoint != null)
 			this._entryPoints.add(entryPoint);
+	}
+
+	public Set<Statement> getExitPoints() {
+		return _exitPoints;
+	}
+
+	public void setExitPoints(Set<Statement> exitPoints) {
+		this._exitPoints = exitPoints;
+	}
+
+	public void addExitPoint(Statement exitPoints) {
+		if (exitPoints != null)
+			this._exitPoints.add(exitPoints);
 	}
 
 	@Override
@@ -86,14 +105,29 @@ public class Signature {
 		sb.append("{\n");
 		sb.append(indent).append("\"name\": \"").append(_name).append("\",\n");
 		sb.append(indent).append("\"type\": \"").append(_type).append("\",\n");
-		sb.append(indent).append("\"paramCount\": ").append(_paramCount).append(",\n");
+		sb.append(indent).append("\"inputParamCount\": ").append(_inputParamTypes.size()).append(",\n");
 
-		sb.append(indent).append("\"paramTypes\": [");
-		if (!_paramTypes.isEmpty()) {
+		sb.append(indent).append("\"inputParamTypes\": [");
+		if (!_inputParamTypes.isEmpty()) {
 			sb.append("\n");
-			for (int i = 0; i < _paramTypes.size(); i++) {
-				sb.append(indent).append(indent).append("\"").append(_paramTypes.get(i)).append("\"");
-				if (i < _paramTypes.size() - 1) {
+			for (int i = 0; i < _inputParamTypes.size(); i++) {
+				sb.append(indent).append(indent).append("\"").append(_inputParamTypes.get(i)).append("\"");
+				if (i < _inputParamTypes.size() - 1) {
+					sb.append(",");
+				}
+				sb.append("\n");
+			}
+			sb.append(indent);
+		}
+		sb.append("],\n");
+		sb.append(indent).append("\"outputParamCount\": ").append(_outputParamTypes.size()).append(",\n");
+
+		sb.append(indent).append("\"outputParamTypes\": [");
+		if (!_outputParamTypes.isEmpty()) {
+			sb.append("\n");
+			for (int i = 0; i < _outputParamTypes.size(); i++) {
+				sb.append(indent).append(indent).append("\"").append(_outputParamTypes.get(i)).append("\"");
+				if (i < _outputParamTypes.size() - 1) {
 					sb.append(",");
 				}
 				sb.append("\n");

@@ -94,6 +94,10 @@ public class SmartContract {
 						signature.addEntryPoint(node);
 	}
 
+	public void computeFunctionsSignatureExitPoints() {
+		// TODO implement
+	}
+
 	/**
 	 * This method iterates over all known entry points in the CFG and searches
 	 * for corresponding event selectors in the bytecode. The results are stored
