@@ -1,4 +1,4 @@
-package it.unipr.crossChainAnalysis;
+package it.unipr.crosschain;
 
 import it.unipr.analysis.*;
 import it.unipr.analysis.Number;

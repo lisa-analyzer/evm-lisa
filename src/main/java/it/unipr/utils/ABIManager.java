@@ -1,7 +1,7 @@
 package it.unipr.utils;
 
-import it.unipr.crossChainAnalysis.EventKnowledge;
-import it.unipr.crossChainAnalysis.Signature;
+import it.unipr.crosschain.EventKnowledge;
+import it.unipr.crosschain.Signature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

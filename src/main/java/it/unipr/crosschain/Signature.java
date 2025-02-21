@@ -1,4 +1,4 @@
-package it.unipr.crossChainAnalysis;
+package it.unipr.crosschain;
 
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.*;
@@ -139,10 +139,26 @@ public class Signature {
 		sb.append(indent).append("\"fullSignature\": \"").append(_fullSignature).append("\",\n");
 		sb.append(indent).append("\"selector\": \"").append(_selector).append("\",\n");
 
-		sb.append(indent).append("\"entrypoints\": [");
+		sb.append(indent).append("\"entryPoints\": [");
 		if (!_entryPoints.isEmpty()) {
 			sb.append("\n");
 			Iterator<Statement> iterator = _entryPoints.iterator();
+
+			while (iterator.hasNext()) {
+				sb.append(indent).append(indent).append("\"").append(iterator.next().toString()).append("\"");
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+				sb.append("\n");
+			}
+			sb.append(indent);
+		}
+		sb.append("],\n");
+
+		sb.append(indent).append("\"exitPoints\": [");
+		if (!_exitPoints.isEmpty()) {
+			sb.append("\n");
+			Iterator<Statement> iterator = _exitPoints.iterator();
 
 			while (iterator.hasNext()) {
 				sb.append(indent).append(indent).append("\"").append(iterator.next().toString()).append("\"");

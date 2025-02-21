@@ -1,4 +1,4 @@
-package it.unipr.crossChainAnalysis.edges;
+package it.unipr.crosschain.edges;
 
 import it.unive.lisa.program.cfg.statement.Statement;
 

@@ -586,4 +586,41 @@ public class EVMCFG extends CFG {
 
 		return false;
 	}
+
+	public Set<Statement> getFunctionExitPoints(Statement start, boolean isVoid) {
+		Stack<Statement> stack = new Stack<>();
+		Set<Statement> visited = new HashSet<>();
+		Set<Statement> functionExitPoints = new HashSet<>();
+
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next)) {
+						stack.push(next);
+
+						if (next instanceof Invalid
+								|| next instanceof Revert)
+							functionExitPoints.add(next);
+
+						if (isVoid && next instanceof Stop)
+							functionExitPoints.add(next);
+
+						if (!isVoid && next instanceof Return)
+							functionExitPoints.add(next);
+					}
+				}
+			}
+		}
+
+		return functionExitPoints;
+	}
 }

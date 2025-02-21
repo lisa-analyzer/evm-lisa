@@ -1,4 +1,4 @@
-package it.unipr.crossChainAnalysis;
+package it.unipr.crosschain;
 
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.*;
@@ -9,8 +9,8 @@ import it.unipr.analysis.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.*;
-import it.unipr.crossChainAnalysis.edges.ConservativeCrossChainEdge;
-import it.unipr.crossChainAnalysis.edges.CrossChainEdge;
+import it.unipr.crosschain.edges.ConservativeCrossChainEdge;
+import it.unipr.crosschain.edges.CrossChainEdge;
 import it.unipr.frontend.EVMFeatures;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMTypeSystem;
@@ -87,6 +87,13 @@ public class CrossChainAnalysis {
 		_bridge.printVulnerabilities();
 
 		shutdownExecutor();
+
+		for (SmartContract contract : _bridge) {
+			log.info("Contract name {}", contract.getName());
+			for (Signature signature : contract.getFunctionsSignature()) {
+				log.info("Contract signature:\n{}", signature);
+			}
+		}
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package it.unipr.crossChainAnalysis;
+package it.unipr.crosschain;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;

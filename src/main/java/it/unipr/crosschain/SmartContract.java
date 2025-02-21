@@ -1,4 +1,4 @@
-package it.unipr.crossChainAnalysis;
+package it.unipr.crosschain;
 
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
@@ -81,10 +81,8 @@ public class SmartContract {
 	}
 
 	/**
-	 * This method iterates over all known entry points in the CFG and searches
-	 * for corresponding function selectors in the bytecode. The results are
-	 * stored in `_functionsSignatureEntryPoints`, which maps function
-	 * signatures to their corresponding statement nodes.
+	 * Identifies and associates entry points for each function signature in the
+	 * contract.
 	 */
 	public void computeFunctionsSignatureEntryPoints() {
 		for (Statement node : _cfg.getNodes())
@@ -94,15 +92,22 @@ public class SmartContract {
 						signature.addEntryPoint(node);
 	}
 
+	/**
+	 * Computes the exit points for each function signature in the contract.
+	 */
 	public void computeFunctionsSignatureExitPoints() {
-		// TODO implement
+		for (Signature signature : _functionsSignature) {
+			boolean isVoid = signature.getOutputParamCount() == 0;
+
+			for (Statement functionEntryPoint : signature.getEntryPoints())
+				for (Statement functionExitPoint : _cfg.getFunctionExitPoints(functionEntryPoint, isVoid))
+					signature.addExitPoint(functionExitPoint);
+		}
 	}
 
 	/**
-	 * This method iterates over all known entry points in the CFG and searches
-	 * for corresponding event selectors in the bytecode. The results are stored
-	 * in `_eventsSignatureEntryPoints`, which maps function signatures to their
-	 * corresponding statement nodes.
+	 * Identifies and associates entry points for each event signature in the
+	 * contract.
 	 */
 	public void computeEventsSignatureEntryPoints() {
 		for (Statement node : _cfg.getNodes())

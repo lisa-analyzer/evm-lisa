@@ -8,7 +8,7 @@ import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
-import it.unipr.crossChainAnalysis.CrossChainAnalysis;
+import it.unipr.crosschain.CrossChainAnalysis;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.utils.MyCache;
 import it.unipr.utils.MyLogger;
@@ -135,12 +135,21 @@ public class EVMLiSA {
 		String bytecodeFullPath = setupBytecode(cmd);
 		String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
 
+		String bytecodeMnemonicPath = _outputDirPath.resolve(address + ".opcode").toString();
+
+		try {
+			EVMFrontend.opcodesFromBytecode(bytecode, bytecodeMnemonicPath);
+		} catch (Exception e) {
+			log.error("Could not parse opcodes from bytecode {}.", bytecodeFullPath);
+			System.exit(1);
+		}
+
 		if (cmd.hasOption("creation-code"))
 			json.put("bytecode", bytecode);
 		else
 			json.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
 
-		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeMnemonicPath);
 
 		long start = System.currentTimeMillis();
 
@@ -386,7 +395,7 @@ public class EVMLiSA {
 	private String setupAnalysisDirectories(CommandLine cmd) {
 		String address;
 		if (!cmd.hasOption("address"))
-			address = "no-address-" + System.currentTimeMillis();
+			address = "contract" + System.currentTimeMillis();
 		else
 			address = cmd.getOptionValue("address");
 
@@ -421,11 +430,10 @@ public class EVMLiSA {
 	 * @return The path to the bytecode file where the opcodes are stored.
 	 */
 	private String setupBytecode(CommandLine cmd) {
-		if (cmd.hasOption("mnemonic-bytecode"))
-			return cmd.getOptionValue("mnemonic-bytecode");
+		String address = cmd.getOptionValue("address") != null ? cmd.getOptionValue("address") : "contract";
 
-		String bytecodePath = _outputDirPath.resolve(cmd.getOptionValue("address") + ".opcode").toString();
-		String bytecode = null;
+		String bytecodePath = _outputDirPath.resolve(address + ".bytecode").toString();
+		String bytecode = "";
 
 		if (cmd.hasOption("filepath-bytecode")) {
 			try {
@@ -438,15 +446,15 @@ public class EVMLiSA {
 			try {
 				bytecode = EVMFrontend.parseContractFromEtherscan(cmd.getOptionValue("address"));
 			} catch (IOException e) {
-				log.error("Could not parse bytecode from Etherscan {}.", cmd.getOptionValue("address"));
+				log.error("Could not parse bytecode from Etherscan {}.", address);
 				System.exit(1);
 			}
 		}
 
-		try {
-			EVMFrontend.opcodesFromBytecode(bytecode, bytecodePath);
-		} catch (Exception e) {
-			log.error("Could not parse opcodes from bytecode {}.", bytecodePath);
+		try (FileWriter writer = new FileWriter(bytecodePath)) {
+			writer.write(bytecode);
+		} catch (IOException e) {
+			log.error("Could not write bytecode file {}.", bytecodePath);
 			System.exit(1);
 		}
 

@@ -1,7 +1,7 @@
 package it.unipr.utils;
 
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.crossChainAnalysis.SmartContract;
+import it.unipr.crosschain.SmartContract;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
