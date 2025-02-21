@@ -352,6 +352,18 @@ def compile_bridge(name):
                                 abi_dir=f'./{name}/abi',
                                 file_index=match_file_index)
 
+def compile_bridge_longest(name):
+    extract_solidity_versions(src_folder=f'./{name}/source-code',
+                              output_csv=f'./{name}/source-code/version.csv')
+    
+    compile_solidity_sources_with_different_version(source_dir=f'./{name}/source-code',
+                                                    json_dir=f'./{name}/json',
+                                                    version_file=f'./{name}/source-code/version.csv')
+
+    extract_and_save_longest_bytecode(bytecode_dir=f'./{name}/bytecode',
+                                json_dir=f'./{name}/json',
+                                abi_dir=f'./{name}/abi')
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compile datasets.")
@@ -369,15 +381,8 @@ if __name__ == "__main__":
         compile_bridge('cross-chain/XGuard/MeterBridge') # MeterBridge
 
     if args.manual:
-        # Test ThorChain Bridge
-        extract_solidity_versions(src_folder='./cross-chain/THORChain-bridge/source-code',
-                                  output_csv='./cross-chain/THORChain-bridge/source-code/version.csv')
-        compile_solidity_sources_with_different_version(source_dir='./cross-chain/THORChain-bridge/source-code',
-                                                        json_dir='./cross-chain/THORChain-bridge/json',
-                                                        version_file='./cross-chain/THORChain-bridge/source-code/version.csv')
-        extract_and_save_longest_bytecode(bytecode_dir='./cross-chain/THORChain-bridge/bytecode/',
-                                          json_dir='./cross-chain/THORChain-bridge/json',
-                                          abi_dir='./cross-chain/THORChain-bridge/abi/')
+        compile_bridge_longest('cross-chain/function-exit-point')
+        # compile_bridge_longest('cross-chain/THORChain-bridge')
 
     if args.solidifi:
         compile_solidity_sources('./reentrancy-solidifi/source-code',
