@@ -21,11 +21,25 @@ import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
+	/**
+	 * The stack height.
+	 */
 	private static int STACK_LIMIT = 32;
+
+	/**
+	 * The top abstract element of this domain.
+	 */
 	private static final AbstractStack TOP = new AbstractStack(
 			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.NUMERIC_TOP)));
+
+	/**
+	 * The bottom abstract element of this domain.
+	 */
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
+	/**
+	 * The abstract stack.
+	 */
 	private final ArrayList<StackElement> stack;
 
 	/**
@@ -211,6 +225,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return stack.size() - bottomCounter;
 	}
 
+	/**
+	 * Yields the stack.
+	 * 
+	 * @return the stack
+	 */
 	public List<StackElement> getStack() {
 		return stack;
 	}
@@ -277,6 +296,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return true;
 	}
 
+	/**
+	 * Yields the second element of this abstract stack.
+	 * 
+	 * @return the second element of this abstract stack
+	 */
 	public StackElement getSecondElement() {
 		if (isBottom())
 			return StackElement.BOTTOM;
@@ -293,6 +317,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public static void setStackLimit(int n) {
 		if (n > 0)
 			STACK_LIMIT = n;
+		else
+			throw new RuntimeException("Stack height cannot be non-positive");
 	}
 
 	/**
@@ -306,8 +332,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	/**
 	 * Checks whether between 0 and x-positions of the stack an element is
-	 * bottom. /** Checks whether between 0 and x-positions of the stack an
-	 * element is bottom.
+	 * bottom.
 	 * 
 	 * @param x the position
 	 * 
