@@ -183,7 +183,7 @@ public class EVMFrontend {
 	 * @throws IOException
 	 */
 	public static Program generateCfgFromFile(String filePath) throws IOException {
-		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath, program);
 		ProgramContext programContext = EVMFrontend.parseContract(filePath);
 

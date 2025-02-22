@@ -62,10 +62,24 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
+	/**
+	 * The CFG of the smart contract of interest.
+	 */
 	private EVMCFG cfg;
-	private int pc = 0; // Program counter
 
+	/**
+	 * The program counter, starting from zero.
+	 */
+	private int pc = 0;
+
+	/*
+	 * The filepath where the smart contract is located.
+	 */
 	private final String filePath;
+
+	/**
+	 * The LiSA program.
+	 */
 	private final Program program;
 
 	/**
@@ -156,7 +170,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 					else
 						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
 
-		// The last statement of the CFG is a return statement
+		// The last statement of the CFG is a virtual LiSA return statement
 		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
 		cfg.addNode(ret);
 		cfg.addEdge(new SequentialEdge(st, ret));

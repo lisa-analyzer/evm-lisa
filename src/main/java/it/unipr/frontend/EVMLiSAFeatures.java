@@ -15,7 +15,7 @@ import it.unive.lisa.program.language.validation.ProgramValidationLogic;
  * 
  * @author <a href="vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class EVMFeatures extends LanguageFeatures {
+public class EVMLiSAFeatures extends LanguageFeatures {
 
 	@Override
 	public ParameterMatchingStrategy getMatchingStrategy() {

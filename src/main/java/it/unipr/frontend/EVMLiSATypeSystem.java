@@ -8,7 +8,12 @@ import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 
-public class EVMTypeSystem extends TypeSystem {
+/**
+ * The EVMLiSA type system.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+public class EVMLiSATypeSystem extends TypeSystem {
 
 	@Override
 	public BooleanType getBooleanType() {
