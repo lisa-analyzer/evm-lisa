@@ -563,6 +563,15 @@ public class StackElement implements BaseLattice<StackElement> {
 		return byteArray;
 	}
 
+	public static StackElement fromBytes(byte[] bytes) {
+		if (bytes == null || bytes.length != 32)
+			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
+
+		BigInteger value = new BigInteger(1, bytes);
+
+		return new StackElement(new Number(value));
+	}
+
 	/**
 	 * Checks whether this set it is definitely evaluated to {@code true}, i.e.,
 	 * if it does not contains zero.
