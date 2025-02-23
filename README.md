@@ -78,7 +78,6 @@ Options:
     --checker-reentrancy                   Enable re-entrancy checker.
     --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
-    --creation-code                        Parse bytecode as creation code (instead of runtime code).
     --dot                                  Export a dot-notation file.
     --download-bytecode                    Download the bytecode.
     --dump-report                          Dump analysis report.

@@ -40,8 +40,6 @@ public class SmartBugsReentrancyTruth {
 				.get("evm-testcases", "ground-truth", "test-reentrancy-smartbugs-truth", "bytecode");
 		String SMARTBUGS_BYTECODES_DIR = smartbugsBytecodesDirPath.toString();
 
-		EVMFrontend.setUseCreationCode();
-
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
 		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;

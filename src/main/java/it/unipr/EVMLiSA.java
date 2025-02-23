@@ -105,7 +105,6 @@ public class EVMLiSA {
 	 *                         file.
 	 */
 	public List<Long[]> computeBasicBlocks(String bytecode) throws IOException {
-		EVMFrontend.setUseCreationCode();
 		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		String address = setupAnalysisDirectories(null);
 		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
@@ -283,8 +282,6 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (cmd.hasOption("creation-code"))
-			EVMFrontend.setUseCreationCode();
 		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
 			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
@@ -1185,13 +1182,6 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option useCreationCodeOption = Option.builder()
-				.longOpt("creation-code")
-				.desc("Parse bytecode as creation code (instead of runtime code).")
-				.required(false)
-				.hasArg(false)
-				.build();
-
 		Option enableReentrancyCheckerOption = Option.builder()
 				.longOpt("checker-reentrancy")
 				.desc("Enable re-entrancy checker.")
@@ -1213,13 +1203,6 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option generateBasicBlocksOption = Option.builder()
-				.longOpt("basic-blocks")
-				.desc("Generate basic blocks.")
-				.required(false)
-				.hasArg(false)
-				.build();
-
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
@@ -1234,13 +1217,11 @@ public class EVMLiSA {
 		options.addOption(useStorageLiveOption);
 		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
 		options.addOption(dumpAnalysisReport);
-		options.addOption(useCreationCodeOption);
 		options.addOption(dumpHtmlOption);
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
-		options.addOption(generateBasicBlocksOption);
 
 		return options;
 	}

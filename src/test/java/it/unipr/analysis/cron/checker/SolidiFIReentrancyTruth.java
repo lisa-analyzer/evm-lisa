@@ -38,7 +38,6 @@ public class SolidiFIReentrancyTruth {
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
-		EVMFrontend.setUseCreationCode();
 
 		Path solidifiBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "test-reentrancy-solidifi-truth", "bytecode");

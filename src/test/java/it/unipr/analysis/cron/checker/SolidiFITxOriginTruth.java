@@ -39,7 +39,6 @@ public class SolidiFITxOriginTruth {
 	@Test
 	public void testSolidiFITxOriginTruth() throws Exception {
 		setSolidifiMap();
-		EVMFrontend.setUseCreationCode();
 
 		Path solidifiBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "test-tx-origin-solidifi-truth", "bytecode");
