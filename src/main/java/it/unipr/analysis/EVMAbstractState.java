@@ -1,18 +1,5 @@
 package it.unipr.analysis;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.frontend.EVMFrontend;
@@ -34,6 +21,17 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState
 		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
@@ -1017,8 +1015,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
 				}
 				case "Mstore8Operator": { // MSTORE8
-					MemoryByte memoryResult = MemoryByte.TOP;
-					StackElement new_mu_i = mu_i;
+					MemoryByte memoryResult = memory;
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -1028,29 +1025,18 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						// TODO handle this case
-//						if (offset.isTop()) {
-//							new_mu_i = mu_i;
-//							memoryResult = memory;
-//						} else {
-//							StackElement current_mu_i_lub = StackElement.BOTTOM;
-//
-//							Number current_mu_i = offset.getNumber().add(new Number(1))
-//									.divide(new Number(32));
-//
-//							memoryResult = memory.putState(offset.getNumber(),
-//									value.mod(new StackElement(new Number(256))));
-//							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
-//
-//							new_mu_i = current_mu_i_lub;
-//						}
+						if (!offset.isTop() && !value.isTop()) {
+							memoryResult = memory.clone();
+							memoryResult.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue());
+						}
+
 						result.add(stackResult);
 					}
 
 					if (result.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
+						return new EVMAbstractState(result, memoryResult, storage, mu_i);
 				}
 				case "SloadOperator": { // SLOAD
 

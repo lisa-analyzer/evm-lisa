@@ -21,7 +21,7 @@ public class DummyConstant extends Constant {
 	private DummyConstant(Type type, Object value, CodeLocation location) {
 		super(type, value, location);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(INSTANCE);

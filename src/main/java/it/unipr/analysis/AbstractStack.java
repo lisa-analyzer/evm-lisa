@@ -304,8 +304,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return STACK_LIMIT;
 	}
 
-	/** Checks whether between 0 and x-positions of the stack an
-	 * element is bottom.
+	/**
+	 * Checks whether between 0 and x-positions of the stack an element is
+	 * bottom.
 	 * 
 	 * @param x the position
 	 * 

@@ -5,11 +5,10 @@ import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.math.BigInteger;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StackElement implements BaseLattice<StackElement> {
 	private static final Logger log = LogManager.getLogger(StackElement.class);
@@ -158,11 +157,10 @@ public class StackElement implements BaseLattice<StackElement> {
 			return NOT_JUMPDEST_TOP;
 
 		Number sub;
-		if(this.n.compareTo(other.n) < 0) {
+		if (this.n.compareTo(other.n) < 0) {
 			sub = MAX.subtract(other.n);
 			sub = sub.add(this.n);
-		}
-		else
+		} else
 			sub = this.n.subtract(other.n);
 
 		return new StackElement(sub);

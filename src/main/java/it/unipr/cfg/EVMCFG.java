@@ -107,8 +107,8 @@ public class EVMCFG extends CFG {
 	public Set<Number> getAllJumpdestLocations() {
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
-			.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
-			.collect(Collectors.toSet());
+					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
+					.collect(Collectors.toSet());
 		else
 			return jumpDestsNodesLocations;
 
@@ -152,7 +152,7 @@ public class EVMCFG extends CFG {
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-						: new Fixpoint<>(this, false);
+				: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A> asc = new EVMAscendingFixpoint<>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -189,13 +189,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-	T extends TypeDomain<T>,
-	A extends AbstractState<A>,
-	H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-			boolean isOptimized, AnalysisState<A> singleton,
-			Map<Statement, AnalysisState<A>> startingPoints,
-			InterproceduralAnalysis<A> interprocedural, ScopeId id,
-			Map<Statement, CompoundState<A>> fixpointResults) {
+			T extends TypeDomain<T>,
+			A extends AbstractState<A>,
+			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
+					boolean isOptimized, AnalysisState<A> singleton,
+					Map<Statement, AnalysisState<A>> startingPoints,
+					InterproceduralAnalysis<A> interprocedural, ScopeId id,
+					Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -206,7 +206,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override
