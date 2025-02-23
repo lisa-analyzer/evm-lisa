@@ -1,5 +1,6 @@
 package it.unipr.analysis;
 
+import it.unipr.EVMLiSA;
 import it.unive.lisa.analysis.*;
 import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -8,12 +9,16 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryByte> {
+    private static final Logger log = LogManager.getLogger(MemoryByte.class);
+
     private static final int WORD_SIZE = 32;
     private byte[] memory;
     private final boolean isTop;
@@ -36,18 +41,23 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 
     public void mstore(int offset, byte[] value) {
         if (value.length != WORD_SIZE) {
-            throw new IllegalArgumentException("The value must be 32 byte");
+            throw new IllegalArgumentException("The value must be 32 bytes");
         }
+
         ensureCapacity(offset + WORD_SIZE);
+
         System.arraycopy(value, 0, memory, offset, WORD_SIZE);
+
+//        log.debug("offset: {}", offset);
+//        log.debug("Memory: {}", printBytes(memory));
     }
 
     public byte[] mload(int offset) {
-        if (offset + WORD_SIZE > memory.length) {
-            return new byte[WORD_SIZE];
-        }
+        ensureCapacity(offset + WORD_SIZE);
+
         byte[] result = new byte[WORD_SIZE];
         System.arraycopy(memory, offset, result, 0, WORD_SIZE);
+
         return result;
     }
 
@@ -202,5 +212,16 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
         }
 
         return new StringRepresentation(hexString.toString());
+    }
+
+    public String printBytes(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder("");
+        for (byte b : bytes)
+            hexString.append(String.format("%02X", b));
+
+        if (hexString.length() == 0)
+            hexString.append("0");
+
+        return hexString.toString();
     }
 }

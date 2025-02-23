@@ -5,10 +5,15 @@ import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigInteger;
 import java.util.Objects;
 
 public class StackElement implements BaseLattice<StackElement> {
+	private static final Logger log = LogManager.getLogger(StackElement.class);
+
 	private static final Number ZERO_INT = new Number(0);
 	private static final Number ONE_INT = new Number(1);
 	private static final Number MAX = new Number(BigInteger.valueOf(2).pow(256));
@@ -152,9 +157,13 @@ public class StackElement implements BaseLattice<StackElement> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Number sub = this.n.subtract(other.n);
-		if (sub.compareTo(ZERO_INT) < 0)
-			sub = sub.add(MAX);
+		Number sub;
+		if(this.n.compareTo(other.n) < 0) {
+			sub = MAX.subtract(other.n);
+			sub = sub.add(this.n);
+		}
+		else
+			sub = this.n.subtract(other.n);
 
 		return new StackElement(sub);
 	}
@@ -568,6 +577,8 @@ public class StackElement implements BaseLattice<StackElement> {
 			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
 
 		BigInteger value = new BigInteger(1, bytes);
+		log.debug("to value: {}", value.toString());
+		log.debug("new StackElement: {}", new StackElement(new Number(value)));
 
 		return new StackElement(new Number(value));
 	}

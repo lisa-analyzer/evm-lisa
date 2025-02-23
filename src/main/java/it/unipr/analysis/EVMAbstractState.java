@@ -958,10 +958,15 @@ public class EVMAbstractState
 						} else if (memory.isTop()) {
 							resultStack.push(StackElement.NUMERIC_TOP);
 						} else {
-							// Legge 32 byte dalla memoria (se l'offset è troppo grande, restituisce 32 byte a zero)
 							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
 							
 							StackElement mload = StackElement.fromBytes(mloadValue);
+
+//							log.debug("MLOAD");
+//							log.debug("offset (dec): {}", offset);
+//							log.debug("value (hex): {}", memory.printBytes(mloadValue));
+//							log.debug("value (dec): {}", mload);
+
 							if (mload.isBottom())
 								continue;
 
@@ -1002,6 +1007,9 @@ public class EVMAbstractState
 									.divide(thirtyTwo);
 
 							byte[] valueBytes = convertStackElementToBytes(value);
+//							log.debug("MSTORE");
+//							log.debug("value (dec): {}", value);
+//							log.debug("value (hex): {}", memory.printBytes(valueBytes));
 
 							memoryResult.mstore(offset.getNumber().intValue(), valueBytes);
 							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
@@ -2199,14 +2207,13 @@ public class EVMAbstractState
 	}
 
 	private byte[] convertStackElementToBytes(StackElement element) {
-		byte[] bytes = new byte[32]; // Una parola EVM è 32 byte
-		BigInteger bigIntValue = Number.toBigInteger(element.getNumber()); // Ottieni il valore numerico
+		byte[] bytes = new byte[32];
+		BigInteger bigIntValue = Number.toBigInteger(element.getNumber());
 
-		byte[] elementBytes = bigIntValue.toByteArray();
-		int copyLength = Math.min(elementBytes.length, 32);
-
-		// Copia i byte più significativi in modo corretto
-		System.arraycopy(elementBytes, 0, bytes, 32 - copyLength, copyLength);
+		// Conversione manuale senza byte extra
+		for (int i = 0; i < 32; i++) {
+			bytes[31 - i] = bigIntValue.shiftRight(i * 8).byteValue();
+		}
 
 		return bytes;
 	}
