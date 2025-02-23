@@ -8,17 +8,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
-	
+
 	/**
 	 * The maximum size of an abstract stack set
 	 */
 	private static int SIZE = 8;
-	
+
 	/**
 	 * The bottom element of the abstract stack set domain.
 	 */
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null, false);
-	
 
 	/**
 	 * The top element of the abstract stack set domain.
@@ -48,7 +47,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	public AbstractStackSet top() {
 		return TOP;
 	}
-	
+
 	@Override
 	public AbstractStackSet bottom() {
 		return BOTTOM;

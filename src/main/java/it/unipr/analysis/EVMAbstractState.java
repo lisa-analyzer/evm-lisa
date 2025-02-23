@@ -201,7 +201,7 @@ public class EVMAbstractState
 
 					StackElement hex;
 					if (CONTRACT_ADDRESS == null)
-						hex = StackElement.NUMERIC_TOP;
+						hex = StackElement.TOP;
 					else
 						hex = new StackElement(toBigInteger(CONTRACT_ADDRESS));
 
@@ -682,7 +682,7 @@ public class EVMAbstractState
 						StackElement resultStackElement = StackElement.ZERO;
 
 						if (target.isTop() || indexOfByte.isTop()) {
-							resultStack.push(StackElement.NUMERIC_TOP);
+							resultStack.push(StackElement.TOP);
 						} else if (target.isTopNotJumpdest() || indexOfByte.isTopNotJumpdest()) {
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						} else {
@@ -952,7 +952,7 @@ public class EVMAbstractState
 							// there is no active words saved
 							resultStack.push(StackElement.ZERO);
 						} else if (offset.isTop()) {
-							resultStack.push(StackElement.NUMERIC_TOP);
+							resultStack.push(StackElement.TOP);
 						} else if (offset.isTopNotJumpdest()) {
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						} else {
@@ -1052,7 +1052,7 @@ public class EVMAbstractState
 
 						StackElement valueToPush = StackElement.BOTTOM;
 						if (key.isTop() || key.isTopNotJumpdest())
-							valueToPush = StackElement.NUMERIC_TOP;
+							valueToPush = StackElement.TOP;
 						else {
 							if (storage.getKeys().contains(key.getNumber()))
 								valueToPush = valueToPush.lub(storage.getState(key.getNumber()));
@@ -1077,7 +1077,7 @@ public class EVMAbstractState
 										log.debug("Value cached");
 									}
 								} else
-									valueToPush = StackElement.NUMERIC_TOP;
+									valueToPush = StackElement.TOP;
 							}
 						}
 
@@ -2155,8 +2155,8 @@ public class EVMAbstractState
 	 * @param address the Ethereum contract address as a String.
 	 * 
 	 * @return a {@link StackElement} containing the storage value if the
-	 *             request is successful, or {@link StackElement#NUMERIC_TOP} if
-	 *             an error occurs.
+	 *             request is successful, or {@link StackElement#TOP} if an
+	 *             error occurs.
 	 */
 	public StackElement getStorageAt(Number key, String address) {
 		try {
@@ -2171,7 +2171,7 @@ public class EVMAbstractState
 
 			if (getStorageAtRequest == null || getStorageAtRequest.isEmpty()) {
 				System.err.println("ERROR: couldn't download contract's storage.");
-				return StackElement.NUMERIC_TOP;
+				return StackElement.TOP;
 			}
 
 			String[] test = getStorageAtRequest.split("\"");
@@ -2184,7 +2184,7 @@ public class EVMAbstractState
 			log.error(e.getMessage());
 		}
 
-		return StackElement.NUMERIC_TOP;
+		return StackElement.TOP;
 	}
 
 	@Override

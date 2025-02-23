@@ -30,7 +30,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * The top abstract element of this domain.
 	 */
 	private static final AbstractStack TOP = new AbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.NUMERIC_TOP)));
+			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.TOP)));
 
 	/**
 	 * The bottom abstract element of this domain.
@@ -206,7 +206,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (!stack.get(0).isTop())
 			stack.add(0, StackElement.BOTTOM);
 		else
-			stack.add(0, StackElement.NUMERIC_TOP);
+			stack.add(0, StackElement.TOP);
 		return result;
 	}
 
@@ -305,7 +305,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (isBottom())
 			return StackElement.BOTTOM;
 		else if (isTop())
-			return StackElement.NUMERIC_TOP;
+			return StackElement.TOP;
 		return this.stack.get(STACK_LIMIT - 2);
 	}
 

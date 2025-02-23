@@ -17,42 +17,81 @@ public class StackElement implements BaseLattice<StackElement> {
 	public static final StackElement ONE = new StackElement(1);
 
 	public static final StackElement NOT_JUMPDEST_TOP = new StackElement(-10);
+	
+	/**
+	 * The top abstract element.
+	 */
+	public static final StackElement TOP = new StackElement(true, false);
+	
 
-	public static final StackElement NUMERIC_TOP = new StackElement(true, false);
+	/**
+	 * The bottom abstract element.
+	 */
 	public static final StackElement BOTTOM = new StackElement(false, true);
 
 	private final Number n;
 	private final boolean isTop, isBottom;
 
+	/**
+	 * Builds the top stack element.
+	 */
 	public StackElement() {
 		this(null, true, false);
 	}
 
+	/**
+	 * Builds a stack element, that can be either top or bottom.
+	 * 
+	 * @param isTop    if it is the top abstract element
+	 * @param isBottom if it is the bottom abstract element
+	 */
 	private StackElement(boolean isTop, boolean isBottom) {
 		this(null, isTop, isBottom);
 	}
 
+	/**
+	 * Builds a stack element.
+	 * 
+	 * @param n        the number of this stack element
+	 * @param isTop    if it is the top abstract element
+	 * @param isBottom if it is the bottom abstract element
+	 */
 	private StackElement(Number n, boolean isTop, boolean isBottom) {
 		this.n = n;
 		this.isTop = isTop;
 		this.isBottom = isBottom;
 	}
 
-	public StackElement(Number i) {
-		this(i, false, false);
+	/**
+	 * Builds a stack element starting from a number.
+	 * 
+	 * @param n the number
+	 */
+	public StackElement(Number n) {
+		this(n, false, false);
 	}
 
+	/**
+	 * Builds a stack element starting from an integer.
+	 * 
+	 * @param i the integer value
+	 */
 	public StackElement(Integer i) {
 		this(new Number(i.intValue()));
 	}
 
+	/**
+	 * Builds a stack element starting from a big integer.
+	 * 
+	 * @param i the big integer value
+	 */
 	public StackElement(BigInteger i) {
 		this(new Number(i));
 	}
 
 	@Override
 	public StackElement top() {
-		return NUMERIC_TOP;
+		return TOP;
 	}
 
 	@Override
@@ -125,10 +164,36 @@ public class StackElement implements BaseLattice<StackElement> {
 		return NOT_JUMPDEST_TOP;
 	}
 
+	/**
+	 * Yields the number of this stack element. This method should be called if
+	 * the stack element is known, i.e., it is neither top nor bottom.
+	 * 
+	 * @return the number of this stack element
+	 */
 	public Number getNumber() {
+		if (isTop() || isTopNotJumpdest() || isBottom())
+			throw new RuntimeException("The stack element is either top or bottom.");
 		return n;
 	}
 
+	/**
+	 * Computes the sum of this stack element and another stack element.
+	 * <p>
+	 * The method follows these rules:
+	 * <ul>
+	 * <li>If either element is bottom, the result is bottom.</li>
+	 * <li>If either element is top, the result is top.</li>
+	 * <li>If either element is top but not a jump destination, the result is
+	 * NOT_JUMPDEST_TOP.</li>
+	 * <li>Otherwise, performs numeric addition with modular reduction by
+	 * MAX.</li>
+	 * </ul>
+	 *
+	 * @param other the stack element to be added
+	 * 
+	 * @return a new {@code StackElement} representing the sum of this and the
+	 *             other stack element
+	 */
 	public StackElement sum(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
@@ -159,6 +224,28 @@ public class StackElement implements BaseLattice<StackElement> {
 		return new StackElement(sub);
 	}
 
+	/**
+	 * Computes the product of this stack element and another stack element.
+	 * <p>
+	 * The method follows these rules:
+	 * <ul>
+	 * <li>If either element is bottom, the result is bottom.</li>
+	 * <li>If either element is zero, the result is zero.</li>
+	 * <li>If either element is top, the result is top.</li>
+	 * <li>If either element is top but not a jump destination, the result is
+	 * NOT_JUMPDEST_TOP.</li>
+	 * <li>Otherwise, performs numeric multiplication with modular
+	 * handling.</li>
+	 * <li>If the multiplication results in a negative number, it wraps around
+	 * by adding MAX.</li>
+	 * <li>If the result exceeds MAX, it wraps around by subtracting MAX.</li>
+	 * </ul>
+	 *
+	 * @param other the stack element to multiply with this element
+	 * 
+	 * @return a new {@code StackElement} representing the product of this and
+	 *             the other stack element
+	 */
 	public StackElement mul(StackElement other) {
 		if (isBottom() || other.isBottom())
 			return bottom();
@@ -259,7 +346,7 @@ public class StackElement implements BaseLattice<StackElement> {
 
 		for (int k = 0; other.n.compareTo(new Number(k)) > 0; k++)
 			if (r.compareTo(MAX) > 0)
-				return NUMERIC_TOP;
+				return TOP;
 			else
 				r = r.multiply(this.n);
 
@@ -603,7 +690,7 @@ public class StackElement implements BaseLattice<StackElement> {
 	}
 
 	public boolean isTopNumeric() {
-		return this == NUMERIC_TOP;
+		return this == TOP;
 	}
 
 	@Override

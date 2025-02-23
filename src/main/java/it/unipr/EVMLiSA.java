@@ -734,7 +734,7 @@ public class EVMLiSA {
 
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
-				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.TOP)) {
 					allJumpAreSound = false;
 					break;
 				}
@@ -768,7 +768,7 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 					continue;
 				}
-				if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+				if (!topStackValuesPerJump.contains(StackElement.TOP)) {
 					// If the elements at the top of the stacks are all
 					// different from NUMERIC_TOP, then we are sure that it
 					// is definitelyFakeMissedJumps
