@@ -23,11 +23,7 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -2186,7 +2182,6 @@ public class EVMAbstractState
 		byte[] bytes = new byte[32];
 		BigInteger bigIntValue = Number.toBigInteger(element.getNumber());
 
-		// Conversione manuale senza byte extra
 		for (int i = 0; i < 32; i++) {
 			bytes[31 - i] = bigIntValue.shiftRight(i * 8).byteValue();
 		}
