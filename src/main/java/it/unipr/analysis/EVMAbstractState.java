@@ -36,7 +36,7 @@ public class EVMAbstractState
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
-			new MemoryByte().bottom(), new Memory().bottom(), StackElement.BOTTOM);
+			new AbstractMemory().bottom(), new AbstractStorage().bottom(), StackElement.BOTTOM);
 	private final boolean isTop;
 
 	/**
@@ -52,12 +52,12 @@ public class EVMAbstractState
 	/**
 	 * The volatile memory.
 	 */
-	private final MemoryByte memory;
+	private final AbstractMemory memory;
 
 	/**
 	 * The storage.
 	 */
-	private final Memory storage;
+	private final AbstractStorage storage;
 
 	private final StackElement mu_i;
 
@@ -78,8 +78,8 @@ public class EVMAbstractState
 	private EVMAbstractState(boolean isTop, String contractAddress) {
 		this.isTop = isTop;
 		this.stacks = new AbstractStackSet();
-		this.memory = new MemoryByte();
-		this.storage = new Memory();
+		this.memory = new AbstractMemory();
+		this.storage = new AbstractStorage();
 		this.mu_i = StackElement.ZERO;
 
 		if (contractAddress == null)
@@ -96,7 +96,7 @@ public class EVMAbstractState
 	 * @param memory the memory to be used.
 	 * @param mu_i   the mu_i to be used.
 	 */
-	public EVMAbstractState(AbstractStackSet stacks, MemoryByte memory, Memory storage, StackElement mu_i) {
+	public EVMAbstractState(AbstractStackSet stacks, AbstractMemory memory, AbstractStorage storage, StackElement mu_i) {
 		this.isTop = false;
 		this.stacks = stacks;
 		this.memory = memory;
@@ -119,7 +119,7 @@ public class EVMAbstractState
 	 * @return A cloned copy of the memory or null if the original memory is
 	 *             null.
 	 */
-	public MemoryByte getMemory() {
+	public AbstractMemory getMemory() {
 		return memory.clone();
 	}
 
@@ -129,7 +129,7 @@ public class EVMAbstractState
 	 * @return A cloned copy of the storage or null if the original storage is
 	 *             null.
 	 */
-	public Memory getStorage() {
+	public AbstractStorage getStorage() {
 		return storage.clone();
 	}
 
@@ -943,7 +943,7 @@ public class EVMAbstractState
 						StackElement offset = resultStack.pop();
 
 						if (mu_i.equals(StackElement.ZERO)) {
-							// Memory empty
+							// AbstractStorage empty
 							resultStack.push(StackElement.ZERO);
 						} else if (offset.isTop()) {
 							resultStack.push(StackElement.NUMERIC_TOP);
@@ -971,7 +971,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage, mu_i);
 				}
 				case "MstoreOperator": { // MSTORE
-					MemoryByte memoryResult = memory;
+					AbstractMemory memoryResult = memory;
 					StackElement new_mu_i = mu_i;
 
 					for (AbstractStack stack : stacks) {
@@ -984,10 +984,10 @@ public class EVMAbstractState
 
 						if (offset.isTop() || value.isTop() || offset.isTopNotJumpdest() || value.isTopNotJumpdest()) {
 							new_mu_i = StackElement.NUMERIC_TOP;
-							memoryResult = MemoryByte.TOP;
+							memoryResult = AbstractMemory.TOP;
 						} else if (memoryResult.isTop()) {
 							new_mu_i = StackElement.NUMERIC_TOP;
-							memoryResult = MemoryByte.TOP;
+							memoryResult = AbstractMemory.TOP;
 						} else {
 							StackElement current_mu_i_lub = StackElement.BOTTOM;
 
@@ -1011,7 +1011,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
 				}
 				case "Mstore8Operator": { // MSTORE8
-					MemoryByte memoryResult = memory;
+					AbstractMemory memoryResult = memory;
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -1041,7 +1041,7 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						StackElement key = resultStack.pop();
-						Memory storageCopy = storage.clone();
+						AbstractStorage storageCopy = storage.clone();
 
 						StackElement valueToPush = StackElement.NUMERIC_TOP;
 						if (key.isTop() || key.isTopNotJumpdest())
@@ -1085,7 +1085,7 @@ public class EVMAbstractState
 				}
 				case "SstoreOperator": { // SSTORE
 
-					Memory storageResult = storage.bottom();
+					AbstractStorage storageResult = storage.bottom();
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -1094,7 +1094,7 @@ public class EVMAbstractState
 						StackElement key = resultStack.pop();
 						StackElement value = resultStack.pop();
 
-						Memory storageCopy = storage.clone();
+						AbstractStorage storageCopy = storage.clone();
 
 						if (!(key.isTopNumeric() || key.isTopNotJumpdest()))
 							storageResult = storageCopy.putState(key.getNumber(), value);

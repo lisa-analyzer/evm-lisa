@@ -399,17 +399,6 @@ public class StackElement implements BaseLattice<StackElement> {
 				new Number(new BigInteger(shiftArithmeticRight(other.n.toByteArray(), this.n.intValue()))));
 	}
 
-	public StackElement mload(Memory memory) throws SemanticException {
-		if (isBottom())
-			return bottom();
-		else if (isTop())
-			return top();
-		else if (isTopNotJumpdest())
-			return NOT_JUMPDEST_TOP;
-
-		return memory.getState(this.n);
-	}
-
 	/**
 	 * Shifts the given byte array to the left by the specified number of bits.
 	 *

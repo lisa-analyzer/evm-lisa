@@ -14,25 +14,25 @@ import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryByte> {
-	private static final Logger log = LogManager.getLogger(MemoryByte.class);
+public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
+	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
 
 	private static final int WORD_SIZE = 32;
 	private byte[] memory;
 	private final boolean isTop;
-	public static final MemoryByte BOTTOM = new MemoryByte(null);
-	public static final MemoryByte TOP = new MemoryByte(null, true);
+	public static final AbstractMemory BOTTOM = new AbstractMemory(null);
+	public static final AbstractMemory TOP = new AbstractMemory(null, true);
 
-	public MemoryByte() {
+	public AbstractMemory() {
 		this(new byte[0]);
 	}
 
-	public MemoryByte(byte[] memory) {
+	public AbstractMemory(byte[] memory) {
 		this.memory = memory;
 		this.isTop = false;
 	}
 
-	public MemoryByte(byte[] memory, boolean isTop) {
+	public AbstractMemory(byte[] memory, boolean isTop) {
 		this.memory = memory;
 		this.isTop = isTop;
 	}
@@ -87,17 +87,17 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MemoryByte other = (MemoryByte) obj;
+		AbstractMemory other = (AbstractMemory) obj;
 		return isTop == other.isTop && Arrays.equals(memory, other.memory);
 	}
 
 	@Override
-	public MemoryByte clone() {
+	public AbstractMemory clone() {
 		if (isTop())
 			return TOP;
 		else if (isBottom())
 			return BOTTOM;
-		MemoryByte cloned = new MemoryByte(Arrays.copyOf(this.memory, this.memory.length), false);
+		AbstractMemory cloned = new AbstractMemory(Arrays.copyOf(this.memory, this.memory.length), false);
 		return cloned;
 	}
 
@@ -118,17 +118,17 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 	}
 
 	@Override
-	public MemoryByte lubAux(MemoryByte other) throws SemanticException {
+	public AbstractMemory lubAux(AbstractMemory other) throws SemanticException {
 		return TOP;
 	}
 
 	@Override
-	public boolean lessOrEqualAux(MemoryByte other) throws SemanticException {
+	public boolean lessOrEqualAux(AbstractMemory other) throws SemanticException {
 		return false;
 	}
 
 	@Override
-	public MemoryByte top() {
+	public AbstractMemory top() {
 		return TOP;
 	}
 
@@ -138,7 +138,7 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 	}
 
 	@Override
-	public MemoryByte bottom() {
+	public AbstractMemory bottom() {
 		return BOTTOM;
 	}
 
@@ -148,21 +148,21 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 	}
 
 	@Override
-	public MemoryByte assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public AbstractMemory assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public MemoryByte smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public AbstractMemory smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public MemoryByte assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
+	public AbstractMemory assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
 			throws SemanticException {
 		// nothing to do here
 		return this;
@@ -174,13 +174,13 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 	}
 
 	@Override
-	public MemoryByte forgetIdentifier(Identifier id) throws SemanticException {
+	public AbstractMemory forgetIdentifier(Identifier id) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public MemoryByte forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+	public AbstractMemory forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -193,13 +193,13 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
 	}
 
 	@Override
-	public MemoryByte pushScope(ScopeToken token) throws SemanticException {
+	public AbstractMemory pushScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public MemoryByte popScope(ScopeToken token) throws SemanticException {
+	public AbstractMemory popScope(ScopeToken token) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
