@@ -1,5 +1,18 @@
 package it.unipr.analysis;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.frontend.EVMFrontend;
@@ -21,17 +34,6 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState
 		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
@@ -40,7 +42,7 @@ public class EVMAbstractState
 
 	private static final EVMAbstractState TOP = new EVMAbstractState(true, "");
 	private static final EVMAbstractState BOTTOM = new EVMAbstractState(new AbstractStackSet().bottom(),
-			new MemoryByte().bottom(), new MemoryByte().bottom(), StackElement.BOTTOM);
+			new MemoryByte().bottom(), new Memory().bottom(), StackElement.BOTTOM);
 	private final boolean isTop;
 
 	/**
@@ -61,7 +63,7 @@ public class EVMAbstractState
 	/**
 	 * The storage.
 	 */
-	private final MemoryByte storage;
+	private final Memory storage;
 
 	private final StackElement mu_i;
 
@@ -83,7 +85,7 @@ public class EVMAbstractState
 		this.isTop = isTop;
 		this.stacks = new AbstractStackSet();
 		this.memory = new MemoryByte();
-		this.storage = new MemoryByte();
+		this.storage = new Memory();
 		this.mu_i = StackElement.ZERO;
 
 		if (contractAddress == null)
@@ -100,7 +102,7 @@ public class EVMAbstractState
 	 * @param memory the memory to be used.
 	 * @param mu_i   the mu_i to be used.
 	 */
-	public EVMAbstractState(AbstractStackSet stacks, MemoryByte memory, MemoryByte storage, StackElement mu_i) {
+	public EVMAbstractState(AbstractStackSet stacks, MemoryByte memory, Memory storage, StackElement mu_i) {
 		this.isTop = false;
 		this.stacks = stacks;
 		this.memory = memory;
@@ -133,7 +135,7 @@ public class EVMAbstractState
 	 * @return A cloned copy of the storage or null if the original storage is
 	 *             null.
 	 */
-	public MemoryByte getStorage() {
+	public Memory getStorage() {
 		return storage.clone();
 	}
 
@@ -944,7 +946,6 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(1))
 							continue;
 						AbstractStack resultStack = stack.clone();
-
 						StackElement offset = resultStack.pop();
 
 						if (mu_i.equals(StackElement.ZERO)) {
@@ -954,16 +955,18 @@ public class EVMAbstractState
 							resultStack.push(StackElement.NUMERIC_TOP);
 						} else if (offset.isTopNotJumpdest()) {
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+						} else if (memory.isTop()) {
+							resultStack.push(StackElement.NUMERIC_TOP);
 						} else {
 							// Legge 32 byte dalla memoria (se l'offset è troppo grande, restituisce 32 byte a zero)
 							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
-
+							
 							StackElement mload = StackElement.fromBytes(mloadValue);
 							if (mload.isBottom())
 								continue;
 
 							resultStack.push(mload);
-						}
+						} 
 
 						result.add(resultStack);
 					}
@@ -985,9 +988,12 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (offset.isTop()) {
-							new_mu_i = mu_i;
-							memoryResult = memory;
+						if (offset.isTop() || value.isTop() || offset.isTopNotJumpdest() || value.isTopNotJumpdest()) {
+							new_mu_i = StackElement.NUMERIC_TOP;
+							memoryResult = MemoryByte.TOP;
+						} else if (memoryResult.isTop()) {
+							new_mu_i = StackElement.NUMERIC_TOP;
+							memoryResult = MemoryByte.TOP;
 						} else {
 							StackElement current_mu_i_lub = StackElement.BOTTOM;
 
@@ -998,7 +1004,6 @@ public class EVMAbstractState
 							byte[] valueBytes = convertStackElementToBytes(value);
 
 							memoryResult.mstore(offset.getNumber().intValue(), valueBytes);
-
 							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));
 
 							new_mu_i = current_mu_i_lub;
@@ -1012,7 +1017,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memoryResult, storage, new_mu_i);
 				}
 				case "Mstore8Operator": { // MSTORE8
-					MemoryByte memoryResult = memory;
+					MemoryByte memoryResult = MemoryByte.TOP;
 					StackElement new_mu_i = mu_i;
 
 					for (AbstractStack stack : stacks) {
@@ -1054,40 +1059,38 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						StackElement key = resultStack.pop();
-						MemoryByte storageCopy = storage.clone();
+						Memory storageCopy = storage.clone();
 
 						StackElement valueToPush = StackElement.NUMERIC_TOP;
-						// TODO handle this case
-//						StackElement valueToPush = StackElement.BOTTOM;
-//						if (key.isTop() || key.isTopNotJumpdest())
-//							valueToPush = StackElement.NUMERIC_TOP;
-//						else {
-//							if (storage.getKeys().contains(key.getNumber()))
-//								valueToPush = valueToPush.lub(storage.getState(key.getNumber()));
-//							else {
-//								if (USE_STORAGE_LIVE && CONTRACT_ADDRESS != null) {
-//									StackElement valueCached = MyCache.getInstance()
-//											.get(Pair.of(CONTRACT_ADDRESS, key.getNumber()));
-//
-//									if (valueCached == null) {
-//										long start = System.currentTimeMillis();
-//										valueToPush = getStorageAt(key.getNumber(), CONTRACT_ADDRESS); // API
-//																										// request
-//										long timeLostToGetStorage = System.currentTimeMillis() - start;
-//
-//										MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
-//												timeLostToGetStorage);
-//
-//										MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, key.getNumber()),
-//												valueToPush);
-//									} else {
-//										valueToPush = valueCached;
-//										log.debug("Value cached");
-//									}
-//								} else
-//									valueToPush = StackElement.NUMERIC_TOP;
-//							}
-//						}
+						if (key.isTop() || key.isTopNotJumpdest())
+							valueToPush = StackElement.NUMERIC_TOP;
+						else {
+							if (storage.getKeys().contains(key.getNumber()))
+								valueToPush = valueToPush.lub(storage.getState(key.getNumber()));
+							else {
+								if (USE_STORAGE_LIVE && CONTRACT_ADDRESS != null) {
+									StackElement valueCached = MyCache.getInstance()
+											.get(Pair.of(CONTRACT_ADDRESS, key.getNumber()));
+
+									if (valueCached == null) {
+										long start = System.currentTimeMillis();
+										valueToPush = getStorageAt(key.getNumber(), CONTRACT_ADDRESS); // API
+																										// request
+										long timeLostToGetStorage = System.currentTimeMillis() - start;
+
+										MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
+												timeLostToGetStorage);
+
+										MyCache.getInstance().put(Pair.of(CONTRACT_ADDRESS, key.getNumber()),
+												valueToPush);
+									} else {
+										valueToPush = valueCached;
+										log.debug("Value cached");
+									}
+								} else
+									valueToPush = StackElement.NUMERIC_TOP;
+							}
+						}
 
 						resultStack.push(valueToPush);
 						result.add(resultStack);
@@ -1100,7 +1103,7 @@ public class EVMAbstractState
 				}
 				case "SstoreOperator": { // SSTORE
 
-					MemoryByte storageResult = storage.bottom();
+					Memory storageResult = storage.bottom();
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -1109,11 +1112,10 @@ public class EVMAbstractState
 						StackElement key = resultStack.pop();
 						StackElement value = resultStack.pop();
 
-						// TODO handle this case
-//						Memory storageCopy = storage.clone();
-//
-//						if (!(key.isTopNumeric() || key.isTopNotJumpdest()))
-//							storageResult = storageCopy.putState(key.getNumber(), value);
+						Memory storageCopy = storage.clone();
+
+						if (!(key.isTopNumeric() || key.isTopNotJumpdest()))
+							storageResult = storageCopy.putState(key.getNumber(), value);
 
 						result.add(resultStack);
 					}

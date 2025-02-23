@@ -69,5 +69,4 @@ public class Memory extends FunctionalLattice<Memory, Number, StackElement> {
 	public StackElement stateOfUnknown(Number key) {
 		return StackElement.NUMERIC_TOP;
 	}
-
 }
