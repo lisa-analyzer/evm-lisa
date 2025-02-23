@@ -1,5 +1,7 @@
 package it.unipr.analysis.cron.checker;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyCache;
 import it.unipr.checker.JumpSolver;
@@ -36,13 +38,17 @@ public class SmartBugsReentrancyTruth {
 
 	@Ignore
 	public void testSmartBugsReentrancyTruth() throws Exception {
+		AbstractStack.setStackLimit(64);
+		AbstractStackSet.setStackSetSize(16);
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+
 		Path smartbugsBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "test-reentrancy-smartbugs-truth", "bytecode");
 		String SMARTBUGS_BYTECODES_DIR = smartbugsBytecodesDirPath.toString();
 
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
-		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
+		int cores = 1;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		// Run the benchmark in parallel
@@ -96,6 +102,8 @@ public class SmartBugsReentrancyTruth {
 
 		log.info("Results: {}", _results);
 
+		boolean sound = true;
+
 		// Check the results
 		for (Integer key : _results.keySet()) {
 			int value = _results.get(key);
@@ -103,11 +111,12 @@ public class SmartBugsReentrancyTruth {
 				continue;
 			} else if (value == 0) {
 				log.error("Unsound on {}.sol", key);
-				assert false;
+				sound = false;
 			} else {
 				log.warn("{} false positive on {}.sol", value - 1, key);
 			}
 		}
+		assert sound;
 	}
 
 	public static List<String> getFileNamesInDirectory(String directoryPath) {

@@ -7,16 +7,17 @@ import java.util.Map;
 public class AbstractStorage extends FunctionalLattice<AbstractStorage, Number, StackElement> {
 
 	/**
-	 * Default constructor for AbstractStorage. Initializes the AbstractStorage with a default
-	 * lattice (Interval). The default lattice is a single Interval representing
-	 * the entire range of possible values (TOP).
+	 * Default constructor for AbstractStorage. Initializes the AbstractStorage
+	 * with a default lattice (Interval). The default lattice is a single
+	 * Interval representing the entire range of possible values (TOP).
 	 */
 	public AbstractStorage() {
 		this(new StackElement());
 	}
 
 	/**
-	 * Constructor for AbstractStorage that allows specifying an initial lattice.
+	 * Constructor for AbstractStorage that allows specifying an initial
+	 * lattice.
 	 *
 	 * @param lattice The initial lattice (Interval) for the AbstractStorage.
 	 */
@@ -25,8 +26,8 @@ public class AbstractStorage extends FunctionalLattice<AbstractStorage, Number, 
 	}
 
 	/**
-	 * Constructor for AbstractStorage that allows specifying both an initial lattice and
-	 * an initial function.
+	 * Constructor for AbstractStorage that allows specifying both an initial
+	 * lattice and an initial function.
 	 *
 	 * @param lattice  The initial lattice (Interval) for the AbstractStorage.
 	 * @param function The initial function (mapping of addresses to Intervals)
