@@ -1875,7 +1875,7 @@ public class EVMAbstractState
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-		if (stack.hasBottomUntil(x))
+		if (stack.hasBottomUntil(x + 1))
 			return stack.bottom();
 
 		List<StackElement> clone = stack.clone().getStack();
