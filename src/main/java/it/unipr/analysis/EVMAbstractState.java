@@ -954,12 +954,12 @@ public class EVMAbstractState
 						} else if (offset.isTop()) {
 							resultStack.push(StackElement.NUMERIC_TOP);
 						} else if (offset.isTopNotJumpdest()) {
-							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+							resultStack.push(StackElement.NUMERIC_TOP);
 						} else if (memory.isTop()) {
 							resultStack.push(StackElement.NUMERIC_TOP);
 						} else {
 							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
-							
+
 							StackElement mload = StackElement.fromBytes(mloadValue);
 
 //							log.debug("MLOAD");
@@ -971,7 +971,7 @@ public class EVMAbstractState
 								continue;
 
 							resultStack.push(mload);
-						} 
+						}
 
 						result.add(resultStack);
 					}
@@ -1865,11 +1865,10 @@ public class EVMAbstractState
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
-		List<StackElement> clone = stack.clone().getStack();
-
-		if (stack.size() < x || x < 1)
+		if (stack.hasBottomUntil(x))
 			return stack.bottom();
 
+		List<StackElement> clone = stack.clone().getStack();
 		Object[] obj = clone.toArray();
 
 		int first;
@@ -1902,11 +1901,10 @@ public class EVMAbstractState
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-		List<StackElement> clone = stack.clone().getStack();
-
-		if (stack.size() < x + 1 || x < 1)
+		if (stack.hasBottomUntil(x))
 			return stack.bottom();
 
+		List<StackElement> clone = stack.clone().getStack();
 		Object[] obj = clone.toArray();
 		int first;
 
