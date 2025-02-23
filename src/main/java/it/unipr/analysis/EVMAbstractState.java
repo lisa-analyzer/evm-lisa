@@ -962,11 +962,6 @@ public class EVMAbstractState
 
 							StackElement mload = StackElement.fromBytes(mloadValue);
 
-//							log.debug("MLOAD");
-//							log.debug("offset (dec): {}", offset);
-//							log.debug("value (hex): {}", memory.printBytes(mloadValue));
-//							log.debug("value (dec): {}", mload);
-
 							if (mload.isBottom())
 								continue;
 
@@ -1007,9 +1002,6 @@ public class EVMAbstractState
 									.divide(thirtyTwo);
 
 							byte[] valueBytes = convertStackElementToBytes(value);
-//							log.debug("MSTORE");
-//							log.debug("value (dec): {}", value);
-//							log.debug("value (hex): {}", memory.printBytes(valueBytes));
 
 							memoryResult.mstore(offset.getNumber().intValue(), valueBytes);
 							current_mu_i_lub = current_mu_i_lub.lub(new StackElement(current_mu_i));

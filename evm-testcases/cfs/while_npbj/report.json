@@ -3,17 +3,17 @@
   "files" : [ "report.json", "untyped_program.evm-testcases_cfs_while_npbj_while_npbj_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "27ms",
-    "end" : "2024-10-03T17:31:51.674+02:00",
+    "duration" : "41ms",
+    "end" : "2025-02-23T13:04:21.047+01:00",
     "expressions" : "9",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-10-03T17:31:51.647+02:00",
+    "start" : "2025-02-23T13:04:21.006+01:00",
     "statements" : "23",
     "units" : "0",
-    "version" : "0.1b8",
+    "version" : "0.1",
     "warnings" : "0"
   },
   "configuration" : {

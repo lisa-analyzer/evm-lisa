@@ -47,9 +47,6 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
         ensureCapacity(offset + WORD_SIZE);
 
         System.arraycopy(value, 0, memory, offset, WORD_SIZE);
-
-//        log.debug("offset: {}", offset);
-//        log.debug("Memory: {}", printBytes(memory));
     }
 
     public byte[] mload(int offset) {
@@ -214,7 +211,7 @@ public class MemoryByte implements ValueDomain<MemoryByte>, BaseLattice<MemoryBy
         return new StringRepresentation(hexString.toString());
     }
 
-    public String printBytes(byte[] bytes) {
+    static public String printBytes(byte[] bytes) {
         StringBuilder hexString = new StringBuilder("");
         for (byte b : bytes)
             hexString.append(String.format("%02X", b));

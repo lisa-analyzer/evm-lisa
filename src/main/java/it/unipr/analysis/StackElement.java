@@ -577,8 +577,6 @@ public class StackElement implements BaseLattice<StackElement> {
 			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
 
 		BigInteger value = new BigInteger(1, bytes);
-		log.debug("to value: {}", value.toString());
-		log.debug("new StackElement: {}", new StackElement(new Number(value)));
 
 		return new StackElement(new Number(value));
 	}
