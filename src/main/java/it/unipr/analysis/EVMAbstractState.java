@@ -1103,7 +1103,7 @@ public class EVMAbstractState
 
 						Memory storageCopy = storage.clone();
 
-						if (!(key.isTopNumeric() || key.isTopNotJumpdest()))
+						if (!(key.isTop() || key.isTopNotJumpdest()))
 							storageResult = storageCopy.putState(key.getNumber(), value);
 
 						result.add(resultStack);
@@ -2070,26 +2070,17 @@ public class EVMAbstractState
 
 		return result;
 	}
-
+	
+	/**
+	 * Yields the second elements of all the stacks in the stack set.
+	 * @return the second elements of all the stacks in the stack set
+	 */
 	public Set<StackElement> getSecondElement() {
 		Set<StackElement> result = new HashSet<>();
 		for (AbstractStack stack : stacks)
 			result.add(stack.getSecondElement());
 
 		return result;
-	}
-
-	/**
-	 * Yields whether the stack is empty.
-	 * 
-	 * @return {@code true} if the stack is empty, {@code false} otherwise
-	 */
-	public boolean isEmpty() {
-		for (AbstractStack stack : stacks)
-			if (!stack.isEmpty())
-				return false;
-
-		return true;
 	}
 
 	@Override

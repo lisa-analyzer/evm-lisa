@@ -165,14 +165,11 @@ public class StackElement implements BaseLattice<StackElement> {
 	}
 
 	/**
-	 * Yields the number of this stack element. This method should be called if
-	 * the stack element is known, i.e., it is neither top nor bottom.
+	 * Yields the number of this stack element.
 	 * 
 	 * @return the number of this stack element
 	 */
 	public Number getNumber() {
-		if (isTop() || isTopNotJumpdest() || isBottom())
-			throw new RuntimeException("The stack element is either top or bottom.");
 		return n;
 	}
 
@@ -689,9 +686,9 @@ public class StackElement implements BaseLattice<StackElement> {
 		return this == NOT_JUMPDEST_TOP;
 	}
 
-	public boolean isTopNumeric() {
-		return this == TOP;
-	}
+//	public boolean isTopNumeric() {
+//		return this == TOP;
+//	}
 
 	@Override
 	public int hashCode() {
@@ -708,12 +705,12 @@ public class StackElement implements BaseLattice<StackElement> {
 			return false;
 		else if (isBottom() && ((StackElement) obj).isBottom())
 			return true;
-		else if (isTopNumeric() && ((StackElement) obj).isTopNumeric())
+		else if (isTop() && ((StackElement) obj).isTop())
 			return true;
 		else if (isTopNotJumpdest() && ((StackElement) obj).isTopNotJumpdest())
 			return true;
-		if (!isBottom() && !isTopNumeric() && !isTopNotJumpdest() &&
-				!((StackElement) obj).isBottom() && !((StackElement) obj).isTopNumeric()
+		if (!isBottom() && !isTop() && !isTopNotJumpdest() &&
+				!((StackElement) obj).isBottom() && !((StackElement) obj).isTop()
 				&& !((StackElement) obj).isTopNotJumpdest())
 			return this.n.equals(((StackElement) obj).n);
 		return false;

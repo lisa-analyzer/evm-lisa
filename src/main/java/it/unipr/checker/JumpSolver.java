@@ -163,7 +163,7 @@ public class JumpSolver implements
 					for (AbstractStack stack : stacks) {
 						StackElement topStack = stack.getTop();
 						stacksTop.add(topStack);
-						if (topStack.isTopNumeric())
+						if (topStack.isTop())
 							unsoundJumps.add(node);
 					}
 
