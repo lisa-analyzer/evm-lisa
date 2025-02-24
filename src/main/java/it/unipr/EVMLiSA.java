@@ -186,10 +186,7 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (cmd.hasOption("creation-code"))
-			json.put("bytecode", bytecode);
-		else
-			json.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+		json.put("bytecode", bytecode);
 
 		Program program = EVMFrontend.generateCfgFromFile(bytecodeMnemonicPath);
 
@@ -206,7 +203,10 @@ public class EVMLiSA {
 
 			long finish = System.currentTimeMillis();
 
-			json.put("basic-blocks", checker.getComputedCFG().bbToString());
+			json.put("basic-blocks-pc", checker.getComputedCFG().bbToString());
+
+			if (cmd.hasOption("basic-blocks"))
+				json.put("basic-blocks", checker.getComputedCFG().basicBlocksToJson());
 
 			checkers(conf, lisa, program, checker, json);
 
@@ -1182,6 +1182,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option basicBlocksOption = Option.builder()
+				.longOpt("basic-blocks")
+				.desc("Print the basic blocks.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		Option enableReentrancyCheckerOption = Option.builder()
 				.longOpt("checker-reentrancy")
 				.desc("Enable re-entrancy checker.")
@@ -1222,6 +1229,7 @@ public class EVMLiSA {
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(basicBlocksOption);
 
 		return options;
 	}

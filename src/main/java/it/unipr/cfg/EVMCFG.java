@@ -1,5 +1,6 @@
 package it.unipr.cfg;
 
+import it.unipr.analysis.BasicBlock;
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
@@ -38,6 +39,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class EVMCFG extends CFG {
 
@@ -46,6 +49,7 @@ public class EVMCFG extends CFG {
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
 	private Set<Number> jumpDestsNodesLocations;
+	private Set<BasicBlock> basicBlocks;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -452,5 +456,156 @@ public class EVMCFG extends CFG {
 
 		sb.append("]");
 		return sb.toString();
+	}
+
+	public Set<BasicBlock> basicBlocks() {
+		Statement start = this.getEntrypoints().stream().findFirst().orElse(null);
+		if (start == null)
+			return null;
+
+		Set<Statement> visited = new HashSet<>();
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(start);
+		basicBlocks = new HashSet<>();
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+			if (visited.contains(current))
+				continue;
+
+			Statement blockStart = current;
+			Statement blockEnd = current;
+			List<Statement> statements = new ArrayList<>();
+
+			while (true) {
+				statements.add(blockEnd);
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
+
+				if (outgoingEdges.isEmpty()
+						|| blockEnd instanceof Jump
+						|| blockEnd instanceof Jumpi
+						|| blockEnd instanceof Invalid
+						|| blockEnd instanceof Stop
+						|| blockEnd instanceof Revert
+						|| blockEnd instanceof Selfdestruct
+						|| blockEnd instanceof Ret) {
+					break;
+				}
+
+				Statement next = outgoingEdges.iterator().next().getDestination();
+				if (visited.contains(next))
+					break;
+
+				blockEnd = next;
+				visited.add(blockEnd);
+			}
+
+			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
+			BasicBlock.BlockType blockType = getBlockType(blockEnd);
+			BasicBlock basicBlock = new BasicBlock(startPc, blockType);
+
+			for (Statement stmt : statements) {
+				basicBlock.addStatement(stmt);
+			}
+
+			for (Edge edge : getOutgoingEdges(blockEnd)) {
+				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
+				if (startPc != endPc && !(edge.getDestination() instanceof Ret)) {
+					basicBlock.addEdge(endPc);
+				}
+			}
+
+			basicBlocks.add(basicBlock);
+
+			// Push next statements to visit
+			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
+				stack.push(edge.getDestination());
+			}
+		}
+		return basicBlocks;
+	}
+
+	/**
+	 * Determines the type of the basic block based on its last instruction.
+	 *
+	 * @param lastStatement The last statement of the block.
+	 * 
+	 * @return The corresponding BlockType.
+	 */
+	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
+		if (lastStatement instanceof Jump)
+			return BasicBlock.BlockType.JUMP;
+		else if (lastStatement instanceof Jumpi)
+			return BasicBlock.BlockType.JUMPI;
+		else if (lastStatement instanceof Stop)
+			return BasicBlock.BlockType.STOP;
+		else if (lastStatement instanceof Revert)
+			return BasicBlock.BlockType.REVERT;
+		else if (lastStatement instanceof Selfdestruct)
+			return BasicBlock.BlockType.SELFDESTRUCT;
+		else
+			return BasicBlock.BlockType.RETURN;
+	}
+
+	public JSONObject basicBlocksToJson() {
+		basicBlocks = basicBlocks();
+		JSONArray blocksArray = new JSONArray();
+
+		for (BasicBlock block : basicBlocks) {
+			JSONObject blockJson = new JSONObject();
+			blockJson.put("id", block.getId());
+
+			JSONArray instructionsArray = new JSONArray();
+			for (Statement stmt : block.getStatements()) {
+				JSONObject instructionJson = new JSONObject();
+
+				int pc = ((ProgramCounterLocation) stmt.getLocation()).getPc();
+
+				instructionJson.put("pc", pc);
+				instructionJson.put("instruction", stmt.toString());
+
+				instructionsArray.put(instructionJson);
+			}
+			blockJson.put("instructions", instructionsArray);
+
+			JSONArray outgoingEdgesArray = new JSONArray();
+			for (Integer edgeId : block.getOutgoingEdges()) {
+				outgoingEdgesArray.put(edgeId);
+			}
+			if (!block.getOutgoingEdges().isEmpty())
+				blockJson.put("outgoingEdges", outgoingEdgesArray);
+
+			BasicBlock.BlockType bbt = block.getBlockType();
+			if (bbt == BasicBlock.BlockType.STOP
+					|| bbt == BasicBlock.BlockType.RETURN)
+				blockJson.put("background-color", "green");
+			else if (bbt == BasicBlock.BlockType.REVERT
+					|| bbt == BasicBlock.BlockType.SELFDESTRUCT)
+				blockJson.put("background-color", "red");
+
+			blockJson.put("lastInstruction", block.getBlockType());
+
+			String edgeColor = "red";
+			if (block.getStatements().get(0) instanceof Jumpdest)
+				edgeColor = "green";
+
+			for (BasicBlock prevBlock : basicBlocks) {
+				if (prevBlock.getOutgoingEdges().contains(block.getId())) {
+					Statement lastStatement = prevBlock.getStatements().get(prevBlock.getStatements().size() - 1);
+					if (lastStatement instanceof Jump) {
+						edgeColor = "black";
+						break;
+					}
+				}
+			}
+			blockJson.put("ingoing-edge-color", edgeColor);
+
+			blocksArray.put(blockJson);
+		}
+
+		JSONObject basicBlocksJson = new JSONObject();
+		basicBlocksJson.put("basic_blocks", blocksArray);
+
+		return basicBlocksJson;
 	}
 }
