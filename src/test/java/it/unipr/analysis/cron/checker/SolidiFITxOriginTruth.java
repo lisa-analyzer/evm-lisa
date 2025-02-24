@@ -39,7 +39,6 @@ public class SolidiFITxOriginTruth {
 	@Test
 	public void testSolidiFITxOriginTruth() throws Exception {
 		setSolidifiMap();
-		EVMFrontend.setUseCreationCode();
 
 		Path solidifiBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "test-tx-origin-solidifi-truth", "bytecode");
@@ -47,7 +46,7 @@ public class SolidiFITxOriginTruth {
 
 		List<String> bytecodes = getFileNamesInDirectory(SOLIDIFI_BYTECODES_DIR);
 
-		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
+		int cores = 1;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		// Run the benchmark in parallel

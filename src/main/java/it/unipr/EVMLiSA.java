@@ -105,7 +105,6 @@ public class EVMLiSA {
 	 *                         file.
 	 */
 	public List<Long[]> computeBasicBlocks(String bytecode) throws IOException {
-		EVMFrontend.setUseCreationCode();
 		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		String address = setupAnalysisDirectories(null);
 		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
@@ -187,10 +186,7 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (cmd.hasOption("creation-code"))
-			json.put("bytecode", bytecode);
-		else
-			json.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+		json.put("bytecode", bytecode);
 
 		Program program = EVMFrontend.generateCfgFromFile(bytecodeMnemonicPath);
 
@@ -207,7 +203,10 @@ public class EVMLiSA {
 
 			long finish = System.currentTimeMillis();
 
-			json.put("basic-blocks", checker.getComputedCFG().bbToString());
+			json.put("basic-blocks-pc", checker.getComputedCFG().bbToString());
+
+			if (cmd.hasOption("basic-blocks"))
+				json.put("basic-blocks", checker.getComputedCFG().basicBlocksToJson());
 
 			checkers(conf, lisa, program, checker, json);
 
@@ -283,8 +282,6 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (cmd.hasOption("creation-code"))
-			EVMFrontend.setUseCreationCode();
 		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
 			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
@@ -1185,9 +1182,9 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option useCreationCodeOption = Option.builder()
-				.longOpt("creation-code")
-				.desc("Parse bytecode as creation code (instead of runtime code).")
+		Option basicBlocksOption = Option.builder()
+				.longOpt("basic-blocks")
+				.desc("Print the basic blocks.")
 				.required(false)
 				.hasArg(false)
 				.build();
@@ -1213,13 +1210,6 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option generateBasicBlocksOption = Option.builder()
-				.longOpt("basic-blocks")
-				.desc("Generate basic blocks.")
-				.required(false)
-				.hasArg(false)
-				.build();
-
 		options.addOption(addressOption);
 		options.addOption(outputOption);
 		options.addOption(filePathOption);
@@ -1234,13 +1224,12 @@ public class EVMLiSA {
 		options.addOption(useStorageLiveOption);
 		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
 		options.addOption(dumpAnalysisReport);
-		options.addOption(useCreationCodeOption);
 		options.addOption(dumpHtmlOption);
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
-		options.addOption(generateBasicBlocksOption);
+		options.addOption(basicBlocksOption);
 
 		return options;
 	}

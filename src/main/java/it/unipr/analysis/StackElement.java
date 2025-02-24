@@ -7,8 +7,12 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.math.BigInteger;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StackElement implements BaseLattice<StackElement> {
+	private static final Logger log = LogManager.getLogger(StackElement.class);
+
 	private static final Number ZERO_INT = new Number(0);
 	private static final Number ONE_INT = new Number(1);
 	private static final Number MAX = new Number(BigInteger.valueOf(2).pow(256));
@@ -152,9 +156,12 @@ public class StackElement implements BaseLattice<StackElement> {
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
 
-		Number sub = this.n.subtract(other.n);
-		if (sub.compareTo(ZERO_INT) < 0)
-			sub = sub.add(MAX);
+		Number sub;
+		if (this.n.compareTo(other.n) < 0) {
+			sub = MAX.subtract(other.n);
+			sub = sub.add(this.n);
+		} else
+			sub = this.n.subtract(other.n);
 
 		return new StackElement(sub);
 	}
@@ -392,17 +399,6 @@ public class StackElement implements BaseLattice<StackElement> {
 				new Number(new BigInteger(shiftArithmeticRight(other.n.toByteArray(), this.n.intValue()))));
 	}
 
-	public StackElement mload(Memory memory) throws SemanticException {
-		if (isBottom())
-			return bottom();
-		else if (isTop())
-			return top();
-		else if (isTopNotJumpdest())
-			return NOT_JUMPDEST_TOP;
-
-		return memory.getState(this.n);
-	}
-
 	/**
 	 * Shifts the given byte array to the left by the specified number of bits.
 	 *
@@ -561,6 +557,15 @@ public class StackElement implements BaseLattice<StackElement> {
 			}
 		}
 		return byteArray;
+	}
+
+	public static StackElement fromBytes(byte[] bytes) {
+		if (bytes == null || bytes.length != 32)
+			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
+
+		BigInteger value = new BigInteger(1, bytes);
+
+		return new StackElement(new Number(value));
 	}
 
 	/**
