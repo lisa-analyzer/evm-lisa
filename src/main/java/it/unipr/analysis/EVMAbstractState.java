@@ -954,7 +954,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage);
 				}
 				case "MstoreOperator": { // MSTORE
-					AbstractMemory memoryResult = memory.clone();
+					AbstractMemory memoryResult = memory.bottom();
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -966,12 +966,15 @@ public class EVMAbstractState
 
 						if (offset.isTop() || value.isTop() || offset.isTopNotJumpdest() || value.isTopNotJumpdest()) {
 							memoryResult = AbstractMemory.TOP;
-						} else if (memoryResult.isTop()) {
+						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
 						} else {
-							StackElement current_mu_i_lub = StackElement.BOTTOM;
 							byte[] valueBytes = convertStackElementToBytes(value);
-							memoryResult.mstore(offset.getNumber().intValue(), valueBytes);
+
+							AbstractMemory m = memory.clone();
+							m.mstore(offset.getNumber().intValue(), valueBytes);
+
+							memoryResult = memoryResult.lub(m);
 						}
 						result.add(stackResult);
 					}
@@ -982,7 +985,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memoryResult, storage);
 				}
 				case "Mstore8Operator": { // MSTORE8
-					AbstractMemory memoryResult = memory.clone();
+					AbstractMemory memoryResult = memory.bottom();
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -992,9 +995,13 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (!offset.isTop() && !value.isTop()) {
-							memoryResult = memory.clone();
-							memoryResult.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue());
+						if (memory.isTop()) {
+							memoryResult = AbstractMemory.TOP;
+						} else if (!offset.isTop() && !value.isTop()) {
+							AbstractMemory m = memory.clone();
+							m.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue());
+
+							memoryResult = memoryResult.lub(m);
 						}
 
 						result.add(stackResult);

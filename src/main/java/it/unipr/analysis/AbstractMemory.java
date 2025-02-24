@@ -109,12 +109,13 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return Lattice.TOP_STRING;
 		else if (memory == null)
 			return Lattice.BOTTOM_STRING;
-		else if (memory.length == 0)
-			return "EMPTY";
 
 		StringBuilder hexString = new StringBuilder("");
 		for (byte b : memory)
 			hexString.append(String.format("%02X", b));
+
+		if (memory.length == 0 || hexString.toString().matches("^0+$"))
+			return "EMPTY";
 
 		return hexString.toString();
 	}
@@ -217,6 +218,9 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		for (byte b : memory) {
 			hexString.append(String.format("%02X", b));
 		}
+
+		if (memory.length == 0 || hexString.toString().matches("^0+$"))
+			return new StringRepresentation("EMPTY");
 
 		return new StringRepresentation(hexString.toString());
 	}
