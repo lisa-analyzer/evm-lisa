@@ -954,7 +954,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memory, storage);
 				}
 				case "MstoreOperator": { // MSTORE
-					AbstractMemory memoryResult = memory;
+					AbstractMemory memoryResult = memory.clone();
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -982,7 +982,7 @@ public class EVMAbstractState
 						return new EVMAbstractState(result, memoryResult, storage);
 				}
 				case "Mstore8Operator": { // MSTORE8
-					AbstractMemory memoryResult = memory;
+					AbstractMemory memoryResult = memory.clone();
 
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
