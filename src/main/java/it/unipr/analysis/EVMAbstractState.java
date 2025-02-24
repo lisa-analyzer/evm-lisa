@@ -970,11 +970,7 @@ public class EVMAbstractState
 							memoryResult = AbstractMemory.TOP;
 						} else {
 							byte[] valueBytes = convertStackElementToBytes(value);
-
-							AbstractMemory m = memory.clone();
-							m.mstore(offset.getNumber().intValue(), valueBytes);
-
-							memoryResult = memoryResult.lub(m);
+							memoryResult = memoryResult.lub(memory.mstore(offset.getNumber().intValue(), valueBytes));
 						}
 						result.add(stackResult);
 					}
@@ -995,14 +991,13 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (memory.isTop()) {
+						if (offset.isTop() || value.isTop() || offset.isTopNotJumpdest() || value.isTopNotJumpdest()) {
 							memoryResult = AbstractMemory.TOP;
-						} else if (!offset.isTop() && !value.isTop()) {
-							AbstractMemory m = memory.clone();
-							m.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue());
-
-							memoryResult = memoryResult.lub(m);
-						}
+						} else if (memory.isTop()) {
+							memoryResult = AbstractMemory.TOP;
+						} else
+							memoryResult = memoryResult.lub(
+									memory.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue()));
 
 						result.add(stackResult);
 					}
