@@ -62,8 +62,10 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	private void ensureCapacity(int size) {
-		if (size > memory.length) {
-			byte[] newMemory = new byte[size];
+		int alignedSize = ((size + 31) / 32) * 32;
+
+		if (alignedSize > memory.length) {
+			byte[] newMemory = new byte[alignedSize];
 			Arrays.fill(newMemory, (byte) 0);
 			System.arraycopy(memory, 0, newMemory, 0, memory.length);
 			memory = newMemory;
