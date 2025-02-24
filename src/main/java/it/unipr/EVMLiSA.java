@@ -93,6 +93,53 @@ public class EVMLiSA {
 		new EVMLiSA().go(args);
 	}
 
+	/**
+	 * Computes the basic blocks of the CFG of a given EVM bytecode.
+	 *
+	 * @param bytecode The EVM bytecode to analyze.
+	 * 
+	 * @return A list of pairs where each pair represents the start and end
+	 *             program counter of a basic block.
+	 * 
+	 * @throws IOException If an error occurs while writing the bytecode to a
+	 *                         file.
+	 */
+	public List<Long[]> computeBasicBlocks(String bytecode) throws IOException {
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+		String address = setupAnalysisDirectories(null);
+		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
+
+		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
+			writer.write(bytecode);
+		} catch (IOException e) {
+			log.error("Error during writing on file {}", bytecodeFullPath, e);
+			return null;
+		}
+
+		EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(address),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.workdir = OUTPUT_DIR;
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+		conf.useWideningPoints = false;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		log.info("Basic blocks: {}", checker.getComputedCFG().bb().toString());
+
+		return checker.getComputedCFG().bb();
+	}
+
 	private void go(String[] args) throws Exception {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
@@ -130,12 +177,18 @@ public class EVMLiSA {
 		String bytecodeFullPath = setupBytecode(cmd);
 		String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
 
-		if (cmd.hasOption("creation-code"))
-			json.put("bytecode", bytecode);
-		else
-			json.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+		String bytecodeMnemonicPath = _outputDirPath.resolve(address + ".opcode").toString();
 
-		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+		try {
+			EVMFrontend.opcodesFromBytecode(bytecode, bytecodeMnemonicPath);
+		} catch (Exception e) {
+			log.error("Could not parse opcodes from bytecode {}.", bytecodeFullPath);
+			System.exit(1);
+		}
+
+		json.put("bytecode", bytecode);
+
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeMnemonicPath);
 
 		long start = System.currentTimeMillis();
 
@@ -149,6 +202,11 @@ public class EVMLiSA {
 			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 
 			long finish = System.currentTimeMillis();
+
+			json.put("basic-blocks-pc", checker.getComputedCFG().bbToString());
+
+			if (cmd.hasOption("basic-blocks"))
+				json.put("basic-blocks", checker.getComputedCFG().basicBlocksToJson());
 
 			checkers(conf, lisa, program, checker, json);
 
@@ -224,8 +282,6 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (cmd.hasOption("creation-code"))
-			EVMFrontend.setUseCreationCode();
 		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
 			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
@@ -315,8 +371,8 @@ public class EVMLiSA {
 
 	private String setupAnalysisDirectories(CommandLine cmd) {
 		String address;
-		if (!cmd.hasOption("address"))
-			address = "no-address-" + System.currentTimeMillis();
+		if (cmd == null || !cmd.hasOption("address"))
+			address = "contract" + System.currentTimeMillis();
 		else
 			address = cmd.getOptionValue("address");
 
@@ -337,8 +393,10 @@ public class EVMLiSA {
 	}
 
 	private String setupBytecode(CommandLine cmd) {
-		String bytecodePath = _outputDirPath.resolve(cmd.getOptionValue("address") + ".opcode").toString();
-		String bytecode = null;
+		String address = cmd.getOptionValue("address") != null ? cmd.getOptionValue("address") : "contract";
+
+		String bytecodePath = _outputDirPath.resolve(address + ".bytecode").toString();
+		String bytecode = "";
 
 		if (cmd.hasOption("filepath-bytecode")) {
 			try {
@@ -351,15 +409,15 @@ public class EVMLiSA {
 			try {
 				bytecode = EVMFrontend.parseContractFromEtherscan(cmd.getOptionValue("address"));
 			} catch (IOException e) {
-				log.error("Could not parse bytecode from Etherscan {}.", cmd.getOptionValue("address"));
+				log.error("Could not parse bytecode from Etherscan {}.", address);
 				System.exit(1);
 			}
 		}
 
-		try {
-			EVMFrontend.opcodesFromBytecode(bytecode, bytecodePath);
-		} catch (Exception e) {
-			log.error("Could not parse opcodes from bytecode {}.", bytecodePath);
+		try (FileWriter writer = new FileWriter(bytecodePath)) {
+			writer.write(bytecode);
+		} catch (IOException e) {
+			log.error("Could not write bytecode file {}.", bytecodePath);
 			System.exit(1);
 		}
 
@@ -1124,9 +1182,9 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option useCreationCodeOption = Option.builder()
-				.longOpt("creation-code")
-				.desc("Parse bytecode as creation code (instead of runtime code).")
+		Option basicBlocksOption = Option.builder()
+				.longOpt("basic-blocks")
+				.desc("Print the basic blocks.")
 				.required(false)
 				.hasArg(false)
 				.build();
@@ -1166,12 +1224,12 @@ public class EVMLiSA {
 		options.addOption(useStorageLiveOption);
 		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
 		options.addOption(dumpAnalysisReport);
-		options.addOption(useCreationCodeOption);
 		options.addOption(dumpHtmlOption);
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(basicBlocksOption);
 
 		return options;
 	}

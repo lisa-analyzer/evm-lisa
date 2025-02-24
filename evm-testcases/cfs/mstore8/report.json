@@ -3,17 +3,17 @@
   "files" : [ "report.json", "untyped_program.evm-testcases_cfs_mstore8_mstore8_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "6ms",
-    "end" : "2024-10-03T17:31:51.806+02:00",
-    "expressions" : "6",
+    "duration" : "306ms",
+    "end" : "2025-02-24T19:27:10.344+01:00",
+    "expressions" : "18",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-10-03T17:31:51.800+02:00",
-    "statements" : "11",
+    "start" : "2025-02-24T19:27:10.038+01:00",
+    "statements" : "37",
     "units" : "0",
-    "version" : "0.1b8",
+    "version" : "0.1",
     "warnings" : "0"
   },
   "configuration" : {

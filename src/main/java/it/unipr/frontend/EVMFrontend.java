@@ -30,13 +30,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
  * ETHERSCAN_API_KEY.
  */
 public class EVMFrontend {
-
-	private static boolean USE_CREATION_CODE = false;
-
-	static public void setUseCreationCode() {
-		USE_CREATION_CODE = true;
-	}
-
 	/**
 	 * Verifies the syntactic correctness of the smart contract bytecode stored
 	 * in {@code filePath} and returns its {@code ProgramContext}.
@@ -540,10 +533,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-			if (USE_CREATION_CODE)
-				break;
-			else
-				return false;
+			break;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;

@@ -74,11 +74,11 @@ java -jar build/libs/evm-lisa-all.jar [options]
 Options:
  -a,--address <arg>                        Address of an Ethereum smart contract.
  -b,--benchmark <arg>                      Filepath of the benchmark.
+    --basic-blocks                         Print the basic blocks.
  -c,--cores <arg>                          Number of cores used in benchmark.
     --checker-reentrancy                   Enable re-entrancy checker.
     --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
-    --creation-code                        Parse bytecode as creation code (instead of runtime code).
     --dot                                  Export a dot-notation file.
     --download-bytecode                    Download the bytecode.
     --dump-report                          Dump analysis report.

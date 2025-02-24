@@ -38,7 +38,6 @@ public class SolidiFIReentrancyTruth {
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
-		EVMFrontend.setUseCreationCode();
 
 		Path solidifiBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "test-reentrancy-solidifi-truth", "bytecode");
@@ -46,7 +45,7 @@ public class SolidiFIReentrancyTruth {
 
 		List<String> bytecodes = getFileNamesInDirectory(SOLIDIFI_BYTECODES_DIR);
 
-		int cores = Runtime.getRuntime().availableProcessors() - 1;
+		int cores = 1;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		// Run the benchmark
@@ -76,6 +75,9 @@ public class SolidiFIReentrancyTruth {
 
 					LiSA lisa = new LiSA(conf);
 					lisa.run(program);
+
+					Object bb = checker.getComputedCFG().bb();
+					log.info("Basic blocks: {}", bb.toString());
 
 					conf.semanticChecks.clear();
 					conf.semanticChecks.add(new ReentrancyChecker());
