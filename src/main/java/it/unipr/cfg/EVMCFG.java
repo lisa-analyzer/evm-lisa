@@ -435,8 +435,7 @@ public class EVMCFG extends CFG {
 						|| blockEnd instanceof Stop
 						|| blockEnd instanceof Revert
 						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Ret
-						|| blockEnd instanceof Jumpdest) {
+						|| blockEnd instanceof Ret) {
 					break;
 				}
 
@@ -475,11 +474,58 @@ public class EVMCFG extends CFG {
 
 			basicBlocks.add(basicBlock);
 
-			// Push next statements to visit
 			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
 				stack.push(edge.getDestination());
 			}
 		}
+
+		// Split basic blocks on jumpdest
+		Set<BasicBlock> modifiedBlocks = new HashSet<>();
+		for (BasicBlock block : basicBlocks) {
+			List<Statement> statements = block.getStatements();
+			List<Integer> splitIndexes = new ArrayList<>();
+
+			for (int i = 1; i < statements.size() - 1; i++) {
+				if (statements.get(i) instanceof Jumpdest) {
+					splitIndexes.add(i);
+				}
+			}
+
+			if (!splitIndexes.isEmpty()) {
+				BasicBlock currentBlock = new BasicBlock(block.getId(), block.getBlockType());
+				modifiedBlocks.add(currentBlock);
+
+				for (int i = 0; i < statements.size(); i++) {
+					if (splitIndexes.contains(i)) {
+						int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
+						BasicBlock newBlock = new BasicBlock(newBlockId, block.getBlockType());
+						modifiedBlocks.add(newBlock);
+
+						currentBlock.addEdge(newBlockId);
+
+						currentBlock = newBlock;
+					}
+
+					currentBlock.addStatement(statements.get(i));
+				}
+
+				currentBlock.getOutgoingEdges().addAll(block.getOutgoingEdges());
+			} else {
+				modifiedBlocks.add(block);
+			}
+		}
+
+		basicBlocks = modifiedBlocks;
+
+		// Remove basic blocks with only an instruction
+		Set<BasicBlock> newBlocks = new HashSet<>();
+		for (BasicBlock block : basicBlocks) {
+			log.debug("id: {} {}", block.getId(), block.getStatements().size());
+			if(block.getStatements().size() > 1)
+				newBlocks.add(block);
+		}
+
+		basicBlocks = newBlocks;
 		return basicBlocks;
 	}
 
@@ -583,7 +629,7 @@ public class EVMCFG extends CFG {
 			StringBuilder label = new StringBuilder();
 			if (instructions.length() > 5) {
 				JSONObject firstInstr = instructions.getJSONObject(0);
-				JSONObject secondInstr = instructions.getJSONObject(0);
+				JSONObject secondInstr = instructions.getJSONObject(1);
 				JSONObject secondLastInstr = instructions.getJSONObject(instructions.length() - 2);
 				JSONObject lastInstr = instructions.getJSONObject(instructions.length() - 1);
 
