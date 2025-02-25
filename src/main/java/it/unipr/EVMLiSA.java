@@ -1,5 +1,7 @@
 package it.unipr;
 
+import static it.unipr.cfg.EVMCFG.generateDotGraph;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -58,8 +60,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import static it.unipr.cfg.EVMCFG.generateDotGraph;
 
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);

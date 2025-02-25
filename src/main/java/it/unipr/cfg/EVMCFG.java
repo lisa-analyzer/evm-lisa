@@ -1,6 +1,5 @@
 package it.unipr.cfg;
 
-import it.unipr.EVMLiSA;
 import it.unipr.analysis.BasicBlock;
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
@@ -29,7 +28,6 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -43,7 +41,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -396,12 +393,12 @@ public class EVMCFG extends CFG {
 		return sb.toString();
 	}
 
-	public List<Long[]> basicBlocksToLongArray(){
+	public List<Long[]> basicBlocksToLongArray() {
 		basicBlocks = basicBlocks();
 		List<Long[]> bbToLong = new ArrayList<>();
 		for (BasicBlock bb : basicBlocks)
-			for(Integer end : bb.getOutgoingEdges())
-				bbToLong.add(new Long[]{(long) bb.getId(), (long) end});
+			for (Integer end : bb.getOutgoingEdges())
+				bbToLong.add(new Long[] { (long) bb.getId(), (long) end });
 		return bbToLong;
 	}
 
@@ -445,7 +442,7 @@ public class EVMCFG extends CFG {
 
 				visited.add(next);
 
-				if(next instanceof Ret)
+				if (next instanceof Ret)
 					break;
 
 				blockEnd = next;
@@ -455,7 +452,7 @@ public class EVMCFG extends CFG {
 			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
 			BasicBlock.BlockType blockType = getBlockType(blockEnd);
 
-			if(blockType.equals(BasicBlock.BlockType.RET))
+			if (blockType.equals(BasicBlock.BlockType.RET))
 				continue;
 
 			BasicBlock basicBlock = new BasicBlock(startPc, blockType);
@@ -521,7 +518,7 @@ public class EVMCFG extends CFG {
 		Set<BasicBlock> newBlocks = new HashSet<>();
 		for (BasicBlock block : basicBlocks) {
 			log.debug("id: {} {}", block.getId(), block.getStatements().size());
-			if(block.getStatements().size() > 1)
+			if (block.getStatements().size() > 1)
 				newBlocks.add(block);
 		}
 
@@ -544,7 +541,8 @@ public class EVMCFG extends CFG {
 			return BasicBlock.BlockType.RETURN;
 		else if (lastStatement instanceof Jumpdest)
 			return BasicBlock.BlockType.JUMPDEST;
-		else return BasicBlock.BlockType.RET;
+		else
+			return BasicBlock.BlockType.RET;
 	}
 
 	public JSONArray basicBlocksToJson() {
@@ -633,11 +631,15 @@ public class EVMCFG extends CFG {
 				JSONObject secondLastInstr = instructions.getJSONObject(instructions.length() - 2);
 				JSONObject lastInstr = instructions.getJSONObject(instructions.length() - 1);
 
-				label.append(firstInstr.getInt("pc")).append(": ").append(firstInstr.getString("instruction")).append("\\l");
-				label.append(secondInstr.getInt("pc")).append(": ").append(secondInstr.getString("instruction")).append("\\l");
+				label.append(firstInstr.getInt("pc")).append(": ").append(firstInstr.getString("instruction"))
+						.append("\\l");
+				label.append(secondInstr.getInt("pc")).append(": ").append(secondInstr.getString("instruction"))
+						.append("\\l");
 				label.append("...\n");
-				label.append(secondLastInstr.getInt("pc")).append(": ").append(secondLastInstr.getString("instruction")).append("\\l");
-				label.append(lastInstr.getInt("pc")).append(": ").append(lastInstr.getString("instruction")).append("\\l");
+				label.append(secondLastInstr.getInt("pc")).append(": ").append(secondLastInstr.getString("instruction"))
+						.append("\\l");
+				label.append(lastInstr.getInt("pc")).append(": ").append(lastInstr.getString("instruction"))
+						.append("\\l");
 			} else {
 				for (int j = 0; j < instructions.length(); j++) {
 					JSONObject instr = instructions.getJSONObject(j);
@@ -648,8 +650,7 @@ public class EVMCFG extends CFG {
 
 			dotGraph.append(String.format(
 					"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
-					id, label.toString(), backgroundColor
-			));
+					id, label.toString(), backgroundColor));
 		}
 
 		// Edge color mapping
@@ -675,14 +676,12 @@ public class EVMCFG extends CFG {
 				if (color == null) {
 					dotGraph.append(String.format(
 							"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
-							targetId,  targetId + ": Unreachable jump", purpleColor
-					));
+							targetId, targetId + ": Unreachable jump", purpleColor));
 					color = purpleColor;
 				}
 
 				dotGraph.append(String.format(
-						"\t%d -> %d [color=%s];\n", id, targetId, color
-				));
+						"\t%d -> %d [color=%s];\n", id, targetId, color));
 			}
 		}
 

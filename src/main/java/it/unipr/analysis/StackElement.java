@@ -21,12 +21,11 @@ public class StackElement implements BaseLattice<StackElement> {
 	public static final StackElement ONE = new StackElement(1);
 
 	public static final StackElement NOT_JUMPDEST_TOP = new StackElement(-10);
-	
+
 	/**
 	 * The top abstract element.
 	 */
 	public static final StackElement TOP = new StackElement(true, false);
-	
 
 	/**
 	 * The bottom abstract element.

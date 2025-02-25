@@ -1,7 +1,6 @@
 package it.unipr.analysis;
 
 import it.unive.lisa.program.cfg.statement.Statement;
-
 import java.util.*;
 
 public class BasicBlock {
@@ -64,10 +63,13 @@ public class BasicBlock {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		BasicBlock that = (BasicBlock) o;
-		return id == that.id && Objects.equals(statements, that.statements) && Objects.equals(outgoingEdges, that.outgoingEdges) && blockType == that.blockType;
+		return id == that.id && Objects.equals(statements, that.statements)
+				&& Objects.equals(outgoingEdges, that.outgoingEdges) && blockType == that.blockType;
 	}
 
 	@Override

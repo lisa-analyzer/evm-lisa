@@ -2032,9 +2032,10 @@ public class EVMAbstractState
 
 		return result;
 	}
-	
+
 	/**
 	 * Yields the second elements of all the stacks in the stack set.
+	 * 
 	 * @return the second elements of all the stacks in the stack set
 	 */
 	public Set<StackElement> getSecondElement() {
