@@ -476,13 +476,15 @@ public class EVMCFG extends CFG {
 			}
 		}
 
+		log.debug(basicBlocks.toString());
+
 		// Split basic blocks on jumpdest
 		Set<BasicBlock> modifiedBlocks = new HashSet<>();
 		for (BasicBlock block : basicBlocks) {
 			List<Statement> statements = block.getStatements();
 			List<Integer> splitIndexes = new ArrayList<>();
 
-			for (int i = 1; i < statements.size() - 1; i++) {
+			for (int i = 1; i < statements.size(); i++) { // skip the first opcode of the basic block
 				if (statements.get(i) instanceof Jumpdest) {
 					splitIndexes.add(i);
 				}
@@ -495,7 +497,7 @@ public class EVMCFG extends CFG {
 				for (int i = 0; i < statements.size(); i++) {
 					if (splitIndexes.contains(i)) {
 						int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
-						BasicBlock newBlock = new BasicBlock(newBlockId, block.getBlockType());
+						BasicBlock newBlock = new BasicBlock(newBlockId, BasicBlock.BlockType.SPLITTED);
 						modifiedBlocks.add(newBlock);
 
 						currentBlock.addEdge(newBlockId);
@@ -541,8 +543,11 @@ public class EVMCFG extends CFG {
 			return BasicBlock.BlockType.RETURN;
 		else if (lastStatement instanceof Jumpdest)
 			return BasicBlock.BlockType.JUMPDEST;
-		else
+		else if (lastStatement instanceof Invalid)
+			return BasicBlock.BlockType.INVALID;
+		else if (lastStatement instanceof Ret)
 			return BasicBlock.BlockType.RET;
+		return BasicBlock.BlockType.UNKNOWN;
 	}
 
 	public JSONArray basicBlocksToJson() {
@@ -594,7 +599,7 @@ public class EVMCFG extends CFG {
 			for (BasicBlock prevBlock : basicBlocks) {
 				if (prevBlock.getOutgoingEdges().contains(block.getId())) {
 					Statement lastStatement = prevBlock.getStatements().get(prevBlock.getStatements().size() - 1);
-					if (lastStatement instanceof Jump) {
+					if (lastStatement instanceof Jumpi) {
 						edgeColor = "black";
 						break;
 					}
@@ -666,7 +671,6 @@ public class EVMCFG extends CFG {
 			JSONObject block = basicBlocks.getJSONObject(i);
 			int id = block.getInt("id");
 			JSONArray outgoingEdges = block.getJSONArray("outgoing_edges");
-			String edgeColor = block.optString("ingoing_edge_color", "black");
 
 			for (int j = 0; j < outgoingEdges.length(); j++) {
 				int targetId = outgoingEdges.getInt(j);

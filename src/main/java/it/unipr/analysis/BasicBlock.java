@@ -17,7 +17,10 @@ public class BasicBlock {
 		REVERT,
 		SELFDESTRUCT,
 		RET,
-		JUMPDEST
+		JUMPDEST,
+		INVALID,
+		UNKNOWN,
+		SPLITTED
 	}
 
 	public BasicBlock(int id) {
