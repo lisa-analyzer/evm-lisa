@@ -56,7 +56,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static it.unipr.cfg.EVMCFG.generateDotGraph;
 
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
@@ -135,9 +138,9 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Basic blocks: {}", checker.getComputedCFG().bb().toString());
+		log.info("Basic blocks: {}", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
 
-		return checker.getComputedCFG().bb();
+		return checker.getComputedCFG().basicBlocksToLongArray();
 	}
 
 	private void go(String[] args) throws Exception {
@@ -172,7 +175,7 @@ public class EVMLiSA {
 
 		// Single analysis case
 		String address = setupAnalysisDirectories(cmd);
-		json.put("output-directory", OUTPUT_DIR);
+		json.put("output_directory", OUTPUT_DIR);
 
 		String bytecodeFullPath = setupBytecode(cmd);
 		String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
@@ -203,10 +206,14 @@ public class EVMLiSA {
 
 			long finish = System.currentTimeMillis();
 
-			json.put("basic-blocks-pc", checker.getComputedCFG().bbToString());
+			json.put("basic-blocks-pc", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
 
-			if (cmd.hasOption("basic-blocks"))
-				json.put("basic-blocks", checker.getComputedCFG().basicBlocksToJson());
+			if (cmd.hasOption("basic-blocks")) {
+				JSONArray j = checker.getComputedCFG().basicBlocksToJson();
+				String dotFilePath = _outputDirPath.resolve("CFG-with-basic-blocks.dot").toString();
+				json.put("basic_blocks", j);
+				generateDotGraph(j, dotFilePath);
+			}
 
 			checkers(conf, lisa, program, checker, json);
 
@@ -302,22 +309,22 @@ public class EVMLiSA {
 	private JSONObject setupJSON(CommandLine cmd) {
 		JSONObject jsonOptions = new JSONObject();
 		jsonOptions.put("address", cmd.getOptionValue("address"));
-		jsonOptions.put("serialize-inputs", cmd.hasOption("serialize-inputs"));
-		jsonOptions.put("dump-html", cmd.hasOption("html"));
-		jsonOptions.put("dump-dot", cmd.hasOption("dot"));
-		jsonOptions.put("dump-statistics", cmd.hasOption("dump-stats"));
-		jsonOptions.put("download-bytecode", cmd.hasOption("download-bytecode"));
-		jsonOptions.put("use-storage-live", cmd.hasOption("use-live-storage"));
-		jsonOptions.put("use-creation-code", cmd.hasOption("creation-code"));
-		if (cmd.getOptionValue("filepath-bytecode") != null)
-			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-bytecode"));
-		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
-		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
+		jsonOptions.put("serialize_inputs", cmd.hasOption("serialize-inputs"));
+		jsonOptions.put("dump_html", cmd.hasOption("html"));
+		jsonOptions.put("dump_dot", cmd.hasOption("dot"));
+		jsonOptions.put("dump_statistics", cmd.hasOption("dump-stats"));
+		jsonOptions.put("download_bytecode", cmd.hasOption("download-bytecode"));
+		jsonOptions.put("use_storage_live", cmd.hasOption("use-live-storage"));
+		jsonOptions.put("use_creation_code", cmd.hasOption("creation-code"));
+		if (cmd.getOptionValue("filepath_bytecode") != null)
+			jsonOptions.put("input_filepath", cmd.getOptionValue("filepath-bytecode"));
+		jsonOptions.put("stack_size", AbstractStack.getStackLimit());
+		jsonOptions.put("stack_set_size", AbstractStackSet.getStackSetLimit());
 		jsonOptions.put("benchmark", cmd.getOptionValue("benchmark"));
 		jsonOptions.put("cores", CORES);
-		jsonOptions.put("dump-report", cmd.hasOption("dump-report"));
-		jsonOptions.put("output-directory", OUTPUT_DIR);
-		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
+		jsonOptions.put("dump_report", cmd.hasOption("dump-report"));
+		jsonOptions.put("output_directory", OUTPUT_DIR);
+		jsonOptions.put("link_unsound_jumps_to_all_jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
 		return jsonOptions;
 	}
 

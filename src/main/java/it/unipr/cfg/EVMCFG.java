@@ -1,5 +1,6 @@
 package it.unipr.cfg;
 
+import it.unipr.EVMLiSA;
 import it.unipr.analysis.BasicBlock;
 import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
@@ -28,6 +29,9 @@ import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,10 +43,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EVMCFG extends CFG {
+	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<Statement> jumpDestsNodes;
 	private Set<Statement> jumpNodes;
@@ -371,91 +379,30 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	/**
-	 * Computes the basic blocks of the control flow graph (CFG) by starting
-	 * from the first available entry point.
-	 *
-	 * @return A list of pairs where each pair represents the start and end
-	 *             program counter of a basic block.
-	 */
-	public List<Long[]> bb() {
-		return bb(this.getEntrypoints().stream().findFirst().get());
-	}
-
-	/**
-	 * Performs a depth-first search (DFS) to compute basic blocks in the CFG.
-	 *
-	 * @param start The starting statement of the CFG traversal.
-	 * 
-	 * @return A list of pairs where each pair represents the start and end
-	 *             program counter of a basic block.
-	 */
-	private List<Long[]> bb(Statement start) {
-		Set<Statement> visited = new HashSet<Statement>();
-		List<Long[]> basicBlocks = new ArrayList<>();
-		Deque<Statement> stack = new ArrayDeque<>();
-		stack.push(start);
-
-		while (!stack.isEmpty()) {
-			Statement current = stack.pop();
-			if (visited.contains(current))
-				continue;
-
-			Statement blockStart = current;
-			Statement blockEnd = current;
-
-			while (true) {
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
-				if (outgoingEdges.isEmpty()
-						|| blockEnd instanceof Jump
-						|| blockEnd instanceof Jumpi
-						|| blockEnd instanceof Invalid
-						|| blockEnd instanceof Stop
-						|| blockEnd instanceof Revert
-						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Ret) {
-					break;
-				}
-
-				Statement next = outgoingEdges.iterator().next().getDestination();
-				if (visited.contains(next))
-					break;
-
-				blockEnd = next;
-				visited.add(blockEnd);
-			}
-
-			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
-			for (Edge edge : getOutgoingEdges(blockEnd)) {
-				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
-				if (startPc != endPc && !(edge.getDestination() instanceof Ret))
-					basicBlocks.add(new Long[] { (long) startPc, (long) endPc });
-			}
-
-			// Push next statements to visit
-			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
-				stack.push(edge.getDestination());
-			}
-		}
-
-		return basicBlocks;
-	}
-
-	public String bbToString() {
+	public static String bbToString(List<Long[]> bb) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 
 		boolean first = true;
-		for (Long[] l : bb()) {
+		for (Long[] l : bb) {
 			if (!first)
 				sb.append(", ");
 
-			sb.append("(").append(l[0]).append(",").append(l[1]).append(")");
+			sb.append("(").append(l[0]).append(", ").append(l[1]).append(")");
 			first = false;
 		}
 
 		sb.append("]");
 		return sb.toString();
+	}
+
+	public List<Long[]> basicBlocksToLongArray(){
+		basicBlocks = basicBlocks();
+		List<Long[]> bbToLong = new ArrayList<>();
+		for (BasicBlock bb : basicBlocks)
+			for(Integer end : bb.getOutgoingEdges())
+				bbToLong.add(new Long[]{(long) bb.getId(), (long) end});
+		return bbToLong;
 	}
 
 	public Set<BasicBlock> basicBlocks() {
@@ -488,7 +435,8 @@ public class EVMCFG extends CFG {
 						|| blockEnd instanceof Stop
 						|| blockEnd instanceof Revert
 						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Ret) {
+						|| blockEnd instanceof Ret
+						|| blockEnd instanceof Jumpdest) {
 					break;
 				}
 
@@ -496,12 +444,21 @@ public class EVMCFG extends CFG {
 				if (visited.contains(next))
 					break;
 
+				visited.add(next);
+
+				if(next instanceof Ret)
+					break;
+
 				blockEnd = next;
-				visited.add(blockEnd);
+
 			}
 
 			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
 			BasicBlock.BlockType blockType = getBlockType(blockEnd);
+
+			if(blockType.equals(BasicBlock.BlockType.RET))
+				continue;
+
 			BasicBlock basicBlock = new BasicBlock(startPc, blockType);
 
 			for (Statement stmt : statements) {
@@ -510,7 +467,8 @@ public class EVMCFG extends CFG {
 
 			for (Edge edge : getOutgoingEdges(blockEnd)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
-				if (startPc != endPc && !(edge.getDestination() instanceof Ret)) {
+				if (startPc != endPc
+						&& !(edge.getDestination() instanceof Ret)) {
 					basicBlock.addEdge(endPc);
 				}
 			}
@@ -525,13 +483,6 @@ public class EVMCFG extends CFG {
 		return basicBlocks;
 	}
 
-	/**
-	 * Determines the type of the basic block based on its last instruction.
-	 *
-	 * @param lastStatement The last statement of the block.
-	 * 
-	 * @return The corresponding BlockType.
-	 */
 	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
 		if (lastStatement instanceof Jump)
 			return BasicBlock.BlockType.JUMP;
@@ -543,11 +494,17 @@ public class EVMCFG extends CFG {
 			return BasicBlock.BlockType.REVERT;
 		else if (lastStatement instanceof Selfdestruct)
 			return BasicBlock.BlockType.SELFDESTRUCT;
-		else
+		else if (lastStatement instanceof Return)
 			return BasicBlock.BlockType.RETURN;
+		else if (lastStatement instanceof Jumpdest)
+			return BasicBlock.BlockType.JUMPDEST;
+		else return BasicBlock.BlockType.RET;
 	}
 
-	public JSONObject basicBlocksToJson() {
+	public JSONArray basicBlocksToJson() {
+		String lightGreenColor = "\"#A6EC99\"";
+		String greyColor = "\"#D3D3D3\"";
+		String lightRed = "\"#EF8683\"";
 		basicBlocks = basicBlocks();
 		JSONArray blocksArray = new JSONArray();
 
@@ -572,22 +529,23 @@ public class EVMCFG extends CFG {
 			for (Integer edgeId : block.getOutgoingEdges()) {
 				outgoingEdgesArray.put(edgeId);
 			}
-			if (!block.getOutgoingEdges().isEmpty())
-				blockJson.put("outgoingEdges", outgoingEdgesArray);
+			blockJson.put("outgoing_edges", outgoingEdgesArray);
 
 			BasicBlock.BlockType bbt = block.getBlockType();
 			if (bbt == BasicBlock.BlockType.STOP
 					|| bbt == BasicBlock.BlockType.RETURN)
-				blockJson.put("background-color", "green");
+				blockJson.put("background_color", lightGreenColor);
 			else if (bbt == BasicBlock.BlockType.REVERT
 					|| bbt == BasicBlock.BlockType.SELFDESTRUCT)
-				blockJson.put("background-color", "red");
+				blockJson.put("background_color", lightRed);
+			else
+				blockJson.put("background_color", greyColor);
 
-			blockJson.put("lastInstruction", block.getBlockType());
+			blockJson.put("last_instruction", block.getBlockType());
 
-			String edgeColor = "red";
+			String edgeColor = lightRed;
 			if (block.getStatements().get(0) instanceof Jumpdest)
-				edgeColor = "green";
+				edgeColor = lightGreenColor;
 
 			for (BasicBlock prevBlock : basicBlocks) {
 				if (prevBlock.getOutgoingEdges().contains(block.getId())) {
@@ -598,7 +556,7 @@ public class EVMCFG extends CFG {
 					}
 				}
 			}
-			blockJson.put("ingoing-edge-color", edgeColor);
+			blockJson.put("ingoing_edge_color", edgeColor);
 
 			blocksArray.put(blockJson);
 		}
@@ -606,6 +564,89 @@ public class EVMCFG extends CFG {
 		JSONObject basicBlocksJson = new JSONObject();
 		basicBlocksJson.put("basic_blocks", blocksArray);
 
-		return basicBlocksJson;
+		return blocksArray;
+	}
+
+	public static void generateDotGraph(JSONArray basicBlocks, String outputPath) {
+		String purpleColor = "\"#A97FB2\"";
+		StringBuilder dotGraph = new StringBuilder();
+		dotGraph.append("digraph CFG {\n");
+		dotGraph.append("\trankdir=TB;\n");
+
+		// Nodes
+		for (int i = 0; i < basicBlocks.length(); i++) {
+			JSONObject block = basicBlocks.getJSONObject(i);
+			int id = block.getInt("id");
+			String backgroundColor = block.optString("background_color", "white");
+			JSONArray instructions = block.getJSONArray("instructions");
+
+			StringBuilder label = new StringBuilder();
+			if (instructions.length() > 5) {
+				JSONObject firstInstr = instructions.getJSONObject(0);
+				JSONObject secondInstr = instructions.getJSONObject(0);
+				JSONObject secondLastInstr = instructions.getJSONObject(instructions.length() - 2);
+				JSONObject lastInstr = instructions.getJSONObject(instructions.length() - 1);
+
+				label.append(firstInstr.getInt("pc")).append(": ").append(firstInstr.getString("instruction")).append("\\l");
+				label.append(secondInstr.getInt("pc")).append(": ").append(secondInstr.getString("instruction")).append("\\l");
+				label.append("...\n");
+				label.append(secondLastInstr.getInt("pc")).append(": ").append(secondLastInstr.getString("instruction")).append("\\l");
+				label.append(lastInstr.getInt("pc")).append(": ").append(lastInstr.getString("instruction")).append("\\l");
+			} else {
+				for (int j = 0; j < instructions.length(); j++) {
+					JSONObject instr = instructions.getJSONObject(j);
+					label.append(instr.getInt("pc")).append(": ")
+							.append(instr.getString("instruction")).append("\\l");
+				}
+			}
+
+			dotGraph.append(String.format(
+					"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
+					id, label.toString(), backgroundColor
+			));
+		}
+
+		// Edge color mapping
+		Map<Integer, String> colorMapping = new HashMap<>();
+		for (int i = 0; i < basicBlocks.length(); i++) {
+			JSONObject block = basicBlocks.getJSONObject(i);
+			int id = block.getInt("id");
+			colorMapping.put(id, block.getString("ingoing_edge_color"));
+		}
+
+		// Edges
+		for (int i = 0; i < basicBlocks.length(); i++) {
+			JSONObject block = basicBlocks.getJSONObject(i);
+			int id = block.getInt("id");
+			JSONArray outgoingEdges = block.getJSONArray("outgoing_edges");
+			String edgeColor = block.optString("ingoing_edge_color", "black");
+
+			for (int j = 0; j < outgoingEdges.length(); j++) {
+				int targetId = outgoingEdges.getInt(j);
+				String color = colorMapping.get(targetId);
+
+				// Unreachable jump
+				if (color == null) {
+					dotGraph.append(String.format(
+							"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
+							targetId,  targetId + ": Unreachable jump", purpleColor
+					));
+					color = purpleColor;
+				}
+
+				dotGraph.append(String.format(
+						"\t%d -> %d [color=%s];\n", id, targetId, color
+				));
+			}
+		}
+
+		dotGraph.append("}\n");
+
+		try (FileWriter writer = new FileWriter(outputPath)) {
+			writer.write(dotGraph.toString());
+			log.info("DOT file successfully written to {}", outputPath);
+		} catch (IOException e) {
+			log.error("Error writing DOT file: {}", e.getMessage());
+		}
 	}
 }

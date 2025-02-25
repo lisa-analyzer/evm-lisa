@@ -18,7 +18,9 @@ public class BasicBlock {
 		STOP,
 		RETURN,
 		REVERT,
-		SELFDESTRUCT
+		SELFDESTRUCT,
+		RET,
+		JUMPDEST
 	}
 
 	public BasicBlock(int id) {

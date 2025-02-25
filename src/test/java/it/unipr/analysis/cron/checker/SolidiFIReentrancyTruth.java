@@ -76,9 +76,6 @@ public class SolidiFIReentrancyTruth {
 					LiSA lisa = new LiSA(conf);
 					lisa.run(program);
 
-					Object bb = checker.getComputedCFG().bb();
-					log.info("Basic blocks: {}", bb.toString());
-
 					conf.semanticChecks.clear();
 					conf.semanticChecks.add(new ReentrancyChecker());
 					lisa.run(program);

@@ -80,16 +80,16 @@ public class MyLogger {
 		this.json.put("address", this.address);
 		this.json.put("opcodes", this.opcodes);
 		this.json.put("jumps", this.jumps);
-		this.json.put("resolved-jumps", this.totalResolvedJumps);
-		this.json.put("definitely-unreachable-jumps", this.definitelyUnreachableJumps);
-		this.json.put("maybe-unreachable-jumps", this.maybeUnreachableJumps);
-		this.json.put("unsound-jumps", this.unsoundJumps);
-		this.json.put("maybe-unsound-jumps", this.maybeUnsoundJumps);
-		this.json.put("solved-jumps-percent", this.solvedJumpsPercent);
+		this.json.put("resolved_jumps", this.totalResolvedJumps);
+		this.json.put("definitely_unreachable_jumps", this.definitelyUnreachableJumps);
+		this.json.put("maybe_unreachable_jumps", this.maybeUnreachableJumps);
+		this.json.put("unsound_jumps", this.unsoundJumps);
+		this.json.put("maybe_unsound_jumps", this.maybeUnsoundJumps);
+		this.json.put("solved_jumps_percent", this.solvedJumpsPercent);
 		this.json.put("time", this.time);
-		this.json.put("time-lost-to-get-storage", this.timeLostToGetStorage);
-		this.json.put("actual-time", this.actualTime);
-		this.json.put("current-thread", this.currentThread);
+		this.json.put("time_lost_to_get_storage", this.timeLostToGetStorage);
+		this.json.put("actual_time", this.actualTime);
+		this.json.put("current_thread", this.currentThread);
 	}
 
 	public static MyLogger newLogger() {
