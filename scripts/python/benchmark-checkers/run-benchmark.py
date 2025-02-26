@@ -224,9 +224,9 @@ def run_evmlisa(bytecode_file, result_evmlisa_dir, type="reentrancy"):
     command = (
         f"java -jar jars/evm-lisa.jar "
         f"--filepath-bytecode {bytecode_file} "
-        f"--stack-size 40 "
-        f"--stack-set-size 15 "
-        f"--creation-code "
+        # f"--stack-size 40 "
+        # f"--stack-set-size 15 "
+        # f"--creation-code "
         f"--checker-{type} "
         f"--link-unsound-jumps-to-all-jumpdest "
         # f"--dump-report "
@@ -252,7 +252,7 @@ def evmlisa(bytecode_dir, results_dir, result_evmlisa_dir, type="reentrancy"):
     bytecode_files = [os.path.join(bytecode_dir, f) for f in os.listdir(bytecode_dir) if f.endswith(".bytecode")]
     num_files = len(bytecode_files)
     print(f"[EVMLISA] Found {num_files} bytecode files for analysis in '{bytecode_dir}'.")
-    print(f"[EVMLISA] Started thread pool with {max_threads} workers.")
+    print(f"[EVMLISA] Analysis sent to thread pool with {max_threads} workers.")
 
     analysis_ended = 0
 
