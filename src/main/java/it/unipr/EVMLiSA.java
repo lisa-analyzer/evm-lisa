@@ -115,7 +115,7 @@ public class EVMLiSA {
 		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
 			writer.write(bytecode);
 		} catch (IOException e) {
-			log.error("Error during writing on file {}", bytecodeFullPath, e);
+			log.error("[computeBasicBlocks] Error during writing on file {}", bytecodeFullPath, e);
 			return null;
 		}
 
@@ -242,7 +242,7 @@ public class EVMLiSA {
 					.buildJson(json)
 					.build().toString();
 
-			log.error(msg);
+			log.error("Failure: {} - details: {}", e, e.getMessage());
 
 			if (cmd.hasOption("dump-stats")) {
 				toFile(FAILURE_FULLPATH, msg);
@@ -1050,7 +1050,7 @@ public class EVMLiSA {
 					// I can do max 5 API request in 1 sec to Etherscan.io
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					log.error("e: {}", e.getMessage());
+					log.error("[saveSmartContractsFromEtherscan] e: {}", e.getMessage());
 				}
 			}
 
