@@ -476,8 +476,6 @@ public class EVMCFG extends CFG {
 			}
 		}
 
-		log.debug(basicBlocks.toString());
-
 		// Split basic blocks on jumpdest
 		Set<BasicBlock> modifiedBlocks = new HashSet<>();
 		for (BasicBlock block : basicBlocks) {
@@ -519,7 +517,6 @@ public class EVMCFG extends CFG {
 		// Remove basic blocks with only an instruction
 		Set<BasicBlock> newBlocks = new HashSet<>();
 		for (BasicBlock block : basicBlocks) {
-			log.debug("id: {} {}", block.getId(), block.getStatements().size());
 			if (block.getStatements().size() > 1)
 				newBlocks.add(block);
 		}

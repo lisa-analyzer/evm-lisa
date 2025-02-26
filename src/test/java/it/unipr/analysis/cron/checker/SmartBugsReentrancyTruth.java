@@ -48,7 +48,7 @@ public class SmartBugsReentrancyTruth {
 
 		List<String> bytecodes = getFileNamesInDirectory(SMARTBUGS_BYTECODES_DIR);
 
-		int cores = 1;
+		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		// Run the benchmark in parallel

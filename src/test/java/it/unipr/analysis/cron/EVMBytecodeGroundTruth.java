@@ -68,7 +68,7 @@ public class EVMBytecodeGroundTruth {
 
 		List<String> smartContracts = EVMLiSA.readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
 
-		int cores = 1;
+		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		for (String address : smartContracts) {
@@ -148,30 +148,13 @@ public class EVMBytecodeGroundTruth {
 			}
 		}
 		assert !changed;
-
-		if (smartContractGroundTruthListTime != 0) {
-			float percentageChange = ((smartContractListTime - smartContractGroundTruthListTime)
-					/ (float) smartContractGroundTruthListTime) * 100;
-
-			System.err.println("\n");
-			System.err.println("GroundTruth Time: " + (smartContractGroundTruthListTime / (float) 1000) + " seconds");
-			System.err.println("New Execution Time: " + (smartContractListTime / (float) 1000) + " seconds");
-
-			if (percentageChange > 0) {
-				System.err.println("Time lost: " + percentageChange + "%");
-			} else {
-				System.err.println("Time gained: " + Math.abs(percentageChange) + "%");
-			}
-		} else {
-			System.err.println("Cannot calculate percentage change, ground truth time is zero.");
-		}
 	}
 
 	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
 		Path bytecodeDir = Paths.get(RESULT_EXEC_DIR_PATH, "benchmark", CONTRACT_ADDR);
 		String BYTECODE_DIR = bytecodeDir.toString();
 
-		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".sol");
+		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".bytecode");
 		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
 
 		// Directory setup and bytecode retrieval
