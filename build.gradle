@@ -43,6 +43,8 @@ dependencies {
  	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
  	
  	implementation 'org.json:json:20210307'
+
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 }
 
 

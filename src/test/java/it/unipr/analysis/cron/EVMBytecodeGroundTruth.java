@@ -4,8 +4,8 @@ import it.unipr.EVMLiSA;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyCache;
-import it.unipr.analysis.MyLogger;
+import it.unipr.utils.MyCache;
+import it.unipr.utils.MyLogger;
 import it.unipr.checker.JumpSolver;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.LiSA;
@@ -163,7 +163,7 @@ public class EVMBytecodeGroundTruth {
 		// If the file does not exist, we will do an API request to Etherscan
 		File file = new File(BYTECODE_FULLPATH);
 		if (!file.exists()) {
-			String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+			String bytecode = EVMFrontend.parseBytecodeFromEtherscan(CONTRACT_ADDR);
 			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
 		}
 

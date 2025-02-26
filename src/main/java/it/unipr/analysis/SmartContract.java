@@ -1,0 +1,335 @@
+package it.unipr.analysis;
+
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.push.Push;
+import it.unipr.checker.JumpSolver;
+import it.unipr.frontend.EVMFrontend;
+import it.unipr.frontend.EVMLiSAFeatures;
+import it.unipr.frontend.EVMLiSATypeSystem;
+import it.unipr.utils.*;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.statement.Statement;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class SmartContract {
+    private static final Logger log = LogManager.getLogger(SmartContract.class);
+
+    private String _address;
+
+    private String _bytecode;
+    private String _mnemonicBytecode;
+    private String _abi;
+
+    private final Path _workingDirectory = Path.of("execution", "results");
+    private Path _abiFilePath;
+    private Path _bytecodeFilePath;
+    private final Path _mnemonicBytecodeFilePath;
+
+    private EVMCFG _cfg;
+    private StatisticsObject _statistics;
+
+    private Set<Signature> _functionsSignature;
+    private Set<Signature> _eventsSignature;
+
+    public SmartContract(){
+        this._address = null;
+
+        this._bytecode = null;
+        this._abi = null;
+        this._mnemonicBytecode = null;
+
+        this._bytecodeFilePath = null;
+        this._abiFilePath = null;
+        this._mnemonicBytecodeFilePath = null;
+
+        this._cfg = null;
+
+        this._functionsSignature = null;
+        this._eventsSignature = null;
+    }
+
+    public SmartContract(Path bytecodeFilePath){
+        if (bytecodeFilePath == null)
+            throw new IllegalArgumentException("bytecodeFilePath cannot be null");
+
+        this._address = "contract-" + System.currentTimeMillis();
+
+        Path outputDir = _workingDirectory.resolve(_address);
+        this._bytecodeFilePath = outputDir.resolve(_address + ".bytecode");
+        this._mnemonicBytecodeFilePath = outputDir.resolve(_address + ".opcode");
+
+        try {
+            this._bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFilePath.toString())));
+
+            EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
+            this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
+
+        } catch (IOException e) {
+            log.warn("Failed to read bytecode from files: {}, {}", _bytecodeFilePath, _abiFilePath);
+        }
+
+        try {
+            Files.createDirectories(outputDir);
+
+            Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
+            this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
+
+        } catch (IOException e) {
+            log.error("Failed to parse mnemonic from bytecode: {}", _bytecodeFilePath);
+        }
+    }
+
+    public SmartContract(Path bytecodeFilePath, Path abiFilePath) {
+        if (bytecodeFilePath == null || abiFilePath == null)
+            throw new IllegalArgumentException("bytecodeFilePath and abiFilePath cannot be null");
+
+        this._address = "contract-" + System.currentTimeMillis();
+
+        this._bytecodeFilePath = bytecodeFilePath;
+        this._abiFilePath = abiFilePath;
+        this._mnemonicBytecodeFilePath = _workingDirectory.resolve(this._address + ".opcode");
+
+        try {
+            this._bytecode = new String(Files.readAllBytes(Paths.get(_bytecodeFilePath.toString())));
+            this._abi = new String(Files.readAllBytes(Paths.get(_abiFilePath.toString())));
+
+            EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
+            this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
+
+        } catch (IOException e) {
+            log.warn("Failed to read bytecode or ABI from files: {}, {}", _bytecodeFilePath, _abiFilePath);
+        } catch (NullPointerException npe) {
+            log.warn("Failed to read bytecode or ABI from files: {}", _bytecodeFilePath);
+        }
+
+        this._functionsSignature = ABIManager.parseFunctionsFromABI(abiFilePath);
+        this._eventsSignature = ABIManager.parseEventsFromABI(abiFilePath);
+    }
+
+    public SmartContract(String address) {
+        if(!EthereumUtils.isValidEVMAddress(address))
+            throw new IllegalArgumentException("Invalid address: " + address);
+
+        this._address = address;
+
+        try {
+            this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
+        } catch (IOException e) {
+            log.warn("Failed to parse Ethereum bytecode: {}", address, e);
+            this._bytecode = null;
+        }
+
+        try {
+            this._abi = EVMFrontend.parseABIFromEtherscan(address);
+        } catch (IOException e) {
+            log.warn("Failed to parse Ethereum ABI: {}", address, e);
+            this._abi = null;
+        }
+        
+        Path outputDir = _workingDirectory.resolve(address);
+        this._abiFilePath = outputDir.resolve(address + ".abi.json");
+        this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
+        this._mnemonicBytecodeFilePath = outputDir.resolve(address + ".opcode");
+
+        try {
+            Files.createDirectories(outputDir);
+
+            // Write ABI to file
+            if (this._abi != null) {
+                Files.writeString(this._abiFilePath, this._abi, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                log.info("ABI saved at {}", this._abiFilePath);
+            }
+
+            // Write bytecode to file
+            if (this._bytecode != null) {
+                Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                log.info("Bytecode saved at {}", this._bytecodeFilePath);
+            }
+
+            EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
+            this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
+
+        } catch (IOException e) {
+            log.error("Failed to save ABI or bytecode to file for contract {}", address, e);
+        }
+
+        this._functionsSignature = ABIManager.parseFunctionsFromABI(this._abiFilePath);
+        this._eventsSignature = ABIManager.parseEventsFromABI(this._abiFilePath);
+    }
+
+    ///////////////////// GETTERs
+    public String getAddress() {
+        return _address;
+    }
+
+    public String getBytecode() {
+        return _bytecode;
+    }
+
+    public String getAbi() {
+        return _abi;
+    }
+
+    public Path getAbiPath() {
+        return this._abiFilePath;
+    }
+
+    public Path getBytecodePath() {
+        return this._bytecodeFilePath;
+    }
+
+    public Path getMnemonicBytecodePath() {
+        return this._mnemonicBytecodeFilePath;
+    }
+
+    public EVMCFG getCFG() {
+        return this._cfg;
+    }
+
+    public Set<Signature> getFunctionsSignature() {
+        return this._functionsSignature;
+    }
+
+    public Set<Signature> getEventsSignature() {
+        return this._eventsSignature;
+    }
+
+    public void printStatistics(){
+        log.info("Total opcodes: {}", _statistics.getTotalOpcodes());
+        log.info("Total jumps: {}", _statistics.getTotalJumps());
+        log.info("Resolved jumps: {}", _statistics.getResolvedJumps());
+        log.info("Definitely unreachable jumps: {}", _statistics.getDefinitelyUnreachableJumps());
+        log.info("Maybe unreachable jumps: {}", _statistics.getMaybeUnreachableJumps());
+        log.info("Unsound jumps: {}", _statistics.getUnsoundJumps());
+        log.info("Maybe unsound jumps: {}", _statistics.getMaybeUnsoundJumps());
+    }
+
+    ///////////////////// SETTERs
+    public SmartContract setAddress(String address) {
+        this._address = address;
+        return this;
+    }
+
+    public SmartContract setBytecode(String bytecode) {
+        this._bytecode = bytecode;
+        return this;
+    }
+
+    public SmartContract setAbi(String abi) {
+        this._abi = abi;
+        return this;
+    }
+
+    public SmartContract setCFG(EVMCFG cfg) {
+        this._cfg = cfg;
+        return this;
+    }
+
+    public SmartContract setStatistics(StatisticsObject statisticsObject) {
+        this._statistics = statisticsObject;
+        return this;
+    }
+
+    public SmartContract setAbiFilePath(Path abiFilePath) {
+        this._abiFilePath = abiFilePath;
+        return this;
+    }
+
+    public SmartContract setBytecodeFilePath(Path bytecodeFilePath) {
+        this._bytecodeFilePath = bytecodeFilePath;
+        return this;
+    }
+
+    public SmartContract setFunctionsSignature(Set<Signature> functionsSignature) {
+        this._functionsSignature = functionsSignature;
+        return this;
+    }
+
+    public SmartContract setEventsSignature(Set<Signature> eventsSignature) {
+        this._eventsSignature = eventsSignature;
+        return this;
+    }
+
+    /**
+     * Identifies and associates entry points for each function signature in the
+     * contract.
+     */
+    public void computeFunctionsSignatureEntryPoints() {
+        for (Statement node : _cfg.getNodes())
+            if (node instanceof Push)
+                for (Signature signature : _functionsSignature)
+                    if (node.toString().contains(signature.getSelector()))
+                        signature.addEntryPoint(node);
+    }
+
+    /**
+     * Computes the exit points for each function signature in the contract.
+     */
+    public void computeFunctionsSignatureExitPoints() {
+        for (Signature signature : _functionsSignature) {
+            boolean isVoid = signature.getOutputParamCount() == 0;
+
+            for (Statement functionEntryPoint : signature.getEntryPoints())
+                for (Statement functionExitPoint : _cfg.getFunctionExitPoints(functionEntryPoint, isVoid))
+                    signature.addExitPoint(functionExitPoint);
+        }
+    }
+
+    /**
+     * Identifies and associates entry points for each event signature in the
+     * contract.
+     * TODO fix this is not fully correct
+     */
+    public void computeEventsSignatureEntryPoints() {
+        for (Statement node : _cfg.getNodes())
+            if (node instanceof Push)
+                for (Signature signature : _eventsSignature)
+                    if (node.toString().contains(signature.getSelector()))
+                        signature.addEntryPoint(node);
+    }
+
+    /**
+     * Computes and registers event exit points for this smart contract. This
+     * method sets up a LiSA analysis environment and runs the
+     * {@code EventsExitPointsComputer} to identify statements where events
+     * exit.
+     */
+    public void computeEventsExitPoints() {
+        // Setup configuration
+        Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+        program.addCodeMember(this._cfg);
+        LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
+        LiSA lisa = new LiSA(conf);
+
+        EventsExitPointsComputer checker = new EventsExitPointsComputer();
+        conf.semanticChecks.add(checker);
+        lisa.run(program);
+    }
+
+
+    public static void main(String[] args) {
+        String address = "0x26366920975b24A89CD991A495d0D70CB8E1BA1F";
+        SmartContract sc = new SmartContract(address);
+
+        log.debug("Address: {}", sc.getAddress());
+        log.debug("Bytecode: {}", sc.getBytecode());
+        log.debug("ABI: {}", sc.getAbi());
+        log.debug("Bytecode file path: {}", sc.getBytecodePath());
+        log.debug("ABI file path: {}", sc.getAbiPath());
+//        log.debug("Function signature: {}", sc.getFunctionsSignature());
+//        log.debug("Events signature: {}", sc.getFunctionsSignature());
+
+    }
+}

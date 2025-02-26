@@ -1,7 +1,7 @@
 package it.unipr.analysis.cron.checker;
 
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyCache;
+import it.unipr.utils.MyCache;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.frontend.EVMFrontend;

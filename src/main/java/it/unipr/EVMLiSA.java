@@ -2,12 +2,10 @@ package it.unipr;
 
 import static it.unipr.cfg.EVMCFG.generateDotGraph;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.MyCache;
-import it.unipr.analysis.MyLogger;
-import it.unipr.analysis.StackElement;
+import it.unipr.analysis.*;
+import it.unipr.utils.LiSAConfigurationManager;
+import it.unipr.utils.MyCache;
+import it.unipr.utils.MyLogger;
 import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.EVMCFG;
@@ -18,6 +16,7 @@ import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.StatisticsObject;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -93,7 +92,139 @@ public class EVMLiSA {
 	 * @param args configuration options
 	 */
 	public static void main(String[] args) throws Exception {
-		new EVMLiSA().go(args);
+//		new EVMLiSA().go(args);
+
+		// Single case (address)
+		EVMLiSA.analyzeContract(new SmartContract("0x26366920975b24A89CD991A495d0D70CB8E1BA1F"));
+
+		// Single case (bytecode)
+		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
+	}
+
+	public static void analyzeContract(SmartContract contract) throws IOException {
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+
+		Program program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		contract.setCFG(checker.getComputedCFG());
+		contract.setStatistics(computeStatistics(checker, lisa, program));
+	}
+
+	private static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program){
+		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
+		return computeJumps(checker, soundlySolved);
+	}
+
+	private static StatisticsObject computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+		EVMCFG cfg = checker.getComputedCFG();
+
+		log.info("### Calculating statistics ###");
+
+		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
+
+		int resolvedJumps = 0;
+		int definitelyUnreachable = 0;
+		int maybeUnreachable = 0;
+		int unsoundJumps = 0;
+		int maybeUnsoundJumps = 0;
+
+		boolean allJumpAreSound = true;
+
+		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
+			log.warn("There are no entrypoints.");
+			return null;
+		}
+
+		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
+		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
+
+		if (!JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
+			for (Statement jumpNode : cfg.getAllJumps()) {
+				if (pushedJumps.contains(jumpNode))
+					continue;
+
+				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+
+				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.TOP)) {
+					allJumpAreSound = false;
+					break;
+				}
+			}
+
+		// we are safe supposing that we have a single entry point
+		for (Statement jumpNode : cfg.getAllJumps()) {
+			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) {
+				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
+
+				if (pushedJumps.contains(jumpNode)) {
+					resolvedJumps++;
+					continue;
+				}
+
+				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
+					definitelyUnreachable++;
+					continue;
+				}
+				if (!reachableFrom) {
+					if (allJumpAreSound)
+						definitelyUnreachable++;
+					else
+						maybeUnreachable++;
+					continue;
+				}
+				if (topStackValuesPerJump == null) {
+					// If all stacks are bottom, then we have a
+					// maybeFakeMissedJump
+					definitelyUnreachable++;
+					continue;
+				}
+				if (!topStackValuesPerJump.contains(StackElement.TOP)) {
+					// If the elements at the top of the stacks are all
+					// different from NUMERIC_TOP, then we are sure that it
+					// is definitelyFakeMissedJumps
+					resolvedJumps++;
+					continue;
+				}
+				if (soundlySolved != null && !soundlySolved.contains(jumpNode)) {
+					unsoundJumps++;
+					log.error("{} not solved", jumpNode);
+					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
+					continue;
+				}
+				if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
+					maybeUnsoundJumps++;
+					continue;
+				}
+
+				resolvedJumps++;
+			}
+		}
+
+		log.info("Total opcodes: {}", cfg.getOpcodeCount());
+		log.info("Total jumps: {}", cfg.getAllJumps().size());
+		log.info("Resolved jumps: {}", resolvedJumps);
+		log.info("Definitely unreachable jumps: {}", definitelyUnreachable);
+		log.info("Maybe unreachable jumps: {}", maybeUnreachable);
+		log.info("Unsound jumps: {}", unsoundJumps);
+		log.info("Maybe unsound jumps: {}", maybeUnsoundJumps);
+
+		return StatisticsObject.newStatisticsObject()
+				.totalOpcodes(cfg.getOpcodeCount())
+				.totalJumps(cfg.getAllJumps().size())
+				.resolvedJumps(resolvedJumps)
+				.definitelyUnreachableJumps(definitelyUnreachable)
+				.maybeUnreachableJumps(maybeUnreachable)
+				.unsoundJumps(unsoundJumps)
+				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.build();
 	}
 
 	/**
@@ -414,7 +545,7 @@ public class EVMLiSA {
 			}
 		} else {
 			try {
-				bytecode = EVMFrontend.parseContractFromEtherscan(cmd.getOptionValue("address"));
+				bytecode = EVMFrontend.parseBytecodeFromEtherscan(cmd.getOptionValue("address"));
 			} catch (IOException e) {
 				log.error("Could not parse bytecode from Etherscan {}.", address);
 				System.exit(1);
@@ -493,7 +624,7 @@ public class EVMLiSA {
 					}
 				}
 
-				String bytecode = EVMFrontend.parseContractFromEtherscan(CONTRACT_ADDR);
+				String bytecode = EVMFrontend.parseBytecodeFromEtherscan(CONTRACT_ADDR);
 				if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
 					numberOfAPIEtherscanRequestOnSuccess++;
 			}
@@ -549,7 +680,7 @@ public class EVMLiSA {
 	 *             soundly solved jumps after applying the iterative resolution
 	 *             process
 	 */
-	Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
+	private static Set<Statement> getSoundlySolvedJumps(JumpSolver checker, LiSA lisa, Program program) {
 		HashSet<Statement> soundlySolved = new HashSet<>();
 		if (JumpSolver.getLinkUnsoundJumpsToAllJumpdest()) {
 			int currentIteration = 0;
@@ -1064,7 +1195,7 @@ public class EVMLiSA {
 				if (!file.exists()) {
 					numberOfAPIEtherscanRequest++;
 
-					String bytecode = EVMFrontend.parseContractFromEtherscan(address);
+					String bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
 					if (EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH))
 						numberOfAPIEtherscanRequestOnSuccess++;
 

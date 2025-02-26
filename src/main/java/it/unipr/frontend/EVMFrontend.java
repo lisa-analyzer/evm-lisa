@@ -4,12 +4,10 @@ import io.github.cdimascio.dotenv.Dotenv;
 import it.unipr.evm.antlr.EVMBLexer;
 import it.unipr.evm.antlr.EVMBParser;
 import it.unipr.evm.antlr.EVMBParser.ProgramContext;
-import it.unive.lisa.AnalysisException;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,6 +19,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.json.JSONObject;
 
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
@@ -53,29 +52,41 @@ public class EVMFrontend {
 		}
 	}
 
-	/**
-	 * Yields the EVM bytecode of a smart contract stored at {@code address} and
-	 * stores the result in {@code output}.
-	 * 
-	 * @param address the address of the smart contract to be parsed.
-	 * 
-	 * @return {@code true} if the bytecode was successfully downloaded and
-	 *             stored, false otherwise.
-	 * 
-	 * @throws IOException
-	 */
-	public static String parseContractFromEtherscan(String address) throws IOException {
-		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
 
-		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
+	public static String parseBytecodeFromEtherscan(String address) throws IOException {
+		String response = etherscanRequest("proxy", "eth_getCode", address);
+
+		if (response == null || response.isEmpty()) {
 			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
 			return null;
 		}
 
-		String[] test = bytecodeRequest.split("\"");
-		String bytecode = test[9];
+		JSONObject jsonResponse = new JSONObject(response);
 
-		return bytecode;
+		if (!jsonResponse.has("result") || jsonResponse.getString("result").equals("0x")) {
+			System.err.println("ERROR: Contract bytecode not available or empty.");
+			return null;
+		}
+
+		return jsonResponse.getString("result");
+	}
+
+	public static String parseABIFromEtherscan(String address) throws IOException {
+		String response = etherscanRequest("contract", "getabi", address);
+
+		if (response == null || response.isEmpty()) {
+			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
+			return null;
+		}
+
+		JSONObject jsonResponse = new JSONObject(response);
+
+		if (!jsonResponse.has("result") || jsonResponse.get("result").equals("Contract source code not verified")) {
+			System.err.println("ERROR: Contract ABI not available or not verified.");
+			return null;
+		}
+
+		return jsonResponse.getString("result");
 	}
 
 	/**
@@ -133,34 +144,6 @@ public class EVMFrontend {
 		writer.close();
 
 		return true;
-	}
-
-	/**
-	 * Yelds the EVM bytecode of a smart contract stored at the address
-	 * {@code contractAddress} and generates its CFG as a {@code Program}.
-	 * 
-	 * @param contractAddress the address of the smart contract of interest
-	 * 
-	 * @return a LiSA {@code Program} representing the generated CFG
-	 * 
-	 * @throws IOException
-	 * @throws AnalysisException
-	 */
-	public static Program generateCfgFromContractAddress(String contractAddress)
-			throws IOException, AnalysisException {
-		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
-
-		// Get bytecode from Etherscan
-		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
-
-		String bytecode = EVMFrontend.parseContractFromEtherscan(contractAddress);
-
-		if (!EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_OUTFILE_PATH)) {
-			return null;
-		}
-
-		// Parse bytecode to generate CFG
-		return EVMFrontend.generateCfgFromFile(BYTECODE_OUTFILE_PATH);
 	}
 
 	/**

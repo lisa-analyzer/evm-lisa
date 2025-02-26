@@ -1,7 +1,7 @@
 package it.unipr.cfg;
 
 import it.unipr.analysis.BasicBlock;
-import it.unipr.analysis.MyCache;
+import it.unipr.utils.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
 import it.unive.lisa.analysis.AbstractState;
@@ -30,17 +30,11 @@ import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -695,5 +689,181 @@ public class EVMCFG extends CFG {
 		} catch (IOException e) {
 			log.error("Error writing DOT file: {}", e.getMessage());
 		}
+	}
+
+	/**
+	 * The method performs a depth-first search (DFS) and identifies `Push`
+	 * statements containing function selectors.
+	 *
+	 * @param start      The starting statement for the search.
+	 * @param signatures A set of signatures and their corresponding function
+	 *                       selectors.
+	 *
+	 * @return A set of pairs where each pair consists of a function signature
+	 *             (from the ABI) and the corresponding statement in the CFG.
+	 */
+	public Set<Pair<String, Statement>> findMatchingStatements(Statement start,
+															   Set<Pair<String, String>> signatures) {
+		Set<Pair<String, Statement>> matchingStatements = new HashSet<>();
+		Set<Statement> visited = new HashSet<>();
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				if (current instanceof Push)
+					for (Pair<String, String> signature : signatures)
+						if (current.toString().contains(signature.getRight()))
+							matchingStatements.add(Pair.of(signature.getLeft(), current));
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return matchingStatements;
+	}
+
+	public boolean reachableFromCrossing(Statement start, Statement target, Set<Statement> statements) {
+		return dfsCrossing(start, target, new HashSet<>(), statements);
+	}
+
+	/**
+	 * Check whether all paths from {@code start} to {@code target} contain at
+	 * least one {@code statements} statement. This method explores all possible
+	 * paths using a depth-first search (DFS). If there is at least one path
+	 * where a required statement is missing, the method returns {@code false}.
+	 *
+	 * @param start      The starting statement of the search.
+	 * @param target     The target statement.
+	 * @param visited    A set of visited statements to avoid cycles.
+	 * @param statements The set of statements that must be present in all
+	 *                       paths.
+	 *
+	 * @return {@code true} if all paths contain all statements, otherwise
+	 *             {@code false}.
+	 */
+	private boolean dfsCrossing(Statement start, Statement target, Set<Statement> visited, Set<Statement> statements) {
+		boolean foundTarget = false;
+		Set<Statement> pathStatements = new HashSet<>();
+
+		Stack<List<Statement>> stack = new Stack<>();
+		stack.push(Collections.singletonList(start));
+
+		while (!stack.isEmpty()) {
+			List<Statement> path = stack.pop();
+			Statement current = path.get(path.size() - 1);
+
+			if (visited.contains(current)) {
+				continue;
+			}
+
+			visited.add(current);
+			pathStatements.add(current);
+
+			if (current.equals(target)) {
+				foundTarget = true;
+
+				// Check if this specific path contains at least a statement
+				boolean contains = false;
+				for (Statement statement : statements) {
+					if (pathStatements.contains(statement)) {
+						contains = true;
+						break;
+					}
+				}
+				if (!contains)
+					return false;
+			}
+
+			Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+			for (Edge edge : outgoingEdges) {
+				Statement next = edge.getDestination();
+				if (!visited.contains(next)) {
+					List<Statement> newPath = new ArrayList<>(path);
+					newPath.add(next);
+					stack.push(newPath);
+				}
+			}
+		}
+
+		return foundTarget;
+	}
+
+	public boolean reachableFromWithoutJumpI(Statement start, Statement target) {
+		return dfsWithoutJumpI(start, target, new HashSet<>());
+	}
+
+	private boolean dfsWithoutJumpI(Statement start, Statement target, Set<Statement> visited) {
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target))
+				return true;
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					if (edge.getSource() instanceof Jumpi)
+						continue;
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public Set<Statement> getFunctionExitPoints(Statement start, boolean isVoid) {
+		Stack<Statement> stack = new Stack<>();
+		Set<Statement> visited = new HashSet<>();
+		Set<Statement> functionExitPoints = new HashSet<>();
+
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next)) {
+						stack.push(next);
+
+						if (next instanceof Invalid
+								|| next instanceof Revert)
+							functionExitPoints.add(next);
+
+						if (isVoid && next instanceof Stop)
+							functionExitPoints.add(next);
+
+						if (!isVoid && next instanceof Return)
+							functionExitPoints.add(next);
+					}
+				}
+			}
+		}
+
+		return functionExitPoints;
 	}
 }

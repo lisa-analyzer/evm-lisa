@@ -1,6 +1,6 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.MyCache;
+import it.unipr.utils.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.EVMCFG;

@@ -1,5 +1,8 @@
-package it.unipr.analysis;
+package it.unipr.utils;
 
+import it.unipr.analysis.Number;
+import it.unipr.analysis.StackElement;
+import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,8 +12,8 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Singleton class implementing a cache with an LRU (Least Recently Used)
  * eviction policy. The cache uses a {@link LRUMap} to store key-value pairs
- * where the key is a {@link Pair} of {@link String} and {@link Number}, and the
- * value is a {@link StackElement}.
+ * where the key is a {@link Pair} of {@link String} and
+ * {@link it.unipr.analysis.Number}, and the value is a {@link StackElement}.
  */
 public class MyCache {
 	private static MyCache _instance = null;
@@ -18,8 +21,12 @@ public class MyCache {
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
-	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
 	private final LRUMap<String, Boolean> _reachableFrom;
+	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
+	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
+	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
+	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
+	public final LRUMap<Statement, Set<String>> _eventsExitPoints;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -37,26 +44,29 @@ public class MyCache {
 	}
 
 	/**
-	 * Private constructor to prevent instantiation. Initializes the LRUMap with
-	 * a maximum size of 500.
+	 * Private constructor to prevent instantiation.
 	 */
 	private MyCache() {
-		this._map = new LRUMap<Pair<String, Number>, StackElement>(500);
+		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._reachableFrom = new LRUMap<String, Boolean>(2000);
+		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
 		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._reachableFrom = new LRUMap<String, Boolean>(20000);
 	}
 
 	/**
 	 * Puts a key-value pair into the cache.
 	 *
 	 * @param key   the key, a {@link Pair} of {@link String} and
-	 *                  {@link Number}.
+	 *                  {@link it.unipr.analysis.Number}.
 	 * @param value the value, a {@link StackElement}.
 	 */
-	public void put(Pair<String, Number> key, StackElement value) {
+	public void put(Pair<String, it.unipr.analysis.Number> key, StackElement value) {
 		synchronized (_map) {
 			_map.put(key, value);
 		}
@@ -65,8 +75,9 @@ public class MyCache {
 	/**
 	 * Retrieves a value from the cache by its key.
 	 *
-	 * @param key the key, a {@link Pair} of {@link String} and {@link Number}.
-	 * 
+	 * @param key the key, a {@link Pair} of {@link String} and
+	 *                {@link it.unipr.analysis.Number}.
+	 *
 	 * @return the value associated with the key, or {@code null} if the key is
 	 *             not in the cache.
 	 */
@@ -140,13 +151,164 @@ public class MyCache {
 	 *
 	 * @param key the key identifying the smart contract or entity whose
 	 *                warnings are to be retrieved
-	 * 
+	 *
 	 * @return the number of warnings associated with the key, or 0 if none
 	 *             exist
 	 */
 	public int getReentrancyWarnings(Integer key) {
 		synchronized (_reentrancyWarnings) {
 			return (_reentrancyWarnings.get(key) != null) ? _reentrancyWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds an event order warning for the specified key. If no warnings are
+	 * associated with the key, a new set is created and the warning is added to
+	 * it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addEventOrderWarning(Integer key, Object warning) {
+		synchronized (_eventOrderWarnings) {
+			_eventOrderWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of event order warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getEventOrderWarnings(Integer key) {
+		synchronized (_eventOrderWarnings) {
+			return (_eventOrderWarnings.get(key) != null) ? _eventOrderWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds an unchecked state update warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addUncheckedStateUpdateWarning(Integer key, Object warning) {
+		synchronized (_uncheckedStateUpdateWarnings) {
+			_uncheckedStateUpdateWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of unchecked state update warnings associated with
+	 * the specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getUncheckedStateUpdateWarnings(Integer key) {
+		synchronized (_uncheckedStateUpdateWarnings) {
+			return (_uncheckedStateUpdateWarnings.get(key) != null) ? _uncheckedStateUpdateWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds an unchecked external influence warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addUncheckedExternalInfluenceWarning(Integer key, Object warning) {
+		synchronized (_uncheckedExternalInfluenceWarnings) {
+			_uncheckedExternalInfluenceWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of unchecked external influence warnings associated
+	 * with the specified key. If no warnings are associated with the key, the
+	 * method returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getUncheckedExternalInfluenceWarnings(Integer key) {
+		synchronized (_uncheckedExternalInfluenceWarnings) {
+			return (_uncheckedExternalInfluenceWarnings.get(key) != null)
+					? _uncheckedExternalInfluenceWarnings.get(key).size()
+					: 0;
+		}
+	}
+
+	/**
+	 * Adds an event exit point associated with a given statement. If the
+	 * statement does not already have an associated set of event exit points, a
+	 * new synchronized HashSet is created. This method is thread-safe.
+	 *
+	 * @param key       The statement representing the exit point.
+	 * @param signature The event signature to associate with the statement.
+	 */
+	public void addEventExitPoint(Statement key, String signature) {
+		synchronized (_eventsExitPoints) {
+			_eventsExitPoints
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(signature);
+		}
+	}
+
+	/**
+	 * Retrieves the set of event exit points associated with a given statement.
+	 * If the statement has no associated exit points, an empty set is returned.
+	 * This method is thread-safe.
+	 *
+	 * @param key The statement whose event exit points are being queried.
+	 *
+	 * @return A set of event signatures associated with the given statement, or
+	 *             an empty set if none exist.
+	 */
+	public Set<String> getEventExitPoints(Statement key) {
+		synchronized (_eventsExitPoints) {
+			return _eventsExitPoints.get(key) == null ? new HashSet<>() : _eventsExitPoints.get(key);
+		}
+	}
+
+	/**
+	 * Checks whether there are event exit points associated with a given
+	 * statement.
+	 *
+	 * @param key The statement to check.
+	 *
+	 * @return {@code true} if the statement has associated event exit points,
+	 *             {@code false} otherwise.
+	 */
+	public boolean containsEventExitPoints(Statement key) {
+		synchronized (_eventsExitPoints) {
+			return _eventsExitPoints.get(key) != null;
 		}
 	}
 
@@ -168,10 +330,10 @@ public class MyCache {
 	 * Checks if a specific key is marked as reachable in the reachability map.
 	 *
 	 * @param key the key representing the element to check
-	 * 
+	 *
 	 * @return {@code true} if the key is marked as reachable, {@code false}
 	 *             otherwise
-	 * 
+	 *
 	 * @throws NullPointerException if the key does not exist in the map
 	 */
 	public boolean isReachableFrom(String key) {
@@ -184,7 +346,7 @@ public class MyCache {
 	 * Checks if a specific key exists in the reachability map.
 	 *
 	 * @param key the key representing the element to check
-	 * 
+	 *
 	 * @return {@code true} if the key exists in the map, {@code false}
 	 *             otherwise
 	 */
@@ -218,7 +380,7 @@ public class MyCache {
 	 *
 	 * @param key the key identifying the smart contract or entity whose
 	 *                warnings are to be retrieved
-	 * 
+	 *
 	 * @return the number of warnings associated with the key, or 0 if none
 	 *             exist
 	 */
