@@ -174,19 +174,19 @@ public class JumpSolver implements
 			return;
 		}
 
-		this.fixpoint = true;
-
-		LiSAConfiguration conf = tool.getConfiguration();
-		LiSA lisa = new LiSA(conf);
-
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(cfgToAnalyze);
-
-		try {
-			lisa.run(program);
-		} catch (AnalysisException e) {
-			log.error("(JumpSolver): {}", e.getMessage());
-		}
+//		this.fixpoint = true;
+//
+//		LiSAConfiguration conf = tool.getConfiguration();
+//		LiSA lisa = new LiSA(conf);
+//
+//		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+//		program.addCodeMember(cfgToAnalyze);
+//
+//		try {
+//			lisa.run(program);
+//		} catch (AnalysisException e) {
+//			log.error("(JumpSolver): {}", e.getMessage());
+//		}
 	}
 
 	/**
@@ -214,53 +214,53 @@ public class JumpSolver implements
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
-		for (AnalyzedCFG<
-				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
-						.getResultOf(this.cfgToAnalyze)) {
-			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-					TypeEnvironment<InferredTypes>>> analysisResult = null;
-
-			try {
-				analysisResult = result.getAnalysisStateBefore(node);
-			} catch (SemanticException e1) {
-				e1.printStackTrace();
-
-			}
-
-			// Retrieve the symbolic stack from the analysis result
-			EVMAbstractState valueState = analysisResult.getState().getValueState();
-
-			// If the abstract stack is top or bottom, or it is empty, we do not
-			// have enough information to solve the jump.
-			if (valueState.isBottom()) {
-				continue;
-			} else if (valueState.isTop()) {
-				log.warn("Not solved jump (state is top): {} [{}]", node,
-						((ProgramCounterLocation) node.getLocation()).getPc());
-				continue;
-			}
-
-			Set<Number> flattenedTopStack = valueState.getTop().stream()
-					.filter(t -> !t.isTop() && !t.isBottom())
-					.map(s -> s.getNumber())
-					.collect(Collectors.toSet());
-
-			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
-					.filter(pc -> {
-						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
-						int pcValue = pcLocation.getPc();
-						// Check if the value is in the flattened set
-						return flattenedTopStack.contains(new Number(pcValue));
-					})
-					.collect(Collectors.toSet());
-
-			// For each JUMPDEST, add the missing edge from this node to
-			// the JUMPDEST.
-			if (node instanceof Jump)
-				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
-			else
-				addEdgesToCFG(node, filteredDests, TrueEdge.class);
-		}
+//		for (AnalyzedCFG<
+//				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
+//						.getResultOf(this.cfgToAnalyze)) {
+//			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+//					TypeEnvironment<InferredTypes>>> analysisResult = null;
+//
+//			try {
+//				analysisResult = result.getAnalysisStateBefore(node);
+//			} catch (SemanticException e1) {
+//				e1.printStackTrace();
+//
+//			}
+//
+//			// Retrieve the symbolic stack from the analysis result
+//			EVMAbstractState valueState = analysisResult.getState().getValueState();
+//
+//			// If the abstract stack is top or bottom, or it is empty, we do not
+//			// have enough information to solve the jump.
+//			if (valueState.isBottom()) {
+//				continue;
+//			} else if (valueState.isTop()) {
+//				log.warn("Not solved jump (state is top): {} [{}]", node,
+//						((ProgramCounterLocation) node.getLocation()).getPc());
+//				continue;
+//			}
+//
+//			Set<Number> flattenedTopStack = valueState.getTop().stream()
+//					.filter(t -> !t.isTop() && !t.isBottom())
+//					.map(s -> s.getNumber())
+//					.collect(Collectors.toSet());
+//
+//			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
+//					.filter(pc -> {
+//						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
+//						int pcValue = pcLocation.getPc();
+//						// Check if the value is in the flattened set
+//						return flattenedTopStack.contains(new Number(pcValue));
+//					})
+//					.collect(Collectors.toSet());
+//
+//			// For each JUMPDEST, add the missing edge from this node to
+//			// the JUMPDEST.
+//			if (node instanceof Jump)
+//				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
+//			else
+//				addEdgesToCFG(node, filteredDests, TrueEdge.class);
+//		}
 
 		return true;
 	}

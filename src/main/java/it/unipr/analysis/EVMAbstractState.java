@@ -1,7 +1,22 @@
 package it.unipr.analysis;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -11,6 +26,9 @@ import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -21,16 +39,9 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.function.Predicate;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState
-		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
+implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 	private static final Logger log = LogManager.getLogger(EVMAbstractState.class);
 
@@ -254,10 +265,14 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
-								|| jmpDest.isTop())
+						if (jmpDest.isTop())
 							result.add(resultStack);
-
+						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
+							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream().filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()).equals(jmpDest.getNumber())).findFirst().get();
+							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
+								((EVMCFG) pp.getCFG()).addEdge(new SequentialEdge((Statement) pp, dest));
+							result.add(resultStack);
+						} 
 					}
 
 					if (result.isEmpty())
@@ -277,9 +292,14 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
-								|| jmpDest.isTop())
+						if (jmpDest.isTop())
 							result.add(resultStack);
+						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
+							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream().filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest.getNumber().intValue()).findFirst().get();
+							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
+								((EVMCFG) pp.getCFG()).addEdge(new TrueEdge((Statement) pp, dest));
+							result.add(resultStack);
+						} 
 					}
 
 					if (result.isEmpty())
@@ -1030,7 +1050,7 @@ public class EVMAbstractState
 									if (valueCached == null) {
 										long start = System.currentTimeMillis();
 										valueToPush = getStorageAt(key.getNumber(), CONTRACT_ADDRESS); // API
-																										// request
+										// request
 										long timeLostToGetStorage = System.currentTimeMillis() - start;
 
 										MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
@@ -1906,9 +1926,9 @@ public class EVMAbstractState
 
 						@SuppressWarnings("unchecked")
 						Pair<Set<AbstractStack>,
-								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-												.getValue());
+						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+								.getValue());
 						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
 							return top();
 						else if (split.getRight().isEmpty())
