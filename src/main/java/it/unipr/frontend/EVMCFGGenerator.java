@@ -48,7 +48,6 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
-import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -169,22 +168,6 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 						cfg.addEdge(new TrueEdge(entry.getKey(), node));
 					else
 						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
-
-		// The last statement of the CFG is a virtual LiSA return statement
-		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
-		cfg.addNode(ret);
-		cfg.addEdge(new SequentialEdge(st, ret));
-
-		// REVERT nodes must be linked to return statement
-		for (Statement stmt : cfg.getNodes()) {
-			if (stmt instanceof Revert
-					|| stmt instanceof Return
-					|| stmt instanceof Stop
-					|| stmt instanceof Selfdestruct
-					|| stmt instanceof Invalid)
-				cfg.addEdge(new SequentialEdge(stmt, ret));
-		}
-
 		unit.addCodeMember(cfg);
 
 		cfg.computeHotspotNodes();
