@@ -514,10 +514,11 @@ public class EVMCFG extends CFG {
 
 		basicBlocks = modifiedBlocks;
 
-		// Remove basic blocks with only an instruction
+		// TODO check
 		Set<BasicBlock> newBlocks = new HashSet<>();
 		for (BasicBlock block : basicBlocks) {
-			if (block.getStatements().size() > 1)
+			if (block.getStatements().size() > 1
+					|| !(block.getStatements().get(0) instanceof Jumpdest))
 				newBlocks.add(block);
 		}
 
@@ -571,38 +572,45 @@ public class EVMCFG extends CFG {
 			}
 			blockJson.put("instructions", instructionsArray);
 
+			// Edges
 			JSONArray outgoingEdgesArray = new JSONArray();
 			for (Integer edgeId : block.getOutgoingEdges()) {
-				outgoingEdgesArray.put(edgeId);
+				String color = "black";
+				Statement source = block.getStatements().get(block.getStatements().size() - 1);
+
+				for (BasicBlock b : basicBlocks) {
+					if (b.getId() == edgeId) {
+						Statement dest = b.getStatements().get(0);
+
+						if (source instanceof Jumpi && dest instanceof Jumpdest)
+							color = lightGreenColor;
+						else if (source instanceof Jumpi)
+							color = lightRed;
+
+						JSONObject edgeJson = new JSONObject();
+						edgeJson.put("target", edgeId);
+						edgeJson.put("color", color);
+
+						outgoingEdgesArray.put(edgeJson);
+						break;
+					}
+				}
 			}
 			blockJson.put("outgoing_edges", outgoingEdgesArray);
 
+			// Background color
+			block.setBlockType(getBlockType(block.getStatements().get(block.getStatements().size() - 1))); // update
 			BasicBlock.BlockType bbt = block.getBlockType();
-			if (bbt == BasicBlock.BlockType.STOP
-					|| bbt == BasicBlock.BlockType.RETURN)
+			if (bbt == BasicBlock.BlockType.STOP || bbt == BasicBlock.BlockType.RETURN)
 				blockJson.put("background_color", lightGreenColor);
 			else if (bbt == BasicBlock.BlockType.REVERT
-					|| bbt == BasicBlock.BlockType.SELFDESTRUCT)
+					|| bbt == BasicBlock.BlockType.SELFDESTRUCT
+					|| bbt == BasicBlock.BlockType.INVALID)
 				blockJson.put("background_color", lightRed);
 			else
 				blockJson.put("background_color", greyColor);
 
 			blockJson.put("last_instruction", block.getBlockType());
-
-			String edgeColor = lightRed;
-			if (block.getStatements().get(0) instanceof Jumpdest)
-				edgeColor = lightGreenColor;
-
-			for (BasicBlock prevBlock : basicBlocks) {
-				if (prevBlock.getOutgoingEdges().contains(block.getId())) {
-					Statement lastStatement = prevBlock.getStatements().get(prevBlock.getStatements().size() - 1);
-					if (lastStatement instanceof Jumpi) {
-						edgeColor = "black";
-						break;
-					}
-				}
-			}
-			blockJson.put("ingoing_edge_color", edgeColor);
 
 			blocksArray.put(blockJson);
 		}
@@ -655,14 +663,6 @@ public class EVMCFG extends CFG {
 					id, label.toString(), backgroundColor));
 		}
 
-		// Edge color mapping
-		Map<Integer, String> colorMapping = new HashMap<>();
-		for (int i = 0; i < basicBlocks.length(); i++) {
-			JSONObject block = basicBlocks.getJSONObject(i);
-			int id = block.getInt("id");
-			colorMapping.put(id, block.getString("ingoing_edge_color"));
-		}
-
 		// Edges
 		for (int i = 0; i < basicBlocks.length(); i++) {
 			JSONObject block = basicBlocks.getJSONObject(i);
@@ -670,11 +670,12 @@ public class EVMCFG extends CFG {
 			JSONArray outgoingEdges = block.getJSONArray("outgoing_edges");
 
 			for (int j = 0; j < outgoingEdges.length(); j++) {
-				int targetId = outgoingEdges.getInt(j);
-				String color = colorMapping.get(targetId);
+				JSONObject edge = outgoingEdges.getJSONObject(j);
+				int targetId = edge.getInt("target");
+				String color = edge.getString("color");
 
 				// Unreachable jump
-				if (color == null) {
+				if (color == null || color.isEmpty()) {
 					dotGraph.append(String.format(
 							"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
 							targetId, targetId + ": Unreachable jump", purpleColor));
