@@ -235,7 +235,7 @@ public class SolidiFITxOriginTruth {
 		_solidifi.put(45, 28);
 		_solidifi.put(46, 7);
 		_solidifi.put(47, 40);
-		_solidifi.put(48, 31); 
+		_solidifi.put(48, 31);
 		_solidifi.put(49, 11);
 		_solidifi.put(50, 25);
 	}
