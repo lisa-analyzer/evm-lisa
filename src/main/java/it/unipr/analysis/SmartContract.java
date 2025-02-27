@@ -241,7 +241,7 @@ public class SmartContract {
 
 	public SmartContract setCFG(EVMCFG cfg) {
 		this._cfg = cfg;
-		this._basicBlocks = EVMCFG.getBasicBlocks(cfg);
+		this._basicBlocks = BasicBlock.getBasicBlocks(cfg);
 		return this;
 	}
 
@@ -348,7 +348,7 @@ public class SmartContract {
 	public void generateGraphWithBasicBlocks() {
 		log.info("Generating graph with basic blocks...");
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
-		EVMCFG.generateDotGraph(EVMCFG.basicBlocksToJson(_basicBlocks), dotFile.toString());
+		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(_basicBlocks), dotFile.toString());
 		log.info("Generated graph with basic blocks at {}", dotFile);
 	}
 
@@ -369,11 +369,11 @@ public class SmartContract {
 
 		jsonObject.put("statistics", _statistics != null ? _statistics.toJson() : new JSONArray());
 
-		jsonObject.put("basic_blocks", _basicBlocks != null ? EVMCFG.basicBlocksToJson(_basicBlocks) : new JSONArray());
+		jsonObject.put("basic_blocks",
+				_basicBlocks != null ? JSONManager.basicBlocksToJson(_basicBlocks) : new JSONArray());
 
-		jsonObject.put("basic_blocks_pc", _basicBlocks != null ?
-				EVMCFG.basicBlocksToLongArrayToString(
-					EVMCFG.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());
+		jsonObject.put("basic_blocks_pc", _basicBlocks != null ? BasicBlock.basicBlocksToLongArrayToString(
+				BasicBlock.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());
 
 		JSONArray functionsArray = new JSONArray();
 		if (_functionsSignature != null && !_functionsSignature.isEmpty())
@@ -395,7 +395,7 @@ public class SmartContract {
 		return toJson().toString(4);
 	}
 
-	public boolean toFile(){
+	public boolean toFile() {
 		Path outputDir = _workingDirectory.resolve(_address);
 		try {
 			Files.createDirectories(outputDir);
