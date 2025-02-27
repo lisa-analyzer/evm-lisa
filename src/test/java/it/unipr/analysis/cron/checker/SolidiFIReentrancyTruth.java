@@ -43,7 +43,7 @@ public class SolidiFIReentrancyTruth {
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		Path solidifiBuggyBytecodesDirPath = Paths
-				.get("evm-testcases", "ground-truth", "test-reentrancy-solidifi-truth", "bytecode", "buggy");
+				.get("evm-testcases", "ground-truth", "solidifi", "reentrancy-truth", "bytecode");
 		String SOLIDIFI_BUGGY_BYTECODES_DIR = solidifiBuggyBytecodesDirPath.toString();
 		List<String> bytecodes = getFileNamesInDirectory(SOLIDIFI_BUGGY_BYTECODES_DIR);
 
@@ -90,7 +90,7 @@ public class SolidiFIReentrancyTruth {
 		}
 
 		Path solidifiVanillaBytecodesDirPath = Paths
-				.get("evm-testcases", "ground-truth", "test-reentrancy-solidifi-truth", "bytecode", "vanilla");
+				.get("evm-testcases", "ground-truth", "solidifi", "vanilla", "bytecode");
 		String SOLIDIFI_VANILLA_BYTECODES_DIR = solidifiVanillaBytecodesDirPath.toString();
 		bytecodes = getFileNamesInDirectory(SOLIDIFI_VANILLA_BYTECODES_DIR);
 
