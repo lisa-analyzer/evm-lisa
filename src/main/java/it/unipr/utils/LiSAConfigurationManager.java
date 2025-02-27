@@ -12,27 +12,27 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class LiSAConfigurationManager {
 
-    /**
-     * Creates a LiSA configuration for analyzing the given smart contract.
-     *
-     * @param contract The smart contract to be analyzed.
-     *
-     * @return A configured instance of {@link LiSAConfiguration}.
-     */
-    public static LiSAConfiguration createConfiguration(SmartContract contract) {
-        String address = EthereumUtils.isValidEVMAddress(contract.getAddress()) ? contract.getAddress() : null;
+	/**
+	 * Creates a LiSA configuration for analyzing the given smart contract.
+	 *
+	 * @param contract The smart contract to be analyzed.
+	 *
+	 * @return A configured instance of {@link LiSAConfiguration}.
+	 */
+	public static LiSAConfiguration createConfiguration(SmartContract contract) {
+		String address = EthereumUtils.isValidEVMAddress(contract.getAddress()) ? contract.getAddress() : null;
 
-        LiSAConfiguration conf = new LiSAConfiguration();
-        conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-                new EVMAbstractState(address),
-                new TypeEnvironment<>(new InferredTypes()));
-        conf.workdir = contract.getBytecodePath().toString();
-        conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-        conf.callGraph = new RTACallGraph();
-        conf.serializeResults = false;
-        conf.optimize = false;
-        conf.useWideningPoints = false;
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new EVMAbstractState(address),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.workdir = contract.getBytecodePath().toString();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+		conf.useWideningPoints = false;
 
-        return conf;
-    }
+		return conf;
+	}
 }

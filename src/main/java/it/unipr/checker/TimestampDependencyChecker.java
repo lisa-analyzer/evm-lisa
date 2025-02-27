@@ -1,6 +1,5 @@
 package it.unipr.checker;
 
-import it.unipr.utils.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.EVMCFG;
@@ -10,6 +9,7 @@ import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.cfg.Return;
 import it.unipr.cfg.Sha3;
 import it.unipr.cfg.Sstore;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;

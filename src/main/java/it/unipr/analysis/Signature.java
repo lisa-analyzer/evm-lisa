@@ -2,176 +2,141 @@ package it.unipr.analysis;
 
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Signature {
-    private final String _name;
-    private final String _type;
-    private final List<String> _inputParamTypes;
-    private final List<String> _outputParamTypes;
-    private final String _fullSignature;
-    private final String _selector;
-    private Set<Statement> _entryPoints;
-    private Set<Statement> _exitPoints;
+	private final String _name;
+	private final String _type;
+	private final List<String> _inputParamTypes;
+	private final List<String> _outputParamTypes;
+	private final String _fullSignature;
+	private final String _selector;
+	private Set<Statement> _entryPoints;
+	private Set<Statement> _exitPoints;
 
-    public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
-                     String fullSignature, String selector) {
-        this._name = name;
-        this._type = type;
-        this._inputParamTypes = inputParamTypes;
-        this._outputParamTypes = outputParamTypes;
-        this._fullSignature = fullSignature;
-        this._selector = selector;
-        this._entryPoints = new HashSet<>();
-        this._exitPoints = new HashSet<>();
-    }
+	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
+			String fullSignature, String selector) {
+		this._name = name;
+		this._type = type;
+		this._inputParamTypes = inputParamTypes;
+		this._outputParamTypes = outputParamTypes;
+		this._fullSignature = fullSignature;
+		this._selector = selector;
+		this._entryPoints = new HashSet<>();
+		this._exitPoints = new HashSet<>();
+	}
 
-    public String getName() {
-        return _name;
-    }
+	public String getName() {
+		return _name;
+	}
 
-    public String getType() {
-        return _type;
-    }
+	public String getType() {
+		return _type;
+	}
 
-    public int getParamCount() {
-        return _inputParamTypes.size();
-    }
+	public int getParamCount() {
+		return _inputParamTypes.size();
+	}
 
-    public int getOutputParamCount() {
-        return _outputParamTypes.size();
-    }
+	public int getOutputParamCount() {
+		return _outputParamTypes.size();
+	}
 
-    public List<String> getParamTypes() {
-        return _inputParamTypes;
-    }
+	public List<String> getParamTypes() {
+		return _inputParamTypes;
+	}
 
-    public String getFullSignature() {
-        return _fullSignature;
-    }
+	public String getFullSignature() {
+		return _fullSignature;
+	}
 
-    public String getSelector() {
-        return _selector;
-    }
+	public String getSelector() {
+		return _selector;
+	}
 
-    public Set<Statement> getEntryPoints() {
-        return _entryPoints;
-    }
+	public Set<Statement> getEntryPoints() {
+		return _entryPoints;
+	}
 
-    public void setEntryPoints(Set<Statement> entryPoints) {
-        this._entryPoints = entryPoints;
-    }
+	public void setEntryPoints(Set<Statement> entryPoints) {
+		this._entryPoints = entryPoints;
+	}
 
-    public void addEntryPoint(Statement entryPoint) {
-        if (entryPoint != null)
-            this._entryPoints.add(entryPoint);
-    }
+	public void addEntryPoint(Statement entryPoint) {
+		if (entryPoint != null)
+			this._entryPoints.add(entryPoint);
+	}
 
-    public Set<Statement> getExitPoints() {
-        return _exitPoints;
-    }
+	public Set<Statement> getExitPoints() {
+		return _exitPoints;
+	}
 
-    public void setExitPoints(Set<Statement> exitPoints) {
-        this._exitPoints = exitPoints;
-    }
+	public void setExitPoints(Set<Statement> exitPoints) {
+		this._exitPoints = exitPoints;
+	}
 
-    public void addExitPoint(Statement exitPoints) {
-        if (exitPoints != null)
-            this._exitPoints.add(exitPoints);
-    }
+	public void addExitPoint(Statement exitPoints) {
+		if (exitPoints != null)
+			this._exitPoints.add(exitPoints);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass())
-            return false;
-        Signature other = (Signature) obj;
-        return Objects.equals(_name, other._name) &&
-                Objects.equals(_type, other._type) &&
-                Objects.equals(_fullSignature, other._fullSignature) &&
-                Objects.equals(_selector, other._selector);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		Signature other = (Signature) obj;
+		return Objects.equals(_name, other._name) &&
+				Objects.equals(_type, other._type) &&
+				Objects.equals(_fullSignature, other._fullSignature) &&
+				Objects.equals(_selector, other._selector);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(_name, _type, _fullSignature, _selector);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(_name, _type, _fullSignature, _selector);
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        String indent = "  ";
+	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
 
-        sb.append("{\n");
-        sb.append(indent).append("\"name\": \"").append(_name).append("\",\n");
-        sb.append(indent).append("\"type\": \"").append(_type).append("\",\n");
-        sb.append(indent).append("\"inputParamCount\": ").append(_inputParamTypes.size()).append(",\n");
+		json.put("name", _name);
+		json.put("type", _type);
+		json.put("input_param_count", _inputParamTypes.size());
 
-        sb.append(indent).append("\"inputParamTypes\": [");
-        if (!_inputParamTypes.isEmpty()) {
-            sb.append("\n");
-            for (int i = 0; i < _inputParamTypes.size(); i++) {
-                sb.append(indent).append(indent).append("\"").append(_inputParamTypes.get(i)).append("\"");
-                if (i < _inputParamTypes.size() - 1) {
-                    sb.append(",");
-                }
-                sb.append("\n");
-            }
-            sb.append(indent);
-        }
-        sb.append("],\n");
-        sb.append(indent).append("\"outputParamCount\": ").append(_outputParamTypes.size()).append(",\n");
+		JSONArray inputTypesArray = new JSONArray();
+		for (String type : _inputParamTypes)
+			inputTypesArray.put(type);
+		json.put("input_param_types", inputTypesArray);
 
-        sb.append(indent).append("\"outputParamTypes\": [");
-        if (!_outputParamTypes.isEmpty()) {
-            sb.append("\n");
-            for (int i = 0; i < _outputParamTypes.size(); i++) {
-                sb.append(indent).append(indent).append("\"").append(_outputParamTypes.get(i)).append("\"");
-                if (i < _outputParamTypes.size() - 1) {
-                    sb.append(",");
-                }
-                sb.append("\n");
-            }
-            sb.append(indent);
-        }
-        sb.append("],\n");
+		json.put("output_param_count", _outputParamTypes.size());
 
-        sb.append(indent).append("\"fullSignature\": \"").append(_fullSignature).append("\",\n");
-        sb.append(indent).append("\"selector\": \"").append(_selector).append("\",\n");
+		JSONArray outputTypesArray = new JSONArray();
+		for (String type : _outputParamTypes)
+			outputTypesArray.put(type);
+		json.put("output_param_types", outputTypesArray);
 
-        sb.append(indent).append("\"entryPoints\": [");
-        if (!_entryPoints.isEmpty()) {
-            sb.append("\n");
-            Iterator<Statement> iterator = _entryPoints.iterator();
+		json.put("full_signature", _fullSignature);
+		json.put("selector", _selector);
 
-            while (iterator.hasNext()) {
-                sb.append(indent).append(indent).append("\"").append(iterator.next().toString()).append("\"");
-                if (iterator.hasNext()) {
-                    sb.append(",");
-                }
-                sb.append("\n");
-            }
-            sb.append(indent);
-        }
-        sb.append("],\n");
+		JSONArray entryPointsArray = new JSONArray();
+		for (Statement stmt : _entryPoints)
+			entryPointsArray.put(stmt.toString());
+		json.put("entry_points", entryPointsArray);
 
-        sb.append(indent).append("\"exitPoints\": [");
-        if (!_exitPoints.isEmpty()) {
-            sb.append("\n");
-            Iterator<Statement> iterator = _exitPoints.iterator();
+		JSONArray exitPointsArray = new JSONArray();
+		for (Statement stmt : _exitPoints)
+			exitPointsArray.put(stmt.toString());
 
-            while (iterator.hasNext()) {
-                sb.append(indent).append(indent).append("\"").append(iterator.next().toString()).append("\"");
-                if (iterator.hasNext()) {
-                    sb.append(",");
-                }
-                sb.append("\n");
-            }
-            sb.append(indent);
-        }
-        sb.append("]\n");
+		json.put("exit_points", exitPointsArray);
 
-        sb.append("}");
-        return sb.toString();
-    }
+		return json;
+	}
+
+	@Override
+	public String toString() {
+		return toJson().toString(4);
+	}
 }

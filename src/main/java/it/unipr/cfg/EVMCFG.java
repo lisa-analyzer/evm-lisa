@@ -1,9 +1,9 @@
 package it.unipr.cfg;
 
 import it.unipr.analysis.BasicBlock;
-import it.unipr.utils.MyCache;
 import it.unipr.analysis.Number;
 import it.unipr.cfg.push.Push;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -370,41 +369,15 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	public static String bbToString(List<Long[]> bb) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-
-		boolean first = true;
-		for (Long[] l : bb) {
-			if (!first)
-				sb.append(", ");
-
-			sb.append("(").append(l[0]).append(", ").append(l[1]).append(")");
-			first = false;
-		}
-
-		sb.append("]");
-		return sb.toString();
-	}
-
-	public List<Long[]> basicBlocksToLongArray() {
-		basicBlocks = basicBlocks();
-		List<Long[]> bbToLong = new ArrayList<>();
-		for (BasicBlock bb : basicBlocks)
-			for (Integer end : bb.getOutgoingEdges())
-				bbToLong.add(new Long[] { (long) bb.getId(), (long) end });
-		return bbToLong;
-	}
-
-	public Set<BasicBlock> basicBlocks() {
-		Statement start = this.getEntrypoints().stream().findFirst().orElse(null);
+	public static Set<BasicBlock> getBasicBlocks(EVMCFG cfg) {
+		Statement start = cfg.getEntrypoints().stream().findFirst().orElse(null);
 		if (start == null)
 			return null;
 
 		Set<Statement> visited = new HashSet<>();
 		Deque<Statement> stack = new ArrayDeque<>();
 		stack.push(start);
-		basicBlocks = new HashSet<>();
+		Set<BasicBlock> basicBlocks = new HashSet<>();
 
 		while (!stack.isEmpty()) {
 			Statement current = stack.pop();
@@ -417,7 +390,7 @@ public class EVMCFG extends CFG {
 
 			while (true) {
 				statements.add(blockEnd);
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
+				Collection<Edge> outgoingEdges = cfg.getOutgoingEdges(blockEnd);
 
 				if (outgoingEdges.isEmpty()
 						|| blockEnd instanceof Jump
@@ -455,7 +428,7 @@ public class EVMCFG extends CFG {
 				basicBlock.addStatement(stmt);
 			}
 
-			for (Edge edge : getOutgoingEdges(blockEnd)) {
+			for (Edge edge : cfg.getOutgoingEdges(blockEnd)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
 				if (startPc != endPc
 						&& !(edge.getDestination() instanceof Ret)) {
@@ -465,7 +438,7 @@ public class EVMCFG extends CFG {
 
 			basicBlocks.add(basicBlock);
 
-			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
+			for (Edge edge : cfg.getOutgoingEdges(blockEnd)) {
 				stack.push(edge.getDestination());
 			}
 		}
@@ -476,7 +449,9 @@ public class EVMCFG extends CFG {
 			List<Statement> statements = block.getStatements();
 			List<Integer> splitIndexes = new ArrayList<>();
 
-			for (int i = 1; i < statements.size(); i++) { // skip the first opcode of the basic block
+			for (int i = 1; i < statements.size(); i++) { // skip the first
+															// opcode of the
+															// basic block
 				if (statements.get(i) instanceof Jumpdest) {
 					splitIndexes.add(i);
 				}
@@ -520,7 +495,7 @@ public class EVMCFG extends CFG {
 		return basicBlocks;
 	}
 
-	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
+	public static BasicBlock.BlockType getBlockType(Statement lastStatement) {
 		if (lastStatement instanceof Jump)
 			return BasicBlock.BlockType.JUMP;
 		else if (lastStatement instanceof Jumpi)
@@ -542,11 +517,35 @@ public class EVMCFG extends CFG {
 		return BasicBlock.BlockType.UNKNOWN;
 	}
 
-	public JSONArray basicBlocksToJson() {
+	public static List<Long[]> basicBlocksToLongArray(Set<BasicBlock> basicBlocks) {
+		List<Long[]> bbToLong = new ArrayList<>();
+		for (BasicBlock bb : basicBlocks)
+			for (Integer end : bb.getOutgoingEdges())
+				bbToLong.add(new Long[] { (long) bb.getId(), (long) end });
+		return bbToLong;
+	}
+
+	public static String basicBlocksToLongArrayToString(List<Long[]> bb) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+
+		boolean first = true;
+		for (Long[] l : bb) {
+			if (!first)
+				sb.append(", ");
+
+			sb.append("(").append(l[0]).append(", ").append(l[1]).append(")");
+			first = false;
+		}
+
+		sb.append("]");
+		return sb.toString();
+	}
+
+	public static JSONArray basicBlocksToJson(Set<BasicBlock> basicBlocks) {
 		String lightGreenColor = "\"#A6EC99\"";
 		String greyColor = "\"#D3D3D3\"";
 		String lightRed = "\"#EF8683\"";
-		basicBlocks = basicBlocks();
 		JSONArray blocksArray = new JSONArray();
 
 		for (BasicBlock block : basicBlocks) {
@@ -703,7 +702,7 @@ public class EVMCFG extends CFG {
 	 *             (from the ABI) and the corresponding statement in the CFG.
 	 */
 	public Set<Pair<String, Statement>> findMatchingStatements(Statement start,
-															   Set<Pair<String, String>> signatures) {
+			Set<Pair<String, String>> signatures) {
 		Set<Pair<String, Statement>> matchingStatements = new HashSet<>();
 		Set<Statement> visited = new HashSet<>();
 		Stack<Statement> stack = new Stack<>();

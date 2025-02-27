@@ -6,138 +6,166 @@ import org.json.JSONObject;
  * Collects statistical data related to CFG analysis.
  */
 public class StatisticsObject {
-    private int totalOpcodes;
-    private int totalJumps;
-    private int resolvedJumps;
-    private int definitelyUnreachableJumps;
-    private int maybeUnreachableJumps;
-    private int unsoundJumps;
-    private int maybeUnsoundJumps;
-    private JSONObject json;
+	private int totalOpcodes;
+	private int totalJumps;
+	private int resolvedJumps;
+	private int definitelyUnreachableJumps;
+	private int maybeUnreachableJumps;
+	private int unsoundJumps;
+	private int maybeUnsoundJumps;
+	private JSONObject json;
 
-    private StatisticsObject() {
-        this.totalOpcodes = 0;
-        this.totalJumps = 0;
-        this.resolvedJumps = 0;
-        this.definitelyUnreachableJumps = 0;
-        this.maybeUnreachableJumps = 0;
-        this.unsoundJumps = 0;
-        this.maybeUnsoundJumps = 0;
-        this.json = new JSONObject();
-    }
+	private StatisticsObject() {
+		this.totalOpcodes = 0;
+		this.totalJumps = 0;
+		this.resolvedJumps = 0;
+		this.definitelyUnreachableJumps = 0;
+		this.maybeUnreachableJumps = 0;
+		this.unsoundJumps = 0;
+		this.maybeUnsoundJumps = 0;
+		this.json = new JSONObject();
+	}
 
-    private StatisticsObject(int totalOpcodes, int totalJumps, int resolvedJumps, int definitelyUnreachableJumps,
-                             int maybeUnreachableJumps, int unsoundJumps, int maybeUnsoundJumps, JSONObject json) {
-        this.totalOpcodes = totalOpcodes;
-        this.totalJumps = totalJumps;
-        this.resolvedJumps = resolvedJumps;
-        this.definitelyUnreachableJumps = definitelyUnreachableJumps;
-        this.maybeUnreachableJumps = maybeUnreachableJumps;
-        this.unsoundJumps = unsoundJumps;
-        this.maybeUnsoundJumps = maybeUnsoundJumps;
-        this.json = json;
+	private StatisticsObject(int totalOpcodes, int totalJumps, int resolvedJumps, int definitelyUnreachableJumps,
+			int maybeUnreachableJumps, int unsoundJumps, int maybeUnsoundJumps, JSONObject json) {
+		this.totalOpcodes = totalOpcodes;
+		this.totalJumps = totalJumps;
+		this.resolvedJumps = resolvedJumps;
+		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
+		this.maybeUnreachableJumps = maybeUnreachableJumps;
+		this.unsoundJumps = unsoundJumps;
+		this.maybeUnsoundJumps = maybeUnsoundJumps;
+		this.json = json;
 
-        this.json.put("total_opcodes", this.totalOpcodes);
-        this.json.put("total_jumps", this.totalJumps);
-        this.json.put("resolved_jumps", this.resolvedJumps);
-        this.json.put("definitely_unreachable_jumps", this.definitelyUnreachableJumps);
-        this.json.put("maybe_unreachable_jumps", this.maybeUnreachableJumps);
-        this.json.put("unsound_jumps", this.unsoundJumps);
-        this.json.put("maybe_unsound_jumps", this.maybeUnsoundJumps);
-    }
+		this.json.put("total_opcodes", this.totalOpcodes);
+		this.json.put("total_jumps", this.totalJumps);
+		this.json.put("resolved_jumps", this.resolvedJumps);
+		this.json.put("definitely_unreachable_jumps", this.definitelyUnreachableJumps);
+		this.json.put("maybe_unreachable_jumps", this.maybeUnreachableJumps);
+		this.json.put("unsound_jumps", this.unsoundJumps);
+		this.json.put("maybe_unsound_jumps", this.maybeUnsoundJumps);
+	}
 
-    public int getTotalOpcodes() {
-        return totalOpcodes;
-    }
+	public int getTotalOpcodes() {
+		return totalOpcodes;
+	}
 
-    public int getTotalJumps() {
-        return totalJumps;
-    }
+	public int getTotalJumps() {
+		return totalJumps;
+	}
 
-    public int getResolvedJumps() {
-        return resolvedJumps;
-    }
+	public int getResolvedJumps() {
+		return resolvedJumps;
+	}
 
-    public int getDefinitelyUnreachableJumps() {
-        return definitelyUnreachableJumps;
-    }
+	public int getDefinitelyUnreachableJumps() {
+		return definitelyUnreachableJumps;
+	}
 
-    public int getMaybeUnreachableJumps() {
-        return maybeUnreachableJumps;
-    }
+	public int getMaybeUnreachableJumps() {
+		return maybeUnreachableJumps;
+	}
 
-    public int getUnsoundJumps() {
-        return unsoundJumps;
-    }
+	public int getUnsoundJumps() {
+		return unsoundJumps;
+	}
 
-    public int getMaybeUnsoundJumps() {
-        return maybeUnsoundJumps;
-    }
+	public int getMaybeUnsoundJumps() {
+		return maybeUnsoundJumps;
+	}
 
-    public static StatisticsObject newStatisticsObject() {
-        return new StatisticsObject();
-    }
+	public static StatisticsObject newStatisticsObject() {
+		return new StatisticsObject();
+	}
 
-    public StatisticsObject totalOpcodes(int totalOpcodes) {
-        this.totalOpcodes = totalOpcodes;
-        return this;
-    }
+	public StatisticsObject totalOpcodes(int totalOpcodes) {
+		this.totalOpcodes = totalOpcodes;
+		return this;
+	}
 
-    public StatisticsObject totalJumps(int totalJumps) {
-        this.totalJumps = totalJumps;
-        return this;
-    }
+	public StatisticsObject totalJumps(int totalJumps) {
+		this.totalJumps = totalJumps;
+		return this;
+	}
 
-    public StatisticsObject resolvedJumps(int resolvedJumps) {
-        this.resolvedJumps = resolvedJumps;
-        return this;
-    }
+	public StatisticsObject resolvedJumps(int resolvedJumps) {
+		this.resolvedJumps = resolvedJumps;
+		return this;
+	}
 
-    public StatisticsObject definitelyUnreachableJumps(int definitelyUnreachableJumps) {
-        this.definitelyUnreachableJumps = definitelyUnreachableJumps;
-        return this;
-    }
+	public StatisticsObject definitelyUnreachableJumps(int definitelyUnreachableJumps) {
+		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
+		return this;
+	}
 
-    public StatisticsObject maybeUnreachableJumps(int maybeUnreachableJumps) {
-        this.maybeUnreachableJumps = maybeUnreachableJumps;
-        return this;
-    }
+	public StatisticsObject maybeUnreachableJumps(int maybeUnreachableJumps) {
+		this.maybeUnreachableJumps = maybeUnreachableJumps;
+		return this;
+	}
 
-    public StatisticsObject unsoundJumps(int unsoundJumps) {
-        this.unsoundJumps = unsoundJumps;
-        return this;
-    }
+	public StatisticsObject unsoundJumps(int unsoundJumps) {
+		this.unsoundJumps = unsoundJumps;
+		return this;
+	}
 
-    public StatisticsObject maybeUnsoundJumps(int maybeUnsoundJumps) {
-        this.maybeUnsoundJumps = maybeUnsoundJumps;
-        return this;
-    }
+	public StatisticsObject maybeUnsoundJumps(int maybeUnsoundJumps) {
+		this.maybeUnsoundJumps = maybeUnsoundJumps;
+		return this;
+	}
 
-    public StatisticsObject buildJson(JSONObject json) {
-        this.json = json;
-        return this;
-    }
+	public StatisticsObject buildJson(JSONObject json) {
+		this.json = json;
+		return this;
+	}
 
-    public StatisticsObject build() {
-        return new StatisticsObject(totalOpcodes, totalJumps, resolvedJumps, definitelyUnreachableJumps,
-                maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps, json);
-    }
+	public void addTotalOpcodes(int totalOpcodes) {
+		this.totalOpcodes = totalOpcodes;
+	}
 
-    public String getJson() {
-        return json.toString(4);
-    }
+	public void addTotalJumps(int totalJumps) {
+		this.totalJumps = totalJumps;
+	}
 
-    @Override
-    public String toString() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("total_opcodes", totalOpcodes);
-        jsonObject.put("total_jumps", totalJumps);
-        jsonObject.put("resolved_jumps", resolvedJumps);
-        jsonObject.put("definitely_unreachable_jumps", definitelyUnreachableJumps);
-        jsonObject.put("maybe_unreachable_jumps", maybeUnreachableJumps);
-        jsonObject.put("unsound_jumps", unsoundJumps);
-        jsonObject.put("maybe_unsound_jumps", maybeUnsoundJumps);
+	public void addResolvedJumps(int resolvedJumps) {
+		this.resolvedJumps = resolvedJumps;
+	}
 
-        return jsonObject.toString(4);
-    }
+	public void addDefinitelyUnreachableJumps(int definitelyUnreachableJumps) {
+		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
+	}
+
+	public void addMaybeUnreachableJumps(int maybeUnreachableJumps) {
+		this.maybeUnreachableJumps = maybeUnreachableJumps;
+	}
+
+	public void addUnsoundJumps(int unsoundJumps) {
+		this.unsoundJumps = unsoundJumps;
+	}
+
+	public void addMaybeUnsoundJumps(int maybeUnsoundJumps) {
+		this.maybeUnsoundJumps = maybeUnsoundJumps;
+	}
+
+	public StatisticsObject build() {
+		return new StatisticsObject(totalOpcodes, totalJumps, resolvedJumps, definitelyUnreachableJumps,
+				maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps, json);
+	}
+
+	public JSONObject toJson() {
+		return json;
+	}
+
+	@Override
+	public String toString() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("total_opcodes", totalOpcodes);
+		jsonObject.put("total_jumps", totalJumps);
+		jsonObject.put("resolved_jumps", resolvedJumps);
+		jsonObject.put("definitely_unreachable_jumps", definitelyUnreachableJumps);
+		jsonObject.put("maybe_unreachable_jumps", maybeUnreachableJumps);
+		jsonObject.put("unsound_jumps", unsoundJumps);
+		jsonObject.put("maybe_unsound_jumps", maybeUnsoundJumps);
+
+		return jsonObject.toString(4);
+	}
 }

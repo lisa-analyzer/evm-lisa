@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -52,7 +53,6 @@ public class EVMFrontend {
 		}
 	}
 
-
 	public static String parseBytecodeFromEtherscan(String address) throws IOException {
 		String response = etherscanRequest("proxy", "eth_getCode", address);
 
@@ -71,7 +71,7 @@ public class EVMFrontend {
 		return jsonResponse.getString("result");
 	}
 
-	public static String parseABIFromEtherscan(String address) throws IOException {
+	public static JSONArray parseABIFromEtherscan(String address) throws IOException {
 		String response = etherscanRequest("contract", "getabi", address);
 
 		if (response == null || response.isEmpty()) {
@@ -86,7 +86,7 @@ public class EVMFrontend {
 			return null;
 		}
 
-		return jsonResponse.getString("result");
+		return new JSONArray(jsonResponse.getString("result"));
 	}
 
 	/**

@@ -3,9 +3,6 @@ package it.unipr;
 import static it.unipr.cfg.EVMCFG.generateDotGraph;
 
 import it.unipr.analysis.*;
-import it.unipr.utils.LiSAConfigurationManager;
-import it.unipr.utils.MyCache;
-import it.unipr.utils.MyLogger;
 import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.EVMCFG;
@@ -16,7 +13,7 @@ import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.frontend.EVMFrontend;
-import it.unipr.utils.StatisticsObject;
+import it.unipr.utils.*;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -29,10 +26,7 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,13 +34,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -93,37 +82,75 @@ public class EVMLiSA {
 	public static void main(String[] args) {
 //		new EVMLiSA().go(args);
 
-		try{
-			new EVMLiSA().tests();
-		} catch (Exception e){
+		try {
+			new EVMLiSA().examples();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void tests()  throws Exception {
+	private void examples() throws Exception {
 		// Single case (address)
 		SmartContract sc = new SmartContract("0x26366920975b24A89CD991A495d0D70CB8E1BA1F");
 		EVMLiSA.analyzeContract(sc);
 		log.debug(sc);
+		sc.generateGraphWithBasicBlocks();
 
-		// Single case (bytecode)
-		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
+		// Single case (bytecode as a path)
+		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
+				"0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
+
+		// Single case (bytecode as a string)
+		EVMLiSA.analyzeContract(new SmartContract().setBytecode(
+				"0x608060405234801561001057600080fd5b50600436106100415760003560e01c80636146195414610046578063d88bba1114610050578063fbc7f20e14610087575b600080fd5b61004e6100a2565b005b61006b735a98fcbea516cf06857215779fd812ca3bef1b3281565b6040516001600160a01b03909116815260200160405180910390f35b61006b7387d93d9b2c672bf9c9642d853a8682546a5012b581565b6040516328a1b1ad60e21b8152735a98fcbea516cf06857215779fd812ca3bef1b3260048201527387d93d9b2c672bf9c9642d853a8682546a5012b5602482015273223d844fc4b006d67c0cdbd39371a9f73f69d9749063a286c6b490604401600060405180830381600087803b15801561011c57600080fd5b505af1158015610130573d6000803e3d6000fd5b5050505056fea2646970667358221220bae0c5370f53dc13f1e3000d78511979d423220e1cd1c5e47b343314ab833ff964736f6c63430008110033"));
 
 		// Multiple contracts
 		EVMLiSA.analyzeSetOfContracts(Path.of("benchmark", "50-ground-truth.txt"));
 	}
 
+	private static StatisticsObject analyzeResults(List<SmartContract> contracts) {
+		int totalOpcodes = 0;
+		int totalJumps = 0;
+		int resolvedJumps = 0;
+		int maybeUnreachableJumps = 0;
+		int definitelyUnreachableJumps = 0;
+		int maybeUnsoundJumps = 0;
+		int unsoundJumps = 0;
+
+		for (SmartContract contract : contracts) {
+			StatisticsObject s = contract.getStatistics();
+			totalOpcodes += s.getTotalOpcodes();
+			totalJumps += s.getTotalJumps();
+			resolvedJumps += s.getResolvedJumps();
+			maybeUnreachableJumps += s.getMaybeUnreachableJumps();
+			definitelyUnreachableJumps += s.getDefinitelyUnreachableJumps();
+			maybeUnsoundJumps += s.getMaybeUnsoundJumps();
+			unsoundJumps += s.getUnsoundJumps();
+		}
+
+		return StatisticsObject.newStatisticsObject()
+				.totalOpcodes(totalOpcodes)
+				.totalJumps(totalJumps)
+				.resolvedJumps(resolvedJumps)
+				.maybeUnreachableJumps(maybeUnreachableJumps)
+				.definitelyUnreachableJumps(definitelyUnreachableJumps)
+				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.unsoundJumps(unsoundJumps);
+	}
+
 	public static void analyzeSetOfContracts(Path filePath) throws Exception {
 		log.info("Analyzing set of contracts...");
+
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
+
 		int cores = 4;
 		ExecutorService executor = Executors.newFixedThreadPool(cores);
 
 		List<Future<?>> futures = new ArrayList<>();
 
-		for (SmartContract contract : contracts) {
+		for (SmartContract contract : contracts)
 			futures.add(executor.submit(() -> analyzeContract(contract)));
-		}
+
 		log.info("{} contracts submitted to Thread pool with {} workers.", contracts.size(), cores);
 
 		waitForCompletion(futures);
@@ -131,9 +158,9 @@ public class EVMLiSA {
 		executor.shutdown();
 		log.info("Finished analyzing {} contracts.", contracts.size());
 
-		for (SmartContract contract : contracts) {
-			log.debug(contract);
-		}
+		log.info("Benchmark results:");
+		log.info(EVMLiSA.analyzeResults(contracts));
+		System.err.println(JSONManager.aggregateSmartContractsToJson(contracts));
 	}
 
 	/**
@@ -178,7 +205,7 @@ public class EVMLiSA {
 		contract.computeEventsExitPoints();
 	}
 
-	public static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program){
+	public static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 		return computeJumps(checker, soundlySolved);
 	}
@@ -330,9 +357,14 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Basic blocks: {}", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
+		log.info("Basic blocks: {}", EVMCFG.basicBlocksToLongArrayToString(
+				EVMCFG.basicBlocksToLongArray(
+						Objects.requireNonNull(
+								EVMCFG.getBasicBlocks(checker.getComputedCFG())))));
 
-		return checker.getComputedCFG().basicBlocksToLongArray();
+		return EVMCFG.basicBlocksToLongArray(
+				Objects.requireNonNull(
+						EVMCFG.getBasicBlocks(checker.getComputedCFG())));
 	}
 
 	private void go(String[] args) throws Exception {
@@ -398,10 +430,16 @@ public class EVMLiSA {
 
 			long finish = System.currentTimeMillis();
 
-			json.put("basic-blocks-pc", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
+			json.put("basic-blocks-pc",
+					EVMCFG.basicBlocksToLongArrayToString(
+							EVMCFG.basicBlocksToLongArray(
+									Objects.requireNonNull(
+											EVMCFG.getBasicBlocks(checker.getComputedCFG())))));
 
 			if (cmd.hasOption("basic-blocks")) {
-				JSONArray j = checker.getComputedCFG().basicBlocksToJson();
+				JSONArray j = EVMCFG.basicBlocksToJson(
+						Objects.requireNonNull(
+								EVMCFG.getBasicBlocks(checker.getComputedCFG())));
 				String dotFilePath = _outputDirPath.resolve("CFG-with-basic-blocks.dot").toString();
 				json.put("basic_blocks", j);
 				generateDotGraph(j, dotFilePath);
