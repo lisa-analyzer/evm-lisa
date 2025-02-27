@@ -1805,13 +1805,13 @@ DUP14
 SWAP11
 'db'(Unknown Opcode)
 SELFBALANCE
-'5e'(Unknown Opcode)
+MCOPY
 JUMPI
 SELFBALANCE
 LOG2
 '0d'(Unknown Opcode)
 'c3'(Unknown Opcode)
-'5c'(Unknown Opcode)
+TLOAD
 'f6'(Unknown Opcode)
 SIGNEXTEND
 ISZERO
