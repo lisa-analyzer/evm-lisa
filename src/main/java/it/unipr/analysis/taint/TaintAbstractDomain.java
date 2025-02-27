@@ -179,6 +179,17 @@ public abstract class TaintAbstractDomain
 					else if (value.isClean())
 						return resultStack;
 				}
+				case "McopyOperator": { // pops 3
+					if (hasBottomUntil(3))
+						return bottom();
+					TaintAbstractDomain resultStack = clone();
+
+					TaintElement destOffset = resultStack.pop();
+					TaintElement offset = resultStack.pop();
+					TaintElement size = resultStack.pop();
+
+					return resultStack;
+				}
 
 				case "ByteOperator":
 				case "ShlOperator":
