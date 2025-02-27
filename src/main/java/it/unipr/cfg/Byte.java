@@ -15,6 +15,8 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * Byte opcode of the program to analyze.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Byte extends Statement {
 

@@ -1,5 +1,7 @@
 package it.unipr;
 
+import static it.unipr.cfg.EVMCFG.generateDotGraph;
+
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
@@ -56,6 +58,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EVMLiSA {
@@ -93,6 +96,53 @@ public class EVMLiSA {
 		new EVMLiSA().go(args);
 	}
 
+	/**
+	 * Computes the basic blocks of the CFG of a given EVM bytecode.
+	 *
+	 * @param bytecode The EVM bytecode to analyze.
+	 * 
+	 * @return A list of pairs where each pair represents the start and end
+	 *             program counter of a basic block.
+	 * 
+	 * @throws IOException If an error occurs while writing the bytecode to a
+	 *                         file.
+	 */
+	public List<Long[]> computeBasicBlocks(String bytecode) throws IOException {
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+		String address = setupAnalysisDirectories(null);
+		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
+
+		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
+			writer.write(bytecode);
+		} catch (IOException e) {
+			log.error("[computeBasicBlocks] Error during writing on file {}", bytecodeFullPath, e);
+			return null;
+		}
+
+		EVMFrontend.opcodesFromBytecode(bytecode, bytecodeFullPath);
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(address),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.workdir = OUTPUT_DIR;
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.callGraph = new RTACallGraph();
+		conf.serializeResults = false;
+		conf.optimize = false;
+		conf.useWideningPoints = false;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
+
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		log.info("Basic blocks: {}", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
+
+		return checker.getComputedCFG().basicBlocksToLongArray();
+	}
+
 	private void go(String[] args) throws Exception {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
@@ -125,17 +175,23 @@ public class EVMLiSA {
 
 		// Single analysis case
 		String address = setupAnalysisDirectories(cmd);
-		json.put("output-directory", OUTPUT_DIR);
+		json.put("output_directory", OUTPUT_DIR);
 
 		String bytecodeFullPath = setupBytecode(cmd);
 		String bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFullPath)));
 
-		if (cmd.hasOption("creation-code"))
-			json.put("bytecode", bytecode);
-		else
-			json.put("bytecode", bytecode.substring(0, bytecode.indexOf("fe")));
+		String bytecodeMnemonicPath = _outputDirPath.resolve(address + ".opcode").toString();
 
-		Program program = EVMFrontend.generateCfgFromFile(bytecodeFullPath);
+		try {
+			EVMFrontend.opcodesFromBytecode(bytecode, bytecodeMnemonicPath);
+		} catch (Exception e) {
+			log.error("Could not parse opcodes from bytecode {}.", bytecodeFullPath);
+			System.exit(1);
+		}
+
+		json.put("bytecode", bytecode);
+
+		Program program = EVMFrontend.generateCfgFromFile(bytecodeMnemonicPath);
 
 		long start = System.currentTimeMillis();
 
@@ -149,6 +205,15 @@ public class EVMLiSA {
 			Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 
 			long finish = System.currentTimeMillis();
+
+			json.put("basic_blocks_pc", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
+
+			if (cmd.hasOption("basic-blocks")) {
+				JSONArray j = checker.getComputedCFG().basicBlocksToJson();
+				String dotFilePath = _outputDirPath.resolve("CFG_with_basic_blocks.dot").toString();
+				json.put("basic_blocks", j);
+				generateDotGraph(j, dotFilePath);
+			}
 
 			checkers(conf, lisa, program, checker, json);
 
@@ -177,7 +242,7 @@ public class EVMLiSA {
 					.buildJson(json)
 					.build().toString();
 
-			log.error(msg);
+			log.error("Failure: {} - details: {}", e, e.getMessage());
 
 			if (cmd.hasOption("dump-stats")) {
 				toFile(FAILURE_FULLPATH, msg);
@@ -224,8 +289,6 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (cmd.hasOption("creation-code"))
-			EVMFrontend.setUseCreationCode();
 		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
 			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
@@ -246,22 +309,22 @@ public class EVMLiSA {
 	private JSONObject setupJSON(CommandLine cmd) {
 		JSONObject jsonOptions = new JSONObject();
 		jsonOptions.put("address", cmd.getOptionValue("address"));
-		jsonOptions.put("serialize-inputs", cmd.hasOption("serialize-inputs"));
-		jsonOptions.put("dump-html", cmd.hasOption("html"));
-		jsonOptions.put("dump-dot", cmd.hasOption("dot"));
-		jsonOptions.put("dump-statistics", cmd.hasOption("dump-stats"));
-		jsonOptions.put("download-bytecode", cmd.hasOption("download-bytecode"));
-		jsonOptions.put("use-storage-live", cmd.hasOption("use-live-storage"));
-		jsonOptions.put("use-creation-code", cmd.hasOption("creation-code"));
-		if (cmd.getOptionValue("filepath-bytecode") != null)
-			jsonOptions.put("input-filepath", cmd.getOptionValue("filepath-bytecode"));
-		jsonOptions.put("stack-size", AbstractStack.getStackLimit());
-		jsonOptions.put("stack-set-size", AbstractStackSet.getStackSetLimit());
+		jsonOptions.put("serialize_inputs", cmd.hasOption("serialize-inputs"));
+		jsonOptions.put("dump_html", cmd.hasOption("html"));
+		jsonOptions.put("dump_dot", cmd.hasOption("dot"));
+		jsonOptions.put("dump_statistics", cmd.hasOption("dump-stats"));
+		jsonOptions.put("download_bytecode", cmd.hasOption("download-bytecode"));
+		jsonOptions.put("use_storage_live", cmd.hasOption("use-live-storage"));
+		jsonOptions.put("use_creation_code", cmd.hasOption("creation-code"));
+		if (cmd.getOptionValue("filepath_bytecode") != null)
+			jsonOptions.put("input_filepath", cmd.getOptionValue("filepath-bytecode"));
+		jsonOptions.put("stack_size", AbstractStack.getStackLimit());
+		jsonOptions.put("stack_set_size", AbstractStackSet.getStackSetLimit());
 		jsonOptions.put("benchmark", cmd.getOptionValue("benchmark"));
 		jsonOptions.put("cores", CORES);
-		jsonOptions.put("dump-report", cmd.hasOption("dump-report"));
-		jsonOptions.put("output-directory", OUTPUT_DIR);
-		jsonOptions.put("link-unsound-jumps-to-all-jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
+		jsonOptions.put("dump_report", cmd.hasOption("dump-report"));
+		jsonOptions.put("output_directory", OUTPUT_DIR);
+		jsonOptions.put("link_unsound_jumps_to_all_jumpdest", JumpSolver.getLinkUnsoundJumpsToAllJumpdest());
 		return jsonOptions;
 	}
 
@@ -315,8 +378,8 @@ public class EVMLiSA {
 
 	private String setupAnalysisDirectories(CommandLine cmd) {
 		String address;
-		if (!cmd.hasOption("address"))
-			address = "no-address-" + System.currentTimeMillis();
+		if (cmd == null || !cmd.hasOption("address"))
+			address = "contract" + System.currentTimeMillis();
 		else
 			address = cmd.getOptionValue("address");
 
@@ -337,8 +400,10 @@ public class EVMLiSA {
 	}
 
 	private String setupBytecode(CommandLine cmd) {
-		String bytecodePath = _outputDirPath.resolve(cmd.getOptionValue("address") + ".opcode").toString();
-		String bytecode = null;
+		String address = cmd.getOptionValue("address") != null ? cmd.getOptionValue("address") : "contract";
+
+		String bytecodePath = _outputDirPath.resolve(address + ".bytecode").toString();
+		String bytecode = "";
 
 		if (cmd.hasOption("filepath-bytecode")) {
 			try {
@@ -351,15 +416,15 @@ public class EVMLiSA {
 			try {
 				bytecode = EVMFrontend.parseContractFromEtherscan(cmd.getOptionValue("address"));
 			} catch (IOException e) {
-				log.error("Could not parse bytecode from Etherscan {}.", cmd.getOptionValue("address"));
+				log.error("Could not parse bytecode from Etherscan {}.", address);
 				System.exit(1);
 			}
 		}
 
-		try {
-			EVMFrontend.opcodesFromBytecode(bytecode, bytecodePath);
-		} catch (Exception e) {
-			log.error("Could not parse opcodes from bytecode {}.", bytecodePath);
+		try (FileWriter writer = new FileWriter(bytecodePath)) {
+			writer.write(bytecode);
+		} catch (IOException e) {
+			log.error("Could not write bytecode file {}.", bytecodePath);
 			System.exit(1);
 		}
 
@@ -734,7 +799,7 @@ public class EVMLiSA {
 
 				Set<StackElement> topStackValuesPerJump = checker.getTopStackValuesPerJump(jumpNode);
 
-				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+				if (topStackValuesPerJump != null && topStackValuesPerJump.contains(StackElement.TOP)) {
 					allJumpAreSound = false;
 					break;
 				}
@@ -768,7 +833,7 @@ public class EVMLiSA {
 					definitelyUnreachable++;
 					continue;
 				}
-				if (!topStackValuesPerJump.contains(StackElement.NUMERIC_TOP)) {
+				if (!topStackValuesPerJump.contains(StackElement.TOP)) {
 					// If the elements at the top of the stacks are all
 					// different from NUMERIC_TOP, then we are sure that it
 					// is definitelyFakeMissedJumps
@@ -985,7 +1050,7 @@ public class EVMLiSA {
 					// I can do max 5 API request in 1 sec to Etherscan.io
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					log.error("e: {}", e.getMessage());
+					log.error("[saveSmartContractsFromEtherscan] e: {}", e.getMessage());
 				}
 			}
 
@@ -1124,9 +1189,9 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option useCreationCodeOption = Option.builder()
-				.longOpt("creation-code")
-				.desc("Parse bytecode as creation code (instead of runtime code).")
+		Option basicBlocksOption = Option.builder()
+				.longOpt("basic-blocks")
+				.desc("Generate CFG with basic blocks.")
 				.required(false)
 				.hasArg(false)
 				.build();
@@ -1166,12 +1231,12 @@ public class EVMLiSA {
 		options.addOption(useStorageLiveOption);
 		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
 		options.addOption(dumpAnalysisReport);
-		options.addOption(useCreationCodeOption);
 		options.addOption(dumpHtmlOption);
 		options.addOption(dumpDotOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(basicBlocksOption);
 
 		return options;
 	}

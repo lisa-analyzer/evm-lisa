@@ -12,6 +12,10 @@ import it.unive.lisa.type.Untyped;
 
 /**
  * Swap15 opcode of the program to analyze.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * 
+ * @see <a href="https://www.evm.codes/">EVM bytecode opodes</a>
  */
 public class Swap15 extends Swap {
 
@@ -31,6 +35,7 @@ public class Swap15 extends Swap {
 		return "SWAP15";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 

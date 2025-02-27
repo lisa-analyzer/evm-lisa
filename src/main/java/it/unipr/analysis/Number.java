@@ -3,11 +3,26 @@ package it.unipr.analysis;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * Custom class representing a number that can be implemented as an {@code int},
+ * {@code long}, or {@code BigInteger}.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:saveriomattia.merenda@studenti.unipr.it">Mattia
+ *             Merenda</a>
+ */
 public class Number implements Comparable<Number> {
-	public static final BigInteger MAX_INT = BigInteger.valueOf(2).pow(31);
-	public static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(63);
+	/**
+	 * Maximal representable integer value.
+	 */
+	private static final BigInteger MAX_INT = BigInteger.valueOf(2).pow(31);
 
-	static enum Type {
+	/**
+	 * Maximal representable long value.
+	 */
+	private static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(63);
+
+	private static enum Type {
 		INT,
 		LONG,
 		BIGINTEGER
@@ -17,14 +32,24 @@ public class Number implements Comparable<Number> {
 	private final long l;
 	private final BigInteger b;
 
-	public Number(int other) {
-		this.i = other;
+	/**
+	 * Builds a number starting from an integer value.
+	 * 
+	 * @param i the integer value
+	 */
+	public Number(int i) {
+		this.i = i;
 		this.l = -1;
 		this.b = null;
 	}
 
-	public Number(long other) {
-		this.l = other;
+	/**
+	 * Builds a number starting from a long value.
+	 * 
+	 * @param l the long value
+	 */
+	public Number(long l) {
+		this.l = l;
 		this.b = null;
 		this.i = -1;
 	}
@@ -45,6 +70,11 @@ public class Number implements Comparable<Number> {
 		}
 	}
 
+	/**
+	 * Yields the backing implementation of the number.
+	 * 
+	 * @return the backing implementation of the number
+	 */
 	public Type getType() {
 		if (b != null)
 			return Type.BIGINTEGER;
@@ -53,14 +83,29 @@ public class Number implements Comparable<Number> {
 		return Type.LONG;
 	}
 
+	/**
+	 * Yields the integer value.
+	 * 
+	 * @return the integer value
+	 */
 	public int getInt() {
 		return i;
 	}
 
+	/**
+	 * Yields the long value.
+	 * 
+	 * @return the long value
+	 */
 	public long getLong() {
 		return l;
 	}
 
+	/**
+	 * Yields the big integer value.
+	 * 
+	 * @return the big integer value
+	 */
 	public BigInteger getBigInteger() {
 		return b;
 	}
@@ -77,6 +122,13 @@ public class Number implements Comparable<Number> {
 		return ot;
 	}
 
+	/**
+	 * Adds two numbers and returns the result as a {@code Number}.
+	 * 
+	 * @param other the number to add
+	 * 
+	 * @return the sum as a {@code Number}
+	 */
 	public Number add(Number other) {
 		if (this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number(i + other.getInt());
@@ -89,6 +141,13 @@ public class Number implements Comparable<Number> {
 		return new Number(me.add(ot));
 	}
 
+	/**
+	 * Subtracts another number from this one and returns the result.
+	 * 
+	 * @param other the number to subtract
+	 * 
+	 * @return the result as a {@code Number}
+	 */
 	public Number subtract(Number other) {
 		if (this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number(i - other.getInt());
@@ -101,16 +160,29 @@ public class Number implements Comparable<Number> {
 		return new Number(me.subtract(ot));
 	}
 
+	/**
+	 * Multiplies this number by another.
+	 * 
+	 * @param other the number to multiply by
+	 * 
+	 * @return the product as a {@code Number}
+	 */
 	public Number multiply(Number other) {
 		if (this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number((long) i * other.getInt());
 
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
-
 		return new Number(me.multiply(ot));
 	}
 
+	/**
+	 * Multiplies this number by another.
+	 * 
+	 * @param other the number to multiply by
+	 * 
+	 * @return the product as a {@code Number}
+	 */
 	public Number divide(Number other) {
 		if (this.getType() == other.getType() && other.getType() == Type.INT)
 			return new Number(i / other.getInt());
@@ -119,55 +191,97 @@ public class Number implements Comparable<Number> {
 
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
-
 		return new Number(me.divide(ot));
 	}
 
+	/**
+	 * Performs bitwise AND between two numbers.
+	 * 
+	 * @param other the number to AND with
+	 * 
+	 * @return the result as a {@code Number}
+	 */
 	public Number and(Number other) {
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
-
 		return new Number(me.and(ot));
 	}
 
+	/**
+	 * Performs bitwise OR between two numbers.
+	 * 
+	 * @param other the number to OR with
+	 * 
+	 * @return the result as a {@code Number}
+	 */
 	public Number or(Number other) {
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
-
 		return new Number(me.or(ot));
 	}
 
+	/**
+	 * Performs bitwise XOR between two numbers.
+	 * 
+	 * @param other the number to XOR with
+	 * 
+	 * @return the result as a {@code Number}
+	 */
 	public Number xor(Number other) {
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
-
 		return new Number(me.xor(ot));
 	}
 
+	/**
+	 * Returns the bitwise NOT of this number.
+	 * 
+	 * @return the bitwise complement as a {@code Number}
+	 */
 	public Number not() {
 		BigInteger me = toBigInteger(this);
-
 		return new Number(me.not());
 	}
 
+	/**
+	 * Converts this number into a byte array.
+	 * 
+	 * @return the byte array representation
+	 */
 	public byte[] toByteArray() {
 		BigInteger me = toBigInteger(this);
-
 		return me.toByteArray();
 	}
 
+	/**
+	 * Shifts this number right by a specified number of bits.
+	 * 
+	 * @param other the number of positions to shift
+	 * 
+	 * @return the shifted number
+	 */
 	public Number shiftRight(int other) {
 		BigInteger me = toBigInteger(this);
-
 		return new Number(me.shiftRight(other));
 	}
 
+	/**
+	 * Shifts this number left by a specified number of bits.
+	 * 
+	 * @param other the number of positions to shift
+	 * 
+	 * @return the shifted number
+	 */
 	public Number shiftLeft(int other) {
 		BigInteger me = toBigInteger(this);
-
 		return new Number(me.shiftLeft(other));
 	}
 
+	/**
+	 * Returns the integer value of this number.
+	 * 
+	 * @return the integer representation
+	 */
 	public int intValue() {
 		if (getType() == Type.INT)
 			return i;

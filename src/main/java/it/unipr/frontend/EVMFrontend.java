@@ -30,13 +30,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
  * ETHERSCAN_API_KEY.
  */
 public class EVMFrontend {
-
-	private static boolean USE_CREATION_CODE = false;
-
-	static public void setUseCreationCode() {
-		USE_CREATION_CODE = true;
-	}
-
 	/**
 	 * Verifies the syntactic correctness of the smart contract bytecode stored
 	 * in {@code filePath} and returns its {@code ProgramContext}.
@@ -183,7 +176,7 @@ public class EVMFrontend {
 	 * @throws IOException
 	 */
 	public static Program generateCfgFromFile(String filePath) throws IOException {
-		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath, program);
 		ProgramContext programContext = EVMFrontend.parseContract(filePath);
 
@@ -361,11 +354,22 @@ public class EVMFrontend {
 			writer.write("BASEFEE\n");
 			break;
 		case "49":
+			writer.write("BLOBHASH\n");
+			break;
+		case "4a":
+			writer.write("BLOBBASEFEE\n");
+			break;
 		case "4f":
 			writer.write("INVALID\n");
 			break;
 		case "50":
 			writer.write("POP\n");
+			break;
+		case "5c":
+			writer.write("TLOAD\n");
+			break;
+		case "5d":
+			writer.write("TSTORE\n");
 			break;
 		case "51":
 			writer.write("MLOAD\n");
@@ -399,6 +403,9 @@ public class EVMFrontend {
 			break;
 		case "5b":
 			writer.write("JUMPDEST\n");
+			break;
+		case "5e":
+			writer.write("MCOPY\n");
 			break;
 		case "5f":
 			writer.write("PUSH0\n");
@@ -540,10 +547,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-			if (USE_CREATION_CODE)
-				break;
-			else
-				return false;
+			break;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;

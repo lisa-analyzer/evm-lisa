@@ -48,7 +48,6 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
-import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -62,10 +61,24 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
+	/**
+	 * The CFG of the smart contract of interest.
+	 */
 	private EVMCFG cfg;
-	private int pc = 0; // Program counter
 
+	/**
+	 * The program counter, starting from zero.
+	 */
+	private int pc = 0;
+
+	/*
+	 * The filepath where the smart contract is located.
+	 */
 	private final String filePath;
+
+	/**
+	 * The LiSA program.
+	 */
 	private final Program program;
 
 	/**
@@ -155,22 +168,6 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 						cfg.addEdge(new TrueEdge(entry.getKey(), node));
 					else
 						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
-
-		// The last statement of the CFG is a return statement
-		Ret ret = new Ret(cfg, new ProgramCounterLocation(pc++, -1));
-		cfg.addNode(ret);
-		cfg.addEdge(new SequentialEdge(st, ret));
-
-		// REVERT nodes must be linked to return statement
-		for (Statement stmt : cfg.getNodes()) {
-			if (stmt instanceof Revert
-					|| stmt instanceof Return
-					|| stmt instanceof Stop
-					|| stmt instanceof Selfdestruct
-					|| stmt instanceof Invalid)
-				cfg.addEdge(new SequentialEdge(stmt, ret));
-		}
-
 		unit.addCodeMember(cfg);
 
 		cfg.computeHotspotNodes();
@@ -307,16 +304,26 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return new Chainid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "SELFBALANCE":
 			return new Selfbalance(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "BLOBHASH":
+			return new BlobHash(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "BLOBBASEFEE":
+			return new BlobBaseFee(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "BASEFEE":
 			return new Basefee(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "POP":
 			return new Pop(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "TLOAD":
+			return new Tload(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "TSTORE":
+			return new Tstore(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "MLOAD":
 			return new Mload(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "MSTORE":
 			return new Mstore(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "MSTORE8":
 			return new Mstore8(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "MCOPY":
+			return new Mcopy(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "SLOAD":
 			return new Sload(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "SSTORE":

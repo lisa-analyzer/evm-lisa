@@ -3,17 +3,17 @@
   "files" : [ "report.json", "untyped_program.evm-testcases_cfs_xor_xor_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "7ms",
-    "end" : "2024-10-03T17:31:51.618+02:00",
+    "duration" : "20ms",
+    "end" : "2025-02-26T11:44:06.110+01:00",
     "expressions" : "18",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-10-03T17:31:51.611+02:00",
-    "statements" : "31",
+    "start" : "2025-02-26T11:44:06.090+01:00",
+    "statements" : "30",
     "units" : "0",
-    "version" : "0.1b8",
+    "version" : "0.1",
     "warnings" : "0"
   },
   "configuration" : {

@@ -9,8 +9,8 @@ import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.frontend.EVMFeatures;
-import it.unipr.frontend.EVMTypeSystem;
+import it.unipr.frontend.EVMLiSAFeatures;
+import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.AnalysisState;
@@ -163,7 +163,7 @@ public class JumpSolver implements
 					for (AbstractStack stack : stacks) {
 						StackElement topStack = stack.getTop();
 						stacksTop.add(topStack);
-						if (topStack.isTopNumeric())
+						if (topStack.isTop())
 							unsoundJumps.add(node);
 					}
 
@@ -179,7 +179,7 @@ public class JumpSolver implements
 		LiSAConfiguration conf = tool.getConfiguration();
 		LiSA lisa = new LiSA(conf);
 
-		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(cfgToAnalyze);
 
 		try {
