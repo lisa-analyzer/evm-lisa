@@ -20,6 +20,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SmartContract {
     private static final Logger log = LogManager.getLogger(SmartContract.class);
@@ -149,13 +151,13 @@ public class SmartContract {
             // Write ABI to file
             if (this._abi != null) {
                 Files.writeString(this._abiFilePath, this._abi, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                log.info("ABI saved at {}", this._abiFilePath);
+//                log.info("ABI saved at {}", this._abiFilePath);
             }
 
             // Write bytecode to file
             if (this._bytecode != null) {
                 Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                log.info("Bytecode saved at {}", this._bytecodeFilePath);
+//                log.info("Bytecode saved at {}", this._bytecodeFilePath);
             }
 
             EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
@@ -204,6 +206,10 @@ public class SmartContract {
 
     public Set<Signature> getEventsSignature() {
         return this._eventsSignature;
+    }
+
+    public StatisticsObject getStatistics() {
+        return _statistics;
     }
 
     public void printStatistics(){
@@ -318,6 +324,39 @@ public class SmartContract {
         lisa.run(program);
     }
 
+    @Override
+    public String toString() {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("address", _address != null ? _address : JSONObject.NULL);
+        jsonObject.put("bytecode", _bytecode != null ? _bytecode : JSONObject.NULL);
+        jsonObject.put("mnemonic_bytecode", _mnemonicBytecode != null ? _mnemonicBytecode : JSONObject.NULL);
+        jsonObject.put("abi", _abi != null ? _abi : JSONObject.NULL);
+
+        jsonObject.put("working_directory", _workingDirectory.toString());
+
+        jsonObject.put("abi_file_path", _abiFilePath != null ? _abiFilePath.toString() : JSONObject.NULL);
+        jsonObject.put("bytecode_file_path", _bytecodeFilePath != null ? _bytecodeFilePath.toString() : JSONObject.NULL);
+        jsonObject.put("mnemonic_bytecode_file_path", _mnemonicBytecodeFilePath.toString());
+
+        jsonObject.put("statistics", _statistics != null ? new JSONObject(_statistics.toString()) : JSONObject.NULL);
+
+        JSONArray functionsArray = new JSONArray();
+        if (_functionsSignature != null && !_functionsSignature.isEmpty())
+            for (Signature signature : _functionsSignature)
+                functionsArray.put(signature.toString());
+
+        jsonObject.put("functions_signature", !functionsArray.isEmpty() ? functionsArray : JSONObject.NULL);
+
+        JSONArray eventsArray = new JSONArray();
+        if (_eventsSignature != null && !_eventsSignature.isEmpty())
+            for (Signature signature : _eventsSignature)
+                eventsArray.put(signature.toString());
+
+        jsonObject.put("events_signature", !eventsArray.isEmpty() ? eventsArray : JSONObject.NULL);
+
+        return jsonObject.toString(4);
+    }
 
     public static void main(String[] args) {
         String address = "0x26366920975b24A89CD991A495d0D70CB8E1BA1F";

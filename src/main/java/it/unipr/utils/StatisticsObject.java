@@ -129,13 +129,15 @@ public class StatisticsObject {
 
     @Override
     public String toString() {
-        return totalOpcodes + ", " +
-                totalJumps + ", " +
-                resolvedJumps + ", " +
-                definitelyUnreachableJumps + ", " +
-                maybeUnreachableJumps + ", " +
-                unsoundJumps + ", " +
-                maybeUnsoundJumps + ", " +
-                json.toString() + "\n";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("total_opcodes", totalOpcodes);
+        jsonObject.put("total_jumps", totalJumps);
+        jsonObject.put("resolved_jumps", resolvedJumps);
+        jsonObject.put("definitely_unreachable_jumps", definitelyUnreachableJumps);
+        jsonObject.put("maybe_unreachable_jumps", maybeUnreachableJumps);
+        jsonObject.put("unsound_jumps", unsoundJumps);
+        jsonObject.put("maybe_unsound_jumps", maybeUnsoundJumps);
+
+        return jsonObject.toString(4);
     }
 }

@@ -122,7 +122,7 @@ public class ABIManager {
 
                 signatures.add(new Signature(functionName, type, paramTypes, outputTypes, fullSignature, selector));
 
-                log.debug("[{}] {} -> {}", type, fullSignature, selector);
+//                log.debug("[{}] {} -> {}", type, fullSignature, selector);
             }
         }
         return signatures;

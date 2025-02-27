@@ -45,9 +45,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -91,20 +90,78 @@ public class EVMLiSA {
 	 * 
 	 * @param args configuration options
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 //		new EVMLiSA().go(args);
 
+		try{
+			new EVMLiSA().tests();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	private void tests()  throws Exception {
 		// Single case (address)
-		EVMLiSA.analyzeContract(new SmartContract("0x26366920975b24A89CD991A495d0D70CB8E1BA1F"));
+		SmartContract sc = new SmartContract("0x26366920975b24A89CD991A495d0D70CB8E1BA1F");
+		EVMLiSA.analyzeContract(sc);
+		log.debug(sc);
 
 		// Single case (bytecode)
 		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
+
+		// Multiple contracts
+		EVMLiSA.analyzeSetOfContracts(Path.of("benchmark", "50-ground-truth.txt"));
 	}
 
-	public static void analyzeContract(SmartContract contract) throws IOException {
-		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+	public static void analyzeSetOfContracts(Path filePath) throws Exception {
+		log.info("Analyzing set of contracts...");
+		List<SmartContract> contracts = buildContractsFromFile(filePath);
+		int cores = 4;
+		ExecutorService executor = Executors.newFixedThreadPool(cores);
 
-		Program program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+		List<Future<?>> futures = new ArrayList<>();
+
+		for (SmartContract contract : contracts) {
+			futures.add(executor.submit(() -> analyzeContract(contract)));
+		}
+		log.info("{} contracts submitted to Thread pool with {} workers.", contracts.size(), cores);
+
+		waitForCompletion(futures);
+
+		executor.shutdown();
+		log.info("Finished analyzing {} contracts.", contracts.size());
+
+		for (SmartContract contract : contracts) {
+			log.debug(contract);
+		}
+	}
+
+	/**
+	 * Waits for all submitted tasks in the given list of futures to complete.
+	 *
+	 * @param futures A list of {@link Future} objects representing running
+	 *                    tasks.
+	 */
+	static private void waitForCompletion(List<Future<?>> futures) {
+		for (Future<?> future : futures)
+			try {
+				future.get();
+			} catch (ExecutionException e) {
+				log.error("Error during task execution: {}", e.getMessage());
+			} catch (InterruptedException ie) {
+				log.error("Interrupted during task execution: {}", ie.getMessage());
+			}
+	}
+
+	public static void analyzeContract(SmartContract contract) {
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+		Program program;
+		try {
+			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+		} catch (IOException e) {
+			log.error("Unable to generate CFG from file");
+			return;
+		}
 
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		JumpSolver checker = new JumpSolver();
@@ -115,9 +172,13 @@ public class EVMLiSA {
 
 		contract.setCFG(checker.getComputedCFG());
 		contract.setStatistics(computeStatistics(checker, lisa, program));
+		contract.computeFunctionsSignatureEntryPoints();
+		contract.computeFunctionsSignatureExitPoints();
+		contract.computeEventsSignatureEntryPoints();
+		contract.computeEventsExitPoints();
 	}
 
-	private static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program){
+	public static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program){
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 		return computeJumps(checker, soundlySolved);
 	}
@@ -1054,6 +1115,33 @@ public class EVMLiSA {
 			log.error("(readFileAsString): {}", e.getMessage());
 			return null;
 		}
+	}
+
+	public static List<SmartContract> buildContractsFromFile(Path filePath) throws Exception {
+		log.info("Parsing contracts from {}", filePath);
+
+		List<SmartContract> contracts = new ArrayList<>();
+
+		try {
+			File myObj = new File(String.valueOf(filePath));
+			Scanner myReader = new Scanner(myObj);
+
+			while (myReader.hasNextLine()) {
+				String address = myReader.nextLine();
+				contracts.add(new SmartContract(address));
+
+				log.info("Created contract: {}", address);
+				Thread.sleep(500);
+			}
+			myReader.close();
+
+		} catch (FileNotFoundException e) {
+			log.error("{} not found.", filePath);
+			throw e;
+		}
+
+		log.info("Created {} contracts.", contracts.size());
+		return contracts;
 	}
 
 	/**
