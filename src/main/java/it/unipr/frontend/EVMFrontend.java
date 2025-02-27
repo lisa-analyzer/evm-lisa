@@ -354,6 +354,11 @@ public class EVMFrontend {
 			writer.write("BASEFEE\n");
 			break;
 		case "49":
+			writer.write("BLOBHASH\n");
+			break;
+		case "4a":
+			writer.write("BLOBBASEFEE\n");
+			break;
 		case "4f":
 			writer.write("INVALID\n");
 			break;

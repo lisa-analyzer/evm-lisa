@@ -304,6 +304,10 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return new Chainid(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "SELFBALANCE":
 			return new Selfbalance(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "BLOBHASH":
+			return new BlobHash(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "BLOBBASEFEE":
+			return new BlobBaseFee(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "BASEFEE":
 			return new Basefee(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "POP":

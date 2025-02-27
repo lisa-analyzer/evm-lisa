@@ -196,6 +196,7 @@ public class EVMAbstractState
 					return new EVMAbstractState(result, memory, storage);
 				}
 
+				case "BlobBaseFeeOperator": // BLOBBASEFEE
 				case "GasOperator": // GAS
 				case "MsizeOperator": // MSIZE
 				case "BasefeeOperator": // BASEFEE
@@ -741,6 +742,24 @@ public class EVMAbstractState
 					else
 						return new EVMAbstractState(result, memory, storage);
 				}
+
+				case "BlobHashOperator": { // BLOBHASH
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
+						AbstractStack resultStack = stack.clone();
+						StackElement index = resultStack.pop();
+
+						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+						result.add(resultStack);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memory, storage);
+				}
+
 				case "Sha3Operator": { // SHA3
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
