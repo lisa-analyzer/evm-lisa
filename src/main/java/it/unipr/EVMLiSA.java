@@ -1191,7 +1191,7 @@ public class EVMLiSA {
 
 		Option basicBlocksOption = Option.builder()
 				.longOpt("basic-blocks")
-				.desc("Print the basic blocks.")
+				.desc("Generate CFG with basic blocks.")
 				.required(false)
 				.hasArg(false)
 				.build();
