@@ -21,7 +21,7 @@ import org.junit.Test;
  * Push Before Jump), are also tested in specific test cases.
  */
 public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
-	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = true;
+	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
 
 	private static final String FAKE_ADDRESS = "0x000000000000000";
 
@@ -41,7 +41,7 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	private static CronConfiguration createConfiguration(String testDir, String subDir, String programFile,
 			boolean generateCfg) {
 		if (GENERATE_CFG_FOR_ALL_TESTS) {
-			generateCfg = false;
+			generateCfg = true;
 		}
 
 		CronConfiguration conf = new CronConfiguration();
@@ -270,6 +270,24 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testMcopy() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mcopy", "mcopy.sol", false);
+		perform(conf);
+	}
+
+	/**
+	 * The final memory must be TOP
+	 */
+	@Test
+	public void testMcopyTopNotJumpdest() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mcopy_topnotjumpdest", "mcopy.sol", false);
+		perform(conf);
+	}
+
+	/**
+	 * The final memory must be TOP
+	 */
+	@Test
+	public void testMcopyTop() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mcopy_top", "mcopy.sol", false);
 		perform(conf);
 	}
 
