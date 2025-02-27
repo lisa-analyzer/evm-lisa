@@ -263,6 +263,10 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		perform(conf);
 	}
 
+	/**
+	 * The final memory must be
+	 * 000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F
+	 */
 	@Test
 	public void testMcopy() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mcopy", "mcopy.sol", true);

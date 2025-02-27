@@ -67,6 +67,7 @@ opcodes
    | MLOAD
    | MSTORE
    | MSTORE8
+   | MCOPY
    | SLOAD
    | SSTORE
    | JUMP

@@ -393,6 +393,9 @@ public class EVMFrontend {
 		case "5b":
 			writer.write("JUMPDEST\n");
 			break;
+		case "5e":
+			writer.write("MCOPY\n");
+			break;
 		case "5f":
 			writer.write("PUSH0\n");
 			break;

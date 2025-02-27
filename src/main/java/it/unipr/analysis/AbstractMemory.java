@@ -12,12 +12,11 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
 	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
@@ -252,23 +251,5 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			hexString.append("0");
 
 		return hexString.toString();
-	}
-
-	public static void main(String[] args) {
-		AbstractMemory memory = new AbstractMemory();
-
-		byte[] initialData = new byte[32];
-		for (int i = 0; i < 32; i++) {
-			initialData[i] = (byte) i;
-		}
-		memory = memory.mstore(32, initialData);
-
-		log.debug("Memory before MCOPY:");
-		log.debug(memory);
-
-		memory = memory.mcopy(0, 32, 32);
-
-		log.debug("Memory after MCOPY:");
-		log.debug(memory);
 	}
 }
