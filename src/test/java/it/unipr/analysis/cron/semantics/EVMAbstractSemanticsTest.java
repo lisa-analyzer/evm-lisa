@@ -296,4 +296,10 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("cfs", "blob", "blob.sol", false);
 		perform(conf);
 	}
+
+	@Test
+	public void testTransient() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "transient", "transient.sol", false);
+		perform(conf);
+	}
 }

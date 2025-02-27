@@ -23,7 +23,11 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -940,6 +944,39 @@ public class EVMAbstractState
 					else
 						return new EVMAbstractState(result, memory, storage);
 				}
+				case "TloadOperator": { // TLOAD
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
+						AbstractStack resultStack = stack.clone();
+						StackElement key = resultStack.pop();
+
+						resultStack.push(StackElement.TOP);
+						result.add(resultStack);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memory, storage);
+				}
+
+				case "TstoreOperator": { // TSTORE
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
+						AbstractStack resultStack = stack.clone();
+						StackElement key = resultStack.pop();
+						StackElement value = resultStack.pop();
+						result.add(resultStack);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memory, storage);
+				}
+
 				case "MloadOperator": { // MLOAD
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))

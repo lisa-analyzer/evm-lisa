@@ -124,6 +124,14 @@ ORIGIN
    : 'ORIGIN'
    ;
 
+TSTORE
+   : 'TSTORE'
+   ;
+
+TLOAD
+   : 'TLOAD'
+   ;
+
 CALLER
    : 'CALLER'
    ;

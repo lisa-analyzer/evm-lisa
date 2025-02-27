@@ -312,6 +312,10 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return new Basefee(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "POP":
 			return new Pop(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "TLOAD":
+			return new Tload(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "TSTORE":
+			return new Tstore(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "MLOAD":
 			return new Mload(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "MSTORE":

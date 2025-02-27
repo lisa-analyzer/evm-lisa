@@ -57,6 +57,8 @@ opcodes
    | BLOCKHASH
    | BLOBHASH
    | BLOBBASEFEE
+   | TLOAD
+   | TSTORE
    | COINBASE
    | TIMESTAMP
    | NUMBER

@@ -365,6 +365,12 @@ public class EVMFrontend {
 		case "50":
 			writer.write("POP\n");
 			break;
+		case "5c":
+			writer.write("TLOAD\n");
+			break;
+		case "5d":
+			writer.write("TSTORE\n");
+			break;
 		case "51":
 			writer.write("MLOAD\n");
 			break;

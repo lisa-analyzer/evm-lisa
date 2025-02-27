@@ -122,13 +122,26 @@ public abstract class TaintAbstractDomain
 
 					return resultStack;
 				}
-				case "JumpiOperator": { // JUMPI
+
+				case "TstoreOperator":
+				case "JumpiOperator": {
 					if (hasBottomUntil(2))
 						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
 					TaintElement opnd2 = resultStack.pop();
+
+					return resultStack;
+				}
+
+				case "TloadOperator": {
+					if (hasBottomUntil(2))
+						return bottom();
+
+					TaintAbstractDomain resultStack = clone();
+					TaintElement key = resultStack.pop();
+					resultStack.push(TaintElement.TOP);
 
 					return resultStack;
 				}
