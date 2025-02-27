@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(JumpSolver.class);
 
@@ -50,11 +50,6 @@ public class JumpSolver implements
 	 * The CFG to be analyzed.
 	 */
 	private EVMCFG cfgToAnalyze;
-
-	/**
-	 * Yields if the fixpoint has been reached.
-	 */
-	private boolean fixpoint = true;
 
 	/**
 	 * The set of unreachable jumps (i.e., their state is bottom)
@@ -118,75 +113,74 @@ public class JumpSolver implements
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
 
-		if (fixpoint) {
-			this.unreachableJumps = new HashSet<>();
-			this.maybeUnsoundJumps = new HashSet<>();
-			this.unsoundJumps = new HashSet<>();
+		this.unreachableJumps = new HashSet<>();
+		this.maybeUnsoundJumps = new HashSet<>();
+		this.unsoundJumps = new HashSet<>();
 
-			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				if (cfgToAnalyze.getAllPushedJumps().contains(node))
-					continue;
+		for (Statement node : this.cfgToAnalyze.getAllJumps()) {
+			if (cfgToAnalyze.getAllPushedJumps().contains(node))
+				continue;
 
-				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(this.cfgToAnalyze)) {
-					AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-							TypeEnvironment<InferredTypes>>> analysisResult = null;
+			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(this.cfgToAnalyze)) {
+				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+				TypeEnvironment<InferredTypes>>> analysisResult = null;
 
-					try {
-						analysisResult = result.getAnalysisStateBefore(node);
-					} catch (SemanticException e1) {
-						log.error("(JumpSolver): {}", e1.getMessage());
-					}
-
-					// Retrieve the symbolic stack from the analysis result
-					EVMAbstractState valueState = analysisResult.getState().getValueState();
-
-					if (valueState.isBottom()) {
-						// If the value state is bottom, the jump is definitely
-						// unreachable
-						this.unreachableJumps.add(node);
-						continue;
-					}
-
-					if (valueState.isTop()) {
-						// If the value state is top, the jump is maybe unsound
-						// (i.e., we should re-run the analysis with different
-						// parameter)
-						this.maybeUnsoundJumps.add(node);
-						continue;
-					}
-
-					Set<StackElement> stacksTop = new HashSet<>();
-					AbstractStackSet stacks = valueState.getStacks();
-					for (AbstractStack stack : stacks) {
-						StackElement topStack = stack.getTop();
-						stacksTop.add(topStack);
-						if (topStack.isTop())
-							unsoundJumps.add(node);
-					}
-
-					topStackValuesPerJump.put(node, stacksTop);
+				try {
+					analysisResult = result.getAnalysisStateBefore(node);
+				} catch (SemanticException e1) {
+					log.error("(JumpSolver): {}", e1.getMessage());
 				}
-			}
 
-			return;
+				// Retrieve the symbolic stack from the analysis result
+				EVMAbstractState valueState = analysisResult.getState().getValueState();
+
+				if (valueState.isBottom()) {
+					// If the value state is bottom, the jump is definitely
+					// unreachable
+					this.unreachableJumps.add(node);
+					continue;
+				}
+
+				if (valueState.isTop()) {
+					// If the value state is top, the jump is maybe unsound
+					// (i.e., we should re-run the analysis with different
+					// parameter)
+					this.maybeUnsoundJumps.add(node);
+					continue;
+				}
+
+				Set<StackElement> stacksTop = new HashSet<>();
+				AbstractStackSet stacks = valueState.getStacks();
+				for (AbstractStack stack : stacks) {
+					StackElement topStack = stack.getTop();
+					stacksTop.add(topStack);
+					if (topStack.isTop())
+						unsoundJumps.add(node);
+				}
+
+				topStackValuesPerJump.put(node, stacksTop);
+			}
 		}
 
-//		this.fixpoint = true;
-//
-//		LiSAConfiguration conf = tool.getConfiguration();
-//		LiSA lisa = new LiSA(conf);
-//
-//		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-//		program.addCodeMember(cfgToAnalyze);
-//
-//		try {
-//			lisa.run(program);
-//		} catch (AnalysisException e) {
-//			log.error("(JumpSolver): {}", e.getMessage());
-//		}
+		return;
+
+
+		//		this.fixpoint = true;
+		//
+		//		LiSAConfiguration conf = tool.getConfiguration();
+		//		LiSA lisa = new LiSA(conf);
+		//
+		//		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		//		program.addCodeMember(cfgToAnalyze);
+		//
+		//		try {
+		//			lisa.run(program);
+		//		} catch (AnalysisException e) {
+		//			log.error("(JumpSolver): {}", e.getMessage());
+		//		}
 	}
 
 	/**
@@ -201,78 +195,64 @@ public class JumpSolver implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		this.cfgToAnalyze = (EVMCFG) graph;
 
-		// The method focuses only on JUMP and JUMPI statements
-		if (!(node instanceof Jump) && !(node instanceof Jumpi))
-			return true;
-		else if (cfgToAnalyze.getAllPushedJumps().contains(node))
+		if (cfgToAnalyze.getAllPushedJumps().contains(node))
 			return true;
 
 		// Iterate over all the analysis results, in our case there will be only
 		// one result.
-//		for (AnalyzedCFG<
-//				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
-//						.getResultOf(this.cfgToAnalyze)) {
-//			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-//					TypeEnvironment<InferredTypes>>> analysisResult = null;
-//
-//			try {
-//				analysisResult = result.getAnalysisStateBefore(node);
-//			} catch (SemanticException e1) {
-//				e1.printStackTrace();
-//
-//			}
-//
-//			// Retrieve the symbolic stack from the analysis result
-//			EVMAbstractState valueState = analysisResult.getState().getValueState();
-//
-//			// If the abstract stack is top or bottom, or it is empty, we do not
-//			// have enough information to solve the jump.
-//			if (valueState.isBottom()) {
-//				continue;
-//			} else if (valueState.isTop()) {
-//				log.warn("Not solved jump (state is top): {} [{}]", node,
-//						((ProgramCounterLocation) node.getLocation()).getPc());
-//				continue;
-//			}
-//
-//			Set<Number> flattenedTopStack = valueState.getTop().stream()
-//					.filter(t -> !t.isTop() && !t.isBottom())
-//					.map(s -> s.getNumber())
-//					.collect(Collectors.toSet());
-//
-//			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
-//					.filter(pc -> {
-//						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
-//						int pcValue = pcLocation.getPc();
-//						// Check if the value is in the flattened set
-//						return flattenedTopStack.contains(new Number(pcValue));
-//					})
-//					.collect(Collectors.toSet());
-//
-//			// For each JUMPDEST, add the missing edge from this node to
-//			// the JUMPDEST.
-//			if (node instanceof Jump)
-//				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
-//			else
-//				addEdgesToCFG(node, filteredDests, TrueEdge.class);
-//		}
+		//		for (AnalyzedCFG<
+		//				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
+		//						.getResultOf(this.cfgToAnalyze)) {
+		//			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+		//					TypeEnvironment<InferredTypes>>> analysisResult = null;
+		//
+		//			try {
+		//				analysisResult = result.getAnalysisStateBefore(node);
+		//			} catch (SemanticException e1) {
+		//				e1.printStackTrace();
+		//
+		//			}
+		//
+		//			// Retrieve the symbolic stack from the analysis result
+		//			EVMAbstractState valueState = analysisResult.getState().getValueState();
+		//
+		//			// If the abstract stack is top or bottom, or it is empty, we do not
+		//			// have enough information to solve the jump.
+		//			if (valueState.isBottom()) {
+		//				continue;
+		//			} else if (valueState.isTop()) {
+		//				log.warn("Not solved jump (state is top): {} [{}]", node,
+		//						((ProgramCounterLocation) node.getLocation()).getPc());
+		//				continue;
+		//			}
+		//
+		//			Set<Number> flattenedTopStack = valueState.getTop().stream()
+		//					.filter(t -> !t.isTop() && !t.isBottom())
+		//					.map(s -> s.getNumber())
+		//					.collect(Collectors.toSet());
+		//
+		//			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
+		//					.filter(pc -> {
+		//						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
+		//						int pcValue = pcLocation.getPc();
+		//						// Check if the value is in the flattened set
+		//						return flattenedTopStack.contains(new Number(pcValue));
+		//					})
+		//					.collect(Collectors.toSet());
+		//
+		//			// For each JUMPDEST, add the missing edge from this node to
+		//			// the JUMPDEST.
+		//			if (node instanceof Jump)
+		//				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
+		//			else
+		//				addEdgesToCFG(node, filteredDests, TrueEdge.class);
+		//		}
 
 		return true;
-	}
-
-	private <T extends Edge> void addEdgesToCFG(Statement node, Set<Statement> filteredDests, Class<T> edgeClass) {
-		for (Statement jmp : filteredDests) {
-			Edge edge = edgeClass.equals(SequentialEdge.class) ? new SequentialEdge(node, jmp)
-					: new TrueEdge(node, jmp);
-			if (!this.cfgToAnalyze.containsEdge(edge)) {
-				this.cfgToAnalyze.addEdge(edge);
-				this.fixpoint = false;
-			}
-		}
 	}
 }
