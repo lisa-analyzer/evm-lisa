@@ -262,4 +262,10 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("cfs", "sload_sstore", "sload_sstore.sol", false);
 		perform(conf);
 	}
+
+	@Test
+	public void testMcopy() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mcopy", "mcopy.sol", true);
+		perform(conf);
+	}
 }

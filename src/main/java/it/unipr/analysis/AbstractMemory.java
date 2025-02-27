@@ -12,11 +12,16 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
+	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
+
 	private static final int WORD_SIZE = 32;
 	private final byte[] memory;
 	private final boolean isTop;
@@ -57,6 +62,21 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		byte[] result = new byte[WORD_SIZE];
 		System.arraycopy(newMemory, offset, result, 0, WORD_SIZE);
 		return result;
+	}
+
+	public AbstractMemory mcopy(int destOffset, int srcOffset, int length) {
+		if (length <= 0)
+			return this;
+
+		byte[] newMemory = ensureCapacity(Math.max(destOffset + length, srcOffset + length));
+
+		int availableSrc = Math.min(srcOffset + length, memory.length) - srcOffset;
+		int copyLength = Math.min(availableSrc, length);
+
+		if (copyLength > 0)
+			System.arraycopy(memory, srcOffset, newMemory, destOffset, copyLength);
+
+		return new AbstractMemory(newMemory);
 	}
 
 	private byte[] ensureCapacity(int size) {
@@ -232,5 +252,23 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			hexString.append("0");
 
 		return hexString.toString();
+	}
+
+	public static void main(String[] args) {
+		AbstractMemory memory = new AbstractMemory();
+
+		byte[] initialData = new byte[32];
+		for (int i = 0; i < 32; i++) {
+			initialData[i] = (byte) i;
+		}
+		memory = memory.mstore(32, initialData);
+
+		log.debug("Memory before MCOPY:");
+		log.debug(memory);
+
+		memory = memory.mcopy(0, 32, 32);
+
+		log.debug("Memory after MCOPY:");
+		log.debug(memory);
 	}
 }
