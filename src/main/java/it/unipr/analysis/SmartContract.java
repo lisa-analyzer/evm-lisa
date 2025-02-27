@@ -371,6 +371,10 @@ public class SmartContract {
 
 		jsonObject.put("basic_blocks", _basicBlocks != null ? EVMCFG.basicBlocksToJson(_basicBlocks) : new JSONArray());
 
+		jsonObject.put("basic_blocks_pc", _basicBlocks != null ?
+				EVMCFG.basicBlocksToLongArrayToString(
+					EVMCFG.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());
+
 		JSONArray functionsArray = new JSONArray();
 		if (_functionsSignature != null && !_functionsSignature.isEmpty())
 			for (Signature signature : _functionsSignature)
@@ -389,5 +393,20 @@ public class SmartContract {
 	@Override
 	public String toString() {
 		return toJson().toString(4);
+	}
+
+	public boolean toFile(){
+		Path outputDir = _workingDirectory.resolve(_address);
+		try {
+			Files.createDirectories(outputDir);
+			Files.writeString(
+					outputDir.resolve("results.json"),
+					this.toJson().toString(4),
+					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			log.error("Failed to save results in {}", outputDir, e);
+			return false;
+		}
+		return true;
 	}
 }

@@ -27,11 +27,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.*;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -94,7 +90,8 @@ public class EVMLiSA {
 		SmartContract sc = new SmartContract("0x26366920975b24A89CD991A495d0D70CB8E1BA1F");
 		EVMLiSA.analyzeContract(sc);
 		log.debug(sc);
-		sc.generateGraphWithBasicBlocks();
+		sc.generateGraphWithBasicBlocks(); // generate .dot file
+		sc.toFile(); // save results to file
 
 		// Single case (bytecode as a path)
 		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
@@ -158,9 +155,19 @@ public class EVMLiSA {
 		executor.shutdown();
 		log.info("Finished analyzing {} contracts.", contracts.size());
 
-		log.info("Benchmark results:");
+		log.info("Multi analysis results:");
 		log.info(EVMLiSA.analyzeResults(contracts));
-		System.err.println(JSONManager.aggregateSmartContractsToJson(contracts));
+
+		Path outputDir = Path.of("execution", "results", "set-of-contracts");
+		try {
+			Files.createDirectories(outputDir);
+			Files.writeString(
+					outputDir.resolve(System.currentTimeMillis() + ".json"),
+					JSONManager.aggregateSmartContractsToJson(contracts).toString(4),
+					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			log.error("Failed to save results in {}", outputDir, e);
+		}
 	}
 
 	/**

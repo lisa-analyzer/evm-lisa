@@ -684,9 +684,9 @@ public class EVMCFG extends CFG {
 
 		try (FileWriter writer = new FileWriter(outputPath)) {
 			writer.write(dotGraph.toString());
-			log.info("DOT file successfully written to {}", outputPath);
+			log.info(".dot file successfully written in {}", outputPath);
 		} catch (IOException e) {
-			log.error("Error writing DOT file: {}", e.getMessage());
+			log.error("Error writing .dot file: {}", e.getMessage());
 		}
 	}
 
