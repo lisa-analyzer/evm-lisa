@@ -270,8 +270,8 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testMcopy() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mcopy", "mcopy.sol", false);
-    perform(conf);
-  }
+		perform(conf);
+	}
 
 	@Test
 	public void testBlobs() throws AnalysisSetupException, IOException {
