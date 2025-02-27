@@ -206,11 +206,11 @@ public class EVMLiSA {
 
 			long finish = System.currentTimeMillis();
 
-			json.put("basic-blocks-pc", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
+			json.put("basic_blocks_pc", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
 
 			if (cmd.hasOption("basic-blocks")) {
 				JSONArray j = checker.getComputedCFG().basicBlocksToJson();
-				String dotFilePath = _outputDirPath.resolve("CFG-with-basic-blocks.dot").toString();
+				String dotFilePath = _outputDirPath.resolve("CFG_with_basic_blocks.dot").toString();
 				json.put("basic_blocks", j);
 				generateDotGraph(j, dotFilePath);
 			}
