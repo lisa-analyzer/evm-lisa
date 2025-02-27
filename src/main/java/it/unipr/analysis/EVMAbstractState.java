@@ -1026,6 +1026,38 @@ public class EVMAbstractState
 					else
 						return new EVMAbstractState(result, memoryResult, storage);
 				}
+				case "McopyOperator": { // MCOPY
+					AbstractMemory memoryResult = memory.bottom();
+
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
+						AbstractStack stackResult = stack.clone();
+
+						StackElement destOffset = stackResult.pop();
+						StackElement offset = stackResult.pop();
+						StackElement size = stackResult.pop();
+
+						if (destOffset.isTop() || offset.isTop() || size.isTop()
+								|| destOffset.isTopNotJumpdest() || offset.isTopNotJumpdest()
+								|| size.isTopNotJumpdest()) {
+							memoryResult = AbstractMemory.TOP;
+						} else if (memory.isTop()) {
+							memoryResult = AbstractMemory.TOP;
+						} else
+							memoryResult = memory.mcopy(
+									destOffset.getNumber().intValue(),
+									offset.getNumber().intValue(),
+									size.getNumber().intValue());
+
+						result.add(stackResult);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memoryResult, storage);
+				}
 				case "SloadOperator": { // SLOAD
 
 					for (AbstractStack stack : stacks) {

@@ -236,6 +236,10 @@ MSTORE8
    : 'MSTORE8'
    ;
 
+MCOPY
+   : 'MCOPY'
+   ;
+
 SLOAD
    : 'SLOAD'
    ;

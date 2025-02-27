@@ -318,6 +318,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			return new Mstore(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "MSTORE8":
 			return new Mstore8(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
+		case "MCOPY":
+			return new Mcopy(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "SLOAD":
 			return new Sload(cfg, new ProgramCounterLocation(pc++, getLine(ctx)));
 		case "SSTORE":
