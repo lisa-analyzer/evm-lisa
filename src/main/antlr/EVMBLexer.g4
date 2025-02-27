@@ -180,6 +180,14 @@ BLOCKHASH
    : 'BLOCKHASH'
    ;
 
+BLOBHASH
+   : 'BLOBHASH'
+   ;
+
+BLOBBASEFEE
+   : 'BLOBBASEFEE'
+   ;
+
 COINBASE
    : 'COINBASE'
    ;
