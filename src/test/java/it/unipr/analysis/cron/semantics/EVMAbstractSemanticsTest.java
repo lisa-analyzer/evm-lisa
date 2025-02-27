@@ -262,4 +262,44 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("cfs", "sload_sstore", "sload_sstore.sol", false);
 		perform(conf);
 	}
+
+	/**
+	 * The final memory must be
+	 * 000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F
+	 */
+	@Test
+	public void testMcopy() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mcopy", "mcopy.sol", false);
+		perform(conf);
+	}
+
+	/**
+	 * The final memory must be TOP
+	 */
+	@Test
+	public void testMcopyTopNotJumpdest() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mcopy_topnotjumpdest", "mcopy.sol", false);
+		perform(conf);
+	}
+
+	/**
+	 * The final memory must be TOP
+	 */
+	@Test
+	public void testMcopyTop() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mcopy_top", "mcopy.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testBlobs() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "blob", "blob.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTransient() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "transient", "transient.sol", false);
+		perform(conf);
+	}
 }

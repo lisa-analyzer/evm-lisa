@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -207,6 +206,7 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 					return new EVMAbstractState(result, memory, storage);
 				}
 
+				case "BlobBaseFeeOperator": // BLOBBASEFEE
 				case "GasOperator": // GAS
 				case "MsizeOperator": // MSIZE
 				case "BasefeeOperator": // BASEFEE
@@ -761,6 +761,24 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 					else
 						return new EVMAbstractState(result, memory, storage);
 				}
+
+				case "BlobHashOperator": { // BLOBHASH
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
+						AbstractStack resultStack = stack.clone();
+						StackElement index = resultStack.pop();
+
+						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+						result.add(resultStack);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memory, storage);
+				}
+
 				case "Sha3Operator": { // SHA3
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
@@ -941,6 +959,39 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 					else
 						return new EVMAbstractState(result, memory, storage);
 				}
+				case "TloadOperator": { // TLOAD
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
+						AbstractStack resultStack = stack.clone();
+						StackElement key = resultStack.pop();
+
+						resultStack.push(StackElement.TOP);
+						result.add(resultStack);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memory, storage);
+				}
+
+				case "TstoreOperator": { // TSTORE
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(1))
+							continue;
+						AbstractStack resultStack = stack.clone();
+						StackElement key = resultStack.pop();
+						StackElement value = resultStack.pop();
+						result.add(resultStack);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memory, storage);
+				}
+
 				case "MloadOperator": { // MLOAD
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
@@ -1018,6 +1069,38 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						} else
 							memoryResult = memoryResult.lub(
 									memory.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue()));
+
+						result.add(stackResult);
+					}
+
+					if (result.isEmpty())
+						return BOTTOM;
+					else
+						return new EVMAbstractState(result, memoryResult, storage);
+				}
+				case "McopyOperator": { // MCOPY
+					AbstractMemory memoryResult = memory.bottom();
+
+					for (AbstractStack stack : stacks) {
+						if (stack.hasBottomUntil(3))
+							continue;
+						AbstractStack stackResult = stack.clone();
+
+						StackElement destOffset = stackResult.pop();
+						StackElement offset = stackResult.pop();
+						StackElement size = stackResult.pop();
+
+						if (destOffset.isTop() || offset.isTop() || size.isTop()
+								|| destOffset.isTopNotJumpdest() || offset.isTopNotJumpdest()
+								|| size.isTopNotJumpdest()) {
+							memoryResult = AbstractMemory.TOP;
+						} else if (memory.isTop()) {
+							memoryResult = AbstractMemory.TOP;
+						} else
+							memoryResult = memory.mcopy(
+									destOffset.getNumber().intValue(),
+									offset.getNumber().intValue(),
+									size.getNumber().intValue());
 
 						result.add(stackResult);
 					}

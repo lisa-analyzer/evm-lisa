@@ -1878,7 +1878,7 @@ ADD
 PUSH1 0x20
 DUP7
 ADD
-'5e'(Unknown Opcode)
+MCOPY
 PUSH0
 PUSH1 0x20
 DUP3
@@ -2290,7 +2290,7 @@ SHA3
 PUSH26 0xa69b4cc0077dd417eb9928e86722b0b46beb6150798738d34b57
 'd2'(Unknown Opcode)
 '24'(Unknown Opcode)
-'5c'(Unknown Opcode)
+TLOAD
 MLOAD
 PUSH5 0x736f6c6343
 STOP

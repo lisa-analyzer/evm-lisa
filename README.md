@@ -74,7 +74,7 @@ java -jar build/libs/evm-lisa-all.jar [options]
 Options:
  -a,--address <arg>                        Address of an Ethereum smart contract.
  -b,--benchmark <arg>                      Filepath of the benchmark.
-    --basic-blocks                         Print the basic blocks.
+    --basic-blocks                         Generate CFG with basic blocks.
  -c,--cores <arg>                          Number of cores used in benchmark.
     --checker-reentrancy                   Enable re-entrancy checker.
     --checker-timestampdependency          Enable timestamp-dependency checker.
@@ -107,7 +107,6 @@ java -jar build/libs/evm-lisa-all.jar \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---creation-code \
 --link-unsound-jumps-to-all-jumpdest
 ```
 
@@ -120,7 +119,6 @@ evm-lisa:latest \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---creation-code \
 --link-unsound-jumps-to-all-jumpdest
 ```
 

@@ -1630,7 +1630,7 @@ SLT
 SHA3
 EXTCODECOPY
 CODECOPY
-'5d'(Unknown Opcode)
+TSTORE
 DIV
 '28'(Unknown Opcode)
 CALLER

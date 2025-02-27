@@ -6,7 +6,6 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ public class EVMAscendingFixpoint<A extends AbstractState<A>> extends CFGFixpoin
 
 	private final int widenAfter;
 	private final Map<Statement, Integer> lubs;
-	private final Collection<Statement> wideningPoints;
 
 	/**
 	 * Builds the fixpoint implementation.
@@ -28,7 +26,6 @@ public class EVMAscendingFixpoint<A extends AbstractState<A>> extends CFGFixpoin
 		super(graph, interprocedural);
 		this.widenAfter = widenAfter;
 		this.lubs = new HashMap<>(graph.getNodesCount());
-		this.wideningPoints = graph.getCycleEntries();
 	}
 
 	@Override

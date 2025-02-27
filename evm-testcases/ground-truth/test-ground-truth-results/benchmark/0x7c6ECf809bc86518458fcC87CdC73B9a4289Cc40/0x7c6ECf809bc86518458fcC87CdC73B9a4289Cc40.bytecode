@@ -2941,7 +2941,7 @@ SLT
 SHA3
 DUP9
 MULMOD
-'5d'(Unknown Opcode)
+TSTORE
 'c7'(Unknown Opcode)
 '27'(Unknown Opcode)
 SWAP7

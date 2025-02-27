@@ -482,7 +482,9 @@ public class EVMCFG extends CFG {
 			List<Statement> statements = block.getStatements();
 			List<Integer> splitIndexes = new ArrayList<>();
 
-			for (int i = 1; i < statements.size(); i++) { // skip the first opcode of the basic block
+			for (int i = 1; i < statements.size(); i++) { // skip the first
+															// opcode of the
+															// basic block
 				if (statements.get(i) instanceof Jumpdest) {
 					splitIndexes.add(i);
 				}
