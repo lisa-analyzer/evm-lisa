@@ -60,6 +60,45 @@ public class EVMLiSA {
 		}
 	}
 
+	public static void setStackLimit(int limit) {
+		AbstractStack.setStackLimit(limit);
+	}
+
+	public static void setStackSetSize(int size) {
+		AbstractStackSet.setStackSetSize(size);
+	}
+
+	public static void setWorkingDirectory(Path workingDirectoryPath) {
+		EVMLiSA.OUTPUT_DIRECTORY_PATH = workingDirectoryPath;
+		SmartContract.setWorkingDirectory(workingDirectoryPath);
+	}
+
+	public static void setCores(int cores) {
+		EVMLiSA.CORES = Math.max(cores, 1);
+	}
+
+	public static void setLinkUnsoundJumpsToAllJumpdest() {
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+	}
+
+	public static void enableAllSecurityCheckers(){
+		EVMLiSA.enableReentrancyChecker();
+		EVMLiSA.enableTimestampDependencyCheckerChecker();
+		EVMLiSA.enableTxOriginChecker();
+	}
+
+	public static void enableReentrancyChecker(){
+		ENABLE_REENTRANCY_CHECKER = true;
+	}
+
+	public static void enableTimestampDependencyCheckerChecker(){
+		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = true;
+	}
+
+	public static void enableTxOriginChecker(){
+		ENABLE_TXORIGIN_CHECKER = true;
+	}
+
 	private void go(String[] args) throws Exception {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
@@ -75,7 +114,9 @@ public class EVMLiSA {
 
 		// Ensure that at least one valid option is provided to specify the
 		// bytecode source
-		if (!cmd.hasOption("address") && !cmd.hasOption("bytecode-path") && !cmd.hasOption("bytecode")) {
+		if (!cmd.hasOption("address")
+				&& !cmd.hasOption("bytecode-path")
+				&& !cmd.hasOption("bytecode")) {
 			log.error("Address, bytecode or filepath required.");
 			new HelpFormatter().printHelp("help", getOptions());
 			System.exit(1);
@@ -390,19 +431,6 @@ public class EVMLiSA {
 
 		log.info("Created {} contracts.", contracts.size());
 		return contracts;
-	}
-
-	public static void setWorkingDirectory(Path workingDirectoryPath) {
-		EVMLiSA.OUTPUT_DIRECTORY_PATH = workingDirectoryPath;
-		SmartContract.setWorkingDirectory(workingDirectoryPath);
-	}
-
-	public static void setCores(int cores) {
-		EVMLiSA.CORES = Math.max(cores, 1);
-	}
-
-	public static void setLinkUnsoundJumpsToAllJumpdest() {
-		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 	}
 
 	private Options getOptions() {

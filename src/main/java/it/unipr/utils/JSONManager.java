@@ -10,7 +10,10 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -28,6 +31,38 @@ public class JSONManager {
 			log.error("Error while reading JSON file {}", filePath, e);
 			return new JSONObject();
 		}
+	}
+
+	public static Set<StatisticsObject> readStatsFromJSON(Path filePath) {
+		Set<StatisticsObject> groundTruthData = new HashSet<>();
+
+		JSONObject groundTruthDataJson = JSONManager.loadJsonFromFile(filePath);
+		JSONArray contracts = (JSONArray) groundTruthDataJson.get("smart_contracts");
+
+		for (Object obj : contracts) {
+			JSONObject contract = (JSONObject) obj;
+			String address = (String) contract.get("address");
+			JSONObject statistics;
+
+			try {
+				statistics = (JSONObject) contract.get("statistics");
+			} catch (Exception e) {
+				log.error("There are no statistics for: {}", address);
+				continue;
+			}
+
+			groundTruthData.add(StatisticsObject.newStatisticsObject()
+					.address(address)
+					.totalOpcodes(statistics.getInt("total_opcodes"))
+					.totalJumps(statistics.getInt("total_jumps"))
+					.resolvedJumps(statistics.getInt("resolved_jumps"))
+					.definitelyUnreachableJumps(statistics.getInt("definitely_unreachable_jumps"))
+					.maybeUnreachableJumps(statistics.getInt("maybe_unreachable_jumps"))
+					.maybeUnsoundJumps(statistics.getInt("maybe_unsound_jumps"))
+					.unsoundJumps(statistics.getInt("unsound_jumps"))
+					.build());
+		}
+		return groundTruthData;
 	}
 
 	public static JSONObject aggregateSmartContractsToJson(List<SmartContract> contracts) {
