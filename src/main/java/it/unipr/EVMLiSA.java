@@ -116,7 +116,7 @@ public class EVMLiSA {
 		sc.toFile(); // save results to file
 		// print basic blocks as pairs (i.e., (from_block, to_block) pairs)
 		log.debug(BasicBlock.basicBlocksToLongArrayToString(
-					BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
+				BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
 
 		// Single case (bytecode as a path)
 		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
