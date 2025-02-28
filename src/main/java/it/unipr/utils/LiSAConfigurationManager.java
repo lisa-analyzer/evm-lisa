@@ -26,12 +26,13 @@ public class LiSAConfigurationManager {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new EVMAbstractState(address),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.workdir = contract.getBytecodePath().toString();
+		conf.workdir = contract.getWorkingDirectory().toString();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.callGraph = new RTACallGraph();
 		conf.serializeResults = false;
 		conf.optimize = false;
 		conf.useWideningPoints = false;
+		conf.analysisGraphs = LiSAConfiguration.GraphType.DOT;
 
 		return conf;
 	}

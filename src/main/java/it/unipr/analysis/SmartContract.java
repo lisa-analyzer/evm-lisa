@@ -174,6 +174,10 @@ public class SmartContract {
 		return this._bytecodeFilePath;
 	}
 
+	public Path getWorkingDirectory() {
+		return this._workingDirectory.resolve(this._address);
+	}
+
 	public Path getMnemonicBytecodePath() {
 		return this._mnemonicBytecodeFilePath;
 	}
