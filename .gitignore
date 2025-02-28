@@ -12,7 +12,7 @@ evm-outputs/
 test-ground-truth-stats/
 evm-testcases/ground-truth/test/*
 
-# Escludi tutti i file nella directory 50-ground-truth
+# Ignore 50-ground-truth file
 evm-testcases/ground-truth/50-ground-truth/**/*.html
 evm-testcases/ground-truth/50-ground-truth/**/*.opcode
 evm-testcases/ground-truth/50-ground-truth/**/*.json
