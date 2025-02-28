@@ -55,6 +55,10 @@ opcodes
    | RETURNDATACOPY
    | EXTCODEHASH
    | BLOCKHASH
+   | BLOBHASH
+   | BLOBBASEFEE
+   | TLOAD
+   | TSTORE
    | COINBASE
    | TIMESTAMP
    | NUMBER
@@ -67,6 +71,7 @@ opcodes
    | MLOAD
    | MSTORE
    | MSTORE8
+   | MCOPY
    | SLOAD
    | SSTORE
    | JUMP

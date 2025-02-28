@@ -102,7 +102,6 @@ java -jar build/libs/evm-lisa-all.jar \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---creation-code \
 --link-unsound-jumps-to-all-jumpdest
 ```
 
@@ -115,7 +114,6 @@ evm-lisa:latest \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---creation-code \
 --link-unsound-jumps-to-all-jumpdest
 ```
 

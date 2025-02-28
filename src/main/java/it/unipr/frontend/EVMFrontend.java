@@ -337,11 +337,22 @@ public class EVMFrontend {
 			writer.write("BASEFEE\n");
 			break;
 		case "49":
+			writer.write("BLOBHASH\n");
+			break;
+		case "4a":
+			writer.write("BLOBBASEFEE\n");
+			break;
 		case "4f":
 			writer.write("INVALID\n");
 			break;
 		case "50":
 			writer.write("POP\n");
+			break;
+		case "5c":
+			writer.write("TLOAD\n");
+			break;
+		case "5d":
+			writer.write("TSTORE\n");
 			break;
 		case "51":
 			writer.write("MLOAD\n");
@@ -375,6 +386,9 @@ public class EVMFrontend {
 			break;
 		case "5b":
 			writer.write("JUMPDEST\n");
+			break;
+		case "5e":
+			writer.write("MCOPY\n");
 			break;
 		case "5f":
 			writer.write("PUSH0\n");

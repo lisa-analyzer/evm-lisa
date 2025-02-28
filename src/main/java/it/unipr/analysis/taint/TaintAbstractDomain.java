@@ -90,6 +90,7 @@ public abstract class TaintAbstractDomain
 				case "PcOperator":
 				case "GasOperator":
 				case "MsizeOperator":
+				case "BlobBaseFee":
 				case "BasefeeOperator":
 				case "CalldatasizeOperator":
 				case "CallvalueOperator":
@@ -121,7 +122,9 @@ public abstract class TaintAbstractDomain
 
 					return resultStack;
 				}
-				case "JumpiOperator": { // JUMPI
+
+				case "TstoreOperator":
+				case "JumpiOperator": {
 					if (hasBottomUntil(2))
 						return bottom();
 
@@ -132,6 +135,18 @@ public abstract class TaintAbstractDomain
 					return resultStack;
 				}
 
+				case "TloadOperator": {
+					if (hasBottomUntil(2))
+						return bottom();
+
+					TaintAbstractDomain resultStack = clone();
+					TaintElement key = resultStack.pop();
+					resultStack.push(TaintElement.TOP);
+
+					return resultStack;
+				}
+
+				case "BlobhashOperator":
 				case "BalanceOperator":
 				case "BlockhashOperator":
 				case "NotOperator":
@@ -176,6 +191,17 @@ public abstract class TaintAbstractDomain
 						return mk(resultStack.stack, TaintElement.TAINT);
 					else if (value.isClean())
 						return resultStack;
+				}
+				case "McopyOperator": { // pops 3
+					if (hasBottomUntil(3))
+						return bottom();
+					TaintAbstractDomain resultStack = clone();
+
+					TaintElement destOffset = resultStack.pop();
+					TaintElement offset = resultStack.pop();
+					TaintElement size = resultStack.pop();
+
+					return resultStack;
 				}
 
 				case "ByteOperator":

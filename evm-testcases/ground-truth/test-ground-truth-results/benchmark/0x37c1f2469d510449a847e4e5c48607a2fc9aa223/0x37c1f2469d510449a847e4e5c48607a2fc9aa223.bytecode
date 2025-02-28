@@ -950,7 +950,7 @@ ADD
 PUSH1 0x40
 DUP6
 ADD
-'5e'(Unknown Opcode)
+MCOPY
 PUSH0
 PUSH1 0x40
 DUP3
@@ -1200,7 +1200,7 @@ POP
 SHL
 'c5'(Unknown Opcode)
 SELFBALANCE
-'5c'(Unknown Opcode)
+TLOAD
 LOG1
 'ef'(Unknown Opcode)
 PUSH30 0x6dff5bc46d727bffd5978e64736f6c63430008190033
