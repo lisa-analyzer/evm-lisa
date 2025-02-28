@@ -83,6 +83,7 @@ Options:
     --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
     --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
+    --output-directory-path <arg>          Filepath of the output directory.
     --stack-set-size <arg>                 Dimension of stack-set (default: 8).
     --stack-size <arg>                     Dimension of stack (default: 32).
     --use-live-storage                     Use the live storage in SLOAD.

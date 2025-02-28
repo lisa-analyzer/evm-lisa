@@ -31,9 +31,8 @@ public class EVMBytecodeGroundTruth {
 
 	@Ignore
 	public void testGroundTruth() throws Exception {
-		String GROUND_TRUTH_FILE_PATH = Paths
-				.get("evm-testcases", "ground-truth", "ground-truth-data.csv")
-				.toString();
+		Path GROUND_TRUTH_FILE_PATH = Paths
+				.get("evm-testcases", "ground-truth", "ground-truth-data.json");
 		String RESULT_EXEC_DIR_PATH = Paths
 				.get("evm-testcases", "ground-truth", "test-ground-truth-results")
 				.toString();
@@ -47,39 +46,9 @@ public class EVMBytecodeGroundTruth {
 		AbstractStack.setStackLimit(32);
 		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
-		long smartContractListTime = System.currentTimeMillis();
 
-		if (new File(RESULT_EXEC_FILE_PATH).delete())
-			log.warn("File deleted {}", RESULT_EXEC_FILE_PATH);
+		EVMLiSA.analyzeSetOfContracts(Paths.get("benchmark", "50-ground-truth.txt"));
 
-		List<String> smartContracts = EVMLiSA.readSmartContractsFromFile(SMARTCONTRACTS_FULLPATH);
-
-		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
-		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
-
-//		for (String address : smartContracts) {
-//			executor.submit(() -> {
-//				try {
-//					MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
-//
-//					if (myStats.jumpSize() != 0) {
-//						synchronized (RESULT_EXEC_FILE_PATH) {
-//							EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
-//						}
-//					}
-//				} catch (Exception e) {
-//					log.error("Error processing contract {}: {}", address, e.getMessage(), e);
-//				}
-//			});
-//		}
-
-		// Shutdown the executor and wait for completion
-		executor.shutdown();
-		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
-			log.error("Timeout reached while waiting for thread pool to terminate.");
-			executor.shutdownNow();
-		}
-		smartContractListTime = System.currentTimeMillis() - smartContractListTime;
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
 		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);

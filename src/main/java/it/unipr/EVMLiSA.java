@@ -43,6 +43,7 @@ public class EVMLiSA {
 	private static boolean ENABLE_REENTRANCY_CHECKER = false;
 	private static boolean ENABLE_TXORIGIN_CHECKER = false;
 	private static boolean ENABLE_TIMESTAMPDEPENDENCY_CHECKER = false;
+	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
 	 * Generates a control flow graph (represented as a LiSA {@code Program})
@@ -69,8 +70,6 @@ public class EVMLiSA {
 		// Benchmark case
 		if (cmd.hasOption("benchmark")) {
 			EVMLiSA.analyzeSetOfContracts(Path.of(cmd.getOptionValue("benchmark")));
-			// TODO check and print statistics
-			// TODO add checkers
 			return;
 		}
 
@@ -114,7 +113,7 @@ public class EVMLiSA {
 		EVMLiSA.analyzeContract(sc);
 		sc.generateGraphWithBasicBlocks(); // generate .dot file
 		sc.toFile(); // save results to file
-		// print basic blocks as pairs (i.e., (from_block, to_block) pairs)
+		// print basic blocks as (from_block, to_block) pairs
 		log.debug(BasicBlock.basicBlocksToLongArrayToString(
 				BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
 
@@ -134,9 +133,7 @@ public class EVMLiSA {
 		log.info("Analyzing set of contracts...");
 
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
-
 		ExecutorService executor = Executors.newFixedThreadPool(CORES);
-
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : contracts)
@@ -149,16 +146,14 @@ public class EVMLiSA {
 		executor.shutdown();
 		log.info("Finished analyzing {} contracts.", contracts.size());
 
-		log.info("Multi analysis results:");
-		log.info(EVMLiSA.analyzeResults(contracts));
-
-		Path outputDir = Path.of("execution", "results", "set-of-contracts");
+		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("set-of-contracts");
 		try {
 			Files.createDirectories(outputDir);
 			Files.writeString(
-					outputDir.resolve(System.currentTimeMillis() + ".json"),
+					outputDir.resolve("results.json"),
 					JSONManager.aggregateSmartContractsToJson(contracts).toString(4),
 					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			log.info("Results saved in {}", outputDir.resolve("results.json"));
 		} catch (IOException e) {
 			log.error("Failed to save results in {}", outputDir, e);
 		}
@@ -426,36 +421,6 @@ public class EVMLiSA {
 		return smartContractsRead;
 	}
 
-	private static StatisticsObject analyzeResults(List<SmartContract> contracts) {
-		int totalOpcodes = 0;
-		int totalJumps = 0;
-		int resolvedJumps = 0;
-		int maybeUnreachableJumps = 0;
-		int definitelyUnreachableJumps = 0;
-		int maybeUnsoundJumps = 0;
-		int unsoundJumps = 0;
-
-		for (SmartContract contract : contracts) {
-			StatisticsObject s = contract.getStatistics();
-			totalOpcodes += s.getTotalOpcodes();
-			totalJumps += s.getTotalJumps();
-			resolvedJumps += s.getResolvedJumps();
-			maybeUnreachableJumps += s.getMaybeUnreachableJumps();
-			definitelyUnreachableJumps += s.getDefinitelyUnreachableJumps();
-			maybeUnsoundJumps += s.getMaybeUnsoundJumps();
-			unsoundJumps += s.getUnsoundJumps();
-		}
-
-		return StatisticsObject.newStatisticsObject()
-				.totalOpcodes(totalOpcodes)
-				.totalJumps(totalJumps)
-				.resolvedJumps(resolvedJumps)
-				.maybeUnreachableJumps(maybeUnreachableJumps)
-				.definitelyUnreachableJumps(definitelyUnreachableJumps)
-				.maybeUnsoundJumps(maybeUnsoundJumps)
-				.unsoundJumps(unsoundJumps);
-	}
-
 	private Options getOptions() {
 		Options options = new Options();
 
@@ -477,6 +442,13 @@ public class EVMLiSA {
 		Option abiPathOption = Option.builder()
 				.longOpt("abi-path")
 				.desc("Filepath of the abi file.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option outputDirectoryPathOption = Option.builder()
+				.longOpt("output-directory-path")
+				.desc("Filepath of the output directory.")
 				.required(false)
 				.hasArg(true)
 				.build();
@@ -566,13 +538,13 @@ public class EVMLiSA {
 		options.addOption(stackSetSizeOption);
 		options.addOption(benchmarkOption);
 		options.addOption(coresOption);
-
 		options.addOption(useStorageLiveOption);
 		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
 		options.addOption(enableAllCheckerOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(outputDirectoryPathOption);
 
 		return options;
 	}
@@ -604,6 +576,12 @@ public class EVMLiSA {
 		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all");
 		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = cmd.hasOption("checker-timestampdependency")
 				|| cmd.hasOption("checker-all");
+
+		if(cmd.hasOption("output-directory-path"))
+			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
+		else
+			OUTPUT_DIRECTORY_PATH = Path.of("execution", "results");
+		SmartContract.setWorkingDirectory(OUTPUT_DIRECTORY_PATH);
 
 		try {
 			if (cmd.hasOption("stack-size"))

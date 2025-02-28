@@ -10,6 +10,8 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +33,7 @@ public class SmartContract {
 	private String _mnemonicBytecode;
 	private JSONArray _abi;
 
-	private final Path _workingDirectory = Path.of("execution", "results");
+	private static Path _workingDirectory = Path.of("execution", "results");
 	private Path _abiFilePath;
 	private Path _bytecodeFilePath;
 	private Path _mnemonicBytecodeFilePath;
@@ -55,23 +57,34 @@ public class SmartContract {
 			throw new IllegalArgumentException("Invalid address: " + address);
 
 		this._address = address;
-
-		try {
-			this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
-		} catch (IOException e) {
-			log.warn("Failed to parse Ethereum bytecode: {}", address, e);
-		}
-
-		try {
-			this._abi = EVMFrontend.parseABIFromEtherscan(address);
-		} catch (IOException e) {
-			log.warn("Failed to parse Ethereum ABI: {}", address, e);
-		}
-
 		Path outputDir = _workingDirectory.resolve(address);
 		this._abiFilePath = outputDir.resolve(address + ".abi.json");
 		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
 		this._mnemonicBytecodeFilePath = outputDir.resolve(address + ".opcode");
+
+		// If the file does not exist, we will do an API request to Etherscan
+		File file = new File(String.valueOf(_bytecodeFilePath));
+		if (!file.exists()) {
+			try {
+				this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
+			} catch (IOException e) {
+				log.warn("Failed to parse Ethereum bytecode: {}", address, e);
+			}
+
+			try {
+				this._abi = EVMFrontend.parseABIFromEtherscan(address);
+			} catch (IOException e) {
+				log.warn("Failed to parse Ethereum ABI: {}", address, e);
+			}
+		} else {
+			log.info("Contract {} already present in memory.", address);
+			try {
+				this._bytecode = new String(Files.readAllBytes(Paths.get(_bytecodeFilePath.toString())));
+				this._abi = new JSONArray(new String(Files.readAllBytes(Paths.get(_abiFilePath.toString()))));
+			} catch (IOException e) {
+				log.warn("Failed to read bytecode from {}", _bytecodeFilePath, e);
+			}
+		}
 
 		try {
 			Files.createDirectories(outputDir);
@@ -180,7 +193,7 @@ public class SmartContract {
 	}
 
 	public Path getWorkingDirectory() {
-		return this._workingDirectory.resolve(this._address);
+		return _workingDirectory.resolve(this._address);
 	}
 
 	public Path getMnemonicBytecodePath() {
@@ -296,6 +309,10 @@ public class SmartContract {
 	public SmartContract setEventsSignature(Set<Signature> eventsSignature) {
 		this._eventsSignature = eventsSignature;
 		return this;
+	}
+
+	public static void setWorkingDirectory(Path workingDirectory) {
+		_workingDirectory = workingDirectory;
 	}
 
 	/**
