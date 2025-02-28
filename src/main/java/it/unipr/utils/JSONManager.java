@@ -7,11 +7,29 @@ import it.unipr.cfg.Jumpdest;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class JSONManager {
+	private static final Logger log = LogManager.getLogger(JSONManager.class);
+
+	public static JSONObject loadJsonFromFile(Path filePath) {
+		try {
+			String content = new String(Files.readAllBytes(filePath));
+
+			return new JSONObject(content);
+		} catch (IOException e) {
+			log.error("Error while reading JSON file {}", filePath, e);
+			return new JSONObject();
+		}
+	}
+
 	public static JSONObject aggregateSmartContractsToJson(List<SmartContract> contracts) {
 		JSONObject aggregatedJson = new JSONObject();
 		JSONArray contractsArray = new JSONArray();

@@ -39,7 +39,7 @@ public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
 
 	// Configuration
-	private static int CORES;
+	private static int CORES = 1;
 	private static boolean ENABLE_REENTRANCY_CHECKER = false;
 	private static boolean ENABLE_TXORIGIN_CHECKER = false;
 	private static boolean ENABLE_TIMESTAMPDEPENDENCY_CHECKER = false;
@@ -392,33 +392,17 @@ public class EVMLiSA {
 		return contracts;
 	}
 
-	/**
-	 * Reads smart contracts from a file and returns a list of strings.
-	 *
-	 * @return A list of strings containing the smart contracts read from the
-	 *             file.
-	 * 
-	 * @throws Exception If an error occurs while reading the file.
-	 */
-	public static ArrayList<String> readSmartContractsFromFile(String SMARTCONTRACTS_FULLPATH) throws Exception {
-		ArrayList<String> smartContractsRead = new ArrayList<String>();
+	public static void setWorkingDirectory(Path workingDirectoryPath) {
+		EVMLiSA.OUTPUT_DIRECTORY_PATH = workingDirectoryPath;
+		SmartContract.setWorkingDirectory(workingDirectoryPath);
+	}
 
-		try {
-			File myObj = new File(SMARTCONTRACTS_FULLPATH);
-			Scanner myReader = new Scanner(myObj);
+	public static void setCores(int cores) {
+		EVMLiSA.CORES = Math.max(cores, 1);
+	}
 
-			while (myReader.hasNextLine()) {
-				String data = myReader.nextLine();
-				smartContractsRead.add(data);
-			}
-			myReader.close();
-
-		} catch (FileNotFoundException e) {
-			log.error("{} not found.", SMARTCONTRACTS_FULLPATH);
-			throw e;
-		}
-
-		return smartContractsRead;
+	public static void setLinkUnsoundJumpsToAllJumpdest() {
+		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 	}
 
 	private Options getOptions() {
@@ -577,7 +561,7 @@ public class EVMLiSA {
 		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = cmd.hasOption("checker-timestampdependency")
 				|| cmd.hasOption("checker-all");
 
-		if(cmd.hasOption("output-directory-path"))
+		if (cmd.hasOption("output-directory-path"))
 			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
 		else
 			OUTPUT_DIRECTORY_PATH = Path.of("execution", "results");

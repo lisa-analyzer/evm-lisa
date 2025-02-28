@@ -10,9 +10,15 @@
 # Ignore output directories that contain generated results
 evm-outputs/
 test-ground-truth-stats/
-evm-testcases/ground-truth/test-ground-truth-results/logs.txt
-evm-testcases/ground-truth/test-ground-truth-results/statistics.csv
 evm-testcases/ground-truth/test/*
+
+# Escludi tutti i file nella directory 50-ground-truth
+evm-testcases/ground-truth/50-ground-truth/**/*.html
+evm-testcases/ground-truth/50-ground-truth/**/*.opcode
+evm-testcases/ground-truth/50-ground-truth/**/*.json
+evm-testcases/ground-truth/50-ground-truth/**/*.dot
+evm-testcases/ground-truth/50-ground-truth/**/*.js
+
 
 # Ignore benchmark file
 scripts/python/benchmark-checkers/**/bytecode/**

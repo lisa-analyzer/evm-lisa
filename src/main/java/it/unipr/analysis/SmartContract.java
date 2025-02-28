@@ -10,7 +10,6 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -77,7 +76,7 @@ public class SmartContract {
 				log.warn("Failed to parse Ethereum ABI: {}", address, e);
 			}
 		} else {
-			log.info("Contract {} already present in memory.", address);
+			log.warn("Contract {} already present in memory, not downloaded.", address);
 			try {
 				this._bytecode = new String(Files.readAllBytes(Paths.get(_bytecodeFilePath.toString())));
 				this._abi = new JSONArray(new String(Files.readAllBytes(Paths.get(_abiFilePath.toString()))));

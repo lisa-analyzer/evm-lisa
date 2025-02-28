@@ -3,24 +3,17 @@ package it.unipr.analysis.cron;
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
+import it.unipr.utils.JSONManager;
+import it.unipr.utils.StatisticsObject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
 
 /*
  * ground-truth-stats/ground-truth-data.csv FILE MUST BE UPDATED WHEN A NEW
@@ -29,350 +22,104 @@ import org.junit.Ignore;
 public class EVMBytecodeGroundTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruth.class);
 
-	@Ignore
+	@Test
 	public void testGroundTruth() throws Exception {
-		Path GROUND_TRUTH_FILE_PATH = Paths
-				.get("evm-testcases", "ground-truth", "ground-truth-data.json");
-		String RESULT_EXEC_DIR_PATH = Paths
-				.get("evm-testcases", "ground-truth", "test-ground-truth-results")
-				.toString();
-		String RESULT_EXEC_FILE_PATH = Paths
-				.get("evm-testcases", "ground-truth", "test-ground-truth-results", "statistics.csv")
-				.toString();
-		String SMARTCONTRACTS_FULLPATH = Paths
-				.get("benchmark", "50-ground-truth.txt")
-				.toString();
+		Path WORKING_DIRECTORY_PATH = Paths.get("evm-testcases", "ground-truth", "50-ground-truth");
+		Path GROUND_TRUTH_FILE_PATH = WORKING_DIRECTORY_PATH.resolve("ground-truth-data.json");
+		Path SMARTCONTRACTS_FULLPATH = Paths.get("benchmark", "50-ground-truth.txt");
 
 		AbstractStack.setStackLimit(32);
 		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
 
-		EVMLiSA.analyzeSetOfContracts(Paths.get("benchmark", "50-ground-truth.txt"));
+		EVMLiSA.setWorkingDirectory(WORKING_DIRECTORY_PATH);
+		EVMLiSA.setCores(4);
+		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
+		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH);
 
+		Set<StatisticsObject> groundTruthData = readStatsFromJSON(GROUND_TRUTH_FILE_PATH);
+		Set<StatisticsObject> newData = readStatsFromJSON(
+				WORKING_DIRECTORY_PATH.resolve("set-of-contracts").resolve("results.json"));
 
-		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
-		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
-		long smartContractGroundTruthListTime = 0;
+		log.info("Ground truth size: {}", groundTruthData.size());
+		log.info("New data size: {}", newData.size());
 
-		assert smartContractList.size() == smartContractGroundTruthList.size();
+		assert groundTruthData.size() == newData.size();
 
-		for (SmartContractData truthSC : smartContractGroundTruthList) {
-			for (SmartContractData newSC : smartContractList) {
+		for (StatisticsObject groundTruthStats : groundTruthData) {
+			for (StatisticsObject newStats : newData) {
+				if (groundTruthStats.getAddress().equals(newStats.getAddress())
+						&& !groundTruthStats.equals(newStats)) {
 
-				if (truthSC.getAddress().equals(newSC.getAddress())) {
+					if (!changed)
+						System.err.println("\n*******************************************\n");
 
-					smartContractGroundTruthListTime += truthSC.getTimeMillis();
+					changed = true;
+					System.err.printf("%s\n", groundTruthStats.getAddress());
 
-					if (!truthSC.equals(newSC)) {
-						if (!changed)
-							System.err.println("\n*******************************************\n");
-
-						changed = true;
-						System.err.printf("%s\n", truthSC.getAddress());
-
-						if (truthSC.getSolvedJumps() != newSC.getSolvedJumps()) {
-							System.err.println("\tSolved Jumps");
-							System.err.printf("\t\tTruth: %s, New: %s\n", truthSC.getSolvedJumps(),
-									newSC.getSolvedJumps());
-						}
-						if (truthSC.getDefinitelyUnreachableJumps() != newSC.getDefinitelyUnreachableJumps()) {
-							System.err.println("\tDefinitely Unreachable Jumps");
-							System.err.printf("\t\tTruth: %s, New: %s\n", truthSC.getDefinitelyUnreachableJumps(),
-									newSC.getDefinitelyUnreachableJumps());
-						}
-						if (truthSC.getMaybeUnreachableJumps() != newSC.getMaybeUnreachableJumps()) {
-							System.err.println("\tMaybe Unreachable Jumps");
-							System.err.printf("\t\tTruth: %s, New: %s\n", truthSC.getMaybeUnreachableJumps(),
-									newSC.getMaybeUnreachableJumps());
-						}
-						if (truthSC.getUnsoundJumps() != newSC.getUnsoundJumps()) {
-							System.err.println("\tUnsolved Jumps");
-							System.err.printf("\t\tTruth: %s, New: %s\n", truthSC.getUnsoundJumps(),
-									newSC.getUnsoundJumps());
-						}
-						if (truthSC.getMaybeUnsoundJumps() != newSC.getMaybeUnsoundJumps()) {
-							System.err.println("\tMaybe Unsound Jumps");
-							System.err.printf("\t\tTruth: %s, New: %s\n", truthSC.getMaybeUnsoundJumps(),
-									newSC.getMaybeUnsoundJumps());
-						}
+					if (groundTruthStats.getResolvedJumps() != newStats.getResolvedJumps()) {
+						System.err.println("\tSolved Jumps");
+						System.err.printf("\t\tTruth: %s, New: %s\n", groundTruthStats.getResolvedJumps(),
+								newStats.getResolvedJumps());
 					}
-
-					smartContractList.remove(newSC);
+					if (groundTruthStats.getDefinitelyUnreachableJumps() != newStats.getDefinitelyUnreachableJumps()) {
+						System.err.println("\tDefinitely Unreachable Jumps");
+						System.err.printf("\t\tTruth: %s, New: %s\n", groundTruthStats.getDefinitelyUnreachableJumps(),
+								newStats.getDefinitelyUnreachableJumps());
+					}
+					if (groundTruthStats.getMaybeUnreachableJumps() != newStats.getMaybeUnreachableJumps()) {
+						System.err.println("\tMaybe Unreachable Jumps");
+						System.err.printf("\t\tTruth: %s, New: %s\n", groundTruthStats.getMaybeUnreachableJumps(),
+								newStats.getMaybeUnreachableJumps());
+					}
+					if (groundTruthStats.getUnsoundJumps() != newStats.getUnsoundJumps()) {
+						System.err.println("\tUnsolved Jumps");
+						System.err.printf("\t\tTruth: %s, New: %s\n", groundTruthStats.getUnsoundJumps(),
+								newStats.getUnsoundJumps());
+					}
+					if (groundTruthStats.getMaybeUnsoundJumps() != newStats.getMaybeUnsoundJumps()) {
+						System.err.println("\tMaybe Unsound Jumps");
+						System.err.printf("\t\tTruth: %s, New: %s\n", groundTruthStats.getMaybeUnsoundJumps(),
+								newStats.getMaybeUnsoundJumps());
+					}
+					newData.remove(newStats);
 					break;
 				}
 			}
 		}
+
 		assert !changed;
 	}
 
-//	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
-//		Path bytecodeDir = Paths.get(RESULT_EXEC_DIR_PATH, "benchmark", CONTRACT_ADDR);
-//		String BYTECODE_DIR = bytecodeDir.toString();
-//
-//		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".bytecode");
-//		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
-//
-//		// Directory setup and bytecode retrieval
-//		Files.createDirectories(bytecodeDir);
-//
-//		// If the file does not exist, we will do an API request to Etherscan
-//		File file = new File(BYTECODE_FULLPATH);
-//		if (!file.exists()) {
-//			String bytecode = EVMFrontend.parseBytecodeFromEtherscan(CONTRACT_ADDR);
-//			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
-//		}
-//
-//		// Configuration and test run
-//		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
-//
-//		long start = System.currentTimeMillis();
-//
-//		LiSAConfiguration conf = new LiSAConfiguration();
-//		conf.serializeInputs = false;
-//		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
-//				new TypeEnvironment<>(new InferredTypes()));
-//		conf.jsonOutput = false;
-//		conf.workdir = BYTECODE_DIR;
-//		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-//		JumpSolver checker = new JumpSolver();
-//		conf.semanticChecks.add(checker);
-//		conf.callGraph = new RTACallGraph();
-//		conf.serializeResults = false;
-//		conf.optimize = false;
-//
-//		LiSA lisa = new LiSA(conf);
-//		lisa.run(program);
-//
-//		// Print the results
-//		long finish = System.currentTimeMillis();
-//
-//		return EVMLiSA.dumpStatistics(checker, null)
-//				.address(CONTRACT_ADDR)
-//				.time(finish - start)
-//				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
-//				.build();
-//	}
+	private Set<StatisticsObject> readStatsFromJSON(Path GROUND_TRUTH_FILE_PATH) {
+		Set<StatisticsObject> groundTruthData = new HashSet<>();
 
-	/**
-	 * Reads data from a CSV file and populates a list of
-	 * {@link SmartContractData} objects.
-	 *
-	 * @param csvPath the path to the CSV file containing the smart contract
-	 *                    statistics
-	 * 
-	 * @return a {@code List<SmartContractData>} containing the data read from
-	 *             the CSV file
-	 * 
-	 * @throws NullPointerException if {@code csvPath} is {@code null} The CSV
-	 *                                  file is expected to have the following
-	 *                                  columns: Smart Contract, Total Opcodes,
-	 *                                  Total Jumps, Solved Jumps, Definitely
-	 *                                  unreachable jumps, Maybe unreachable
-	 *                                  jumps, Total solved Jumps, Unsound
-	 *                                  jumps, Maybe unsound jumps, % Total
-	 *                                  Solved, Time (millis), Time lost to get
-	 *                                  Storage, Actual time, Notes. Each line
-	 *                                  after the header represents one smart
-	 *                                  contract data entry, and the method
-	 *                                  converts each line into a
-	 *                                  {@link SmartContractData} object and
-	 *                                  adds it to the list. If an
-	 *                                  {@link IOException} occurs during
-	 *                                  reading, the exception's stack trace
-	 *                                  will be printed.
-	 */
-	private List<SmartContractData> readStatsFromCSV(String csvPath) {
-		if (csvPath == null)
-			throw new NullPointerException("csvPath is null");
+		JSONObject groundTruthDataJson = JSONManager.loadJsonFromFile(GROUND_TRUTH_FILE_PATH);
+		JSONArray contracts = (JSONArray) groundTruthDataJson.get("smart_contracts");
 
-		List<SmartContractData> smartContractList = new ArrayList<>();
-		String line;
-		String csvSeparator = ",";
+		for (Object obj : contracts) {
+			JSONObject contract = (JSONObject) obj;
+			String address = (String) contract.get("address");
+			JSONObject statistics;
 
-		try (BufferedReader br = new BufferedReader(new FileReader(csvPath))) {
-			line = br.readLine(); // Skip the header
-
-			while ((line = br.readLine()) != null) {
-				String[] values = line.split(csvSeparator);
-				smartContractList.add(new SmartContractData(values));
-			}
-		} catch (IOException e) {
-			System.err.println("private List<SmartContractData> readStatsFromCSV(String csvPath): " + e.getMessage());
-		}
-
-		return smartContractList;
-	}
-
-	/**
-	 * Represents data related to a smart contract, including various statistics
-	 * about opcodes, jumps, and execution times. This class provides methods to
-	 * access individual data points and constructs objects from an array of
-	 * values typically read from a CSV file.
-	 */
-	private class SmartContractData {
-		private final String _address;
-		private final int _totalOpcodes;
-		private final int _totalJumps;
-		private final int _solvedJumps;
-		private final int _definitelyUnreachableJumps;
-		private final int _maybeUnreachableJumps;
-		private final int _totalSolvedJumps;
-		private final int _unsoundJumps;
-		private final int _maybeUnsoundJumps;
-		private final double _percentageTotalSolved;
-		private final long _timeMillis;
-		private final long _timeLostToGetStorage;
-		private final long _actualTime;
-		private final String _notes;
-
-		public SmartContractData(String[] values) {
-			if (values == null)
-				throw new NullPointerException("String[] values == null");
-			this._address = values[0].trim();
-			this._totalOpcodes = Integer.parseInt(values[1].trim());
-			this._totalJumps = Integer.parseInt(values[2].trim());
-			this._solvedJumps = Integer.parseInt(values[3].trim());
-			this._definitelyUnreachableJumps = Integer.parseInt(values[4].trim());
-			this._maybeUnreachableJumps = Integer.parseInt(values[5].trim());
-			this._totalSolvedJumps = Integer.parseInt(values[6].trim());
-			this._unsoundJumps = Integer.parseInt(values[7].trim());
-			this._maybeUnsoundJumps = Integer.parseInt(values[8].trim());
-			this._percentageTotalSolved = Double.parseDouble(values[9].trim());
-			this._timeMillis = Long.parseLong(values[10].trim());
-			this._timeLostToGetStorage = Long.parseLong(values[11].trim());
-			this._actualTime = Long.parseLong(values[12].trim());
-			this._notes = values[13].trim();
-		}
-
-		public String getAddress() {
-			return _address;
-		}
-
-		public int getTotalOpcodes() {
-			return _totalOpcodes;
-		}
-
-		public int getTotalJumps() {
-			return _totalJumps;
-		}
-
-		public int getSolvedJumps() {
-			return _solvedJumps;
-		}
-
-		public int getDefinitelyUnreachableJumps() {
-			return _definitelyUnreachableJumps;
-		}
-
-		public int getMaybeUnreachableJumps() {
-			return _maybeUnreachableJumps;
-		}
-
-		public int getTotalSolvedJumps() {
-			return _totalSolvedJumps;
-		}
-
-		public int getUnsoundJumps() {
-			return _unsoundJumps;
-		}
-
-		public int getMaybeUnsoundJumps() {
-			return _maybeUnsoundJumps;
-		}
-
-		public double getPercentageTotalSolved() {
-			return _percentageTotalSolved;
-		}
-
-		public long getTimeMillis() {
-			return _timeMillis;
-		}
-
-		public long getTimeLostToGetStorage() {
-			return _timeLostToGetStorage;
-		}
-
-		public long getActualTime() {
-			return _actualTime;
-		}
-
-		public String getNotes() {
-			return _notes;
-		}
-
-		public void print() {
-			System.out.println("Address: " + _address);
-			System.out.println("Total Opcodes: " + _totalOpcodes);
-			System.out.println("Total Jumps: " + _totalJumps);
-			System.out.println("Solved Jumps: " + _solvedJumps);
-			System.out.println("Definitely Unreachable Jumps: " + _definitelyUnreachableJumps);
-			System.out.println("Maybe Unreachable Jumps: " + _maybeUnreachableJumps);
-			System.out.println("Total Solved Jumps: " + _totalSolvedJumps);
-			System.out.println("Unsound Jumps: " + _unsoundJumps);
-			System.out.println("Maybe Unsound Jumps: " + _maybeUnsoundJumps);
-			System.out.println("Percentage of Total Solved: " + _percentageTotalSolved);
-			System.out.println("Time (Millis): " + _timeMillis);
-			System.out.println("Time Lost to Get Storage: " + _timeLostToGetStorage);
-			System.out.println("Actual Time: " + _actualTime);
-			System.out.println("Notes: " + _notes);
-			System.out.println("-------------------------------");
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null)
-				return false;
-			if (!(obj instanceof SmartContractData))
-				return false;
-
-			SmartContractData other = (SmartContractData) obj;
-
-			return this._address.equals(other.getAddress()) &&
-					this._solvedJumps == other.getSolvedJumps() &&
-					this._definitelyUnreachableJumps == other.getDefinitelyUnreachableJumps() &&
-					this._maybeUnreachableJumps == other.getMaybeUnreachableJumps() &&
-					this._unsoundJumps == other.getUnsoundJumps() &&
-					this._maybeUnsoundJumps == other.getMaybeUnsoundJumps();
-		}
-	}
-
-	/**
-	 * Deletes all files and subdirectories within the specified directory, and
-	 * then deletes the directory itself.
-	 *
-	 * @param pathDir the path of the directory to be cleared If the directory
-	 *                    exists, this method uses
-	 *                    {@link java.nio.file.Files#walkFileTree} to
-	 *                    recursively visit all files and subdirectories,
-	 *                    deleting each one. If the directory or any of its
-	 *                    contents cannot be deleted, an error message is
-	 *                    printed to {@code System.err}.
-	 */
-	private void clearDirectory(String pathDir) {
-		if (pathDir == null)
-			return;
-		Path path = Paths.get(pathDir);
-
-		if (Files.exists(path)) {
 			try {
-				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-					@Override
-					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-						Files.delete(file);
-						return FileVisitResult.CONTINUE;
-					}
-
-					@Override
-					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-						Files.delete(dir);
-						return FileVisitResult.CONTINUE;
-					}
-				});
-
-				System.out.println("Directory " + pathDir + " deleted.");
-			} catch (IOException e) {
-				System.err.println("Error deleting " + pathDir + ": " + e);
+				statistics = (JSONObject) contract.get("statistics");
+			} catch (Exception e) {
+				log.error("There are no statistics for: {}", address);
+				continue;
 			}
+
+			groundTruthData.add(StatisticsObject.newStatisticsObject()
+					.address(address)
+					.totalOpcodes(statistics.getInt("total_opcodes"))
+					.totalJumps(statistics.getInt("total_jumps"))
+					.resolvedJumps(statistics.getInt("resolved_jumps"))
+					.definitelyUnreachableJumps(statistics.getInt("definitely_unreachable_jumps"))
+					.maybeUnreachableJumps(statistics.getInt("maybe_unreachable_jumps"))
+					.maybeUnsoundJumps(statistics.getInt("maybe_unsound_jumps"))
+					.unsoundJumps(statistics.getInt("unsound_jumps"))
+					.build());
 		}
+		return groundTruthData;
 	}
 }
