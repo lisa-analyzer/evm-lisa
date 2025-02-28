@@ -316,7 +316,7 @@ public class SmartContract {
 
 	/**
 	 * Identifies and associates entry points for each function signature in the
-	 * contract. TODO fix this is not fully correct
+	 * contract.
 	 */
 	public void computeFunctionsSignatureEntryPoints() {
 		if (_functionsSignature == null) {
@@ -328,7 +328,8 @@ public class SmartContract {
 			if (node instanceof Push)
 				for (Signature signature : _functionsSignature)
 					if (node.toString().contains(signature.getSelector()))
-						signature.addEntryPoint(node);
+						signature.addEntryPoint(_cfg.getCloserJumpdest(node));
+
 	}
 
 	/**

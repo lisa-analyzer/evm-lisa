@@ -20,6 +20,7 @@ import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint.CompoundState;
 import it.unive.lisa.program.cfg.fixpoints.OptimizedFixpoint;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -538,5 +539,33 @@ public class EVMCFG extends CFG {
 		}
 
 		return functionExitPoints;
+	}
+
+	public Statement getCloserJumpdest(Statement start) {
+		Deque<Statement> queue = new ArrayDeque<>();
+		Set<Statement> visited = new HashSet<>();
+
+		queue.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next)) {
+						queue.push(next);
+						if (next instanceof Jumpdest && edge instanceof TrueEdge)
+							return next;
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 }
