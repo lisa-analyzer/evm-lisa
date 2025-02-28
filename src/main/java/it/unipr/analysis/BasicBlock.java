@@ -7,10 +7,10 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.*;
 
 public class BasicBlock {
-	private final int id; // Program Counter (PC)
-	private final List<Statement> statements;
-	private final Set<Integer> outgoingEdges;
-	private BlockType blockType;
+	private final int _id; // Program Counter (PC)
+	private final List<Statement> _statements;
+	private final Set<Integer> _outgoingEdges;
+	private BlockType _blockType;
 
 	public enum BlockType {
 		JUMP,
@@ -23,48 +23,49 @@ public class BasicBlock {
 		JUMPDEST,
 		INVALID,
 		UNKNOWN,
-		SPLITTED
+		SPLITTED,
+		FUNCTION
 	}
 
 	public BasicBlock(int id) {
-		this.id = id;
-		this.statements = new ArrayList<>();
-		this.outgoingEdges = new HashSet<>();
+		this._id = id;
+		this._statements = new ArrayList<>();
+		this._outgoingEdges = new HashSet<>();
 	}
 
 	public BasicBlock(int id, BlockType blockType) {
-		this.id = id;
-		this.statements = new ArrayList<>();
-		this.outgoingEdges = new HashSet<>();
-		this.blockType = blockType;
+		this._id = id;
+		this._statements = new ArrayList<>();
+		this._outgoingEdges = new HashSet<>();
+		this._blockType = blockType;
 	}
 
 	public int getId() {
-		return id;
+		return _id;
 	}
 
 	public List<Statement> getStatements() {
-		return statements;
+		return _statements;
 	}
 
 	public Set<Integer> getOutgoingEdges() {
-		return outgoingEdges;
+		return _outgoingEdges;
 	}
 
 	public BlockType getBlockType() {
-		return blockType;
+		return _blockType;
 	}
 
 	public void addStatement(Statement statement) {
-		statements.add(statement);
+		_statements.add(statement);
 	}
 
 	public void addEdge(int targetBlockId) {
-		outgoingEdges.add(targetBlockId);
+		_outgoingEdges.add(targetBlockId);
 	}
 
 	public void setBlockType(BlockType blockType) {
-		this.blockType = blockType;
+		this._blockType = blockType;
 	}
 
 	public static BlockType getBlockType(Statement lastStatement) {
@@ -240,6 +241,10 @@ public class BasicBlock {
 		return sb.toString();
 	}
 
+	public boolean contains(Statement stmt) {
+		return _statements.contains(stmt);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -247,22 +252,24 @@ public class BasicBlock {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		BasicBlock that = (BasicBlock) o;
-		return id == that.id && Objects.equals(statements, that.statements)
-				&& Objects.equals(outgoingEdges, that.outgoingEdges) && blockType == that.blockType;
+		return _id == that._id
+				&& Objects.equals(_statements, that._statements)
+				&& Objects.equals(_outgoingEdges, that._outgoingEdges)
+				&& _blockType == that._blockType;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, statements, outgoingEdges, blockType);
+		return Objects.hash(_id, _statements, _outgoingEdges, _blockType);
 	}
 
 	@Override
 	public String toString() {
 		return "BasicBlock{" +
-				"id=" + id +
-				", statements=" + statements +
-				", outgoingEdges=" + outgoingEdges +
-				", blockType=" + blockType +
+				"id=" + _id +
+				", statements=" + _statements +
+				", outgoingEdges=" + _outgoingEdges +
+				", blockType=" + _blockType +
 				'}';
 	}
 }

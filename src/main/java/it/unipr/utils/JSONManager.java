@@ -1,13 +1,13 @@
 package it.unipr.utils;
 
 import it.unipr.analysis.BasicBlock;
+import it.unipr.analysis.Signature;
 import it.unipr.analysis.SmartContract;
 import it.unipr.cfg.Jumpdest;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.List;
-import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,28 +24,33 @@ public class JSONManager {
 		return aggregatedJson;
 	}
 
-	public static JSONArray basicBlocksToJson(Set<BasicBlock> basicBlocks) {
-		String lightGreenColor = "\"#A6EC99\"";
-		String greyColor = "\"#D3D3D3\"";
-		String lightRed = "\"#EF8683\"";
+	public static JSONArray basicBlocksToJson(SmartContract contract) {
 		JSONArray blocksArray = new JSONArray();
 
-		for (BasicBlock block : basicBlocks) {
+		for (BasicBlock block : contract.getBasicBlocks()) {
 			JSONObject blockJson = new JSONObject();
 			blockJson.put("id", block.getId());
 
 			JSONArray instructionsArray = new JSONArray();
 			for (Statement stmt : block.getStatements()) {
 				JSONObject instructionJson = new JSONObject();
-
 				int pc = ((ProgramCounterLocation) stmt.getLocation()).getPc();
-
 				instructionJson.put("pc", pc);
 				instructionJson.put("instruction", stmt.toString());
-
 				instructionsArray.put(instructionJson);
 			}
 			blockJson.put("instructions", instructionsArray);
+
+			// Labels
+			for (Signature function : contract.getFunctionsSignature())
+				for (Statement entryPoint : function.getEntryPoints())
+					if (block.contains(entryPoint)) {
+						blockJson.put("label", "Function " + function.getSelector());
+						block.setBlockType(BasicBlock.BlockType.FUNCTION);
+					}
+			for (Statement entryPoint : contract.getCFG().getEntrypoints())
+				if (block.contains(entryPoint))
+					blockJson.put("label", "Entry point " + entryPoint.getLocation());
 
 			// Edges
 			JSONArray outgoingEdgesArray = new JSONArray();
@@ -53,19 +58,20 @@ public class JSONManager {
 				String color = "black";
 				Statement source = block.getStatements().get(block.getStatements().size() - 1);
 
-				for (BasicBlock b : basicBlocks) {
+				for (BasicBlock b : contract.getBasicBlocks()) {
 					if (b.getId() == edgeId) {
 						Statement dest = b.getStatements().get(0);
-
 						if (source instanceof Jumpi && dest instanceof Jumpdest)
-							color = lightGreenColor;
+							color = DOTFileManager.greenColor;
 						else if (source instanceof Jumpi)
-							color = lightRed;
+							color = DOTFileManager.redColor;
+						else if (block.getBlockType() == BasicBlock.BlockType.JUMP
+								&& block.getOutgoingEdges().size() > 1)
+							color = DOTFileManager.orangeColor;
 
 						JSONObject edgeJson = new JSONObject();
 						edgeJson.put("target", edgeId);
 						edgeJson.put("color", color);
-
 						outgoingEdgesArray.put(edgeJson);
 						break;
 					}
@@ -74,26 +80,28 @@ public class JSONManager {
 			blockJson.put("outgoing_edges", outgoingEdgesArray);
 
 			// Background color
-			block.setBlockType(BasicBlock.getBlockType(block.getStatements().get(block.getStatements().size() - 1))); // update
 			BasicBlock.BlockType bbt = block.getBlockType();
-			if (bbt == BasicBlock.BlockType.STOP || bbt == BasicBlock.BlockType.RETURN)
-				blockJson.put("background_color", lightGreenColor);
-			else if (bbt == BasicBlock.BlockType.REVERT
-					|| bbt == BasicBlock.BlockType.SELFDESTRUCT
-					|| bbt == BasicBlock.BlockType.INVALID)
-				blockJson.put("background_color", lightRed);
-			else
-				blockJson.put("background_color", greyColor);
+			if (bbt == BasicBlock.BlockType.FUNCTION)
+				blockJson.put("background_color", DOTFileManager.blueColor);
+			else {
+				block.setBlockType(
+						BasicBlock.getBlockType(block.getStatements().get(block.getStatements().size() - 1)));
+				bbt = block.getBlockType();
+				if (bbt == BasicBlock.BlockType.STOP || bbt == BasicBlock.BlockType.RETURN)
+					blockJson.put("background_color", DOTFileManager.lightGreenColor);
+				else if (bbt == BasicBlock.BlockType.REVERT || bbt == BasicBlock.BlockType.SELFDESTRUCT
+						|| bbt == BasicBlock.BlockType.INVALID)
+					blockJson.put("background_color", DOTFileManager.lightRedColor);
+				else if (bbt == BasicBlock.BlockType.JUMP && block.getOutgoingEdges().size() > 1)
+					blockJson.put("background_color", DOTFileManager.lightOrangeColor);
+				else
+					blockJson.put("background_color", DOTFileManager.greyColor);
+			}
 
 			blockJson.put("last_instruction", block.getBlockType());
-
 			blocksArray.put(blockJson);
 		}
 
-		JSONObject basicBlocksJson = new JSONObject();
-		basicBlocksJson.put("basic_blocks", blocksArray);
-
 		return blocksArray;
 	}
-
 }

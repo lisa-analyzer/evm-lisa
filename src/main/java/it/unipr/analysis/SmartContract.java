@@ -182,6 +182,10 @@ public class SmartContract {
 		return this._cfg;
 	}
 
+	public Set<BasicBlock> getBasicBlocks() {
+		return this._basicBlocks;
+	}
+
 	public Set<Signature> getFunctionsSignature() {
 		return this._functionsSignature;
 	}
@@ -348,7 +352,7 @@ public class SmartContract {
 	public void generateGraphWithBasicBlocks() {
 		log.info("Generating graph with basic blocks...");
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
-		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(_basicBlocks), dotFile.toString());
+		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(this), dotFile.toString());
 		log.info("Generated graph with basic blocks at {}", dotFile);
 	}
 
@@ -370,7 +374,7 @@ public class SmartContract {
 		jsonObject.put("statistics", _statistics != null ? _statistics.toJson() : new JSONArray());
 
 		jsonObject.put("basic_blocks",
-				_basicBlocks != null ? JSONManager.basicBlocksToJson(_basicBlocks) : new JSONArray());
+				_basicBlocks != null ? JSONManager.basicBlocksToJson(this) : new JSONArray());
 
 		jsonObject.put("basic_blocks_pc", _basicBlocks != null ? BasicBlock.basicBlocksToLongArrayToString(
 				BasicBlock.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());

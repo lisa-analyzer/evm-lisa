@@ -9,9 +9,17 @@ import org.json.JSONObject;
 
 public class DOTFileManager {
 	private static final Logger log = LogManager.getLogger(DOTFileManager.class);
+	public static String purpleColor = "\"#A97FB2\"";
+	public static String lightGreenColor = "\"#A6EC99\"";
+	public static String greenColor = "\"#5F9747\"";
+	public static String greyColor = "\"#D3D3D3\"";
+	public static String lightRedColor = "\"#EF8683\"";
+	public static String redColor = "\"#B70000\"";
+	public static String lightOrangeColor = "\"#FFB38A\"";
+	public static String orangeColor = "\"#FF9248\"";
+	public static String blueColor = "\"#6FA8DC\"";
 
 	public static void generateDotGraph(JSONArray basicBlocks, String outputPath) {
-		String purpleColor = "\"#A97FB2\"";
 		StringBuilder dotGraph = new StringBuilder();
 		dotGraph.append("digraph CFG {\n");
 		dotGraph.append("\trankdir=TB;\n");
@@ -24,6 +32,9 @@ public class DOTFileManager {
 			JSONArray instructions = block.getJSONArray("instructions");
 
 			StringBuilder label = new StringBuilder();
+			if (block.has("label"))
+				label.append(block.getString("label")).append("\\n- - - - - - - - - - - -\\n");
+
 			if (instructions.length() > 5) {
 				JSONObject firstInstr = instructions.getJSONObject(0);
 				JSONObject secondInstr = instructions.getJSONObject(1);

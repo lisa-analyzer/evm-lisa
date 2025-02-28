@@ -39,7 +39,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EVMLiSA {
@@ -85,7 +84,7 @@ public class EVMLiSA {
 
 	private void examples() throws Exception {
 		// Single case (address)
-		SmartContract sc = new SmartContract("0x26366920975b24A89CD991A495d0D70CB8E1BA1F");
+		SmartContract sc = new SmartContract("0x3932f366886d2b981485503a182173da80d15c97");
 		EVMLiSA.analyzeContract(sc);
 		log.debug(sc);
 		sc.generateGraphWithBasicBlocks(); // generate .dot file
@@ -441,14 +440,14 @@ public class EVMLiSA {
 									Objects.requireNonNull(
 											BasicBlock.getBasicBlocks(checker.getComputedCFG())))));
 
-			if (cmd.hasOption("basic-blocks")) {
-				JSONArray j = JSONManager.basicBlocksToJson(
-						Objects.requireNonNull(
-								BasicBlock.getBasicBlocks(checker.getComputedCFG())));
-				String dotFilePath = _outputDirPath.resolve("CFG-with-basic-blocks.dot").toString();
-				json.put("basic_blocks", j);
-				DOTFileManager.generateDotGraph(j, dotFilePath);
-			}
+//			if (cmd.hasOption("basic-blocks")) {
+//				JSONArray j = JSONManager.basicBlocksToJson(
+//						Objects.requireNonNull(
+//								BasicBlock.getBasicBlocks(checker.getComputedCFG())));
+//				String dotFilePath = _outputDirPath.resolve("CFG-with-basic-blocks.dot").toString();
+//				json.put("basic_blocks", j);
+//				DOTFileManager.generateDotGraph(j, dotFilePath);
+//			}
 
 			checkers(conf, lisa, program, checker, json);
 
