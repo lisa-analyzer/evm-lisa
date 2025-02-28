@@ -211,7 +211,7 @@ public class EVMLiSA {
 			if (cmd.hasOption("basic-blocks")) {
 				JSONArray j = checker.getComputedCFG().basicBlocksToJson();
 				String dotFilePath = _outputDirPath.resolve("CFG_with_basic_blocks.dot").toString();
-				json.put("basic_blocks", j);
+				// json.put("basic_blocks", j);
 				generateDotGraph(j, dotFilePath);
 			}
 

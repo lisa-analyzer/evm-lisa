@@ -58,10 +58,9 @@ public class EVMBytecodeGroundTruth {
 				.get("benchmark", "50-ground-truth.txt")
 				.toString();
 
-		AbstractStack.setStackLimit(32);
-		AbstractStackSet.setStackSetSize(8);
+		AbstractStack.setStackLimit(64);
+		AbstractStackSet.setStackSetSize(16);
 		boolean changed = false;
-		long smartContractListTime = System.currentTimeMillis();
 
 		if (new File(RESULT_EXEC_FILE_PATH).delete())
 			log.warn("File deleted {}", RESULT_EXEC_FILE_PATH);
@@ -93,20 +92,18 @@ public class EVMBytecodeGroundTruth {
 			log.error("Timeout reached while waiting for thread pool to terminate.");
 			executor.shutdownNow();
 		}
-		smartContractListTime = System.currentTimeMillis() - smartContractListTime;
 
 		List<SmartContractData> smartContractList = readStatsFromCSV(RESULT_EXEC_FILE_PATH);
 		List<SmartContractData> smartContractGroundTruthList = readStatsFromCSV(GROUND_TRUTH_FILE_PATH);
-		long smartContractGroundTruthListTime = 0;
 
 		assert smartContractList.size() == smartContractGroundTruthList.size();
+		int upgrades = 0;
+		int downgrades = 0;
 
 		for (SmartContractData truthSC : smartContractGroundTruthList) {
 			for (SmartContractData newSC : smartContractList) {
 
 				if (truthSC.getAddress().equals(newSC.getAddress())) {
-
-					smartContractGroundTruthListTime += truthSC.getTimeMillis();
 
 					if (!truthSC.equals(newSC)) {
 						if (!changed)
@@ -119,6 +116,11 @@ public class EVMBytecodeGroundTruth {
 							System.err.println("\tSolved Jumps");
 							System.err.printf("\t\tTruth: %s, New: %s\n", truthSC.getSolvedJumps(),
 									newSC.getSolvedJumps());
+
+							if (truthSC.getSolvedJumps() > newSC.getSolvedJumps())
+								downgrades++;
+							else
+								upgrades++;
 						}
 						if (truthSC.getDefinitelyUnreachableJumps() != newSC.getDefinitelyUnreachableJumps()) {
 							System.err.println("\tDefinitely Unreachable Jumps");
@@ -147,6 +149,10 @@ public class EVMBytecodeGroundTruth {
 				}
 			}
 		}
+
+		log.debug("Upgrades: {}", upgrades);
+		log.debug("Downgrades: {}", downgrades);
+
 		assert !changed;
 	}
 
