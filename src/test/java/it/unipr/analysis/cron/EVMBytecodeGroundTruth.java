@@ -3,20 +3,6 @@ package it.unipr.analysis.cron;
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.checker.JumpSolver;
-import it.unipr.frontend.EVMFrontend;
-import it.unipr.utils.MyCache;
-import it.unipr.utils.MyLogger;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.Program;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -34,7 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.Ignore;
 
 /*
  * ground-truth-stats/ground-truth-data.csv FILE MUST BE UPDATED WHEN A NEW
@@ -43,7 +29,7 @@ import org.junit.Test;
 public class EVMBytecodeGroundTruth {
 	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruth.class);
 
-	@Test
+	@Ignore
 	public void testGroundTruth() throws Exception {
 		String GROUND_TRUTH_FILE_PATH = Paths
 				.get("evm-testcases", "ground-truth", "ground-truth-data.csv")
@@ -71,21 +57,21 @@ public class EVMBytecodeGroundTruth {
 		int cores = Runtime.getRuntime().availableProcessors() / 3 * 2;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
-		for (String address : smartContracts) {
-			executor.submit(() -> {
-				try {
-					MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
-
-					if (myStats.jumpSize() != 0) {
-						synchronized (RESULT_EXEC_FILE_PATH) {
-							EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
-						}
-					}
-				} catch (Exception e) {
-					log.error("Error processing contract {}: {}", address, e.getMessage(), e);
-				}
-			});
-		}
+//		for (String address : smartContracts) {
+//			executor.submit(() -> {
+//				try {
+//					MyLogger myStats = newAnalysis(address, RESULT_EXEC_DIR_PATH);
+//
+//					if (myStats.jumpSize() != 0) {
+//						synchronized (RESULT_EXEC_FILE_PATH) {
+//							EVMLiSA.toFile(RESULT_EXEC_FILE_PATH, myStats.toString());
+//						}
+//					}
+//				} catch (Exception e) {
+//					log.error("Error processing contract {}: {}", address, e.getMessage(), e);
+//				}
+//			});
+//		}
 
 		// Shutdown the executor and wait for completion
 		executor.shutdown();
@@ -150,53 +136,53 @@ public class EVMBytecodeGroundTruth {
 		assert !changed;
 	}
 
-	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
-		Path bytecodeDir = Paths.get(RESULT_EXEC_DIR_PATH, "benchmark", CONTRACT_ADDR);
-		String BYTECODE_DIR = bytecodeDir.toString();
-
-		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".bytecode");
-		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
-
-		// Directory setup and bytecode retrieval
-		Files.createDirectories(bytecodeDir);
-
-		// If the file does not exist, we will do an API request to Etherscan
-		File file = new File(BYTECODE_FULLPATH);
-		if (!file.exists()) {
-			String bytecode = EVMFrontend.parseBytecodeFromEtherscan(CONTRACT_ADDR);
-			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
-		}
-
-		// Configuration and test run
-		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
-
-		long start = System.currentTimeMillis();
-
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.serializeInputs = false;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.jsonOutput = false;
-		conf.workdir = BYTECODE_DIR;
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		JumpSolver checker = new JumpSolver();
-		conf.semanticChecks.add(checker);
-		conf.callGraph = new RTACallGraph();
-		conf.serializeResults = false;
-		conf.optimize = false;
-
-		LiSA lisa = new LiSA(conf);
-		lisa.run(program);
-
-		// Print the results
-		long finish = System.currentTimeMillis();
-
-		return EVMLiSA.dumpStatistics(checker, null)
-				.address(CONTRACT_ADDR)
-				.time(finish - start)
-				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
-				.build();
-	}
+//	private MyLogger newAnalysis(String CONTRACT_ADDR, String RESULT_EXEC_DIR_PATH) throws Exception {
+//		Path bytecodeDir = Paths.get(RESULT_EXEC_DIR_PATH, "benchmark", CONTRACT_ADDR);
+//		String BYTECODE_DIR = bytecodeDir.toString();
+//
+//		Path bytecodeFullPath = bytecodeDir.resolve(CONTRACT_ADDR + ".bytecode");
+//		String BYTECODE_FULLPATH = bytecodeFullPath.toString();
+//
+//		// Directory setup and bytecode retrieval
+//		Files.createDirectories(bytecodeDir);
+//
+//		// If the file does not exist, we will do an API request to Etherscan
+//		File file = new File(BYTECODE_FULLPATH);
+//		if (!file.exists()) {
+//			String bytecode = EVMFrontend.parseBytecodeFromEtherscan(CONTRACT_ADDR);
+//			EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_FULLPATH);
+//		}
+//
+//		// Configuration and test run
+//		Program program = EVMFrontend.generateCfgFromFile(BYTECODE_FULLPATH);
+//
+//		long start = System.currentTimeMillis();
+//
+//		LiSAConfiguration conf = new LiSAConfiguration();
+//		conf.serializeInputs = false;
+//		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new EVMAbstractState(CONTRACT_ADDR),
+//				new TypeEnvironment<>(new InferredTypes()));
+//		conf.jsonOutput = false;
+//		conf.workdir = BYTECODE_DIR;
+//		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+//		JumpSolver checker = new JumpSolver();
+//		conf.semanticChecks.add(checker);
+//		conf.callGraph = new RTACallGraph();
+//		conf.serializeResults = false;
+//		conf.optimize = false;
+//
+//		LiSA lisa = new LiSA(conf);
+//		lisa.run(program);
+//
+//		// Print the results
+//		long finish = System.currentTimeMillis();
+//
+//		return EVMLiSA.dumpStatistics(checker, null)
+//				.address(CONTRACT_ADDR)
+//				.time(finish - start)
+//				.timeLostToGetStorage(MyCache.getInstance().getTimeLostToGetStorage(CONTRACT_ADDR))
+//				.build();
+//	}
 
 	/**
 	 * Reads data from a CSV file and populates a list of

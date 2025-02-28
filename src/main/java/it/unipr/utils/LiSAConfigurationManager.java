@@ -32,7 +32,8 @@ public class LiSAConfigurationManager {
 		conf.serializeResults = false;
 		conf.optimize = false;
 		conf.useWideningPoints = false;
-		conf.analysisGraphs = LiSAConfiguration.GraphType.DOT;
+		conf.analysisGraphs = LiSAConfiguration.GraphType.HTML;
+		conf.jsonOutput = true;
 
 		return conf;
 	}

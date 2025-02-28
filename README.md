@@ -73,21 +73,16 @@ java -jar build/libs/evm-lisa-all.jar [options]
 ```
 Options:
  -a,--address <arg>                        Address of an Ethereum smart contract.
- -b,--benchmark <arg>                      Filepath of the benchmark.
-    --basic-blocks                         Print the basic blocks.
+    --abi-path <arg>                       Filepath of the abi file.
+ -b,--bytecode <arg>                       Bytecode to be analyzed (e.g., 0x6080...).
+    --benchmark <arg>                      Filepath of the benchmark.
+    --bytecode-path <arg>                  Filepath of the bytecode file.
  -c,--cores <arg>                          Number of cores used in benchmark.
-    --checker-reentrancy                   Enable re-entrancy checker.
+    --checker-all                          Enable all security checkers.
+    --checker-reentrancy                   Enable reentrancy checker.
     --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
-    --dot                                  Export a dot-notation file.
-    --download-bytecode                    Download the bytecode.
-    --dump-report                          Dump analysis report.
-    --dump-stats                           Dump statistics.
- -f,--filepath-bytecode <arg>              Filepath of the bytecode file.
-    --html                                 Export a graphic HTML report.
     --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
- -o,--output <arg>                         Output directory path.
-    --serialize-inputs                     Serialize inputs.
     --stack-set-size <arg>                 Dimension of stack-set (default: 8).
     --stack-size <arg>                     Dimension of stack (default: 32).
     --use-live-storage                     Use the live storage in SLOAD.

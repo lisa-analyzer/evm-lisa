@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.HashSet;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,12 +39,62 @@ public class SmartContract {
 	private EVMCFG _cfg;
 	private Set<BasicBlock> _basicBlocks;
 	private StatisticsObject _statistics;
+	private VulnerabilitiesObject _vulnerabilities;
 
 	private Set<Signature> _functionsSignature;
 	private Set<Signature> _eventsSignature;
 
 	public SmartContract() {
 		this._address = "contract-" + System.currentTimeMillis();
+		this._functionsSignature = new HashSet<>();
+		this._eventsSignature = new HashSet<>();
+	}
+
+	public SmartContract(String address) {
+		if (!EthereumUtils.isValidEVMAddress(address))
+			throw new IllegalArgumentException("Invalid address: " + address);
+
+		this._address = address;
+
+		try {
+			this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
+		} catch (IOException e) {
+			log.warn("Failed to parse Ethereum bytecode: {}", address, e);
+		}
+
+		try {
+			this._abi = EVMFrontend.parseABIFromEtherscan(address);
+		} catch (IOException e) {
+			log.warn("Failed to parse Ethereum ABI: {}", address, e);
+		}
+
+		Path outputDir = _workingDirectory.resolve(address);
+		this._abiFilePath = outputDir.resolve(address + ".abi.json");
+		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
+		this._mnemonicBytecodeFilePath = outputDir.resolve(address + ".opcode");
+
+		try {
+			Files.createDirectories(outputDir);
+
+			// Write ABI to file
+			if (this._abi != null)
+				Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
+						StandardOpenOption.TRUNCATE_EXISTING);
+
+			// Write bytecode to file
+			if (this._bytecode != null)
+				Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE,
+						StandardOpenOption.TRUNCATE_EXISTING);
+
+			EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
+			this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
+
+		} catch (IOException e) {
+			log.error("Failed to save ABI or bytecode to file for contract {}", address, e);
+		}
+
+		this._functionsSignature = ABIManager.parseFunctionsFromABI(this._abiFilePath);
+		this._eventsSignature = ABIManager.parseEventsFromABI(this._abiFilePath);
 	}
 
 	public SmartContract(Path bytecodeFilePath) {
@@ -56,6 +107,7 @@ public class SmartContract {
 		this._mnemonicBytecodeFilePath = outputDir.resolve(_address + ".opcode");
 
 		try {
+			// TODO check if bytecodeFilePath exists
 			this._bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFilePath.toString())));
 
 			EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
@@ -104,53 +156,6 @@ public class SmartContract {
 
 		this._functionsSignature = ABIManager.parseFunctionsFromABI(abiFilePath);
 		this._eventsSignature = ABIManager.parseEventsFromABI(abiFilePath);
-	}
-
-	public SmartContract(String address) {
-		if (!EthereumUtils.isValidEVMAddress(address))
-			throw new IllegalArgumentException("Invalid address: " + address);
-
-		this._address = address;
-
-		try {
-			this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
-		} catch (IOException e) {
-			log.warn("Failed to parse Ethereum bytecode: {}", address, e);
-		}
-
-		try {
-			this._abi = EVMFrontend.parseABIFromEtherscan(address);
-		} catch (IOException e) {
-			log.warn("Failed to parse Ethereum ABI: {}", address, e);
-		}
-
-		Path outputDir = _workingDirectory.resolve(address);
-		this._abiFilePath = outputDir.resolve(address + ".abi.json");
-		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
-		this._mnemonicBytecodeFilePath = outputDir.resolve(address + ".opcode");
-
-		try {
-			Files.createDirectories(outputDir);
-
-			// Write ABI to file
-			if (this._abi != null)
-				Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
-						StandardOpenOption.TRUNCATE_EXISTING);
-
-			// Write bytecode to file
-			if (this._bytecode != null)
-				Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE,
-						StandardOpenOption.TRUNCATE_EXISTING);
-
-			EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
-			this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
-
-		} catch (IOException e) {
-			log.error("Failed to save ABI or bytecode to file for contract {}", address, e);
-		}
-
-		this._functionsSignature = ABIManager.parseFunctionsFromABI(this._abiFilePath);
-		this._eventsSignature = ABIManager.parseEventsFromABI(this._abiFilePath);
 	}
 
 	///////////////////// GETTERs
@@ -202,6 +207,10 @@ public class SmartContract {
 		return _statistics;
 	}
 
+	public VulnerabilitiesObject getVulnerabilities() {
+		return _vulnerabilities;
+	}
+
 	public void printStatistics() {
 		log.info("Total opcodes: {}", _statistics.getTotalOpcodes());
 		log.info("Total jumps: {}", _statistics.getTotalJumps());
@@ -210,6 +219,12 @@ public class SmartContract {
 		log.info("Maybe unreachable jumps: {}", _statistics.getMaybeUnreachableJumps());
 		log.info("Unsound jumps: {}", _statistics.getUnsoundJumps());
 		log.info("Maybe unsound jumps: {}", _statistics.getMaybeUnsoundJumps());
+	}
+
+	public void printVulnerabilities() {
+		log.info("Reentrancy: {}", _vulnerabilities.getReentrancy());
+		log.info("Timestamp dependency: {}", _vulnerabilities.getTimestamp());
+		log.info("Tx.Origin: {}", _vulnerabilities.getTxOrigin());
 	}
 
 	///////////////////// SETTERs
@@ -253,8 +268,13 @@ public class SmartContract {
 		return this;
 	}
 
-	public SmartContract setStatistics(StatisticsObject statisticsObject) {
-		this._statistics = statisticsObject;
+	public SmartContract setStatistics(StatisticsObject statistics) {
+		this._statistics = statistics;
+		return this;
+	}
+
+	public SmartContract setVulnerabilities(VulnerabilitiesObject vulnerabilities) {
+		this._vulnerabilities = vulnerabilities;
 		return this;
 	}
 
@@ -376,6 +396,8 @@ public class SmartContract {
 		jsonObject.put("mnemonic_bytecode_file_path", _mnemonicBytecodeFilePath.toString());
 
 		jsonObject.put("statistics", _statistics != null ? _statistics.toJson() : new JSONArray());
+
+		jsonObject.put("vulnerabilities", _vulnerabilities != null ? _vulnerabilities.toJson() : new JSONArray());
 
 		jsonObject.put("basic_blocks",
 				_basicBlocks != null ? JSONManager.basicBlocksToJson(this) : new JSONArray());
