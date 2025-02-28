@@ -52,14 +52,14 @@ public class EVMLiSA {
 	 */
 	public static void main(String[] args) {
 		try {
-			new EVMLiSA().go2(args);
+			new EVMLiSA().go(args);
 //			new EVMLiSA().examples();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void go2(String[] args) throws Exception {
+	private void go(String[] args) throws Exception {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
 			return;
@@ -112,9 +112,11 @@ public class EVMLiSA {
 		// Single case (address)
 		SmartContract sc = new SmartContract("0x3932f366886d2b981485503a182173da80d15c97");
 		EVMLiSA.analyzeContract(sc);
-		log.debug(sc);
 		sc.generateGraphWithBasicBlocks(); // generate .dot file
 		sc.toFile(); // save results to file
+		// print basic blocks as pairs (i.e., (from_block, to_block) pairs)
+		log.debug(BasicBlock.basicBlocksToLongArrayToString(
+					BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
 
 		// Single case (bytecode as a path)
 		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
