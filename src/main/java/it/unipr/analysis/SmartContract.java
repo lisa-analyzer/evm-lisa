@@ -389,7 +389,7 @@ public class SmartContract {
 		lisa.run(program);
 	}
 
-	public void generateGraphWithBasicBlocks() {
+	public void generateCFGWithBasicBlocks() {
 		log.info("Generating graph with basic blocks...");
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
 		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(this), dotFile.toString());

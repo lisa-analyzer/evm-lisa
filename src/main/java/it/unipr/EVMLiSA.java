@@ -35,6 +35,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * EVMLiSA is the entry point for analyzing EVM bytecode smart contracts using
+ * LiSA. It generates a control flow graph (CFG) and applies various security
+ * analyses.
+ */
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
 
@@ -46,59 +51,122 @@ public class EVMLiSA {
 	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
-	 * Generates a control flow graph (represented as a LiSA {@code Program})
-	 * from an EVM bytecode smart contract and runs the analysis on it.
-	 * 
+	 * Main entry point for EVMLiSA.
+	 *
 	 * @param args configuration options
 	 */
-	public static void main(String[] args) {
-		try {
-			new EVMLiSA().go(args);
-//			new EVMLiSA().examples();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public static void main(String[] args) throws Exception {
+		new EVMLiSA().go(args);
 	}
 
+	/**
+	 * Sets the stack limit.
+	 *
+	 * @param limit the maximum stack size
+	 */
 	public static void setStackLimit(int limit) {
 		AbstractStack.setStackLimit(limit);
 	}
 
+	/**
+	 * Sets the stack set size.
+	 *
+	 * @param size the stack set size
+	 */
 	public static void setStackSetSize(int size) {
 		AbstractStackSet.setStackSetSize(size);
 	}
 
+	/**
+	 * Sets the working directory.
+	 *
+	 * @param workingDirectoryPath the path to the working directory
+	 */
 	public static void setWorkingDirectory(Path workingDirectoryPath) {
 		EVMLiSA.OUTPUT_DIRECTORY_PATH = workingDirectoryPath;
 		SmartContract.setWorkingDirectory(workingDirectoryPath);
 	}
 
+	/**
+	 * Sets the number of processing cores.
+	 *
+	 * @param cores the number of cores
+	 */
 	public static void setCores(int cores) {
 		EVMLiSA.CORES = Math.max(cores, 1);
 	}
 
+	/**
+	 * Sets the linking of unsound jumps to all JUMPDEST instructions.
+	 */
 	public static void setLinkUnsoundJumpsToAllJumpdest() {
 		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 	}
 
-	public static void enableAllSecurityCheckers(){
+	/**
+	 * Enables all security checkers.
+	 */
+	public static void enableAllSecurityCheckers() {
 		EVMLiSA.enableReentrancyChecker();
 		EVMLiSA.enableTimestampDependencyCheckerChecker();
 		EVMLiSA.enableTxOriginChecker();
 	}
 
-	public static void enableReentrancyChecker(){
+	/**
+	 * Enables the reentrancy checker.
+	 */
+	public static void enableReentrancyChecker() {
 		ENABLE_REENTRANCY_CHECKER = true;
 	}
 
-	public static void enableTimestampDependencyCheckerChecker(){
+	/**
+	 * Enables the timestamp dependency checker.
+	 */
+	public static void enableTimestampDependencyCheckerChecker() {
 		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = true;
 	}
 
-	public static void enableTxOriginChecker(){
+	/**
+	 * Enables the tx. origin checker.
+	 */
+	public static void enableTxOriginChecker() {
 		ENABLE_TXORIGIN_CHECKER = true;
 	}
 
+	/**
+	 * Runs example analyses on smart contracts.
+	 *
+	 * @throws Exception if an error occurs during execution
+	 */
+	private void examples() throws Exception {
+		// Single case (address)
+		SmartContract sc = new SmartContract("0x3932f366886d2b981485503a182173da80d15c97");
+		EVMLiSA.analyzeContract(sc);
+		sc.generateCFGWithBasicBlocks(); // generate .dot file
+		sc.toFile(); // save results to file
+		// print basic blocks as (from_block, to_block) pairs
+		log.debug(BasicBlock.basicBlocksToLongArrayToString(
+				BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
+
+		// Single case (bytecode as a path)
+		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
+				"0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
+
+		// Single case (bytecode as a string)
+		EVMLiSA.analyzeContract(new SmartContract().setBytecode(
+				"0x608060405234801561001057600080fd5b50600436106100415760003560e01c80636146195414610046578063d88bba1114610050578063fbc7f20e14610087575b600080fd5b61004e6100a2565b005b61006b735a98fcbea516cf06857215779fd812ca3bef1b3281565b6040516001600160a01b03909116815260200160405180910390f35b61006b7387d93d9b2c672bf9c9642d853a8682546a5012b581565b6040516328a1b1ad60e21b8152735a98fcbea516cf06857215779fd812ca3bef1b3260048201527387d93d9b2c672bf9c9642d853a8682546a5012b5602482015273223d844fc4b006d67c0cdbd39371a9f73f69d9749063a286c6b490604401600060405180830381600087803b15801561011c57600080fd5b505af1158015610130573d6000803e3d6000fd5b5050505056fea2646970667358221220bae0c5370f53dc13f1e3000d78511979d423220e1cd1c5e47b343314ab833ff964736f6c63430008110033"));
+
+		// Multiple contracts
+		EVMLiSA.analyzeSetOfContracts(Path.of("benchmark", "50-ground-truth.txt"));
+	}
+
+	/**
+	 * Executes the analysis workflow.
+	 *
+	 * @param args command-line arguments
+	 * 
+	 * @throws Exception if an error occurs during execution
+	 */
 	private void go(String[] args) throws Exception {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
@@ -148,28 +216,13 @@ public class EVMLiSA {
 		System.err.println(contract);
 	}
 
-	private void examples() throws Exception {
-		// Single case (address)
-		SmartContract sc = new SmartContract("0x3932f366886d2b981485503a182173da80d15c97");
-		EVMLiSA.analyzeContract(sc);
-		sc.generateGraphWithBasicBlocks(); // generate .dot file
-		sc.toFile(); // save results to file
-		// print basic blocks as (from_block, to_block) pairs
-		log.debug(BasicBlock.basicBlocksToLongArrayToString(
-				BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
-
-		// Single case (bytecode as a path)
-		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
-				"0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
-
-		// Single case (bytecode as a string)
-		EVMLiSA.analyzeContract(new SmartContract().setBytecode(
-				"0x608060405234801561001057600080fd5b50600436106100415760003560e01c80636146195414610046578063d88bba1114610050578063fbc7f20e14610087575b600080fd5b61004e6100a2565b005b61006b735a98fcbea516cf06857215779fd812ca3bef1b3281565b6040516001600160a01b03909116815260200160405180910390f35b61006b7387d93d9b2c672bf9c9642d853a8682546a5012b581565b6040516328a1b1ad60e21b8152735a98fcbea516cf06857215779fd812ca3bef1b3260048201527387d93d9b2c672bf9c9642d853a8682546a5012b5602482015273223d844fc4b006d67c0cdbd39371a9f73f69d9749063a286c6b490604401600060405180830381600087803b15801561011c57600080fd5b505af1158015610130573d6000803e3d6000fd5b5050505056fea2646970667358221220bae0c5370f53dc13f1e3000d78511979d423220e1cd1c5e47b343314ab833ff964736f6c63430008110033"));
-
-		// Multiple contracts
-		EVMLiSA.analyzeSetOfContracts(Path.of("benchmark", "50-ground-truth.txt"));
-	}
-
+	/**
+	 * Analyzes a set of smart contracts from a given file.
+	 *
+	 * @param filePath the path to the file containing contract addresses
+	 * 
+	 * @throws Exception if an error occurs during analysis
+	 */
 	public static void analyzeSetOfContracts(Path filePath) throws Exception {
 		log.info("Analyzing set of contracts...");
 
@@ -200,6 +253,11 @@ public class EVMLiSA {
 		}
 	}
 
+	/**
+	 * Analyzes a given smart contract.
+	 *
+	 * @param contract the smart contract to analyze
+	 */
 	public static void analyzeContract(SmartContract contract) {
 		Program program;
 		try {
@@ -251,15 +309,34 @@ public class EVMLiSA {
 						.timestamp(MyCache.getInstance()
 								.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
 						.build());
-		contract.generateGraphWithBasicBlocks();
+		contract.generateCFGWithBasicBlocks();
 		contract.toFile(); // save results to file
 	}
 
+	/**
+	 * Computes statistics based on the analysis of jumps within the given
+	 * program.
+	 *
+	 * @param checker the jump solver used for the analysis
+	 * @param lisa    the LiSA framework instance
+	 * @param program the program being analyzed
+	 * 
+	 * @return a {@link StatisticsObject} containing the computed statistics
+	 */
 	public static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 		return computeJumps(checker, soundlySolved);
 	}
 
+	/**
+	 * Computes jump-related statistics based on the analysis results.
+	 *
+	 * @param checker       the jump solver used for analysis
+	 * @param soundlySolved the set of jumps that have been soundly solved
+	 * 
+	 * @return a {@link StatisticsObject} containing the computed jump
+	 *             statistics
+	 */
 	private static StatisticsObject computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
 
@@ -406,6 +483,15 @@ public class EVMLiSA {
 		return soundlySolved;
 	}
 
+	/**
+	 * Builds a list of smart contracts from a given file.
+	 *
+	 * @param filePath the path to the file containing contract addresses
+	 * 
+	 * @return a list of {@link SmartContract} objects
+	 * 
+	 * @throws Exception if an error occurs while reading the file
+	 */
 	public static List<SmartContract> buildContractsFromFile(Path filePath) throws Exception {
 		log.info("Parsing contracts from {}", filePath);
 
@@ -431,6 +517,42 @@ public class EVMLiSA {
 
 		log.info("Created {} contracts.", contracts.size());
 		return contracts;
+	}
+
+	private void setupGlobalOptions(CommandLine cmd) {
+		try {
+			CORES = cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1;
+		} catch (Exception e) {
+			log.warn("Cores set to 1: {}", e.getMessage());
+			CORES = 1;
+		}
+
+		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy") || cmd.hasOption("checker-all");
+		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all");
+		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = cmd.hasOption("checker-timestampdependency")
+				|| cmd.hasOption("checker-all");
+
+		if (cmd.hasOption("output-directory-path"))
+			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
+		else
+			OUTPUT_DIRECTORY_PATH = Path.of("execution", "results");
+		SmartContract.setWorkingDirectory(OUTPUT_DIRECTORY_PATH);
+
+		try {
+			if (cmd.hasOption("stack-size"))
+				AbstractStack.setStackLimit(Integer.parseInt(cmd.getOptionValue("stack-size")));
+
+			if (cmd.hasOption("stack-set-size"))
+				AbstractStackSet.setStackSetSize(Integer.parseInt(cmd.getOptionValue("stack-set-size")));
+		} catch (NumberFormatException e) {
+			log.error("Size must be an integer.");
+			System.exit(1);
+		}
+
+		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
+			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
+		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
+			EVMAbstractState.setUseStorageLive();
 	}
 
 	private Options getOptions() {
@@ -574,42 +696,6 @@ public class EVMLiSA {
 			System.exit(1);
 			return null;
 		}
-	}
-
-	private void setupGlobalOptions(CommandLine cmd) {
-		try {
-			CORES = cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1;
-		} catch (Exception e) {
-			log.warn("Cores set to 1: {}", e.getMessage());
-			CORES = 1;
-		}
-
-		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy") || cmd.hasOption("checker-all");
-		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all");
-		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = cmd.hasOption("checker-timestampdependency")
-				|| cmd.hasOption("checker-all");
-
-		if (cmd.hasOption("output-directory-path"))
-			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
-		else
-			OUTPUT_DIRECTORY_PATH = Path.of("execution", "results");
-		SmartContract.setWorkingDirectory(OUTPUT_DIRECTORY_PATH);
-
-		try {
-			if (cmd.hasOption("stack-size"))
-				AbstractStack.setStackLimit(Integer.parseInt(cmd.getOptionValue("stack-size")));
-
-			if (cmd.hasOption("stack-set-size"))
-				AbstractStackSet.setStackSetSize(Integer.parseInt(cmd.getOptionValue("stack-set-size")));
-		} catch (NumberFormatException e) {
-			log.error("Size must be an integer.");
-			System.exit(1);
-		}
-
-		if (cmd.hasOption("link-unsound-jumps-to-all-jumpdest"))
-			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
-		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
-			EVMAbstractState.setUseStorageLive();
 	}
 
 	/**

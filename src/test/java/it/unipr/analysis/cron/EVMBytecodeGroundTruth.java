@@ -1,18 +1,13 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.EVMLiSA;
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.AbstractStackSet;
 import it.unipr.utils.JSONManager;
 import it.unipr.utils.StatisticsObject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Test;
 
 /*
