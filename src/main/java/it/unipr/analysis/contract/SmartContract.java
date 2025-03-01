@@ -100,48 +100,49 @@ public class SmartContract {
 		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
 		this._mnemonicBytecodeFilePath = outputDir.resolve(address + ".opcode");
 
-		// If the file does not exist, we will do an API request to Etherscan
-		File file = new File(String.valueOf(_bytecodeFilePath));
-		if (!file.exists()) {
-			try {
+		// Bytecode case
+		try {
+			// If the bytecode file does not exist, we will do an API request to Etherscan
+			File file = new File(String.valueOf(_bytecodeFilePath));
+			if (!file.exists()) {
+				Files.createDirectories(outputDir);
 				this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
-			} catch (IOException e) {
-				log.warn("Failed to parse Ethereum bytecode: {}", address, e);
-			}
-
-			try {
-				this._abi = EVMFrontend.parseABIFromEtherscan(address);
-			} catch (IOException e) {
-				log.warn("Failed to parse Ethereum ABI: {}", address, e);
-			}
-		} else {
-			log.warn("Contract {} already present in memory, not downloaded.", address);
-			try {
+				// Write bytecode to file
+				if (this._bytecode != null)
+					Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE,
+							StandardOpenOption.TRUNCATE_EXISTING);
+			} else {
+				log.warn("Contract (bytecode) already present in {}, not downloaded.", _bytecodeFilePath);
 				this._bytecode = new String(Files.readAllBytes(Paths.get(_bytecodeFilePath.toString())));
-				this._abi = new JSONArray(new String(Files.readAllBytes(Paths.get(_abiFilePath.toString()))));
-			} catch (IOException e) {
-				log.warn("Failed to read bytecode from {}", _bytecodeFilePath, e);
 			}
+		} catch (IOException e) {
+			log.warn("Failed to load bytecode: {}", address, e);
+		}
+
+		// ABI case
+		try {
+			// If the ABI file does not exist, we will do an API request to Etherscan
+			File file = new File(String.valueOf(_abiFilePath));
+			if (!file.exists()) {
+				Files.createDirectories(outputDir);
+				this._abi = EVMFrontend.parseABIFromEtherscan(address);
+				// Write ABI to file
+				if (this._abi != null)
+					Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
+							StandardOpenOption.TRUNCATE_EXISTING);
+			} else {
+				log.warn("Contract (ABI) already present in {}, not downloaded.", _abiFilePath);
+				this._abi = new JSONArray(new String(Files.readAllBytes(Paths.get(_abiFilePath.toString()))));
+			}
+		} catch (IOException e) {
+			log.warn("Failed to load ABI: {}", address, e);
 		}
 
 		try {
-			Files.createDirectories(outputDir);
-
-			// Write ABI to file
-			if (this._abi != null)
-				Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
-						StandardOpenOption.TRUNCATE_EXISTING);
-
-			// Write bytecode to file
-			if (this._bytecode != null)
-				Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE,
-						StandardOpenOption.TRUNCATE_EXISTING);
-
 			EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
 			this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
-
 		} catch (IOException e) {
-			log.error("Failed to save ABI or bytecode to file for contract {}", address, e);
+			log.error("Failed to save mnemonic bytecode to file for contract {}", address, e);
 		}
 
 		this._functionsSignature = ABIManager.parseFunctionsFromABI(this._abiFilePath);
@@ -159,18 +160,17 @@ public class SmartContract {
 		this();
 		if (bytecodeFilePath == null)
 			throw new IllegalArgumentException("bytecodeFilePath cannot be null");
+		else if (!Files.exists(bytecodeFilePath))
+			throw new IllegalArgumentException("bytecodeFilePath not found: " + bytecodeFilePath);
 
 		Path outputDir = _workingDirectory.resolve(_address);
 		this._bytecodeFilePath = outputDir.resolve(_address + ".bytecode");
 		this._mnemonicBytecodeFilePath = outputDir.resolve(_address + ".opcode");
 
 		try {
-			// TODO check if bytecodeFilePath exists
 			this._bytecode = new String(Files.readAllBytes(Paths.get(bytecodeFilePath.toString())));
-
 			EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
 			this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
-
 		} catch (IOException e) {
 			log.warn("Failed to read bytecode from files: {}, {}", _bytecodeFilePath, _abiFilePath);
 		}
@@ -202,6 +202,8 @@ public class SmartContract {
 
 		if (bytecodeFilePath == null || abiFilePath == null)
 			throw new IllegalArgumentException("bytecodeFilePath and abiFilePath cannot be null");
+		else if (!Files.exists(bytecodeFilePath) || !Files.exists(abiFilePath))
+			throw new IllegalArgumentException("bytecodeFilePath or abiFilePath not found");
 
 		this._bytecodeFilePath = bytecodeFilePath;
 		this._abiFilePath = abiFilePath;
@@ -578,10 +580,9 @@ public class SmartContract {
 	 * the graph to a file in the contract's working directory.
 	 */
 	public void generateCFGWithBasicBlocks() {
-		log.info("Generating graph with basic blocks...");
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
 		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(this), dotFile.toString());
-		log.info("Generated graph with basic blocks at {}", dotFile);
+		log.info("Generated CFG at {}", dotFile);
 	}
 
 	/**

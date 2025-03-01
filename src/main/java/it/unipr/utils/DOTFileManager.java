@@ -118,7 +118,7 @@ public class DOTFileManager {
 
 		try (FileWriter writer = new FileWriter(outputPath)) {
 			writer.write(dotGraph.toString());
-			log.info(".dot file successfully written in {}", outputPath);
+//			log.info(".dot file successfully written in {}", outputPath);
 		} catch (IOException e) {
 			log.error("Error writing .dot file: {}", e.getMessage());
 		}

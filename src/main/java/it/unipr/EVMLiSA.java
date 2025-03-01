@@ -261,6 +261,8 @@ public class EVMLiSA {
 	 * @param contract the smart contract to analyze
 	 */
 	public static void analyzeContract(SmartContract contract) {
+		log.info("Analyzing contract {}...", contract.getAddress());
+
 		Program program;
 		try {
 			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
@@ -276,26 +278,7 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		if (ENABLE_REENTRANCY_CHECKER) {
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
-		}
-		if (ENABLE_TXORIGIN_CHECKER) {
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TxOriginChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
-					new TypeEnvironment<>(new InferredTypes()));
-			lisa.run(program);
-		}
-		if (ENABLE_TIMESTAMPDEPENDENCY_CHECKER) {
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TimestampDependencyChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-					new TimestampDependencyAbstractDomain(),
-					new TypeEnvironment<>(new InferredTypes()));
-			lisa.run(program);
-		}
+		log.info("Analysis ended: CFG built successfully ({})", contract.getAddress());
 
 		contract.setCFG(checker.getComputedCFG());
 		contract.computeFunctionsSignatureEntryPoints();
@@ -304,6 +287,34 @@ public class EVMLiSA {
 		contract.computeEventsExitPoints();
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
+
+		if (ENABLE_REENTRANCY_CHECKER) {
+			log.info("Running reentrancy checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new ReentrancyChecker());
+			lisa.run(program);
+			log.info("{} vulnerabilities found", MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
+		}
+		if (ENABLE_TXORIGIN_CHECKER) {
+			log.info("Running tx. origin checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TxOriginChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+			log.info("{} vulnerabilities found", MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
+		}
+		if (ENABLE_TIMESTAMPDEPENDENCY_CHECKER) {
+			log.info("Running timestamp dependency checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TimestampDependencyChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new TimestampDependencyAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+			log.info("{} vulnerabilities found", MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
+		}
+
 		contract.setVulnerabilities(
 				VulnerabilitiesObject.newVulnerabilitiesObject()
 						.reentrancy(MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
