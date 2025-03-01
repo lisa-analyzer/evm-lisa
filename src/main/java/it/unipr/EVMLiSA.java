@@ -1,6 +1,8 @@
 package it.unipr;
 
 import it.unipr.analysis.*;
+import it.unipr.analysis.contract.BasicBlock;
+import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.EVMCFG;
@@ -38,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * EVMLiSA is the entry point for analyzing EVM bytecode smart contracts using
  * LiSA. It generates a control flow graph (CFG) and applies various security
- * analyses.
+ * checkers.
  */
 public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);

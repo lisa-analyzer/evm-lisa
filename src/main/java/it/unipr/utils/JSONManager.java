@@ -1,8 +1,8 @@
 package it.unipr.utils;
 
-import it.unipr.analysis.BasicBlock;
-import it.unipr.analysis.Signature;
-import it.unipr.analysis.SmartContract;
+import it.unipr.analysis.contract.BasicBlock;
+import it.unipr.analysis.contract.Signature;
+import it.unipr.analysis.contract.SmartContract;
 import it.unipr.cfg.Jumpdest;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
@@ -21,6 +21,14 @@ import org.json.JSONObject;
 public class JSONManager {
 	private static final Logger log = LogManager.getLogger(JSONManager.class);
 
+	/**
+	 * Loads a JSON object from a file.
+	 *
+	 * @param filePath the path of the JSON file
+	 * 
+	 * @return the JSON object parsed from the file, or an empty JSON object in
+	 *             case of failure
+	 */
 	public static JSONObject loadJsonFromFile(Path filePath) {
 		try {
 			String content = new String(Files.readAllBytes(filePath));
@@ -32,6 +40,14 @@ public class JSONManager {
 		}
 	}
 
+	/**
+	 * Reads statistics from a JSON file and returns them as a set of
+	 * StatisticsObject instances.
+	 *
+	 * @param filePath the path of the JSON file
+	 * 
+	 * @return a set of StatisticsObject containing the extracted statistics
+	 */
 	public static Set<StatisticsObject> readStatsFromJSON(Path filePath) {
 		Set<StatisticsObject> groundTruthData = new HashSet<>();
 
@@ -64,6 +80,13 @@ public class JSONManager {
 		return groundTruthData;
 	}
 
+	/**
+	 * Aggregates a list of smart contracts into a single JSON object.
+	 *
+	 * @param contracts the list of smart contracts to aggregate
+	 * 
+	 * @return a JSON object containing the aggregated contracts
+	 */
 	public static JSONObject aggregateSmartContractsToJson(List<SmartContract> contracts) {
 		JSONObject aggregatedJson = new JSONObject();
 		JSONArray contractsArray = new JSONArray();
@@ -76,6 +99,13 @@ public class JSONManager {
 		return aggregatedJson;
 	}
 
+	/**
+	 * Converts the basic blocks of a smart contract into a JSON representation.
+	 *
+	 * @param contract the smart contract containing the basic blocks
+	 * 
+	 * @return a JSON array representing the basic blocks
+	 */
 	public static JSONArray basicBlocksToJson(SmartContract contract) {
 		JSONArray blocksArray = new JSONArray();
 

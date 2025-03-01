@@ -1,7 +1,7 @@
 package it.unipr.utils;
 
-import it.unipr.analysis.EventKnowledge;
-import it.unipr.analysis.Signature;
+import it.unipr.analysis.contract.EventKnowledge;
+import it.unipr.analysis.contract.Signature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

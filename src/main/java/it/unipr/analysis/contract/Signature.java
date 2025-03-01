@@ -1,4 +1,4 @@
-package it.unipr.analysis;
+package it.unipr.analysis.contract;
 
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.*;

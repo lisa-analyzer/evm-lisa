@@ -1,4 +1,4 @@
-package it.unipr.analysis;
+package it.unipr.analysis.contract;
 
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
@@ -23,34 +23,73 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Represents an EVM smart contract with analysis capabilities. Manages contract
+ * bytecode, ABI, and provides methods for CFG analysis and vulnerability
+ * detection.
+ */
 public class SmartContract {
 	private static final Logger log = LogManager.getLogger(SmartContract.class);
 
+	/** Contract address on the Ethereum blockchain. */
 	private String _address;
 
+	/** Raw contract bytecode. */
 	private String _bytecode;
+
+	/** Mnemonic representation of bytecode (opcodes). */
 	private String _mnemonicBytecode;
+
+	/** Contract ABI in JSON format. */
 	private JSONArray _abi;
 
+	/** Base directory for storing contract analysis results. */
 	private static Path _workingDirectory = Path.of("execution", "results");
+
+	/** Path to the contract's ABI file. */
 	private Path _abiFilePath;
+
+	/** Path to the contract's bytecode file. */
 	private Path _bytecodeFilePath;
+
+	/** Path to the contract's mnemonic bytecode file. */
 	private Path _mnemonicBytecodeFilePath;
 
+	/** Control flow graph of the contract. */
 	private EVMCFG _cfg;
+
+	/** Basic blocks extracted from the CFG. */
 	private Set<BasicBlock> _basicBlocks;
+
+	/** Statistical information about the contract analysis. */
 	private StatisticsObject _statistics;
+
+	/** Detected vulnerabilities in the contract. */
 	private VulnerabilitiesObject _vulnerabilities;
 
+	/** Function signatures extracted from the contract ABI. */
 	private Set<Signature> _functionsSignature;
+
+	/** Event signatures extracted from the contract ABI. */
 	private Set<Signature> _eventsSignature;
 
+	/**
+	 * Constructs a new SmartContract with a generated address.
+	 */
 	public SmartContract() {
 		this._address = "contract-" + System.currentTimeMillis();
 		this._functionsSignature = new HashSet<>();
 		this._eventsSignature = new HashSet<>();
 	}
 
+	/**
+	 * Constructs a SmartContract using an Ethereum address. Downloads bytecode
+	 * and ABI from Etherscan if not available locally.
+	 *
+	 * @param address Ethereum address of the contract.
+	 * 
+	 * @throws IllegalArgumentException If the address is invalid.
+	 */
 	public SmartContract(String address) {
 		if (!EthereumUtils.isValidEVMAddress(address))
 			throw new IllegalArgumentException("Invalid address: " + address);
@@ -109,6 +148,13 @@ public class SmartContract {
 		this._eventsSignature = ABIManager.parseEventsFromABI(this._abiFilePath);
 	}
 
+	/**
+	 * Constructs a SmartContract from a bytecode file.
+	 *
+	 * @param bytecodeFilePath Path to the bytecode file.
+	 * 
+	 * @throws IllegalArgumentException If bytecodeFilePath is null.
+	 */
 	public SmartContract(Path bytecodeFilePath) {
 		this();
 		if (bytecodeFilePath == null)
@@ -143,6 +189,14 @@ public class SmartContract {
 		}
 	}
 
+	/**
+	 * Constructs a SmartContract from bytecode and ABI files.
+	 *
+	 * @param bytecodeFilePath Path to the bytecode file.
+	 * @param abiFilePath      Path to the ABI file.
+	 * 
+	 * @throws IllegalArgumentException If either path is null.
+	 */
 	public SmartContract(Path bytecodeFilePath, Path abiFilePath) {
 		this();
 
@@ -171,80 +225,145 @@ public class SmartContract {
 	}
 
 	///////////////////// GETTERs
+	/**
+	 * Returns the contract address.
+	 *
+	 * @return The contract address.
+	 */
 	public String getAddress() {
 		return _address;
 	}
 
+	/**
+	 * Returns the contract bytecode.
+	 *
+	 * @return The raw bytecode.
+	 */
 	public String getBytecode() {
 		return _bytecode;
 	}
 
+	/**
+	 * Returns the contract ABI.
+	 *
+	 * @return The ABI as a JSONArray.
+	 */
 	public JSONArray getAbi() {
 		return _abi;
 	}
 
+	/**
+	 * Returns the path of the ABI file.
+	 *
+	 * @return Path of the ABI file.
+	 */
 	public Path getAbiPath() {
 		return this._abiFilePath;
 	}
 
+	/**
+	 * Returns the path of the bytecode file.
+	 *
+	 * @return Path of the bytecode file.
+	 */
 	public Path getBytecodePath() {
 		return this._bytecodeFilePath;
 	}
 
+	/**
+	 * Returns the working directory for this contract.
+	 *
+	 * @return Working directory path.
+	 */
 	public Path getWorkingDirectory() {
 		return _workingDirectory.resolve(this._address);
 	}
 
+	/**
+	 * Returns the path of the mnemonic bytecode file.
+	 *
+	 * @return Path of the mnemonic bytecode file.
+	 */
 	public Path getMnemonicBytecodePath() {
 		return this._mnemonicBytecodeFilePath;
 	}
 
+	/**
+	 * Returns the control flow graph of the contract.
+	 *
+	 * @return The contract's CFG.
+	 */
 	public EVMCFG getCFG() {
 		return this._cfg;
 	}
 
+	/**
+	 * Returns the basic blocks of the contract.
+	 *
+	 * @return Set of basic blocks.
+	 */
 	public Set<BasicBlock> getBasicBlocks() {
 		return this._basicBlocks;
 	}
 
+	/**
+	 * Returns the function signatures of the contract.
+	 *
+	 * @return Set of function signatures.
+	 */
 	public Set<Signature> getFunctionsSignature() {
 		return this._functionsSignature;
 	}
 
+	/**
+	 * Returns the event signatures of the contract.
+	 *
+	 * @return Set of event signatures.
+	 */
 	public Set<Signature> getEventsSignature() {
 		return this._eventsSignature;
 	}
 
+	/**
+	 * Returns the statistical information about the contract.
+	 *
+	 * @return Statistical object.
+	 */
 	public StatisticsObject getStatistics() {
 		return _statistics;
 	}
 
+	/**
+	 * Returns the vulnerabilities detected in the contract.
+	 *
+	 * @return Vulnerabilities object.
+	 */
 	public VulnerabilitiesObject getVulnerabilities() {
 		return _vulnerabilities;
 	}
 
-	public void printStatistics() {
-		log.info("Total opcodes: {}", _statistics.getTotalOpcodes());
-		log.info("Total jumps: {}", _statistics.getTotalJumps());
-		log.info("Resolved jumps: {}", _statistics.getResolvedJumps());
-		log.info("Definitely unreachable jumps: {}", _statistics.getDefinitelyUnreachableJumps());
-		log.info("Maybe unreachable jumps: {}", _statistics.getMaybeUnreachableJumps());
-		log.info("Unsound jumps: {}", _statistics.getUnsoundJumps());
-		log.info("Maybe unsound jumps: {}", _statistics.getMaybeUnsoundJumps());
-	}
-
-	public void printVulnerabilities() {
-		log.info("Reentrancy: {}", _vulnerabilities.getReentrancy());
-		log.info("Timestamp dependency: {}", _vulnerabilities.getTimestamp());
-		log.info("Tx.Origin: {}", _vulnerabilities.getTxOrigin());
-	}
-
 	///////////////////// SETTERs
+	/**
+	 * Sets the contract address.
+	 *
+	 * @param address The contract address.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setAddress(String address) {
 		this._address = address;
 		return this;
 	}
 
+	/**
+	 * Sets the contract bytecode and generates the mnemonic representation.
+	 *
+	 * @param bytecode The raw bytecode.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 * 
+	 * @throws IllegalArgumentException If bytecode is null.
+	 */
 	public SmartContract setBytecode(String bytecode) {
 		if (bytecode == null)
 			throw new IllegalArgumentException("Bytecode cannot be null");
@@ -269,54 +388,116 @@ public class SmartContract {
 		return this;
 	}
 
+	/**
+	 * Sets the contract ABI.
+	 *
+	 * @param abi The ABI as a JSONArray.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setAbi(JSONArray abi) {
 		this._abi = abi;
 		return this;
 	}
 
+	/**
+	 * Sets the control flow graph and extracts basic blocks.
+	 *
+	 * @param cfg The EVMCFG to set.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setCFG(EVMCFG cfg) {
 		this._cfg = cfg;
 		this._basicBlocks = BasicBlock.getBasicBlocks(cfg);
 		return this;
 	}
 
+	/**
+	 * Sets the statistical information.
+	 *
+	 * @param statistics Statistical object.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setStatistics(StatisticsObject statistics) {
 		this._statistics = statistics;
 		return this;
 	}
 
+	/**
+	 * Sets the vulnerabilities object.
+	 *
+	 * @param vulnerabilities Vulnerabilities object.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setVulnerabilities(VulnerabilitiesObject vulnerabilities) {
 		this._vulnerabilities = vulnerabilities;
 		return this;
 	}
 
+	/**
+	 * Sets the path to the ABI file.
+	 *
+	 * @param abiFilePath Path to the ABI file.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setAbiFilePath(Path abiFilePath) {
 		this._abiFilePath = abiFilePath;
 		return this;
 	}
 
+	/**
+	 * Sets the path to the bytecode file.
+	 *
+	 * @param bytecodeFilePath Path to the bytecode file.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setBytecodeFilePath(Path bytecodeFilePath) {
 		this._bytecodeFilePath = bytecodeFilePath;
 		return this;
 	}
 
+	/**
+	 * Sets the function signatures.
+	 *
+	 * @param functionsSignature Set of function signatures.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setFunctionsSignature(Set<Signature> functionsSignature) {
 		this._functionsSignature = functionsSignature;
 		return this;
 	}
 
+	/**
+	 * Sets the event signatures.
+	 *
+	 * @param eventsSignature Set of event signatures.
+	 * 
+	 * @return This SmartContract instance for method chaining.
+	 */
 	public SmartContract setEventsSignature(Set<Signature> eventsSignature) {
 		this._eventsSignature = eventsSignature;
 		return this;
 	}
 
+	/**
+	 * Sets the working directory for all contract analyses.
+	 *
+	 * @param workingDirectory Path to the working directory.
+	 */
 	public static void setWorkingDirectory(Path workingDirectory) {
 		_workingDirectory = workingDirectory;
 	}
 
 	/**
 	 * Identifies and associates entry points for each function signature in the
-	 * contract.
+	 * contract. Uses the selector from each signature to find matching Push
+	 * statements in the CFG.
 	 */
 	public void computeFunctionsSignatureEntryPoints() {
 		if (_functionsSignature == null) {
@@ -334,6 +515,7 @@ public class SmartContract {
 
 	/**
 	 * Computes the exit points for each function signature in the contract.
+	 * Exit points are determined based on whether the function returns a value.
 	 */
 	public void computeFunctionsSignatureExitPoints() {
 		if (_functionsSignature == null) {
@@ -352,7 +534,8 @@ public class SmartContract {
 
 	/**
 	 * Identifies and associates entry points for each event signature in the
-	 * contract.
+	 * contract. Uses the selector from each signature to find matching Push
+	 * statements in the CFG.
 	 */
 	public void computeEventsSignatureEntryPoints() {
 		if (_eventsSignature == null) {
@@ -390,6 +573,10 @@ public class SmartContract {
 		lisa.run(program);
 	}
 
+	/**
+	 * Generates a DOT graph visualization of the CFG with basic blocks. Saves
+	 * the graph to a file in the contract's working directory.
+	 */
 	public void generateCFGWithBasicBlocks() {
 		log.info("Generating graph with basic blocks...");
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
@@ -397,6 +584,12 @@ public class SmartContract {
 		log.info("Generated graph with basic blocks at {}", dotFile);
 	}
 
+	/**
+	 * Converts this SmartContract to a JSON object. Includes all fields of the
+	 * contract, including bytecode, ABI, signatures, and analysis results.
+	 *
+	 * @return JSONObject representation of this contract.
+	 */
 	public JSONObject toJson() {
 		JSONObject jsonObject = new JSONObject();
 
@@ -442,6 +635,11 @@ public class SmartContract {
 		return toJson().toString(4);
 	}
 
+	/**
+	 * Saves the contract information to a JSON file in the working directory.
+	 *
+	 * @return true if the operation was successful, false otherwise.
+	 */
 	public boolean toFile() {
 		Path outputDir = _workingDirectory.resolve(_address);
 		try {

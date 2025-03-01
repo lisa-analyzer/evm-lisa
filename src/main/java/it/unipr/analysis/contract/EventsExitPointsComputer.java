@@ -1,5 +1,6 @@
-package it.unipr.analysis;
+package it.unipr.analysis.contract;
 
+import it.unipr.analysis.*;
 import it.unipr.cfg.*;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
@@ -76,7 +77,6 @@ public class EventsExitPointsComputer implements
 	 */
 	private void checkForEventSignature(Statement node, AbstractStackSet stacks) {
 		for (AbstractStack originalStack : stacks) {
-//			log.debug("Original stack: {}", originalStack);
 			AbstractStack stack = originalStack.clone();
 
 			stack.pop(); // offset
@@ -85,18 +85,11 @@ public class EventsExitPointsComputer implements
 			if (node instanceof Log1) {
 				StackElement topic = stack.pop();
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic));
-
-//				log.debug("LOG1");
-//				log.debug(toHexFirst4Bytes(topic));
 			} else if (node instanceof Log2) {
 				StackElement topic1 = stack.pop();
 				StackElement topic2 = stack.pop();
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic1));
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic2));
-
-//				log.debug("LOG2");
-//				log.debug(toHexFirst4Bytes(topic1));
-//				log.debug(toHexFirst4Bytes(topic2));
 			} else if (node instanceof Log3) {
 				StackElement topic1 = stack.pop();
 				StackElement topic2 = stack.pop();
@@ -104,11 +97,6 @@ public class EventsExitPointsComputer implements
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic1));
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic2));
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic3));
-
-//				log.debug("LOG3");
-//				log.debug(toHexFirst4Bytes(topic1));
-//				log.debug(toHexFirst4Bytes(topic2));
-//				log.debug(toHexFirst4Bytes(topic3));
 			} else if (node instanceof Log4) {
 				StackElement topic1 = stack.pop();
 				StackElement topic2 = stack.pop();
@@ -118,12 +106,6 @@ public class EventsExitPointsComputer implements
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic2));
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic3));
 				MyCache.getInstance().addEventExitPoint(node, toHexFirst4Bytes(topic4));
-
-//				log.debug("LOG4");
-//				log.debug(toHexFirst4Bytes(topic1));
-//				log.debug(toHexFirst4Bytes(topic2));
-//				log.debug(toHexFirst4Bytes(topic3));
-//				log.debug(toHexFirst4Bytes(topic4));
 			}
 		}
 	}
@@ -164,6 +146,6 @@ public class EventsExitPointsComputer implements
 	 *             element.
 	 */
 	public static String toHex(StackElement value) {
-		return Number.toBigInteger(value.getNumber()).toString(16);
+		return it.unipr.analysis.Number.toBigInteger(value.getNumber()).toString(16);
 	}
 }

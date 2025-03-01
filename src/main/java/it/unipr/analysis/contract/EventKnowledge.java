@@ -1,4 +1,4 @@
-package it.unipr.analysis;
+package it.unipr.analysis.contract;
 
 import java.util.Arrays;
 import java.util.List;

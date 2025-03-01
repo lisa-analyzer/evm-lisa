@@ -1,12 +1,16 @@
 package it.unipr.utils;
 
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 /**
  * Collects statistical data related to CFG analysis.
  */
 public class StatisticsObject {
+	private static final Logger log = LogManager.getLogger(StatisticsObject.class);
+
 	private String address;
 	private int totalOpcodes;
 	private int totalJumps;
@@ -195,5 +199,15 @@ public class StatisticsObject {
 	public int hashCode() {
 		return Objects.hash(address, totalOpcodes, totalJumps, resolvedJumps, definitelyUnreachableJumps,
 				maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps);
+	}
+
+	public static void printStatistics(StatisticsObject statistics) {
+		log.info("Total opcodes: {}", statistics.getTotalOpcodes());
+		log.info("Total jumps: {}", statistics.getTotalJumps());
+		log.info("Resolved jumps: {}", statistics.getResolvedJumps());
+		log.info("Definitely unreachable jumps: {}", statistics.getDefinitelyUnreachableJumps());
+		log.info("Maybe unreachable jumps: {}", statistics.getMaybeUnreachableJumps());
+		log.info("Unsound jumps: {}", statistics.getUnsoundJumps());
+		log.info("Maybe unsound jumps: {}", statistics.getMaybeUnsoundJumps());
 	}
 }

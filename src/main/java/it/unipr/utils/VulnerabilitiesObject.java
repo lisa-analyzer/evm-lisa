@@ -1,8 +1,12 @@
 package it.unipr.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 public class VulnerabilitiesObject {
+	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
+
 	private int reentrancy;
 	private int timestamp;
 	private int txOrigin;
@@ -71,5 +75,11 @@ public class VulnerabilitiesObject {
 	@Override
 	public String toString() {
 		return toJson().toString(4);
+	}
+
+	public static void printVulnerabilities(VulnerabilitiesObject vulnerabilities) {
+		log.info("Reentrancy: {}", vulnerabilities.getReentrancy());
+		log.info("Timestamp dependency: {}", vulnerabilities.getTimestamp());
+		log.info("Tx.Origin: {}", vulnerabilities.getTxOrigin());
 	}
 }

@@ -12,8 +12,8 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Singleton class implementing a cache with an LRU (Least Recently Used)
  * eviction policy. The cache uses a {@link LRUMap} to store key-value pairs
- * where the key is a {@link Pair} of {@link String} and
- * {@link it.unipr.analysis.Number}, and the value is a {@link StackElement}.
+ * where the key is a {@link Pair} of {@link String} and {@link Number}, and the
+ * value is a {@link StackElement}.
  */
 public class MyCache {
 	private static MyCache _instance = null;

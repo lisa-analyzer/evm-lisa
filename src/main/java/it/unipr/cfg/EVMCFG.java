@@ -1,7 +1,7 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.BasicBlock;
 import it.unipr.analysis.Number;
+import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.cfg.push.Push;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
@@ -54,6 +54,13 @@ public class EVMCFG extends CFG {
 		super(cfgDesc);
 	}
 
+	/**
+	 * Identifies and categorizes key statements (hotspot nodes) within the
+	 * control flow graph (CFG). This method initializes sets to store specific
+	 * types of statements, such as storage operations (SSTORE), jump
+	 * destinations (JUMPDEST), jump instructions (JUMP and JUMPI), and pushed
+	 * jumps.
+	 */
 	public void computeHotspotNodes() {
 		this.jumpDestsNodes = new HashSet<Statement>();
 		this.jumpNodes = new HashSet<Statement>();
@@ -472,10 +479,31 @@ public class EVMCFG extends CFG {
 		return foundTarget;
 	}
 
+	/**
+	 * Checks if the target statement is reachable from the start statement
+	 * without traversing any Jumpi instructions.
+	 *
+	 * @param start  the starting statement
+	 * @param target the target statement
+	 * 
+	 * @return true if the target is reachable without passing through Jumpi,
+	 *             false otherwise
+	 */
 	public boolean reachableFromWithoutJumpI(Statement start, Statement target) {
 		return dfsWithoutJumpI(start, target, new HashSet<>());
 	}
 
+	/**
+	 * Performs a depth-first search (DFS) to determine if the target statement
+	 * is reachable from the start statement while avoiding Jumpi instructions.
+	 *
+	 * @param start   the starting statement
+	 * @param target  the target statement
+	 * @param visited the set of already visited statements
+	 * 
+	 * @return true if the target is reachable without passing through Jumpi,
+	 *             false otherwise
+	 */
 	private boolean dfsWithoutJumpI(Statement start, Statement target, Set<Statement> visited) {
 		Stack<Statement> stack = new Stack<>();
 		stack.push(start);
@@ -504,6 +532,18 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
+	/**
+	 * Identifies all possible exit points for a function starting from a given
+	 * statement. Performs a depth-first search from the start statement and
+	 * collects statements that represent function exits based on their type and
+	 * whether the function returns a value.
+	 *
+	 * @param start  The starting statement for the search, usually the function
+	 *                   entry point.
+	 * @param isVoid Whether the function has no return value.
+	 * 
+	 * @return A set of statements that represent function exit points.
+	 */
 	public Set<Statement> getFunctionExitPoints(Statement start, boolean isVoid) {
 		Stack<Statement> stack = new Stack<>();
 		Set<Statement> visited = new HashSet<>();
@@ -541,6 +581,16 @@ public class EVMCFG extends CFG {
 		return functionExitPoints;
 	}
 
+	/**
+	 * Finds the closest Jumpdest statement reachable from a given start
+	 * statement. Performs a breadth-first search to find the nearest Jumpdest
+	 * statement along a true edge.
+	 *
+	 * @param start The starting statement for the search.
+	 * 
+	 * @return The closest Jumpdest statement along a true edge, or null if none
+	 *             is found.
+	 */
 	public Statement getCloserJumpdest(Statement start) {
 		Deque<Statement> queue = new ArrayDeque<>();
 		Set<Statement> visited = new HashSet<>();
