@@ -137,7 +137,7 @@ public class JSONManager {
 			// Edges
 			JSONArray outgoingEdgesArray = new JSONArray();
 			for (Integer edgeId : block.getOutgoingEdges()) {
-				String color = "black";
+				String color = DOTFileManager.blackColor;
 				Statement source = block.getStatements().get(block.getStatements().size() - 1);
 
 				for (BasicBlock b : contract.getBasicBlocks()) {

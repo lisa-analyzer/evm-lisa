@@ -9,16 +9,16 @@ import org.json.JSONObject;
 
 public class DOTFileManager {
 	private static final Logger log = LogManager.getLogger(DOTFileManager.class);
-	public static String purpleColor = "\"#A97FB2\"";
-	public static String lightGreenColor = "\"#A6EC99\"";
-	public static String greenColor = "\"#5F9747\"";
-	public static String greyColor = "\"#D3D3D3\"";
-	public static String lightRedColor = "\"#EF8683\"";
-	public static String redColor = "\"#B70000\"";
-	public static String lightOrangeColor = "\"#FFB38A\"";
-	public static String orangeColor = "\"#FF9248\"";
-	public static String blueColor = "\"#6FA8DC\"";
-	public static String blackColor = "\"#000000\"";
+	public static String purpleColor = "#A97FB2";
+	public static String lightGreenColor = "#A6EC99";
+	public static String greenColor = "#5F9747";
+	public static String greyColor = "#D3D3D3";
+	public static String lightRedColor = "#EF8683";
+	public static String redColor = "#B70000";
+	public static String lightOrangeColor = "#FFB38A";
+	public static String orangeColor = "#FF9248";
+	public static String blueColor = "#6FA8DC";
+	public static String blackColor = "#000000";
 
 	public static void generateDotGraph(JSONArray basicBlocks, String outputPath) {
 		StringBuilder dotGraph = new StringBuilder();
@@ -60,7 +60,7 @@ public class DOTFileManager {
 			}
 
 			dotGraph.append(String.format(
-					"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
+					"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=\"%s\"];\n",
 					id, label.toString(), backgroundColor));
 		}
 
@@ -78,13 +78,13 @@ public class DOTFileManager {
 				// Unreachable jump
 				if (color == null || color.isEmpty()) {
 					dotGraph.append(String.format(
-							"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
+							"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=\"%s\"];\n",
 							targetId, targetId + ": Unreachable jump", purpleColor));
 					color = purpleColor;
 				}
 
 				dotGraph.append(String.format(
-						"\t%d -> %d [color=%s];\n", id, targetId, color));
+						"\t%d -> %d [color=\"%s\"];\n", id, targetId, color));
 			}
 		}
 
@@ -95,22 +95,22 @@ public class DOTFileManager {
 		dotGraph.append("\t\tnode [shape=plaintext];\n");
 		dotGraph.append(
 				"\t\t\"legend\" [label=<<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" cellborder=\"0\">\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">black edge&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.blackColor).append(">sequential edge</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">green edge&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.greenColor).append(">true edge</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">red edge&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.redColor).append(">false edge</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">orange edge&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.orangeColor).append(">sequential multiple edge</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">green background&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.lightGreenColor).append(">correct termination</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">red background&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.lightRedColor).append(">error termination</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">orange background&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.lightOrangeColor).append(">jump to multiple blocks</font></td></tr>\n");
-		dotGraph.append("\t\t\t<tr><td align=\"right\">blue background&nbsp;</td><td align=\"left\"><font color=")
-				.append(DOTFileManager.blueColor).append(">function entrypoint</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">black edge&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.blackColor).append("\">sequential edge</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">green edge&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.greenColor).append("\">true edge</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">red edge&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.redColor).append("\">false edge</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">orange edge&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.orangeColor).append("\">sequential multiple edge</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">green background&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.lightGreenColor).append("\">correct termination</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">red background&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.lightRedColor).append("\">error termination</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">orange background&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.lightOrangeColor).append("\">jump to multiple blocks</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">blue background&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.blueColor).append("\">function entrypoint</font></td></tr>\n");
 		dotGraph.append("\t\t</table>>];\n");
 		dotGraph.append("\t}\n");
 
