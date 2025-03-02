@@ -95,6 +95,8 @@ public class EVMLiSA {
 	 * @param cores the number of cores
 	 */
 	public static void setCores(int cores) {
+		if (cores > Runtime.getRuntime().availableProcessors())
+			cores = Runtime.getRuntime().availableProcessors() - 1;
 		EVMLiSA.CORES = Math.max(cores, 1);
 	}
 

@@ -1,0 +1,69 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "_mainTokenSymbol",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "name": "_mainTokenName",
+                "internalType": "string",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [{
+            "indexed": false,
+            "name": "_msg",
+            "internalType": "string",
+            "type": "string"
+        }],
+        "name": "Log",
+        "anonymous": false,
+        "type": "event"
+    },
+    {
+        "outputs": [],
+        "inputs": [],
+        "name": "start",
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "string",
+            "type": "string"
+        }],
+        "inputs": [],
+        "name": "tokenName",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "string",
+            "type": "string"
+        }],
+        "inputs": [],
+        "name": "tokenSymbol",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [],
+        "name": "withdrawal",
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]

@@ -96,7 +96,7 @@ public class SmartContract {
 
 		this._address = address;
 		Path outputDir = _workingDirectory.resolve(address);
-		this._abiFilePath = outputDir.resolve(address + ".abi.json");
+		this._abiFilePath = outputDir.resolve(address + ".abi");
 		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
 		this._mnemonicBytecodeFilePath = outputDir.resolve(address + ".opcode");
 

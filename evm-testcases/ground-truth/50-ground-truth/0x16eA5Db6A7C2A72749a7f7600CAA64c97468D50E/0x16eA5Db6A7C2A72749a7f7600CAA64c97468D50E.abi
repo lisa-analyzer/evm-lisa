@@ -1,0 +1,49 @@
+[
+    {
+        "inputs": [{
+            "name": "_weth",
+            "internalType": "address",
+            "type": "address"
+        }],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "contract IWETH",
+            "type": "address"
+        }],
+        "inputs": [],
+        "name": "WETH",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "bytecode",
+                "internalType": "bytes",
+                "type": "bytes"
+            },
+            {
+                "name": "inputAmounts",
+                "internalType": "uint256[]",
+                "type": "uint256[]"
+            },
+            {
+                "name": "msgSender",
+                "internalType": "address",
+                "type": "address"
+            }
+        ],
+        "name": "executePath",
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]
