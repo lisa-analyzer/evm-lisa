@@ -1,7 +1,6 @@
 package it.unipr;
 
 import it.unipr.analysis.*;
-import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
@@ -135,33 +134,6 @@ public class EVMLiSA {
 	 */
 	public static void enableTxOriginChecker() {
 		ENABLE_TXORIGIN_CHECKER = true;
-	}
-
-	/**
-	 * Runs example analyses on smart contracts.
-	 *
-	 * @throws Exception if an error occurs during execution
-	 */
-	private void examples() throws Exception {
-		// Single case (address)
-		SmartContract sc = new SmartContract("0x3932f366886d2b981485503a182173da80d15c97");
-		EVMLiSA.analyzeContract(sc);
-		sc.generateCFGWithBasicBlocks(); // generate .dot file
-		sc.toFile(); // save results to file
-		// print basic blocks as (from_block, to_block) pairs
-		log.debug(BasicBlock.basicBlocksToLongArrayToString(
-				BasicBlock.basicBlocksToLongArray(sc.getBasicBlocks())));
-
-		// Single case (bytecode as a path)
-		EVMLiSA.analyzeContract(new SmartContract(Path.of("execution", "results",
-				"0x26366920975b24A89CD991A495d0D70CB8E1BA1F", "0x26366920975b24A89CD991A495d0D70CB8E1BA1F.bytecode")));
-
-		// Single case (bytecode as a string)
-		EVMLiSA.analyzeContract(new SmartContract().setBytecode(
-				"0x608060405234801561001057600080fd5b50600436106100415760003560e01c80636146195414610046578063d88bba1114610050578063fbc7f20e14610087575b600080fd5b61004e6100a2565b005b61006b735a98fcbea516cf06857215779fd812ca3bef1b3281565b6040516001600160a01b03909116815260200160405180910390f35b61006b7387d93d9b2c672bf9c9642d853a8682546a5012b581565b6040516328a1b1ad60e21b8152735a98fcbea516cf06857215779fd812ca3bef1b3260048201527387d93d9b2c672bf9c9642d853a8682546a5012b5602482015273223d844fc4b006d67c0cdbd39371a9f73f69d9749063a286c6b490604401600060405180830381600087803b15801561011c57600080fd5b505af1158015610130573d6000803e3d6000fd5b5050505056fea2646970667358221220bae0c5370f53dc13f1e3000d78511979d423220e1cd1c5e47b343314ab833ff964736f6c63430008110033"));
-
-		// Multiple contracts
-		EVMLiSA.analyzeSetOfContracts(Path.of("benchmark", "50-ground-truth.txt"));
 	}
 
 	/**
