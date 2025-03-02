@@ -112,6 +112,9 @@ public class EVMLiSA {
 		String address = setupAnalysisDirectories(null);
 		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
 
+		AbstractStackSet.setStackSetSize(5);
+		AbstractStack.setStackLimit(80);
+		
 		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
 			writer.write(bytecode);
 		} catch (IOException e) {

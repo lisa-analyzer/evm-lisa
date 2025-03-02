@@ -13,7 +13,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
@@ -257,6 +256,9 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						if (stack.hasBottomUntil(1))
 							continue;
 
+						if (((ProgramCounterLocation) pp.getLocation()).getPc() == 664)
+							System.err.println("h");
+						
 						AbstractStack resultStack = stack.clone();
 						StackElement jmpDest = resultStack.pop();
 //						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
