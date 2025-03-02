@@ -143,6 +143,24 @@ valid jump destination as the top element;
 
 ---
 
+## EVMLiSA as a library
+EVMLiSA can be used as a Java library to analyze Ethereum smart contracts.
+```java
+// Single case (address)
+EVMLiSA.analyzeContract(new SmartContract("0x123456..."));
+
+// Single case (bytecode as a path)
+EVMLiSA.analyzeContract(new SmartContract(Path.of("bytecode", "code.bytecode")));
+
+// Single case (bytecode as a string)
+EVMLiSA.analyzeContract(new SmartContract().setBytecode("0x6080..."));
+
+// Multiple contracts
+EVMLiSA.analyzeSetOfContracts(Path.of("list-of-contracts.txt"));
+```
+
+---
+
 ## Contributors
 <a href="https://github.com/lisa-analyzer/evm-lisa/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=lisa-analyzer/evm-lisa" />
