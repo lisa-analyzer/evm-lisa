@@ -90,7 +90,7 @@ public abstract class TaintAbstractDomain
 				case "PcOperator":
 				case "GasOperator":
 				case "MsizeOperator":
-				case "BlobBaseFee":
+				case "BlobBaseFeeOperator":
 				case "BasefeeOperator":
 				case "CalldatasizeOperator":
 				case "CallvalueOperator":
@@ -146,7 +146,7 @@ public abstract class TaintAbstractDomain
 					return resultStack;
 				}
 
-				case "BlobhashOperator":
+				case "BlobHashOperator":
 				case "BalanceOperator":
 				case "BlockhashOperator":
 				case "NotOperator":
