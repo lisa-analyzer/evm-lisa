@@ -50,39 +50,39 @@ public class Jumpi extends Statement {
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
-		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
-
-		if (valueState == null) {
+//		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
+//
+//		if (valueState == null) {
 			// if EVMLiSA is not using EVMAbstractState, we just return the
 			// small-step
 			// semantics of the JUMPI operator
 			Constant c = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
 			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
 					JumpiOperator.INSTANCE, getLocation()), this);
-		}
+//		}
 
-		// Split here
-		Set<AbstractStack> trueStacks = new HashSet<>();
-		Set<AbstractStack> falseStacks = new HashSet<>();
-		if (!valueState.isBottom() && !valueState.isTop()) {
-			for (AbstractStack st : valueState.getStacks()) {
-				AbstractStack result = st.clone();
-				result.pop();
-				StackElement condition = result.pop();
-				if (condition.isDefinitelyTrue())
-					trueStacks.add(result);
-				else if (condition.isDefinitelyFalse())
-					falseStacks.add(result);
-				else if (condition.isUnknown()) {
-					trueStacks.add(result);
-					falseStacks.add(result);
-				}
-			}
-		}
-
-		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
-				JumpiOperator.INSTANCE, getLocation()), this);
+//		// Split here
+//		Set<AbstractStack> trueStacks = new HashSet<>();
+//		Set<AbstractStack> falseStacks = new HashSet<>();
+//		if (!valueState.isBottom() && !valueState.isTop()) {
+//			for (AbstractStack st : valueState.getStacks()) {
+//				AbstractStack result = st.clone();
+//				result.pop();
+//				StackElement condition = result.pop();
+//				if (condition.isDefinitelyTrue())
+//					trueStacks.add(result);
+//				else if (condition.isDefinitelyFalse())
+//					falseStacks.add(result);
+//				else if (condition.isUnknown()) {
+//					trueStacks.add(result);
+//					falseStacks.add(result);
+//				}
+//			}
+//		}
+//
+//		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
+//		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
+//				JumpiOperator.INSTANCE, getLocation()), this);
 	}
 
 	@Override

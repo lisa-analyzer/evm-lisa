@@ -1979,48 +1979,48 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
 			SemanticOracle oracle) {
 		// Ensures BOTTOM and TOP propagation
-		if (this.isBottom() || this.isTop())
-			return this;
-
-		if (expression instanceof UnaryExpression) {
-			UnaryExpression un = (UnaryExpression) expression;
-			UnaryOperator op = un.getOperator();
-
-			if (op instanceof JumpiOperator) { // JUMPI
-
-				@SuppressWarnings("unchecked")
-				Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>,
-						Set<AbstractStack>>) ((Constant) un.getExpression()).getValue());
-				if (split.getLeft().isEmpty() && split.getRight().isEmpty())
-					return top();
-				else if (split.getLeft().isEmpty())
-					return bottom();
-				return new EVMAbstractState(new AbstractStackSet(split.getLeft(), false), memory, storage);
-
-			} else if (op instanceof LogicalNegation) {
-				// Get the expression wrapped by LogicalNegation
-				SymbolicExpression wrappedExpr = un.getExpression();
-
-				if (wrappedExpr instanceof UnaryExpression) {
-					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
-
-					// Check if LogicalNegation is wrapping a JUMPI
-					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-
-						@SuppressWarnings("unchecked")
-						Pair<Set<AbstractStack>,
-						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-								.getValue());
-						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
-							return top();
-						else if (split.getRight().isEmpty())
-							return bottom();
-						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, storage);
-					}
-				}
-			}
-		}
+//		if (this.isBottom() || this.isTop())
+//			return this;
+//
+//		if (expression instanceof UnaryExpression) {
+//			UnaryExpression un = (UnaryExpression) expression;
+//			UnaryOperator op = un.getOperator();
+//
+//			if (op instanceof JumpiOperator) { // JUMPI
+//
+//				@SuppressWarnings("unchecked")
+//				Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>,
+//						Set<AbstractStack>>) ((Constant) un.getExpression()).getValue());
+//				if (split.getLeft().isEmpty() && split.getRight().isEmpty())
+//					return top();
+//				else if (split.getLeft().isEmpty())
+//					return bottom();
+//				return new EVMAbstractState(new AbstractStackSet(split.getLeft(), false), memory, storage);
+//
+//			} else if (op instanceof LogicalNegation) {
+//				// Get the expression wrapped by LogicalNegation
+//				SymbolicExpression wrappedExpr = un.getExpression();
+//
+//				if (wrappedExpr instanceof UnaryExpression) {
+//					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
+//
+//					// Check if LogicalNegation is wrapping a JUMPI
+//					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
+//
+//						@SuppressWarnings("unchecked")
+//						Pair<Set<AbstractStack>,
+//						Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
+//								AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
+//								.getValue());
+//						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
+//							return top();
+//						else if (split.getRight().isEmpty())
+//							return bottom();
+//						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, storage);
+//					}
+//				}
+//			}
+//		}
 
 		return this;
 	}
