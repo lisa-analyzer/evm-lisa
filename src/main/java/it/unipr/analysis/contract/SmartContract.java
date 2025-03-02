@@ -102,7 +102,8 @@ public class SmartContract {
 
 		// Bytecode case
 		try {
-			// If the bytecode file does not exist, we will do an API request to Etherscan
+			// If the bytecode file does not exist, we will do an API request to
+			// Etherscan
 			File file = new File(String.valueOf(_bytecodeFilePath));
 			if (!file.exists()) {
 				Files.createDirectories(outputDir);
@@ -121,7 +122,8 @@ public class SmartContract {
 
 		// ABI case
 		try {
-			// If the ABI file does not exist, we will do an API request to Etherscan
+			// If the ABI file does not exist, we will do an API request to
+			// Etherscan
 			File file = new File(String.valueOf(_abiFilePath));
 			if (!file.exists()) {
 				Files.createDirectories(outputDir);

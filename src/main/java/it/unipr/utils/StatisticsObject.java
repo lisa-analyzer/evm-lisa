@@ -36,19 +36,19 @@ public class StatisticsObject {
 		this.json = new JSONObject();
 	}
 
-
 	/**
 	 * Creates a new {@code StatisticsObject} with specified values.
 	 *
-	 * @param address                     the contract address
-	 * @param totalOpcodes                 the total number of opcodes
-	 * @param totalJumps                   the total number of jumps
-	 * @param resolvedJumps                the number of resolved jumps
-	 * @param definitelyUnreachableJumps   the number of definitely unreachable jumps
-	 * @param maybeUnreachableJumps        the number of maybe unreachable jumps
-	 * @param unsoundJumps                 the number of unsound jumps
-	 * @param maybeUnsoundJumps            the number of maybe unsound jumps
-	 * @param json                         the JSON representation of the object
+	 * @param address                    the contract address
+	 * @param totalOpcodes               the total number of opcodes
+	 * @param totalJumps                 the total number of jumps
+	 * @param resolvedJumps              the number of resolved jumps
+	 * @param definitelyUnreachableJumps the number of definitely unreachable
+	 *                                       jumps
+	 * @param maybeUnreachableJumps      the number of maybe unreachable jumps
+	 * @param unsoundJumps               the number of unsound jumps
+	 * @param maybeUnsoundJumps          the number of maybe unsound jumps
+	 * @param json                       the JSON representation of the object
 	 */
 	private StatisticsObject(String address, int totalOpcodes, int totalJumps, int resolvedJumps,
 			int definitelyUnreachableJumps,
@@ -80,7 +80,6 @@ public class StatisticsObject {
 	public String getAddress() {
 		return address;
 	}
-
 
 	/**
 	 * Returns the total number of opcodes.
@@ -154,11 +153,11 @@ public class StatisticsObject {
 		return new StatisticsObject();
 	}
 
-
 	/**
 	 * Sets the contract address.
 	 *
 	 * @param address the contract address
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject address(String address) {
@@ -170,6 +169,7 @@ public class StatisticsObject {
 	 * Sets the total number of opcodes.
 	 *
 	 * @param totalOpcodes the total opcodes
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject totalOpcodes(int totalOpcodes) {
@@ -181,6 +181,7 @@ public class StatisticsObject {
 	 * Sets the total number of jumps.
 	 *
 	 * @param totalJumps the total jumps
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject totalJumps(int totalJumps) {
@@ -188,11 +189,11 @@ public class StatisticsObject {
 		return this;
 	}
 
-
 	/**
 	 * Sets the number of resolved jumps.
 	 *
 	 * @param resolvedJumps the resolved jumps
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject resolvedJumps(int resolvedJumps) {
@@ -204,6 +205,7 @@ public class StatisticsObject {
 	 * Sets the number of definitely unreachable jumps.
 	 *
 	 * @param definitelyUnreachableJumps the definitely unreachable jumps
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject definitelyUnreachableJumps(int definitelyUnreachableJumps) {
@@ -211,11 +213,11 @@ public class StatisticsObject {
 		return this;
 	}
 
-
 	/**
 	 * Sets the number of maybe unreachable jumps.
 	 *
 	 * @param maybeUnreachableJumps the maybe unreachable jumps
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject maybeUnreachableJumps(int maybeUnreachableJumps) {
@@ -227,6 +229,7 @@ public class StatisticsObject {
 	 * Sets the number of unsound jumps.
 	 *
 	 * @param unsoundJumps the unsound jumps
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject unsoundJumps(int unsoundJumps) {
@@ -238,6 +241,7 @@ public class StatisticsObject {
 	 * Sets the number of maybe unsound jumps.
 	 *
 	 * @param maybeUnsoundJumps the maybe unsound jumps
+	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
 	public StatisticsObject maybeUnsoundJumps(int maybeUnsoundJumps) {

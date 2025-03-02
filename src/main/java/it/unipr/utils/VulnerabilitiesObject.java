@@ -5,8 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 /**
- * Represents an object that stores information about potential smart contract vulnerabilities,
- * including reentrancy, timestamp dependency, and tx. origin usage.
+ * Represents an object that stores information about potential smart contract
+ * vulnerabilities, including reentrancy, timestamp dependency, and tx. origin
+ * usage.
  */
 public class VulnerabilitiesObject {
 	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
@@ -17,7 +18,8 @@ public class VulnerabilitiesObject {
 	private JSONObject json;
 
 	/**
-	 * Creates a new {@code VulnerabilitiesObject} with default values (-1) for all vulnerabilities.
+	 * Creates a new {@code VulnerabilitiesObject} with default values (-1) for
+	 * all vulnerabilities.
 	 */
 	private VulnerabilitiesObject() {
 		this.reentrancy = -1;
@@ -29,10 +31,10 @@ public class VulnerabilitiesObject {
 	/**
 	 * Creates a new {@code VulnerabilitiesObject} with specified values.
 	 *
-	 * @param reentrancy   the reentrancy vulnerability score
-	 * @param timestamp    the timestamp dependency vulnerability score
-	 * @param txOrigin     the tx.origin vulnerability score
-	 * @param json         the JSON representation of the object
+	 * @param reentrancy the reentrancy vulnerability score
+	 * @param timestamp  the timestamp dependency vulnerability score
+	 * @param txOrigin   the tx.origin vulnerability score
+	 * @param json       the JSON representation of the object
 	 */
 	private VulnerabilitiesObject(int reentrancy, int timestamp, int txOrigin, JSONObject json) {
 		this.reentrancy = reentrancy;
@@ -47,7 +49,6 @@ public class VulnerabilitiesObject {
 		if (txOrigin != -1)
 			this.json.put("tx_origin", this.txOrigin);
 	}
-
 
 	/**
 	 * Returns the reentrancy vulnerability score.
@@ -76,7 +77,6 @@ public class VulnerabilitiesObject {
 		return txOrigin;
 	}
 
-
 	/**
 	 * Creates a new {@code VulnerabilitiesObject} with default values.
 	 *
@@ -90,6 +90,7 @@ public class VulnerabilitiesObject {
 	 * Sets the reentrancy vulnerability score.
 	 *
 	 * @param reentrancy the reentrancy score
+	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject reentrancy(int reentrancy) {
@@ -97,11 +98,11 @@ public class VulnerabilitiesObject {
 		return this;
 	}
 
-
 	/**
 	 * Sets the timestamp dependency vulnerability score.
 	 *
 	 * @param timestamp the timestamp dependency score
+	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject timestamp(int timestamp) {
@@ -113,6 +114,7 @@ public class VulnerabilitiesObject {
 	 * Sets the tx. origin vulnerability score.
 	 *
 	 * @param txOrigin the tx. origin score
+	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject txOrigin(int txOrigin) {
