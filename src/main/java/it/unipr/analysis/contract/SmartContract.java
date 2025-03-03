@@ -106,6 +106,7 @@ public class SmartContract {
 			// Etherscan
 			File file = new File(String.valueOf(_bytecodeFilePath));
 			if (!file.exists()) {
+				Thread.sleep(500); // Etherscan API request limit
 				Files.createDirectories(outputDir);
 				this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
 				// Write bytecode to file
@@ -118,6 +119,8 @@ public class SmartContract {
 			}
 		} catch (IOException e) {
 			log.warn("Failed to load bytecode: {}", address, e);
+		} catch (InterruptedException e) {
+			log.error("Unable to parse bytecode from Etherscan: {}", address, e);
 		}
 
 		// ABI case
@@ -126,6 +129,7 @@ public class SmartContract {
 			// Etherscan
 			File file = new File(String.valueOf(_abiFilePath));
 			if (!file.exists()) {
+				Thread.sleep(500); // Etherscan API request limit
 				Files.createDirectories(outputDir);
 				this._abi = EVMFrontend.parseABIFromEtherscan(address);
 				// Write ABI to file
@@ -138,6 +142,8 @@ public class SmartContract {
 			}
 		} catch (IOException e) {
 			log.warn("Failed to load ABI: {}", address, e);
+		} catch (InterruptedException e) {
+			log.error("Unable to parse ABI from Etherscan: {}", address, e);
 		}
 
 		try {

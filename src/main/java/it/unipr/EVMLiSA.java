@@ -260,7 +260,7 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Analysis ended: CFG built successfully ({})", contract.getAddress());
+		log.info("Analysis ended ({})", contract.getAddress());
 
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
@@ -311,7 +311,7 @@ public class EVMLiSA {
 									.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
 							.build());
 			contract.generateCFGWithBasicBlocks();
-			contract.toFile(); // save results to file
+			contract.toFile();
 		}
 	}
 
@@ -341,9 +341,6 @@ public class EVMLiSA {
 	 */
 	private static StatisticsObject computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
-
-		log.info("### Calculating statistics ###");
-
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 
 		int resolvedJumps = 0;
@@ -425,15 +422,7 @@ public class EVMLiSA {
 			}
 		}
 
-		log.info("Total opcodes: {}", cfg.getOpcodeCount());
-		log.info("Total jumps: {}", cfg.getAllJumps().size());
-		log.info("Resolved jumps: {}", resolvedJumps);
-		log.info("Definitely unreachable jumps: {}", definitelyUnreachable);
-		log.info("Maybe unreachable jumps: {}", maybeUnreachable);
-		log.info("Unsound jumps: {}", unsoundJumps);
-		log.info("Maybe unsound jumps: {}", maybeUnsoundJumps);
-
-		return StatisticsObject.newStatisticsObject()
+		StatisticsObject stats = StatisticsObject.newStatisticsObject()
 				.totalOpcodes(cfg.getOpcodeCount())
 				.totalJumps(cfg.getAllJumps().size())
 				.resolvedJumps(resolvedJumps)
@@ -442,6 +431,10 @@ public class EVMLiSA {
 				.unsoundJumps(unsoundJumps)
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.build();
+
+		log.info("### Calculating statistics ###\n{}", stats);
+
+		return stats;
 	}
 
 	/**
@@ -502,13 +495,12 @@ public class EVMLiSA {
 		try {
 			File myObj = new File(String.valueOf(filePath));
 			Scanner myReader = new Scanner(myObj);
+			int counter = 0;
 
 			while (myReader.hasNextLine()) {
 				String address = myReader.nextLine();
 				contracts.add(new SmartContract(address));
-
-				log.info("Created contract: {}", address);
-				Thread.sleep(500);
+				log.info("Created contract ({}): {}", ++counter, address);
 			}
 			myReader.close();
 
