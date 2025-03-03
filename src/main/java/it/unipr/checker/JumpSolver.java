@@ -3,16 +3,8 @@ package it.unipr.checker;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
-import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.frontend.EVMLiSAFeatures;
-import it.unipr.frontend.EVMLiSATypeSystem;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -22,18 +14,12 @@ import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
-import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.edge.SequentialEdge;
-import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * filtering all the possible destinations and adding the missing edges.
  */
 public class JumpSolver implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(JumpSolver.class);
 
@@ -113,7 +99,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool) {
 
 		this.unreachableJumps = new HashSet<>();
 		this.maybeUnsoundJumps = new HashSet<>();
@@ -126,7 +112,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(this.cfgToAnalyze)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
@@ -167,30 +153,31 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 
 		return;
 
-
-		//		this.fixpoint = true;
+		// this.fixpoint = true;
 		//
-		//		LiSAConfiguration conf = tool.getConfiguration();
-		//		LiSA lisa = new LiSA(conf);
+		// LiSAConfiguration conf = tool.getConfiguration();
+		// LiSA lisa = new LiSA(conf);
 		//
-		//		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		//		program.addCodeMember(cfgToAnalyze);
+		// Program program = new Program(new EVMLiSAFeatures(), new
+		// EVMLiSATypeSystem());
+		// program.addCodeMember(cfgToAnalyze);
 		//
-		//		try {
-		//			lisa.run(program);
-		//		} catch (AnalysisException e) {
-		//			log.error("(JumpSolver): {}", e.getMessage());
-		//		}
+		// try {
+		// lisa.run(program);
+		// } catch (AnalysisException e) {
+		// log.error("(JumpSolver): {}", e.getMessage());
+		// }
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 		this.cfgToAnalyze = (EVMCFG) graph;
 		return true;
 	}
-	
+
 //	/**
 //	 * {@inheritDoc} Visits the CFG, focusing only on JUMP and JUMPI statements.
 //	 * Tries to solve the jump destinations by inspecting the interval at the

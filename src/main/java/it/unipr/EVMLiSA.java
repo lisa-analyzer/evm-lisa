@@ -114,7 +114,7 @@ public class EVMLiSA {
 
 		AbstractStackSet.setStackSetSize(stackSetSize);
 		AbstractStack.setStackLimit(stackLimit);
-		
+
 		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
 			writer.write(bytecode);
 		} catch (IOException e) {

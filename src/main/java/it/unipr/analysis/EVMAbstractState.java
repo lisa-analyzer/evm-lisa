@@ -1,18 +1,5 @@
 package it.unipr.analysis;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
@@ -33,13 +20,23 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState
-implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
+		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 
 	private static final Logger log = LogManager.getLogger(EVMAbstractState.class);
 
@@ -267,11 +264,14 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						if (jmpDest.isTop())
 							result.add(resultStack);
 						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
-							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream().filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()).equals(jmpDest.getNumber())).findFirst().get();
+							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+									.filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc())
+											.equals(jmpDest.getNumber()))
+									.findFirst().get();
 							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
 								((EVMCFG) pp.getCFG()).addEdge(new SequentialEdge((Statement) pp, dest));
 							result.add(resultStack);
-						} 
+						}
 					}
 
 					if (result.isEmpty())
@@ -294,11 +294,14 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						if (jmpDest.isTop())
 							result.add(resultStack);
 						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
-							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream().filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest.getNumber().intValue()).findFirst().get();
+							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+									.filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest
+											.getNumber().intValue())
+									.findFirst().get();
 							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
 								((EVMCFG) pp.getCFG()).addEdge(new TrueEdge((Statement) pp, dest));
 							result.add(resultStack);
-						} 
+						}
 					}
 
 					if (result.isEmpty())
