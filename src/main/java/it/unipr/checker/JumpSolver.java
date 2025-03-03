@@ -183,76 +183,84 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironm
 		//		}
 	}
 
-	/**
-	 * {@inheritDoc} Visits the CFG, focusing only on JUMP and JUMPI statements.
-	 * Tries to solve the jump destinations by inspecting the interval at the
-	 * top of the symbolic stack.
-	 * 
-	 * @param tool  the semantic check tool that is running this check.
-	 * @param graph the CFG to visit.
-	 * @param node  the current node of the CFG.
-	 */
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Statement node) {
-
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph) {
 		this.cfgToAnalyze = (EVMCFG) graph;
-
-		if (cfgToAnalyze.getAllPushedJumps().contains(node))
-			return true;
-
-		// Iterate over all the analysis results, in our case there will be only
-		// one result.
-		//		for (AnalyzedCFG<
-		//				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
-		//						.getResultOf(this.cfgToAnalyze)) {
-		//			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-		//					TypeEnvironment<InferredTypes>>> analysisResult = null;
-		//
-		//			try {
-		//				analysisResult = result.getAnalysisStateBefore(node);
-		//			} catch (SemanticException e1) {
-		//				e1.printStackTrace();
-		//
-		//			}
-		//
-		//			// Retrieve the symbolic stack from the analysis result
-		//			EVMAbstractState valueState = analysisResult.getState().getValueState();
-		//
-		//			// If the abstract stack is top or bottom, or it is empty, we do not
-		//			// have enough information to solve the jump.
-		//			if (valueState.isBottom()) {
-		//				continue;
-		//			} else if (valueState.isTop()) {
-		//				log.warn("Not solved jump (state is top): {} [{}]", node,
-		//						((ProgramCounterLocation) node.getLocation()).getPc());
-		//				continue;
-		//			}
-		//
-		//			Set<Number> flattenedTopStack = valueState.getTop().stream()
-		//					.filter(t -> !t.isTop() && !t.isBottom())
-		//					.map(s -> s.getNumber())
-		//					.collect(Collectors.toSet());
-		//
-		//			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
-		//					.filter(pc -> {
-		//						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
-		//						int pcValue = pcLocation.getPc();
-		//						// Check if the value is in the flattened set
-		//						return flattenedTopStack.contains(new Number(pcValue));
-		//					})
-		//					.collect(Collectors.toSet());
-		//
-		//			// For each JUMPDEST, add the missing edge from this node to
-		//			// the JUMPDEST.
-		//			if (node instanceof Jump)
-		//				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
-		//			else
-		//				addEdgesToCFG(node, filteredDests, TrueEdge.class);
-		//		}
-
 		return true;
 	}
+	
+//	/**
+//	 * {@inheritDoc} Visits the CFG, focusing only on JUMP and JUMPI statements.
+//	 * Tries to solve the jump destinations by inspecting the interval at the
+//	 * top of the symbolic stack.
+//	 * 
+//	 * @param tool  the semantic check tool that is running this check.
+//	 * @param graph the CFG to visit.
+//	 * @param node  the current node of the CFG.
+//	 */
+//	@Override
+//	public boolean visit(
+//			CheckToolWithAnalysisResults<
+//			SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
+//			CFG graph, Statement node) {
+//
+////		
+////
+////		if (cfgToAnalyze.getAllPushedJumps().contains(node))
+////			return true;
+//
+//		// Iterate over all the analysis results, in our case there will be only
+//		// one result.
+//		//		for (AnalyzedCFG<
+//		//				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
+//		//						.getResultOf(this.cfgToAnalyze)) {
+//		//			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
+//		//					TypeEnvironment<InferredTypes>>> analysisResult = null;
+//		//
+//		//			try {
+//		//				analysisResult = result.getAnalysisStateBefore(node);
+//		//			} catch (SemanticException e1) {
+//		//				e1.printStackTrace();
+//		//
+//		//			}
+//		//
+//		//			// Retrieve the symbolic stack from the analysis result
+//		//			EVMAbstractState valueState = analysisResult.getState().getValueState();
+//		//
+//		//			// If the abstract stack is top or bottom, or it is empty, we do not
+//		//			// have enough information to solve the jump.
+//		//			if (valueState.isBottom()) {
+//		//				continue;
+//		//			} else if (valueState.isTop()) {
+//		//				log.warn("Not solved jump (state is top): {} [{}]", node,
+//		//						((ProgramCounterLocation) node.getLocation()).getPc());
+//		//				continue;
+//		//			}
+//		//
+//		//			Set<Number> flattenedTopStack = valueState.getTop().stream()
+//		//					.filter(t -> !t.isTop() && !t.isBottom())
+//		//					.map(s -> s.getNumber())
+//		//					.collect(Collectors.toSet());
+//		//
+//		//			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
+//		//					.filter(pc -> {
+//		//						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
+//		//						int pcValue = pcLocation.getPc();
+//		//						// Check if the value is in the flattened set
+//		//						return flattenedTopStack.contains(new Number(pcValue));
+//		//					})
+//		//					.collect(Collectors.toSet());
+//		//
+//		//			// For each JUMPDEST, add the missing edge from this node to
+//		//			// the JUMPDEST.
+//		//			if (node instanceof Jump)
+//		//				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
+//		//			else
+//		//				addEdgesToCFG(node, filteredDests, TrueEdge.class);
+//		//		}
+//
+//		return true;
+//	}
 }

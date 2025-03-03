@@ -107,13 +107,13 @@ public class EVMLiSA {
 	 * @throws IOException If an error occurs while writing the bytecode to a
 	 *                         file.
 	 */
-	public List<Long[]> computeBasicBlocks(String bytecode) throws IOException {
+	public List<Long[]> computeBasicBlocks(String bytecode, int stackSetSize, int stackLimit) throws IOException {
 		JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		String address = setupAnalysisDirectories(null);
 		String bytecodeFullPath = _outputDirPath.resolve(address).toString();
 
-		AbstractStackSet.setStackSetSize(5);
-		AbstractStack.setStackLimit(80);
+		AbstractStackSet.setStackSetSize(stackSetSize);
+		AbstractStack.setStackLimit(stackLimit);
 		
 		try (FileWriter writer = new FileWriter(bytecodeFullPath)) {
 			writer.write(bytecode);
