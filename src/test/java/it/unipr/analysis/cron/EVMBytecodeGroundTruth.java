@@ -27,8 +27,8 @@ public class EVMBytecodeGroundTruth {
 		EVMLiSA.setStackLimit(32);
 		EVMLiSA.setStackSetSize(8);
 		EVMLiSA.setWorkingDirectory(WORKING_DIRECTORY_PATH);
-		EVMLiSA.setCores(4);
-		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
+		EVMLiSA.setCores(6);
+		EVMLiSA.setTestMode();
 		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH);
 
 		Set<StatisticsObject> groundTruthData = JSONManager.readStatsFromJSON(GROUND_TRUTH_FILE_PATH);
