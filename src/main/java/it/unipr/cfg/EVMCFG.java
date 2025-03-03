@@ -517,14 +517,14 @@ public class EVMCFG extends CFG {
 		basicBlocks = modifiedBlocks;
 
 		// TODO check
-		Set<BasicBlock> newBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			if (block.getStatements().size() > 1
-					|| !(block.getStatements().get(0) instanceof Jumpdest))
-				newBlocks.add(block);
-		}
+//		Set<BasicBlock> newBlocks = new HashSet<>();
+//		for (BasicBlock block : basicBlocks) {
+//			if (block.getStatements().size() > 1
+//					|| !(block.getStatements().get(0) instanceof Jumpdest))
+//				newBlocks.add(block);
+//		}
+//		basicBlocks = newBlocks;
 
-		basicBlocks = newBlocks;
 		return basicBlocks;
 	}
 
