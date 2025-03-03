@@ -476,56 +476,41 @@ public class EVMCFG extends CFG {
 			}
 		}
 
-		// Split basic blocks on jumpdest
-		Set<BasicBlock> modifiedBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			List<Statement> statements = block.getStatements();
-			List<Integer> splitIndexes = new ArrayList<>();
+		// Handle Jumpdest: Split blocks correctly
+	    Set<BasicBlock> modifiedBlocks = new HashSet<>();
+	    for (BasicBlock block : basicBlocks) {
+	        List<Statement> statements = block.getStatements();
+	        List<Integer> splitIndexes = new ArrayList<>();
 
-			for (int i = 1; i < statements.size(); i++) { // skip the first
-															// opcode of the
-															// basic block
-				if (statements.get(i) instanceof Jumpdest) {
-					splitIndexes.add(i);
-				}
-			}
+	        for (int i = 1; i < statements.size(); i++) {
+	            if (statements.get(i) instanceof Jumpdest && getIngoingEdges(statements.get(i)).stream().filter(t -> t.getSource() instanceof Jump  || t.getSource() instanceof Jumpi).count() == 0) {
+	                splitIndexes.add(i);
+	            }
+	        }
 
-			if (!splitIndexes.isEmpty()) {
-				BasicBlock currentBlock = new BasicBlock(block.getId(), block.getBlockType());
-				modifiedBlocks.add(currentBlock);
+	        if (!splitIndexes.isEmpty()) {
+	            BasicBlock currentBlock = new BasicBlock(block.getId(), block.getBlockType());
+	            modifiedBlocks.add(currentBlock);
 
-				for (int i = 0; i < statements.size(); i++) {
-					if (splitIndexes.contains(i)) {
-						int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
-						BasicBlock newBlock = new BasicBlock(newBlockId, BasicBlock.BlockType.SPLITTED);
-						modifiedBlocks.add(newBlock);
+	            for (int i = 0; i < statements.size(); i++) {
+	                if (splitIndexes.contains(i)) {
+	                    int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
+	                    BasicBlock newBlock = new BasicBlock(newBlockId, BasicBlock.BlockType.SPLITTED);
+	                    modifiedBlocks.add(newBlock);
+	                    currentBlock.addEdge(newBlockId);
+	                    currentBlock = newBlock;
+	                }
+	                currentBlock.addStatement(statements.get(i));
+	            }
 
-						currentBlock.addEdge(newBlockId);
+	            currentBlock.getOutgoingEdges().addAll(block.getOutgoingEdges());
+	        } else {
+	            modifiedBlocks.add(block);
+	        }
+	    }
 
-						currentBlock = newBlock;
-					}
-
-					currentBlock.addStatement(statements.get(i));
-				}
-
-				currentBlock.getOutgoingEdges().addAll(block.getOutgoingEdges());
-			} else {
-				modifiedBlocks.add(block);
-			}
-		}
-
-		basicBlocks = modifiedBlocks;
-
-		// TODO check
-//		Set<BasicBlock> newBlocks = new HashSet<>();
-//		for (BasicBlock block : basicBlocks) {
-//			if (block.getStatements().size() > 1
-//					|| !(block.getStatements().get(0) instanceof Jumpdest))
-//				newBlocks.add(block);
-//		}
-//		basicBlocks = newBlocks;
-
-		return basicBlocks;
+	    basicBlocks = modifiedBlocks;
+	    return basicBlocks;
 	}
 
 	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
