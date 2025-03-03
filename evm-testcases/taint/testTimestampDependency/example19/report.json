@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_taint_testTimestampDependency_example19_example20.sol().json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "27ms",
+    "end" : "2025-02-28T16:42:43.654+01:00",
+    "expressions" : "5",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "1",
+    "programs" : "1",
+    "start" : "2025-02-28T16:42:43.627+01:00",
+    "statements" : "8",
+    "units" : "0",
+    "version" : "0.1",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "false",
+    "wideningThreshold" : "5",
+    "workdir" : "evm-outputs/taint/testTimestampDependency/example19"
+  }
+}
