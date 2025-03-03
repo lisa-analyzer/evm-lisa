@@ -256,9 +256,6 @@ implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
 						if (stack.hasBottomUntil(1))
 							continue;
 
-						if (((ProgramCounterLocation) pp.getLocation()).getPc() == 664)
-							System.err.println("h");
-						
 						AbstractStack resultStack = stack.clone();
 						StackElement jmpDest = resultStack.pop();
 //						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
