@@ -206,7 +206,6 @@ public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysi
 		perform(conf);
 	}
 
-
 	@Test
 	public void testTimestampDependency22() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example22", "example23.sol",
