@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,8 +117,8 @@ public class EVMCFG extends CFG {
 	public Set<Number> getAllJumpdestLocations() {
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
-					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
-					.collect(Collectors.toSet());
+			.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
+			.collect(Collectors.toSet());
 		else
 			return jumpDestsNodesLocations;
 
@@ -161,7 +162,7 @@ public class EVMCFG extends CFG {
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-				: new Fixpoint<>(this, false);
+						: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A> asc = new EVMAscendingFixpoint<>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -198,13 +199,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-			T extends TypeDomain<T>,
-			A extends AbstractState<A>,
-			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-					boolean isOptimized, AnalysisState<A> singleton,
-					Map<Statement, AnalysisState<A>> startingPoints,
-					InterproceduralAnalysis<A> interprocedural, ScopeId id,
-					Map<Statement, CompoundState<A>> fixpointResults) {
+	T extends TypeDomain<T>,
+	A extends AbstractState<A>,
+	H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
+			boolean isOptimized, AnalysisState<A> singleton,
+			Map<Statement, AnalysisState<A>> startingPoints,
+			InterproceduralAnalysis<A> interprocedural, ScopeId id,
+			Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -215,7 +216,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override
@@ -405,7 +406,7 @@ public class EVMCFG extends CFG {
 	public Set<BasicBlock> basicBlocks() {
 		Statement start = this.getEntrypoints().stream().findFirst().orElse(null);
 		if (start == null)
-			return null;
+			return Collections.emptySet();
 
 		Set<Statement> visited = new HashSet<>();
 		Deque<Statement> stack = new ArrayDeque<>();
@@ -417,116 +418,76 @@ public class EVMCFG extends CFG {
 			if (visited.contains(current))
 				continue;
 
-			Statement blockStart = current;
-			Statement blockEnd = current;
 			List<Statement> statements = new ArrayList<>();
+			Statement blockStart = current;
 
 			while (true) {
-				statements.add(blockEnd);
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
-
-				if (outgoingEdges.isEmpty()
-						|| blockEnd instanceof Jump
-						|| blockEnd instanceof Jumpi
-						|| blockEnd instanceof Invalid
-						|| blockEnd instanceof Stop
-						|| blockEnd instanceof Revert
-						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Ret) {
+				if (current instanceof Jumpdest && !statements.isEmpty()) {
+					stack.push(current);
 					break;
 				}
 
-				Statement next = outgoingEdges.iterator().next().getDestination();
-				if (visited.contains(next))
+				statements.add(current);
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				// Terminate block if current statement is an ending type
+				if (current instanceof Jump || current instanceof Jumpi ||
+						current instanceof Invalid || current instanceof Stop ||
+						current instanceof Revert || current instanceof Selfdestruct) {
+					for (Edge edge : outgoingEdges) {
+						stack.push(edge.getDestination());
+					}
 					break;
+				}
 
-				visited.add(next);
-
-				if (next instanceof Ret)
+				if (outgoingEdges.isEmpty()) {
 					break;
+				}
 
-				blockEnd = next;
+				boolean foundNext = false;
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
 
+					if (next == current) {
+						continue; // Preserve self-loops
+					}
+
+					if (next instanceof Jumpdest) {
+						stack.push(next);
+						break;
+					}
+
+					current = next;
+					foundNext = true;
+					break;
+				}
+
+				if (!foundNext) {
+					break;
+				}
 			}
 
 			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
-			BasicBlock.BlockType blockType = getBlockType(blockEnd);
-
-			if (blockType.equals(BasicBlock.BlockType.RET))
-				continue;
+			BasicBlock.BlockType blockType = getBlockType(current);
 
 			BasicBlock basicBlock = new BasicBlock(startPc, blockType);
-
 			for (Statement stmt : statements) {
 				basicBlock.addStatement(stmt);
 			}
 
-			for (Edge edge : getOutgoingEdges(blockEnd)) {
+			for (Edge edge : list.getOutgoingEdges(current)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
-				if (startPc != endPc
-						&& !(edge.getDestination() instanceof Ret)) {
-					basicBlock.addEdge(endPc);
-				}
-			}
-
-			basicBlocks.add(basicBlock);
-
-			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
+				basicBlock.addEdge(endPc);
 				stack.push(edge.getDestination());
 			}
+			basicBlocks.add(basicBlock);
 		}
-
-		// Split basic blocks on jumpdest
-		Set<BasicBlock> modifiedBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			List<Statement> statements = block.getStatements();
-			List<Integer> splitIndexes = new ArrayList<>();
-
-			for (int i = 1; i < statements.size(); i++) { // skip the first
-															// opcode of the
-															// basic block
-				if (statements.get(i) instanceof Jumpdest) {
-					splitIndexes.add(i);
-				}
-			}
-
-			if (!splitIndexes.isEmpty()) {
-				BasicBlock currentBlock = new BasicBlock(block.getId(), block.getBlockType());
-				modifiedBlocks.add(currentBlock);
-
-				for (int i = 0; i < statements.size(); i++) {
-					if (splitIndexes.contains(i)) {
-						int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
-						BasicBlock newBlock = new BasicBlock(newBlockId, BasicBlock.BlockType.SPLITTED);
-						modifiedBlocks.add(newBlock);
-
-						currentBlock.addEdge(newBlockId);
-
-						currentBlock = newBlock;
-					}
-
-					currentBlock.addStatement(statements.get(i));
-				}
-
-				currentBlock.getOutgoingEdges().addAll(block.getOutgoingEdges());
-			} else {
-				modifiedBlocks.add(block);
-			}
-		}
-
-		basicBlocks = modifiedBlocks;
-
-		// TODO check
-//		Set<BasicBlock> newBlocks = new HashSet<>();
-//		for (BasicBlock block : basicBlocks) {
-//			if (block.getStatements().size() > 1
-//					|| !(block.getStatements().get(0) instanceof Jumpdest))
-//				newBlocks.add(block);
-//		}
-//		basicBlocks = newBlocks;
 
 		return basicBlocks;
 	}
+
 
 	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
 		if (lastStatement instanceof Jump)
@@ -644,19 +605,19 @@ public class EVMCFG extends CFG {
 				JSONObject lastInstr = instructions.getJSONObject(instructions.length() - 1);
 
 				label.append(firstInstr.getInt("pc")).append(": ").append(firstInstr.getString("instruction"))
-						.append("\\l");
+				.append("\\l");
 				label.append(secondInstr.getInt("pc")).append(": ").append(secondInstr.getString("instruction"))
-						.append("\\l");
+				.append("\\l");
 				label.append("...\n");
 				label.append(secondLastInstr.getInt("pc")).append(": ").append(secondLastInstr.getString("instruction"))
-						.append("\\l");
+				.append("\\l");
 				label.append(lastInstr.getInt("pc")).append(": ").append(lastInstr.getString("instruction"))
-						.append("\\l");
+				.append("\\l");
 			} else {
 				for (int j = 0; j < instructions.length(); j++) {
 					JSONObject instr = instructions.getJSONObject(j);
 					label.append(instr.getInt("pc")).append(": ")
-							.append(instr.getString("instruction")).append("\\l");
+					.append(instr.getString("instruction")).append("\\l");
 				}
 			}
 
