@@ -547,6 +547,8 @@ public class EVMLiSA {
 			JumpSolver.setLinkUnsoundJumpsToAllJumpdest();
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
 			EVMAbstractState.setUseStorageLive();
+		if (cmd.hasOption("etherscan-api-key"))
+			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
 	}
 
 	private Options getOptions() {
@@ -658,6 +660,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option etherscanAPIKeyOption = Option.builder()
+				.longOpt("etherscan-api-key")
+				.desc("Insert your Etherscan API key.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -673,6 +682,7 @@ public class EVMLiSA {
 		options.addOption(enableTxOriginCheckerOption);
 		options.addOption(enableTimestampDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
+		options.addOption(etherscanAPIKeyOption);
 
 		return options;
 	}

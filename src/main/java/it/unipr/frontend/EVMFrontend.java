@@ -30,6 +30,29 @@ import org.json.JSONObject;
  * ETHERSCAN_API_KEY.
  */
 public class EVMFrontend {
+	private static String ETHERSCAN_API_KEY = "";
+
+	/**
+	 * Sets the Etherscan API key for making requests to the Etherscan API.
+	 *
+	 * @param apiKey The API key to be used for Etherscan API calls.
+	 */
+	public static void setEtherscanAPIKey(String apiKey) {
+		ETHERSCAN_API_KEY = apiKey;
+	}
+
+	/**
+	 * Retrieves the Etherscan API key.
+	 * If no API key is currently set, attempts to load it from environment variables.
+	 *
+	 * @return The Etherscan API key, or null if no key is available.
+	 */
+	private static String getEtherscanAPIKey(){
+		if (ETHERSCAN_API_KEY == null || ETHERSCAN_API_KEY.isEmpty())
+			return Dotenv.load().get("ETHERSCAN_API_KEY");
+		return ETHERSCAN_API_KEY;
+	}
+
 	/**
 	 * Verifies the syntactic correctness of the smart contract bytecode stored
 	 * in {@code filePath} and returns its {@code ProgramContext}.
@@ -642,8 +665,7 @@ public class EVMFrontend {
 	 */
 	public static String etherscanRequest(String module, String action, String address) throws IOException {
 		// Get the API key from the environment variable
-		Dotenv dotenv = Dotenv.load();
-		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
+		final String API_KEY = EVMFrontend.getEtherscanAPIKey();
 
 		// Check if API key was retrieved correctly from the environment
 		// variable
@@ -705,8 +727,7 @@ public class EVMFrontend {
 	public static String etherscanRequest(String module, String action, String position, String address)
 			throws IOException {
 		// Get the API key from the environment variable
-		Dotenv dotenv = Dotenv.load();
-		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
+		final String API_KEY = EVMFrontend.getEtherscanAPIKey();
 
 		// Check if API key was retrieved correctly from the environment
 		// variable
