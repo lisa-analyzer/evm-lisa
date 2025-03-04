@@ -153,7 +153,10 @@ public class JSONManager {
 						int destPc = ((ProgramCounterLocation) dest.getLocation()).getPc();
 						if (source instanceof Jumpi
 								&& dest instanceof Jumpdest
-								&& ((sourcePc + 1) != destPc)) // jumpdest as first opcode in jumpi's false branch
+								&& ((sourcePc + 1) != destPc)) // jumpdest as
+																// first opcode
+																// in jumpi's
+																// false branch
 							color = DOTFileManager.greenColor;
 						else if (source instanceof Jumpi)
 							color = DOTFileManager.redColor;

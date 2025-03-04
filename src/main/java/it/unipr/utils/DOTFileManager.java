@@ -111,6 +111,8 @@ public class DOTFileManager {
 				.append(DOTFileManager.lightOrangeColor).append("\">jump to multiple blocks</font></td></tr>\n");
 		dotGraph.append("\t\t\t<tr><td align=\"right\">blue background&nbsp;</td><td align=\"left\"><font color=\"")
 				.append(DOTFileManager.blueColor).append("\">function entrypoint</font></td></tr>\n");
+		dotGraph.append("\t\t\t<tr><td align=\"right\">purple background&nbsp;</td><td align=\"left\"><font color=\"")
+				.append(DOTFileManager.purpleColor).append("\">event entrypoint</font></td></tr>\n");
 		dotGraph.append("\t\t</table>>];\n");
 		dotGraph.append("\t}\n");
 

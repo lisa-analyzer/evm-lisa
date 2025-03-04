@@ -42,12 +42,12 @@ public class EVMFrontend {
 	}
 
 	/**
-	 * Retrieves the Etherscan API key.
-	 * If no API key is currently set, attempts to load it from environment variables.
+	 * Retrieves the Etherscan API key. If no API key is currently set, attempts
+	 * to load it from environment variables.
 	 *
 	 * @return The Etherscan API key, or null if no key is available.
 	 */
-	private static String getEtherscanAPIKey(){
+	private static String getEtherscanAPIKey() {
 		if (ETHERSCAN_API_KEY == null || ETHERSCAN_API_KEY.isEmpty())
 			return Dotenv.load().get("ETHERSCAN_API_KEY");
 		return ETHERSCAN_API_KEY;
