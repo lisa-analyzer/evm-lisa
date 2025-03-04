@@ -47,7 +47,8 @@ public class BasicBlock {
 		INVALID,
 		UNKNOWN,
 		SPLITTED,
-		FUNCTION
+		FUNCTION,
+		EVENT
 	}
 
 	/**

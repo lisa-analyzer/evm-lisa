@@ -130,6 +130,12 @@ public class JSONManager {
 						blockJson.put("label", "Function " + function.getSelector());
 						block.setBlockType(BasicBlock.BlockType.FUNCTION);
 					}
+			for (Signature event : contract.getEventsSignature())
+				for (Statement entryPoint : event.getEntryPoints())
+					if (block.contains(entryPoint)) {
+						blockJson.put("label", "Event " + event.getSelector());
+						block.setBlockType(BasicBlock.BlockType.EVENT);
+					}
 			for (Statement entryPoint : contract.getCFG().getEntrypoints())
 				if (block.contains(entryPoint))
 					blockJson.put("label", "Entry point " + entryPoint.getLocation());
@@ -169,6 +175,8 @@ public class JSONManager {
 			BasicBlock.BlockType bbt = block.getBlockType();
 			if (bbt == BasicBlock.BlockType.FUNCTION)
 				blockJson.put("background_color", DOTFileManager.blueColor);
+			else if (bbt == BasicBlock.BlockType.EVENT)
+				blockJson.put("background_color", DOTFileManager.purpleColor);
 			else {
 				block.setBlockType(
 						BasicBlock.getBlockType(block.getStatements().get(block.getStatements().size() - 1)));
