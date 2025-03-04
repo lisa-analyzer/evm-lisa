@@ -255,8 +255,6 @@ public class EVMAbstractState
 
 						AbstractStack resultStack = stack.clone();
 						StackElement jmpDest = resultStack.pop();
-//						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
-//							continue;
 
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
@@ -268,6 +266,9 @@ public class EVMAbstractState
 									.filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc())
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
+							
+							if (((ProgramCounterLocation) dest.getLocation()).getPc() == 757)
+								System.err.println("Here!");
 							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
 								((EVMCFG) pp.getCFG()).addEdge(new SequentialEdge((Statement) pp, dest));
 							result.add(resultStack);

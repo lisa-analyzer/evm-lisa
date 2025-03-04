@@ -1,5 +1,12 @@
 package it.unipr.analysis;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -12,12 +19,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
@@ -236,64 +237,31 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack lubAux(AbstractStack other) throws SemanticException {
-		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
-
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			StackElement thisElement = thisIterator.next();
-			StackElement otherElement = otherIterator.next();
-			result.add(thisElement.lub(otherElement));
-		}
-
-		return new AbstractStack(result);
+		throw new RuntimeException("lub on AbstractStack should never be called");
 	}
 
 	@Override
 	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
-		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
-
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			StackElement thisElement = thisIterator.next();
-			StackElement otherElement = otherIterator.next();
-			result.add(thisElement.widening(otherElement));
-		}
-
-		return new AbstractStack(result);
+		throw new RuntimeException("widening on AbstractStack should never be called");
 	}
 
 	@Override
 	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
-		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
-
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			StackElement thisElement = thisIterator.next();
-			StackElement otherElement = otherIterator.next();
-			result.add(thisElement.glb(otherElement));
-		}
-
-		return new AbstractStack(result);
+		throw new RuntimeException("glb on AbstractStack should never be called");
 	}
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
+	    ListIterator<StackElement> thisIterator = this.stack.listIterator(this.stack.size());
+	    ListIterator<StackElement> otherIterator = other.stack.listIterator(other.stack.size());
 
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			if (!thisIterator.next().lessOrEqual(otherIterator.next())) {
-				return false;
-			}
-		}
+	    while (thisIterator.hasPrevious() && otherIterator.hasPrevious()) {
+	        if (!thisIterator.previous().lessOrEqual(otherIterator.previous())) {
+	            return false;
+	        }
+	    }
 
-		return true;
+	    return true;
 	}
 
 	/**
