@@ -117,8 +117,8 @@ public class EVMCFG extends CFG {
 	public Set<Number> getAllJumpdestLocations() {
 		if (jumpDestsNodesLocations == null)
 			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
-			.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
-			.collect(Collectors.toSet());
+					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
+					.collect(Collectors.toSet());
 		else
 			return jumpDestsNodesLocations;
 
@@ -162,7 +162,7 @@ public class EVMCFG extends CFG {
 		boolean isOptimized = conf.optimize && conf.descendingPhaseType == DescendingPhaseType.NONE;
 		Fixpoint<CFG, Statement, Edge, CompoundState<A>> fix = isOptimized
 				? new OptimizedFixpoint<>(this, false, conf.hotspots)
-						: new Fixpoint<>(this, false);
+				: new Fixpoint<>(this, false);
 		EVMAscendingFixpoint<A> asc = new EVMAscendingFixpoint<>(this, interprocedural,
 				conf.wideningThreshold);
 
@@ -199,13 +199,13 @@ public class EVMCFG extends CFG {
 	}
 
 	private <V extends ValueDomain<V>,
-	T extends TypeDomain<T>,
-	A extends AbstractState<A>,
-	H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
-			boolean isOptimized, AnalysisState<A> singleton,
-			Map<Statement, AnalysisState<A>> startingPoints,
-			InterproceduralAnalysis<A> interprocedural, ScopeId id,
-			Map<Statement, CompoundState<A>> fixpointResults) {
+			T extends TypeDomain<T>,
+			A extends AbstractState<A>,
+			H extends HeapDomain<H>> AnalyzedCFG<A> flatten(
+					boolean isOptimized, AnalysisState<A> singleton,
+					Map<Statement, AnalysisState<A>> startingPoints,
+					InterproceduralAnalysis<A> interprocedural, ScopeId id,
+					Map<Statement, CompoundState<A>> fixpointResults) {
 		Map<Statement, AnalysisState<A>> finalResults = new HashMap<>(fixpointResults.size());
 		for (Entry<Statement, CompoundState<A>> e : fixpointResults.entrySet()) {
 			finalResults.put(e.getKey(), e.getValue().postState);
@@ -216,7 +216,7 @@ public class EVMCFG extends CFG {
 		return isOptimized
 				? new OptimizedAnalyzedCFG<A>(this, id, singleton, startingPoints, finalResults,
 						interprocedural)
-						: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
+				: new AnalyzedCFG<>(this, id, singleton, startingPoints, finalResults);
 	}
 
 	@Override
@@ -488,7 +488,6 @@ public class EVMCFG extends CFG {
 		return basicBlocks;
 	}
 
-
 	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
 		if (lastStatement instanceof Jump)
 			return BasicBlock.BlockType.JUMP;
@@ -545,7 +544,11 @@ public class EVMCFG extends CFG {
 					if (b.getId() == edgeId) {
 						Statement dest = b.getStatements().get(0);
 
-						if (source instanceof Jumpi && dest instanceof Jumpdest)
+						int sourcePc = ((ProgramCounterLocation) source.getLocation()).getPc();
+						int destPc = ((ProgramCounterLocation) dest.getLocation()).getPc();
+						if (source instanceof Jumpi
+								&& dest instanceof Jumpdest
+								&& ((sourcePc + 1) != destPc)) // jumpdest as first opcode in jumpi's false branch
 							color = lightGreenColor;
 						else if (source instanceof Jumpi)
 							color = lightRed;
@@ -605,19 +608,19 @@ public class EVMCFG extends CFG {
 				JSONObject lastInstr = instructions.getJSONObject(instructions.length() - 1);
 
 				label.append(firstInstr.getInt("pc")).append(": ").append(firstInstr.getString("instruction"))
-				.append("\\l");
+						.append("\\l");
 				label.append(secondInstr.getInt("pc")).append(": ").append(secondInstr.getString("instruction"))
-				.append("\\l");
+						.append("\\l");
 				label.append("...\n");
 				label.append(secondLastInstr.getInt("pc")).append(": ").append(secondLastInstr.getString("instruction"))
-				.append("\\l");
+						.append("\\l");
 				label.append(lastInstr.getInt("pc")).append(": ").append(lastInstr.getString("instruction"))
-				.append("\\l");
+						.append("\\l");
 			} else {
 				for (int j = 0; j < instructions.length(); j++) {
 					JSONObject instr = instructions.getJSONObject(j);
 					label.append(instr.getInt("pc")).append(": ")
-					.append(instr.getString("instruction")).append("\\l");
+							.append(instr.getString("instruction")).append("\\l");
 				}
 			}
 
