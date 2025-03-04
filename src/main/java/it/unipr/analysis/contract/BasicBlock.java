@@ -180,7 +180,7 @@ public class BasicBlock {
 	public static Set<BasicBlock> getBasicBlocks(EVMCFG cfg) {
 		Statement start = cfg.getEntrypoints().stream().findFirst().orElse(null);
 		if (start == null)
-			return new HashSet<>();
+			return Collections.emptySet();
 
 		Set<Statement> visited = new HashSet<>();
 		Deque<Statement> stack = new ArrayDeque<>();
@@ -192,113 +192,73 @@ public class BasicBlock {
 			if (visited.contains(current))
 				continue;
 
-			Statement blockStart = current;
-			Statement blockEnd = current;
 			List<Statement> statements = new ArrayList<>();
+			Statement blockStart = current;
 
 			while (true) {
-				statements.add(blockEnd);
-				Collection<Edge> outgoingEdges = cfg.getOutgoingEdges(blockEnd);
-
-				if (outgoingEdges.isEmpty()
-						|| blockEnd instanceof Jump
-						|| blockEnd instanceof Jumpi
-						|| blockEnd instanceof Invalid
-						|| blockEnd instanceof Stop
-						|| blockEnd instanceof Revert
-						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Ret) {
+				if (current instanceof Jumpdest && !statements.isEmpty()) {
+					stack.push(current);
 					break;
 				}
 
-				Statement next = outgoingEdges.iterator().next().getDestination();
-				if (visited.contains(next))
+				statements.add(current);
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = cfg.getOutgoingEdges(current);
+
+				// Terminate block if current statement is an ending type
+				if (current instanceof Jump || current instanceof Jumpi ||
+						current instanceof Invalid || current instanceof Stop ||
+						current instanceof Revert || current instanceof Selfdestruct) {
+					for (Edge edge : outgoingEdges) {
+						stack.push(edge.getDestination());
+					}
 					break;
+				}
 
-				visited.add(next);
-
-				if (next instanceof Ret)
+				if (outgoingEdges.isEmpty()) {
 					break;
+				}
 
-				blockEnd = next;
+				boolean foundNext = false;
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
 
+					if (next == current) {
+						continue; // Preserve self-loops
+					}
+
+					if (next instanceof Jumpdest) {
+						stack.push(next);
+						break;
+					}
+
+					current = next;
+					foundNext = true;
+					break;
+				}
+
+				if (!foundNext) {
+					break;
+				}
 			}
 
 			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
-			BasicBlock.BlockType blockType = BasicBlock.getBlockType(blockEnd);
-
-			if (blockType.equals(BasicBlock.BlockType.RET))
-				continue;
+			BasicBlock.BlockType blockType = getBlockType(current);
 
 			BasicBlock basicBlock = new BasicBlock(startPc, blockType);
-
 			for (Statement stmt : statements) {
 				basicBlock.addStatement(stmt);
 			}
 
-			for (Edge edge : cfg.getOutgoingEdges(blockEnd)) {
+			for (Edge edge : cfg.getOutgoingEdges(current)) {
 				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
-				if (startPc != endPc
-						&& !(edge.getDestination() instanceof Ret)) {
-					basicBlock.addEdge(endPc);
-				}
-			}
-
-			basicBlocks.add(basicBlock);
-
-			for (Edge edge : cfg.getOutgoingEdges(blockEnd)) {
+				basicBlock.addEdge(endPc);
 				stack.push(edge.getDestination());
 			}
+			basicBlocks.add(basicBlock);
 		}
 
-		// Split basic blocks on jumpdest
-		Set<BasicBlock> modifiedBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			List<Statement> statements = block.getStatements();
-			List<Integer> splitIndexes = new ArrayList<>();
-
-			for (int i = 1; i < statements.size(); i++) {
-				// skip the first opcode of the basic block
-				if (statements.get(i) instanceof Jumpdest) {
-					splitIndexes.add(i);
-				}
-			}
-
-			if (!splitIndexes.isEmpty()) {
-				BasicBlock currentBlock = new BasicBlock(block.getId(), block.getBlockType());
-				modifiedBlocks.add(currentBlock);
-
-				for (int i = 0; i < statements.size(); i++) {
-					if (splitIndexes.contains(i)) {
-						int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
-						BasicBlock newBlock = new BasicBlock(newBlockId, BasicBlock.BlockType.SPLITTED);
-						modifiedBlocks.add(newBlock);
-
-						currentBlock.addEdge(newBlockId);
-
-						currentBlock = newBlock;
-					}
-
-					currentBlock.addStatement(statements.get(i));
-				}
-
-				currentBlock.getOutgoingEdges().addAll(block.getOutgoingEdges());
-			} else {
-				modifiedBlocks.add(block);
-			}
-		}
-
-		basicBlocks = modifiedBlocks;
-
-		// TODO check
-		Set<BasicBlock> newBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			if (block.getStatements().size() > 1
-					|| !(block.getStatements().get(0) instanceof Jumpdest))
-				newBlocks.add(block);
-		}
-
-		basicBlocks = newBlocks;
 		return basicBlocks;
 	}
 

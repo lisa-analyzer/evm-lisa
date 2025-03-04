@@ -143,7 +143,11 @@ public class JSONManager {
 				for (BasicBlock b : contract.getBasicBlocks()) {
 					if (b.getId() == edgeId) {
 						Statement dest = b.getStatements().get(0);
-						if (source instanceof Jumpi && dest instanceof Jumpdest)
+						int sourcePc = ((ProgramCounterLocation) source.getLocation()).getPc();
+						int destPc = ((ProgramCounterLocation) dest.getLocation()).getPc();
+						if (source instanceof Jumpi
+								&& dest instanceof Jumpdest
+								&& ((sourcePc + 1) != destPc)) // jumpdest as first opcode in jumpi's false branch
 							color = DOTFileManager.greenColor;
 						else if (source instanceof Jumpi)
 							color = DOTFileManager.redColor;
