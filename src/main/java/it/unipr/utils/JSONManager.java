@@ -201,4 +201,10 @@ public class JSONManager {
 
 		return blocksArray;
 	}
+
+	public static JSONObject throwNewError(String error) {
+		JSONObject errorJson = new JSONObject();
+		errorJson.put("error", error);
+		return errorJson;
+	}
 }
