@@ -150,7 +150,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(stack);
+		return stack.hashCode();
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractStack other = (AbstractStack) obj;
-		return Objects.equals(stack, other.stack);
+		return stack.equals(other.stack);
 	}
 
 	@Override
