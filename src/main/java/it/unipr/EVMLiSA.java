@@ -141,7 +141,7 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Basic blocks: {}", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
+//		log.info("Basic blocks: {}", EVMCFG.bbToString(checker.getComputedCFG().basicBlocksToLongArray()));
 
 		return checker.getComputedCFG().basicBlocksToLongArray();
 	}
