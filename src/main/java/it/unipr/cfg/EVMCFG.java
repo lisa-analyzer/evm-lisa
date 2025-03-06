@@ -30,17 +30,8 @@ import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -485,7 +476,9 @@ public class EVMCFG extends CFG {
 			basicBlocks.add(basicBlock);
 		}
 
-		return basicBlocks;
+		List<BasicBlock> sortedBlocks = new ArrayList<>(basicBlocks);
+		sortedBlocks.sort(Comparator.comparingInt(BasicBlock::getId));
+		return new LinkedHashSet<>(sortedBlocks);
 	}
 
 	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
