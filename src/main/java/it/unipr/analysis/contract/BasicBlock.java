@@ -259,7 +259,7 @@ public class BasicBlock {
 			}
 			basicBlocks.add(basicBlock);
 		}
-		
+
 		List<BasicBlock> sortedBlocks = new ArrayList<>(basicBlocks);
 		sortedBlocks.sort(Comparator.comparingInt(BasicBlock::getId));
 		return new LinkedHashSet<>(sortedBlocks);

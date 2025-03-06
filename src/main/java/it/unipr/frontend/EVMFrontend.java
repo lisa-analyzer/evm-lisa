@@ -88,7 +88,8 @@ public class EVMFrontend {
 		JSONObject jsonResponse = new JSONObject(response);
 
 		if (!jsonResponse.has("result") || jsonResponse.getString("result").equals("0x")) {
-			System.err.println(JSONManager.throwNewError("Contract bytecode not available or empty. (" + address + ")"));
+			System.err
+					.println(JSONManager.throwNewError("Contract bytecode not available or empty. (" + address + ")"));
 			System.exit(1);
 		}
 
@@ -106,7 +107,8 @@ public class EVMFrontend {
 		JSONObject jsonResponse = new JSONObject(response);
 
 		if (!jsonResponse.has("result") || jsonResponse.get("result").equals("Contract source code not verified")) {
-			System.err.println(JSONManager.throwNewError("Contract ABI not available or not verified. (" + address + ")"));
+			System.err.println(
+					JSONManager.throwNewError("Contract ABI not available or not verified. (" + address + ")"));
 			System.exit(1);
 		}
 
@@ -134,7 +136,8 @@ public class EVMFrontend {
 	public static void opcodesFromBytecode(String bytecode, String output) throws IOException {
 
 		if (bytecode == null || bytecode.isEmpty()) {
-			System.err.println(JSONManager.throwNewError("Couldn't extract opcodes from bytecode. Bytecode is null or empty."));
+			System.err.println(
+					JSONManager.throwNewError("Couldn't extract opcodes from bytecode. Bytecode is null or empty."));
 			System.exit(1);
 		}
 
@@ -175,7 +178,8 @@ public class EVMFrontend {
 	 * @return a LiSA {@code Program} representing the generated control flow
 	 *             graph
 	 * 
-	 * @throws IOException if an I/O error occurs while writing to the input file
+	 * @throws IOException if an I/O error occurs while writing to the input
+	 *                         file
 	 */
 	public static Program generateCfgFromFile(String filePath) throws IOException {
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
@@ -195,7 +199,8 @@ public class EVMFrontend {
 	 * @param opcode
 	 * @param writer
 	 * 
-	 * @throws IOException if an I/O error occurs while writing to the input file
+	 * @throws IOException if an I/O error occurs while writing to the input
+	 *                         file
 	 */
 	private static boolean addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
@@ -666,7 +671,8 @@ public class EVMFrontend {
 		// Check if API key was retrieved correctly from the environment
 		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
-			System.err.println(JSONManager.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
+			System.err.println(JSONManager
+					.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
 			System.exit(1);
 		}
 
@@ -728,7 +734,8 @@ public class EVMFrontend {
 		// Check if API key was retrieved correctly from the environment
 		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
-			System.err.println(JSONManager.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
+			System.err.println(JSONManager
+					.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
 			System.exit(1);
 		}
 

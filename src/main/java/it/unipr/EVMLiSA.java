@@ -174,27 +174,33 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		SmartContract contract = new SmartContract();
+		SmartContract contract = null;
 
 		// Single analysis case (address)
 		if (cmd.hasOption("address"))
 			contract = new SmartContract(cmd.getOptionValue("address"));
 
 		// Single analysis case (bytecode and abi as a path)
-		if (cmd.hasOption("bytecode-path") && cmd.hasOption("abi-path"))
+		else if (cmd.hasOption("bytecode-path") && cmd.hasOption("abi-path"))
 			contract = new SmartContract(
 					Path.of(cmd.getOptionValue("bytecode-path")),
 					Path.of(cmd.getOptionValue("abi-path")));
 
 		// Single analysis case (bytecode as a path)
-		if (cmd.hasOption("bytecode-path"))
+		else if (cmd.hasOption("bytecode-path"))
 			contract = new SmartContract(
 					Path.of(cmd.getOptionValue("bytecode-path")));
 
 		// Single analysis case (bytecode as a string)
-		if (cmd.hasOption("bytecode"))
+		else if (cmd.hasOption("bytecode"))
 			contract = new SmartContract()
 					.setBytecode(cmd.getOptionValue("bytecode"));
+
+		else {
+			log.error("No valid option provided.");
+			JSONManager.throwNewError("No valid option provided.");
+			System.exit(1);
+		}
 
 		EVMLiSA.analyzeContract(contract);
 		System.err.println(contract);
