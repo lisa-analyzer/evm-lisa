@@ -206,19 +206,6 @@ public class SmartContract {
 		} catch (IOException e) {
 			log.warn("Failed to read bytecode from files: {}", _bytecodeFilePath);
 		}
-
-//		try {
-//			Files.writeString(this._bytecodeFilePath, this._bytecode, StandardOpenOption.CREATE,
-//					StandardOpenOption.TRUNCATE_EXISTING);
-//
-//			EVMFrontend.opcodesFromBytecode(_bytecode, _mnemonicBytecodeFilePath.toString());
-//			this._mnemonicBytecode = new String(Files.readAllBytes(Paths.get(_mnemonicBytecodeFilePath.toString())));
-//
-//		} catch (IOException e) {
-//			log.error("Failed to parse mnemonic from bytecode: {}", _bytecodeFilePath);
-//			System.err.println(JSONManager.throwNewError("Failed to parse mnemonic from bytecode: " + _bytecodeFilePath));
-//			System.exit(1);
-//		}
 	}
 
 	/**

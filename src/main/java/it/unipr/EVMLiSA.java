@@ -47,9 +47,7 @@ public class EVMLiSA {
 	// Configuration
 	private static int CORES = 1;
 	private static boolean TEST_MODE = false;
-	private static boolean ENABLE_REENTRANCY_CHECKER = false;
-	private static boolean ENABLE_TXORIGIN_CHECKER = false;
-	private static boolean ENABLE_TIMESTAMPDEPENDENCY_CHECKER = false;
+	private static boolean WEB_APP_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
@@ -120,21 +118,21 @@ public class EVMLiSA {
 	 * Enables the reentrancy checker.
 	 */
 	public static void enableReentrancyChecker() {
-		ENABLE_REENTRANCY_CHECKER = true;
+		ReentrancyChecker.enableChecker();
 	}
 
 	/**
 	 * Enables the timestamp dependency checker.
 	 */
 	public static void enableTimestampDependencyCheckerChecker() {
-		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = true;
+		TimestampDependencyChecker.enableChecker();
 	}
 
 	/**
 	 * Enables the tx. origin checker.
 	 */
 	public static void enableTxOriginChecker() {
-		ENABLE_TXORIGIN_CHECKER = true;
+		TxOriginChecker.enableChecker();
 	}
 
 	/**
@@ -142,6 +140,13 @@ public class EVMLiSA {
 	 */
 	public static void setTestMode() {
 		TEST_MODE = true;
+	}
+
+	/**
+	 * Enables the web-app mode (i.e., it does not produce output files).
+	 */
+	public static void setWebAppMode() {
+		WEB_APP_MODE = true;
 	}
 
 	/**
@@ -249,6 +254,14 @@ public class EVMLiSA {
 	 * @param contract the smart contract to analyze
 	 */
 	public static void analyzeContract(SmartContract contract) {
+		if (TEST_MODE) {
+			analyzeContractInTestMode(contract);
+			return;
+		} else if (WEB_APP_MODE) {
+			analyzeContractInWebAppMode(contract);
+			return;
+		}
+
 		log.info("Analyzing contract {}...", contract.getAddress());
 
 		Program program;
@@ -271,54 +284,113 @@ public class EVMLiSA {
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
 
-		if (!TEST_MODE) {
-			contract.setCFG(checker.getComputedCFG());
-			contract.computeFunctionsSignatureEntryPoints();
-			contract.computeFunctionsSignatureExitPoints();
-			contract.computeEventsSignatureEntryPoints();
-			contract.computeEventsExitPoints();
+		contract.setCFG(checker.getComputedCFG());
+		contract.computeFunctionsSignatureEntryPoints();
+		contract.computeFunctionsSignatureExitPoints();
+		contract.computeEventsSignatureEntryPoints();
+		contract.computeEventsExitPoints();
 
-			if (ENABLE_REENTRANCY_CHECKER) {
-				log.info("Running reentrancy checker...");
-				conf.semanticChecks.clear();
-				conf.semanticChecks.add(new ReentrancyChecker());
-				lisa.run(program);
-				log.info("{} vulnerabilities found",
-						MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
-			}
-			if (ENABLE_TXORIGIN_CHECKER) {
-				log.info("Running tx. origin checker...");
-				conf.semanticChecks.clear();
-				conf.semanticChecks.add(new TxOriginChecker());
-				conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
-						new TypeEnvironment<>(new InferredTypes()));
-				lisa.run(program);
-				log.info("{} vulnerabilities found",
-						MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
-			}
-			if (ENABLE_TIMESTAMPDEPENDENCY_CHECKER) {
-				log.info("Running timestamp dependency checker...");
-				conf.semanticChecks.clear();
-				conf.semanticChecks.add(new TimestampDependencyChecker());
-				conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-						new TimestampDependencyAbstractDomain(),
-						new TypeEnvironment<>(new InferredTypes()));
-				lisa.run(program);
-				log.info("{} vulnerabilities found",
-						MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
-			}
-
-			contract.setVulnerabilities(
-					VulnerabilitiesObject.newVulnerabilitiesObject()
-							.reentrancy(
-									MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
-							.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
-							.timestamp(MyCache.getInstance()
-									.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
-							.build());
-			contract.generateCFGWithBasicBlocks();
-			contract.toFile();
+		if (ReentrancyChecker.isEnabled()) {
+			log.info("Running reentrancy checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new ReentrancyChecker());
+			lisa.run(program);
+			log.info("{} vulnerabilities found",
+					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 		}
+		if (TxOriginChecker.isEnabled()) {
+			log.info("Running tx. origin checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TxOriginChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+			log.info("{} vulnerabilities found",
+					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
+		}
+		if (TimestampDependencyChecker.isEnabled()) {
+			log.info("Running timestamp dependency checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new TimestampDependencyChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new TimestampDependencyAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+			log.info("{} vulnerabilities found",
+					MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
+		}
+
+		contract.setVulnerabilities(
+				VulnerabilitiesObject.newVulnerabilitiesObject()
+						.reentrancy(
+								MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
+						.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
+						.timestamp(MyCache.getInstance()
+								.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
+						.build());
+		contract.generateCFGWithBasicBlocks();
+		contract.toFile();
+	}
+
+	/**
+	 * Analyzes a given smart contract in test mode (i.e., without computing
+	 * functions, events).
+	 *
+	 * @param contract the smart contract to analyze
+	 */
+	public static void analyzeContractInTestMode(SmartContract contract) {
+		log.info("Analyzing contract {}...", contract.getAddress());
+
+		Program program;
+		try {
+			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+		} catch (IOException e) {
+			log.error("Unable to generate CFG from file");
+			return;
+		}
+
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		log.info("Analysis ended ({})", contract.getAddress());
+
+		contract.setStatistics(
+				computeStatistics(checker, lisa, program));
+	}
+
+	/**
+	 * Analyzes a given smart contract in test mode (i.e., without producing
+	 * output files).
+	 *
+	 * @param contract the smart contract to analyze
+	 */
+	public static void analyzeContractInWebAppMode(SmartContract contract) {
+		Program program;
+		try {
+			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+		} catch (IOException e) {
+			log.error("Unable to generate CFG from file");
+			return;
+		}
+
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfigurationForWebApp(contract);
+		JumpSolver checker = new JumpSolver();
+		conf.semanticChecks.add(checker);
+
+		LiSA lisa = new LiSA(conf);
+		lisa.run(program);
+
+		contract.setStatistics(
+				computeStatistics(checker, lisa, program));
+		contract.setCFG(checker.getComputedCFG());
+		contract.computeFunctionsSignatureEntryPoints();
+		contract.computeFunctionsSignatureExitPoints();
+		contract.computeEventsSignatureEntryPoints();
+		contract.computeEventsExitPoints();
 	}
 
 	/**
@@ -527,10 +599,12 @@ public class EVMLiSA {
 			CORES = 1;
 		}
 
-		ENABLE_REENTRANCY_CHECKER = cmd.hasOption("checker-reentrancy") || cmd.hasOption("checker-all");
-		ENABLE_TXORIGIN_CHECKER = cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all");
-		ENABLE_TIMESTAMPDEPENDENCY_CHECKER = cmd.hasOption("checker-timestampdependency")
-				|| cmd.hasOption("checker-all");
+		if (cmd.hasOption("checker-reentrancy") || cmd.hasOption("checker-all"))
+			ReentrancyChecker.enableChecker();
+		if (cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all"))
+			TxOriginChecker.enableChecker();
+		if (cmd.hasOption("checker-timestampdependency") || cmd.hasOption("checker-all"))
+			TimestampDependencyChecker.enableChecker();
 
 		if (cmd.hasOption("output-directory-path"))
 			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
@@ -555,6 +629,8 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
+		if (cmd.hasOption("web-app-mode"))
+			EVMLiSA.setWebAppMode();
 	}
 
 	private Options getOptions() {
@@ -673,6 +749,13 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
+		Option enableWebAppModeOption = Option.builder()
+				.longOpt("web-app-mode")
+				.desc("Enable the web app mode (i.e., analysis doesn't produce output files).")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -689,6 +772,7 @@ public class EVMLiSA {
 		options.addOption(enableTimestampDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
+		options.addOption(enableWebAppModeOption);
 
 		return options;
 	}

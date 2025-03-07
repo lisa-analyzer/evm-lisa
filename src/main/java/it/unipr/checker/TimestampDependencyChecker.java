@@ -29,6 +29,20 @@ public class TimestampDependencyChecker implements
 
 	private static final Logger log = LogManager.getLogger(TimestampDependencyChecker.class);
 
+	private static boolean isEnabled = false;
+
+	public static void enableChecker() {
+		isEnabled = true;
+	}
+
+	public static void disableChecker() {
+		isEnabled = false;
+	}
+
+	public static boolean isEnabled() {
+		return isEnabled;
+	}
+
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
