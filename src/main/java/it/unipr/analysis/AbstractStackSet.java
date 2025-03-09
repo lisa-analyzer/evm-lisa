@@ -1,11 +1,10 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
@@ -71,8 +70,8 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	@Override
 	public AbstractStackSet lubAux(AbstractStackSet other) throws SemanticException {
 		Set<AbstractStack> set = new HashSet<>();
-		for (AbstractStack st1: this.elements)
-			for (AbstractStack st2: other.elements)
+		for (AbstractStack st1 : this.elements)
+			for (AbstractStack st2 : other.elements)
 				if (st1.equals(st2))
 					set.add(st1);
 				else if (st1.lessOrEqual(st2))

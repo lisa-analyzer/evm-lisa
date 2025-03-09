@@ -47,7 +47,6 @@ public class EVMLiSA {
 	// Configuration
 	private static int CORES = 1;
 	private static boolean TEST_MODE = false;
-	private static boolean WEB_APP_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
@@ -140,13 +139,6 @@ public class EVMLiSA {
 	 */
 	public static void setTestMode() {
 		TEST_MODE = true;
-	}
-
-	/**
-	 * Enables the web-app mode (i.e., it does not produce output files).
-	 */
-	public static void setWebAppMode() {
-		WEB_APP_MODE = true;
 	}
 
 	/**
@@ -257,9 +249,6 @@ public class EVMLiSA {
 		if (TEST_MODE) {
 			analyzeContractInTestMode(contract);
 			return;
-		} else if (WEB_APP_MODE) {
-			analyzeContractInWebAppMode(contract);
-			return;
 		}
 
 		log.info("Analyzing contract {}...", contract.getAddress());
@@ -360,37 +349,7 @@ public class EVMLiSA {
 
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
-	}
-
-	/**
-	 * Analyzes a given smart contract in test mode (i.e., without producing
-	 * output files).
-	 *
-	 * @param contract the smart contract to analyze
-	 */
-	public static void analyzeContractInWebAppMode(SmartContract contract) {
-		Program program;
-		try {
-			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
-		} catch (IOException e) {
-			log.error("Unable to generate CFG from file");
-			return;
-		}
-
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfigurationForWebApp(contract);
-		JumpSolver checker = new JumpSolver();
-		conf.semanticChecks.add(checker);
-
-		LiSA lisa = new LiSA(conf);
-		lisa.run(program);
-
-		contract.setStatistics(
-				computeStatistics(checker, lisa, program));
 		contract.setCFG(checker.getComputedCFG());
-		contract.computeFunctionsSignatureEntryPoints();
-		contract.computeFunctionsSignatureExitPoints();
-		contract.computeEventsSignatureEntryPoints();
-		contract.computeEventsExitPoints();
 	}
 
 	/**
@@ -629,8 +588,6 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
-		if (cmd.hasOption("web-app-mode"))
-			EVMLiSA.setWebAppMode();
 	}
 
 	private Options getOptions() {
@@ -749,13 +706,6 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
-		Option enableWebAppModeOption = Option.builder()
-				.longOpt("web-app-mode")
-				.desc("Enable the web app mode (i.e., analysis doesn't produce output files).")
-				.required(false)
-				.hasArg(false)
-				.build();
-
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -772,7 +722,6 @@ public class EVMLiSA {
 		options.addOption(enableTimestampDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
-		options.addOption(enableWebAppModeOption);
 
 		return options;
 	}
