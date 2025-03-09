@@ -1,0 +1,119 @@
+[
+    {
+        "inputs": [{
+            "name": "_tokenAddress",
+            "internalType": "address",
+            "type": "address"
+        }],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "array",
+                "internalType": "uint256[]",
+                "type": "uint256[]"
+            },
+            {
+                "name": "_to",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "name": "value",
+                "internalType": "uint256",
+                "type": "uint256"
+            }
+        ],
+        "name": "coinbaseInArray",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "_to",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "name": "value",
+                "internalType": "uint256",
+                "type": "uint256"
+            },
+            {
+                "name": "flag",
+                "internalType": "uint256",
+                "type": "uint256"
+            }
+        ],
+        "name": "coinbaseLessFlag",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "array",
+                "internalType": "uint256[]",
+                "type": "uint256[]"
+            },
+            {
+                "name": "_to",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "name": "value",
+                "internalType": "uint256",
+                "type": "uint256"
+            },
+            {
+                "name": "flag",
+                "internalType": "uint256",
+                "type": "uint256"
+            }
+        ],
+        "name": "coinbaseLessFlagorInArray",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "_to",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "name": "value",
+                "internalType": "uint256",
+                "type": "uint256"
+            },
+            {
+                "name": "flag",
+                "internalType": "uint256",
+                "type": "uint256"
+            }
+        ],
+        "name": "testTxprice",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "address",
+            "type": "address"
+        }],
+        "inputs": [],
+        "name": "tokenAddress",
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

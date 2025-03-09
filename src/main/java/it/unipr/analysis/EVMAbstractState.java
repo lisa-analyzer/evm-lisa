@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;

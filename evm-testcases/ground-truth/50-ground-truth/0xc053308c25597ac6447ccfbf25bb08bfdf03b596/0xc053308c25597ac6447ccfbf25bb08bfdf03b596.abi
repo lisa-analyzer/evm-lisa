@@ -1,0 +1,152 @@
+[
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "id",
+                "internalType": "uint256",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "user",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "action",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "name": "targetValue",
+                "internalType": "uint256",
+                "type": "uint256"
+            }
+        ],
+        "name": "IntentCreated",
+        "anonymous": false,
+        "type": "event"
+    },
+    {
+        "inputs": [{
+            "indexed": false,
+            "name": "id",
+            "internalType": "uint256",
+            "type": "uint256"
+        }],
+        "name": "IntentFulfilled",
+        "anonymous": false,
+        "type": "event"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "address",
+            "type": "address"
+        }],
+        "inputs": [],
+        "name": "admin",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "_action",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "name": "_targetValue",
+                "internalType": "uint256",
+                "type": "uint256"
+            }
+        ],
+        "name": "createIntent",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [],
+        "inputs": [{
+            "name": "_id",
+            "internalType": "uint256",
+            "type": "uint256"
+        }],
+        "name": "fulfillIntent",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "uint256",
+            "type": "uint256"
+        }],
+        "inputs": [],
+        "name": "intentCount",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "outputs": [
+            {
+                "name": "id",
+                "internalType": "uint256",
+                "type": "uint256"
+            },
+            {
+                "name": "user",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "name": "action",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "name": "targetValue",
+                "internalType": "uint256",
+                "type": "uint256"
+            },
+            {
+                "name": "fulfilled",
+                "internalType": "bool",
+                "type": "bool"
+            }
+        ],
+        "inputs": [{
+            "name": "",
+            "internalType": "uint256",
+            "type": "uint256"
+        }],
+        "name": "intents",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "uint256",
+            "type": "uint256"
+        }],
+        "inputs": [{
+            "name": "",
+            "internalType": "address",
+            "type": "address"
+        }],
+        "name": "userIntentCount",
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
