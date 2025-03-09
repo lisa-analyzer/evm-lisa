@@ -47,7 +47,6 @@ public class EVMLiSA {
 	// Configuration
 	private static int CORES = 1;
 	private static boolean TEST_MODE = false;
-	private static boolean WEB_APP_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
@@ -140,13 +139,6 @@ public class EVMLiSA {
 	 */
 	public static void setTestMode() {
 		TEST_MODE = true;
-	}
-
-	/**
-	 * Enables the web-app mode (i.e., it does not produce output files).
-	 */
-	public static void setWebAppMode() {
-		WEB_APP_MODE = true;
 	}
 
 	/**
@@ -256,9 +248,6 @@ public class EVMLiSA {
 	public static void analyzeContract(SmartContract contract) {
 		if (TEST_MODE) {
 			analyzeContractInTestMode(contract);
-			return;
-		} else if (WEB_APP_MODE) {
-			analyzeContractInWebAppMode(contract);
 			return;
 		}
 
@@ -629,8 +618,6 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
-		if (cmd.hasOption("web-app-mode"))
-			EVMLiSA.setWebAppMode();
 	}
 
 	private Options getOptions() {
@@ -749,13 +736,6 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
-		Option enableWebAppModeOption = Option.builder()
-				.longOpt("web-app-mode")
-				.desc("Enable the web app mode (i.e., analysis doesn't produce output files).")
-				.required(false)
-				.hasArg(false)
-				.build();
-
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -772,7 +752,6 @@ public class EVMLiSA {
 		options.addOption(enableTimestampDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
-		options.addOption(enableWebAppModeOption);
 
 		return options;
 	}
