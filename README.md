@@ -73,21 +73,17 @@ java -jar build/libs/evm-lisa-all.jar [options]
 ```
 Options:
  -a,--address <arg>                        Address of an Ethereum smart contract.
- -b,--benchmark <arg>                      Filepath of the benchmark.
-    --basic-blocks                         Generate CFG with basic blocks.
+    --abi-path <arg>                       Filepath of the abi file.
+ -b,--bytecode <arg>                       Bytecode to be analyzed (e.g., 0x6080...).
+    --benchmark <arg>                      Filepath of the benchmark.
+    --bytecode-path <arg>                  Filepath of the bytecode file.
  -c,--cores <arg>                          Number of cores used in benchmark.
-    --checker-reentrancy                   Enable re-entrancy checker.
+    --checker-all                          Enable all security checkers.
+    --checker-reentrancy                   Enable reentrancy checker.
     --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
-    --dot                                  Export a dot-notation file.
-    --download-bytecode                    Download the bytecode.
-    --dump-report                          Dump analysis report.
-    --dump-stats                           Dump statistics.
- -f,--filepath-bytecode <arg>              Filepath of the bytecode file.
-    --html                                 Export a graphic HTML report.
     --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
- -o,--output <arg>                         Output directory path.
-    --serialize-inputs                     Serialize inputs.
+    --output-directory-path <arg>          Filepath of the output directory.
     --stack-set-size <arg>                 Dimension of stack-set (default: 8).
     --stack-size <arg>                     Dimension of stack (default: 32).
     --use-live-storage                     Use the live storage in SLOAD.
@@ -144,6 +140,24 @@ Maybe unsound jumps: 0
 - _Unsound_: the jump node is reached at least with a stack with an unknown numerical value that may correspond to a
 valid jump destination as the top element;
 - _Maybe unsound_: the stack set exceeded the maximal stack size.
+
+---
+
+## EVMLiSA as a library
+EVMLiSA can be used as a Java library to analyze Ethereum smart contracts.
+```java
+// Single case (address)
+EVMLiSA.analyzeContract(new SmartContract("0x123456..."));
+
+// Single case (bytecode as a path)
+EVMLiSA.analyzeContract(new SmartContract(Path.of("bytecode", "code.bytecode")));
+
+// Single case (bytecode as a string)
+EVMLiSA.analyzeContract(new SmartContract().setBytecode("0x6080..."));
+
+// Multiple contracts
+EVMLiSA.analyzeSetOfContracts(Path.of("list-of-contracts.txt"));
+```
 
 ---
 

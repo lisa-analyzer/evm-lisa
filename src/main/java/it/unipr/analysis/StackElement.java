@@ -690,9 +690,9 @@ public class StackElement implements BaseLattice<StackElement> {
 		return this == NOT_JUMPDEST_TOP;
 	}
 
-//	public boolean isTopNumeric() {
-//		return this == TOP;
-//	}
+	public boolean isTopNumeric() {
+		return this == TOP;
+	}
 
 	@Override
 	public int hashCode() {
