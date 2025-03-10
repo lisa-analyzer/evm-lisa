@@ -267,8 +267,6 @@ public class EVMAbstractState
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
 							
-							if (((ProgramCounterLocation) dest.getLocation()).getPc() == 757)
-								System.err.println("Here!");
 							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
 								((EVMCFG) pp.getCFG()).addEdge(new SequentialEdge((Statement) pp, dest));
 							result.add(resultStack);
