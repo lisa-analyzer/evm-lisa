@@ -1,5 +1,7 @@
 package it.unipr.analysis.cron.semantics;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.cron.CronConfiguration;
 import it.unipr.analysis.cron.EVMBytecodeAnalysisExecutor;
 import it.unipr.analysis.taint.TaintAbstractDomain;
@@ -41,6 +43,9 @@ public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysi
 		if (GENERATE_CFG_FOR_ALL_TESTS) {
 			generateCfg = true;
 		}
+		
+		AbstractStackSet.setStackSetSize(8);
+		AbstractStack.setStackLimit(32);
 
 		CronConfiguration conf = new CronConfiguration();
 		conf.testDir = testDir;

@@ -1,5 +1,23 @@
 package it.unipr.analysis.cron.checker;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Test;
+
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.MyCache;
 import it.unipr.checker.JumpSolver;
@@ -14,20 +32,6 @@ import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Test;
 
 public class SolidiFIReentrancyTruth {
 	private static final Logger log = LogManager.getLogger(SolidiFIReentrancyTruth.class);
@@ -39,6 +43,8 @@ public class SolidiFIReentrancyTruth {
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
+		AbstractStackSet.setStackSetSize(8);
+		AbstractStack.setStackLimit(32);
 		int cores = Runtime.getRuntime().availableProcessors() / 4 * 3;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
