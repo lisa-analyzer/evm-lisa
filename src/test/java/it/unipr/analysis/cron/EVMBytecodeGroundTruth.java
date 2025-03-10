@@ -58,8 +58,8 @@ public class EVMBytecodeGroundTruth {
 				.get("benchmark", "50-ground-truth.txt")
 				.toString();
 
-		AbstractStack.setStackLimit(64);
-		AbstractStackSet.setStackSetSize(16);
+		AbstractStack.setStackLimit(32);
+		AbstractStackSet.setStackSetSize(8);
 		boolean changed = false;
 
 		if (new File(RESULT_EXEC_FILE_PATH).delete())

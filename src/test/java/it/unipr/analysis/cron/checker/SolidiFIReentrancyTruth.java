@@ -43,8 +43,6 @@ public class SolidiFIReentrancyTruth {
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
-		AbstractStackSet.setStackSetSize(8);
-		AbstractStack.setStackLimit(32);
 		int cores = Runtime.getRuntime().availableProcessors() / 4 * 3;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
