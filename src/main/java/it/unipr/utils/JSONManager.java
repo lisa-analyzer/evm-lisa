@@ -207,4 +207,18 @@ public class JSONManager {
 		errorJson.put("error", error);
 		return errorJson;
 	}
+
+	public static JSONObject throwNewError(String error, String notes) {
+		JSONObject errorJson = new JSONObject();
+		errorJson.put("error", error);
+		errorJson.put("notes", notes);
+		return errorJson;
+	}
+
+	public static JSONObject throwNewError(String error, JSONObject notes) {
+		JSONObject errorJson = new JSONObject();
+		errorJson.put("error", error);
+		errorJson.put("notes", notes);
+		return errorJson;
+	}
 }

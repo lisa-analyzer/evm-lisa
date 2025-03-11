@@ -120,6 +120,7 @@ public class SmartContract {
 			if (!file.exists()) {
 				Thread.sleep(500); // Etherscan API request limit
 				Files.createDirectories(outputDir);
+
 				this._bytecode = EVMFrontend.parseBytecodeFromEtherscan(address);
 				// Write bytecode to file
 				if (this._bytecode != null)
@@ -144,12 +145,13 @@ public class SmartContract {
 			File file = new File(String.valueOf(_abiFilePath));
 			if (!file.exists()) {
 				Thread.sleep(500); // Etherscan API request limit
+
 				Files.createDirectories(outputDir);
 				this._abi = EVMFrontend.parseABIFromEtherscan(address);
+
 				// Write ABI to file
-				if (this._abi != null)
-					Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
-							StandardOpenOption.TRUNCATE_EXISTING);
+				Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
+						StandardOpenOption.TRUNCATE_EXISTING);
 			} else {
 				log.warn("Contract (ABI) already present in {}, not downloaded.", _abiFilePath);
 				this._abi = new JSONArray(new String(Files.readAllBytes(Paths.get(_abiFilePath.toString()))));
@@ -423,11 +425,16 @@ public class SmartContract {
 	/**
 	 * Sets the control flow graph and extracts basic blocks.
 	 *
-	 * @param cfg The EVMCFG to set.
+	 * @param cfg The {@link EVMCFG} to set.
 	 * 
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setCFG(EVMCFG cfg) {
+		if (cfg == null) {
+			System.err.println(JSONManager.throwNewError("CFG cannot be null"));
+			System.exit(1);
+		}
+
 		this._cfg = cfg;
 		this._basicBlocks = BasicBlock.getBasicBlocks(cfg);
 		return this;

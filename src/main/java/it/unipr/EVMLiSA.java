@@ -145,10 +145,8 @@ public class EVMLiSA {
 	 * Executes the analysis workflow.
 	 *
 	 * @param args command-line arguments
-	 * 
-	 * @throws Exception if an error occurs during execution
 	 */
-	private void go(String[] args) throws Exception {
+	private void go(String[] args) {
 		CommandLine cmd = parseCommandLine(args);
 		if (cmd == null)
 			return;
@@ -194,7 +192,6 @@ public class EVMLiSA {
 					.setBytecode(cmd.getOptionValue("bytecode"));
 
 		else {
-			log.error("No valid option provided.");
 			JSONManager.throwNewError("No valid option provided.");
 			System.exit(1);
 		}
@@ -207,13 +204,21 @@ public class EVMLiSA {
 	 * Analyzes a set of smart contracts from a given file.
 	 *
 	 * @param filePath the path to the file containing contract addresses
-	 * 
-	 * @throws Exception if an error occurs during analysis
 	 */
-	public static void analyzeSetOfContracts(Path filePath) throws Exception {
-		log.info("Analyzing set of contracts...");
-
+	public static void analyzeSetOfContracts(Path filePath) {
+		log.info("Building contracts...");
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
+		analyzeSetOfContracts(contracts);
+	}
+
+	/**
+	 * Analyzes a set of smart contracts from a list of {@link SmartContract}.
+	 *
+	 * @param contracts the list of {@link SmartContract} to be analyzed
+	 */
+	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
+		log.info("Analyzing {} contracts...", contracts.size());
+
 		ExecutorService executor = Executors.newFixedThreadPool(CORES);
 		List<Future<?>> futures = new ArrayList<>();
 
@@ -225,7 +230,7 @@ public class EVMLiSA {
 		waitForCompletion(futures);
 
 		executor.shutdown();
-		log.info("Finished analyzing {} contracts.", contracts.size());
+		log.info("Finished analysis of {} contracts.", contracts.size());
 
 		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("set-of-contracts");
 		try {
@@ -236,7 +241,8 @@ public class EVMLiSA {
 					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			log.info("Results saved in {}", outputDir.resolve("results.json"));
 		} catch (IOException e) {
-			log.error("Failed to save results in {}", outputDir, e);
+			System.err.println(JSONManager.throwNewError("Failed to save results in " + outputDir));
+			System.exit(1);
 		}
 	}
 
@@ -246,19 +252,15 @@ public class EVMLiSA {
 	 * @param contract the smart contract to analyze
 	 */
 	public static void analyzeContract(SmartContract contract) {
-		if (TEST_MODE) {
-			analyzeContractInTestMode(contract);
-			return;
-		}
-
 		log.info("Analyzing contract {}...", contract.getAddress());
 
-		Program program;
+		Program program = null;
 		try {
 			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
 		} catch (IOException e) {
-			log.error("Unable to generate CFG from file");
-			return;
+			System.err.println(
+					JSONManager.throwNewError("Unable to generate partial CFG from file", contract.toJson()));
+			System.exit(1);
 		}
 
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
@@ -272,8 +274,11 @@ public class EVMLiSA {
 
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
-
 		contract.setCFG(checker.getComputedCFG());
+
+		if (TEST_MODE)
+			return;
+
 		contract.computeFunctionsSignatureEntryPoints();
 		contract.computeFunctionsSignatureExitPoints();
 		contract.computeEventsSignatureEntryPoints();
@@ -319,67 +324,6 @@ public class EVMLiSA {
 						.build());
 		contract.generateCFGWithBasicBlocks();
 		contract.toFile();
-	}
-
-	/**
-	 * Analyzes a given smart contract in test mode (i.e., without computing
-	 * functions, events).
-	 *
-	 * @param contract the smart contract to analyze
-	 */
-	public static void analyzeContractInTestMode(SmartContract contract) {
-		log.info("Analyzing contract {}...", contract.getAddress());
-
-		Program program;
-		try {
-			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
-		} catch (IOException e) {
-			log.error("Unable to generate CFG from file");
-			return;
-		}
-
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		JumpSolver checker = new JumpSolver();
-		conf.semanticChecks.add(checker);
-
-		LiSA lisa = new LiSA(conf);
-		lisa.run(program);
-
-		log.info("Analysis ended ({})", contract.getAddress());
-
-		contract.setStatistics(
-				computeStatistics(checker, lisa, program));
-	}
-
-	/**
-	 * Analyzes a given smart contract in test mode (i.e., without producing
-	 * output files).
-	 *
-	 * @param contract the smart contract to analyze
-	 */
-	public static void analyzeContractInWebAppMode(SmartContract contract) {
-		Program program;
-		try {
-			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
-		} catch (IOException e) {
-			log.error("Unable to generate CFG from file");
-			return;
-		}
-
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfigurationForWebApp(contract);
-		JumpSolver checker = new JumpSolver();
-		conf.semanticChecks.add(checker);
-
-		LiSA lisa = new LiSA(conf);
-		lisa.run(program);
-
-		contract.setStatistics(
-				computeStatistics(checker, lisa, program));
-		contract.setCFG(checker.getComputedCFG());
-		contract.computeFunctionsSignatureEntryPoints();
-		contract.computeFunctionsSignatureExitPoints();
-		contract.computeEventsSignatureEntryPoints();
-		contract.computeEventsExitPoints();
 	}
 
 	/**
@@ -551,10 +495,8 @@ public class EVMLiSA {
 	 * @param filePath the path to the file containing contract addresses
 	 * 
 	 * @return a list of {@link SmartContract} objects
-	 * 
-	 * @throws Exception if an error occurs while reading the file
 	 */
-	public static List<SmartContract> buildContractsFromFile(Path filePath) throws Exception {
+	public static List<SmartContract> buildContractsFromFile(Path filePath) {
 		log.info("Parsing contracts from {}", filePath);
 
 		List<SmartContract> contracts = new ArrayList<>();
@@ -572,8 +514,8 @@ public class EVMLiSA {
 			myReader.close();
 
 		} catch (FileNotFoundException e) {
-			log.error("{} not found.", filePath);
-			throw e;
+			JSONManager.throwNewError("Unable to read " + filePath + ". File not found.");
+			System.exit(1);
 		}
 
 		log.info("Created {} contracts.", contracts.size());
@@ -608,7 +550,7 @@ public class EVMLiSA {
 			if (cmd.hasOption("stack-set-size"))
 				AbstractStackSet.setStackSetSize(Integer.parseInt(cmd.getOptionValue("stack-set-size")));
 		} catch (NumberFormatException e) {
-			log.error("Size must be an integer.");
+			System.err.println(JSONManager.throwNewError("Size must be an integer."));
 			System.exit(1);
 		}
 
@@ -782,9 +724,11 @@ public class EVMLiSA {
 			try {
 				future.get();
 			} catch (ExecutionException e) {
-				log.error("Error during task execution: {}", e.getMessage());
+				System.err.println(JSONManager.throwNewError("Error during task execution: " + e.getMessage()));
+				System.exit(1);
 			} catch (InterruptedException ie) {
-				log.error("Interrupted during task execution: {}", ie.getMessage());
+				System.err.println(JSONManager.throwNewError("Interrupted during task execution: " + ie.getMessage()));
+				System.exit(1);
 			}
 	}
 }
