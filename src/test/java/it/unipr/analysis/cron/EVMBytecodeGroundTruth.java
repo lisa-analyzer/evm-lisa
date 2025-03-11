@@ -24,10 +24,9 @@ public class EVMBytecodeGroundTruth {
 		Path SMARTCONTRACTS_FULLPATH = Paths.get("benchmark", "50-ground-truth.txt");
 
 		boolean changed = false;
-		EVMLiSA.setStackLimit(32);
-		EVMLiSA.setStackSetSize(8);
 		EVMLiSA.setWorkingDirectory(WORKING_DIRECTORY_PATH);
-		EVMLiSA.setCores(6);
+		EVMLiSA.setCores(
+				Runtime.getRuntime().availableProcessors() / 4 * 3);
 		EVMLiSA.setTestMode();
 		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH);
 
