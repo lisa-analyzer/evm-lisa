@@ -13,6 +13,5 @@
 		<Root level="DEBUG">
 			<AppenderRef ref="console" level="DEBUG"/>
 		</Root>
-		<Logger name="it.unive.lisa" level="OFF"/>
 	</Loggers>
 </Configuration>
