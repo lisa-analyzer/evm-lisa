@@ -131,4 +131,34 @@ public class TxOriginAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example12", "example15.sol", false);
 		perform(conf);
 	}
+
+	@Test
+	public void testTxOrigin13() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example13", "example14.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTxOrigin14() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example14", "example15.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTxOrigin15() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example15", "example16.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTxOrigin16() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example16", "example17.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTxOrigin17() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTxOrigin", "example17", "example18.sol", false);
+		perform(conf);
+	}
 }

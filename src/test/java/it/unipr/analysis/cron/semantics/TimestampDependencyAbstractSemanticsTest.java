@@ -177,4 +177,40 @@ public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysi
 				false);
 		perform(conf);
 	}
+
+	@Test
+	public void testTimestampDependency18() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example18", "example19.sol",
+				false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTimestampDependency19() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example19", "example20.sol",
+				false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTimestampDependency20() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example20", "example21.sol",
+				false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTimestampDependency21() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example21", "example22.sol",
+				false);
+		perform(conf);
+	}
+
+	@Test
+	public void testTimestampDependency22() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example22", "example23.sol",
+				false);
+		perform(conf);
+	}
+
 }
