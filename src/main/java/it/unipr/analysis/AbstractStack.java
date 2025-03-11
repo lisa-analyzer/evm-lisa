@@ -1,5 +1,13 @@
 package it.unipr.analysis;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -12,12 +20,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
@@ -30,7 +32,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * The top abstract element of this domain.
 	 */
 	private static final AbstractStack TOP = new AbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.TOP)));
+			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.TOP)), STACK_LIMIT);
 
 	/**
 	 * The bottom abstract element of this domain.
@@ -43,10 +45,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	private final ArrayList<StackElement> stack;
 
 	/**
+	 * The size of this stack (i.e., the number of elements)
+	 */
+	private int size;
+
+	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.BOTTOM)));
+		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.BOTTOM)), 0);
 	}
 
 	/**
@@ -56,7 +63,24 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public AbstractStack(ArrayList<StackElement> stack) {
 		this.stack = stack;
+		if (stack != null) {
+			int bottomCounter = 0;
+			for (StackElement item : stack) {
+				if (item.isBottom()) {
+					bottomCounter++;
+				}
+			}
+			this.size = STACK_LIMIT - bottomCounter;
+		} else
+			this.size = 0;
+
 	}
+	
+	AbstractStack(ArrayList<StackElement> stack, int size) {
+		this.stack = stack;
+		this.size = size;
+	}
+	
 
 	@Override
 	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
@@ -183,7 +207,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack clone() {
 		if (isBottom() || isTop())
 			return this;
-		return new AbstractStack(new ArrayList<>(stack));
+		return new AbstractStack(new ArrayList<>(stack), this.size);
 	}
 
 	/**
@@ -194,6 +218,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public void push(StackElement target) {
 		stack.remove(0);
 		stack.add(target);
+		this.size++;
 	}
 
 	/**
@@ -203,9 +228,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public StackElement pop() {
 		StackElement result = stack.remove(stack.size() - 1);
-		if (!stack.get(0).isTop())
+		if (!stack.get(0).isTop()) {
 			stack.add(0, StackElement.BOTTOM);
-		else
+			this.size--;
+		} else
 			stack.add(0, StackElement.TOP);
 		return result;
 	}
@@ -216,13 +242,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @return the number of items in the stack.
 	 */
 	public int size() {
-		int bottomCounter = 0;
-		for (StackElement item : stack) {
-			if (item.isBottom()) {
-				bottomCounter++;
-			}
-		}
-		return stack.size() - bottomCounter;
+		return this.size;
 	}
 
 	/**
@@ -284,14 +304,14 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
+		if (size() > other.size())
+			return false;
+		ListIterator<StackElement> thisIterator = this.stack.listIterator(this.stack.size());
+		ListIterator<StackElement> otherIterator = other.stack.listIterator(other.stack.size());
 
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			if (!thisIterator.next().lessOrEqual(otherIterator.next())) {
+		while (thisIterator.hasPrevious() && otherIterator.hasPrevious()) 
+			if (!thisIterator.previous().lessOrEqual(otherIterator.previous())) 
 				return false;
-			}
-		}
 
 		return true;
 	}

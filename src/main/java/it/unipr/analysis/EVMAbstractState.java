@@ -1923,7 +1923,7 @@ public class EVMAbstractState
 		result.add(tmp);
 		result.remove(0);
 
-		return new AbstractStack(result);
+		return new AbstractStack(result, stack.size());
 	}
 
 	/**
@@ -1958,7 +1958,7 @@ public class EVMAbstractState
 		for (int i = 0; i < clone.size(); i++)
 			result.add((StackElement) obj[i]);
 
-		return new AbstractStack(result);
+		return new AbstractStack(result, stack.size());
 	}
 
 	@Override
