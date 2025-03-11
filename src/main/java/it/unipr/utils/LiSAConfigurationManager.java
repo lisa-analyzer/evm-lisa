@@ -32,34 +32,8 @@ public class LiSAConfigurationManager {
 		conf.serializeResults = false;
 		conf.optimize = false;
 		conf.useWideningPoints = false;
-		conf.analysisGraphs = LiSAConfiguration.GraphType.HTML;
+		// conf.analysisGraphs = LiSAConfiguration.GraphType.HTML;
 		conf.jsonOutput = true;
-
-		return conf;
-	}
-
-	/**
-	 * Creates a LiSA configuration for analyzing the given smart contract
-	 * optimized for the web application (i.e., it does not produce any output
-	 * file).
-	 *
-	 * @param contract The smart contract to be analyzed.
-	 *
-	 * @return A configured instance of {@link LiSAConfiguration}.
-	 */
-	public static LiSAConfiguration createConfigurationForWebApp(SmartContract contract) {
-		String address = EthereumUtils.isValidEVMAddress(contract.getAddress()) ? contract.getAddress() : null;
-
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new EVMAbstractState(address),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.workdir = contract.getWorkingDirectory().toString();
-		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
-		conf.callGraph = new RTACallGraph();
-		conf.serializeResults = false;
-		conf.optimize = false;
-		conf.useWideningPoints = false;
 
 		return conf;
 	}

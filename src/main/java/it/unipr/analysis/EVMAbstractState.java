@@ -15,7 +15,6 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
@@ -1117,7 +1116,7 @@ public class EVMAbstractState
 									if (valueCached == null) {
 										long start = System.currentTimeMillis();
 										valueToPush = getStorageAt(key.getNumber(), CONTRACT_ADDRESS); // API
-																										// request
+										// request
 										long timeLostToGetStorage = System.currentTimeMillis() - start;
 
 										MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
@@ -1882,10 +1881,7 @@ public class EVMAbstractState
 			}
 		}
 
-		if (!(expression instanceof Skip))
-			throw new SemanticException("Reachable just with the skip node");
-
-		return top();
+		throw new SemanticException("Unrecognized opcode: " + pp);
 	}
 
 	/**
