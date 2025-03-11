@@ -40,7 +40,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	private final StackElement[] stack;
 
 	/**
-	 * The size of this stack (i.e., the number of elements)
+	 * The size of this stack (i.e., the number of elements).
 	 */
 	private int size;
 
@@ -267,35 +267,17 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack lubAux(AbstractStack other) throws SemanticException {
-		StackElement[] result = new StackElement[STACK_LIMIT];
-
-		for (int i = 0; i < STACK_LIMIT; i++) {
-			result[i] = this.stack[i].lub(other.stack[i]);
-		}
-
-		return new AbstractStack(result);
+		throw new RuntimeException("lub on abstract stack should be never called");
 	}
 
 	@Override
 	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
-		StackElement[] result = new StackElement[STACK_LIMIT];
-
-		for (int i = 0; i < STACK_LIMIT; i++) {
-			result[i] = this.stack[i].widening(other.stack[i]);
-		}
-
-		return new AbstractStack(result);
+		throw new RuntimeException("widening on abstract stack should be never called");
 	}
 
 	@Override
 	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
-		StackElement[] result = new StackElement[STACK_LIMIT];
-
-		for (int i = 0; i < STACK_LIMIT; i++) {
-			result[i] = this.stack[i].glb(other.stack[i]);
-		}
-
-		return new AbstractStack(result);
+		throw new RuntimeException("glb on abstract stack should be never called");
 	}
 
 	@Override

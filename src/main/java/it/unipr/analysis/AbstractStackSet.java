@@ -9,7 +9,7 @@ import java.util.Set;
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
 	/**
-	 * The maximum size of an abstract stack set
+	 * The maximum size of an abstract stack set.
 	 */
 	private static int SIZE = 8;
 
