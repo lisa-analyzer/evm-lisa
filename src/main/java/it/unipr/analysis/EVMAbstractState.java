@@ -24,9 +24,7 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -1901,29 +1899,7 @@ public class EVMAbstractState
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
-		if (stack.hasBottomUntil(x))
-			return stack.bottom();
-
-		List<StackElement> clone = stack.clone().getStack();
-		Object[] obj = clone.toArray();
-
-		int first;
-		if (stack.size() < AbstractStack.getStackLimit())
-			first = AbstractStack.getStackLimit();
-		else
-			first = clone.size();
-
-		StackElement tmp = (StackElement) obj[first - x];
-
-		ArrayList<StackElement> result = new ArrayList<>();
-
-		for (int i = 0; i < clone.size(); i++)
-			result.add((StackElement) obj[i]);
-
-		result.add(tmp);
-		result.remove(0);
-
-		return new AbstractStack(result, stack.size());
+		return stack.dupX(x);
 	}
 
 	/**
@@ -1937,28 +1913,7 @@ public class EVMAbstractState
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-		if (stack.hasBottomUntil(x + 1))
-			return stack.bottom();
-
-		List<StackElement> clone = stack.clone().getStack();
-		Object[] obj = clone.toArray();
-		int first;
-
-		if (stack.size() < AbstractStack.getStackLimit())
-			first = AbstractStack.getStackLimit() - 1;
-		else
-			first = clone.size() - 1;
-
-		Object tmp = obj[first];
-		obj[first] = obj[first - x];
-		obj[first - x] = tmp;
-
-		ArrayList<StackElement> result = new ArrayList<>();
-
-		for (int i = 0; i < clone.size(); i++)
-			result.add((StackElement) obj[i]);
-
-		return new AbstractStack(result, stack.size());
+		return stack.swapX(x);
 	}
 
 	@Override

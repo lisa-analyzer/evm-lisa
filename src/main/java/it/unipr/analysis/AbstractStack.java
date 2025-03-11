@@ -1,13 +1,5 @@
 package it.unipr.analysis;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -20,6 +12,9 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
@@ -32,7 +27,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * The top abstract element of this domain.
 	 */
 	private static final AbstractStack TOP = new AbstractStack(
-			new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.TOP)), STACK_LIMIT);
+			createFilledArray(STACK_LIMIT, StackElement.TOP), STACK_LIMIT);
 
 	/**
 	 * The bottom abstract element of this domain.
@@ -40,9 +35,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	/**
-	 * The abstract stack.
+	 * The abstract stack as an array.
 	 */
-	private final ArrayList<StackElement> stack;
+	private final StackElement[] stack;
 
 	/**
 	 * The size of this stack (i.e., the number of elements)
@@ -50,18 +45,27 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	private int size;
 
 	/**
-	 * Builds an initial symbolic stack.
+	 * Helper method to create and fill an array with a specific element.
 	 */
-	public AbstractStack() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, StackElement.BOTTOM)), 0);
+	private static StackElement[] createFilledArray(int size, StackElement element) {
+		StackElement[] array = new StackElement[size];
+		Arrays.fill(array, element);
+		return array;
 	}
 
 	/**
-	 * Builds a symbolic stack starting from a given stack.
+	 * Builds an initial symbolic stack.
+	 */
+	public AbstractStack() {
+		this(createFilledArray(STACK_LIMIT, StackElement.BOTTOM), 0);
+	}
+
+	/**
+	 * Builds a symbolic stack starting from a given stack array.
 	 *
 	 * @param stack the stack of values
 	 */
-	public AbstractStack(ArrayList<StackElement> stack) {
+	public AbstractStack(StackElement[] stack) {
 		this.stack = stack;
 		if (stack != null) {
 			int bottomCounter = 0;
@@ -71,16 +75,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 				}
 			}
 			this.size = STACK_LIMIT - bottomCounter;
-		} else
+		} else {
 			this.size = 0;
-
+		}
 	}
-	
-	AbstractStack(ArrayList<StackElement> stack, int size) {
+
+	AbstractStack(StackElement[] stack, int size) {
 		this.stack = stack;
 		this.size = size;
 	}
-	
 
 	@Override
 	public AbstractStack assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
@@ -139,7 +142,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public String toString() {
-		return this.stack.toString();
+		if (isBottom())
+			return "BOTTOM";
+		if (isTop())
+			return "TOP";
+		return Arrays.toString(this.stack);
 	}
 
 	@Override
@@ -168,12 +175,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	}
 
 	public boolean isEmpty() {
-		return stack.isEmpty();
+		return size == 0;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(stack);
+		return Objects.hash(Arrays.hashCode(stack));
 	}
 
 	@Override
@@ -185,7 +192,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractStack other = (AbstractStack) obj;
-		return Objects.equals(stack, other.stack);
+		return Arrays.equals(stack, other.stack);
 	}
 
 	@Override
@@ -200,14 +207,14 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @return the StackElement at the top of the stack.
 	 */
 	public StackElement getTop() {
-		return this.stack.get(stack.size() - 1); // Get the last element
+		return this.stack[STACK_LIMIT - 1]; // Get the last element
 	}
 
 	@Override
 	public AbstractStack clone() {
 		if (isBottom() || isTop())
 			return this;
-		return new AbstractStack(new ArrayList<>(stack), this.size);
+		return new AbstractStack(Arrays.copyOf(stack, STACK_LIMIT), this.size);
 	}
 
 	/**
@@ -216,8 +223,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @param target the element to be pushed onto the stack.
 	 */
 	public void push(StackElement target) {
-		stack.remove(0);
-		stack.add(target);
+		// Shift all elements one position to the left
+		System.arraycopy(stack, 1, stack, 0, STACK_LIMIT - 1);
+		stack[STACK_LIMIT - 1] = target;
 		this.size++;
 	}
 
@@ -227,12 +235,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @return the element at the top of the stack.
 	 */
 	public StackElement pop() {
-		StackElement result = stack.remove(stack.size() - 1);
-		if (!stack.get(0).isTop()) {
-			stack.add(0, StackElement.BOTTOM);
+		StackElement result = stack[STACK_LIMIT - 1];
+		// Shift all elements one position to the right
+		System.arraycopy(stack, 0, stack, 1, STACK_LIMIT - 1);
+		if (!stack[1].isTop()) {
+			stack[0] = StackElement.BOTTOM;
 			this.size--;
-		} else
-			stack.add(0, StackElement.TOP);
+		} else {
+			stack[0] = StackElement.TOP;
+		}
 		return result;
 	}
 
@@ -247,24 +258,19 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	/**
 	 * Yields the stack.
-	 * 
-	 * @return the stack
+	 *
+	 * @return the stack as an array
 	 */
-	public List<StackElement> getStack() {
+	public StackElement[] getStack() {
 		return stack;
 	}
 
 	@Override
 	public AbstractStack lubAux(AbstractStack other) throws SemanticException {
-		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
+		StackElement[] result = new StackElement[STACK_LIMIT];
 
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			StackElement thisElement = thisIterator.next();
-			StackElement otherElement = otherIterator.next();
-			result.add(thisElement.lub(otherElement));
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			result[i] = this.stack[i].lub(other.stack[i]);
 		}
 
 		return new AbstractStack(result);
@@ -272,15 +278,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack wideningAux(AbstractStack other) throws SemanticException {
-		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
+		StackElement[] result = new StackElement[STACK_LIMIT];
 
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			StackElement thisElement = thisIterator.next();
-			StackElement otherElement = otherIterator.next();
-			result.add(thisElement.widening(otherElement));
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			result[i] = this.stack[i].widening(other.stack[i]);
 		}
 
 		return new AbstractStack(result);
@@ -288,15 +289,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public AbstractStack glbAux(AbstractStack other) throws SemanticException {
-		ArrayList<StackElement> result = new ArrayList<>(STACK_LIMIT);
+		StackElement[] result = new StackElement[STACK_LIMIT];
 
-		Iterator<StackElement> thisIterator = this.stack.iterator();
-		Iterator<StackElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			StackElement thisElement = thisIterator.next();
-			StackElement otherElement = otherIterator.next();
-			result.add(thisElement.glb(otherElement));
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			result[i] = this.stack[i].glb(other.stack[i]);
 		}
 
 		return new AbstractStack(result);
@@ -306,19 +302,20 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
 		if (size() > other.size())
 			return false;
-		ListIterator<StackElement> thisIterator = this.stack.listIterator(this.stack.size());
-		ListIterator<StackElement> otherIterator = other.stack.listIterator(other.stack.size());
 
-		while (thisIterator.hasPrevious() && otherIterator.hasPrevious()) 
-			if (!thisIterator.previous().lessOrEqual(otherIterator.previous())) 
+		// Starting from the top of the stack and moving downward
+		for (int i = STACK_LIMIT - 1; i >= 0; i--) {
+			if (!this.stack[i].lessOrEqual(other.stack[i])) {
 				return false;
+			}
+		}
 
 		return true;
 	}
 
 	/**
 	 * Yields the second element of this abstract stack.
-	 * 
+	 *
 	 * @return the second element of this abstract stack
 	 */
 	public StackElement getSecondElement() {
@@ -326,7 +323,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return StackElement.BOTTOM;
 		else if (isTop())
 			return StackElement.TOP;
-		return this.stack.get(STACK_LIMIT - 2);
+		return this.stack[STACK_LIMIT - 2];
 	}
 
 	/**
@@ -353,15 +350,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	/**
 	 * Checks whether between 0 and x-positions of the stack an element is
 	 * bottom.
-	 * 
+	 *
 	 * @param x the position
-	 * 
+	 *
 	 * @return {@code true} if between 0 and x-positions of the stack an element
 	 *             is bottom, {@code false} otherwise.
 	 */
 	public boolean hasBottomUntil(int x) {
 		for (int i = 0; i < x; i++)
-			if (this.stack.get((STACK_LIMIT - 1) - i).isBottom())
+			if (this.stack[(STACK_LIMIT - 1) - i].isBottom())
 				return true;
 		return false;
 	}
@@ -369,5 +366,58 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	@Override
 	public boolean knowsIdentifier(Identifier id) {
 		return true;
+	}
+
+	/**
+	 * Duplicates the x-th element from the top of the stack and returns the
+	 * modified stack.
+	 *
+	 * @param x The position of the element to duplicate from the top of the
+	 *              stack.
+	 *
+	 * @return A new stack with the specified element duplicated at the top.
+	 */
+	public AbstractStack dupX(int x) {
+		if (hasBottomUntil(x))
+			return bottom();
+
+		AbstractStack clonedStack = clone();
+		StackElement[] stackArray = clonedStack.getStack();
+
+		int topIndex = STACK_LIMIT - 1;
+		int targetIndex = topIndex - x + 1;
+		StackElement elementToDuplicate = stackArray[targetIndex];
+
+		StackElement[] resultArray = new StackElement[STACK_LIMIT];
+
+		System.arraycopy(stackArray, 1, resultArray, 0, STACK_LIMIT - 1);
+
+		resultArray[topIndex] = elementToDuplicate;
+
+		return new AbstractStack(resultArray, size() + 1);
+	}
+
+	/**
+	 * Swaps the 1st with the (x + 1)-th element from the top of the stack and
+	 * returns the modified stack.
+	 *
+	 * @param x The position of the element to swap with the top of the stack.
+	 * 
+	 * @return A new stack with the specified elements swapped.
+	 */
+	public AbstractStack swapX(int x) {
+		if (hasBottomUntil(x + 1))
+			return bottom();
+
+		int topIndex = STACK_LIMIT - 1;
+		int swapIndex = topIndex - x;
+
+		StackElement[] newStack = Arrays.copyOf(stack, STACK_LIMIT);
+
+		StackElement temp = newStack[topIndex];
+		newStack[topIndex] = newStack[swapIndex];
+		newStack[swapIndex] = temp;
+
+		return new AbstractStack(newStack, size());
 	}
 }
