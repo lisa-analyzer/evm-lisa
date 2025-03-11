@@ -302,9 +302,16 @@ public class Number implements Comparable<Number> {
 
 	@Override
 	public int compareTo(Number other) {
+		if (getType() == other.getType()) {
+			if (getType() == Type.INT)
+				return Integer.compare(this.i, other.i);
+			else if (getType() == Type.LONG)
+				return Long.compare(this.l, other.l);
+		}
+
+		// Otherwise, fall back to BigInteger comparisons.
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
-
 		return me.compareTo(ot);
 	}
 
