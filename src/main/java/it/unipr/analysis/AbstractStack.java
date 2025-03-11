@@ -27,7 +27,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * The top abstract element of this domain.
 	 */
 	private static final AbstractStack TOP = new AbstractStack(
-			createFilledArray(STACK_LIMIT, StackElement.TOP), STACK_LIMIT);
+			createFilledArray(STACK_LIMIT, StackElement.TOP));
 
 	/**
 	 * The bottom abstract element of this domain.
@@ -38,11 +38,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * The abstract stack as an array.
 	 */
 	private final StackElement[] stack;
-
-	/**
-	 * The size of this stack (i.e., the number of elements).
-	 */
-	private int size;
 
 	/**
 	 * Helper method to create and fill an array with a specific element.
@@ -57,7 +52,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * Builds an initial symbolic stack.
 	 */
 	public AbstractStack() {
-		this(createFilledArray(STACK_LIMIT, StackElement.BOTTOM), 0);
+		this(createFilledArray(STACK_LIMIT, StackElement.BOTTOM));
 	}
 
 	/**
@@ -67,22 +62,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public AbstractStack(StackElement[] stack) {
 		this.stack = stack;
-		if (stack != null) {
-			int bottomCounter = 0;
-			for (StackElement item : stack) {
-				if (item.isBottom()) {
-					bottomCounter++;
-				}
-			}
-			this.size = STACK_LIMIT - bottomCounter;
-		} else {
-			this.size = 0;
-		}
-	}
-
-	AbstractStack(StackElement[] stack, int size) {
-		this.stack = stack;
-		this.size = size;
 	}
 
 	@Override
@@ -174,10 +153,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return stack == null;
 	}
 
-	public boolean isEmpty() {
-		return size == 0;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(Arrays.hashCode(stack));
@@ -214,7 +189,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack clone() {
 		if (isBottom() || isTop())
 			return this;
-		return new AbstractStack(Arrays.copyOf(stack, STACK_LIMIT), this.size);
+		return new AbstractStack(stack.clone());
 	}
 
 	/**
@@ -226,7 +201,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		// Shift all elements one position to the left
 		System.arraycopy(stack, 1, stack, 0, STACK_LIMIT - 1);
 		stack[STACK_LIMIT - 1] = target;
-		this.size++;
 	}
 
 	/**
@@ -238,31 +212,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		StackElement result = stack[STACK_LIMIT - 1];
 		// Shift all elements one position to the right
 		System.arraycopy(stack, 0, stack, 1, STACK_LIMIT - 1);
-		if (!stack[1].isTop()) {
+		if (!stack[1].isTop())
 			stack[0] = StackElement.BOTTOM;
-			this.size--;
-		} else {
+		else
 			stack[0] = StackElement.TOP;
-		}
+
 		return result;
-	}
-
-	/**
-	 * Returns the number of items in the stack (non-bottom).
-	 *
-	 * @return the number of items in the stack.
-	 */
-	public int size() {
-		return this.size;
-	}
-
-	/**
-	 * Yields the stack.
-	 *
-	 * @return the stack as an array
-	 */
-	public StackElement[] getStack() {
-		return stack;
 	}
 
 	@Override
@@ -282,9 +237,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		if (size() > other.size())
-			return false;
-
 		// Starting from the top of the stack and moving downward
 		for (int i = STACK_LIMIT - 1; i >= 0; i--) {
 			if (!this.stack[i].lessOrEqual(other.stack[i])) {
@@ -363,8 +315,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		if (hasBottomUntil(x))
 			return bottom();
 
-		AbstractStack clonedStack = clone();
-		StackElement[] stackArray = clonedStack.getStack();
+		StackElement[] stackArray = this.stack.clone();
 
 		int topIndex = STACK_LIMIT - 1;
 		int targetIndex = topIndex - x + 1;
@@ -376,7 +327,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 		resultArray[topIndex] = elementToDuplicate;
 
-		return new AbstractStack(resultArray, size() + 1);
+		return new AbstractStack(resultArray);
 	}
 
 	/**
@@ -394,12 +345,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		int topIndex = STACK_LIMIT - 1;
 		int swapIndex = topIndex - x;
 
-		StackElement[] newStack = Arrays.copyOf(stack, STACK_LIMIT);
+		StackElement[] newStack = this.stack.clone();
 
 		StackElement temp = newStack[topIndex];
 		newStack[topIndex] = newStack[swapIndex];
 		newStack[swapIndex] = temp;
 
-		return new AbstractStack(newStack, size());
+		return new AbstractStack(newStack);
 	}
 }
