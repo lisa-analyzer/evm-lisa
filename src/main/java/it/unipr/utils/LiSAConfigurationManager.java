@@ -20,6 +20,18 @@ public class LiSAConfigurationManager {
 	 * @return A configured instance of {@link LiSAConfiguration}.
 	 */
 	public static LiSAConfiguration createConfiguration(SmartContract contract) {
+		return createConfiguration(contract, false);
+	}
+
+	/**
+	 * Creates a LiSA configuration for analyzing the given smart contract.
+	 *
+	 * @param contract    The smart contract to be analyzed.
+	 * @param dumpResults Dump the jsonOutput and html version of the CFG.
+	 *
+	 * @return A configured instance of {@link LiSAConfiguration}.
+	 */
+	public static LiSAConfiguration createConfiguration(SmartContract contract, boolean dumpResults) {
 		String address = EthereumUtils.isValidEVMAddress(contract.getAddress()) ? contract.getAddress() : null;
 
 		LiSAConfiguration conf = new LiSAConfiguration();
@@ -32,8 +44,12 @@ public class LiSAConfigurationManager {
 		conf.serializeResults = false;
 		conf.optimize = false;
 		conf.useWideningPoints = false;
-		// conf.analysisGraphs = LiSAConfiguration.GraphType.HTML;
-		conf.jsonOutput = true;
+		conf.jsonOutput = false;
+
+		if (dumpResults) {
+			conf.analysisGraphs = LiSAConfiguration.GraphType.HTML;
+			conf.jsonOutput = true;
+		}
 
 		return conf;
 	}

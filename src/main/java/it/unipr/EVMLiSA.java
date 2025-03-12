@@ -263,14 +263,16 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract, true);
+		if (TEST_MODE)
+			conf = LiSAConfigurationManager.createConfiguration(contract);
 		JumpSolver checker = new JumpSolver();
 		conf.semanticChecks.add(checker);
 
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Analysis ended ({})", contract.getAddress());
+		log.info("Analysis ended {}", contract.getAddress());
 
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
