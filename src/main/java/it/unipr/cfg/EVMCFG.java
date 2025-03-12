@@ -46,6 +46,7 @@ public class EVMCFG extends CFG {
 	public Set<Statement> logxs;
 	public Set<Statement> calls;
 	public Set<Statement> externalData;
+	public Set<Statement> jumpI;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -144,6 +145,23 @@ public class EVMCFG extends CFG {
 		}
 
 		return this.calls;
+	}
+
+	public Set<Statement> getAllJumpI() {
+		if (this.jumpI == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> jumpI = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Jumpi) {
+					jumpI.add(statement);
+				}
+			}
+
+			return this.jumpI = jumpI;
+		}
+
+		return this.jumpI;
 	}
 
 	/**

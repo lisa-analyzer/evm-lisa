@@ -760,7 +760,7 @@ public class EVMLiSA {
 	 * @param futures A list of {@link Future} objects representing running
 	 *                    tasks.
 	 */
-	static private void waitForCompletion(List<Future<?>> futures) {
+	public static void waitForCompletion(List<Future<?>> futures) {
 		for (Future<?> future : futures)
 			try {
 				future.get();
