@@ -11,6 +11,7 @@ import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
+import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.utils.*;
 import it.unive.lisa.LiSA;
@@ -86,6 +87,10 @@ public class EVMLiSA {
 		SmartContract.setWorkingDirectory(workingDirectoryPath);
 	}
 
+	public static Path getWorkingDirectory() {
+		return EVMLiSA.OUTPUT_DIRECTORY_PATH;
+	}
+
 	/**
 	 * Sets the number of processing cores.
 	 *
@@ -152,6 +157,16 @@ public class EVMLiSA {
 			return;
 
 		setupGlobalOptions(cmd);
+
+		// Cross chain analysis
+		if (cmd.hasOption("cross-chain-analysis")
+				&& cmd.hasOption("bytecode-directory-path")
+				&& cmd.hasOption("abi-directory-path")) {
+			xEVMLiSA.runAnalysis(
+					Path.of(cmd.getOptionValue("bytecode-directory-path")),
+					Path.of(cmd.getOptionValue("abi-directory-path")));
+			return;
+		}
 
 		// Benchmark case
 		if (cmd.hasOption("benchmark")) {
@@ -680,6 +695,27 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
+		Option enableCrossChainAnalysisOption = Option.builder()
+				.longOpt("cross-chain-analysis")
+				.desc("Run a cross-chain analysis..")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option crossChainBytecodeDirectoryPathOption = Option.builder()
+				.longOpt("bytecode-directory-path")
+				.desc("Directory path of bytecode files.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option crossChainAbiDirectoryPathOption = Option.builder()
+				.longOpt("abi-directory-path")
+				.desc("Directory path of abi files.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -696,6 +732,9 @@ public class EVMLiSA {
 		options.addOption(enableTimestampDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
+		options.addOption(enableCrossChainAnalysisOption);
+		options.addOption(crossChainBytecodeDirectoryPathOption);
+		options.addOption(crossChainAbiDirectoryPathOption);
 
 		return options;
 	}

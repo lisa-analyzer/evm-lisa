@@ -1,7 +1,6 @@
 package it.unipr.cfg;
 
 import it.unipr.analysis.Number;
-import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.cfg.push.Push;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
@@ -43,7 +42,10 @@ public class EVMCFG extends CFG {
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
 	private Set<Number> jumpDestsNodesLocations;
-	private Set<BasicBlock> basicBlocks;
+	public Set<Statement> sha3s;
+	public Set<Statement> logxs;
+	public Set<Statement> calls;
+	public Set<Statement> externalData;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -87,12 +89,128 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the SSTORE statements in the CFG. SSTORE
+	 * Returns a set of all the CALLDATA, CALLVALUE, CALLER and ORIGIN
+	 * statements in the CFG.
+	 *
+	 * @return a set of all the CALLDATA, CALLVALUE, CALLER and ORIGIN
+	 *             statements in the CFG
+	 */
+	public Set<Statement> getExternalData() {
+		if (this.externalData == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> externalData = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Calldataload) {
+					externalData.add(statement);
+				} else if (statement instanceof Callvalue) {
+					externalData.add(statement);
+				} else if (statement instanceof Caller) {
+					externalData.add(statement);
+				} else if (statement instanceof Origin) {
+					externalData.add(statement);
+				}
+			}
+
+			return this.externalData = externalData;
+		}
+
+		return this.externalData;
+	}
+
+	/**
+	 * Returns a set of all the CALL, STATICCALL and DELEGATECALL statements in
+	 * the CFG.
+	 *
+	 * @return a set of all the CALL, STATICCALL and DELEGATECALL statements in
+	 *             the CFG
+	 */
+	public Set<Statement> getAllCall() {
+		if (this.calls == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> calls = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Call) {
+					calls.add(statement);
+				} else if (statement instanceof Staticcall) {
+					calls.add(statement);
+				} else if (statement instanceof Delegatecall) {
+					calls.add(statement);
+				}
+			}
+
+			return this.calls = calls;
+		}
+
+		return this.calls;
+	}
+
+	/**
+	 * Returns a set of all the LOGx statements in the CFG.
+	 *
+	 * @return a set of all the LOGx statements in the CFG
+	 */
+	public Set<Statement> getAllLogX() {
+		if (logxs == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> logxs = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Log1 || statement instanceof Log2 || statement instanceof Log3
+						|| statement instanceof Log4) {
+					logxs.add(statement);
+				}
+			}
+
+			return this.logxs = logxs;
+		}
+
+		return logxs;
+	}
+
+	/**
+	 * Returns a set of all the SSTORE statements in the CFG.
 	 *
 	 * @return a set of all the SSTORE statements in the CFG
 	 */
 	public Set<Statement> getAllSstore() {
+		if (sstores == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> sstores = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Sstore) {
+					sstores.add(statement);
+				}
+			}
+
+			return this.sstores = sstores;
+		}
+
 		return sstores;
+	}
+
+	/**
+	 * Returns a set of all the SHA3 statements in the CFG.
+	 *
+	 * @return a set of all the SHA3 statements in the CFG
+	 */
+	public Set<Statement> getAllSha3() {
+		if (sha3s == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> sha3s = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes()) {
+				if (statement instanceof Sha3) {
+					sha3s.add(statement);
+				}
+			}
+
+			return this.sha3s = sha3s;
+		}
+
+		return sha3s;
 	}
 
 	/**

@@ -31,6 +31,8 @@ import org.json.JSONObject;
 public class SmartContract {
 	private static final Logger log = LogManager.getLogger(SmartContract.class);
 
+	private String _name;
+
 	/** Contract address on the Ethereum blockchain. */
 	private String _address;
 
@@ -186,7 +188,6 @@ public class SmartContract {
 	 * @throws IllegalArgumentException If bytecodeFilePath is null.
 	 */
 	public SmartContract(Path bytecodeFilePath) {
-		this();
 		if (bytecodeFilePath == null) {
 			log.error("Bytecode file path is null");
 			System.err.println(JSONManager.throwNewError("Bytecode file path is null"));
@@ -197,7 +198,18 @@ public class SmartContract {
 			System.exit(1);
 		}
 
+		this._name = getFileNameWithoutExtension(bytecodeFilePath);
+		this._address = getFileNameWithoutExtension(bytecodeFilePath);
+
 		Path outputDir = _workingDirectory.resolve(_address);
+		try {
+			Files.createDirectories(outputDir);
+		} catch (IOException e) {
+			log.error("Unable to create output directory: {}", outputDir);
+			JSONManager.throwNewError("Unable to create output directory: " + outputDir);
+			System.exit(1);
+		}
+
 		this._bytecodeFilePath = outputDir.resolve(_address + ".bytecode");
 		this._mnemonicBytecodeFilePath = outputDir.resolve(_address + ".opcode");
 
@@ -679,5 +691,18 @@ public class SmartContract {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Extracts the filename without extension from a given Path.
+	 *
+	 * @param path The file path
+	 * 
+	 * @return The filename without extension
+	 */
+	private static String getFileNameWithoutExtension(Path path) {
+		String fileName = path.getFileName().toString();
+		int lastDotIndex = fileName.lastIndexOf('.');
+		return (lastDotIndex == -1) ? fileName : fileName.substring(0, lastDotIndex);
 	}
 }

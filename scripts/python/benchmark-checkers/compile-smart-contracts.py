@@ -254,7 +254,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                         
                         # Save ABI if available
                         if abi and abi_dir is not None:
-                            abi_filename = os.path.join(abi_dir, f"{base_filename}.abi.json")
+                            abi_filename = os.path.join(abi_dir, f"{base_filename}.abi")
                             
                             if isinstance(abi, str):  
                                 abi = json.loads(abi)
@@ -320,7 +320,7 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
 
                             # Save ABI if available
                             if abi and abi_dir is not None:
-                                abi_filename = os.path.join(abi_dir, f"{file_id}_{count}.abi.json")
+                                abi_filename = os.path.join(abi_dir, f"{file_id}_{count}.abi")
                                 
                                 if isinstance(abi, str):  
                                     abi = json.loads(abi)
