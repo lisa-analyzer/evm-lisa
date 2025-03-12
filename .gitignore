@@ -49,6 +49,7 @@ local.properties
 .DS_Store
 execution/
 .env
+src/main/resources/log4j2.xml
 
 # External tool builders
 .externalToolBuilders/

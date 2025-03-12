@@ -91,6 +91,10 @@ public class EVMLiSA {
 		return EVMLiSA.OUTPUT_DIRECTORY_PATH;
 	}
 
+	public static int getCores() {
+		return EVMLiSA.CORES;
+	}
+
 	/**
 	 * Sets the number of processing cores.
 	 *

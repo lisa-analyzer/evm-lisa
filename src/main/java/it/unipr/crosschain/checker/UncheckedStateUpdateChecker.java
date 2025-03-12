@@ -47,8 +47,6 @@ import org.apache.logging.log4j.Logger;
  * <li>If a tainted value reaches SSTORE without encountering a validation step
  * (JUMPI), the contract is vulnerable.</li>
  * </ul>
- *
- * @see UncheckedStateUpdateAbstractDomain
  */
 public class UncheckedStateUpdateChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {

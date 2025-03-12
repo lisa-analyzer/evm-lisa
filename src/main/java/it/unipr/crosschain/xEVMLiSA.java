@@ -22,6 +22,7 @@ import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.LiSAConfigurationManager;
 import it.unipr.utils.MyCache;
+import it.unipr.utils.VulnerabilitiesObject;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -33,6 +34,8 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,9 +56,9 @@ public class xEVMLiSA {
 		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
 		bridge.buildPartialXCFG();
 		bridge.addEdges(
-				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge)
-		// getCrossChainEdgesUsingEventsEntrypoint(bridge) // SmartAxe solution
-		);
+				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+		runCheckers(bridge);
+		printVulnerabilities(bridge);
 
 		// log.debug("Bridge after analysis \n {}", bridge);
 	}
@@ -187,40 +190,45 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs a series of intra-chain security checkers on a given smart contract.
-	 * Each checker is executed asynchronously using the thread pool.
-	 *
-	 * @param contract The smart contract to analyze.
-	 */
-	private void runIntraChainCheckersPerContract(SmartContract contract) {
-		log.info("Running checkers for contract: {}", contract.getAddress());
-//		_executor.submit(() -> runReentrancyChecker(contract));
-//		_executor.submit(() -> runEventOrderChecker(contract));
-//		_executor.submit(() -> runUncheckedStateUpdateChecker(contract));
-//		_executor.submit(() -> runUncheckedExternalInfluenceChecker(contract));
-//		_executor.submit(() -> runTxOriginChecker(contract));
-//		_executor.submit(() -> runTimestampDependencyChecker(contract));
-	}
-
-	/**
 	 * Executes all security checkers in parallel on the smart contracts in the
 	 * bridge.
 	 */
-	public void runCheckers() {
-		log.info("Running checkers");
+	public static void runCheckers(Bridge bridge) {
+		log.info("Running checkers...");
 
+		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
 		List<Future<?>> futures = new ArrayList<>();
 
-//		for (SmartContract contract : _bridge) {
-//			futures.add(_executor.submit(() -> runReentrancyChecker(contract)));
-//			futures.add(_executor.submit(() -> runEventOrderChecker(contract)));
-//			futures.add(_executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
-//			futures.add(_executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
-//			futures.add(_executor.submit(() -> runTxOriginChecker(contract)));
-//			futures.add(_executor.submit(() -> runTimestampDependencyChecker(contract)));
-//		}
+		for (SmartContract contract : bridge) {
+			futures.add(executor.submit(() -> runReentrancyChecker(contract)));
+			futures.add(executor.submit(() -> runEventOrderChecker(contract)));
+			futures.add(executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
+			futures.add(executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
+			futures.add(executor.submit(() -> runTxOriginChecker(contract)));
+			futures.add(executor.submit(() -> runTimestampDependencyChecker(contract)));
+		}
 
 		waitForCompletion(futures);
+		executor.shutdown();
+
+		log.info("Saving checkers results...");
+
+		for (SmartContract contract : bridge) {
+			contract.setVulnerabilities(
+					VulnerabilitiesObject.newVulnerabilitiesObject()
+							.reentrancy(
+									MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()))
+							.txOrigin(MyCache.getInstance().getTxOriginWarnings(contract.getCFG().hashCode()))
+							.timestamp(MyCache.getInstance()
+									.getTimestampDependencyWarnings(contract.getCFG().hashCode()))
+							.eventOrder(MyCache.getInstance()
+									.getEventOrderWarnings(contract.getCFG().hashCode()))
+							.uncheckedExternalInfluence(MyCache.getInstance()
+									.getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()))
+							.uncheckedStateUpdate(MyCache.getInstance()
+									.getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()))
+							.build());
+		}
 	}
 
 	/**
@@ -228,7 +236,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	private void runTimestampDependencyChecker(SmartContract contract) {
+	public static void runTimestampDependencyChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -249,7 +257,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	private void runTxOriginChecker(SmartContract contract) {
+	public static void runTxOriginChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -270,7 +278,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	private void runUncheckedExternalInfluenceChecker(SmartContract contract) {
+	public static void runUncheckedExternalInfluenceChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -291,7 +299,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	private void runUncheckedStateUpdateChecker(SmartContract contract) {
+	public static void runUncheckedStateUpdateChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -311,7 +319,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	private void runReentrancyChecker(SmartContract contract) {
+	public static void runReentrancyChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -332,7 +340,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	private void runEventOrderChecker(SmartContract contract) {
+	public static void runEventOrderChecker(SmartContract contract) {
 		Set<Statement> functionsEntrypoints = new HashSet<>();
 
 		for (Signature function : contract.getFunctionsSignature())
@@ -341,12 +349,6 @@ public class xEVMLiSA {
 		EVMCFG cfg = contract.getCFG();
 		Set<Statement> sstoreSet = cfg.getAllSstore();
 		Set<Statement> logSet = cfg.getAllLogX();
-
-//		log.debug("Contract: {}", contract.getName());
-//		log.debug("Functions: {}", contract.getFunctionsSignature().size());
-//		log.debug("Functions entry points: {}", functionsEntrypoints.size());
-//		log.debug("Sstore set: {}", sstoreSet.size());
-//		log.debug("Log set: {}", logSet.size());
 
 		for (Statement functionEntrypoint : functionsEntrypoints) {
 			for (Statement emitEvent : logSet) {
@@ -367,6 +369,39 @@ public class xEVMLiSA {
 					}
 				}
 			}
+		}
+	}
+
+	public static void printVulnerabilities(Bridge bridge) {
+		for (SmartContract contract : bridge) {
+			if (contract.getCFG() == null)
+				return;
+
+			VulnerabilitiesObject vulnerabilities = contract.getVulnerabilities();
+			log.info(contract.getName());
+			log.info(vulnerabilities);
+
+//			if (vulnerabilities.getReentrancy() > 0)
+//				log.warn("{} reentrancy warning", vulnerabilities.getReentrancy());
+//
+//			if (vulnerabilities.getEventOrder() > 0)
+//				log.warn("{} event order warning", vulnerabilities.getEventOrder());
+//
+//			if (vulnerabilities.getUncheckedStateUpdate() > 0)
+//				log.warn("{} unchecked state update warning",
+//						vulnerabilities.getUncheckedStateUpdate());
+//
+//			if (vulnerabilities.getUncheckedExternalInfluence() > 0)
+//				log.warn("{} unchecked external influence warning",
+//						vulnerabilities.getUncheckedExternalInfluence());
+//
+//			if (vulnerabilities.getTimestamp() > 0)
+//				log.warn("{} timestamp dependency warning",
+//						vulnerabilities.getTimestamp());
+//
+//			if (vulnerabilities.getTxOrigin() > 0)
+//				log.warn("{} tx. origin warning",
+//						vulnerabilities.getTxOrigin());
 		}
 	}
 }

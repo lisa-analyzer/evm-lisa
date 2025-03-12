@@ -109,6 +109,7 @@ public class SmartContract {
 		}
 
 		this._address = address;
+		this._name = address;
 		Path outputDir = _workingDirectory.resolve(address);
 		this._abiFilePath = outputDir.resolve(address + ".abi");
 		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
@@ -371,6 +372,10 @@ public class SmartContract {
 	 */
 	public VulnerabilitiesObject getVulnerabilities() {
 		return _vulnerabilities;
+	}
+
+	public String getName() {
+		return this._name;
 	}
 
 	///////////////////// SETTERs

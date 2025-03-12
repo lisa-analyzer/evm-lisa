@@ -15,6 +15,9 @@ public class VulnerabilitiesObject {
 	private int reentrancy;
 	private int timestamp;
 	private int txOrigin;
+	private int uncheckedExternalInfluence;
+	private int eventOrder;
+	private int uncheckedStateUpdate;
 	private JSONObject json;
 
 	/**
@@ -25,6 +28,9 @@ public class VulnerabilitiesObject {
 		this.reentrancy = -1;
 		this.timestamp = -1;
 		this.txOrigin = -1;
+		this.uncheckedExternalInfluence = -1;
+		this.eventOrder = -1;
+		this.uncheckedStateUpdate = -1;
 		this.json = new JSONObject();
 	}
 
@@ -33,13 +39,17 @@ public class VulnerabilitiesObject {
 	 *
 	 * @param reentrancy the reentrancy vulnerability score
 	 * @param timestamp  the timestamp dependency vulnerability score
-	 * @param txOrigin   the tx.origin vulnerability score
+	 * @param txOrigin   the tx. origin vulnerability score
 	 * @param json       the JSON representation of the object
 	 */
-	private VulnerabilitiesObject(int reentrancy, int timestamp, int txOrigin, JSONObject json) {
+	private VulnerabilitiesObject(int reentrancy, int timestamp, int txOrigin, int uncheckedExternalInfluence,
+			int eventOrder, int uncheckedStateUpdate, JSONObject json) {
 		this.reentrancy = reentrancy;
 		this.timestamp = timestamp;
 		this.txOrigin = txOrigin;
+		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
+		this.eventOrder = eventOrder;
+		this.uncheckedStateUpdate = uncheckedStateUpdate;
 		this.json = json;
 
 		if (reentrancy != -1)
@@ -48,6 +58,12 @@ public class VulnerabilitiesObject {
 			this.json.put("timestamp_dependency", this.timestamp);
 		if (txOrigin != -1)
 			this.json.put("tx_origin", this.txOrigin);
+		if (uncheckedExternalInfluence != -1)
+			this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
+		if (eventOrder != -1)
+			this.json.put("event_order", this.eventOrder);
+		if (uncheckedStateUpdate != -1)
+			this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
 	}
 
 	/**
@@ -75,6 +91,18 @@ public class VulnerabilitiesObject {
 	 */
 	public int getTxOrigin() {
 		return txOrigin;
+	}
+
+	public int getUncheckedExternalInfluence() {
+		return uncheckedExternalInfluence;
+	}
+
+	public int getEventOrder() {
+		return eventOrder;
+	}
+
+	public int getUncheckedStateUpdate() {
+		return uncheckedStateUpdate;
 	}
 
 	/**
@@ -122,13 +150,29 @@ public class VulnerabilitiesObject {
 		return this;
 	}
 
+	public VulnerabilitiesObject uncheckedExternalInfluence(int uncheckedExternalInfluence) {
+		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
+		return this;
+	}
+
+	public VulnerabilitiesObject eventOrder(int eventOrder) {
+		this.eventOrder = eventOrder;
+		return this;
+	}
+
+	public VulnerabilitiesObject uncheckedStateUpdate(int uncheckedStateUpdate) {
+		this.uncheckedStateUpdate = uncheckedStateUpdate;
+		return this;
+	}
+
 	/**
 	 * Builds a new {@code VulnerabilitiesObject} with the specified values.
 	 *
 	 * @return a new {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject build() {
-		return new VulnerabilitiesObject(reentrancy, timestamp, txOrigin, json);
+		return new VulnerabilitiesObject(reentrancy, timestamp, txOrigin, uncheckedExternalInfluence, eventOrder,
+				uncheckedStateUpdate, json);
 	}
 
 	/**
@@ -159,5 +203,8 @@ public class VulnerabilitiesObject {
 		log.info("Reentrancy: {}", vulnerabilities.getReentrancy());
 		log.info("Timestamp dependency: {}", vulnerabilities.getTimestamp());
 		log.info("Tx.Origin: {}", vulnerabilities.getTxOrigin());
+		log.info("Unchecked external influence: {}", vulnerabilities.getUncheckedExternalInfluence());
+		log.info("Event order: {}", vulnerabilities.getEventOrder());
+		log.info("Unchecked state update: {}", vulnerabilities.getUncheckedStateUpdate());
 	}
 }
