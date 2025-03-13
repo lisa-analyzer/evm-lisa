@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_taint_testSanitizer_test2_test2.opcode().json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "8ms",
+    "end" : "2025-03-13T17:42:39.010+01:00",
+    "expressions" : "8",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "1",
+    "programs" : "1",
+    "start" : "2025-03-13T17:42:39.002+01:00",
+    "statements" : "11",
+    "units" : "0",
+    "version" : "0.1",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "false",
+    "wideningThreshold" : "5",
+    "workdir" : "evm-outputs/taint/testSanitizer/test2"
+  }
+}

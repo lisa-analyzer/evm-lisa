@@ -1,26 +1,25 @@
-package it.unipr.analysis.taint;
+package it.unipr.analysis.cron.semantics.sanitizer;
 
-import it.unipr.analysis.operator.BalanceOperator;
-import it.unipr.analysis.operator.BlockhashOperator;
-import it.unipr.analysis.operator.DifficultyOperator;
-import it.unipr.analysis.operator.TimestampOperator;
+import it.unipr.analysis.operator.*;
+import it.unipr.analysis.taint.TaintAbstractDomain;
+import it.unipr.analysis.taint.TaintElement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
-	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
+public class SanitizerAbstractDomain extends TaintAbstractDomain {
+	private static final SanitizerAbstractDomain TOP = new SanitizerAbstractDomain(
 			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
 			TaintElement.CLEAN);
-	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
+	private static final SanitizerAbstractDomain BOTTOM = new SanitizerAbstractDomain(null,
 			TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public TimestampDependencyAbstractDomain() {
+	public SanitizerAbstractDomain() {
 		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
 	}
 
@@ -30,7 +29,7 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TimestampDependencyAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
+	protected SanitizerAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
 		super(stack, memory);
 	}
 
@@ -46,22 +45,25 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public Set<Operator> getSanitizedOpcode() {
-		return Set.of();
+		Set<Operator> sanitizedOpcode = new HashSet<>();
+		sanitizedOpcode.add(AddOperator.INSTANCE);
+		sanitizedOpcode.add(AddressOperator.INSTANCE);
+		return sanitizedOpcode;
 	}
 
 	@Override
-	public TimestampDependencyAbstractDomain top() {
+	public SanitizerAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public TimestampDependencyAbstractDomain bottom() {
+	public SanitizerAbstractDomain bottom() {
 		return BOTTOM;
 	}
 
 	@Override
 	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory) {
-		return new TimestampDependencyAbstractDomain(list, memory);
+		return new SanitizerAbstractDomain(list, memory);
 	}
 
 }

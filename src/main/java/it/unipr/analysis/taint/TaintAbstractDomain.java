@@ -35,7 +35,7 @@ public abstract class TaintAbstractDomain
 	/**
 	 * The abstract stack domain.
 	 */
-	private final ArrayList<TaintElement> stack;
+	private ArrayList<TaintElement> stack;
 
 	/**
 	 * The local memory, tracking if it is clean or tainted.
@@ -75,6 +75,9 @@ public abstract class TaintAbstractDomain
 			UnaryOperator op = un.getOperator();
 
 			if (op != null) {
+				if (this.getSanitizedOpcode().contains(op))
+					sanitizeStack();
+
 				switch (op.getClass().getSimpleName()) {
 				case "TimestampOperator":
 				case "OriginOperator":
@@ -707,6 +710,17 @@ public abstract class TaintAbstractDomain
 			return true;
 	}
 
+	private void sanitizeStack() {
+		ArrayList<TaintElement> result = new ArrayList<>();
+		for (TaintElement item : stack) {
+			if (item.isBottom())
+				result.add(TaintElement.BOTTOM);
+			else
+				result.add(TaintElement.CLEAN);
+		}
+		stack = result;
+	}
+
 	@Override
 	public TaintAbstractDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
 			SemanticOracle oracle) throws SemanticException {
@@ -905,6 +919,13 @@ public abstract class TaintAbstractDomain
 	 * @return the set of opcodes that push taint elements
 	 */
 	public abstract Set<Operator> getTaintedOpcode();
+
+	/**
+	 * Yields the set of opcodes that sanitize the state.
+	 *
+	 * @return the set of opcodes that sanitize the state
+	 */
+	public abstract Set<Operator> getSanitizedOpcode();
 
 	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
