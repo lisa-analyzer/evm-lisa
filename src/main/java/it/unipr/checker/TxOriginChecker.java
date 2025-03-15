@@ -1,11 +1,11 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.MyCache;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -24,6 +24,20 @@ public class TxOriginChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(TxOriginChecker.class);
+
+	private static boolean isEnabled = false;
+
+	public static void enableChecker() {
+		isEnabled = true;
+	}
+
+	public static void disableChecker() {
+		isEnabled = false;
+	}
+
+	public static boolean isEnabled() {
+		return isEnabled;
+	}
 
 	@Override
 	public boolean visit(

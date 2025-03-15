@@ -4,13 +4,12 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.SetLattice;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
 	/**
-	 * The maximum size of an abstract stack set
+	 * The maximum size of an abstract stack set.
 	 */
 	private static int SIZE = 8;
 
@@ -79,21 +78,6 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	@Override
 	public AbstractStackSet mk(Set<AbstractStack> set) {
 		return new AbstractStackSet(set, false);
-	}
-
-	public String toString2() {
-		String result = "{";
-		Iterator<AbstractStack> it = elements.iterator();
-
-		while (it.hasNext()) {
-			result += it.next().toString();
-			if (it.hasNext())
-				result += ", ";
-		}
-
-		result += "}";
-
-		return result;
 	}
 
 	/**

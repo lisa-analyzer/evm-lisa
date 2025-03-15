@@ -1,0 +1,56 @@
+[
+    {
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "sender",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "statement",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "name": "statementHash",
+                "internalType": "bytes",
+                "type": "bytes"
+            }
+        ],
+        "name": "FABRYXProclamation",
+        "anonymous": false,
+        "type": "event"
+    },
+    {
+        "outputs": [],
+        "inputs": [
+            {
+                "name": "statement",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "name": "statementHash",
+                "internalType": "bytes",
+                "type": "bytes"
+            }
+        ],
+        "name": "proclaim",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "outputs": [{
+            "name": "",
+            "internalType": "address",
+            "type": "address"
+        }],
+        "inputs": [],
+        "name": "safeAddress",
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
