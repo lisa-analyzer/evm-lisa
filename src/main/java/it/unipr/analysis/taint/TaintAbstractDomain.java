@@ -35,7 +35,7 @@ public abstract class TaintAbstractDomain
 	/**
 	 * The abstract stack domain.
 	 */
-	private ArrayList<TaintElement> stack;
+	private final ArrayList<TaintElement> stack;
 
 	/**
 	 * The local memory, tracking if it is clean or tainted.
@@ -75,9 +75,6 @@ public abstract class TaintAbstractDomain
 			UnaryOperator op = un.getOperator();
 
 			if (op != null) {
-				if (this.getSanitizedOpcode().contains(op))
-					sanitizeStack();
-
 				switch (op.getClass().getSimpleName()) {
 				case "TimestampOperator":
 				case "OriginOperator":
@@ -708,17 +705,6 @@ public abstract class TaintAbstractDomain
 			return false;
 		else
 			return true;
-	}
-
-	private void sanitizeStack() {
-		ArrayList<TaintElement> result = new ArrayList<>();
-		for (TaintElement item : stack) {
-			if (item.isBottom())
-				result.add(TaintElement.BOTTOM);
-			else
-				result.add(TaintElement.CLEAN);
-		}
-		stack = result;
 	}
 
 	@Override
