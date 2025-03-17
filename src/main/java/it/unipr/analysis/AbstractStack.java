@@ -277,15 +277,14 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return popped;
 	}
 
+	/**
+	 * Performs {@code pos} consecutive {@code pop()} operations on the stack.
+	 *
+	 * @param pos the number of elements to pop from the stack
+	 */
 	public void popX(int pos) {
-		// Shift all elements pos position to the right
-		System.arraycopy(stack, 0, stack, pos, STACK_LIMIT - pos);
-
-		for (int i = 1; i < pos; i++)
-			if (!stack[i].isTop())
-				stack[i - 1] = StackElement.BOTTOM;
-			else
-				stack[i - 1] = StackElement.TOP;
+		for (int i = 0; i < pos; i++)
+			pop();
 	}
 
 	@Override
@@ -415,4 +414,5 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		clone.circularArray[topIndex] = temp;
 		return clone;
 	}
+
 }
