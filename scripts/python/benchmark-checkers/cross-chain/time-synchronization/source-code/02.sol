@@ -11,7 +11,7 @@ contract TargetChainBridge {
         bytes32 hash = keccak256(abi.encodePacked(sender, timestamp));
         
         // Vulnerability: timestamp used as a parameter in a conditional statement
-        if (timestamp % 2 == 0) {
+        if (timestamp > 100000) {
             balances[sender] += amount;
         }
     }
