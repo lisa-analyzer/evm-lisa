@@ -1,5 +1,8 @@
 package it.unipr.analysis;
 
+import java.util.Arrays;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -12,9 +15,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
@@ -169,7 +169,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(Arrays.hashCode(circularArray));
+		return Arrays.hashCode(circularArray);
 	}
 
 	@Override
@@ -182,13 +182,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return false;
 
 		AbstractStack other = (AbstractStack) obj;
-		if (isBottom() || other.isBottom())
-			return isBottom() == other.isBottom();
-		for (int i = 0; i < STACK_LIMIT; i++)
-			if (!get(i).equals(other.get(i)))
-				return false;
-
-		return true;
+		return Arrays.equals(this.circularArray, other.circularArray);
 	}
 
 	/**
