@@ -37,8 +37,21 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * The abstract stack as a circular array.
 	 */
 	private final StackElement[] circularArray;
-	private int head;
-	private int tail;
+
+    /**
+     * The index representing the beginning of the logical stack in the circular array.
+     * <p>
+     * This pointer indicates the position in the array that corresponds to the bottom of the stack.
+     * Tracks the index of the oldest element in the circular array.
+     */
+    private int head;
+
+    /**
+     * The index representing the next insertion point in the circular array.
+     * <p>
+     * This pointer is used to identify the top of the stack, where the next element will be pushed.
+     */
+    private int tail;
 
 	/**
 	 * Helper method to create and fill an array with a specific element.
