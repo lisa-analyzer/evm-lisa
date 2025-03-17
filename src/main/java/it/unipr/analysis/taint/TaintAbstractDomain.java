@@ -277,100 +277,100 @@ public abstract class TaintAbstractDomain
 				}
 
 				case "Dup1Operator": { // DUP1
-					return dupXoperator(1, clone());
+					return dupXoperator(1, this);
 				}
 				case "Dup2Operator": { // DUP2
-					return dupXoperator(2, clone());
+					return dupXoperator(2, this);
 				}
 				case "Dup3Operator": { // DUP3
-					return dupXoperator(3, clone());
+					return dupXoperator(3, this);
 				}
 				case "Dup4Operator": { // DUP4
-					return dupXoperator(4, clone());
+					return dupXoperator(4, this);
 				}
 				case "Dup5Operator": { // DUP5
-					return dupXoperator(5, clone());
+					return dupXoperator(5, this);
 				}
 				case "Dup6Operator": { // DUP6
-					return dupXoperator(6, clone());
+					return dupXoperator(6, this);
 				}
 				case "Dup7Operator": { // DUP7
-					return dupXoperator(7, clone());
+					return dupXoperator(7, this);
 				}
 				case "Dup8Operator": { // DUP8
-					return dupXoperator(8, clone());
+					return dupXoperator(8, this);
 				}
 				case "Dup9Operator": { // DUP9
-					return dupXoperator(9, clone());
+					return dupXoperator(9, this);
 				}
 				case "Dup10Operator": { // DUP10
-					return dupXoperator(10, clone());
+					return dupXoperator(10, this);
 				}
 				case "Dup11Operator": { // DUP11
-					return dupXoperator(11, clone());
+					return dupXoperator(11, this);
 				}
 				case "Dup12Operator": { // DUP12
-					return dupXoperator(12, clone());
+					return dupXoperator(12, this);
 				}
 				case "Dup13Operator": { // DUP13
-					return dupXoperator(13, clone());
+					return dupXoperator(13, this);
 				}
 				case "Dup14Operator": { // DUP14
-					return dupXoperator(14, clone());
+					return dupXoperator(14, this);
 				}
 				case "Dup15Operator": { // DUP15
-					return dupXoperator(15, clone());
+					return dupXoperator(15, this);
 				}
 				case "Dup16Operator": { // DUP16
-					return dupXoperator(16, clone());
+					return dupXoperator(16, this);
 				}
 				case "Swap1Operator": { // SWAP1
-					return swapXoperator(1, clone());
+					return swapXoperator(1, this);
 				}
 				case "Swap2Operator": { // SWAP2
-					return swapXoperator(2, clone());
+					return swapXoperator(2, this);
 				}
 				case "Swap3Operator": { // SWAP3
-					return swapXoperator(3, clone());
+					return swapXoperator(3, this);
 				}
 				case "Swap4Operator": { // SWAP4
-					return swapXoperator(4, clone());
+					return swapXoperator(4, this);
 				}
 				case "Swap5Operator": { // SWAP5
-					return swapXoperator(5, clone());
+					return swapXoperator(5, this);
 				}
 				case "Swap6Operator": { // SWAP6
-					return swapXoperator(6, clone());
+					return swapXoperator(6, this);
 				}
 				case "Swap7Operator": { // SWAP7
-					return swapXoperator(7, clone());
+					return swapXoperator(7, this);
 				}
 				case "Swap8Operator": { // SWAP8
-					return swapXoperator(8, clone());
+					return swapXoperator(8, this);
 				}
 				case "Swap9Operator": { // SWAP9
-					return swapXoperator(9, clone());
+					return swapXoperator(9, this);
 				}
 				case "Swap10Operator": { // SWAP10
-					return swapXoperator(10, clone());
+					return swapXoperator(10, this);
 				}
 				case "Swap11Operator": { // SWAP11
-					return swapXoperator(11, clone());
+					return swapXoperator(11, this);
 				}
 				case "Swap12Operator": { // SWAP12
-					return swapXoperator(12, clone());
+					return swapXoperator(12, this);
 				}
 				case "Swap13Operator": { // SWAP13
-					return swapXoperator(13, clone());
+					return swapXoperator(13, this);
 				}
 				case "Swap14Operator": { // SWAP14
-					return swapXoperator(14, clone());
+					return swapXoperator(14, this);
 				}
 				case "Swap15Operator": { // SWAP15
-					return swapXoperator(15, clone());
+					return swapXoperator(15, this);
 				}
 				case "Swap16Operator": { // SWAP16
-					return swapXoperator(16, clone());
+					return swapXoperator(16, this);
 				}
 				case "Log0Operator": { // LOG0
 					if (hasBottomUntil(2))
@@ -905,6 +905,13 @@ public abstract class TaintAbstractDomain
 	 * @return the set of opcodes that push taint elements
 	 */
 	public abstract Set<Operator> getTaintedOpcode();
+
+	/**
+	 * Yields the set of opcodes that sanitize the state.
+	 *
+	 * @return the set of opcodes that sanitize the state
+	 */
+	public abstract Set<Operator> getSanitizedOpcode();
 
 	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}

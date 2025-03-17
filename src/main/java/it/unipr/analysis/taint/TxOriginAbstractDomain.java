@@ -36,6 +36,11 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
+	public Set<Operator> getSanitizedOpcode() {
+		return Set.of();
+	}
+
+	@Override
 	public TxOriginAbstractDomain top() {
 		return TOP;
 	}
