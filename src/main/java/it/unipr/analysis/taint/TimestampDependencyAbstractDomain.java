@@ -45,6 +45,11 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
+	public Set<Operator> getSanitizedOpcode() {
+		return Set.of();
+	}
+
+	@Override
 	public TimestampDependencyAbstractDomain top() {
 		return TOP;
 	}

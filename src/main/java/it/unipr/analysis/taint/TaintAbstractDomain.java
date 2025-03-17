@@ -907,6 +907,13 @@ public abstract class TaintAbstractDomain
 	public abstract Set<Operator> getTaintedOpcode();
 
 	/**
+	 * Yields the set of opcodes that sanitize the state.
+	 *
+	 * @return the set of opcodes that sanitize the state
+	 */
+	public abstract Set<Operator> getSanitizedOpcode();
+
+	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
 	 * given the stack and the memory.
 	 * 
