@@ -1,6 +1,8 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.operator.OriginOperator;
+import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.Origin;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,15 +11,20 @@ import java.util.Set;
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
-			TaintElement.CLEAN);
-	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
+			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT,
+					TaintElement.BOTTOM)),
+			TaintElement.CLEAN,
+			null);
+	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(
+			null,
+			TaintElement.BOTTOM,
+			null);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TxOriginAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
+		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN, null);
 	}
 
 	/**
@@ -26,13 +33,13 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TxOriginAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
-		super(stack, memory);
+	protected TxOriginAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory, EVMCFG cfg) {
+		super(stack, memory, cfg);
 	}
 
 	@Override
-	public Set<Operator> getTaintedOpcode() {
-		return Collections.singleton(OriginOperator.INSTANCE);
+	public boolean isTainted(Statement stmt) {
+		return stmt instanceof Origin;
 	}
 
 	@Override
@@ -51,7 +58,7 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory) {
-		return new TxOriginAbstractDomain(list, memory);
+	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory, EVMCFG cfg) {
+		return new TxOriginAbstractDomain(list, memory, cfg);
 	}
 }

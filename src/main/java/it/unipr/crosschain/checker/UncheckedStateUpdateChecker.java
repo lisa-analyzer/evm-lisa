@@ -21,33 +21,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * This checker detects cases where a contract updates its state using values
- * returned from external calls (CALL, DELEGATECALL, STATICCALL) without proper
- * validation.
- * <p>
- * <b>Purpose:</b>
- * </p>
- * <ul>
- * <li>Identifies operations where state updates (SSTORE) are influenced by
- * external contract calls.</li>
- * <li>Ensures that state updates do not depend on unverified external
- * data.</li>
- * <li>Prevents potential security vulnerabilities due to unchecked state
- * modifications.</li>
- * </ul>
- * <p>
- * <b>Analysis Process:</b>
- * </p>
- * <ul>
- * <li>Uses taint analysis to track the propagation of values from external
- * calls.</li>
- * <li>Marks CALL, DELEGATECALL, and STATICCALL as taint sources.</li>
- * <li>Marks SSTORE as a sink where state is modified.</li>
- * <li>If a tainted value reaches SSTORE without encountering a validation step
- * (JUMPI), the contract is vulnerable.</li>
- * </ul>
- */
 public class UncheckedStateUpdateChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 

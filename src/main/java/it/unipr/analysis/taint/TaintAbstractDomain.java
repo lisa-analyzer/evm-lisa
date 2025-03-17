@@ -1,5 +1,6 @@
 package it.unipr.analysis.taint;
 
+import it.unipr.cfg.EVMCFG;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -8,6 +9,7 @@ import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Operator;
@@ -42,15 +44,20 @@ public abstract class TaintAbstractDomain
 	 */
 	private final TaintElement memory;
 
+	private final EVMCFG cfg;
+
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
-	 *
-	 * @param stack the stack of values
 	 */
 	protected TaintAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
+		this(stack, memory, null);
+	}
+
+	protected TaintAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory, EVMCFG cfg) {
 		this.stack = stack;
 		this.memory = memory;
+		this.cfg = cfg;
 	}
 
 	@Override
@@ -99,7 +106,7 @@ public abstract class TaintAbstractDomain
 				case "PushOperator":
 				case "Push0Operator": {
 					TaintAbstractDomain resultStack = clone();
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.CLEAN);
@@ -159,7 +166,7 @@ public abstract class TaintAbstractDomain
 
 					TaintAbstractDomain resultStack = clone();
 					TaintElement opnd1 = resultStack.pop();
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.semantics(opnd1));
@@ -188,7 +195,7 @@ public abstract class TaintAbstractDomain
 					TaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.stack, TaintElement.TAINT);
+						return mk(resultStack.stack, TaintElement.TAINT, resultStack.cfg);
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -450,7 +457,7 @@ public abstract class TaintAbstractDomain
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.semantics(value, offset, length));
@@ -465,7 +472,7 @@ public abstract class TaintAbstractDomain
 					TaintElement length = resultStack.pop();
 					TaintElement salt = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.semantics(value, offset, length, salt));
@@ -484,7 +491,7 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack
@@ -515,7 +522,7 @@ public abstract class TaintAbstractDomain
 					TaintElement outOffset = resultStack.pop();
 					TaintElement outLength = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.semantics(gas, to, inOffset, inLength, outOffset, outLength));
@@ -566,7 +573,7 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.semantics(address));
@@ -605,7 +612,7 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement address = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
+					if (this.isTainted((Statement) pp))
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack.push(TaintElement.semantics(address));
@@ -621,28 +628,28 @@ public abstract class TaintAbstractDomain
 		return top();
 	}
 
-	private TaintAbstractDomain dupXoperator(int x, TaintAbstractDomain stack) {
-		if (stack.isEmpty() || stack.hasBottomUntil(x))
+	private TaintAbstractDomain dupXoperator(int x, TaintAbstractDomain other) {
+		if (other.isEmpty() || other.hasBottomUntil(x))
 			return bottom();
-		return dupX(x, stack.clone());
+		return dupX(x, other.clone());
 	}
 
-	private TaintAbstractDomain swapXoperator(int x, TaintAbstractDomain stack) {
-		if (stack.isEmpty() || stack.hasBottomUntil(x))
+	private TaintAbstractDomain swapXoperator(int x, TaintAbstractDomain other) {
+		if (other.isEmpty() || other.hasBottomUntil(x))
 			return bottom();
-		return swapX(x, stack.clone());
+		return swapX(x, other.clone());
 	}
 
-	private TaintAbstractDomain swapX(int x, TaintAbstractDomain stack) {
-		List<TaintElement> clone = stack.clone().getStack();
+	private TaintAbstractDomain swapX(int x, TaintAbstractDomain other) {
+		List<TaintElement> clone = other.clone().getStack();
 
-		if (stack.size() < x + 1 || x < 1)
-			return stack.bottom();
+		if (other.size() < x + 1 || x < 1)
+			return other.bottom();
 
 		Object[] obj = clone.toArray();
 		int first;
 
-		if (stack.size() < STACK_LIMIT)
+		if (other.size() < STACK_LIMIT)
 			first = STACK_LIMIT - 1;
 		else
 			first = clone.size() - 1;
@@ -656,19 +663,19 @@ public abstract class TaintAbstractDomain
 		for (int i = 0; i < clone.size(); i++)
 			result.add((TaintElement) obj[i]);
 
-		return mk(result, stack.memory);
+		return mk(result, other.memory, other.cfg);
 	}
 
-	private TaintAbstractDomain dupX(int x, TaintAbstractDomain stack) {
-		List<TaintElement> clone = stack.clone().getStack();
+	private TaintAbstractDomain dupX(int x, TaintAbstractDomain other) {
+		List<TaintElement> clone = other.clone().getStack();
 
-		if (stack.size() < x || x < 1)
-			return stack.bottom();
+		if (other.size() < x || x < 1)
+			return other.bottom();
 
 		Object[] obj = clone.toArray();
 
 		int first;
-		if (stack.size() < STACK_LIMIT)
+		if (other.size() < STACK_LIMIT)
 			first = STACK_LIMIT;
 		else
 			first = clone.size();
@@ -683,7 +690,7 @@ public abstract class TaintAbstractDomain
 		result.add(tmp);
 		result.remove(0);
 
-		return mk(result, stack.memory);
+		return mk(result, other.memory, other.cfg);
 	}
 
 	private ArrayList<TaintElement> getStack() {
@@ -701,15 +708,12 @@ public abstract class TaintAbstractDomain
 	}
 
 	private boolean isEmpty() {
-		if (!stack.isEmpty())
-			return false;
-		else
-			return true;
+		return stack.isEmpty();
 	}
 
 	@Override
 	public TaintAbstractDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
-			SemanticOracle oracle) throws SemanticException {
+			SemanticOracle oracle) {
 		// nothing to do here
 		return this;
 	}
@@ -721,13 +725,13 @@ public abstract class TaintAbstractDomain
 	}
 
 	@Override
-	public TaintAbstractDomain forgetIdentifier(Identifier id) throws SemanticException {
+	public TaintAbstractDomain forgetIdentifier(Identifier id) {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public TaintAbstractDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+	public TaintAbstractDomain forgetIdentifiersIf(Predicate<Identifier> test) {
 		// nothing to do here
 		return this;
 	}
@@ -760,13 +764,13 @@ public abstract class TaintAbstractDomain
 	}
 
 	@Override
-	public TaintAbstractDomain pushScope(ScopeToken token) throws SemanticException {
+	public TaintAbstractDomain pushScope(ScopeToken token) {
 		// nothing to do here
 		return this;
 	}
 
 	@Override
-	public TaintAbstractDomain popScope(ScopeToken token) throws SemanticException {
+	public TaintAbstractDomain popScope(ScopeToken token) {
 		// nothing to do here
 		return this;
 	}
@@ -784,7 +788,7 @@ public abstract class TaintAbstractDomain
 			result.add(thisElement.glb(otherElement));
 		}
 
-		return mk(result, this.memory.glb(other.memory));
+		return mk(result, this.memory.glb(other.memory), this.cfg);
 	}
 
 	@Override
@@ -800,7 +804,7 @@ public abstract class TaintAbstractDomain
 			result.add(thisElement.lub(otherElement));
 		}
 
-		return mk(result, this.memory.lub(other.memory));
+		return mk(result, this.memory.lub(other.memory), this.cfg);
 	}
 
 	@Override
@@ -844,8 +848,8 @@ public abstract class TaintAbstractDomain
 
 	/**
 	 * Checks whether between 0 and x-positions of the stack an element is
-	 * bottom. /** Checks whether between 0 and x-positions of the stack an
-	 * element is bottom.
+	 * bottom. Checks whether between 0 and x-positions of the stack an element
+	 * is bottom.
 	 *
 	 * @param x the position
 	 *
@@ -863,7 +867,7 @@ public abstract class TaintAbstractDomain
 	public TaintAbstractDomain clone() {
 		if (isBottom())
 			return this;
-		return mk(new ArrayList<>(stack), this.memory);
+		return mk(new ArrayList<>(stack), this.memory, this.cfg);
 	}
 
 	@Override
@@ -883,6 +887,11 @@ public abstract class TaintAbstractDomain
 		return Objects.hash(memory, stack);
 	}
 
+	/**
+	 * Returns the second element from the top of the stack.
+	 *
+	 * @return the second element of the stack.
+	 */
 	public TaintElement getSecondElement() {
 		if (isBottom())
 			return TaintElement.BOTTOM;
@@ -891,6 +900,11 @@ public abstract class TaintAbstractDomain
 		return this.stack.get(STACK_LIMIT - 2);
 	}
 
+	/**
+	 * Returns the first element (top) of the stack.
+	 *
+	 * @return the top element of the stack.
+	 */
 	public TaintElement getFirstElement() {
 		if (isBottom())
 			return TaintElement.BOTTOM;
@@ -900,11 +914,14 @@ public abstract class TaintAbstractDomain
 	}
 
 	/**
-	 * Yields the set of opcodes that push taint elements.
+	 * Determines whether the given statement is tainted.
+	 *
+	 * @param stmt the statement to check
 	 * 
-	 * @return the set of opcodes that push taint elements
+	 * @return {@code true} if the statement is tainted, {@code false}
+	 *             otherwise.
 	 */
-	public abstract Set<Operator> getTaintedOpcode();
+	public abstract boolean isTainted(Statement stmt);
 
 	/**
 	 * Yields the set of opcodes that sanitize the state.
@@ -915,13 +932,14 @@ public abstract class TaintAbstractDomain
 
 	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
-	 * given the stack and the memory.
+	 * given the stack, the memory and the CFG.
 	 * 
 	 * @param list   the stack
 	 * @param memory the memory
+	 * @param cfg    the CFG
 	 * 
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
 	 */
-	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory);
+	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory, EVMCFG cfg);
 
 }
