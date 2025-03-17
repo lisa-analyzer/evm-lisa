@@ -373,35 +373,12 @@ public class xEVMLiSA {
 	}
 
 	public static void printVulnerabilities(Bridge bridge) {
+		log.info("Printing vulnerabilities...");
 		for (SmartContract contract : bridge) {
 			if (contract.getCFG() == null)
 				return;
 
-			VulnerabilitiesObject vulnerabilities = contract.getVulnerabilities();
-			log.info(contract.getName());
-			log.info(vulnerabilities);
-
-//			if (vulnerabilities.getReentrancy() > 0)
-//				log.warn("{} reentrancy warning", vulnerabilities.getReentrancy());
-//
-//			if (vulnerabilities.getEventOrder() > 0)
-//				log.warn("{} event order warning", vulnerabilities.getEventOrder());
-//
-//			if (vulnerabilities.getUncheckedStateUpdate() > 0)
-//				log.warn("{} unchecked state update warning",
-//						vulnerabilities.getUncheckedStateUpdate());
-//
-//			if (vulnerabilities.getUncheckedExternalInfluence() > 0)
-//				log.warn("{} unchecked external influence warning",
-//						vulnerabilities.getUncheckedExternalInfluence());
-//
-//			if (vulnerabilities.getTimestamp() > 0)
-//				log.warn("{} timestamp dependency warning",
-//						vulnerabilities.getTimestamp());
-//
-//			if (vulnerabilities.getTxOrigin() > 0)
-//				log.warn("{} tx. origin warning",
-//						vulnerabilities.getTxOrigin());
+			log.info("{}: {}", contract.getName(), contract.getVulnerabilities());
 		}
 	}
 }
