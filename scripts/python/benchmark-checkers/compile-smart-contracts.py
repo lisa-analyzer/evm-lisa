@@ -359,25 +359,12 @@ if __name__ == "__main__":
     parser.add_argument("--smartbugs", action="store_true", help="Compile SmartBugs dataset")
     parser.add_argument("--slise", action="store_true", help="Compile SliSE dataset")
     parser.add_argument("--longest-bytecode", action="store_true", help="Save only the longest bytecode")
-    parser.add_argument("--manual", action="store_true", help="Manual mode")
-    parser.add_argument("--cross-chain-xguard", action="store_true", help="Compile XGuard dataset")
+    parser.add_argument("--cross-chain", action="store_true", help="Compile cross-chain dataset")
 
     args = parser.parse_args()
 
-    if args.cross_chain_xguard:
-        compile_bridge('cross-chain/XGuard/QBridge') # QBridge
-        compile_bridge('cross-chain/XGuard/MeterBridge') # MeterBridge
-
-    if args.manual:
-        # Test ThorChain Bridge
-        extract_solidity_versions(src_folder='./cross-chain/THORChain-bridge/source-code',
-                                  output_csv='./cross-chain/THORChain-bridge/source-code/version.csv')
-        compile_solidity_sources_with_different_version(source_dir='./cross-chain/THORChain-bridge/source-code',
-                                                        json_dir='./cross-chain/THORChain-bridge/json',
-                                                        version_file='./cross-chain/THORChain-bridge/source-code/version.csv')
-        extract_and_save_longest_bytecode(bytecode_dir='./cross-chain/THORChain-bridge/bytecode/',
-                                          json_dir='./cross-chain/THORChain-bridge/json',
-                                          abi_dir='./cross-chain/THORChain-bridge/abi/')
+    if args.cross_chain:
+        compile_bridge('cross-chain/time-synchronization')
 
     if args.solidifi:
         compile_solidity_sources('./solidifi/reentrancy/source-code',
