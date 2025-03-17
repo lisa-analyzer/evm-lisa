@@ -63,6 +63,11 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
+	public Set<Operator> getSanitizedOpcode() {
+		return Set.of();
+	}
+
+	@Override
 	public UncheckedStateUpdateAbstractDomain top() {
 		return TOP;
 	}

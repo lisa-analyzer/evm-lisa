@@ -64,6 +64,11 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 	}
 
 	@Override
+	public Set<Operator> getSanitizedOpcode() {
+		return Set.of();
+	}
+
+	@Override
 	public UncheckedExternalInfluenceAbstractDomain top() {
 		return TOP;
 	}
