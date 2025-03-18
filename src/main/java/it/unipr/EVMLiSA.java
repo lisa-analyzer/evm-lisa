@@ -35,6 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 
 /**
  * EVMLiSA is the entry point for analyzing EVM bytecode smart contracts using
@@ -187,9 +188,12 @@ public class EVMLiSA {
 					Path.of(cmd.getOptionValue("bytecode-path")));
 
 		// Single analysis case (bytecode as a string)
-		else if (cmd.hasOption("bytecode"))
+		else if (cmd.hasOption("bytecode")) {
 			contract = new SmartContract()
 					.setBytecode(cmd.getOptionValue("bytecode"));
+			if(cmd.hasOption("abi"))
+				contract.setAbi(cmd.getOptionValue("abi"));
+		}
 
 		else {
 			JSONManager.throwNewError("No valid option provided.");
@@ -602,6 +606,12 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(true)
 				.build();
+		Option abiOption = Option.builder()
+				.longOpt("abi")
+				.desc("ABI of the bytecode to be analyzed.")
+				.required(false)
+				.hasArg(true)
+				.build();
 
 		Option stackSizeOption = Option.builder()
 				.longOpt("stack-size")
@@ -696,6 +706,7 @@ public class EVMLiSA {
 		options.addOption(enableTimestampDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
+		options.addOption(abiOption);
 
 		return options;
 	}

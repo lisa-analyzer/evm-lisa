@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -418,9 +419,50 @@ public class SmartContract {
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setAbi(JSONArray abi) {
+		if (abi == null)
+			throw new IllegalArgumentException("ABI cannot be null");
+
 		this._abi = abi;
+		Path outputDir = _workingDirectory.resolve(this._address);
+		this._abiFilePath = outputDir.resolve(this._address + ".abi");
+
+		try {
+			Files.createDirectories(outputDir);
+			// Write ABI to file
+			Files.writeString(this._abiFilePath, this._abi.toString(4), StandardOpenOption.CREATE,
+					StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			log.error("Failed to write ABI to: {}", _abiFilePath);
+			System.err.println(JSONManager.throwNewError("Failed to write ABI to:: " + _abiFilePath));
+			System.exit(1);
+		}
+
+		this._functionsSignature = ABIManager.parseFunctionsFromABI(this._abiFilePath);
+		this._eventsSignature = ABIManager.parseEventsFromABI(this._abiFilePath);
+
 		return this;
 	}
+        /**
+	 * Sets the contract ABI.
+	 *
+	 * @param abi The ABI as a String.
+	 *
+	 * @return This SmartContract instance for method chaining.
+	 */
+		public SmartContract setAbi(String abi) {
+			if (abi == null)
+				throw new IllegalArgumentException("ABI cannot be null");
+
+			try {
+				this._abi = new JSONArray(abi);
+			} catch (JSONException e) {
+				log.error("Invalid ABI format");
+				System.err.println(JSONManager.throwNewError("Invalid ABI format"));
+				System.exit(1);
+			}
+
+			return setAbi(this._abi);
+		}
 
 	/**
 	 * Sets the control flow graph and extracts basic blocks.
