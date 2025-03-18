@@ -99,6 +99,7 @@ Alternatively, you can pass your API key directly using the `--etherscan-api-key
 ```
 Options:
  -a,--address <arg>                        Address of an Ethereum smart contract
+    --abi <arg>                            ABI of the bytecode to be analyzed (JSON format).
     --abi-path <arg>                       Filepath of the ABI file
  -b,--bytecode <arg>                       Bytecode to be analyzed (e.g., 0x6080...)
     --benchmark <arg>                      Filepath of the benchmark
