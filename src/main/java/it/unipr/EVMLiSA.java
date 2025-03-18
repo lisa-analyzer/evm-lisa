@@ -35,7 +35,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 
 /**
  * EVMLiSA is the entry point for analyzing EVM bytecode smart contracts using
@@ -191,7 +190,7 @@ public class EVMLiSA {
 		else if (cmd.hasOption("bytecode")) {
 			contract = new SmartContract()
 					.setBytecode(cmd.getOptionValue("bytecode"));
-			if(cmd.hasOption("abi"))
+			if (cmd.hasOption("abi"))
 				contract.setAbi(cmd.getOptionValue("abi"));
 		}
 
@@ -608,7 +607,7 @@ public class EVMLiSA {
 				.build();
 		Option abiOption = Option.builder()
 				.longOpt("abi")
-				.desc("ABI of the bytecode to be analyzed.")
+				.desc("ABI of the bytecode to be analyzed (JSON format).")
 				.required(false)
 				.hasArg(true)
 				.build();

@@ -442,27 +442,28 @@ public class SmartContract {
 
 		return this;
 	}
-        /**
+
+	/**
 	 * Sets the contract ABI.
 	 *
 	 * @param abi The ABI as a String.
 	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
-		public SmartContract setAbi(String abi) {
-			if (abi == null)
-				throw new IllegalArgumentException("ABI cannot be null");
+	public SmartContract setAbi(String abi) {
+		if (abi == null)
+			throw new IllegalArgumentException("ABI cannot be null");
 
-			try {
-				this._abi = new JSONArray(abi);
-			} catch (JSONException e) {
-				log.error("Invalid ABI format");
-				System.err.println(JSONManager.throwNewError("Invalid ABI format"));
-				System.exit(1);
-			}
-
-			return setAbi(this._abi);
+		try {
+			this._abi = new JSONArray(abi);
+		} catch (JSONException e) {
+			log.error("Invalid ABI format");
+			System.err.println(JSONManager.throwNewError("Invalid ABI format"));
+			System.exit(1);
 		}
+
+		return setAbi(this._abi);
+	}
 
 	/**
 	 * Sets the control flow graph and extracts basic blocks.
