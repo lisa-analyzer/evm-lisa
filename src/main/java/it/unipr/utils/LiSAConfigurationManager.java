@@ -47,7 +47,7 @@ public class LiSAConfigurationManager {
 		conf.jsonOutput = false;
 
 		if (dumpResults) {
-			conf.analysisGraphs = LiSAConfiguration.GraphType.HTML;
+			conf.analysisGraphs = LiSAConfiguration.GraphType.DOT;
 			conf.jsonOutput = true;
 		}
 
