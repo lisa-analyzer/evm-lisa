@@ -110,10 +110,10 @@ public class Bridge implements Iterable<SmartContract> {
 				xCFG.addEdge(e);
 		}
 
-		log.info("Partial xCFG built");
-		log.info("Nodes count: {}", xCFG.getNodesCount());
-		log.info("Edge count: {}", xCFG.getEdgesCount());
-		log.info("Opcode count: {}", xCFG.getOpcodeCount());
+		log.info("Partial xCFG built.");
+		log.debug("Nodes count: {}.", xCFG.getNodesCount());
+		log.debug("Edge count: {}.", xCFG.getEdgesCount());
+		log.debug("Opcode count: {}.", xCFG.getOpcodeCount());
 
 		this.xCFG = xCFG;
 		return xCFG;

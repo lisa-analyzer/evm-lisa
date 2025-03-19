@@ -86,7 +86,7 @@ public class UncheckedStateUpdateChecker implements
 
 					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-					log.warn("Unchecked State Update vulnerability at {} at line no. {} coming from line {}",
+					log.warn("Unchecked State Update vulnerability at pc {} at line {} coming from line {}.",
 							sstoreLocation.getPc(),
 							sstoreLocation.getSourceCodeLine(),
 							((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());

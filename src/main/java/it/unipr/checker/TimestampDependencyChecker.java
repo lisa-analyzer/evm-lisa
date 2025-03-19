@@ -114,7 +114,7 @@ public class TimestampDependencyChecker implements
 			EVMCFG cfg) {
 		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		log.warn("Timestamp attack at {} at line no. {}", sinkLoc.getPc(),
+		log.warn("Timestamp attack at pc {} at line {}.", sinkLoc.getPc(),
 				sinkLoc.getSourceCodeLine());
 
 		String warn = "Timestamp attack at " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();

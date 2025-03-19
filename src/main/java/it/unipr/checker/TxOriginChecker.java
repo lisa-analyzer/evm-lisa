@@ -79,7 +79,7 @@ public class TxOriginChecker implements
 						if (firstElem.isTaint() || secondElem.isTaint()) {
 							ProgramCounterLocation jumploc = (ProgramCounterLocation) node.getLocation();
 
-							log.warn("Tx. Origin attack at {} at line no. {}", jumploc.getPc(),
+							log.warn("Tx. Origin attack at pc {} at line {}.", jumploc.getPc(),
 									jumploc.getSourceCodeLine());
 
 							String warn = "TxOrigin attack at "

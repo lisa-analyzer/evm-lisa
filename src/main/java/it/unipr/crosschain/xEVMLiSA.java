@@ -72,10 +72,10 @@ public class xEVMLiSA {
 	private static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
 		Set<Edge> crossChainEdges = new HashSet<>();
 
-		log.info("Computing cross chain edges");
-		log.info("Functions count: {}", bridge.getFunctions().size());
-		log.info("Events count: {}", bridge.getEvents().size());
-		log.info("Log count: {}", bridge.getXCFG().getAllLogX().size());
+		log.info("Computing cross chain edge.");
+		log.debug("Functions count: {}.", bridge.getFunctions().size());
+		log.debug("Events count: {}.", bridge.getEvents().size());
+		log.debug("Log count: {}.", bridge.getXCFG().getAllLogX().size());
 
 		boolean match = false;
 
@@ -96,7 +96,7 @@ public class xEVMLiSA {
 								crossChainEdges.addAll(
 										addCrossChainEdges(event.getEntryPoints(), function.getEntryPoints()));
 								log.debug(
-										"Perfect match! Event: {}/{} from LOG source-code line: {}, to Function: {}/{}",
+										"Perfect match! Event: {}/{} from LOG source-code line: {}, to Function: {}/{}.",
 										event.getName(), event.getParamCount(),
 										((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
 										function.getName(), function.getParamCount());
@@ -112,15 +112,15 @@ public class xEVMLiSA {
 					crossChainEdges.addAll(addConservativeCrossChainEdges(Collections.singleton(logStatement),
 							function.getEntryPoints()));
 
-				log.warn("No match! LOG at source-code line {} conservative linked to {} functions",
+				log.warn("No match! LOG at source-code line {} conservative linked to {} functions.",
 						((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
 						bridge.getFunctions().size());
 			}
 		}
 
-		log.debug("Added {} cross chain edges using events exit points and functions entry points",
+		log.debug("Added {} cross chain edges using events exit points and functions entry points.",
 				crossChainEdges.size());
-		log.info("Cross chain edges computed");
+		log.info("Cross chain edges computed.");
 
 		return crossChainEdges;
 	}
@@ -145,7 +145,7 @@ public class xEVMLiSA {
 
 		Set<Edge> crossChainEdges = new HashSet<>(addCrossChainEdges(emittingBlocks, informationBlocks));
 
-		log.debug("Added {} cross chain edges using events entrypoint", crossChainEdges.size());
+		log.debug("Added {} cross chain edges using events entrypoint.", crossChainEdges.size());
 		return crossChainEdges;
 	}
 
@@ -194,7 +194,7 @@ public class xEVMLiSA {
 	 * bridge.
 	 */
 	public static void runCheckers(Bridge bridge) {
-		log.info("Running checkers...");
+		log.info("Running checkers.");
 
 		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
 		List<Future<?>> futures = new ArrayList<>();
@@ -211,7 +211,7 @@ public class xEVMLiSA {
 		waitForCompletion(futures);
 		executor.shutdown();
 
-		log.info("Saving checkers results...");
+		log.info("Saving checkers results.");
 
 		for (SmartContract contract : bridge) {
 			contract.setVulnerabilities(
@@ -361,7 +361,7 @@ public class xEVMLiSA {
 
 						String warn = "Event Order vulnerability at " + emitEventLocation.getPc();
 
-						log.warn("Event Order vulnerability at {} at line no. {} coming from line {}",
+						log.warn("Event Order vulnerability at pc {} at line {} coming from line {}.",
 								emitEventLocation.getPc(),
 								emitEventLocation.getSourceCodeLine(), functionEntrypointLocation.getSourceCodeLine());
 
@@ -373,12 +373,11 @@ public class xEVMLiSA {
 	}
 
 	public static void printVulnerabilities(Bridge bridge) {
-		log.info("Printing vulnerabilities...");
 		for (SmartContract contract : bridge) {
 			if (contract.getCFG() == null)
 				return;
 
-			log.info("{}: {}", contract.getName(), contract.getVulnerabilities());
+			log.debug("Contract {} vulnerabilities: {}", contract.getName(), contract.getVulnerabilities());
 		}
 	}
 }

@@ -131,7 +131,7 @@ public class UncheckedExternalInfluenceChecker implements
 
 					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-					log.warn("Unchecked External Influence vulnerability at {} at line no. {} coming from line {}",
+					log.warn("Unchecked External Influence vulnerability at pc {} at line {} coming from line {}.",
 							sstoreLocation.getPc(),
 							sstoreLocation.getSourceCodeLine(),
 							((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());

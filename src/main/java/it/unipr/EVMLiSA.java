@@ -228,7 +228,7 @@ public class EVMLiSA {
 	 * @param filePath the path to the file containing contract addresses
 	 */
 	public static void analyzeSetOfContracts(Path filePath) {
-		log.info("Building contracts...");
+		log.info("Building contracts.");
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
 		analyzeSetOfContracts(contracts);
 	}
@@ -239,7 +239,7 @@ public class EVMLiSA {
 	 * @param contracts the list of {@link SmartContract} to be analyzed
 	 */
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
-		log.info("Analyzing {} contracts...", contracts.size());
+		log.info("Analyzing {} contracts.", contracts.size());
 
 		ExecutorService executor = Executors.newFixedThreadPool(CORES);
 		List<Future<?>> futures = new ArrayList<>();
@@ -247,7 +247,7 @@ public class EVMLiSA {
 		for (SmartContract contract : contracts)
 			futures.add(executor.submit(() -> analyzeContract(contract)));
 
-		log.info("{} contracts submitted to Thread pool with {} workers.", contracts.size(), CORES);
+		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(), CORES);
 
 		waitForCompletion(futures);
 
@@ -274,7 +274,7 @@ public class EVMLiSA {
 	 * @param contract the smart contract to analyze
 	 */
 	public static void analyzeContract(SmartContract contract) {
-		log.info("Analyzing contract {}...", contract.getAddress());
+		log.info("Analyzing contract {}.", contract.getAddress());
 
 		Program program = null;
 		try {
@@ -294,11 +294,13 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Analysis ended {}", contract.getAddress());
+		log.info("Analysis ended of contract {}.", contract.getAddress());
 
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
 		contract.setCFG(checker.getComputedCFG());
+
+		log.debug("Contract {} statistics: {}", contract.getAddress(), contract.getStatistics());
 
 		if (TEST_MODE)
 			return;
@@ -467,7 +469,7 @@ public class EVMLiSA {
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.build();
 
-		log.info("### Calculating statistics ###\n{}", stats);
+		// log.info("### Calculating statistics ###\n{}", stats);
 
 		return stats;
 	}

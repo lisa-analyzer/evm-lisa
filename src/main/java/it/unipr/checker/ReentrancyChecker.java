@@ -111,7 +111,7 @@ public class ReentrancyChecker implements
 				if (!ss2.equals(ss1) && cfg.reachableFromSequentially(ss1, ss2))
 					sstoreLoc = (ProgramCounterLocation) ss2.getLocation();
 
-			log.warn("Reentrancy attack at {} at line no. {} coming from line {}", sstoreLoc.getPc(),
+			log.warn("Reentrancy attack at pc {} at line {} coming from line {}.", sstoreLoc.getPc(),
 					sstoreLoc.getSourceCodeLine(), ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
 			String warn = "Reentrancy attack at " + sstoreLoc.getPc();
 			tool.warn(warn);
