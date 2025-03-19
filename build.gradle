@@ -20,7 +20,6 @@ plugins {
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
     mavenCentral()   
 }
 
@@ -149,7 +148,7 @@ tasks.register('checkCodeStyle') {
 }
 
 tasks.named('shadowJar') {
-    archiveBaseName = 'evm-lisa'
+    archiveBaseName.set('evm-lisa')
     manifest {
         attributes(
                 'Main-Class': mainClassName
