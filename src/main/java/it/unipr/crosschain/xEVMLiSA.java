@@ -12,10 +12,12 @@ import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
+import it.unipr.crosschain.checker.TimeSynchronizationChecker;
 import it.unipr.crosschain.checker.UncheckedExternalInfluenceChecker;
 import it.unipr.crosschain.checker.UncheckedStateUpdateChecker;
 import it.unipr.crosschain.edges.ConservativeCrossChainEdge;
 import it.unipr.crosschain.edges.CrossChainEdge;
+import it.unipr.crosschain.taint.TimeSynchronizationAbstractDomain;
 import it.unipr.crosschain.taint.UncheckedExternalInfluenceAbstractDomain;
 import it.unipr.crosschain.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.frontend.EVMLiSAFeatures;
@@ -206,6 +208,7 @@ public class xEVMLiSA {
 			futures.add(executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(executor.submit(() -> runTxOriginChecker(contract)));
 			futures.add(executor.submit(() -> runTimestampDependencyChecker(contract)));
+			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
 		}
 
 		waitForCompletion(futures);
@@ -227,6 +230,8 @@ public class xEVMLiSA {
 									.getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()))
 							.uncheckedStateUpdate(MyCache.getInstance()
 									.getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()))
+							.timeSynchronization(MyCache.getInstance()
+									.getTimeSynchronizationWarnings(contract.getCFG().hashCode()))
 							.build());
 		}
 	}
@@ -363,7 +368,8 @@ public class xEVMLiSA {
 
 						log.warn("Event Order vulnerability at pc {} at line {} coming from line {}.",
 								emitEventLocation.getPc(),
-								emitEventLocation.getSourceCodeLine(), functionEntrypointLocation.getSourceCodeLine());
+								emitEventLocation.getSourceCodeLine(),
+								functionEntrypointLocation.getSourceCodeLine());
 
 						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
 					}
@@ -372,11 +378,41 @@ public class xEVMLiSA {
 		}
 	}
 
+	/**
+	 * Runs the time synchronization checker on the given smart contract. The
+	 * method configures the analysis process by setting up the required EVM
+	 * program, loaders, and time synchronization checkers, and then initiates
+	 * the analysis.
+	 *
+	 * @param contract The smart contract to analyze for time synchronization
+	 *                     issues.
+	 */
+	public static void runTimeSynchronizationChecker(SmartContract contract) {
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Time synchronization checker
+		TimeSynchronizationChecker checker = new TimeSynchronizationChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TimeSynchronizationAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.analysisGraphs = LiSAConfiguration.GraphType.DOT;
+		lisa.run(program);
+	}
+
+	/**
+	 * Prints the vulnerabilities of each smart contract in the given bridge.
+	 *
+	 * @param bridge The bridge containing the smart contracts to analyze for
+	 *                   vulnerabilities.
+	 */
 	public static void printVulnerabilities(Bridge bridge) {
 		for (SmartContract contract : bridge) {
 			if (contract.getCFG() == null)
 				return;
-
 			log.debug("Contract {} vulnerabilities: {}", contract.getName(), contract.getVulnerabilities());
 		}
 	}

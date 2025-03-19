@@ -26,6 +26,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
+	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
 	public final LRUMap<Statement, Set<String>> _eventsExitPoints;
 
 	/**
@@ -57,6 +58,7 @@ public class MyCache {
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
 		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(1000);
 	}
 
 	/**
@@ -421,6 +423,41 @@ public class MyCache {
 	public int getTimestampDependencyWarnings(Integer key) {
 		synchronized (_timestampDependencyWarnings) {
 			return (_timestampDependencyWarnings.get(key) != null) ? _timestampDependencyWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds a time synchronization warning to the internal tracking map. If the
+	 * key does not already exist, a new synchronized set will be created and
+	 * associated with the given key.
+	 *
+	 * @param key     the identifier for the time synchronization warning
+	 *                    category
+	 * @param warning the warning object to be added to the corresponding set of
+	 *                    warnings for the given key
+	 */
+	public void addTimeSynchronizationWarning(Integer key, Object warning) {
+		synchronized (_timeSynchronizationWarnings) {
+			_timeSynchronizationWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of time synchronization warnings associated with the
+	 * given key.
+	 *
+	 * @param key an Integer key used to look up the warnings in the time
+	 *                synchronization warnings map
+	 * 
+	 * @return the count of time synchronization warnings associated with the
+	 *             provided key; returns 0 if the key is not present or no
+	 *             warnings exist
+	 */
+	public int getTimeSynchronizationWarnings(Integer key) {
+		synchronized (_timeSynchronizationWarnings) {
+			return (_timeSynchronizationWarnings.get(key) != null) ? _timeSynchronizationWarnings.get(key).size() : 0;
 		}
 	}
 }

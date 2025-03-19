@@ -71,18 +71,28 @@ public class TaintElement implements BaseLattice<TaintElement> {
 	}
 
 	@Override
-	public TaintElement lubAux(TaintElement other) throws SemanticException {
+	public TaintElement lubAux(TaintElement other) {
 		return TOP;
 	}
 
 	@Override
-	public boolean lessOrEqualAux(TaintElement other) throws SemanticException {
+	public boolean lessOrEqualAux(TaintElement other) {
 		return false;
 	}
 
 	@Override
-	public TaintElement glbAux(TaintElement other) throws SemanticException {
+	public TaintElement glbAux(TaintElement other) {
 		return BOTTOM;
+	}
+
+	@Override
+	public boolean isTop() {
+		return this == TOP;
+	}
+
+	@Override
+	public boolean isBottom() {
+		return this == BOTTOM;
 	}
 
 	/**

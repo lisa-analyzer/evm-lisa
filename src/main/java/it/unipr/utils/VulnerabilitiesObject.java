@@ -18,52 +18,38 @@ public class VulnerabilitiesObject {
 	private int uncheckedExternalInfluence;
 	private int eventOrder;
 	private int uncheckedStateUpdate;
+	private int timeSynchronization;
 	private JSONObject json;
 
-	/**
-	 * Creates a new {@code VulnerabilitiesObject} with default values (-1) for
-	 * all vulnerabilities.
-	 */
 	private VulnerabilitiesObject() {
-		this.reentrancy = -1;
-		this.timestamp = -1;
-		this.txOrigin = -1;
-		this.uncheckedExternalInfluence = -1;
-		this.eventOrder = -1;
-		this.uncheckedStateUpdate = -1;
+		this.reentrancy = 0;
+		this.timestamp = 0;
+		this.txOrigin = 0;
+		this.uncheckedExternalInfluence = 0;
+		this.eventOrder = 0;
+		this.uncheckedStateUpdate = 0;
+		this.timeSynchronization = 0;
 		this.json = new JSONObject();
 	}
 
-	/**
-	 * Creates a new {@code VulnerabilitiesObject} with specified values.
-	 *
-	 * @param reentrancy the reentrancy vulnerability score
-	 * @param timestamp  the timestamp dependency vulnerability score
-	 * @param txOrigin   the tx. origin vulnerability score
-	 * @param json       the JSON representation of the object
-	 */
 	private VulnerabilitiesObject(int reentrancy, int timestamp, int txOrigin, int uncheckedExternalInfluence,
-			int eventOrder, int uncheckedStateUpdate, JSONObject json) {
+			int eventOrder, int uncheckedStateUpdate, int timeSynchronization, JSONObject json) {
 		this.reentrancy = reentrancy;
 		this.timestamp = timestamp;
 		this.txOrigin = txOrigin;
 		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
 		this.eventOrder = eventOrder;
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
+		this.timeSynchronization = timeSynchronization;
 		this.json = json;
 
-		if (reentrancy != -1)
-			this.json.put("reentrancy", this.reentrancy);
-		if (timestamp != -1)
-			this.json.put("timestamp_dependency", this.timestamp);
-		if (txOrigin != -1)
-			this.json.put("tx_origin", this.txOrigin);
-		if (uncheckedExternalInfluence != -1)
-			this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
-		if (eventOrder != -1)
-			this.json.put("event_order", this.eventOrder);
-		if (uncheckedStateUpdate != -1)
-			this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
+		this.json.put("reentrancy", this.reentrancy);
+		this.json.put("timestamp_dependency", this.timestamp);
+		this.json.put("tx_origin", this.txOrigin);
+		this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
+		this.json.put("event_order", this.eventOrder);
+		this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
+		this.json.put("time_synchronization", this.timeSynchronization);
 	}
 
 	/**
@@ -93,16 +79,40 @@ public class VulnerabilitiesObject {
 		return txOrigin;
 	}
 
+	/**
+	 * Returns the unchecked external influence vulnerability score.
+	 *
+	 * @return the unchecked external influence score
+	 */
 	public int getUncheckedExternalInfluence() {
 		return uncheckedExternalInfluence;
 	}
 
+	/**
+	 * Returns the event order vulnerability score.
+	 *
+	 * @return the event order score
+	 */
 	public int getEventOrder() {
 		return eventOrder;
 	}
 
+	/**
+	 * Returns the unchecked state update vulnerability score.
+	 *
+	 * @return the unchecked state update score
+	 */
 	public int getUncheckedStateUpdate() {
 		return uncheckedStateUpdate;
+	}
+
+	/**
+	 * Returns the time synchronization vulnerability score.
+	 *
+	 * @return the time synchronization score
+	 */
+	public int getTimeSynchronization() {
+		return timeSynchronization;
 	}
 
 	/**
@@ -150,18 +160,51 @@ public class VulnerabilitiesObject {
 		return this;
 	}
 
+	/**
+	 * Sets the unchecked external influence vulnerability score.
+	 *
+	 * @param uncheckedExternalInfluence the unchecked external influence score
+	 * 
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
 	public VulnerabilitiesObject uncheckedExternalInfluence(int uncheckedExternalInfluence) {
 		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
 		return this;
 	}
 
+	/**
+	 * Sets the event order vulnerability score.
+	 *
+	 * @param eventOrder the event order score
+	 * 
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
 	public VulnerabilitiesObject eventOrder(int eventOrder) {
 		this.eventOrder = eventOrder;
 		return this;
 	}
 
+	/**
+	 * Sets the unchecked state update vulnerability score.
+	 *
+	 * @param uncheckedStateUpdate the unchecked state update score
+	 * 
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
 	public VulnerabilitiesObject uncheckedStateUpdate(int uncheckedStateUpdate) {
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
+		return this;
+	}
+
+	/**
+	 * Sets the time synchronization vulnerability score.
+	 *
+	 * @param timeSynchronization the time synchronization score
+	 * 
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject timeSynchronization(int timeSynchronization) {
+		this.timeSynchronization = timeSynchronization;
 		return this;
 	}
 
@@ -172,7 +215,7 @@ public class VulnerabilitiesObject {
 	 */
 	public VulnerabilitiesObject build() {
 		return new VulnerabilitiesObject(reentrancy, timestamp, txOrigin, uncheckedExternalInfluence, eventOrder,
-				uncheckedStateUpdate, json);
+				uncheckedStateUpdate, timeSynchronization, json);
 	}
 
 	/**
@@ -194,17 +237,4 @@ public class VulnerabilitiesObject {
 		return toJson().toString(4);
 	}
 
-	/**
-	 * Logs the vulnerability scores of the given {@code VulnerabilitiesObject}.
-	 *
-	 * @param vulnerabilities the vulnerabilities object to log
-	 */
-	public static void printVulnerabilities(VulnerabilitiesObject vulnerabilities) {
-		log.info("Reentrancy: {}", vulnerabilities.getReentrancy());
-		log.info("Timestamp dependency: {}", vulnerabilities.getTimestamp());
-		log.info("Tx.Origin: {}", vulnerabilities.getTxOrigin());
-		log.info("Unchecked external influence: {}", vulnerabilities.getUncheckedExternalInfluence());
-		log.info("Event order: {}", vulnerabilities.getEventOrder());
-		log.info("Unchecked state update: {}", vulnerabilities.getUncheckedStateUpdate());
-	}
 }

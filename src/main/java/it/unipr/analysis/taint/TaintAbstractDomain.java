@@ -914,6 +914,25 @@ public abstract class TaintAbstractDomain
 	}
 
 	/**
+	 * Retrieves the element from the stack at the specified position. The
+	 * position is calculated from the top of the stack, where the top is at
+	 * position 1. If the stack state is {@code BOTTOM},
+	 * {@code TaintElement.BOTTOM} is returned. If the stack state is
+	 * {@code TOP}, {@code TaintElement.TOP} is returned.
+	 *
+	 * @param position the position of the element to retrieve from the stack
+	 * 
+	 * @return the element at the specified position in the stack
+	 */
+	public TaintElement getElementAtPosition(int position) {
+		if (isBottom())
+			return TaintElement.BOTTOM;
+		else if (isTop())
+			return TaintElement.TOP;
+		return this.stack.get(STACK_LIMIT - position);
+	}
+
+	/**
 	 * Determines whether the given statement is tainted.
 	 *
 	 * @param stmt the statement to check
