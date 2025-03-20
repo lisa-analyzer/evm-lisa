@@ -1,8 +1,5 @@
 package it.unipr.analysis;
 
-import java.util.Arrays;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -15,6 +12,8 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
 
@@ -38,20 +37,23 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	private final StackElement[] circularArray;
 
-    /**
-     * The index representing the beginning of the logical stack in the circular array.
-     * <p>
-     * This pointer indicates the position in the array that corresponds to the bottom of the stack.
-     * Tracks the index of the oldest element in the circular array.
-     */
-    private int head;
+	/**
+	 * The index representing the beginning of the logical stack in the circular
+	 * array.
+	 * <p>
+	 * This pointer indicates the position in the array that corresponds to the
+	 * bottom of the stack. Tracks the index of the oldest element in the
+	 * circular array.
+	 */
+	private int head;
 
-    /**
-     * The index representing the next insertion point in the circular array.
-     * <p>
-     * This pointer is used to identify the top of the stack, where the next element will be pushed.
-     */
-    private int tail;
+	/**
+	 * The index representing the next insertion point in the circular array.
+	 * <p>
+	 * This pointer is used to identify the top of the stack, where the next
+	 * element will be pushed.
+	 */
+	private int tail;
 
 	/**
 	 * Helper method to create and fill an array with a specific element.

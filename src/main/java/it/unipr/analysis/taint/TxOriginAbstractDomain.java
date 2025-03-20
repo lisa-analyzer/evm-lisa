@@ -2,7 +2,6 @@ package it.unipr.analysis.taint;
 
 import it.unipr.analysis.operator.OriginOperator;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -11,16 +10,13 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TxOriginAbstractDomain BOTTOM =
-			new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
-
+	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
 
 	private static TaintElement[] createFilledArray(int size, TaintElement element) {
 		TaintElement[] array = new TaintElement[size];
 		Arrays.fill(array, element);
 		return array;
 	}
-
 
 	/**
 	 * Builds an initial symbolic stack.

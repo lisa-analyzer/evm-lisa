@@ -1,12 +1,5 @@
 package it.unipr.analysis.taint;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.StackElement;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -23,9 +16,13 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public abstract class TaintAbstractDomain
-implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
+		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	/**
 	 * The stack limit.
@@ -38,17 +35,20 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	private final TaintElement[] circularArray;
 
 	/**
-	 * The index representing the beginning of the logical stack in the circular array.
+	 * The index representing the beginning of the logical stack in the circular
+	 * array.
 	 * <p>
-	 * This pointer indicates the position in the array that corresponds to the bottom of the stack.
-	 * Tracks the index of the oldest element in the circular array.
+	 * This pointer indicates the position in the array that corresponds to the
+	 * bottom of the stack. Tracks the index of the oldest element in the
+	 * circular array.
 	 */
 	private int head;
 
 	/**
 	 * The index representing the next insertion point in the circular array.
 	 * <p>
-	 * This pointer is used to identify the top of the stack, where the next element will be pushed.
+	 * This pointer is used to identify the top of the stack, where the next
+	 * element will be pushed.
 	 */
 	private int tail;
 
@@ -58,7 +58,8 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	private final TaintElement memory;
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack and a memory element.
+	 * Builds a taint abstract stack starting from a given stack and a memory
+	 * element.
 	 *
 	 * @param circularArray the stack of values
 	 * @param memory        the memory element
@@ -205,7 +206,8 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 					TaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.circularArray, TaintElement.TAINT); // TODO: CHECK
+						return mk(resultStack.circularArray, TaintElement.TAINT); // TODO:
+																					// CHECK
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -483,7 +485,7 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack
-						.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
+								.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
 					return resultStack;
 				}
 				case "ReturnOperator": { // RETURN
@@ -610,7 +612,8 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	/**
 	 * Checks whether the stack is empty.
 	 *
-	 * @return {@code true} if the first element is bottom, {@code false} otherwise.
+	 * @return {@code true} if the first element is bottom, {@code false}
+	 *             otherwise.
 	 */
 	public boolean isEmpty() {
 		return getFirstElement().isBottom();
@@ -727,10 +730,13 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	}
 
 	/**
-	 * Computes the greatest lower bound (GLB) between this abstract domain and another.
+	 * Computes the greatest lower bound (GLB) between this abstract domain and
+	 * another.
 	 *
 	 * @param other the other domain
-	 * @return a new domain representing the greatest lower bound of the two domains
+	 * 
+	 * @return a new domain representing the greatest lower bound of the two
+	 *             domains
 	 */
 	@Override
 	public TaintAbstractDomain glbAux(TaintAbstractDomain other) throws SemanticException {
@@ -742,10 +748,13 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	}
 
 	/**
-	 * Computes the least upper bound (LUB) between this abstract domain and another.
+	 * Computes the least upper bound (LUB) between this abstract domain and
+	 * another.
 	 *
 	 * @param other the other domain
-	 * @return a new domain representing the least upper bound of the two domains
+	 * 
+	 * @return a new domain representing the least upper bound of the two
+	 *             domains
 	 */
 	@Override
 	public TaintAbstractDomain lubAux(TaintAbstractDomain other) throws SemanticException {
@@ -869,7 +878,6 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return Arrays.equals(this.circularArray, other.circularArray);
 	}
 
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(circularArray, memory);
@@ -929,7 +937,7 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
 	 * given the stack and the memory.
 	 *
-	 * @param array the stack
+	 * @param array  the stack
 	 * @param memory the memory
 	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}

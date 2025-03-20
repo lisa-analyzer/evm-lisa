@@ -1,20 +1,17 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.StackElement;
 import it.unipr.analysis.operator.BalanceOperator;
 import it.unipr.analysis.operator.BlockhashOperator;
 import it.unipr.analysis.operator.DifficultyOperator;
 import it.unipr.analysis.operator.TimestampOperator;
 import it.unive.lisa.symbolic.value.Operator;
-
 import java.util.*;
 
 public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TimestampDependencyAbstractDomain BOTTOM =
-			new TimestampDependencyAbstractDomain(null, TaintElement.BOTTOM);
-
+	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
+			TaintElement.BOTTOM);
 
 	private static TaintElement[] createFilledArray(int size, TaintElement element) {
 		TaintElement[] array = new TaintElement[size];
