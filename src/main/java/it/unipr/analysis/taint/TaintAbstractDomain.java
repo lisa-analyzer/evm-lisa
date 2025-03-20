@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.StackElement;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -36,12 +38,17 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	private final TaintElement[] circularArray;
 
 	/**
-	 * The index representing the beginning of the logical stack.
+	 * The index representing the beginning of the logical stack in the circular array.
+	 * <p>
+	 * This pointer indicates the position in the array that corresponds to the bottom of the stack.
+	 * Tracks the index of the oldest element in the circular array.
 	 */
 	private int head;
 
 	/**
-	 * The index representing the next insertion point.
+	 * The index representing the next insertion point in the circular array.
+	 * <p>
+	 * This pointer is used to identify the top of the stack, where the next element will be pushed.
 	 */
 	private int tail;
 
@@ -51,15 +58,14 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	private final TaintElement memory;
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack and a list of
-	 * elements that push taint.
+	 * Builds a taint abstract stack starting from a given stack and a memory element.
 	 *
 	 * @param circularArray the stack of values
+	 * @param memory        the memory element
 	 */
 	protected TaintAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
 		this.circularArray = circularArray;
 		this.memory = memory;
-		// TODO: CHECK
 		this.head = 0;
 		this.tail = 0;
 	}
@@ -600,11 +606,24 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 			return bottom();
 		return stack.swapX(x);
 	}
-	
-	public boolean isEmpty() { // TODO: CHECK
+
+	/**
+	 * Checks whether the stack is empty.
+	 *
+	 * @return {@code true} if the first element is bottom, {@code false} otherwise.
+	 */
+	public boolean isEmpty() {
 		return getFirstElement().isBottom();
 	}
 
+	/**
+	 * Swaps the 1st with the (x + 1)-th element from the top of the stack and
+	 * returns the modified stack.
+	 *
+	 * @param x The position of the element to swap with the top of the stack.
+	 *
+	 * @return A new stack with the specified elements swapped.
+	 */
 	public TaintAbstractDomain swapX(int x) {
 		if (hasBottomUntil(x + 1))
 			return bottom();
@@ -618,6 +637,15 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return copy;
 	}
 
+	/**
+	 * Duplicates the x-th element from the top of the stack and returns the
+	 * modified stack.
+	 *
+	 * @param x The position of the element to duplicate from the top of the
+	 *              stack.
+	 *
+	 * @return A new stack with the specified element duplicated at the top.
+	 */
 	public TaintAbstractDomain dupX(int x) {
 		if (hasBottomUntil(x))
 			return bottom();
@@ -698,6 +726,12 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return this;
 	}
 
+	/**
+	 * Computes the greatest lower bound (GLB) between this abstract domain and another.
+	 *
+	 * @param other the other domain
+	 * @return a new domain representing the greatest lower bound of the two domains
+	 */
 	@Override
 	public TaintAbstractDomain glbAux(TaintAbstractDomain other) throws SemanticException {
 		TaintElement[] result = new TaintElement[STACK_LIMIT];
@@ -707,6 +741,12 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return mk(result, this.memory.glb(other.memory));
 	}
 
+	/**
+	 * Computes the least upper bound (LUB) between this abstract domain and another.
+	 *
+	 * @param other the other domain
+	 * @return a new domain representing the least upper bound of the two domains
+	 */
 	@Override
 	public TaintAbstractDomain lubAux(TaintAbstractDomain other) throws SemanticException {
 		TaintElement[] result = new TaintElement[STACK_LIMIT];
@@ -716,6 +756,13 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return mk(result, this.memory.lub(other.memory));
 	}
 
+	/**
+	 * Get a specific element of the stack.
+	 *
+	 * @param index the index of the element
+	 *
+	 * @return the StackElement at the given index, or BOTTOM if out of bounds
+	 */
 	public TaintElement get(int index) {
 		if (index < 0 || index >= STACK_LIMIT)
 			return TaintElement.BOTTOM;
@@ -733,8 +780,13 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	/**
 	 * Pushes the specified element onto the stack.
+	 * <p>
+	 * This method inserts the given {@link TaintElement} at the tail of the
+	 * circular array, effectively updating the top of the stack. The head of
+	 * the stack is also updated to maintain the circular nature of the
+	 * structure.
 	 *
-	 * @param target the element to be pushed onto the stack.
+	 * @param target the element to be pushed onto the stack
 	 */
 	public void push(TaintElement target) {
 		circularArray[tail] = target;
@@ -744,8 +796,14 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	/**
 	 * Pops the element from the stack.
+	 * <p>
+	 * This method removes and returns the topmost element of the stack. After
+	 * popping, the stack structure is adjusted by shifting the head, and the
+	 * previous bottommost element is updated based on the next element. If the
+	 * next element is {@link TaintElement#TOP}, the bottom is set to TOP,
+	 * otherwise, it is set to {@link TaintElement#BOTTOM}.
 	 *
-	 * @return the element at the top of the stack.
+	 * @return the element at the top of the stack before popping
 	 */
 
 	public TaintElement pop() {
@@ -785,10 +843,9 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return false;
 	}
 
-
 	@Override
 	public TaintAbstractDomain clone() {
-		TaintElement[] newArray = Arrays.copyOf(circularArray, STACK_LIMIT);
+		TaintElement[] newArray = circularArray.clone();
 		TaintAbstractDomain copy = mk(newArray, memory);
 		copy.head = this.head;
 		copy.tail = this.tail;
@@ -818,6 +875,11 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return Objects.hash(circularArray, memory);
 	}
 
+	/**
+	 * Yields the second element of this abstract stack.
+	 *
+	 * @return the second element of this abstract stack
+	 */
 	public TaintElement getSecondElement() {
 		if (isBottom())
 			return TaintElement.BOTTOM;
@@ -826,12 +888,27 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		return circularArray[(tail - 2 + STACK_LIMIT) % STACK_LIMIT];
 	}
 
+	/**
+	 * Yields the first element of this abstract stack.
+	 *
+	 * @return the first element of this abstract stack
+	 */
 	public TaintElement getFirstElement() {
 		if (isBottom())
 			return TaintElement.BOTTOM;
 		if (isTop())
 			return TaintElement.TOP;
 		return circularArray[(tail - 1 + STACK_LIMIT) % STACK_LIMIT];
+	}
+
+	/**
+	 * Performs {@code pos} consecutive {@code pop()} operations on the stack.
+	 *
+	 * @param pos the number of elements to pop from the stack
+	 */
+	public void popX(int pos) {
+		for (int i = 0; i < pos; i++)
+			pop();
 	}
 
 	/**
@@ -852,7 +929,7 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
 	 * given the stack and the memory.
 	 *
-	 * @param array the stack // TODO: CHECK
+	 * @param array the stack
 	 * @param memory the memory
 	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
