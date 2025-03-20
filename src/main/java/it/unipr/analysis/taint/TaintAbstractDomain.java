@@ -1,6 +1,10 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.StackElement;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -12,18 +16,14 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Operator;
-import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 
-import java.util.*;
-import java.util.function.Predicate;
-
 public abstract class TaintAbstractDomain
-		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
+implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 
 	/**
 	 * The stack limit.
@@ -59,7 +59,7 @@ public abstract class TaintAbstractDomain
 	protected TaintAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
 		this.circularArray = circularArray;
 		this.memory = memory;
-		 // TODO: CHECK
+		// TODO: CHECK
 		this.head = 0;
 		this.tail = 0;
 	}
@@ -267,11 +267,7 @@ public abstract class TaintAbstractDomain
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					resultStack.pop();
-
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 
 				case "SstoreOperator": { // pops 2
@@ -281,10 +277,7 @@ public abstract class TaintAbstractDomain
 					resultStack.pop();
 					resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 
 				case "Dup1Operator": { // DUP1
@@ -390,10 +383,7 @@ public abstract class TaintAbstractDomain
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "Log1Operator": { // LOG1
 					if (hasBottomUntil(3))
@@ -403,10 +393,7 @@ public abstract class TaintAbstractDomain
 					TaintElement length = resultStack.pop();
 					resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "Log2Operator": { // LOG2
 					if (hasBottomUntil(4))
@@ -417,10 +404,7 @@ public abstract class TaintAbstractDomain
 					resultStack.pop();
 					resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "Log3Operator": { // LOG3
 					if (hasBottomUntil(5))
@@ -432,10 +416,7 @@ public abstract class TaintAbstractDomain
 					resultStack.pop();
 					resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "Log4Operator": { // LOG4
 					if (hasBottomUntil(6))
@@ -448,10 +429,7 @@ public abstract class TaintAbstractDomain
 					resultStack.pop();
 					resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "CreateOperator": { // CREATE
 					if (hasBottomUntil(3))
@@ -499,7 +477,7 @@ public abstract class TaintAbstractDomain
 						resultStack.push(TaintElement.TAINT);
 					else
 						resultStack
-								.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
+						.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
 					return resultStack;
 				}
 				case "ReturnOperator": { // RETURN
@@ -509,10 +487,7 @@ public abstract class TaintAbstractDomain
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "DelegatecallOperator":
 				case "StaticcallOperator": { // pops 6, push 1
@@ -539,10 +514,7 @@ public abstract class TaintAbstractDomain
 					TaintElement offset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "InvalidOperator": { // INVALID
 					return this;
@@ -553,10 +525,7 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					TaintElement recipient = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "CodecopyOperator": { // CODECOPY
 					if (hasBottomUntil(3))
@@ -566,10 +535,7 @@ public abstract class TaintAbstractDomain
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "ExtcodesizeOperator": { // EXTCODESIZE
 					if (hasBottomUntil(1))
@@ -592,10 +558,7 @@ public abstract class TaintAbstractDomain
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
 					if (hasBottomUntil(3))
@@ -605,10 +568,7 @@ public abstract class TaintAbstractDomain
 					TaintElement dataOffset = resultStack.pop();
 					TaintElement length = resultStack.pop();
 
-					if (resultStack.isEmpty())
-						return bottom();
-					else
-						return resultStack;
+					return resultStack;
 				}
 				case "ExtcodehashOperator": { // EXTCODEHASH
 					if (hasBottomUntil(1))
@@ -626,10 +586,7 @@ public abstract class TaintAbstractDomain
 			}
 		}
 
-		if (!(expression instanceof Skip))
-			throw new SemanticException("Reachable just with the skip node");
-
-		return top();
+		throw new SemanticException("Unrecognized opcode: " + pp);
 	}
 
 	private TaintAbstractDomain dupXoperator(int x, TaintAbstractDomain stack) {
@@ -642,6 +599,10 @@ public abstract class TaintAbstractDomain
 		if (stack.isEmpty() || stack.hasBottomUntil(x + 1))
 			return bottom();
 		return stack.swapX(x);
+	}
+	
+	public boolean isEmpty() { // TODO: CHECK
+		return getFirstElement().isBottom();
 	}
 
 	public TaintAbstractDomain swapX(int x) {
@@ -664,24 +625,6 @@ public abstract class TaintAbstractDomain
 		TaintAbstractDomain copy = this.clone();
 		copy.push(circularArray[posX]);
 		return copy;
-	}
-
-	/*private ArrayList<TaintElement> getStack() {
-		return stack;
-	}*/
-
-	/*private int size() {
-		int bottomCounter = 0;
-		for (TaintElement item : stack) {
-			if (item.isBottom()) {
-				bottomCounter++;
-			}
-		}
-		return stack.size() - bottomCounter;
-	}*/
-
-	public boolean isEmpty() { // TODO: CHECK
-		return getFirstElement().isBottom();
 	}
 
 	@Override
@@ -876,7 +819,7 @@ public abstract class TaintAbstractDomain
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(circularArray) + memory.hashCode();
+		return Objects.hash(circularArray, memory);
 	}
 
 	public TaintElement getSecondElement() {
@@ -894,13 +837,6 @@ public abstract class TaintAbstractDomain
 			return TaintElement.TOP;
 		return circularArray[(tail - 1 + STACK_LIMIT) % STACK_LIMIT];
 	}
-
-	/**
-	 * @return copy of the array
-	 */
-	/*protected TaintElement[] getArrayCopy() { // TODO: CHECK
-		return Arrays.copyOf(circularArray, STACK_LIMIT);
-	}*/
 
 	/**
 	 * Yields the set of opcodes that push taint elements.
