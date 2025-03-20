@@ -148,7 +148,7 @@ public abstract class TaintAbstractDomain
 
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(2);
-					
+
 					return resultStack;
 				}
 
@@ -205,8 +205,8 @@ public abstract class TaintAbstractDomain
 					TaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.circularArray, TaintElement.TAINT); // TODO:
-																					// CHECK
+						return mk(resultStack.circularArray, TaintElement.TAINT);
+
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -401,7 +401,6 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(4);
 
-
 					return resultStack;
 				}
 				case "Log3Operator": { // LOG3
@@ -410,7 +409,6 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(5);
 
-
 					return resultStack;
 				}
 				case "Log4Operator": { // LOG4
@@ -418,7 +416,6 @@ public abstract class TaintAbstractDomain
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(6);
-
 
 					return resultStack;
 				}
@@ -504,7 +501,6 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(2);
 
-
 					return resultStack;
 				}
 				case "InvalidOperator": { // INVALID
@@ -523,7 +519,6 @@ public abstract class TaintAbstractDomain
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(3);
-
 
 					return resultStack;
 				}
@@ -545,7 +540,6 @@ public abstract class TaintAbstractDomain
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(4);
 
-
 					return resultStack;
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
@@ -553,7 +547,6 @@ public abstract class TaintAbstractDomain
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
 					resultStack.popX(3);
-
 
 					return resultStack;
 				}
