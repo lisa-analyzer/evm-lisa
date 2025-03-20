@@ -1,5 +1,6 @@
 package it.unipr.analysis.taint;
 
+import it.unipr.analysis.StackElement;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -17,11 +18,8 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+
+import java.util.*;
 import java.util.function.Predicate;
 
 public abstract class TaintAbstractDomain
@@ -33,9 +31,19 @@ public abstract class TaintAbstractDomain
 	protected static int STACK_LIMIT = 32;
 
 	/**
-	 * The abstract stack domain.
+	 * The abstract stack as a circular array.
 	 */
-	private final ArrayList<TaintElement> stack;
+	private final TaintElement[] circularArray;
+
+	/**
+	 * The index representing the beginning of the logical stack.
+	 */
+	private int head;
+
+	/**
+	 * The index representing the next insertion point.
+	 */
+	private int tail;
 
 	/**
 	 * The local memory, tracking if it is clean or tainted.
@@ -46,11 +54,14 @@ public abstract class TaintAbstractDomain
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param stack the stack of values
+	 * @param circularArray the stack of values
 	 */
-	protected TaintAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
-		this.stack = stack;
+	protected TaintAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
+		this.circularArray = circularArray;
 		this.memory = memory;
+		 // TODO: CHECK
+		this.head = 0;
+		this.tail = 0;
 	}
 
 	@Override
@@ -188,7 +199,7 @@ public abstract class TaintAbstractDomain
 					TaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.stack, TaintElement.TAINT);
+						return mk(resultStack.circularArray, TaintElement.TAINT); // TODO: CHECK
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -624,73 +635,42 @@ public abstract class TaintAbstractDomain
 	private TaintAbstractDomain dupXoperator(int x, TaintAbstractDomain stack) {
 		if (stack.isEmpty() || stack.hasBottomUntil(x))
 			return bottom();
-		return dupX(x, stack.clone());
+		return stack.dupX(x);
 	}
 
 	private TaintAbstractDomain swapXoperator(int x, TaintAbstractDomain stack) {
-		if (stack.isEmpty() || stack.hasBottomUntil(x))
+		if (stack.isEmpty() || stack.hasBottomUntil(x + 1))
 			return bottom();
-		return swapX(x, stack.clone());
+		return stack.swapX(x);
 	}
 
-	private TaintAbstractDomain swapX(int x, TaintAbstractDomain stack) {
-		List<TaintElement> clone = stack.clone().getStack();
-
-		if (stack.size() < x + 1 || x < 1)
-			return stack.bottom();
-
-		Object[] obj = clone.toArray();
-		int first;
-
-		if (stack.size() < STACK_LIMIT)
-			first = STACK_LIMIT - 1;
-		else
-			first = clone.size() - 1;
-
-		Object tmp = obj[first];
-		obj[first] = obj[first - x];
-		obj[first - x] = tmp;
-
-		ArrayList<TaintElement> result = new ArrayList<>();
-
-		for (int i = 0; i < clone.size(); i++)
-			result.add((TaintElement) obj[i]);
-
-		return mk(result, stack.memory);
+	public TaintAbstractDomain swapX(int x) {
+		if (hasBottomUntil(x + 1))
+			return bottom();
+		x++;
+		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT;
+		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
+		TaintAbstractDomain copy = this.clone();
+		TaintElement tmp = copy.circularArray[posX];
+		copy.circularArray[posX] = copy.circularArray[topIndex];
+		copy.circularArray[topIndex] = tmp;
+		return copy;
 	}
 
-	private TaintAbstractDomain dupX(int x, TaintAbstractDomain stack) {
-		List<TaintElement> clone = stack.clone().getStack();
-
-		if (stack.size() < x || x < 1)
-			return stack.bottom();
-
-		Object[] obj = clone.toArray();
-
-		int first;
-		if (stack.size() < STACK_LIMIT)
-			first = STACK_LIMIT;
-		else
-			first = clone.size();
-
-		TaintElement tmp = (TaintElement) obj[first - x];
-
-		ArrayList<TaintElement> result = new ArrayList<>();
-
-		for (int i = 0; i < clone.size(); i++)
-			result.add((TaintElement) obj[i]);
-
-		result.add(tmp);
-		result.remove(0);
-
-		return mk(result, stack.memory);
+	public TaintAbstractDomain dupX(int x) {
+		if (hasBottomUntil(x))
+			return bottom();
+		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT;
+		TaintAbstractDomain copy = this.clone();
+		copy.push(circularArray[posX]);
+		return copy;
 	}
 
-	private ArrayList<TaintElement> getStack() {
+	/*private ArrayList<TaintElement> getStack() {
 		return stack;
-	}
+	}*/
 
-	private int size() {
+	/*private int size() {
 		int bottomCounter = 0;
 		for (TaintElement item : stack) {
 			if (item.isBottom()) {
@@ -698,13 +678,10 @@ public abstract class TaintAbstractDomain
 			}
 		}
 		return stack.size() - bottomCounter;
-	}
+	}*/
 
-	private boolean isEmpty() {
-		if (!stack.isEmpty())
-			return false;
-		else
-			return true;
+	public boolean isEmpty() { // TODO: CHECK
+		return getFirstElement().isBottom();
 	}
 
 	@Override
@@ -746,17 +723,24 @@ public abstract class TaintAbstractDomain
 		else if (isTop())
 			return Lattice.topRepresentation();
 
-		return new StringRepresentation(stack.toString());
+		return new StringRepresentation(this.toString());
 	}
 
 	@Override
 	public String toString() {
 		if (isBottom())
 			return Lattice.BOTTOM_STRING;
-		else if (isTop())
+		if (isTop())
 			return Lattice.TOP_STRING;
-
-		return stack.toString();
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			int pos = (head + i) % STACK_LIMIT;
+			sb.append(circularArray[pos]);
+			if (i < STACK_LIMIT - 1)
+				sb.append(", ");
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 
 	@Override
@@ -773,46 +757,33 @@ public abstract class TaintAbstractDomain
 
 	@Override
 	public TaintAbstractDomain glbAux(TaintAbstractDomain other) throws SemanticException {
-		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
-
-		Iterator<TaintElement> thisIterator = this.stack.iterator();
-		Iterator<TaintElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			TaintElement thisElement = thisIterator.next();
-			TaintElement otherElement = otherIterator.next();
-			result.add(thisElement.glb(otherElement));
+		TaintElement[] result = new TaintElement[STACK_LIMIT];
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			result[i] = this.get(i).glb(other.get(i));
 		}
-
 		return mk(result, this.memory.glb(other.memory));
 	}
 
 	@Override
 	public TaintAbstractDomain lubAux(TaintAbstractDomain other) throws SemanticException {
-		ArrayList<TaintElement> result = new ArrayList<>(STACK_LIMIT);
-
-		Iterator<TaintElement> thisIterator = this.stack.iterator();
-		Iterator<TaintElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			TaintElement thisElement = thisIterator.next();
-			TaintElement otherElement = otherIterator.next();
-			result.add(thisElement.lub(otherElement));
+		TaintElement[] result = new TaintElement[STACK_LIMIT];
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			result[i] = this.get(i).lub(other.get(i));
 		}
-
 		return mk(result, this.memory.lub(other.memory));
+	}
+
+	public TaintElement get(int index) {
+		if (index < 0 || index >= STACK_LIMIT)
+			return TaintElement.BOTTOM;
+		return circularArray[(head + index) % STACK_LIMIT];
 	}
 
 	@Override
 	public boolean lessOrEqualAux(TaintAbstractDomain other) throws SemanticException {
-		Iterator<TaintElement> thisIterator = this.stack.iterator();
-		Iterator<TaintElement> otherIterator = other.stack.iterator();
-
-		while (thisIterator.hasNext() && otherIterator.hasNext()) {
-			if (!thisIterator.next().lessOrEqual(otherIterator.next())) {
+		for (int i = 0; i < STACK_LIMIT; i++)
+			if (!this.get(i).lessOrEqual(other.get(i)))
 				return false;
-			}
-		}
 
 		return true;
 	}
@@ -823,8 +794,9 @@ public abstract class TaintAbstractDomain
 	 * @param target the element to be pushed onto the stack.
 	 */
 	public void push(TaintElement target) {
-		stack.remove(0);
-		stack.add(target);
+		circularArray[tail] = target;
+		tail = (tail + 1) % STACK_LIMIT;
+		head = (head + 1) % STACK_LIMIT;
 	}
 
 	/**
@@ -832,14 +804,23 @@ public abstract class TaintAbstractDomain
 	 *
 	 * @return the element at the top of the stack.
 	 */
-	public TaintElement pop() {
-		TaintElement result = stack.remove(stack.size() - 1);
-		if (stack.get(0).isBottom())
-			stack.add(0, TaintElement.BOTTOM);
-		else
-			stack.add(0, TaintElement.TOP);
 
-		return result;
+	public TaintElement pop() {
+		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
+		TaintElement popped = circularArray[topIndex];
+
+		head = (head - 1 + STACK_LIMIT) % STACK_LIMIT;
+		int bottomIndex = head;
+		int nextIndex = (head + 1) % STACK_LIMIT;
+
+		if (circularArray[nextIndex].isTop())
+			circularArray[bottomIndex] = TaintElement.TOP;
+		else
+			circularArray[bottomIndex] = TaintElement.BOTTOM;
+		tail = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
+		circularArray[topIndex] = TaintElement.BOTTOM;
+
+		return popped;
 	}
 
 	/**
@@ -853,55 +834,77 @@ public abstract class TaintAbstractDomain
 	 *             is bottom, {@code false} otherwise.
 	 */
 	public boolean hasBottomUntil(int x) {
-		for (int i = 0; i < x; i++)
-			if (this.stack.get((STACK_LIMIT - 1) - i).isBottom())
+		for (int i = 0; i < x; i++) {
+			int index = (tail - 1 - i + STACK_LIMIT) % STACK_LIMIT;
+			if (circularArray[index].isBottom())
 				return true;
+		}
 		return false;
 	}
 
+
 	@Override
 	public TaintAbstractDomain clone() {
-		if (isBottom())
-			return this;
-		return mk(new ArrayList<>(stack), this.memory);
+		TaintElement[] newArray = Arrays.copyOf(circularArray, STACK_LIMIT);
+		TaintAbstractDomain copy = mk(newArray, memory);
+		copy.head = this.head;
+		copy.tail = this.tail;
+		return copy;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof TaintAbstractDomain))
 			return false;
 		TaintAbstractDomain other = (TaintAbstractDomain) obj;
-		return Objects.equals(memory, other.memory) && Objects.equals(stack, other.stack);
+
+		if (isBottom() || other.isBottom())
+			return isBottom() == other.isBottom();
+
+		if (!memory.equals(other.memory))
+			return false;
+
+		for (int i = 0; i < STACK_LIMIT; i++)
+			if (!get(i).equals(other.get(i)))
+				return false;
+
+		return true;
 	}
+
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(memory, stack);
+		return Arrays.hashCode(circularArray) + memory.hashCode();
 	}
 
 	public TaintElement getSecondElement() {
 		if (isBottom())
 			return TaintElement.BOTTOM;
-		else if (isTop())
+		if (isTop())
 			return TaintElement.TOP;
-		return this.stack.get(STACK_LIMIT - 2);
+		return circularArray[(tail - 2 + STACK_LIMIT) % STACK_LIMIT];
 	}
 
 	public TaintElement getFirstElement() {
 		if (isBottom())
 			return TaintElement.BOTTOM;
-		else if (isTop())
+		if (isTop())
 			return TaintElement.TOP;
-		return this.stack.get(STACK_LIMIT - 1);
+		return circularArray[(tail - 1 + STACK_LIMIT) % STACK_LIMIT];
 	}
 
 	/**
+	 * @return copy of the array
+	 */
+	/*protected TaintElement[] getArrayCopy() { // TODO: CHECK
+		return Arrays.copyOf(circularArray, STACK_LIMIT);
+	}*/
+
+	/**
 	 * Yields the set of opcodes that push taint elements.
-	 * 
+	 *
 	 * @return the set of opcodes that push taint elements
 	 */
 	public abstract Set<Operator> getTaintedOpcode();
@@ -916,12 +919,13 @@ public abstract class TaintAbstractDomain
 	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
 	 * given the stack and the memory.
-	 * 
-	 * @param list   the stack
+	 *
+	 * @param array the stack // TODO: CHECK
 	 * @param memory the memory
-	 * 
+	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
 	 */
-	public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory);
+	//public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory); // TODO: CHECK
+	public abstract TaintAbstractDomain mk(TaintElement[] array, TaintElement memory);
 
 }
