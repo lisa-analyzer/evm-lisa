@@ -809,11 +809,7 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 		if (!memory.equals(other.memory))
 			return false;
 
-		for (int i = 0; i < STACK_LIMIT; i++)
-			if (!get(i).equals(other.get(i)))
-				return false;
-
-		return true;
+		return Arrays.equals(this.circularArray, other.circularArray);
 	}
 
 
@@ -861,7 +857,6 @@ implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
 	 */
-	//public abstract TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory); // TODO: CHECK
 	public abstract TaintAbstractDomain mk(TaintElement[] array, TaintElement memory);
 
 }
