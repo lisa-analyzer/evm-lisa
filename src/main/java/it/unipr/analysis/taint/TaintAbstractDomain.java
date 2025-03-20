@@ -147,9 +147,8 @@ public abstract class TaintAbstractDomain
 						return bottom();
 
 					TaintAbstractDomain resultStack = clone();
-					TaintElement opnd1 = resultStack.pop();
-					TaintElement opnd2 = resultStack.pop();
-
+					resultStack.popX(2);
+					
 					return resultStack;
 				}
 
@@ -216,10 +215,7 @@ public abstract class TaintAbstractDomain
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
 
-					TaintElement destOffset = resultStack.pop();
-					TaintElement offset = resultStack.pop();
-					TaintElement size = resultStack.pop();
-
+					resultStack.popX(3);
 					return resultStack;
 				}
 
@@ -282,8 +278,7 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					resultStack.pop();
-					resultStack.pop();
+					resultStack.popX(2);
 
 					return resultStack;
 				}
@@ -388,8 +383,7 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+					resultStack.popX(2);
 
 					return resultStack;
 				}
@@ -397,9 +391,7 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
-					resultStack.pop();
+					resultStack.popX(3);
 
 					return resultStack;
 				}
@@ -407,10 +399,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(4))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
-					resultStack.pop();
-					resultStack.pop();
+					resultStack.popX(4);
+
 
 					return resultStack;
 				}
@@ -418,11 +408,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(5))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
-					resultStack.pop();
-					resultStack.pop();
-					resultStack.pop();
+					resultStack.popX(5);
+
 
 					return resultStack;
 				}
@@ -430,12 +417,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(6))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
-					resultStack.pop();
-					resultStack.pop();
-					resultStack.pop();
-					resultStack.pop();
+					resultStack.popX(6);
+
 
 					return resultStack;
 				}
@@ -519,8 +502,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(2))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+					resultStack.popX(2);
+
 
 					return resultStack;
 				}
@@ -539,9 +522,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement memOffset = resultStack.pop();
-					TaintElement dataOffset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+					resultStack.popX(3);
+
 
 					return resultStack;
 				}
@@ -561,10 +543,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(4))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement address = resultStack.pop();
-					TaintElement memOffset = resultStack.pop();
-					TaintElement dataOffset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+					resultStack.popX(4);
+
 
 					return resultStack;
 				}
@@ -572,9 +552,8 @@ public abstract class TaintAbstractDomain
 					if (hasBottomUntil(3))
 						return bottom();
 					TaintAbstractDomain resultStack = clone();
-					TaintElement memOffset = resultStack.pop();
-					TaintElement dataOffset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+					resultStack.popX(3);
+
 
 					return resultStack;
 				}
