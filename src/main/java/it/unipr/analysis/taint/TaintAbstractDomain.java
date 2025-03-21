@@ -786,7 +786,6 @@ public abstract class TaintAbstractDomain
 	 *
 	 * @return the element at the top of the stack before popping
 	 */
-
 	public TaintElement pop() {
 		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
 		TaintElement popped = circularArray[topIndex];
