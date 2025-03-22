@@ -5,6 +5,7 @@ import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.utils.VulnerabilitiesObject;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -25,6 +26,9 @@ public class Bridge implements Iterable<SmartContract> {
 	private final List<SmartContract> contracts;
 
 	private EVMCFG xCFG;
+
+	/** Detected vulnerabilities in the bridge. */
+	private VulnerabilitiesObject _vulnerabilities;
 
 	public Bridge() {
 		this.contracts = new ArrayList<>();
@@ -81,6 +85,27 @@ public class Bridge implements Iterable<SmartContract> {
 			addEdge(edge);
 	}
 
+	/**
+	 * Returns the vulnerabilities detected in the bridge.
+	 *
+	 * @return Vulnerabilities object.
+	 */
+	public VulnerabilitiesObject getVulnerabilities() {
+		return _vulnerabilities;
+	}
+
+	/**
+	 * Sets the vulnerabilities object.
+	 *
+	 * @param vulnerabilities Vulnerabilities object.
+	 *
+	 * @return This SmartContract instance for method chaining.
+	 */
+	public Bridge setVulnerabilities(VulnerabilitiesObject vulnerabilities) {
+		this._vulnerabilities = vulnerabilities;
+		return this;
+	}
+
 	public void addEdge(Edge edge) {
 		xCFG.addEdge(edge);
 	}
@@ -92,7 +117,7 @@ public class Bridge implements Iterable<SmartContract> {
 	 * @return The constructed xCFG.
 	 */
 	public EVMCFG buildPartialXCFG() {
-		log.info("Building partial xCFG...");
+		log.info("Building partial xCFG.");
 
 		String filePath = EVMLiSA.getWorkingDirectory().toString();
 		ClassUnit unit = new ClassUnit(new ProgramCounterLocation(-1, -1), null, "program", false);
@@ -111,9 +136,6 @@ public class Bridge implements Iterable<SmartContract> {
 		}
 
 		log.info("Partial xCFG built.");
-		log.debug("Nodes count: {}.", xCFG.getNodesCount());
-		log.debug("Edge count: {}.", xCFG.getEdgesCount());
-		log.debug("Opcode count: {}.", xCFG.getOpcodeCount());
 
 		this.xCFG = xCFG;
 		return xCFG;
@@ -158,7 +180,8 @@ public class Bridge implements Iterable<SmartContract> {
 			contractsArray.put(contract.toJson());
 		}
 
-		json.put("bridge", contractsArray);
+		json.put("smart_contracts", contractsArray);
+		json.put("vulnerabilities", _vulnerabilities != null ? _vulnerabilities.toJson() : new JSONArray());
 		return json;
 	}
 

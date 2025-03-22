@@ -59,7 +59,7 @@ public abstract class TaintAbstractDomain
 	 */
 	private final TaintElement memory;
 
-	private final EVMCFG cfg;
+	protected final EVMCFG cfg;
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
