@@ -399,7 +399,21 @@ public class xEVMLiSA {
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TimeSynchronizationAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.analysisGraphs = LiSAConfiguration.GraphType.DOT;
+		lisa.run(program);
+	}
+
+	public static void runTimeSynchronizationChecker(Bridge bridge) {
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(bridge.getXCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(EVMLiSA.getWorkingDirectory());
+		LiSA lisa = new LiSA(conf);
+
+		// Time synchronization checker
+		TimeSynchronizationChecker checker = new TimeSynchronizationChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TimeSynchronizationAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 	}
 

@@ -4,37 +4,33 @@ import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Origin;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT,
-					TaintElement.BOTTOM)),
-			TaintElement.CLEAN,
-			null);
-	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(
-			null,
-			TaintElement.BOTTOM,
-			null);
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TxOriginAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN, null);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param stack the stack of values
+	 * @param circularArray the stack of values
 	 */
-	protected TxOriginAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+	protected TxOriginAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
+		this(circularArray, memory, null);
+	}
+
+	protected TxOriginAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
+		super(circularArray, memory, cfg);
 	}
 
 	@Override
@@ -58,7 +54,12 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory, EVMCFG cfg) {
-		return new TxOriginAbstractDomain(list, memory, cfg);
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
+		return mk(array, memory, null);
+	}
+
+	@Override
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
+		return new TxOriginAbstractDomain(array, memory, cfg);
 	}
 }

@@ -6,35 +6,33 @@ import it.unipr.cfg.*;
 import it.unipr.cfg.Number;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 
 	private static final TimeSynchronizationAbstractDomain TOP = new TimeSynchronizationAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
-			TaintElement.CLEAN,
-			null);
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	private static final TimeSynchronizationAbstractDomain BOTTOM = new TimeSynchronizationAbstractDomain(
-			null,
-			TaintElement.BOTTOM,
-			null);
+			null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TimeSynchronizationAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN, null);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+	}
+
+	protected TimeSynchronizationAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
+		super(circularArray, memory, null);
 	}
 
 	/**
 	 * Builds a taint abstract stack.
 	 *
-	 * @param stack the stack of values
+	 * @param circularArray the stack of values
 	 */
-	protected TimeSynchronizationAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+	protected TimeSynchronizationAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
+		super(circularArray, memory, cfg);
 	}
 
 	@Override
@@ -55,6 +53,16 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
+		return mk(array, memory, null);
+	}
+
+	@Override
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
+		return new TimeSynchronizationAbstractDomain(array, memory, cfg);
+	}
+
+	@Override
 	public TimeSynchronizationAbstractDomain top() {
 		return TOP;
 	}
@@ -62,10 +70,5 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 	@Override
 	public TimeSynchronizationAbstractDomain bottom() {
 		return BOTTOM;
-	}
-
-	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory, EVMCFG cfg) {
-		return new TimeSynchronizationAbstractDomain(list, memory, cfg);
 	}
 }

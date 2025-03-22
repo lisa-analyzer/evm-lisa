@@ -115,12 +115,13 @@ public class TimeSynchronizationChecker implements
 	}
 
 	/**
-	 * Checks whether any of the provided {@link TaintElement} instances is either in
-	 * the "taint" state or the "top" state.
+	 * Checks whether any of the provided {@link TaintElement} instances is
+	 * either in the "taint" state or the "top" state.
 	 *
 	 * @param elements the array of {@link TaintElement} instances to be checked
-	 * @return true if at least one of the provided {@link TaintElement} instances
-	 *         is either tainted or top, false otherwise
+	 * 
+	 * @return true if at least one of the provided {@link TaintElement}
+	 *             instances is either tainted or top, false otherwise
 	 */
 	private boolean isTaintedOrTop(TaintElement... elements) {
 		for (TaintElement element : elements) {

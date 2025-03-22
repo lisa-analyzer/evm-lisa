@@ -6,8 +6,6 @@ import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -25,29 +23,38 @@ import java.util.Set;
 public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomain {
 
 	private static final UncheckedExternalInfluenceAbstractDomain TOP = new UncheckedExternalInfluenceAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
-			TaintElement.CLEAN,
-			null);
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	private static final UncheckedExternalInfluenceAbstractDomain BOTTOM = new UncheckedExternalInfluenceAbstractDomain(
-			null,
-			TaintElement.BOTTOM,
-			null);
+			null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public UncheckedExternalInfluenceAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN, null);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+	}
+
+	/**
+	 * Constructs an instance of UncheckedExternalInfluenceAbstractDomain with a
+	 * given stack and memory taint element.
+	 *
+	 * @param circularArray the stack of taint elements representing the
+	 *                          symbolic execution stack
+	 * @param memory        the taint element representing the memory taint
+	 *                          status
+	 */
+	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
+		this(circularArray, memory, null);
 	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param stack the stack of values
+	 * @param circularArray the stack of values
 	 */
-	protected UncheckedExternalInfluenceAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
+		super(circularArray, memory, cfg);
 	}
 
 	@Override
@@ -64,6 +71,16 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 	}
 
 	@Override
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
+		return mk(array, memory, null);
+	}
+
+	@Override
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
+		return new UncheckedExternalInfluenceAbstractDomain(array, memory, cfg);
+	}
+
+	@Override
 	public UncheckedExternalInfluenceAbstractDomain top() {
 		return TOP;
 	}
@@ -73,8 +90,4 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 		return BOTTOM;
 	}
 
-	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory, EVMCFG cfg) {
-		return new UncheckedExternalInfluenceAbstractDomain(list, memory, cfg);
-	}
 }

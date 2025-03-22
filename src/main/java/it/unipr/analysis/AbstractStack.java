@@ -13,7 +13,6 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
@@ -26,18 +25,35 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	/**
 	 * The top abstract element of this domain.
 	 */
-	private static final AbstractStack TOP = new AbstractStack(
-			createFilledArray(STACK_LIMIT, StackElement.TOP));
 
+	private static final AbstractStack TOP = new AbstractStack(createFilledArray(STACK_LIMIT, StackElement.TOP));
 	/**
 	 * The bottom abstract element of this domain.
 	 */
 	private static final AbstractStack BOTTOM = new AbstractStack(null);
 
 	/**
-	 * The abstract stack as an array.
+	 * The abstract stack as a circular array.
 	 */
-	private final StackElement[] stack;
+	private final StackElement[] circularArray;
+
+	/**
+	 * The index representing the beginning of the logical stack in the circular
+	 * array.
+	 * <p>
+	 * This pointer indicates the position in the array that corresponds to the
+	 * bottom of the stack. Tracks the index of the oldest element in the
+	 * circular array.
+	 */
+	private int head;
+
+	/**
+	 * The index representing the next insertion point in the circular array.
+	 * <p>
+	 * This pointer is used to identify the top of the stack, where the next
+	 * element will be pushed.
+	 */
+	private int tail;
 
 	/**
 	 * Helper method to create and fill an array with a specific element.
@@ -53,6 +69,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 	public AbstractStack() {
 		this(createFilledArray(STACK_LIMIT, StackElement.BOTTOM));
+		this.head = 0;
+		this.tail = 0;
 	}
 
 	/**
@@ -61,7 +79,9 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @param stack the stack of values
 	 */
 	public AbstractStack(StackElement[] stack) {
-		this.stack = stack;
+		this.circularArray = stack;
+		this.head = 0;
+		this.tail = 0;
 	}
 
 	@Override
@@ -125,7 +145,16 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return "BOTTOM";
 		if (isTop())
 			return "TOP";
-		return Arrays.toString(this.stack);
+
+		StringBuilder sb = new StringBuilder("[");
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			int pos = (head + i) % STACK_LIMIT;
+			sb.append(circularArray[pos]);
+			if (i < STACK_LIMIT - 1)
+				sb.append(", ");
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 
 	@Override
@@ -142,7 +171,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public boolean isTop() {
 		if (isBottom())
 			return false;
-		for (StackElement element : this.stack)
+		for (StackElement element : this.circularArray)
 			if (!element.isTop())
 				return false;
 		return true;
@@ -150,12 +179,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public boolean isBottom() {
-		return stack == null;
+		return circularArray == null;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(Arrays.hashCode(stack));
+		return Arrays.hashCode(circularArray);
 	}
 
 	@Override
@@ -166,8 +195,22 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		AbstractStack other = (AbstractStack) obj;
-		return Arrays.equals(stack, other.stack);
+		return Arrays.equals(this.circularArray, other.circularArray);
+	}
+
+	/**
+	 * Get a specific element of the stack.
+	 *
+	 * @param index the index of the element
+	 * 
+	 * @return the StackElement at the given index, or BOTTOM if out of bounds
+	 */
+	public StackElement get(int index) {
+		if (index < 0 || index >= STACK_LIMIT) // not valid index
+			return StackElement.BOTTOM;
+		return circularArray[(head + index) % STACK_LIMIT];
 	}
 
 	@Override
@@ -182,53 +225,75 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @return the StackElement at the top of the stack.
 	 */
 	public StackElement getTop() {
-		return this.stack[STACK_LIMIT - 1]; // Get the last element
+		return circularArray[(tail - 1 + STACK_LIMIT) % STACK_LIMIT];
 	}
 
 	@Override
 	public AbstractStack clone() {
 		if (isBottom() || isTop())
 			return this;
-		return new AbstractStack(stack.clone());
+		AbstractStack clone = new AbstractStack(circularArray.clone());
+		clone.head = this.head;
+		clone.tail = this.tail;
+		return clone;
 	}
 
 	/**
 	 * Pushes the specified element onto the stack.
+	 * <p>
+	 * This method inserts the given {@link StackElement} at the tail of the
+	 * circular array, effectively updating the top of the stack. The head of
+	 * the stack is also updated to maintain the circular nature of the
+	 * structure.
 	 *
-	 * @param target the element to be pushed onto the stack.
+	 * @param element the element to be pushed onto the stack
 	 */
-	public void push(StackElement target) {
-		// Shift all elements one position to the left
-		System.arraycopy(stack, 1, stack, 0, STACK_LIMIT - 1);
-		stack[STACK_LIMIT - 1] = target;
+	public void push(StackElement element) {
+		circularArray[tail] = element;
+		tail = (tail + 1) % STACK_LIMIT;
+		head = (head + 1) % STACK_LIMIT;
 	}
 
 	/**
 	 * Pops the element from the stack.
+	 * <p>
+	 * This method removes and returns the topmost element of the stack. After
+	 * popping, the stack structure is adjusted by shifting the head, and the
+	 * previous bottommost element is updated based on the next element. If the
+	 * next element is {@link StackElement#TOP}, the bottom is set to TOP,
+	 * otherwise, it is set to {@link StackElement#BOTTOM}.
 	 *
-	 * @return the element at the top of the stack.
+	 * @return the element at the top of the stack before popping
 	 */
 	public StackElement pop() {
-		StackElement result = stack[STACK_LIMIT - 1];
-		// Shift all elements one position to the right
-		System.arraycopy(stack, 0, stack, 1, STACK_LIMIT - 1);
-		if (!stack[1].isTop())
-			stack[0] = StackElement.BOTTOM;
-		else
-			stack[0] = StackElement.TOP;
 
-		return result;
+		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
+		StackElement popped = circularArray[topIndex];
+
+		// Shift
+		head = (head - 1 + STACK_LIMIT) % STACK_LIMIT;
+		int bottomIndex = head;
+		int secondLogicalIndex = (head + 1) % STACK_LIMIT;
+
+		if (circularArray[secondLogicalIndex].isTop())
+			circularArray[bottomIndex] = StackElement.TOP;
+		else
+			circularArray[bottomIndex] = StackElement.BOTTOM;
+
+		tail = (head + STACK_LIMIT) % STACK_LIMIT;
+		circularArray[topIndex] = StackElement.BOTTOM;
+
+		return popped;
 	}
 
+	/**
+	 * Performs {@code pos} consecutive {@code pop()} operations on the stack.
+	 *
+	 * @param pos the number of elements to pop from the stack
+	 */
 	public void popX(int pos) {
-		// Shift all elements pos position to the right
-		System.arraycopy(stack, 0, stack, pos, STACK_LIMIT - pos);
-
-		for (int i = 1; i < pos; i++)
-			if (!stack[i].isTop())
-				stack[i - 1] = StackElement.BOTTOM;
-			else
-				stack[i - 1] = StackElement.TOP;
+		for (int i = 0; i < pos; i++)
+			pop();
 	}
 
 	@Override
@@ -248,13 +313,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public boolean lessOrEqualAux(AbstractStack other) throws SemanticException {
-		// Starting from the top of the stack and moving downward
-		for (int i = STACK_LIMIT - 1; i >= 0; i--) {
-			if (!this.stack[i].lessOrEqual(other.stack[i])) {
+		for (int i = 0; i < STACK_LIMIT; i++) {
+			int thisIndex = (tail - 1 - i + STACK_LIMIT) % STACK_LIMIT;
+			int otherIndex = (other.tail - 1 - i + STACK_LIMIT) % STACK_LIMIT;
+			if (!this.circularArray[thisIndex].lessOrEqual(other.circularArray[otherIndex]))
 				return false;
-			}
 		}
-
 		return true;
 	}
 
@@ -266,9 +330,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public StackElement getSecondElement() {
 		if (isBottom())
 			return StackElement.BOTTOM;
-		else if (isTop())
+		if (isTop())
 			return StackElement.TOP;
-		return this.stack[STACK_LIMIT - 2];
+
+		int secondElementPos = (tail - 2 + STACK_LIMIT) % STACK_LIMIT;
+		return circularArray[secondElementPos];
 	}
 
 	/**
@@ -301,10 +367,13 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @return {@code true} if between 0 and x-positions of the stack an element
 	 *             is bottom, {@code false} otherwise.
 	 */
+
 	public boolean hasBottomUntil(int x) {
-		for (int i = 0; i < x; i++)
-			if (this.stack[(STACK_LIMIT - 1) - i].isBottom())
+		for (int i = 0; i < x; i++) {
+			int pos = (tail - 1 - i + STACK_LIMIT) % STACK_LIMIT;
+			if (circularArray[pos].isBottom())
 				return true;
+		}
 		return false;
 	}
 
@@ -325,20 +394,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	public AbstractStack dupX(int x) {
 		if (hasBottomUntil(x))
 			return bottom();
-
-		StackElement[] stackArray = this.stack.clone();
-
-		int topIndex = STACK_LIMIT - 1;
-		int targetIndex = topIndex - x + 1;
-		StackElement elementToDuplicate = stackArray[targetIndex];
-
-		StackElement[] resultArray = new StackElement[STACK_LIMIT];
-
-		System.arraycopy(stackArray, 1, resultArray, 0, STACK_LIMIT - 1);
-
-		resultArray[topIndex] = elementToDuplicate;
-
-		return new AbstractStack(resultArray);
+		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT;
+		AbstractStack clone = clone();
+		clone.push(circularArray[posX]);
+		return clone;
 	}
 
 	/**
@@ -346,22 +405,23 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * returns the modified stack.
 	 *
 	 * @param x The position of the element to swap with the top of the stack.
-	 * 
+	 *
 	 * @return A new stack with the specified elements swapped.
 	 */
 	public AbstractStack swapX(int x) {
 		if (hasBottomUntil(x + 1))
 			return bottom();
+		x++;
+		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT; // Index of the
+															// element to swap
+															// with
+		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
 
-		int topIndex = STACK_LIMIT - 1;
-		int swapIndex = topIndex - x;
-
-		StackElement[] newStack = this.stack.clone();
-
-		StackElement temp = newStack[topIndex];
-		newStack[topIndex] = newStack[swapIndex];
-		newStack[swapIndex] = temp;
-
-		return new AbstractStack(newStack);
+		AbstractStack clone = clone();
+		StackElement temp = clone.circularArray[posX];
+		clone.circularArray[posX] = clone.circularArray[topIndex];
+		clone.circularArray[topIndex] = temp;
+		return clone;
 	}
+
 }
