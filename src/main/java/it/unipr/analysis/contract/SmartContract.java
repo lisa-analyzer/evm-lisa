@@ -3,12 +3,7 @@ package it.unipr.analysis.contract;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
 import it.unipr.frontend.EVMFrontend;
-import it.unipr.frontend.EVMLiSAFeatures;
-import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.*;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.IOException;
@@ -649,15 +644,15 @@ public class SmartContract {
 			return;
 		}
 
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(this._cfg);
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
-		LiSA lisa = new LiSA(conf);
-
-		EventsExitPointsComputer checker = new EventsExitPointsComputer();
-		conf.semanticChecks.add(checker);
-		lisa.run(program);
+		Set<Statement> logStatements = _cfg.getAllLogX();
+		for (Signature signature : _eventsSignature) {
+			for (Statement eventEntryPoint : signature.getEntryPoints()) {
+				for (Statement logStatement : logStatements) {
+					if (_cfg.reachableFrom(eventEntryPoint, logStatement))
+						signature.addExitPoint(logStatement);
+				}
+			}
+		}
 	}
 
 	/**

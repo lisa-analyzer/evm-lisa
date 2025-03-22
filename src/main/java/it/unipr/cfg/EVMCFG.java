@@ -175,7 +175,10 @@ public class EVMCFG extends CFG {
 			Set<Statement> logxs = new HashSet<>();
 
 			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Log1 || statement instanceof Log2 || statement instanceof Log3
+				if (statement instanceof Log0
+						|| statement instanceof Log1
+						|| statement instanceof Log2
+						|| statement instanceof Log3
 						|| statement instanceof Log4) {
 					logxs.add(statement);
 				}

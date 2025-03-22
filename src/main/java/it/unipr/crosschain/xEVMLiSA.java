@@ -44,7 +44,6 @@ import org.apache.logging.log4j.Logger;
 
 public class xEVMLiSA {
 	private static final Logger log = LogManager.getLogger(xEVMLiSA.class);
-	private static boolean CONSERVATIVE_LINK = false;
 
 	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
 		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath);
@@ -79,44 +78,31 @@ public class xEVMLiSA {
 		log.debug("Events count: {}.", bridge.getEvents().size());
 		log.debug("Log count: {}.", bridge.getXCFG().getAllLogX().size());
 
-		boolean match = false;
+		for (Signature event : bridge.getEvents()) {
+			for (Signature function : bridge.getFunctions()) {
+				/*
+				 * TODO: We may perform additional checks (e.g., parameter
+				 * types, parameter count, etc.) to link an event to a function,
+				 * as currently we are only linking them based on matching
+				 * names.
+				 */
+				if (event.getName().equalsIgnoreCase(function.getName())) {
 
-		for (Statement logStatement : bridge.getXCFG().getAllLogX()) {
+					crossChainEdges.addAll(
+							addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
 
-			Set<String> selectorsInLOG = MyCache.getInstance().getEventExitPoints(logStatement);
-			match = false;
-
-			if (selectorsInLOG.isEmpty())
-				continue;
-
-			for (String selector : selectorsInLOG) {
-				for (Signature event : bridge.getEvents()) {
-					if (selector.equals(event.getSelector())) {
-						for (Signature function : bridge.getFunctions()) {
-							if (event.getName().equalsIgnoreCase(function.getName())) {
-								match = true;
-								crossChainEdges.addAll(
-										addCrossChainEdges(event.getEntryPoints(), function.getEntryPoints()));
-								log.debug(
-										"Perfect match! Event: {}/{} from LOG source-code line: {}, to Function: {}/{}.",
-										event.getName(), event.getParamCount(),
-										((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
-										function.getName(), function.getParamCount());
-							}
+					// Debug print
+					for (Statement e : event.getExitPoints()) {
+						for (Statement f : function.getEntryPoints()) {
+							log.debug(
+									"Cross-chain edge: event {} (name: {}, selector: {}, line: {}) -> function {} (name: {}, selector: {}, line: {}).",
+									e, event.getName(), event.getSelector(),
+									((ProgramCounterLocation) e.getLocation()).getSourceCodeLine(),
+									f, function.getName(), function.getSelector(),
+									((ProgramCounterLocation) f.getLocation()).getSourceCodeLine());
 						}
 					}
 				}
-			}
-
-			if (!match && CONSERVATIVE_LINK) {
-				// We link this event to all functions entry points
-				for (Signature function : bridge.getFunctions())
-					crossChainEdges.addAll(addConservativeCrossChainEdges(Collections.singleton(logStatement),
-							function.getEntryPoints()));
-
-				log.warn("No match! LOG at source-code line {} conservative linked to {} functions.",
-						((ProgramCounterLocation) logStatement.getLocation()).getSourceCodeLine(),
-						bridge.getFunctions().size());
 			}
 		}
 
