@@ -2,9 +2,11 @@ package it.unipr.utils;
 
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
+import it.unipr.analysis.taint.TaintElement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,8 +28,11 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
-	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
-	public final LRUMap<Statement, Set<String>> _eventsExitPoints;
+	private final Set<String> _timeSynchronizationWarnings;
+	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
+	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
+	private final Set<Statement> _taintedCallDataLoad;
+	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -58,7 +63,10 @@ public class MyCache {
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
 		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._timeSynchronizationWarnings = new HashSet<>();
+		this._vulnerableLogStatement = new LRUMap<>(1000);
+		this._taintedCallDataLoad = new HashSet<>();
+		this._linkFromLogToCallDataLoad = new LRUMap<>(1000);
 	}
 
 	/**
@@ -431,16 +439,12 @@ public class MyCache {
 	 * key does not already exist, a new synchronized set will be created and
 	 * associated with the given key.
 	 *
-	 * @param key     the identifier for the time synchronization warning
-	 *                    category
 	 * @param warning the warning object to be added to the corresponding set of
 	 *                    warnings for the given key
 	 */
-	public void addTimeSynchronizationWarning(Integer key, Object warning) {
+	public void addTimeSynchronizationWarning(String warning) {
 		synchronized (_timeSynchronizationWarnings) {
-			_timeSynchronizationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+			_timeSynchronizationWarnings.add(warning);
 		}
 	}
 
@@ -448,16 +452,71 @@ public class MyCache {
 	 * Retrieves the number of time synchronization warnings associated with the
 	 * given key.
 	 *
-	 * @param key an Integer key used to look up the warnings in the time
-	 *                synchronization warnings map
-	 * 
 	 * @return the count of time synchronization warnings associated with the
 	 *             provided key; returns 0 if the key is not present or no
 	 *             warnings exist
 	 */
-	public int getTimeSynchronizationWarnings(Integer key) {
+	public int getTimeSynchronizationWarnings() {
 		synchronized (_timeSynchronizationWarnings) {
-			return (_timeSynchronizationWarnings.get(key) != null) ? _timeSynchronizationWarnings.get(key).size() : 0;
+			return _timeSynchronizationWarnings.size();
 		}
 	}
+
+	public void addVulnerableLogStatementForTimeSynchronizationChecker(Statement key) {
+		synchronized (_vulnerableLogStatement) {
+			_vulnerableLogStatement.put(key, TaintElement.TAINT);
+		}
+	}
+
+	public Set<Statement> getSetOfVulnerableLogStatementForTimeSynchronizationChecker() {
+		synchronized (_vulnerableLogStatement) {
+			return _vulnerableLogStatement.keySet();
+		}
+	}
+
+	public void addTaintedCallDataLoad(Statement stmt) {
+		synchronized (_taintedCallDataLoad) {
+			_taintedCallDataLoad.add(stmt);
+		}
+	}
+
+	public boolean isTaintedCallDataLoad(Statement stmt) {
+		synchronized (_taintedCallDataLoad) {
+			return _taintedCallDataLoad.contains(stmt);
+		}
+	}
+
+	public int getTaintedCallDataLoadSize() {
+		synchronized (_taintedCallDataLoad) {
+			return _taintedCallDataLoad.size();
+		}
+	}
+
+	public void addLinkFromLogToCallDataLoad(Statement key, Object warning) {
+		synchronized (_linkFromLogToCallDataLoad) {
+			_linkFromLogToCallDataLoad
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	public Set<Object> getLinkFromLogToCallDataLoad(Statement key) {
+		synchronized (_linkFromLogToCallDataLoad) {
+			return (_linkFromLogToCallDataLoad.get(key) != null) ? _linkFromLogToCallDataLoad.get(key)
+					: new HashSet<>();
+		}
+	}
+
+	public Set<Statement> getKeysContainingValueInLinkFromLogToCallDataLoad(Object value) {
+		synchronized (_linkFromLogToCallDataLoad) {
+			Set<Statement> keys = new HashSet<>();
+			for (Map.Entry<Statement, Set<Object>> entry : _linkFromLogToCallDataLoad.entrySet()) {
+				if (entry.getValue().contains(value)) {
+					keys.add(entry.getKey());
+				}
+			}
+			return keys;
+		}
+	}
+
 }
