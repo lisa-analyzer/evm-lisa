@@ -391,6 +391,12 @@ public class EVMCFG extends CFG {
 		return result;
 	}
 
+	public boolean reachableFromCrossingACrossChainEdge(Statement start, Statement target) {
+		if (start.getCFG().equals(target.getCFG()))
+			return false;
+		return reachableFrom(start, target);
+	}
+
 	/**
 	 * Performs a depth-first search (DFS) to determine if the target statement
 	 * is reachable from the start statement.
