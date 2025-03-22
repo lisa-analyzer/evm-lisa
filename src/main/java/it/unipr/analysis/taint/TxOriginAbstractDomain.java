@@ -23,14 +23,14 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected TxOriginAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		this(circularArray, memory, null);
+	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		this(stack, memory, null);
 	}
 
-	protected TxOriginAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
-		super(circularArray, memory, cfg);
+	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		super(stack, memory, cfg);
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return mk(array, memory, null);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+		return mk(stack, memory, null);
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
-		return new TxOriginAbstractDomain(array, memory, cfg);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		return new TxOriginAbstractDomain(stack, memory, cfg);
 	}
 }

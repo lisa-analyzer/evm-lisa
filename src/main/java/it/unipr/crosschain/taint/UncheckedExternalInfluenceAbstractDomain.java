@@ -38,23 +38,22 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 	 * Constructs an instance of UncheckedExternalInfluenceAbstractDomain with a
 	 * given stack and memory taint element.
 	 *
-	 * @param circularArray the stack of taint elements representing the
-	 *                          symbolic execution stack
-	 * @param memory        the taint element representing the memory taint
-	 *                          status
+	 * @param stack  the stack of taint elements representing the symbolic
+	 *                   execution stack
+	 * @param memory the taint element representing the memory taint status
 	 */
-	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		this(circularArray, memory, null);
+	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		this(stack, memory, null);
 	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
-		super(circularArray, memory, cfg);
+	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		super(stack, memory, cfg);
 	}
 
 	@Override

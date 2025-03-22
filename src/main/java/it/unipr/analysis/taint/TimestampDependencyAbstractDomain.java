@@ -3,7 +3,6 @@ package it.unipr.analysis.taint;
 import it.unipr.cfg.*;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.*;
 import java.util.Set;
 
 public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
@@ -23,14 +22,14 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected TimestampDependencyAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		this(circularArray, memory, null);
+	protected TimestampDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		this(stack, memory, null);
 	}
 
-	protected TimestampDependencyAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
-		super(circularArray, memory, cfg);
+	protected TimestampDependencyAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		super(stack, memory, cfg);
 	}
 
 	@Override
@@ -57,13 +56,13 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return mk(array, memory, null);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+		return mk(stack, memory, null);
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
-		return new TimestampDependencyAbstractDomain(array, memory, cfg);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		return new TimestampDependencyAbstractDomain(stack, memory, cfg);
 	}
 
 }

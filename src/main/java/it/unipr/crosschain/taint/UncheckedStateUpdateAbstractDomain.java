@@ -1,6 +1,5 @@
 package it.unipr.crosschain.taint;
 
-import it.unipr.analysis.operator.*;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.Call;
@@ -41,20 +40,20 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected UncheckedStateUpdateAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		this(circularArray, memory, null);
+	protected UncheckedStateUpdateAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		this(stack, memory, null);
 	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected UncheckedStateUpdateAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
-		super(circularArray, memory, cfg);
+	protected UncheckedStateUpdateAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		super(stack, memory, cfg);
 	}
 
 	@Override
@@ -80,12 +79,12 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return mk(array, memory, null);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+		return mk(stack, memory, null);
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
-		return new UncheckedStateUpdateAbstractDomain(array, memory, cfg);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		return new UncheckedStateUpdateAbstractDomain(stack, memory, cfg);
 	}
 }

@@ -22,17 +22,17 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
-	protected TimeSynchronizationAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		super(circularArray, memory, null);
+	protected TimeSynchronizationAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		super(stack, memory, null);
 	}
 
 	/**
 	 * Builds a taint abstract stack.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected TimeSynchronizationAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
-		super(circularArray, memory, cfg);
+	protected TimeSynchronizationAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		super(stack, memory, cfg);
 	}
 
 	@Override
@@ -53,13 +53,13 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return mk(array, memory, null);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+		return mk(stack, memory, null);
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
-		return new TimeSynchronizationAbstractDomain(array, memory, cfg);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		return new TimeSynchronizationAbstractDomain(stack, memory, cfg);
 	}
 
 	@Override

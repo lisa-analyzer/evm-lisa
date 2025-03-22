@@ -34,7 +34,7 @@ public abstract class TaintAbstractDomain
 	/**
 	 * The abstract stack as a circular array.
 	 */
-	private final TaintElement[] circularArray;
+	private final TaintElement[] stack;
 
 	/**
 	 * The index representing the beginning of the logical stack in the circular
@@ -65,8 +65,8 @@ public abstract class TaintAbstractDomain
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 */
-	protected TaintAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		this(circularArray, memory, null);
+	protected TaintAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		this(stack, memory, null);
 	}
 
 	/**
@@ -74,11 +74,11 @@ public abstract class TaintAbstractDomain
 	 * elements that push taint. Builds a taint abstract stack starting from a
 	 * given stack and a memory element.
 	 *
-	 * @param circularArray the stack of values
-	 * @param memory        the memory element
+	 * @param stack  the stack of values
+	 * @param memory the memory element
 	 */
-	protected TaintAbstractDomain(TaintElement[] circularArray, TaintElement memory, EVMCFG cfg) {
-		this.circularArray = circularArray;
+	protected TaintAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+		this.stack = stack;
 		this.memory = memory;
 		this.cfg = cfg;
 		this.head = 0;
@@ -219,7 +219,7 @@ public abstract class TaintAbstractDomain
 					TaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.circularArray, TaintElement.TAINT, resultStack.cfg);
+						return mk(resultStack.stack, TaintElement.TAINT, resultStack.cfg);
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -619,9 +619,9 @@ public abstract class TaintAbstractDomain
 		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT;
 		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
 		TaintAbstractDomain copy = this.clone();
-		TaintElement tmp = copy.circularArray[posX];
-		copy.circularArray[posX] = copy.circularArray[topIndex];
-		copy.circularArray[topIndex] = tmp;
+		TaintElement tmp = copy.stack[posX];
+		copy.stack[posX] = copy.stack[topIndex];
+		copy.stack[topIndex] = tmp;
 		return copy;
 	}
 
@@ -639,7 +639,7 @@ public abstract class TaintAbstractDomain
 			return bottom();
 		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT;
 		TaintAbstractDomain copy = this.clone();
-		copy.push(circularArray[posX]);
+		copy.push(stack[posX]);
 		return copy;
 	}
 
@@ -694,7 +694,7 @@ public abstract class TaintAbstractDomain
 		StringBuilder sb = new StringBuilder("[");
 		for (int i = 0; i < STACK_LIMIT; i++) {
 			int pos = (head + i) % STACK_LIMIT;
-			sb.append(circularArray[pos]);
+			sb.append(stack[pos]);
 			if (i < STACK_LIMIT - 1)
 				sb.append(", ");
 		}
@@ -766,7 +766,7 @@ public abstract class TaintAbstractDomain
 	public TaintElement get(int index) {
 		if (index < 0 || index >= STACK_LIMIT)
 			return TaintElement.BOTTOM;
-		return circularArray[(head + index) % STACK_LIMIT];
+		return stack[(head + index) % STACK_LIMIT];
 	}
 
 	@Override
@@ -789,7 +789,7 @@ public abstract class TaintAbstractDomain
 	 * @param target the element to be pushed onto the stack
 	 */
 	public void push(TaintElement target) {
-		circularArray[tail] = target;
+		stack[tail] = target;
 		tail = (tail + 1) % STACK_LIMIT;
 		head = (head + 1) % STACK_LIMIT;
 	}
@@ -807,18 +807,18 @@ public abstract class TaintAbstractDomain
 	 */
 	public TaintElement pop() {
 		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
-		TaintElement popped = circularArray[topIndex];
+		TaintElement popped = stack[topIndex];
 
 		head = (head - 1 + STACK_LIMIT) % STACK_LIMIT;
 		int bottomIndex = head;
 		int nextIndex = (head + 1) % STACK_LIMIT;
 
-		if (circularArray[nextIndex].isTop())
-			circularArray[bottomIndex] = TaintElement.TOP;
+		if (stack[nextIndex].isTop())
+			stack[bottomIndex] = TaintElement.TOP;
 		else
-			circularArray[bottomIndex] = TaintElement.BOTTOM;
+			stack[bottomIndex] = TaintElement.BOTTOM;
 		tail = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
-		circularArray[topIndex] = TaintElement.BOTTOM;
+		stack[topIndex] = TaintElement.BOTTOM;
 
 		return popped;
 	}
@@ -836,7 +836,7 @@ public abstract class TaintAbstractDomain
 	public boolean hasBottomUntil(int x) {
 		for (int i = 0; i < x; i++) {
 			int index = (tail - 1 - i + STACK_LIMIT) % STACK_LIMIT;
-			if (circularArray[index].isBottom())
+			if (stack[index].isBottom())
 				return true;
 		}
 		return false;
@@ -844,7 +844,7 @@ public abstract class TaintAbstractDomain
 
 	@Override
 	public TaintAbstractDomain clone() {
-		TaintElement[] newArray = circularArray.clone();
+		TaintElement[] newArray = stack.clone();
 		TaintAbstractDomain copy = mk(newArray, memory, this.cfg);
 		copy.head = this.head;
 		copy.tail = this.tail;
@@ -865,12 +865,12 @@ public abstract class TaintAbstractDomain
 		if (!memory.equals(other.memory))
 			return false;
 
-		return Arrays.equals(this.circularArray, other.circularArray);
+		return Arrays.equals(this.stack, other.stack);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(circularArray, memory, cfg);
+		return Objects.hash(stack, memory, cfg);
 	}
 
 	/**
@@ -919,7 +919,7 @@ public abstract class TaintAbstractDomain
 			return TaintElement.BOTTOM;
 		else if (isTop())
 			return TaintElement.TOP;
-		return circularArray[(tail - position + STACK_LIMIT) % STACK_LIMIT];
+		return stack[(tail - position + STACK_LIMIT) % STACK_LIMIT];
 	}
 
 	/**
@@ -943,22 +943,22 @@ public abstract class TaintAbstractDomain
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
 	 * given the stack and the memory.
 	 *
-	 * @param array  the stack
+	 * @param stack  the stack
 	 * @param memory the memory
 	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
 	 */
-	public abstract TaintAbstractDomain mk(TaintElement[] array, TaintElement memory);
+	public abstract TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory);
 
 	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
 	 * given the stack, the memory and the CFG.
 	 *
-	 * @param array  the stack
+	 * @param stack  the stack
 	 * @param memory the memory
 	 * @param cfg    the CFG
 	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
 	 */
-	public abstract TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg);
+	public abstract TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg);
 }
