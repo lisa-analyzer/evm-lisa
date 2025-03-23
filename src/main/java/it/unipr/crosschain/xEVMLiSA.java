@@ -373,27 +373,24 @@ public class xEVMLiSA {
 			functionsEntrypoints.addAll(function.getEntryPoints());
 
 		EVMCFG cfg = contract.getCFG();
-		Set<Statement> sstoreSet = cfg.getAllSstore();
 		Set<Statement> logSet = cfg.getAllLogX();
 
 		for (Statement functionEntrypoint : functionsEntrypoints) {
 			for (Statement emitEvent : logSet) {
-				if (cfg.reachableFrom(functionEntrypoint, emitEvent)) {
-					if (!cfg.reachableFromCrossing(functionEntrypoint, emitEvent, sstoreSet)) {
+				if (cfg.reachableFromWithoutSstore(functionEntrypoint, emitEvent)) {
 
-						ProgramCounterLocation functionEntrypointLocation = (ProgramCounterLocation) functionEntrypoint
-								.getLocation();
-						ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
+					ProgramCounterLocation functionEntrypointLocation = (ProgramCounterLocation) functionEntrypoint
+							.getLocation();
+					ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
 
-						String warn = "Event Order vulnerability at " + emitEventLocation.getPc();
+					String warn = "Event Order vulnerability at " + emitEventLocation.getPc();
 
-						log.warn("Event Order vulnerability at pc {} at line {} coming from line {}.",
-								emitEventLocation.getPc(),
-								emitEventLocation.getSourceCodeLine(),
-								functionEntrypointLocation.getSourceCodeLine());
+					log.warn("Event Order vulnerability at pc {} at line {} coming from line {}.",
+							emitEventLocation.getPc(),
+							emitEventLocation.getSourceCodeLine(),
+							functionEntrypointLocation.getSourceCodeLine());
 
-						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
-					}
+					MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
 				}
 			}
 		}

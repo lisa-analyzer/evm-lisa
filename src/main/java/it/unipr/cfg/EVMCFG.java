@@ -678,6 +678,63 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
+	 * Determines if the target statement is reachable from the start statement
+	 * without triggering SSTORE operation.
+	 *
+	 * @param start  the starting statement from which the reachability is
+	 *                   checked
+	 * @param target the target statement to check for reachability
+	 * 
+	 * @return true if the target statement is reachable from the start without
+	 *             SSTORE being triggered, false otherwise
+	 */
+	public boolean reachableFromWithoutSstore(Statement start, Statement target) {
+		return dfsWithoutSstore(start, target, new HashSet<>());
+	}
+
+	/**
+	 * Performs a depth-first search (DFS) to determine if a path exists from a
+	 * start statement to a target statement in a graph, avoiding any paths that
+	 * involve edges with an `Sstore` source node.
+	 *
+	 * @param start   the starting statement for the DFS traversal
+	 * @param target  the target statement to reach during the DFS traversal
+	 * @param visited a set of already visited statements to avoid cycles during
+	 *                    the traversal
+	 * 
+	 * @return true if a path exists from the start statement to the target
+	 *             statement without traversing through edges originating from
+	 *             an `Sstore` source node, false otherwise
+	 */
+	private boolean dfsWithoutSstore(Statement start, Statement target, Set<Statement> visited) {
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target))
+				return true;
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					if (edge.getSource() instanceof Sstore)
+						continue;
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Identifies all possible exit points for a function starting from a given
 	 * statement. Performs a depth-first search from the start statement and
 	 * collects statements that represent function exits based on their type and
