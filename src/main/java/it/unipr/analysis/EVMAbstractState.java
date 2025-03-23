@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -14,7 +15,6 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
@@ -23,9 +23,7 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -160,6 +158,7 @@ public class EVMAbstractState
 
 			if (op != null) {
 
+				EVMCFG cfg = (EVMCFG) pp.getCFG();
 				switch (op.getClass().getSimpleName()) {
 				case "Push0Operator": { // PUSH0
 
@@ -253,14 +252,11 @@ public class EVMAbstractState
 
 						AbstractStack resultStack = stack.clone();
 						StackElement jmpDest = resultStack.pop();
-						if (((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp) && jmpDest.isTop())
-							continue;
 
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
-								|| jmpDest.isTop())
+						if (jmpDest.isTop() || cfg.getAllJumpdestLocations().contains(jmpDest.getNumber()))
 							result.add(resultStack);
 
 					}
@@ -282,8 +278,7 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())
-								|| jmpDest.isTop())
+						if (jmpDest.isTop() || cfg.getAllJumpdestLocations().contains(jmpDest.getNumber()))
 							result.add(resultStack);
 					}
 
@@ -769,8 +764,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(2))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(2);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -818,9 +812,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(3))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(3);
 
 						result.add(resultStack);
 					}
@@ -835,10 +827,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(3))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
-
+						resultStack.popX(3);
 						result.add(resultStack);
 					}
 
@@ -868,10 +857,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(4))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement address = resultStack.pop();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(4);
 
 						result.add(resultStack);
 					}
@@ -886,9 +872,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(3))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement memOffset = resultStack.pop();
-						StackElement dataOffset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(3);
 
 						result.add(resultStack);
 					}
@@ -966,8 +950,8 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(1))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement key = resultStack.pop();
-						StackElement value = resultStack.pop();
+						resultStack.popX(2);
+
 						result.add(resultStack);
 					}
 
@@ -1118,7 +1102,7 @@ public class EVMAbstractState
 									if (valueCached == null) {
 										long start = System.currentTimeMillis();
 										valueToPush = getStorageAt(key.getNumber(), CONTRACT_ADDRESS); // API
-																										// request
+										// request
 										long timeLostToGetStorage = System.currentTimeMillis() - start;
 
 										MyCache.getInstance().updateTimeLostToGetStorage(CONTRACT_ADDRESS,
@@ -1173,7 +1157,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(1))
 							continue;
-						AbstractStack resultStack = dupX(1, stack.clone());
+						AbstractStack resultStack = dupX(1, stack);
 						result.add(resultStack);
 					}
 
@@ -1187,7 +1171,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
-						AbstractStack resultStack = dupX(2, stack.clone());
+						AbstractStack resultStack = dupX(2, stack);
 						result.add(resultStack);
 					}
 
@@ -1201,7 +1185,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
-						AbstractStack resultStack = dupX(3, stack.clone());
+						AbstractStack resultStack = dupX(3, stack);
 						result.add(resultStack);
 					}
 
@@ -1215,7 +1199,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(4))
 							continue;
-						AbstractStack resultStack = dupX(4, stack.clone());
+						AbstractStack resultStack = dupX(4, stack);
 						result.add(resultStack);
 					}
 
@@ -1229,7 +1213,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(5))
 							continue;
-						AbstractStack resultStack = dupX(5, stack.clone());
+						AbstractStack resultStack = dupX(5, stack);
 						result.add(resultStack);
 					}
 
@@ -1243,7 +1227,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(6))
 							continue;
-						AbstractStack resultStack = dupX(6, stack.clone());
+						AbstractStack resultStack = dupX(6, stack);
 						result.add(resultStack);
 					}
 
@@ -1257,7 +1241,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(7))
 							continue;
-						AbstractStack resultStack = dupX(7, stack.clone());
+						AbstractStack resultStack = dupX(7, stack);
 						result.add(resultStack);
 					}
 
@@ -1271,7 +1255,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(8))
 							continue;
-						AbstractStack resultStack = dupX(8, stack.clone());
+						AbstractStack resultStack = dupX(8, stack);
 						result.add(resultStack);
 					}
 
@@ -1285,7 +1269,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(9))
 							continue;
-						AbstractStack resultStack = dupX(9, stack.clone());
+						AbstractStack resultStack = dupX(9, stack);
 						result.add(resultStack);
 					}
 
@@ -1299,7 +1283,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(10))
 							continue;
-						AbstractStack resultStack = dupX(10, stack.clone());
+						AbstractStack resultStack = dupX(10, stack);
 						result.add(resultStack);
 					}
 
@@ -1313,7 +1297,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(11))
 							continue;
-						AbstractStack resultStack = dupX(11, stack.clone());
+						AbstractStack resultStack = dupX(11, stack);
 						result.add(resultStack);
 					}
 
@@ -1327,7 +1311,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(12))
 							continue;
-						AbstractStack resultStack = dupX(12, stack.clone());
+						AbstractStack resultStack = dupX(12, stack);
 						result.add(resultStack);
 					}
 
@@ -1341,7 +1325,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(13))
 							continue;
-						AbstractStack resultStack = dupX(13, stack.clone());
+						AbstractStack resultStack = dupX(13, stack);
 						result.add(resultStack);
 					}
 
@@ -1355,7 +1339,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(14))
 							continue;
-						AbstractStack resultStack = dupX(14, stack.clone());
+						AbstractStack resultStack = dupX(14, stack);
 						result.add(resultStack);
 					}
 
@@ -1369,7 +1353,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(15))
 							continue;
-						AbstractStack resultStack = dupX(15, stack.clone());
+						AbstractStack resultStack = dupX(15, stack);
 						result.add(resultStack);
 					}
 
@@ -1383,7 +1367,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(16))
 							continue;
-						AbstractStack resultStack = dupX(16, stack.clone());
+						AbstractStack resultStack = dupX(16, stack);
 						result.add(resultStack);
 					}
 
@@ -1397,7 +1381,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(2))
 							continue;
-						AbstractStack resultStack = swapX(1, stack.clone());
+						AbstractStack resultStack = swapX(1, stack);
 						result.add(resultStack);
 					}
 
@@ -1411,7 +1395,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(3))
 							continue;
-						AbstractStack resultStack = swapX(2, stack.clone());
+						AbstractStack resultStack = swapX(2, stack);
 						result.add(resultStack);
 					}
 
@@ -1425,7 +1409,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(4))
 							continue;
-						AbstractStack resultStack = swapX(3, stack.clone());
+						AbstractStack resultStack = swapX(3, stack);
 						result.add(resultStack);
 					}
 
@@ -1439,7 +1423,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(5))
 							continue;
-						AbstractStack resultStack = swapX(4, stack.clone());
+						AbstractStack resultStack = swapX(4, stack);
 						result.add(resultStack);
 					}
 
@@ -1453,7 +1437,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(6))
 							continue;
-						AbstractStack resultStack = swapX(5, stack.clone());
+						AbstractStack resultStack = swapX(5, stack);
 						result.add(resultStack);
 					}
 
@@ -1467,7 +1451,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(7))
 							continue;
-						AbstractStack resultStack = swapX(6, stack.clone());
+						AbstractStack resultStack = swapX(6, stack);
 						result.add(resultStack);
 					}
 
@@ -1481,7 +1465,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(8))
 							continue;
-						AbstractStack resultStack = swapX(7, stack.clone());
+						AbstractStack resultStack = swapX(7, stack);
 						result.add(resultStack);
 					}
 
@@ -1495,7 +1479,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(9))
 							continue;
-						AbstractStack resultStack = swapX(8, stack.clone());
+						AbstractStack resultStack = swapX(8, stack);
 						result.add(resultStack);
 					}
 
@@ -1509,7 +1493,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(10))
 							continue;
-						AbstractStack resultStack = swapX(9, stack.clone());
+						AbstractStack resultStack = swapX(9, stack);
 						result.add(resultStack);
 					}
 
@@ -1523,7 +1507,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(11))
 							continue;
-						AbstractStack resultStack = swapX(10, stack.clone());
+						AbstractStack resultStack = swapX(10, stack);
 						result.add(resultStack);
 					}
 
@@ -1537,7 +1521,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(12))
 							continue;
-						AbstractStack resultStack = swapX(11, stack.clone());
+						AbstractStack resultStack = swapX(11, stack);
 						result.add(resultStack);
 					}
 
@@ -1551,7 +1535,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(13))
 							continue;
-						AbstractStack resultStack = swapX(12, stack.clone());
+						AbstractStack resultStack = swapX(12, stack);
 						result.add(resultStack);
 					}
 
@@ -1565,7 +1549,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(14))
 							continue;
-						AbstractStack resultStack = swapX(13, stack.clone());
+						AbstractStack resultStack = swapX(13, stack);
 						result.add(resultStack);
 					}
 
@@ -1579,7 +1563,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(15))
 							continue;
-						AbstractStack resultStack = swapX(14, stack.clone());
+						AbstractStack resultStack = swapX(14, stack);
 						result.add(resultStack);
 					}
 
@@ -1593,7 +1577,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(16))
 							continue;
-						AbstractStack resultStack = swapX(15, stack.clone());
+						AbstractStack resultStack = swapX(15, stack);
 						result.add(resultStack);
 					}
 
@@ -1607,7 +1591,7 @@ public class EVMAbstractState
 					for (AbstractStack stack : stacks) {
 						if (stack.hasBottomUntil(17))
 							continue;
-						AbstractStack resultStack = swapX(16, stack.clone());
+						AbstractStack resultStack = swapX(16, stack);
 						result.add(resultStack);
 					}
 
@@ -1621,8 +1605,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(2))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(2);
 
 						result.add(resultStack);
 					}
@@ -1637,9 +1620,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(3))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
+						resultStack.popX(3);
 
 						result.add(resultStack);
 					}
@@ -1654,10 +1635,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(4))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
+						resultStack.popX(4);
 
 						result.add(resultStack);
 					}
@@ -1672,11 +1650,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(5))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
+						resultStack.popX(5);
 
 						result.add(resultStack);
 					}
@@ -1691,12 +1665,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
-						resultStack.pop();
+						resultStack.popX(6);
 
 						result.add(resultStack);
 					}
@@ -1711,9 +1680,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(3))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement value = resultStack.pop();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(3);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1729,10 +1696,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(4))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement value = resultStack.pop();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
-						StackElement salt = resultStack.pop();
+						resultStack.popX(4);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1748,13 +1712,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(7))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement value = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+						resultStack.popX(7);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1770,13 +1728,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(7))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement value = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+						resultStack.popX(7);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1808,12 +1760,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+						resultStack.popX(6);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1829,12 +1776,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement gas = resultStack.pop();
-						StackElement to = resultStack.pop();
-						StackElement inOffset = resultStack.pop();
-						StackElement inLength = resultStack.pop();
-						StackElement outOffset = resultStack.pop();
-						StackElement outLength = resultStack.pop();
+						resultStack.popX(6);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1850,8 +1792,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(2))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						StackElement offset = resultStack.pop();
-						StackElement length = resultStack.pop();
+						resultStack.popX(2);
 
 						result.add(resultStack);
 					}
@@ -1883,10 +1824,7 @@ public class EVMAbstractState
 			}
 		}
 
-		if (!(expression instanceof Skip))
-			throw new SemanticException("Reachable just with the skip node");
-
-		return top();
+		throw new SemanticException("Unrecognized opcode: " + pp);
 	}
 
 	/**
@@ -1900,29 +1838,7 @@ public class EVMAbstractState
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
-		if (stack.hasBottomUntil(x))
-			return stack.bottom();
-
-		List<StackElement> clone = stack.clone().getStack();
-		Object[] obj = clone.toArray();
-
-		int first;
-		if (stack.size() < AbstractStack.getStackLimit())
-			first = AbstractStack.getStackLimit();
-		else
-			first = clone.size();
-
-		StackElement tmp = (StackElement) obj[first - x];
-
-		ArrayList<StackElement> result = new ArrayList<>();
-
-		for (int i = 0; i < clone.size(); i++)
-			result.add((StackElement) obj[i]);
-
-		result.add(tmp);
-		result.remove(0);
-
-		return new AbstractStack(result);
+		return stack.dupX(x);
 	}
 
 	/**
@@ -1936,28 +1852,7 @@ public class EVMAbstractState
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
-		if (stack.hasBottomUntil(x + 1))
-			return stack.bottom();
-
-		List<StackElement> clone = stack.clone().getStack();
-		Object[] obj = clone.toArray();
-		int first;
-
-		if (stack.size() < AbstractStack.getStackLimit())
-			first = AbstractStack.getStackLimit() - 1;
-		else
-			first = clone.size() - 1;
-
-		Object tmp = obj[first];
-		obj[first] = obj[first - x];
-		obj[first - x] = tmp;
-
-		ArrayList<StackElement> result = new ArrayList<>();
-
-		for (int i = 0; i < clone.size(); i++)
-			result.add((StackElement) obj[i]);
-
-		return new AbstractStack(result);
+		return stack.swapX(x);
 	}
 
 	@Override

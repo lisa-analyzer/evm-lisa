@@ -1,9 +1,9 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.BasicBlock;
-import it.unipr.analysis.MyCache;
 import it.unipr.analysis.Number;
+import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.cfg.push.Push;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -20,31 +20,20 @@ import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.fixpoints.CFGFixpoint.CompoundState;
 import it.unive.lisa.program.cfg.fixpoints.OptimizedFixpoint;
-import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.algorithms.Fixpoint;
 import it.unive.lisa.util.datastructures.graph.algorithms.FixpointException;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class EVMCFG extends CFG {
 	private static final Logger log = LogManager.getLogger(EVMCFG.class);
@@ -65,6 +54,13 @@ public class EVMCFG extends CFG {
 		super(cfgDesc);
 	}
 
+	/**
+	 * Identifies and categorizes key statements (hotspot nodes) within the
+	 * control flow graph (CFG). This method initializes sets to store specific
+	 * types of statements, such as storage operations (SSTORE), jump
+	 * destinations (JUMPDEST), jump instructions (JUMP and JUMPI), and pushed
+	 * jumps.
+	 */
 	public void computeHotspotNodes() {
 		this.jumpDestsNodes = new HashSet<Statement>();
 		this.jumpNodes = new HashSet<Statement>();
@@ -376,326 +372,250 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	public static String bbToString(List<Long[]> bb) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-
-		boolean first = true;
-		for (Long[] l : bb) {
-			if (!first)
-				sb.append(", ");
-
-			sb.append("(").append(l[0]).append(", ").append(l[1]).append(")");
-			first = false;
-		}
-
-		sb.append("]");
-		return sb.toString();
-	}
-
-	public List<Long[]> basicBlocksToLongArray() {
-		basicBlocks = basicBlocks();
-		List<Long[]> bbToLong = new ArrayList<>();
-		for (BasicBlock bb : basicBlocks)
-			for (Integer end : bb.getOutgoingEdges())
-				bbToLong.add(new Long[] { (long) bb.getId(), (long) end });
-		return bbToLong;
-	}
-
-	public Set<BasicBlock> basicBlocks() {
-		Statement start = this.getEntrypoints().stream().findFirst().orElse(null);
-		if (start == null)
-			return null;
-
+	/**
+	 * The method performs a depth-first search (DFS) and identifies `Push`
+	 * statements containing function selectors.
+	 *
+	 * @param start      The starting statement for the search.
+	 * @param signatures A set of signatures and their corresponding function
+	 *                       selectors.
+	 *
+	 * @return A set of pairs where each pair consists of a function signature
+	 *             (from the ABI) and the corresponding statement in the CFG.
+	 */
+	public Set<Pair<String, Statement>> findMatchingStatements(Statement start,
+			Set<Pair<String, String>> signatures) {
+		Set<Pair<String, Statement>> matchingStatements = new HashSet<>();
 		Set<Statement> visited = new HashSet<>();
-		Deque<Statement> stack = new ArrayDeque<>();
+		Stack<Statement> stack = new Stack<>();
 		stack.push(start);
-		basicBlocks = new HashSet<>();
 
 		while (!stack.isEmpty()) {
 			Statement current = stack.pop();
-			if (visited.contains(current))
-				continue;
 
-			Statement blockStart = current;
-			Statement blockEnd = current;
-			List<Statement> statements = new ArrayList<>();
+			if (!visited.contains(current)) {
+				visited.add(current);
 
-			while (true) {
-				statements.add(blockEnd);
-				Collection<Edge> outgoingEdges = list.getOutgoingEdges(blockEnd);
+				if (current instanceof Push)
+					for (Pair<String, String> signature : signatures)
+						if (current.toString().contains(signature.getRight()))
+							matchingStatements.add(Pair.of(signature.getLeft(), current));
 
-				if (outgoingEdges.isEmpty()
-						|| blockEnd instanceof Jump
-						|| blockEnd instanceof Jumpi
-						|| blockEnd instanceof Invalid
-						|| blockEnd instanceof Stop
-						|| blockEnd instanceof Revert
-						|| blockEnd instanceof Selfdestruct
-						|| blockEnd instanceof Ret) {
-					break;
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
 				}
-
-				Statement next = outgoingEdges.iterator().next().getDestination();
-				if (visited.contains(next))
-					break;
-
-				visited.add(next);
-
-				if (next instanceof Ret)
-					break;
-
-				blockEnd = next;
-
-			}
-
-			int startPc = ((ProgramCounterLocation) blockStart.getLocation()).getPc();
-			BasicBlock.BlockType blockType = getBlockType(blockEnd);
-
-			if (blockType.equals(BasicBlock.BlockType.RET))
-				continue;
-
-			BasicBlock basicBlock = new BasicBlock(startPc, blockType);
-
-			for (Statement stmt : statements) {
-				basicBlock.addStatement(stmt);
-			}
-
-			for (Edge edge : getOutgoingEdges(blockEnd)) {
-				int endPc = ((ProgramCounterLocation) edge.getDestination().getLocation()).getPc();
-				if (startPc != endPc
-						&& !(edge.getDestination() instanceof Ret)) {
-					basicBlock.addEdge(endPc);
-				}
-			}
-
-			basicBlocks.add(basicBlock);
-
-			for (Edge edge : list.getOutgoingEdges(blockEnd)) {
-				stack.push(edge.getDestination());
 			}
 		}
 
-		// Split basic blocks on jumpdest
-		Set<BasicBlock> modifiedBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			List<Statement> statements = block.getStatements();
-			List<Integer> splitIndexes = new ArrayList<>();
-
-			for (int i = 1; i < statements.size(); i++) { // skip the first
-															// opcode of the
-															// basic block
-				if (statements.get(i) instanceof Jumpdest) {
-					splitIndexes.add(i);
-				}
-			}
-
-			if (!splitIndexes.isEmpty()) {
-				BasicBlock currentBlock = new BasicBlock(block.getId(), block.getBlockType());
-				modifiedBlocks.add(currentBlock);
-
-				for (int i = 0; i < statements.size(); i++) {
-					if (splitIndexes.contains(i)) {
-						int newBlockId = ((ProgramCounterLocation) statements.get(i).getLocation()).getPc();
-						BasicBlock newBlock = new BasicBlock(newBlockId, BasicBlock.BlockType.SPLITTED);
-						modifiedBlocks.add(newBlock);
-
-						currentBlock.addEdge(newBlockId);
-
-						currentBlock = newBlock;
-					}
-
-					currentBlock.addStatement(statements.get(i));
-				}
-
-				currentBlock.getOutgoingEdges().addAll(block.getOutgoingEdges());
-			} else {
-				modifiedBlocks.add(block);
-			}
-		}
-
-		basicBlocks = modifiedBlocks;
-
-		// TODO check
-		Set<BasicBlock> newBlocks = new HashSet<>();
-		for (BasicBlock block : basicBlocks) {
-			if (block.getStatements().size() > 1
-					|| !(block.getStatements().get(0) instanceof Jumpdest))
-				newBlocks.add(block);
-		}
-
-		basicBlocks = newBlocks;
-		return basicBlocks;
+		return matchingStatements;
 	}
 
-	private BasicBlock.BlockType getBlockType(Statement lastStatement) {
-		if (lastStatement instanceof Jump)
-			return BasicBlock.BlockType.JUMP;
-		else if (lastStatement instanceof Jumpi)
-			return BasicBlock.BlockType.JUMPI;
-		else if (lastStatement instanceof Stop)
-			return BasicBlock.BlockType.STOP;
-		else if (lastStatement instanceof Revert)
-			return BasicBlock.BlockType.REVERT;
-		else if (lastStatement instanceof Selfdestruct)
-			return BasicBlock.BlockType.SELFDESTRUCT;
-		else if (lastStatement instanceof Return)
-			return BasicBlock.BlockType.RETURN;
-		else if (lastStatement instanceof Jumpdest)
-			return BasicBlock.BlockType.JUMPDEST;
-		else if (lastStatement instanceof Invalid)
-			return BasicBlock.BlockType.INVALID;
-		else if (lastStatement instanceof Ret)
-			return BasicBlock.BlockType.RET;
-		return BasicBlock.BlockType.UNKNOWN;
+	public boolean reachableFromCrossing(Statement start, Statement target, Set<Statement> statements) {
+		return dfsCrossing(start, target, new HashSet<>(), statements);
 	}
 
-	public JSONArray basicBlocksToJson() {
-		String lightGreenColor = "\"#A6EC99\"";
-		String greyColor = "\"#D3D3D3\"";
-		String lightRed = "\"#EF8683\"";
-		basicBlocks = basicBlocks();
-		JSONArray blocksArray = new JSONArray();
+	/**
+	 * Check whether all paths from {@code start} to {@code target} contain at
+	 * least one {@code statements} statement. This method explores all possible
+	 * paths using a depth-first search (DFS). If there is at least one path
+	 * where a required statement is missing, the method returns {@code false}.
+	 *
+	 * @param start      The starting statement of the search.
+	 * @param target     The target statement.
+	 * @param visited    A set of visited statements to avoid cycles.
+	 * @param statements The set of statements that must be present in all
+	 *                       paths.
+	 *
+	 * @return {@code true} if all paths contain all statements, otherwise
+	 *             {@code false}.
+	 */
+	private boolean dfsCrossing(Statement start, Statement target, Set<Statement> visited, Set<Statement> statements) {
+		boolean foundTarget = false;
+		Set<Statement> pathStatements = new HashSet<>();
 
-		for (BasicBlock block : basicBlocks) {
-			JSONObject blockJson = new JSONObject();
-			blockJson.put("id", block.getId());
+		Stack<List<Statement>> stack = new Stack<>();
+		stack.push(Collections.singletonList(start));
 
-			JSONArray instructionsArray = new JSONArray();
-			for (Statement stmt : block.getStatements()) {
-				JSONObject instructionJson = new JSONObject();
+		while (!stack.isEmpty()) {
+			List<Statement> path = stack.pop();
+			Statement current = path.get(path.size() - 1);
 
-				int pc = ((ProgramCounterLocation) stmt.getLocation()).getPc();
-
-				instructionJson.put("pc", pc);
-				instructionJson.put("instruction", stmt.toString());
-
-				instructionsArray.put(instructionJson);
+			if (visited.contains(current)) {
+				continue;
 			}
-			blockJson.put("instructions", instructionsArray);
 
-			// Edges
-			JSONArray outgoingEdgesArray = new JSONArray();
-			for (Integer edgeId : block.getOutgoingEdges()) {
-				String color = "black";
-				Statement source = block.getStatements().get(block.getStatements().size() - 1);
+			visited.add(current);
+			pathStatements.add(current);
 
-				for (BasicBlock b : basicBlocks) {
-					if (b.getId() == edgeId) {
-						Statement dest = b.getStatements().get(0);
+			if (current.equals(target)) {
+				foundTarget = true;
 
-						if (source instanceof Jumpi && dest instanceof Jumpdest)
-							color = lightGreenColor;
-						else if (source instanceof Jumpi)
-							color = lightRed;
-
-						JSONObject edgeJson = new JSONObject();
-						edgeJson.put("target", edgeId);
-						edgeJson.put("color", color);
-
-						outgoingEdgesArray.put(edgeJson);
+				// Check if this specific path contains at least a statement
+				boolean contains = false;
+				for (Statement statement : statements) {
+					if (pathStatements.contains(statement)) {
+						contains = true;
 						break;
 					}
 				}
+				if (!contains)
+					return false;
 			}
-			blockJson.put("outgoing_edges", outgoingEdgesArray);
 
-			// Background color
-			block.setBlockType(getBlockType(block.getStatements().get(block.getStatements().size() - 1))); // update
-			BasicBlock.BlockType bbt = block.getBlockType();
-			if (bbt == BasicBlock.BlockType.STOP || bbt == BasicBlock.BlockType.RETURN)
-				blockJson.put("background_color", lightGreenColor);
-			else if (bbt == BasicBlock.BlockType.REVERT
-					|| bbt == BasicBlock.BlockType.SELFDESTRUCT
-					|| bbt == BasicBlock.BlockType.INVALID)
-				blockJson.put("background_color", lightRed);
-			else
-				blockJson.put("background_color", greyColor);
-
-			blockJson.put("last_instruction", block.getBlockType());
-
-			blocksArray.put(blockJson);
+			Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+			for (Edge edge : outgoingEdges) {
+				Statement next = edge.getDestination();
+				if (!visited.contains(next)) {
+					List<Statement> newPath = new ArrayList<>(path);
+					newPath.add(next);
+					stack.push(newPath);
+				}
+			}
 		}
 
-		JSONObject basicBlocksJson = new JSONObject();
-		basicBlocksJson.put("basic_blocks", blocksArray);
-
-		return blocksArray;
+		return foundTarget;
 	}
 
-	public static void generateDotGraph(JSONArray basicBlocks, String outputPath) {
-		String purpleColor = "\"#A97FB2\"";
-		StringBuilder dotGraph = new StringBuilder();
-		dotGraph.append("digraph CFG {\n");
-		dotGraph.append("\trankdir=TB;\n");
+	/**
+	 * Checks if the target statement is reachable from the start statement
+	 * without traversing any Jumpi instructions.
+	 *
+	 * @param start  the starting statement
+	 * @param target the target statement
+	 * 
+	 * @return true if the target is reachable without passing through Jumpi,
+	 *             false otherwise
+	 */
+	public boolean reachableFromWithoutJumpI(Statement start, Statement target) {
+		return dfsWithoutJumpI(start, target, new HashSet<>());
+	}
 
-		// Nodes
-		for (int i = 0; i < basicBlocks.length(); i++) {
-			JSONObject block = basicBlocks.getJSONObject(i);
-			int id = block.getInt("id");
-			String backgroundColor = block.optString("background_color", "white");
-			JSONArray instructions = block.getJSONArray("instructions");
+	/**
+	 * Performs a depth-first search (DFS) to determine if the target statement
+	 * is reachable from the start statement while avoiding Jumpi instructions.
+	 *
+	 * @param start   the starting statement
+	 * @param target  the target statement
+	 * @param visited the set of already visited statements
+	 * 
+	 * @return true if the target is reachable without passing through Jumpi,
+	 *             false otherwise
+	 */
+	private boolean dfsWithoutJumpI(Statement start, Statement target, Set<Statement> visited) {
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
 
-			StringBuilder label = new StringBuilder();
-			if (instructions.length() > 5) {
-				JSONObject firstInstr = instructions.getJSONObject(0);
-				JSONObject secondInstr = instructions.getJSONObject(1);
-				JSONObject secondLastInstr = instructions.getJSONObject(instructions.length() - 2);
-				JSONObject lastInstr = instructions.getJSONObject(instructions.length() - 1);
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
 
-				label.append(firstInstr.getInt("pc")).append(": ").append(firstInstr.getString("instruction"))
-						.append("\\l");
-				label.append(secondInstr.getInt("pc")).append(": ").append(secondInstr.getString("instruction"))
-						.append("\\l");
-				label.append("...\n");
-				label.append(secondLastInstr.getInt("pc")).append(": ").append(secondLastInstr.getString("instruction"))
-						.append("\\l");
-				label.append(lastInstr.getInt("pc")).append(": ").append(lastInstr.getString("instruction"))
-						.append("\\l");
-			} else {
-				for (int j = 0; j < instructions.length(); j++) {
-					JSONObject instr = instructions.getJSONObject(j);
-					label.append(instr.getInt("pc")).append(": ")
-							.append(instr.getString("instruction")).append("\\l");
+			if (current.equals(target))
+				return true;
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					if (edge.getSource() instanceof Jumpi)
+						continue;
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
 				}
 			}
-
-			dotGraph.append(String.format(
-					"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
-					id, label.toString(), backgroundColor));
 		}
 
-		// Edges
-		for (int i = 0; i < basicBlocks.length(); i++) {
-			JSONObject block = basicBlocks.getJSONObject(i);
-			int id = block.getInt("id");
-			JSONArray outgoingEdges = block.getJSONArray("outgoing_edges");
+		return false;
+	}
 
-			for (int j = 0; j < outgoingEdges.length(); j++) {
-				JSONObject edge = outgoingEdges.getJSONObject(j);
-				int targetId = edge.getInt("target");
-				String color = edge.getString("color");
+	/**
+	 * Identifies all possible exit points for a function starting from a given
+	 * statement. Performs a depth-first search from the start statement and
+	 * collects statements that represent function exits based on their type and
+	 * whether the function returns a value.
+	 *
+	 * @param start  The starting statement for the search, usually the function
+	 *                   entry point.
+	 * @param isVoid Whether the function has no return value.
+	 * 
+	 * @return A set of statements that represent function exit points.
+	 */
+	public Set<Statement> getFunctionExitPoints(Statement start, boolean isVoid) {
+		Stack<Statement> stack = new Stack<>();
+		Set<Statement> visited = new HashSet<>();
+		Set<Statement> functionExitPoints = new HashSet<>();
 
-				// Unreachable jump
-				if (color == null || color.isEmpty()) {
-					dotGraph.append(String.format(
-							"\t%d [label=\"%s\", shape=box, style=filled, fillcolor=%s];\n",
-							targetId, targetId + ": Unreachable jump", purpleColor));
-					color = purpleColor;
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next)) {
+						stack.push(next);
+
+						if (next instanceof Invalid
+								|| next instanceof Revert)
+							functionExitPoints.add(next);
+
+						if (isVoid && next instanceof Stop)
+							functionExitPoints.add(next);
+
+						if (!isVoid && next instanceof Return)
+							functionExitPoints.add(next);
+					}
 				}
-
-				dotGraph.append(String.format(
-						"\t%d -> %d [color=%s];\n", id, targetId, color));
 			}
 		}
 
-		dotGraph.append("}\n");
+		return functionExitPoints;
+	}
 
-		try (FileWriter writer = new FileWriter(outputPath)) {
-			writer.write(dotGraph.toString());
-			log.info("DOT file successfully written to {}", outputPath);
-		} catch (IOException e) {
-			log.error("Error writing DOT file: {}", e.getMessage());
+	/**
+	 * Finds the closest Jumpdest statement reachable from a given start
+	 * statement. Performs a breadth-first search to find the nearest Jumpdest
+	 * statement along a true edge.
+	 *
+	 * @param start The starting statement for the search.
+	 * 
+	 * @return The closest Jumpdest statement along a true edge, or null if none
+	 *             is found.
+	 */
+	public Statement getCloserJumpdest(Statement start) {
+		Deque<Statement> queue = new ArrayDeque<>();
+		Set<Statement> visited = new HashSet<>();
+
+		queue.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					Statement next = edge.getDestination();
+					if (!visited.contains(next)) {
+						queue.push(next);
+						if (next instanceof Jumpdest && edge instanceof TrueEdge)
+							return next;
+					}
+				}
+			}
 		}
+
+		return null;
 	}
 }

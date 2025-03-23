@@ -20,7 +20,6 @@ plugins {
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
     mavenCentral()   
 }
 
@@ -43,6 +42,8 @@ dependencies {
  	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
  	
  	implementation 'org.json:json:20210307'
+
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 }
 
 
@@ -147,7 +148,7 @@ tasks.register('checkCodeStyle') {
 }
 
 tasks.named('shadowJar') {
-    archiveBaseName = 'evm-lisa'
+    archiveBaseName.set('evm-lisa')
     manifest {
         attributes(
                 'Main-Class': mainClassName

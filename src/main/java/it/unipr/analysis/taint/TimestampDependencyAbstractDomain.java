@@ -5,33 +5,35 @@ import it.unipr.analysis.operator.BlockhashOperator;
 import it.unipr.analysis.operator.DifficultyOperator;
 import it.unipr.analysis.operator.TimestampOperator;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
-			new ArrayList<>(Collections.nCopies(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM)),
-			TaintElement.CLEAN);
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
 			TaintElement.BOTTOM);
+
+	private static TaintElement[] createFilledArray(int size, TaintElement element) {
+		TaintElement[] array = new TaintElement[size];
+		Arrays.fill(array, element);
+		return array;
+	}
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public TimestampDependencyAbstractDomain() {
-		this(new ArrayList<>(Collections.nCopies(STACK_LIMIT, TaintElement.BOTTOM)), TaintElement.CLEAN);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param stack the stack of values
+	 * @param circularArray the stack of values
 	 */
-	protected TimestampDependencyAbstractDomain(ArrayList<TaintElement> stack, TaintElement memory) {
-		super(stack, memory);
+	protected TimestampDependencyAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
+		super(circularArray, memory);
 	}
 
 	@Override
@@ -45,6 +47,11 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
+	public Set<Operator> getSanitizedOpcode() {
+		return Set.of();
+	}
+
+	@Override
 	public TimestampDependencyAbstractDomain top() {
 		return TOP;
 	}
@@ -55,8 +62,8 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(ArrayList<TaintElement> list, TaintElement memory) {
-		return new TimestampDependencyAbstractDomain(list, memory);
+	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
+		return new TimestampDependencyAbstractDomain(array, memory);
 	}
 
 }
