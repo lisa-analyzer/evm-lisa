@@ -57,7 +57,7 @@ public class MyCache {
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._reachableFrom = new LRUMap<String, Boolean>(2000);
+		this._reachableFrom = new LRUMap<String, Boolean>(5000);
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
