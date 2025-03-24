@@ -365,6 +365,7 @@ if __name__ == "__main__":
 
     if args.cross_chain:
         compile_bridge('cross-chain/time-synchronization')
+        compile_bridge('cross-chain/dummy-bridge')
 
     if args.solidifi:
         compile_solidity_sources('./solidifi/reentrancy/source-code',
