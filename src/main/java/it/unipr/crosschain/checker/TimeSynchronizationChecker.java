@@ -51,7 +51,8 @@ public class TimeSynchronizationChecker implements
 					// Nothing to do
 					continue;
 				else {
-					if (isTaintedOrTop(taintedStack.getElementAtPosition(1),
+					if (TaintElement.isTaintedOrTop(
+							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2)))
 						throwVulnerability(node, tool, cfg);
 				}
@@ -59,23 +60,6 @@ public class TimeSynchronizationChecker implements
 		}
 
 		return true;
-	}
-
-	/**
-	 * Checks whether any of the provided {@link TaintElement} instances is
-	 * either tainted or at the top of the lattice hierarchy.
-	 *
-	 * @param elements an array of {@link TaintElement} instances to check
-	 * 
-	 * @return {@code true} if at least one element in the input array is
-	 *             tainted or top, {@code false} otherwise
-	 */
-	private boolean isTaintedOrTop(TaintElement... elements) {
-		for (TaintElement element : elements) {
-			if (element.isTaint() || element.isTop())
-				return true;
-		}
-		return false;
 	}
 
 	/**

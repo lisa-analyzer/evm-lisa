@@ -53,29 +53,29 @@ public class VulnerableLOGsComputer implements
 					continue;
 				else {
 					if (node instanceof Log0)
-						if (isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
 							addVulnerableLOG(node);
 					if (node instanceof Log1)
-						if (isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3)))
 							addVulnerableLOG(node);
 					if (node instanceof Log2)
-						if (isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3),
 								taintedStack.getElementAtPosition(4)))
 							addVulnerableLOG(node);
 					if (node instanceof Log3)
-						if (isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3),
 								taintedStack.getElementAtPosition(4),
 								taintedStack.getElementAtPosition(5)))
 							addVulnerableLOG(node);
 					if (node instanceof Log4)
-						if (isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3),
 								taintedStack.getElementAtPosition(4),
@@ -87,23 +87,6 @@ public class VulnerableLOGsComputer implements
 		}
 
 		return true;
-	}
-
-	/**
-	 * Checks whether any of the provided {@link TaintElement} instances is
-	 * either in the "taint" state or the "top" state.
-	 *
-	 * @param elements the array of {@link TaintElement} instances to be checked
-	 * 
-	 * @return true if at least one of the provided {@link TaintElement}
-	 *             instances is either tainted or top, false otherwise
-	 */
-	private boolean isTaintedOrTop(TaintElement... elements) {
-		for (TaintElement element : elements) {
-			if (element.isTaint() || element.isTop())
-				return true;
-		}
-		return false;
 	}
 
 	/**
