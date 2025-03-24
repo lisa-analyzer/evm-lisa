@@ -333,6 +333,20 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
             # Update the progress bar
             pbar.update(1)
 
+def compile_bridges(base_path):
+    """
+    Compiles all bridges in the specified base path by iterating through its subdirectories.
+    """
+    if not os.path.exists(base_path):
+        print(f"Base path '{base_path}' does not exist.")
+        return
+
+    for subfolder in os.listdir(base_path):
+        subfolder_path = os.path.join(base_path, subfolder)
+        if os.path.isdir(subfolder_path):  # Check if it's a directory
+            print(f"Compiling bridge in: {subfolder_path}")
+            compile_bridge(subfolder_path)
+
 def compile_bridge(name):
     extract_solidity_versions(src_folder=f'./{name}/source-code',
                               output_csv=f'./{name}/source-code/version.csv')
@@ -364,6 +378,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.cross_chain:
+        compile_bridges('cross-chain/smartaxe/manually-labeled')
         compile_bridge('cross-chain/time-synchronization')
         compile_bridge('cross-chain/dummy-bridge')
 

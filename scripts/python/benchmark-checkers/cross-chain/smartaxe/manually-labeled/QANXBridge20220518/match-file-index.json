@@ -1,0 +1,9 @@
+{
+    "BridgeQANX-label": 1,
+    "Context": 2,
+    "ERC20": 3,
+    "IERC20": 4,
+    "IERC20Metadata": 5,
+    "QANX": 6,
+    "QANX_label": 7
+}

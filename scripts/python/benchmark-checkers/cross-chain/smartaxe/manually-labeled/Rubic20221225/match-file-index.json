@@ -1,0 +1,23 @@
+{
+    "AccessControlUpgradeable": 1,
+    "AddressUpgradeable": 2,
+    "BridgeBase": 3,
+    "BridgeBase_1": 4,
+    "ContextUpgradeable": 5,
+    "ERC165Upgradeable": 6,
+    "EnumerableSetUpgradeable": 7,
+    "Errors": 8,
+    "FullMath": 9,
+    "IAccessControlUpgradeable": 10,
+    "IERC165Upgradeable": 11,
+    "IERC20Upgradeable": 12,
+    "Initializable": 13,
+    "OnlySourceFunctionality": 14,
+    "PausableUpgradeable": 15,
+    "ReentrancyGuardUpgradeable": 16,
+    "RubicProxy-label": 17,
+    "SafeERC20Upgradeable": 18,
+    "SmartApprove": 19,
+    "StringsUpgradeable": 20,
+    "draft-IERC20PermitUpgradeable": 21
+}
