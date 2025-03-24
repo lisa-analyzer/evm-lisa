@@ -58,11 +58,7 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 
 	@Override
 	public boolean isTainted(Statement stmt) {
-		return stmt instanceof Calldataload
-//				|| stmt instanceof Callvalue
-//				|| stmt instanceof Caller
-//				|| stmt instanceof Origin
-		;
+		return stmt instanceof Calldataload;
 	}
 
 	@Override
