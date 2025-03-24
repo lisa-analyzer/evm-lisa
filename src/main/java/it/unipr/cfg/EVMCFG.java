@@ -104,10 +104,6 @@ public class EVMCFG extends CFG {
 			for (Statement statement : cfgNodeList.getNodes()) {
 				if (statement instanceof Calldataload) {
 					externalData.add(statement);
-				} else if (statement instanceof Callvalue) {
-					externalData.add(statement);
-				} else if (statement instanceof Origin) {
-					externalData.add(statement);
 				}
 			}
 
