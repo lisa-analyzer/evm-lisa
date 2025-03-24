@@ -6,14 +6,14 @@ import org.json.JSONObject;
 
 /**
  * Represents an object that stores information about potential smart contract
- * vulnerabilities, including reentrancy, timestamp dependency, and tx. origin
+ * vulnerabilities, including reentrancy, randomness dependency, and tx. origin
  * usage.
  */
 public class VulnerabilitiesObject {
 	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
 
 	private int reentrancy;
-	private int timestamp;
+	private int randomness;
 	private int txOrigin;
 	private int uncheckedExternalInfluence;
 	private int eventOrder;
@@ -23,7 +23,7 @@ public class VulnerabilitiesObject {
 
 	private VulnerabilitiesObject() {
 		this.reentrancy = 0;
-		this.timestamp = 0;
+		this.randomness = 0;
 		this.txOrigin = 0;
 		this.uncheckedExternalInfluence = 0;
 		this.eventOrder = 0;
@@ -32,10 +32,10 @@ public class VulnerabilitiesObject {
 		this.json = new JSONObject();
 	}
 
-	private VulnerabilitiesObject(int reentrancy, int timestamp, int txOrigin, int uncheckedExternalInfluence,
+	private VulnerabilitiesObject(int reentrancy, int randomness, int txOrigin, int uncheckedExternalInfluence,
 			int eventOrder, int uncheckedStateUpdate, int timeSynchronization, JSONObject json) {
 		this.reentrancy = reentrancy;
-		this.timestamp = timestamp;
+		this.randomness = randomness;
 		this.txOrigin = txOrigin;
 		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
 		this.eventOrder = eventOrder;
@@ -44,7 +44,7 @@ public class VulnerabilitiesObject {
 		this.json = json;
 
 		this.json.put("reentrancy", this.reentrancy);
-		this.json.put("timestamp_dependency", this.timestamp);
+		this.json.put("randomness_dependency", this.randomness);
 		this.json.put("tx_origin", this.txOrigin);
 		this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
 		this.json.put("event_order", this.eventOrder);
@@ -62,12 +62,12 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
-	 * Returns the timestamp dependency vulnerability score.
+	 * Returns the randomness dependency vulnerability score.
 	 *
-	 * @return the timestamp dependency score
+	 * @return the randomness dependency score
 	 */
-	public int getTimestamp() {
-		return timestamp;
+	public int getRandomness() {
+		return randomness;
 	}
 
 	/**
@@ -137,14 +137,14 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
-	 * Sets the timestamp dependency vulnerability score.
+	 * Sets the randomness dependency vulnerability score.
 	 *
-	 * @param timestamp the timestamp dependency score
+	 * @param randomness the randomness dependency score
 	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject timestamp(int timestamp) {
-		this.timestamp = timestamp;
+	public VulnerabilitiesObject randomness(int randomness) {
+		this.randomness = randomness;
 		return this;
 	}
 
@@ -214,7 +214,7 @@ public class VulnerabilitiesObject {
 	 * @return a new {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject build() {
-		return new VulnerabilitiesObject(reentrancy, timestamp, txOrigin, uncheckedExternalInfluence, eventOrder,
+		return new VulnerabilitiesObject(reentrancy, randomness, txOrigin, uncheckedExternalInfluence, eventOrder,
 				uncheckedStateUpdate, timeSynchronization, json);
 	}
 

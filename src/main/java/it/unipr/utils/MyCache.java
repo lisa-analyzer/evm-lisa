@@ -27,7 +27,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
-	private final LRUMap<Integer, Set<Object>> _timestampDependencyWarnings;
+	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
 	private final Set<String> _timeSynchronizationWarnings;
 	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
@@ -62,7 +62,7 @@ public class MyCache {
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
-		this._timestampDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._timeSynchronizationWarnings = new HashSet<>();
 		this._vulnerableLogStatement = new LRUMap<>(1000);
 		this._taintedCallDataLoad = new HashSet<>();
@@ -401,25 +401,25 @@ public class MyCache {
 	}
 
 	/**
-	 * Adds a timestamp dependency warning for the specified key. If no warnings
-	 * are associated with the key, a new set is created and the warning is
-	 * added to it. This method is thread-safe.
+	 * Adds a randomness dependency warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
 	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
-	public void addTimestampDependencyWarning(Integer key, Object warning) {
-		synchronized (_timestampDependencyWarnings) {
-			_timestampDependencyWarnings
+	public void addRandomnessDependencyWarning(Integer key, Object warning) {
+		synchronized (_randomnessDependencyWarnings) {
+			_randomnessDependencyWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
 	}
 
 	/**
-	 * Retrieves the number of timestamp dependency warnings associated with the
-	 * specified key. If no warnings are associated with the key, the method
+	 * Retrieves the number of randomness dependency warnings associated with
+	 * the specified key. If no warnings are associated with the key, the method
 	 * returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
@@ -428,9 +428,9 @@ public class MyCache {
 	 * @return the number of warnings associated with the key, or 0 if none
 	 *             exist
 	 */
-	public int getTimestampDependencyWarnings(Integer key) {
-		synchronized (_timestampDependencyWarnings) {
-			return (_timestampDependencyWarnings.get(key) != null) ? _timestampDependencyWarnings.get(key).size() : 0;
+	public int getRandomnessDependencyWarnings(Integer key) {
+		synchronized (_randomnessDependencyWarnings) {
+			return (_randomnessDependencyWarnings.get(key) != null) ? _randomnessDependencyWarnings.get(key).size() : 0;
 		}
 	}
 

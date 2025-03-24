@@ -5,13 +5,14 @@ import static it.unipr.EVMLiSA.waitForCompletion;
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
-import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
+import it.unipr.analysis.taint.RandomnessDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.Calldataload;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.cfg.Sstore;
+import it.unipr.checker.RandomnessDependencyChecker;
 import it.unipr.checker.ReentrancyChecker;
-import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.crosschain.checker.TimeSynchronizationChecker;
 import it.unipr.crosschain.checker.UncheckedExternalInfluenceChecker;
@@ -215,7 +216,7 @@ public class xEVMLiSA {
 			futures.add(executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(executor.submit(() -> runTxOriginChecker(contract)));
-			futures.add(executor.submit(() -> runTimestampDependencyChecker(contract)));
+			futures.add(executor.submit(() -> runRandomnessDependencyChecker(contract)));
 			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
 		}
 		waitForCompletion(futures);
@@ -237,8 +238,8 @@ public class xEVMLiSA {
 							.reentrancy(
 									MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()))
 							.txOrigin(MyCache.getInstance().getTxOriginWarnings(contract.getCFG().hashCode()))
-							.timestamp(MyCache.getInstance()
-									.getTimestampDependencyWarnings(contract.getCFG().hashCode()))
+							.randomness(MyCache.getInstance()
+									.getRandomnessDependencyWarnings(contract.getCFG().hashCode()))
 							.eventOrder(MyCache.getInstance()
 									.getEventOrderWarnings(contract.getCFG().hashCode()))
 							.uncheckedExternalInfluence(MyCache.getInstance()
@@ -258,22 +259,22 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the timestamp dependency checker on the given smart contract.
+	 * Runs the randomness dependency checker on the given smart contract.
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	public static void runTimestampDependencyChecker(SmartContract contract) {
+	public static void runRandomnessDependencyChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		// Timestamp dependency checker
-		TimestampDependencyChecker checker = new TimestampDependencyChecker();
+		// Randomness dependency checker
+		RandomnessDependencyChecker checker = new RandomnessDependencyChecker();
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new TimestampDependencyAbstractDomain(),
+				new RandomnessDependencyAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 	}
@@ -373,11 +374,10 @@ public class xEVMLiSA {
 			functionsEntrypoints.addAll(function.getEntryPoints());
 
 		EVMCFG cfg = contract.getCFG();
-		Set<Statement> logSet = cfg.getAllLogX();
 
 		for (Statement functionEntrypoint : functionsEntrypoints) {
-			for (Statement emitEvent : logSet) {
-				if (cfg.reachableFromWithoutSstore(functionEntrypoint, emitEvent)) {
+			for (Statement emitEvent : cfg.getAllLogX()) {
+				if (cfg.reachableFromWithoutTypes(functionEntrypoint, emitEvent, Collections.singleton(Sstore.class))) {
 
 					ProgramCounterLocation functionEntrypointLocation = (ProgramCounterLocation) functionEntrypoint
 							.getLocation();

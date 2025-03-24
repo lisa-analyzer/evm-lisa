@@ -5,16 +5,16 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
 
-public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
-	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
+public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
+	private static final RandomnessDependencyAbstractDomain TOP = new RandomnessDependencyAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
+	private static final RandomnessDependencyAbstractDomain BOTTOM = new RandomnessDependencyAbstractDomain(null,
 			TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public TimestampDependencyAbstractDomain() {
+	public RandomnessDependencyAbstractDomain() {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
@@ -24,11 +24,11 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TimestampDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
+	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
 		this(stack, memory, null);
 	}
 
-	protected TimestampDependencyAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
+	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
 		super(stack, memory, cfg);
 	}
 
@@ -46,12 +46,12 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TimestampDependencyAbstractDomain top() {
+	public RandomnessDependencyAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public TimestampDependencyAbstractDomain bottom() {
+	public RandomnessDependencyAbstractDomain bottom() {
 		return BOTTOM;
 	}
 
@@ -62,7 +62,7 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		return new TimestampDependencyAbstractDomain(stack, memory, cfg);
+		return new RandomnessDependencyAbstractDomain(stack, memory, cfg);
 	}
 
 }

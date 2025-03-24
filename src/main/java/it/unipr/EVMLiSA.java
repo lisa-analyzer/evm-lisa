@@ -2,14 +2,14 @@ package it.unipr;
 
 import it.unipr.analysis.*;
 import it.unipr.analysis.contract.SmartContract;
-import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
+import it.unipr.analysis.taint.RandomnessDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.checker.JumpSolver;
+import it.unipr.checker.RandomnessDependencyChecker;
 import it.unipr.checker.ReentrancyChecker;
-import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.frontend.EVMFrontend;
@@ -118,7 +118,7 @@ public class EVMLiSA {
 	 */
 	public static void enableAllSecurityCheckers() {
 		EVMLiSA.enableReentrancyChecker();
-		EVMLiSA.enableTimestampDependencyCheckerChecker();
+		EVMLiSA.enableRandomnessDependencyChecker();
 		EVMLiSA.enableTxOriginChecker();
 	}
 
@@ -130,10 +130,10 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Enables the timestamp dependency checker.
+	 * Enables the randomness dependency checker.
 	 */
-	public static void enableTimestampDependencyCheckerChecker() {
-		TimestampDependencyChecker.enableChecker();
+	public static void enableRandomnessDependencyChecker() {
+		RandomnessDependencyChecker.enableChecker();
 	}
 
 	/**
@@ -328,16 +328,16 @@ public class EVMLiSA {
 			log.info("{} vulnerabilities found",
 					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
 		}
-		if (TimestampDependencyChecker.isEnabled()) {
-			log.info("Running timestamp dependency checker...");
+		if (RandomnessDependencyChecker.isEnabled()) {
+			log.info("Running randomness dependency checker...");
 			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TimestampDependencyChecker());
+			conf.semanticChecks.add(new RandomnessDependencyChecker());
 			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-					new TimestampDependencyAbstractDomain(),
+					new RandomnessDependencyAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
 			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
+					MyCache.getInstance().getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()));
 		}
 
 		contract.setVulnerabilities(
@@ -345,8 +345,8 @@ public class EVMLiSA {
 						.reentrancy(
 								MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
 						.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
-						.timestamp(MyCache.getInstance()
-								.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
+						.randomness(MyCache.getInstance()
+								.getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()))
 						.build());
 		contract.generateCFGWithBasicBlocks();
 		contract.toFile();
@@ -560,8 +560,8 @@ public class EVMLiSA {
 			ReentrancyChecker.enableChecker();
 		if (cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all"))
 			TxOriginChecker.enableChecker();
-		if (cmd.hasOption("checker-timestampdependency") || cmd.hasOption("checker-all"))
-			TimestampDependencyChecker.enableChecker();
+		if (cmd.hasOption("checker-randomnessdependency") || cmd.hasOption("checker-all"))
+			RandomnessDependencyChecker.enableChecker();
 
 		if (cmd.hasOption("output-directory-path"))
 			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
@@ -696,9 +696,9 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option enableTimestampDependencyCheckerOption = Option.builder()
-				.longOpt("checker-timestampdependency")
-				.desc("Enable timestamp-dependency checker.")
+		Option enableRandomnessDependencyCheckerOption = Option.builder()
+				.longOpt("checker-randomnessdependency")
+				.desc("Enable randomness-dependency checker.")
 				.required(false)
 				.hasArg(false)
 				.build();
@@ -744,7 +744,7 @@ public class EVMLiSA {
 		options.addOption(enableAllCheckerOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
-		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(enableRandomnessDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
 		options.addOption(abiOption);
