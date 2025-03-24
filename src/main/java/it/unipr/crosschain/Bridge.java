@@ -23,6 +23,8 @@ import org.json.JSONObject;
 
 public class Bridge implements Iterable<SmartContract> {
 	private static final Logger log = LogManager.getLogger(Bridge.class);
+
+	private final String name;
 	private final List<SmartContract> contracts;
 
 	private EVMCFG xCFG;
@@ -30,7 +32,8 @@ public class Bridge implements Iterable<SmartContract> {
 	/** Detected vulnerabilities in the bridge. */
 	private VulnerabilitiesObject _vulnerabilities;
 
-	public Bridge() {
+	public Bridge(String name) {
+		this.name = name;
 		this.contracts = new ArrayList<>();
 	}
 
@@ -45,18 +48,34 @@ public class Bridge implements Iterable<SmartContract> {
 	 *                                  files
 	 */
 	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
-		this();
+		this(bytecodeDirectoryPath, abiDirectoryPath, "unknown_bridge_" + System.currentTimeMillis());
+	}
+
+	/**
+	 * Constructs a Bridge object, initializing its fields and mapping smart contracts
+	 * from the specified ABI and bytecode directories. It creates `SmartContract` objects
+	 * for any contracts that have matching ABI and bytecode files.
+	 *
+	 * @param bytecodeDirectoryPath the path to the directory containing bytecode files
+	 * @param abiDirectoryPath      the path to the directory containing ABI files
+	 * @param name                  the name of the bridge
+	 */
+	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, String name) {
+		this(name);
 		Map<String, Path> abiFiles = mapFilesByName(abiDirectoryPath, ".abi");
 		Map<String, Path> bytecodeFiles = mapFilesByName(bytecodeDirectoryPath, ".bytecode");
 
-		for (String name : bytecodeFiles.keySet()) {
-			if (abiFiles.containsKey(name)) {
-				contracts.add(new SmartContract(bytecodeFiles.get(name), abiFiles.get(name)));
+		for (String contractName : bytecodeFiles.keySet()) {
+			if (abiFiles.containsKey(contractName)) {
+				contracts.add(new SmartContract(bytecodeFiles.get(contractName), abiFiles.get(contractName)));
 			} else {
-				log.warn("Cannot find ABI file: {}", name);
+				log.warn("Cannot find ABI file: {}.", contractName);
 			}
 		}
+		log.info("Created bridge {} with {} contracts.", name, contracts.size());
 	}
+
+	public String getName() { return name; }
 
 	public List<SmartContract> getSmartContracts() {
 		return contracts;
@@ -180,9 +199,31 @@ public class Bridge implements Iterable<SmartContract> {
 			contractsArray.put(contract.toJson());
 		}
 
+		json.put("name", name);
 		json.put("smart_contracts", contractsArray);
-		json.put("vulnerabilities", _vulnerabilities != null ? _vulnerabilities.toJson() : new JSONArray());
+		json.put("bridge_vulnerabilities", _vulnerabilities != null ? _vulnerabilities.toJson() : new JSONArray());
 		return json;
+	}
+
+	/**
+	 * Constructs a JSON object containing the vulnerabilities detected in
+	 * all the smart contracts within the bridge.
+	 *
+	 * @return JSONArray aggregating all vulnerabilities.
+	 */
+	public JSONArray vulnerabilitiesToJson() {
+		JSONArray vulnerabilitiesArray = new JSONArray();
+
+		for (SmartContract contract : contracts) {
+			if (contract.getVulnerabilities() != null) {
+				JSONObject contractVulnerabilities = new JSONObject();
+				contractVulnerabilities.put("contract_name", contract.getName());
+				contractVulnerabilities.put("vulnerabilities", contract.getVulnerabilities().toJson());
+				vulnerabilitiesArray.put(contractVulnerabilities);
+			}
+		}
+
+		return vulnerabilitiesArray;
 	}
 
 	/**
