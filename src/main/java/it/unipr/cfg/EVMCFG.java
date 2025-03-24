@@ -106,8 +106,6 @@ public class EVMCFG extends CFG {
 					externalData.add(statement);
 				} else if (statement instanceof Callvalue) {
 					externalData.add(statement);
-				} else if (statement instanceof Caller) {
-					externalData.add(statement);
 				} else if (statement instanceof Origin) {
 					externalData.add(statement);
 				}
@@ -625,31 +623,39 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Checks if the target statement is reachable from the start statement
-	 * without traversing any Jumpi instructions.
+	 * Determines if the target statement is reachable from the start statement
+	 * without triggering any of the specified statement types.
 	 *
-	 * @param start  the starting statement
-	 * @param target the target statement
+	 * @param start      the starting statement from which the reachability is
+	 *                       checked
+	 * @param target     the target statement to check for reachability
+	 * @param avoidTypes the types of statements to avoid during traversal
 	 * 
-	 * @return true if the target is reachable without passing through Jumpi,
-	 *             false otherwise
+	 * @return true if the target statement is reachable from the start without
+	 *             triggering any of the specified statement types, false
+	 *             otherwise
 	 */
-	public boolean reachableFromWithoutJumpI(Statement start, Statement target) {
-		return dfsWithoutJumpI(start, target, new HashSet<>());
+	public boolean reachableFromWithoutTypes(Statement start, Statement target, Set<Class<?>> avoidTypes) {
+		return dfsWithoutTypes(start, target, new HashSet<>(), avoidTypes);
 	}
 
 	/**
-	 * Performs a depth-first search (DFS) to determine if the target statement
-	 * is reachable from the start statement while avoiding Jumpi instructions.
+	 * Performs a depth-first search (DFS) to determine if a path exists from a
+	 * start statement to a target statement in a graph, avoiding any paths that
+	 * involve edges with a source node of the specified types.
 	 *
-	 * @param start   the starting statement
-	 * @param target  the target statement
-	 * @param visited the set of already visited statements
+	 * @param start      the starting statement for the DFS traversal
+	 * @param target     the target statement to reach during the DFS traversal
+	 * @param visited    a set of already visited statements to avoid cycles
+	 *                       during the traversal
+	 * @param avoidTypes the types of statements to avoid during traversal
 	 * 
-	 * @return true if the target is reachable without passing through Jumpi,
-	 *             false otherwise
+	 * @return true if a path exists from the start statement to the target
+	 *             statement without traversing through edges originating from
+	 *             nodes of the specified types, false otherwise
 	 */
-	private boolean dfsWithoutJumpI(Statement start, Statement target, Set<Statement> visited) {
+	private boolean dfsWithoutTypes(Statement start, Statement target, Set<Statement> visited,
+			Set<Class<?>> avoidTypes) {
 		Stack<Statement> stack = new Stack<>();
 		stack.push(start);
 
@@ -665,7 +671,7 @@ public class EVMCFG extends CFG {
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
 
 				for (Edge edge : outgoingEdges) {
-					if (edge.getSource() instanceof Jumpi)
+					if (avoidTypes.stream().anyMatch(type -> type.isInstance(edge.getSource())))
 						continue;
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
@@ -677,36 +683,12 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-	/**
-	 * Determines if the target statement is reachable from the start statement
-	 * without triggering SSTORE operation.
-	 *
-	 * @param start  the starting statement from which the reachability is
-	 *                   checked
-	 * @param target the target statement to check for reachability
-	 * 
-	 * @return true if the target statement is reachable from the start without
-	 *             SSTORE being triggered, false otherwise
-	 */
-	public boolean reachableFromWithoutSstore(Statement start, Statement target) {
-		return dfsWithoutSstore(start, target, new HashSet<>());
+	public boolean reachableFromWithoutStatements(Statement start, Statement target, Set<Statement> avoidStatements) {
+		return dfsWithoutStatements(start, target, new HashSet<>(), avoidStatements);
 	}
 
-	/**
-	 * Performs a depth-first search (DFS) to determine if a path exists from a
-	 * start statement to a target statement in a graph, avoiding any paths that
-	 * involve edges with an `Sstore` source node.
-	 *
-	 * @param start   the starting statement for the DFS traversal
-	 * @param target  the target statement to reach during the DFS traversal
-	 * @param visited a set of already visited statements to avoid cycles during
-	 *                    the traversal
-	 * 
-	 * @return true if a path exists from the start statement to the target
-	 *             statement without traversing through edges originating from
-	 *             an `Sstore` source node, false otherwise
-	 */
-	private boolean dfsWithoutSstore(Statement start, Statement target, Set<Statement> visited) {
+	private boolean dfsWithoutStatements(Statement start, Statement target, Set<Statement> visited,
+			Set<Statement> avoidStatements) {
 		Stack<Statement> stack = new Stack<>();
 		stack.push(start);
 
@@ -722,7 +704,7 @@ public class EVMCFG extends CFG {
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
 
 				for (Edge edge : outgoingEdges) {
-					if (edge.getSource() instanceof Sstore)
+					if (avoidStatements.contains(edge.getDestination()))
 						continue;
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
