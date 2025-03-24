@@ -2,9 +2,7 @@ package it.unipr.crosschain.checker;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.cfg.Sstore;
+import it.unipr.cfg.*;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -17,6 +15,7 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Collections;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,18 +53,15 @@ public class UncheckedStateUpdateChecker implements
 					// Nothing to do
 					continue;
 				else {
-					TaintElement firstStackElement = taintedStack.getFirstElement();
-					TaintElement secondStackElement = taintedStack.getSecondElement();
-					if (secondStackElement.isBottom())
-						// Nothing to do
-						continue;
-					else {
-						// Checks if either first or second element in the
-						// stack is tainted
-						if (firstStackElement.isTaint() || secondStackElement.isTaint()) {
-							checkForUncheckedStateUpdate(sstore, tool, cfg);
-						}
+
+					// Checks if either first or second element in the
+					// stack is tainted
+					if (TaintElement.isTaintedOrTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2))) {
+						checkForUncheckedStateUpdate(sstore, tool, cfg);
 					}
+
 				}
 			}
 		}
@@ -77,25 +73,22 @@ public class UncheckedStateUpdateChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-		Set<Statement> jumps = cfg.getAllJumpI();
 		Set<Statement> calls = cfg.getAllCall();
 
 		for (Statement call : calls) {
-			if (cfg.reachableFrom(call, sstore)) {
-				if (!cfg.reachableFromCrossing(call, sstore, jumps)) {
+			if (cfg.reachableFromWithoutTypes(call, sstore, Collections.singleton(Jumpi.class))) {
 
-					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
+				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-					log.warn("Unchecked State Update vulnerability at pc {} at line {} coming from line {}.",
-							sstoreLocation.getPc(),
-							sstoreLocation.getSourceCodeLine(),
-							((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
+				log.warn("Unchecked State Update vulnerability at pc {} at line {} coming from line {}.",
+						sstoreLocation.getPc(),
+						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
 
-					String warn = "Unchecked State Update vulnerability at "
-							+ ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine();
-					tool.warn(warn);
-					MyCache.getInstance().addUncheckedStateUpdateWarning(cfg.hashCode(), warn);
-				}
+				String warn = "Unchecked State Update vulnerability at "
+						+ ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine();
+				tool.warn(warn);
+				MyCache.getInstance().addUncheckedStateUpdateWarning(cfg.hashCode(), warn);
 			}
 		}
 	}
