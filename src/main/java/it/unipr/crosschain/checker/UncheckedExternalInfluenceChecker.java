@@ -2,9 +2,7 @@ package it.unipr.crosschain.checker;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.cfg.Sstore;
+import it.unipr.cfg.*;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -17,6 +15,7 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashSet;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,15 +60,16 @@ public class UncheckedExternalInfluenceChecker implements
 
 	private static final Logger log = LogManager.getLogger(UncheckedExternalInfluenceChecker.class);
 
+	private Set<Statement> taintedJumpi = new HashSet<>();
+
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Sstore) {
+		if (node instanceof Sstore || node instanceof Jumpi) {
 			EVMCFG cfg = ((EVMCFG) graph);
-			Statement sstore = node;
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
@@ -77,7 +77,7 @@ public class UncheckedExternalInfluenceChecker implements
 						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
-					analysisResult = result.getAnalysisStateBefore(sstore);
+					analysisResult = result.getAnalysisStateBefore(node);
 				} catch (SemanticException e1) {
 					log.error("(UncheckedExternalInfluenceChecker): {}", e1.getMessage());
 				}
@@ -89,18 +89,21 @@ public class UncheckedExternalInfluenceChecker implements
 					// Nothing to do
 					continue;
 				else {
-					TaintElement firstStackElement = taintedStack.getFirstElement();
-					TaintElement secondStackElement = taintedStack.getSecondElement();
-					if (secondStackElement.isBottom())
-						// Nothing to do
-						continue;
-					else {
-						// Checks if either first or second element in the
-						// stack is tainted
-						if (firstStackElement.isTaint() || secondStackElement.isTaint()) {
-							checkForUncheckedExternalInfluence(sstore, tool, cfg);
+
+					// Checks if either first or second element in the
+					// stack is tainted
+					if (TaintElement.isTaintedOrTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2))) {
+
+						if (node instanceof Jumpi) {
+							taintedJumpi.add(node);
+							return true;
 						}
+
+						checkForUncheckedExternalInfluence(node, tool, cfg);
 					}
+
 				}
 			}
 		}
@@ -122,25 +125,22 @@ public class UncheckedExternalInfluenceChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-		Set<Statement> jumps = cfg.getAllJumpI();
 		Set<Statement> externalDatas = cfg.getExternalData();
 
 		for (Statement data : externalDatas) {
-			if (cfg.reachableFrom(data, sstore)) {
-				if (!cfg.reachableFromCrossing(data, sstore, jumps)) {
+			if (cfg.reachableFromWithoutStatements(data, sstore, taintedJumpi)) {
 
-					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
+				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-					log.warn("Unchecked External Influence vulnerability at pc {} at line {} coming from line {}.",
-							sstoreLocation.getPc(),
-							sstoreLocation.getSourceCodeLine(),
-							((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
+				log.warn("Unchecked External Influence vulnerability at pc {} at line {} coming from line {}.",
+						sstoreLocation.getPc(),
+						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
-					String warn = "Unchecked External Influence vulnerability at "
-							+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
-					tool.warn(warn);
-					MyCache.getInstance().addUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
-				}
+				String warn = "Unchecked External Influence vulnerability at "
+						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
+				tool.warn(warn);
+				MyCache.getInstance().addUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
 			}
 		}
 	}

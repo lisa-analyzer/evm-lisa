@@ -61,7 +61,8 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 		return stmt instanceof Calldataload
 				|| stmt instanceof Callvalue
 				|| stmt instanceof Caller
-				|| stmt instanceof Origin;
+				|| stmt instanceof Origin
+				;
 	}
 
 	@Override
