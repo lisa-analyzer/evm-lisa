@@ -39,8 +39,6 @@ public class RandomnessDependencyChecker implements
 		return isEnabled;
 	}
 
-	private final Set<Statement> sourceStatements = new HashSet<>();
-
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
@@ -71,13 +69,15 @@ public class RandomnessDependencyChecker implements
 					// Nothing to do
 					continue;
 				else {
-					if (node instanceof Sha3 || node instanceof Sstore || node instanceof Jumpi) {
+					if (node instanceof Sha3
+							|| node instanceof Sstore
+							|| node instanceof Jumpi) {
 						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
-							checkForRandomnessDependency(node, tool, cfg);
+							raiseWarning(node, tool, cfg);
 					} else if (node instanceof Jump) {
 						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1)))
-							checkForRandomnessDependency(node, tool, cfg);
+							raiseWarning(node, tool, cfg);
 					}
 				}
 			}
@@ -85,47 +85,17 @@ public class RandomnessDependencyChecker implements
 		return true;
 	}
 
-	/**
-	 * Analyzes the provided control flow graph (CFG) to detect potential
-	 * dependencies on randomness-related sources that may lead to
-	 * vulnerabilities. If such dependencies are identified and reachable from
-	 * the provided sink statement, a warning is logged and cached.
-	 *
-	 * @param sink the statement in the CFG that acts as the sink in the
-	 *                 analysis
-	 * @param tool the tool providing analysis capabilities and warnings
-	 *                 management
-	 * @param cfg  the control flow graph being analyzed for potential
-	 *                 dependencies
-	 */
-	private void checkForRandomnessDependency(Statement sink, CheckToolWithAnalysisResults<
+	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
+		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		if (sourceStatements.isEmpty()) {
-			for (Statement stmt : cfg.getNodes()) {
-				if (stmt instanceof Timestamp
-						|| stmt instanceof Blockhash
-						|| stmt instanceof Difficulty
-						|| stmt instanceof Balance)
-					synchronized (sourceStatements) {
-						sourceStatements.add(stmt);
-					}
-			}
-		}
+		log.warn("Randomness dependency vulnerability at pc {} (line {}).", sinkLoc.getPc(),
+				sinkLoc.getSourceCodeLine());
 
-		for (Statement source : sourceStatements) {
-			if (cfg.reachableFrom(source, sink)) {
-				ProgramCounterLocation sourceLoc = (ProgramCounterLocation) source.getLocation();
-
-				log.warn("Randomness dependency vulnerability at pc {} (line {}).", sourceLoc.getPc(),
-						sourceLoc.getSourceCodeLine());
-
-				String warn = "Randomness dependency vulnerability at pc "
-						+ ((ProgramCounterLocation) source.getLocation()).getSourceCodeLine();
-				tool.warn(warn);
-				MyCache.getInstance().addRandomnessDependencyWarning(cfg.hashCode(), warn);
-			}
-		}
+		String warn = "Randomness dependency vulnerability at pc "
+				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
+		tool.warn(warn);
+		MyCache.getInstance().addRandomnessDependencyWarning(cfg.hashCode(), warn);
 	}
 }
