@@ -632,7 +632,18 @@ public class EVMCFG extends CFG {
 	 *             otherwise
 	 */
 	public boolean reachableFromWithoutTypes(Statement start, Statement target, Set<Class<?>> avoidTypes) {
-		return dfsWithoutTypes(start, target, new HashSet<>(), avoidTypes);
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withouttypes";
+
+		for (Class<?> type : avoidTypes)
+			key += type.getSimpleName();
+
+		if (MyCache.getInstance().existsInReachableFrom(key)) {
+			return MyCache.getInstance().isReachableFrom(key);
+		}
+
+		boolean result = dfsWithoutTypes(start, target, new HashSet<>(), avoidTypes);
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
 	}
 
 	/**
