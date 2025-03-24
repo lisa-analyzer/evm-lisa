@@ -60,30 +60,35 @@ public class xEVMLiSA {
 	 *                                  (Application Binary Interface) files.
 	 */
 	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
+		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
+		EVMLiSA.setCores(
+				Runtime.getRuntime().availableProcessors() / 4 * 3);
+
 		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath);
+
 		analyzeBridge(bridge);
+
+		runCheckers(bridge);
+
+		printVulnerabilities(bridge);
 	}
 
 	/**
 	 * Analyzes a bridge by examining its smart contracts, building its partial
-	 * cross-chain control flow graph (xCFG), creating cross-chain edges, and
-	 * executing various security checkers to identify vulnerabilities.
+	 * cross-chain control flow graph (xCFG) creating cross-chain edges.
 	 *
 	 * @param bridge The bridge object containing the set of smart contracts to
 	 *                   be analyzed.
 	 */
 	public static void analyzeBridge(Bridge bridge) {
-		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
-		EVMLiSA.setCores(
-				Runtime.getRuntime().availableProcessors() / 4 * 3);
+		log.info("Number of contracts to be analyzed: {}.", bridge.getSmartContracts().size());
+
 		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
 		bridge.buildPartialXCFG();
 		bridge.addEdges(
 				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
-		runCheckers(bridge);
-		printVulnerabilities(bridge);
 
-		// log.debug("Bridge after analysis \n {}", bridge);
+		log.info("Bridge {} analyzed.", bridge.getName());
 	}
 
 	/**
@@ -217,16 +222,16 @@ public class xEVMLiSA {
 			futures.add(executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(executor.submit(() -> runTxOriginChecker(contract)));
 			futures.add(executor.submit(() -> runRandomnessDependencyChecker(contract)));
-			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
+//			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
 		}
-		waitForCompletion(futures);
-
-		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
-
-		// Cross-chain checkers
-		for (SmartContract contract : bridge) {
-			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
-		}
+//		waitForCompletion(futures);
+//
+//		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
+//
+//		// Cross-chain checkers
+//		for (SmartContract contract : bridge) {
+//			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
+//		}
 
 		waitForCompletion(futures);
 
