@@ -121,6 +121,23 @@ public class TaintElement implements BaseLattice<TaintElement> {
 		return CLEAN;
 	}
 
+	/**
+	 * Checks if any of the provided {@link TaintElement} objects is tainted or
+	 * has the top value.
+	 *
+	 * @param elements the array of {@link TaintElement} objects to check
+	 * 
+	 * @return {@code true} if at least one of the elements is tainted or has
+	 *             the top value, {@code false} otherwise
+	 */
+	public static boolean isTaintedOrTop(TaintElement... elements) {
+		for (TaintElement element : elements) {
+			if (element.isTaint() || element.isTop())
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(v);
