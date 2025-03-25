@@ -19,6 +19,8 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class MyCache {
 	private static MyCache _instance = null;
+	private static long _timesUsed = 0;
+
 	private final LRUMap<Pair<String, Number>, StackElement> _map;
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
@@ -47,7 +49,18 @@ public class MyCache {
 					_instance = new MyCache();
 			}
 		}
+		++_timesUsed;
 		return _instance;
+	}
+
+
+	/**
+	 * Retrieves the number of times the cache has been used.
+	 *
+	 * @return the count of times the cache has been used as a long value
+	 */
+	public static long getTimesUsed() {
+		return _timesUsed;
 	}
 
 	/**

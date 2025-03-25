@@ -248,11 +248,6 @@ public class xEVMLiSA {
 							.build());
 		}
 
-		bridge.setVulnerabilities(
-				VulnerabilitiesObject.newVulnerabilitiesObject()
-						.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
-						.build());
-
 		log.info("Intra cross-chain checkers results saved.");
 		executor.shutdown();
 	}
