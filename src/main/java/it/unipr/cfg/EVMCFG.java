@@ -376,15 +376,24 @@ public class EVMCFG extends CFG {
 	 */
 	public boolean reachableFrom(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode();
-		if (MyCache.getInstance().existsInReachableFrom(key)) {
+
+		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
-		}
 
 		boolean result = dfs(start, target, new HashSet<>());
 		MyCache.getInstance().addReachableFrom(key, result);
 		return result;
 	}
 
+	/**
+	 * Determines if the target statement is reachable from the start statement across
+	 * a cross-chain edge in the control flow graph (CFG).
+	 *
+	 * @param start the starting statement in the first control flow graph.
+	 * @param target the target statement which may belong to a different control flow graph.
+	 * @return true if the target statement is reachable from the start statement across
+	 *         a cross-chain edge; false otherwise.
+	 */
 	public boolean reachableFromCrossingACrossChainEdge(Statement start, Statement target) {
 		if (start.getCFG().equals(target.getCFG()))
 			return false;
@@ -467,9 +476,9 @@ public class EVMCFG extends CFG {
 	 */
 	public boolean reachableFromSequentially(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "sequentially";
-		if (MyCache.getInstance().existsInReachableFrom(key)) {
+
+		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
-		}
 
 		boolean result = dfsSequential(start, target, new HashSet<>());
 		MyCache.getInstance().addReachableFrom(key, result);
@@ -552,72 +561,6 @@ public class EVMCFG extends CFG {
 		return matchingStatements;
 	}
 
-	public boolean reachableFromCrossing(Statement start, Statement target, Set<Statement> statements) {
-		return dfsCrossing(start, target, new HashSet<>(), statements);
-	}
-
-	/**
-	 * Check whether all paths from {@code start} to {@code target} contain at
-	 * least one {@code statements} statement. This method explores all possible
-	 * paths using a depth-first search (DFS). If there is at least one path
-	 * where a required statement is missing, the method returns {@code false}.
-	 *
-	 * @param start      The starting statement of the search.
-	 * @param target     The target statement.
-	 * @param visited    A set of visited statements to avoid cycles.
-	 * @param statements The set of statements that must be present in all
-	 *                       paths.
-	 *
-	 * @return {@code true} if all paths contain all statements, otherwise
-	 *             {@code false}.
-	 */
-	private boolean dfsCrossing(Statement start, Statement target, Set<Statement> visited, Set<Statement> statements) {
-		boolean foundTarget = false;
-		Set<Statement> pathStatements = new HashSet<>();
-
-		Stack<List<Statement>> stack = new Stack<>();
-		stack.push(Collections.singletonList(start));
-
-		while (!stack.isEmpty()) {
-			List<Statement> path = stack.pop();
-			Statement current = path.get(path.size() - 1);
-
-			if (visited.contains(current)) {
-				continue;
-			}
-
-			visited.add(current);
-			pathStatements.add(current);
-
-			if (current.equals(target)) {
-				foundTarget = true;
-
-				// Check if this specific path contains at least a statement
-				boolean contains = false;
-				for (Statement statement : statements) {
-					if (pathStatements.contains(statement)) {
-						contains = true;
-						break;
-					}
-				}
-				if (!contains)
-					return false;
-			}
-
-			Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
-			for (Edge edge : outgoingEdges) {
-				Statement next = edge.getDestination();
-				if (!visited.contains(next)) {
-					List<Statement> newPath = new ArrayList<>(path);
-					newPath.add(next);
-					stack.push(newPath);
-				}
-			}
-		}
-
-		return foundTarget;
-	}
-
 	/**
 	 * Determines if the target statement is reachable from the start statement
 	 * without triggering any of the specified statement types.
@@ -632,14 +575,10 @@ public class EVMCFG extends CFG {
 	 *             otherwise
 	 */
 	public boolean reachableFromWithoutTypes(Statement start, Statement target, Set<Class<?>> avoidTypes) {
-		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withouttypes";
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withouttypes" + avoidTypes.hashCode();
 
-		for (Class<?> type : avoidTypes)
-			key += type.getSimpleName();
-
-		if (MyCache.getInstance().existsInReachableFrom(key)) {
+		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
-		}
 
 		boolean result = dfsWithoutTypes(start, target, new HashSet<>(), avoidTypes);
 		MyCache.getInstance().addReachableFrom(key, result);
@@ -691,7 +630,14 @@ public class EVMCFG extends CFG {
 	}
 
 	public boolean reachableFromWithoutStatements(Statement start, Statement target, Set<Statement> avoidStatements) {
-		return dfsWithoutStatements(start, target, new HashSet<>(), avoidStatements);
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withoutstatements" + avoidStatements.hashCode();
+
+		if (MyCache.getInstance().existsInReachableFrom(key))
+			return MyCache.getInstance().isReachableFrom(key);
+
+		boolean result = dfsWithoutStatements(start, target, new HashSet<>(), avoidStatements);
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
 	}
 
 	private boolean dfsWithoutStatements(Statement start, Statement target, Set<Statement> visited,
