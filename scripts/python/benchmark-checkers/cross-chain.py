@@ -49,10 +49,11 @@ def analyze_vulnerabilities(json_path):
             continue
 
         # Inizializza un dizionario per sommare le vulnerabilità per tipo
-        total_vulnerabilities = {key: 0 for key in vulnerabilities[0].keys()}
+        total_vulnerabilities = {key: 0 for key in vulnerabilities[0]["vulnerabilities"].keys()}
 
-        for vuln in vulnerabilities:
-            for key, value in vuln.items():
+        for vuln_entry in vulnerabilities:
+            vuln_data = vuln_entry.get("vulnerabilities", {})
+            for key, value in vuln_data.items():
                 total_vulnerabilities[key] += value
 
         print(f"Bridge: {name}")
