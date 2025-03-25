@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
+
+import it.unipr.utils.MyCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -27,6 +29,8 @@ public class SmartaxeBenchmark {
         EVMLiSA.enableTxOriginChecker();
 
 		new SmartaxeBenchmark().runBenchmarkManuallyLabeled();
+
+		log.debug("Cache used {} times.", MyCache.getTimesUsed());
 	}
 
 	private void runBenchmarkManuallyLabeled() {
