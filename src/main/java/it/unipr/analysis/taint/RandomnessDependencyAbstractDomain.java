@@ -25,11 +25,7 @@ public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
 	 * @param stack the stack of values
 	 */
 	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		this(stack, memory, null);
-	}
-
-	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+		super(stack, memory);
 	}
 
 	@Override
@@ -57,12 +53,7 @@ public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory, null);
-	}
-
-	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		return new RandomnessDependencyAbstractDomain(stack, memory, cfg);
+		return new RandomnessDependencyAbstractDomain(stack, memory);
 	}
 
 }

@@ -22,21 +22,13 @@ public class VulnerableLOGsAbstractDomain extends TaintAbstractDomain {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
-	public VulnerableLOGsAbstractDomain(EVMCFG cfg) {
-		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN, cfg);
-	}
-
-	protected VulnerableLOGsAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		this(stack, memory, null);
-	}
-
 	/**
 	 * Builds a taint abstract stack.
 	 *
 	 * @param stack the stack of values
 	 */
-	protected VulnerableLOGsAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+	protected VulnerableLOGsAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -58,12 +50,7 @@ public class VulnerableLOGsAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory, null);
-	}
-
-	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		return new VulnerableLOGsAbstractDomain(stack, memory, cfg);
+		return mk(stack, memory);
 	}
 
 	@Override

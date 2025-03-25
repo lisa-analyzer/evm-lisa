@@ -52,12 +52,15 @@ public class Bridge implements Iterable<SmartContract> {
 	}
 
 	/**
-	 * Constructs a Bridge object, initializing its fields and mapping smart contracts
-	 * from the specified ABI and bytecode directories. It creates `SmartContract` objects
-	 * for any contracts that have matching ABI and bytecode files.
+	 * Constructs a Bridge object, initializing its fields and mapping smart
+	 * contracts from the specified ABI and bytecode directories. It creates
+	 * `SmartContract` objects for any contracts that have matching ABI and
+	 * bytecode files.
 	 *
-	 * @param bytecodeDirectoryPath the path to the directory containing bytecode files
-	 * @param abiDirectoryPath      the path to the directory containing ABI files
+	 * @param bytecodeDirectoryPath the path to the directory containing
+	 *                                  bytecode files
+	 * @param abiDirectoryPath      the path to the directory containing ABI
+	 *                                  files
 	 * @param name                  the name of the bridge
 	 */
 	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, String name) {
@@ -75,7 +78,9 @@ public class Bridge implements Iterable<SmartContract> {
 		log.info("Created bridge {} with {} contracts.", name, contracts.size());
 	}
 
-	public String getName() { return name; }
+	public String getName() {
+		return name;
+	}
 
 	public List<SmartContract> getSmartContracts() {
 		return contracts;
@@ -206,8 +211,8 @@ public class Bridge implements Iterable<SmartContract> {
 	}
 
 	/**
-	 * Constructs a JSON object containing the vulnerabilities detected in
-	 * all the smart contracts within the bridge.
+	 * Constructs a JSON object containing the vulnerabilities detected in all
+	 * the smart contracts within the bridge.
 	 *
 	 * @return JSONArray aggregating all vulnerabilities.
 	 */

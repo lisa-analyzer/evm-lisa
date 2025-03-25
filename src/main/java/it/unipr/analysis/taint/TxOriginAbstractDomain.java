@@ -1,6 +1,5 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Origin;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
@@ -26,11 +25,7 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	 * @param stack the stack of values
 	 */
 	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		this(stack, memory, null);
-	}
-
-	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+		super(stack, memory);
 	}
 
 	@Override
@@ -55,11 +50,6 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory, null);
-	}
-
-	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		return new TxOriginAbstractDomain(stack, memory, cfg);
+		return new TxOriginAbstractDomain(stack, memory);
 	}
 }

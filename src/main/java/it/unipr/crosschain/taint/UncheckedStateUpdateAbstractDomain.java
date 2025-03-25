@@ -4,7 +4,6 @@ import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.Call;
 import it.unipr.cfg.Delegatecall;
-import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Staticcall;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
@@ -43,17 +42,7 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 	 * @param stack the stack of values
 	 */
 	protected UncheckedStateUpdateAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		this(stack, memory, null);
-	}
-
-	/**
-	 * Builds a taint abstract stack starting from a given stack and a list of
-	 * elements that push taint.
-	 *
-	 * @param stack the stack of values
-	 */
-	protected UncheckedStateUpdateAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+		super(stack, memory);
 	}
 
 	@Override
@@ -80,11 +69,6 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory, null);
-	}
-
-	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		return new UncheckedStateUpdateAbstractDomain(stack, memory, cfg);
+		return mk(stack, memory);
 	}
 }

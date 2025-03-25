@@ -2,7 +2,6 @@ package it.unipr.crosschain.taint;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.cfg.*;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
@@ -22,21 +21,13 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
-	public TimeSynchronizationAbstractDomain(EVMCFG cfg) {
-		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN, cfg);
-	}
-
-	protected TimeSynchronizationAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		this(stack, memory, null);
-	}
-
 	/**
 	 * Builds a taint abstract stack.
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TimeSynchronizationAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+	protected TimeSynchronizationAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -51,12 +42,7 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory, null);
-	}
-
-	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		return new TimeSynchronizationAbstractDomain(stack, memory, cfg);
+		return mk(stack, memory);
 	}
 
 	@Override

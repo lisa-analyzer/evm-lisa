@@ -1,9 +1,8 @@
 package it.unipr.crosschain.taint;
 
-import it.unipr.analysis.operator.*;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.cfg.*;
+import it.unipr.cfg.Calldataload;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
@@ -35,25 +34,13 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 	}
 
 	/**
-	 * Constructs an instance of UncheckedExternalInfluenceAbstractDomain with a
-	 * given stack and memory taint element.
-	 *
-	 * @param stack  the stack of taint elements representing the symbolic
-	 *                   execution stack
-	 * @param memory the taint element representing the memory taint status
-	 */
-	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		this(stack, memory, null);
-	}
-
-	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
 	 * @param stack the stack of values
 	 */
-	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] stack, TaintElement memory, EVMCFG cfg) {
-		super(stack, memory, cfg);
+	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -68,12 +55,7 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return mk(array, memory, null);
-	}
-
-	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory, EVMCFG cfg) {
-		return new UncheckedExternalInfluenceAbstractDomain(array, memory, cfg);
+		return mk(array, memory);
 	}
 
 	@Override
