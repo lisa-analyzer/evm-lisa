@@ -215,6 +215,7 @@ public class EVMLiSA {
 
 		else {
 			JSONManager.throwNewError("No valid option provided.");
+			new HelpFormatter().printHelp("help", getOptions());
 			System.exit(1);
 		}
 
@@ -241,11 +242,14 @@ public class EVMLiSA {
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
 		log.info("Analyzing {} contracts.", contracts.size());
 
-		ExecutorService executor = Executors.newFixedThreadPool(CORES);
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(CORES);
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : contracts)
-			futures.add(executor.submit(() -> analyzeContract(contract)));
+			futures.add(executor.submit(() -> {
+				analyzeContract(contract);
+				log.debug("Active tasks: {}, Pending tasks: {}", executor.getActiveCount(), executor.getQueue().size());
+			}));
 
 		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(), CORES);
 
@@ -315,6 +319,9 @@ public class EVMLiSA {
 			conf.semanticChecks.clear();
 			conf.semanticChecks.add(new ReentrancyChecker());
 			lisa.run(program);
+			log.info("Reentrancy checker ended on {}, with {} vulnerabilities found.",
+					contract.getName(),
+					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 		}
 		if (TxOriginChecker.isEnabled()) {
 			log.info("Running tx. origin checker on {}.", contract.getName());
@@ -324,6 +331,9 @@ public class EVMLiSA {
 					new TxOriginAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
+			log.info("Tx. origin checker ended on {}, with {} vulnerabilities found.",
+					contract.getName(),
+					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
 		}
 		if (RandomnessDependencyChecker.isEnabled()) {
 			log.info("Running randomness dependency checker on {}.", contract.getName());
@@ -333,6 +343,10 @@ public class EVMLiSA {
 					new RandomnessDependencyAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
+			log.info("Randomness dependency checker ended on {}, with {} definite and {} possible vulnerabilities found.",
+					contract.getName(),
+					MyCache.getInstance().getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()),
+					MyCache.getInstance().getPossibleRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()));
 		}
 
 		contract.setVulnerabilities(
