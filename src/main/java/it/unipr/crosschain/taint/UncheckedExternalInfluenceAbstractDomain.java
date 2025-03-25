@@ -55,7 +55,7 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return mk(array, memory);
+		return new UncheckedExternalInfluenceAbstractDomain(array, memory);
 	}
 
 	@Override

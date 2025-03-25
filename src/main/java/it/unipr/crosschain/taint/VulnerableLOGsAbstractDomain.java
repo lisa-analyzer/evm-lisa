@@ -50,7 +50,7 @@ public class VulnerableLOGsAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory);
+		return new VulnerableLOGsAbstractDomain(stack, memory);
 	}
 
 	@Override

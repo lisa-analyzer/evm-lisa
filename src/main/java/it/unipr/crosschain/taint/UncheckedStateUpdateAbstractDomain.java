@@ -69,6 +69,6 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return mk(stack, memory);
+		return new UncheckedStateUpdateAbstractDomain(stack, memory);
 	}
 }
