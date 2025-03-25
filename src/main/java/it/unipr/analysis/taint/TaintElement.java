@@ -131,8 +131,35 @@ public class TaintElement implements BaseLattice<TaintElement> {
 	 *             the top value, {@code false} otherwise
 	 */
 	public static boolean isTaintedOrTop(TaintElement... elements) {
+		return isAtLeastOneTainted(elements) || isAtLeastOneTop(elements);
+	}
+
+
+	/**
+	 * Checks if at least one of the provided {@link TaintElement} objects is tainted.
+	 *
+	 * @param elements the array of {@link TaintElement} objects to check
+	 * @return {@code true} if at least one of the elements is tainted, {@code false} otherwise
+	 */
+	public static boolean isAtLeastOneTainted(TaintElement... elements) {
 		for (TaintElement element : elements) {
-			if (element.isTaint() || element.isTop())
+			if (element.isTaint())
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if at least one of the provided {@link TaintElement} objects
+	 * has the top value.
+	 *
+	 * @param elements the array of {@link TaintElement} objects to check
+	 * @return {@code true} if at least one of the elements has the top value,
+	 *         {@code false} otherwise
+	 */
+	public static boolean isAtLeastOneTop(TaintElement... elements) {
+		for (TaintElement element : elements) {
+			if (element.isTop())
 				return true;
 		}
 		return false;

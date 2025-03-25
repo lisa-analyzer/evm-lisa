@@ -61,14 +61,15 @@ public class xEVMLiSA {
 	 */
 	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
-		EVMLiSA.setCores(
-				Runtime.getRuntime().availableProcessors() / 4 * 3);
+		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() / 4 * 3);
+        EVMLiSA.enableAllSecurityCheckers();
 
 		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath);
 
 		analyzeBridge(bridge);
 
-		runCheckers(bridge);
+		runIntraCrossChainCheckers(bridge);
+		runInterCrossChainCheckers(bridge);
 
 		printVulnerabilities(bridge);
 	}
@@ -84,9 +85,9 @@ public class xEVMLiSA {
 		log.info("Number of contracts to be analyzed: {}.", bridge.getSmartContracts().size());
 
 		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
-		bridge.buildPartialXCFG();
-		bridge.addEdges(
-				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+//		bridge.buildPartialXCFG();
+//		bridge.addEdges(
+//				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
 
 		log.info("Bridge {} analyzed.", bridge.getName());
 	}
@@ -205,37 +206,28 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Executes all security checkers in parallel on the smart contracts in the
-	 * bridge.
+	 * Executes a series of intra cross-chain checkers for the given bridge, which
+	 * analyze associated smart contracts for various vulnerabilities.
+	 * The results of the checkers are saved and stored in the bridge and its
+	 * smart contracts.
+	 *
+	 * @param bridge The bridge containing the set of smart contracts to be analyzed.
 	 */
-	public static void runCheckers(Bridge bridge) {
-		log.info("Running checkers.");
+	public static void runIntraCrossChainCheckers(Bridge bridge) {
+		log.info("Running intra cross-chain checkers.");
 
 		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
 		List<Future<?>> futures = new ArrayList<>();
 
-		// Intra-chain checkers
 		for (SmartContract contract : bridge) {
-			futures.add(executor.submit(() -> runReentrancyChecker(contract)));
 			futures.add(executor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
-			futures.add(executor.submit(() -> runTxOriginChecker(contract)));
-			futures.add(executor.submit(() -> runRandomnessDependencyChecker(contract)));
-//			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
 		}
-//		waitForCompletion(futures);
-//
-//		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
-//
-//		// Cross-chain checkers
-//		for (SmartContract contract : bridge) {
-//			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
-//		}
 
 		waitForCompletion(futures);
 
-		log.info("Saving checkers results.");
+		log.info("Saving intra cross-chain checkers results.");
 
 		for (SmartContract contract : bridge) {
 			contract.setVulnerabilities(
@@ -245,6 +237,8 @@ public class xEVMLiSA {
 							.txOrigin(MyCache.getInstance().getTxOriginWarnings(contract.getCFG().hashCode()))
 							.randomness(MyCache.getInstance()
 									.getRandomnessDependencyWarnings(contract.getCFG().hashCode()))
+							.possibleRandomness(MyCache.getInstance()
+									.getPossibleRandomnessDependencyWarnings(contract.getCFG().hashCode()))
 							.eventOrder(MyCache.getInstance()
 									.getEventOrderWarnings(contract.getCFG().hashCode()))
 							.uncheckedExternalInfluence(MyCache.getInstance()
@@ -259,7 +253,45 @@ public class xEVMLiSA {
 						.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
 						.build());
 
-		log.info("Checkers results saved.");
+		log.info("Intra cross-chain checkers results saved.");
+		executor.shutdown();
+	}
+
+
+	/**
+	 * Executes the inter cross-chain checkers to analyze vulnerabilities related
+	 * to time synchronization across the given bridge of smart contracts (i.e., time synchronization dependency).
+	 *
+	 * @param bridge The bridge object which contains the collection of smart contracts
+	 *               to be analyzed. It serves as the main context for the inter
+	 *               cross-chain analysis.
+	 */
+	public static void runInterCrossChainCheckers(Bridge bridge) {
+		log.info("Running inter cross-chain checkers.");
+
+		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
+		List<Future<?>> futures = new ArrayList<>();
+
+		for (SmartContract contract : bridge) {
+			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
+		}
+		waitForCompletion(futures);
+
+		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
+
+		for (SmartContract contract : bridge) {
+			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
+		}
+		waitForCompletion(futures);
+
+		log.info("Saving inter cross-chain checkers results.");
+
+		bridge.setVulnerabilities(
+				VulnerabilitiesObject.newVulnerabilitiesObject()
+						.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
+						.build());
+
+		log.info("Inter cross-chain checkers results saved.");
 		executor.shutdown();
 	}
 

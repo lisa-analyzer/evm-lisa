@@ -114,7 +114,7 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Enables all security checkers.
+	 * Enables all security checkers (i.e., reentrancy, randomness dependency, tx.origin).
 	 */
 	public static void enableAllSecurityCheckers() {
 		EVMLiSA.enableReentrancyChecker();
@@ -281,7 +281,7 @@ public class EVMLiSA {
 			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
 		} catch (IOException e) {
 			System.err.println(
-					JSONManager.throwNewError("Unable to generate partial CFG from file", contract.toJson()));
+					JSONManager.throwNewError("Unable to generate partial CFG from file.", contract.toJson()));
 			System.exit(1);
 		}
 
@@ -311,33 +311,28 @@ public class EVMLiSA {
 		contract.computeEventsExitPoints();
 
 		if (ReentrancyChecker.isEnabled()) {
-			log.info("Running reentrancy checker...");
+			log.info("Running reentrancy checker on {}.", contract.getName());
 			conf.semanticChecks.clear();
 			conf.semanticChecks.add(new ReentrancyChecker());
 			lisa.run(program);
-			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
 		}
 		if (TxOriginChecker.isEnabled()) {
-			log.info("Running tx. origin checker...");
+			log.info("Running tx. origin checker on {}.", contract.getName());
 			conf.semanticChecks.clear();
 			conf.semanticChecks.add(new TxOriginChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new TxOriginAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
-			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
 		}
 		if (RandomnessDependencyChecker.isEnabled()) {
-			log.info("Running randomness dependency checker...");
+			log.info("Running randomness dependency checker on {}.", contract.getName());
 			conf.semanticChecks.clear();
 			conf.semanticChecks.add(new RandomnessDependencyChecker());
 			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 					new RandomnessDependencyAbstractDomain(),
 					new TypeEnvironment<>(new InferredTypes()));
 			lisa.run(program);
-			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()));
 		}
 
 		contract.setVulnerabilities(
@@ -347,6 +342,8 @@ public class EVMLiSA {
 						.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
 						.randomness(MyCache.getInstance()
 								.getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()))
+						.possibleRandomness(MyCache.getInstance()
+								.getPossibleRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()))
 						.build());
 		contract.generateCFGWithBasicBlocks();
 		contract.toFile();

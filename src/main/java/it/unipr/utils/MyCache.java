@@ -28,6 +28,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
 	private final Set<String> _timeSynchronizationWarnings;
 	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
@@ -62,7 +63,8 @@ public class MyCache {
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
-		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(2000);
+		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(2000);
 		this._timeSynchronizationWarnings = new HashSet<>();
 		this._vulnerableLogStatement = new LRUMap<>(1000);
 		this._taintedCallDataLoad = new HashSet<>();
@@ -431,6 +433,37 @@ public class MyCache {
 	public int getRandomnessDependencyWarnings(Integer key) {
 		synchronized (_randomnessDependencyWarnings) {
 			return (_randomnessDependencyWarnings.get(key) != null) ? _randomnessDependencyWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds a warning indicating a possible randomness dependency to the internal collection.
+	 * The method ensures thread safety during modification of warnings collection.
+	 *
+	 * @param key an integer key representing the category or type of the warning
+	 * @param warning an object representing the warning message or detail to be added
+	 */
+	public void addPossibleRandomnessDependencyWarning(Integer key, Object warning) {
+		synchronized (_possibleRandomnessDependencyWarnings) {
+			_possibleRandomnessDependencyWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of possible randomness dependency warnings associated with a given key.
+	 * The method checks the internal map for the specified key and returns the size of the list
+	 * of warnings if the key exists; otherwise, it returns zero.
+	 *
+	 * @param key the key used to identify the list of randomness dependency warnings
+	 *            in the internal map. It can be null.
+	 * @return the number of randomness dependency warnings associated with the specified key.
+	 *         Returns 0 if the key is not present or there are no warnings associated with it.
+	 */
+	public int getPossibleRandomnessDependencyWarnings(Integer key) {
+		synchronized (_possibleRandomnessDependencyWarnings) {
+			return (_possibleRandomnessDependencyWarnings.get(key) != null) ? _possibleRandomnessDependencyWarnings.get(key).size() : 0;
 		}
 	}
 
