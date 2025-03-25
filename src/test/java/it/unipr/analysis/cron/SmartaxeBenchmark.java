@@ -22,6 +22,9 @@ public class SmartaxeBenchmark {
 		EVMLiSA.setWorkingDirectory(workingDirectory);
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() - 1);
+        EVMLiSA.enableReentrancyChecker();
+        EVMLiSA.enableRandomnessDependencyChecker();
+        EVMLiSA.enableTxOriginChecker();
 
 		new SmartaxeBenchmark().runBenchmarkManuallyLabeled();
 	}
@@ -54,7 +57,7 @@ public class SmartaxeBenchmark {
 
 		for (Bridge bridge : bridges) {
 			xEVMLiSA.analyzeBridge(bridge);
-			xEVMLiSA.runCheckers(bridge);
+			xEVMLiSA.runIntraCrossChainCheckers(bridge);
 
 			JSONObject bridgeVulnerabilities = new JSONObject();
 			bridgeVulnerabilities.put("name", bridge.getName());
