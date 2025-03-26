@@ -1,19 +1,12 @@
 package it.unipr.crosschain;
 
-import static it.unipr.EVMLiSA.waitForCompletion;
-
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
-import it.unipr.analysis.taint.RandomnessDependencyAbstractDomain;
-import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.Calldataload;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.cfg.Sstore;
-import it.unipr.checker.RandomnessDependencyChecker;
-import it.unipr.checker.ReentrancyChecker;
-import it.unipr.checker.TxOriginChecker;
 import it.unipr.crosschain.checker.TimeSynchronizationChecker;
 import it.unipr.crosschain.checker.UncheckedExternalInfluenceChecker;
 import it.unipr.crosschain.checker.UncheckedStateUpdateChecker;
@@ -26,6 +19,7 @@ import it.unipr.crosschain.taint.UncheckedStateUpdateAbstractDomain;
 import it.unipr.crosschain.taint.VulnerableLOGsAbstractDomain;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
+import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.LiSAConfigurationManager;
 import it.unipr.utils.MyCache;
 import it.unipr.utils.VulnerabilitiesObject;
@@ -62,7 +56,6 @@ public class xEVMLiSA {
 	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() / 4 * 3);
-        EVMLiSA.enableAllSecurityCheckers();
 
 		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath);
 
@@ -72,6 +65,7 @@ public class xEVMLiSA {
 		runInterCrossChainCheckers(bridge);
 
 		printVulnerabilities(bridge);
+		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -85,9 +79,9 @@ public class xEVMLiSA {
 		log.info("Number of contracts to be analyzed: {}.", bridge.getSmartContracts().size());
 
 		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
-//		bridge.buildPartialXCFG();
-//		bridge.addEdges(
-//				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+		bridge.buildPartialXCFG();
+		bridge.addEdges(
+				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
 
 		log.info("Bridge {} analyzed.", bridge.getName());
 	}
@@ -206,63 +200,52 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Executes a series of intra cross-chain checkers for the given bridge, which
-	 * analyze associated smart contracts for various vulnerabilities.
-	 * The results of the checkers are saved and stored in the bridge and its
-	 * smart contracts.
+	 * Executes a series of intra cross-chain checkers for the given bridge,
+	 * which analyze associated smart contracts for various vulnerabilities. The
+	 * results of the checkers are saved and stored in the bridge and its smart
+	 * contracts.
 	 *
-	 * @param bridge The bridge containing the set of smart contracts to be analyzed.
+	 * @param bridge The bridge containing the set of smart contracts to be
+	 *                   analyzed.
 	 */
 	public static void runIntraCrossChainCheckers(Bridge bridge) {
-		log.info("Running intra cross-chain checkers.");
+		log.info("[IN] Running intra cross-chain checkers.");
 
-		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : bridge) {
-			futures.add(executor.submit(() -> runEventOrderChecker(contract)));
-			futures.add(executor.submit(() -> runUncheckedStateUpdateChecker(contract)));
-			futures.add(executor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runRandomnessDependencyChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedStateUpdateChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 		}
 
-		waitForCompletion(futures);
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving intra cross-chain checkers results.");
 
 		for (SmartContract contract : bridge) {
 			contract.setVulnerabilities(
-					VulnerabilitiesObject.newVulnerabilitiesObject()
-							.reentrancy(
-									MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()))
-							.txOrigin(MyCache.getInstance().getTxOriginWarnings(contract.getCFG().hashCode()))
-							.randomness(MyCache.getInstance()
-									.getRandomnessDependencyWarnings(contract.getCFG().hashCode()))
-							.possibleRandomness(MyCache.getInstance()
-									.getPossibleRandomnessDependencyWarnings(contract.getCFG().hashCode()))
-							.eventOrder(MyCache.getInstance()
-									.getEventOrderWarnings(contract.getCFG().hashCode()))
-							.uncheckedExternalInfluence(MyCache.getInstance()
-									.getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()))
-							.uncheckedStateUpdate(MyCache.getInstance()
-									.getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()))
-							.build());
+					VulnerabilitiesObject.buildFromCFG(
+							contract.getCFG()));
 		}
 
-		log.info("Intra cross-chain checkers results saved.");
-		executor.shutdown();
+		log.info("[OUT] Intra cross-chain checkers results saved.");
 	}
 
-
 	/**
-	 * Executes the inter cross-chain checkers to analyze vulnerabilities related
-	 * to time synchronization across the given bridge of smart contracts (i.e., time synchronization dependency).
+	 * Executes the inter cross-chain checkers to analyze vulnerabilities
+	 * related to time synchronization across the given bridge of smart
+	 * contracts (i.e., time synchronization dependency).
 	 *
-	 * @param bridge The bridge object which contains the collection of smart contracts
-	 *               to be analyzed. It serves as the main context for the inter
-	 *               cross-chain analysis.
+	 * @param bridge The bridge object which contains the collection of smart
+	 *                   contracts to be analyzed. It serves as the main context
+	 *                   for the inter cross-chain analysis.
 	 */
 	public static void runInterCrossChainCheckers(Bridge bridge) {
-		log.info("Running inter cross-chain checkers.");
+		log.info("[IN] Running inter cross-chain checkers.");
 
 		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
 		List<Future<?>> futures = new ArrayList<>();
@@ -270,14 +253,14 @@ public class xEVMLiSA {
 		for (SmartContract contract : bridge) {
 			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
 		}
-		waitForCompletion(futures);
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
 
 		for (SmartContract contract : bridge) {
 			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
 		}
-		waitForCompletion(futures);
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving inter cross-chain checkers results.");
 
@@ -286,50 +269,8 @@ public class xEVMLiSA {
 						.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
 						.build());
 
-		log.info("Inter cross-chain checkers results saved.");
+		log.info("[OUT] Inter cross-chain checkers results saved.");
 		executor.shutdown();
-	}
-
-	/**
-	 * Runs the randomness dependency checker on the given smart contract.
-	 *
-	 * @param contract The smart contract to analyze.
-	 */
-	public static void runRandomnessDependencyChecker(SmartContract contract) {
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Randomness dependency checker
-		RandomnessDependencyChecker checker = new RandomnessDependencyChecker();
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new RandomnessDependencyAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
-	}
-
-	/**
-	 * Runs the tx. origin checker on the given smart contract.
-	 *
-	 * @param contract The smart contract to analyze.
-	 */
-	public static void runTxOriginChecker(SmartContract contract) {
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Tx. Origin checker
-		TxOriginChecker checker = new TxOriginChecker();
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new TxOriginAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
 	}
 
 	/**
@@ -338,6 +279,8 @@ public class xEVMLiSA {
 	 * @param contract The smart contract to analyze.
 	 */
 	public static void runUncheckedExternalInfluenceChecker(SmartContract contract) {
+		log.info("[IN] Running unchecked external influence checker on {}.", contract.getName());
+
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -351,6 +294,10 @@ public class xEVMLiSA {
 				new UncheckedExternalInfluenceAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
+
+		log.info("[OUT] Unchecked external influence checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -359,6 +306,8 @@ public class xEVMLiSA {
 	 * @param contract The smart contract to analyze.
 	 */
 	public static void runUncheckedStateUpdateChecker(SmartContract contract) {
+		log.info("[IN] Running unchecked state update checker on {}.", contract.getName());
+
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -371,24 +320,10 @@ public class xEVMLiSA {
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
-	}
 
-	/**
-	 * Runs the reentrancy checker on the given smart contract.
-	 *
-	 * @param contract The smart contract to analyze.
-	 */
-	public static void runReentrancyChecker(SmartContract contract) {
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Reentrancy checker
-		ReentrancyChecker checker = new ReentrancyChecker();
-		conf.semanticChecks.add(checker);
-		lisa.run(program);
+		log.info("[OUT] Unchecked state update checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -400,6 +335,8 @@ public class xEVMLiSA {
 	 * @param contract The smart contract to analyze.
 	 */
 	public static void runEventOrderChecker(SmartContract contract) {
+		log.info("[IN] Running event order checker on {}.", contract.getName());
+
 		Set<Statement> functionsEntrypoints = new HashSet<>();
 
 		for (Signature function : contract.getFunctionsSignature())
@@ -426,6 +363,10 @@ public class xEVMLiSA {
 				}
 			}
 		}
+
+		log.info("[OUT] Event order checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**

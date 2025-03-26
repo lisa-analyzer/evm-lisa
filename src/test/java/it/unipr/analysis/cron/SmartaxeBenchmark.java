@@ -1,16 +1,20 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.EVMLiSA;
+import it.unipr.analysis.contract.SmartContract;
 import it.unipr.crosschain.Bridge;
 import it.unipr.crosschain.xEVMLiSA;
+import it.unipr.utils.EVMLiSAExecutor;
+import it.unipr.utils.MyCache;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
-import it.unipr.utils.MyCache;
+import java.util.concurrent.CompletableFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -24,13 +28,11 @@ public class SmartaxeBenchmark {
 		EVMLiSA.setWorkingDirectory(workingDirectory);
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() - 1);
-        EVMLiSA.enableReentrancyChecker();
-        EVMLiSA.enableRandomnessDependencyChecker();
-        EVMLiSA.enableTxOriginChecker();
 
 		new SmartaxeBenchmark().runBenchmarkManuallyLabeled();
 
 		log.debug("Cache used {} times.", MyCache.getTimesUsed());
+		EVMLiSAExecutor.shutdown();
 	}
 
 	private void runBenchmarkManuallyLabeled() {
@@ -45,9 +47,10 @@ public class SmartaxeBenchmark {
 					Path abiDirectoryPath = dir.resolve("abi");
 					String name = dir.getFileName().toString();
 
-					EVMLiSA.setWorkingDirectory(workingDirectory.resolve(name));
-
-					bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, name));
+					if (name.equals("THORChain20210629")) {
+						EVMLiSA.setWorkingDirectory(workingDirectory.resolve(name));
+						bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, name));
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -60,14 +63,30 @@ public class SmartaxeBenchmark {
 		JSONArray bridgesVulnerabilities = new JSONArray();
 
 		for (Bridge bridge : bridges) {
-			xEVMLiSA.analyzeBridge(bridge);
-			xEVMLiSA.runIntraCrossChainCheckers(bridge);
+			log.info("[IN] Analyzing bridge {} with {} contracts.",
+					bridge.getName(), bridge.getSmartContracts().size());
+
+			List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+			for (SmartContract contract : bridge) {
+				futures.add(EVMLiSAExecutor.runAsync(
+						() -> EVMLiSA.buildCFG(contract),
+						() -> EVMLiSA.runReentrancyChecker(contract),
+						() -> EVMLiSA.runTxOriginChecker(contract),
+						() -> EVMLiSA.runRandomnessDependencyChecker(contract),
+						() -> xEVMLiSA.runEventOrderChecker(contract),
+						() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
+						() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract)));
+			}
+
+			EVMLiSAExecutor.awaitCompletionCompletableFutures(futures);
 
 			JSONObject bridgeVulnerabilities = new JSONObject();
 			bridgeVulnerabilities.put("name", bridge.getName());
 			bridgeVulnerabilities.put("vulnerabilities", bridge.vulnerabilitiesToJson());
 			bridgesVulnerabilities.put(bridgeVulnerabilities);
 
+			log.info("[OUT] Bridge analyzed {}.", bridge.getName());
 			log.info("Analyzed {}/{} bridges.", ++counter, bridges.size());
 
 			try {
@@ -79,7 +98,6 @@ public class SmartaxeBenchmark {
 				log.error("An error occurred while saving vulnerabilities results of {}: {}", bridge.getName(),
 						e.getMessage());
 			}
-
 		}
 
 		try {

@@ -13,6 +13,8 @@ import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.frontend.EVMLiSAFeatures;
+import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.*;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -114,7 +116,8 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Enables all security checkers (i.e., reentrancy, randomness dependency, tx.origin).
+	 * Enables all security checkers (i.e., reentrancy, randomness dependency,
+	 * tx.origin).
 	 */
 	public static void enableAllSecurityCheckers() {
 		EVMLiSA.enableReentrancyChecker();
@@ -221,6 +224,7 @@ public class EVMLiSA {
 
 		EVMLiSA.analyzeContract(contract);
 		System.err.println(contract);
+		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -242,20 +246,15 @@ public class EVMLiSA {
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
 		log.info("Analyzing {} contracts.", contracts.size());
 
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(CORES);
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : contracts)
-			futures.add(executor.submit(() -> {
-				analyzeContract(contract);
-				log.debug("Active tasks: {}, Pending tasks: {}", executor.getActiveCount(), executor.getQueue().size());
-			}));
+			futures.add(EVMLiSAExecutor.submit(() -> analyzeContract(contract)));
 
 		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(), CORES);
 
-		waitForCompletion(futures);
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
-		executor.shutdown();
 		log.info("Finished analysis of {} contracts.", contracts.size());
 
 		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("set-of-contracts");
@@ -273,12 +272,18 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Analyzes a given smart contract.
+	 * Builds the Control Flow Graph (CFG) for the given smart contract. This
+	 * method generates the CFG from the contract's mnemonic bytecode,
+	 * configures and runs the LiSA analysis, and stores the computed CFG and
+	 * statistics in the contract object.
 	 *
-	 * @param contract the smart contract to analyze
+	 * @param contract the smart contract for which the CFG is to be built
 	 */
-	public static void analyzeContract(SmartContract contract) {
-		log.info("Analyzing contract {}.", contract.getAddress());
+	public static void buildCFG(SmartContract contract) {
+		if (contract == null)
+			return;
+
+		log.info("[IN] Building CFG of contract {}.", contract.getName());
 
 		Program program = null;
 		try {
@@ -298,7 +303,7 @@ public class EVMLiSA {
 		LiSA lisa = new LiSA(conf);
 		lisa.run(program);
 
-		log.info("Analysis ended of contract {}.", contract.getAddress());
+		log.info("[OUT] CFG of contract {} built.", contract.getName());
 
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
@@ -313,54 +318,132 @@ public class EVMLiSA {
 		contract.computeFunctionsSignatureExitPoints();
 		contract.computeEventsSignatureEntryPoints();
 		contract.computeEventsExitPoints();
+	}
 
-		if (ReentrancyChecker.isEnabled()) {
-			log.info("Running reentrancy checker on {}.", contract.getName());
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
-			log.info("Reentrancy checker ended on {}, with {} vulnerabilities found.",
-					contract.getName(),
-					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
-		}
-		if (TxOriginChecker.isEnabled()) {
-			log.info("Running tx. origin checker on {}.", contract.getName());
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TxOriginChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-					new TxOriginAbstractDomain(),
-					new TypeEnvironment<>(new InferredTypes()));
-			lisa.run(program);
-			log.info("Tx. origin checker ended on {}, with {} vulnerabilities found.",
-					contract.getName(),
-					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
-		}
-		if (RandomnessDependencyChecker.isEnabled()) {
-			log.info("Running randomness dependency checker on {}.", contract.getName());
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new RandomnessDependencyChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-					new RandomnessDependencyAbstractDomain(),
-					new TypeEnvironment<>(new InferredTypes()));
-			lisa.run(program);
-			log.info("Randomness dependency checker ended on {}, with {} definite and {} possible vulnerabilities found.",
-					contract.getName(),
-					MyCache.getInstance().getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()),
-					MyCache.getInstance().getPossibleRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()));
-		}
+	/**
+	 * Runs all enabled security checkers on the given smart contract. This
+	 * method executes various security checkers (e.g., Reentrancy, TxOrigin,
+	 * and Randomness Dependency checkers) on the computed CFG of the contract.
+	 * It then stores the detected vulnerabilities in the contract object.
+	 *
+	 * @param contract the smart contract on which security checkers are
+	 *                     executed
+	 */
+	public static void runCheckers(SmartContract contract) {
+		if (contract == null || contract.getCFG() == null)
+			return;
+
+		log.info("[IN] Running checkers on contract {}.", contract.getName());
+
+		if (ReentrancyChecker.isEnabled())
+			runReentrancyChecker(contract);
+		if (TxOriginChecker.isEnabled())
+			runTxOriginChecker(contract);
+		if (RandomnessDependencyChecker.isEnabled())
+			runRandomnessDependencyChecker(contract);
 
 		contract.setVulnerabilities(
-				VulnerabilitiesObject.newVulnerabilitiesObject()
-						.reentrancy(
-								MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
-						.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
-						.randomness(MyCache.getInstance()
-								.getRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()))
-						.possibleRandomness(MyCache.getInstance()
-								.getPossibleRandomnessDependencyWarnings(checker.getComputedCFG().hashCode()))
-						.build());
+				VulnerabilitiesObject.buildFromCFG(
+						contract.getCFG()));
+
+		log.info("[OUT] Checkers run on contract {}.", contract.getName());
+	}
+
+	/**
+	 * Analyzes a given smart contract.
+	 *
+	 * @param contract the smart contract to analyze
+	 */
+	public static void analyzeContract(SmartContract contract) {
+		log.info("[IN] Analyzing contract {}.", contract.getName());
+
+		buildCFG(contract);
+		runCheckers(contract);
+
 		contract.generateCFGWithBasicBlocks();
 		contract.toFile();
+
+		log.info("[OUT] Analysis ended of contract {}.", contract.getName());
+	}
+
+	/**
+	 * Runs the reentrancy checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runReentrancyChecker(SmartContract contract) {
+		log.info("[IN] Running reentrancy checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Reentrancy checker
+		ReentrancyChecker checker = new ReentrancyChecker();
+		conf.semanticChecks.add(checker);
+		lisa.run(program);
+
+		log.info("[OUT] Reentrancy checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()));
+	}
+
+	/**
+	 * Runs the randomness dependency checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runRandomnessDependencyChecker(SmartContract contract) {
+		log.info("[IN] Running randomness dependency checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Randomness dependency checker
+		RandomnessDependencyChecker checker = new RandomnessDependencyChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new RandomnessDependencyAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+
+		log.info(
+				"[OUT] Randomness dependency checker ended on {}, with {} definite and {} possible vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getRandomnessDependencyWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleRandomnessDependencyWarnings(contract.getCFG().hashCode()));
+	}
+
+	/**
+	 * Runs the tx. origin checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runTxOriginChecker(SmartContract contract) {
+		log.info("[IN] Running tx. origin checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Tx. Origin checker
+		TxOriginChecker checker = new TxOriginChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new TxOriginAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+
+		log.info("[OUT] Tx. origin checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getTxOriginWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -779,24 +862,5 @@ public class EVMLiSA {
 			System.exit(1);
 			return null;
 		}
-	}
-
-	/**
-	 * Waits for all submitted tasks in the given list of futures to complete.
-	 *
-	 * @param futures A list of {@link Future} objects representing running
-	 *                    tasks.
-	 */
-	public static void waitForCompletion(List<Future<?>> futures) {
-		for (Future<?> future : futures)
-			try {
-				future.get();
-			} catch (ExecutionException e) {
-				System.err.println(JSONManager.throwNewError("Error during task execution: " + e.getMessage()));
-				System.exit(1);
-			} catch (InterruptedException ie) {
-				System.err.println(JSONManager.throwNewError("Interrupted during task execution: " + ie.getMessage()));
-				System.exit(1);
-			}
 	}
 }
