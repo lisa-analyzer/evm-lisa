@@ -19,6 +19,7 @@ public class VulnerabilitiesObject {
 	private int txOrigin;
 	private int possibleTxOrigin;
 	private int uncheckedExternalInfluence;
+	private int possibleUncheckedExternalInfluence;
 	private int eventOrder;
 	private int uncheckedStateUpdate;
 	private int timeSynchronization;
@@ -31,22 +32,29 @@ public class VulnerabilitiesObject {
 		this.txOrigin = 0;
 		this.possibleTxOrigin = 0;
 		this.uncheckedExternalInfluence = 0;
+		this.possibleUncheckedExternalInfluence = 0;
 		this.eventOrder = 0;
 		this.uncheckedStateUpdate = 0;
 		this.timeSynchronization = 0;
 		this.json = new JSONObject();
 	}
 
-	private VulnerabilitiesObject(int reentrancy, int randomness, int possibleRandomness, int txOrigin,
-			int possibleTxOrigin,
-			int uncheckedExternalInfluence,
-			int eventOrder, int uncheckedStateUpdate, int timeSynchronization, JSONObject json) {
+	private VulnerabilitiesObject(int reentrancy,
+			int randomness, int possibleRandomness,
+			int txOrigin, int possibleTxOrigin,
+			int uncheckedExternalInfluence, int possibleUncheckedExternalInfluence,
+			int eventOrder,
+			int uncheckedStateUpdate,
+			int timeSynchronization,
+			JSONObject json) {
+
 		this.reentrancy = reentrancy;
 		this.randomness = randomness;
 		this.possibleRandomness = possibleRandomness;
 		this.txOrigin = txOrigin;
 		this.possibleTxOrigin = possibleTxOrigin;
 		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
+		this.possibleUncheckedExternalInfluence = possibleUncheckedExternalInfluence;
 		this.eventOrder = eventOrder;
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
 		this.timeSynchronization = timeSynchronization;
@@ -58,72 +66,10 @@ public class VulnerabilitiesObject {
 		this.json.put("tx_origin", this.txOrigin);
 		this.json.put("tx_origin_possible", this.possibleTxOrigin);
 		this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
+		this.json.put("unchecked_external_influence_possible", this.possibleUncheckedExternalInfluence);
 		this.json.put("event_order", this.eventOrder);
 		this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
 		this.json.put("time_synchronization", this.timeSynchronization);
-	}
-
-	/**
-	 * Returns the reentrancy vulnerability score.
-	 *
-	 * @return the reentrancy score
-	 */
-	public int getReentrancy() {
-		return reentrancy;
-	}
-
-	/**
-	 * Returns the randomness dependency vulnerability score.
-	 *
-	 * @return the randomness dependency score
-	 */
-	public int getRandomness() {
-		return randomness;
-	}
-
-	/**
-	 * Returns the tx .origin vulnerability score.
-	 *
-	 * @return the tx. origin score
-	 */
-	public int getTxOrigin() {
-		return txOrigin;
-	}
-
-	/**
-	 * Returns the unchecked external influence vulnerability score.
-	 *
-	 * @return the unchecked external influence score
-	 */
-	public int getUncheckedExternalInfluence() {
-		return uncheckedExternalInfluence;
-	}
-
-	/**
-	 * Returns the event order vulnerability score.
-	 *
-	 * @return the event order score
-	 */
-	public int getEventOrder() {
-		return eventOrder;
-	}
-
-	/**
-	 * Returns the unchecked state update vulnerability score.
-	 *
-	 * @return the unchecked state update score
-	 */
-	public int getUncheckedStateUpdate() {
-		return uncheckedStateUpdate;
-	}
-
-	/**
-	 * Returns the time synchronization vulnerability score.
-	 *
-	 * @return the time synchronization score
-	 */
-	public int getTimeSynchronization() {
-		return timeSynchronization;
 	}
 
 	/**
@@ -208,6 +154,19 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
+	 * Sets the possible unchecked external influence vulnerability score.
+	 *
+	 * @param possibleUncheckedExternalInfluence the unchecked external
+	 *                                               influence score
+	 *
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject possibleUncheckedExternalInfluence(int possibleUncheckedExternalInfluence) {
+		this.possibleUncheckedExternalInfluence = possibleUncheckedExternalInfluence;
+		return this;
+	}
+
+	/**
 	 * Sets the event order vulnerability score.
 	 *
 	 * @param eventOrder the event order score
@@ -243,6 +202,18 @@ public class VulnerabilitiesObject {
 		return this;
 	}
 
+	/**
+	 * Builds a {@link VulnerabilitiesObject} from the given EVM control-flow
+	 * graph (CFG). This method retrieves various vulnerability warnings from
+	 * the cache based on the CFG's hash code and compiles them into a
+	 * {@link VulnerabilitiesObject}.
+	 *
+	 * @param cfg the EVM control-flow graph from which to extract vulnerability
+	 *                data
+	 * 
+	 * @return a {@link VulnerabilitiesObject} containing detected
+	 *             vulnerabilities
+	 */
 	public static VulnerabilitiesObject buildFromCFG(EVMCFG cfg) {
 		return VulnerabilitiesObject.newVulnerabilitiesObject()
 				.reentrancy(
@@ -258,6 +229,8 @@ public class VulnerabilitiesObject {
 						.getEventOrderWarnings(cfg.hashCode()))
 				.uncheckedExternalInfluence(MyCache.getInstance()
 						.getUncheckedExternalInfluenceWarnings(cfg.hashCode()))
+				.possibleUncheckedExternalInfluence(MyCache.getInstance()
+						.getPossibleUncheckedExternalInfluenceWarnings(cfg.hashCode()))
 				.uncheckedStateUpdate(MyCache.getInstance()
 						.getUncheckedStateUpdateWarnings(cfg.hashCode()))
 				.build();
@@ -269,9 +242,14 @@ public class VulnerabilitiesObject {
 	 * @return a new {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject build() {
-		return new VulnerabilitiesObject(reentrancy, randomness, possibleRandomness, txOrigin, possibleTxOrigin,
-				uncheckedExternalInfluence, eventOrder,
-				uncheckedStateUpdate, timeSynchronization, json);
+		return new VulnerabilitiesObject(reentrancy,
+				randomness, possibleRandomness,
+				txOrigin, possibleTxOrigin,
+				uncheckedExternalInfluence, possibleUncheckedExternalInfluence,
+				eventOrder,
+				uncheckedStateUpdate,
+				timeSynchronization,
+				json);
 	}
 
 	/**

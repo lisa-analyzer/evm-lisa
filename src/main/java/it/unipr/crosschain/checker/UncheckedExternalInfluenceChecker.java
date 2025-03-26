@@ -92,7 +92,7 @@ public class UncheckedExternalInfluenceChecker implements
 
 					// Checks if either first or second element in the
 					// stack is tainted
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2))) {
 
@@ -100,8 +100,17 @@ public class UncheckedExternalInfluenceChecker implements
 							taintedJumpi.add(node);
 							return true;
 						}
-
 						checkForUncheckedExternalInfluence(node, tool, cfg);
+
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2))) {
+
+						if (node instanceof Jumpi) {
+							taintedJumpi.add(node);
+							return true;
+						}
+						checkForPossibleUncheckedExternalInfluence(node, tool, cfg);
 					}
 
 				}
@@ -132,7 +141,7 @@ public class UncheckedExternalInfluenceChecker implements
 
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-				log.warn("Unchecked External Influence vulnerability at pc {} at line {} coming from line {}.",
+				log.warn("Unchecked External Influence vulnerability at pc {}  (line {}) coming from line {}.",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
@@ -141,6 +150,31 @@ public class UncheckedExternalInfluenceChecker implements
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
+			}
+		}
+	}
+
+	private void checkForPossibleUncheckedExternalInfluence(Statement sstore, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
+
+		Set<Statement> externalDatas = cfg.getExternalData();
+
+		for (Statement data : externalDatas) {
+			if (cfg.reachableFromWithoutStatements(data, sstore, taintedJumpi)) {
+
+				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
+
+				log.warn(
+						"Unchecked External Influence vulnerability (possible) at pc {} (line {}) coming from line {}.",
+						sstoreLocation.getPc(),
+						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
+
+				String warn = "Unchecked External Influence vulnerability (possible) at "
+						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
+				tool.warn(warn);
+				MyCache.getInstance().addPossibleUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
 			}
 		}
 	}

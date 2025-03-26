@@ -30,6 +30,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
 	private final Set<String> _timeSynchronizationWarnings;
@@ -76,6 +77,7 @@ public class MyCache {
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleUncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
 		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
@@ -287,6 +289,42 @@ public class MyCache {
 		synchronized (_uncheckedExternalInfluenceWarnings) {
 			return (_uncheckedExternalInfluenceWarnings.get(key) != null)
 					? _uncheckedExternalInfluenceWarnings.get(key).size()
+					: 0;
+		}
+	}
+
+	/**
+	 * Adds a possible unchecked external influence warning for the specified
+	 * key. If no warnings are associated with the key, a new set is created and
+	 * the warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addPossibleUncheckedExternalInfluenceWarning(Integer key, Object warning) {
+		synchronized (_possibleUncheckedExternalInfluenceWarnings) {
+			_possibleUncheckedExternalInfluenceWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of possible unchecked external influence warnings
+	 * associated with the specified key. If no warnings are associated with the
+	 * key, the method returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of possible warnings associated with the key, or 0 if
+	 *             none exist
+	 */
+	public int getPossibleUncheckedExternalInfluenceWarnings(Integer key) {
+		synchronized (_possibleUncheckedExternalInfluenceWarnings) {
+			return (_possibleUncheckedExternalInfluenceWarnings.get(key) != null)
+					? _possibleUncheckedExternalInfluenceWarnings.get(key).size()
 					: 0;
 		}
 	}
