@@ -1,0 +1,8 @@
+file,original pragma version,compiled version,notes
+IERC20.sol,0.8.17,0.8.17,
+QANX.sol,^0.8.0,0.8.0,
+ERC20.sol,0.8.17,0.8.17,
+IERC20Metadata.sol,0.8.17,0.8.17,
+Context.sol,0.8.17,0.8.17,
+BridgeQANX.sol,^0.8.0,0.8.0,
+QANX_1.sol,0.8.17,0.8.17,

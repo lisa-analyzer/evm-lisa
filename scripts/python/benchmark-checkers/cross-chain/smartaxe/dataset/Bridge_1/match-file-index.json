@@ -1,0 +1,8 @@
+{
+    "ERC20_1": 1,
+    "IERC20_1": 2,
+    "TokenA_flat_1": 3,
+    "TokenB_flat_1": 4,
+    "mainBridge_1": 5,
+    "sideBridge_1": 6
+}
