@@ -76,8 +76,7 @@ public class TxOriginChecker implements
 						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
 							raiseWarning(node, tool, cfg);
-
-						if (TaintElement.isAtLeastOneTop(taintedStack.getElementAtPosition(1),
+						else if (TaintElement.isAtLeastOneTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
 							raisePossibleWarning(node, tool, cfg);
 					}
