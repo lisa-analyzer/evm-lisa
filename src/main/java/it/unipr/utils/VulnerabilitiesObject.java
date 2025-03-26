@@ -14,28 +14,44 @@ public class VulnerabilitiesObject {
 	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
 
 	private int reentrancy;
+
 	private int randomness;
 	private int possibleRandomness;
+
 	private int txOrigin;
 	private int possibleTxOrigin;
+
 	private int uncheckedExternalInfluence;
 	private int possibleUncheckedExternalInfluence;
+
 	private int eventOrder;
+
 	private int uncheckedStateUpdate;
+	private int possibleUncheckedStateUpdate;
+
 	private int timeSynchronization;
+
 	private JSONObject json;
 
 	private VulnerabilitiesObject() {
 		this.reentrancy = 0;
+
 		this.randomness = 0;
 		this.possibleRandomness = 0;
+
 		this.txOrigin = 0;
 		this.possibleTxOrigin = 0;
+
 		this.uncheckedExternalInfluence = 0;
 		this.possibleUncheckedExternalInfluence = 0;
+
 		this.eventOrder = 0;
+
 		this.uncheckedStateUpdate = 0;
+		this.possibleUncheckedStateUpdate = 0;
+
 		this.timeSynchronization = 0;
+
 		this.json = new JSONObject();
 	}
 
@@ -44,7 +60,7 @@ public class VulnerabilitiesObject {
 			int txOrigin, int possibleTxOrigin,
 			int uncheckedExternalInfluence, int possibleUncheckedExternalInfluence,
 			int eventOrder,
-			int uncheckedStateUpdate,
+			int uncheckedStateUpdate, int possibleUncheckedStateUpdate,
 			int timeSynchronization,
 			JSONObject json) {
 
@@ -57,6 +73,7 @@ public class VulnerabilitiesObject {
 		this.possibleUncheckedExternalInfluence = possibleUncheckedExternalInfluence;
 		this.eventOrder = eventOrder;
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
+		this.possibleUncheckedStateUpdate = possibleUncheckedStateUpdate;
 		this.timeSynchronization = timeSynchronization;
 		this.json = json;
 
@@ -69,6 +86,7 @@ public class VulnerabilitiesObject {
 		this.json.put("unchecked_external_influence_possible", this.possibleUncheckedExternalInfluence);
 		this.json.put("event_order", this.eventOrder);
 		this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
+		this.json.put("unchecked_state_update_possible", this.possibleUncheckedStateUpdate);
 		this.json.put("time_synchronization", this.timeSynchronization);
 	}
 
@@ -191,6 +209,18 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
+	 * Sets the possible unchecked state update vulnerability score.
+	 *
+	 * @param possibleUncheckedStateUpdate the unchecked state update score
+	 *
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject possibleUncheckedStateUpdate(int possibleUncheckedStateUpdate) {
+		this.possibleUncheckedStateUpdate = possibleUncheckedStateUpdate;
+		return this;
+	}
+
+	/**
 	 * Sets the time synchronization vulnerability score.
 	 *
 	 * @param timeSynchronization the time synchronization score
@@ -233,6 +263,8 @@ public class VulnerabilitiesObject {
 						.getPossibleUncheckedExternalInfluenceWarnings(cfg.hashCode()))
 				.uncheckedStateUpdate(MyCache.getInstance()
 						.getUncheckedStateUpdateWarnings(cfg.hashCode()))
+				.possibleUncheckedStateUpdate(MyCache.getInstance()
+						.getPossibleUncheckedStateUpdateWarnings(cfg.hashCode()))
 				.build();
 	}
 
@@ -247,7 +279,7 @@ public class VulnerabilitiesObject {
 				txOrigin, possibleTxOrigin,
 				uncheckedExternalInfluence, possibleUncheckedExternalInfluence,
 				eventOrder,
-				uncheckedStateUpdate,
+				uncheckedStateUpdate, possibleUncheckedStateUpdate,
 				timeSynchronization,
 				json);
 	}

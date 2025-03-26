@@ -29,6 +29,7 @@ public class MyCache {
 	private final LRUMap<String, Boolean> _reachableFrom;
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleUncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
@@ -76,6 +77,7 @@ public class MyCache {
 		this._reachableFrom = new LRUMap<String, Boolean>(5000);
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleUncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleUncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
@@ -254,6 +256,42 @@ public class MyCache {
 	public int getUncheckedStateUpdateWarnings(Integer key) {
 		synchronized (_uncheckedStateUpdateWarnings) {
 			return (_uncheckedStateUpdateWarnings.get(key) != null) ? _uncheckedStateUpdateWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds a possible unchecked state update warning for the specified key. If
+	 * no warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addPossibleUncheckedStateUpdateWarning(Integer key, Object warning) {
+		synchronized (_possibleUncheckedStateUpdateWarnings) {
+			_possibleUncheckedStateUpdateWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of possible unchecked state update warnings
+	 * associated with the specified key. If no warnings are associated with the
+	 * key, the method returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getPossibleUncheckedStateUpdateWarnings(Integer key) {
+		synchronized (_possibleUncheckedStateUpdateWarnings) {
+			return (_possibleUncheckedStateUpdateWarnings.get(key) != null)
+					? _possibleUncheckedStateUpdateWarnings.get(key).size()
+					: 0;
 		}
 	}
 

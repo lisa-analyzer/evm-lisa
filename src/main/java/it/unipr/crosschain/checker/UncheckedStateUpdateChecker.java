@@ -56,10 +56,14 @@ public class UncheckedStateUpdateChecker implements
 
 					// Checks if either first or second element in the
 					// stack is tainted
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2))) {
 						checkForUncheckedStateUpdate(sstore, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2))) {
+						checkForPossibleUncheckedStateUpdate(sstore, tool, cfg);
 					}
 
 				}
@@ -89,6 +93,30 @@ public class UncheckedStateUpdateChecker implements
 						+ ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addUncheckedStateUpdateWarning(cfg.hashCode(), warn);
+			}
+		}
+	}
+
+	private void checkForPossibleUncheckedStateUpdate(Statement sstore, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
+
+		Set<Statement> calls = cfg.getAllCall();
+
+		for (Statement call : calls) {
+			if (cfg.reachableFromWithoutTypes(call, sstore, Collections.singleton(Jumpi.class))) {
+
+				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
+
+				log.warn("Unchecked State Update vulnerability (possible) at pc {} (line {}) coming from line {}.",
+						sstoreLocation.getPc(),
+						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
+
+				String warn = "Unchecked State Update vulnerability (possible) at "
+						+ ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine();
+				tool.warn(warn);
+				MyCache.getInstance().addPossibleUncheckedStateUpdateWarning(cfg.hashCode(), warn);
 			}
 		}
 	}
