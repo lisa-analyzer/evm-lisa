@@ -367,7 +367,9 @@ public class SmartContract {
 	 * @return Vulnerabilities object.
 	 */
 	public VulnerabilitiesObject getVulnerabilities() {
-		return _vulnerabilities;
+		if (this._vulnerabilities == null)
+			this._vulnerabilities = VulnerabilitiesObject.buildFromCFG(this._cfg);
+		return this._vulnerabilities;
 	}
 
 	public String getName() {

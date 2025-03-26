@@ -1,14 +1,14 @@
 package it.unipr.utils;
 
+import it.unipr.cfg.EVMCFG;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-
 /**
- * The {@code VulnerabilitiesObject} class represents a data model to hold various
- * security vulnerability scores within a system. It provides methods to manage and
- * build these scores, including utilities for JSON representation.
+ * The {@code VulnerabilitiesObject} class represents a data model to hold
+ * various security vulnerability scores within a system. It provides methods to
+ * manage and build these scores, including utilities for JSON representation.
  */
 public class VulnerabilitiesObject {
 	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
@@ -35,7 +35,8 @@ public class VulnerabilitiesObject {
 		this.json = new JSONObject();
 	}
 
-	private VulnerabilitiesObject(int reentrancy, int randomness, int possibleRandomness, int txOrigin, int uncheckedExternalInfluence,
+	private VulnerabilitiesObject(int reentrancy, int randomness, int possibleRandomness, int txOrigin,
+			int uncheckedExternalInfluence,
 			int eventOrder, int uncheckedStateUpdate, int timeSynchronization, JSONObject json) {
 		this.reentrancy = reentrancy;
 		this.randomness = randomness;
@@ -157,6 +158,7 @@ public class VulnerabilitiesObject {
 	 * Sets the possible randomness dependency vulnerability score.
 	 *
 	 * @param possibleRandomness the possible randomness dependency score
+	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject possibleRandomness(int possibleRandomness) {
@@ -224,13 +226,32 @@ public class VulnerabilitiesObject {
 		return this;
 	}
 
+	public static VulnerabilitiesObject buildFromCFG(EVMCFG cfg) {
+		return VulnerabilitiesObject.newVulnerabilitiesObject()
+				.reentrancy(
+						MyCache.getInstance().getReentrancyWarnings(cfg.hashCode()))
+				.txOrigin(MyCache.getInstance().getTxOriginWarnings(cfg.hashCode()))
+				.randomness(MyCache.getInstance()
+						.getRandomnessDependencyWarnings(cfg.hashCode()))
+				.possibleRandomness(MyCache.getInstance()
+						.getPossibleRandomnessDependencyWarnings(cfg.hashCode()))
+				.eventOrder(MyCache.getInstance()
+						.getEventOrderWarnings(cfg.hashCode()))
+				.uncheckedExternalInfluence(MyCache.getInstance()
+						.getUncheckedExternalInfluenceWarnings(cfg.hashCode()))
+				.uncheckedStateUpdate(MyCache.getInstance()
+						.getUncheckedStateUpdateWarnings(cfg.hashCode()))
+				.build();
+	}
+
 	/**
 	 * Builds a new {@code VulnerabilitiesObject} with the specified values.
 	 *
 	 * @return a new {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject build() {
-		return new VulnerabilitiesObject(reentrancy, randomness, possibleRandomness, txOrigin, uncheckedExternalInfluence, eventOrder,
+		return new VulnerabilitiesObject(reentrancy, randomness, possibleRandomness, txOrigin,
+				uncheckedExternalInfluence, eventOrder,
 				uncheckedStateUpdate, timeSynchronization, json);
 	}
 
