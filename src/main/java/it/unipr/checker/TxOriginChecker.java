@@ -60,38 +60,61 @@ public class TxOriginChecker implements
 				}
 
 				// Retrieve the symbolic stack from the analysis result
-				TaintAbstractDomain stack = analysisResult.getState().getValueState();
+				TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
 				// If the stack is bottom, the node is definitely
 				// unreachable
-				if (stack.isBottom())
+				if (taintedStack.isBottom())
 					// Nothing to do
 					continue;
 				else {
-					TaintElement firstElem = stack.getFirstElement();
-					TaintElement secondElem = stack.getSecondElement();
-					if (firstElem.isBottom() || secondElem.isBottom())
+					if (taintedStack.getElementAtPosition(1).isBottom()
+							|| taintedStack.getElementAtPosition(2).isBottom())
 						// Nothing to do
 						continue;
 					else {
-						// Checks if either first or second element in the
-						// stack is tainted
-						if (firstElem.isTaint() || secondElem.isTaint()) {
-							ProgramCounterLocation jumploc = (ProgramCounterLocation) node.getLocation();
+						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
+								taintedStack.getElementAtPosition(2)))
+							raiseWarning(node, tool, cfg);
 
-							log.warn("Tx. Origin attack at pc {} at line {}.", jumploc.getPc(),
-									jumploc.getSourceCodeLine());
-
-							String warn = "TxOrigin attack at "
-									+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
-							tool.warn(warn);
-							MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
-						}
+						if (TaintElement.isAtLeastOneTop(taintedStack.getElementAtPosition(1),
+								taintedStack.getElementAtPosition(2)))
+							raisePossibleWarning(node, tool, cfg);
 					}
 				}
 			}
 		}
 
 		return true;
+	}
+
+	private void raiseWarning(Statement node, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
+
+		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
+
+		log.warn("Tx. Origin attack at pc {} (line {}).", nodeLocation.getPc(),
+				nodeLocation.getSourceCodeLine());
+
+		String warn = "TxOrigin attack at "
+				+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
+		tool.warn(warn);
+		MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
+	}
+
+	private void raisePossibleWarning(Statement node, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
+
+		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
+
+		log.warn("Tx. Origin attack (possible) at pc {} (line {}).", nodeLocation.getPc(),
+				nodeLocation.getSourceCodeLine());
+
+		String warn = "TxOrigin attack (possible) at "
+				+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
+		tool.warn(warn);
+		MyCache.getInstance().addPossibleTxOriginWarning(cfg.hashCode(), warn);
 	}
 }

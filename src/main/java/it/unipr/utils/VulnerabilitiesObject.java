@@ -17,6 +17,7 @@ public class VulnerabilitiesObject {
 	private int randomness;
 	private int possibleRandomness;
 	private int txOrigin;
+	private int possibleTxOrigin;
 	private int uncheckedExternalInfluence;
 	private int eventOrder;
 	private int uncheckedStateUpdate;
@@ -28,6 +29,7 @@ public class VulnerabilitiesObject {
 		this.randomness = 0;
 		this.possibleRandomness = 0;
 		this.txOrigin = 0;
+		this.possibleTxOrigin = 0;
 		this.uncheckedExternalInfluence = 0;
 		this.eventOrder = 0;
 		this.uncheckedStateUpdate = 0;
@@ -36,12 +38,14 @@ public class VulnerabilitiesObject {
 	}
 
 	private VulnerabilitiesObject(int reentrancy, int randomness, int possibleRandomness, int txOrigin,
+			int possibleTxOrigin,
 			int uncheckedExternalInfluence,
 			int eventOrder, int uncheckedStateUpdate, int timeSynchronization, JSONObject json) {
 		this.reentrancy = reentrancy;
 		this.randomness = randomness;
 		this.possibleRandomness = possibleRandomness;
 		this.txOrigin = txOrigin;
+		this.possibleTxOrigin = possibleTxOrigin;
 		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
 		this.eventOrder = eventOrder;
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
@@ -52,6 +56,7 @@ public class VulnerabilitiesObject {
 		this.json.put("randomness_dependency_definite", this.randomness);
 		this.json.put("randomness_dependency_possible", this.possibleRandomness);
 		this.json.put("tx_origin", this.txOrigin);
+		this.json.put("tx_origin_possible", this.possibleTxOrigin);
 		this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
 		this.json.put("event_order", this.eventOrder);
 		this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
@@ -179,6 +184,18 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
+	 * Sets the possible tx. origin vulnerability score.
+	 *
+	 * @param possibleTxOrigin the tx. origin score
+	 *
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject possibleTxOrigin(int possibleTxOrigin) {
+		this.possibleTxOrigin = possibleTxOrigin;
+		return this;
+	}
+
+	/**
 	 * Sets the unchecked external influence vulnerability score.
 	 *
 	 * @param uncheckedExternalInfluence the unchecked external influence score
@@ -231,6 +248,8 @@ public class VulnerabilitiesObject {
 				.reentrancy(
 						MyCache.getInstance().getReentrancyWarnings(cfg.hashCode()))
 				.txOrigin(MyCache.getInstance().getTxOriginWarnings(cfg.hashCode()))
+				.possibleTxOrigin(MyCache.getInstance()
+						.getPossibleTxOriginWarnings(cfg.hashCode()))
 				.randomness(MyCache.getInstance()
 						.getRandomnessDependencyWarnings(cfg.hashCode()))
 				.possibleRandomness(MyCache.getInstance()
@@ -250,7 +269,7 @@ public class VulnerabilitiesObject {
 	 * @return a new {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject build() {
-		return new VulnerabilitiesObject(reentrancy, randomness, possibleRandomness, txOrigin,
+		return new VulnerabilitiesObject(reentrancy, randomness, possibleRandomness, txOrigin, possibleTxOrigin,
 				uncheckedExternalInfluence, eventOrder,
 				uncheckedStateUpdate, timeSynchronization, json);
 	}

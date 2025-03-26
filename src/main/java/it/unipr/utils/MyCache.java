@@ -25,6 +25,7 @@ public class MyCache {
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleTxOriginWarnings;
 	private final LRUMap<String, Boolean> _reachableFrom;
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
@@ -68,19 +69,20 @@ public class MyCache {
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
-		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleTxOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._reachableFrom = new LRUMap<String, Boolean>(5000);
-		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(1000);
-		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(2000);
-		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(2000);
-		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(2000);
+		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
+		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._timeSynchronizationWarnings = new HashSet<>();
-		this._vulnerableLogStatement = new LRUMap<>(1000);
+		this._vulnerableLogStatement = new LRUMap<>(5000);
 		this._taintedCallDataLoad = new HashSet<>();
-		this._linkFromLogToCallDataLoad = new LRUMap<>(1000);
+		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
 	}
 
 	/**
@@ -411,6 +413,40 @@ public class MyCache {
 	public int getTxOriginWarnings(Integer key) {
 		synchronized (_txOriginWarnings) {
 			return (_txOriginWarnings.get(key) != null) ? _txOriginWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds a possible tx origin warning for the specified key. If no warnings
+	 * are associated with the key, a new set is created and the warning is
+	 * added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addPossibleTxOriginWarning(Integer key, Object warning) {
+		synchronized (_possibleTxOriginWarnings) {
+			_possibleTxOriginWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of possible tx origin warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of possible warnings associated with the key, or 0 if
+	 *             none exist
+	 */
+	public int getPossibleTxOriginWarnings(Integer key) {
+		synchronized (_possibleTxOriginWarnings) {
+			return (_possibleTxOriginWarnings.get(key) != null) ? _possibleTxOriginWarnings.get(key).size() : 0;
 		}
 	}
 
