@@ -378,9 +378,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.cross_chain:
-        compile_bridges('cross-chain/smartaxe/manually-labeled')
-        compile_bridge('cross-chain/time-synchronization')
-        compile_bridge('cross-chain/dummy-bridge')
+        compile_bridges('cross-chain/smartaxe/dataset')
+        # compile_bridges('cross-chain/smartaxe/manually-labeled')
+        # compile_bridge('cross-chain/time-synchronization')
+        # compile_bridge('cross-chain/dummy-bridge')
 
     if args.solidifi:
         compile_solidity_sources('./solidifi/reentrancy/source-code',

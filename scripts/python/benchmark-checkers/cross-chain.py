@@ -31,6 +31,25 @@ def move_solidity_files(base_dir):
                 shutil.move(src_path, dest_path)
                 print(f"Moved: {src_path} -> {dest_path}")
 
+def rename_files_in_directory(directory_path):
+    """Renames files by removing '_1' suffix if no other files with the same base name exist."""
+    for root, _, files in os.walk(directory_path):
+        files_to_rename = [
+            file for file in files if file.endswith("_1.sol")
+        ]  # Collect files ending with '_1.sol'
+
+        for file in files_to_rename:
+            base_name = file[:-6]  # Remove '_1.sol'
+            other_file_exists = any(
+                f == f"{base_name}.sol" for f in files
+            )  # Check if the base file exists
+
+            if not other_file_exists:
+                old_path = os.path.join(root, file)
+                new_path = os.path.join(root, f"{base_name}.sol")
+                os.rename(old_path, new_path)
+                print(f"Renamed: {old_path} -> {new_path}")
+
 def analyze_vulnerabilities(json_path):
     """Reads a JSON file and prints the number of vulnerabilities for each bridge."""
     with open(json_path, "r", encoding="utf-8") as file:
@@ -63,8 +82,9 @@ def analyze_vulnerabilities(json_path):
         print("-" * 40)
 
 if __name__ == "__main__":
-    json_file_path = "benchmark_results.json"  
-    analyze_vulnerabilities(json_file_path)
+    # json_file_path = "benchmark_results.json"  
+    # analyze_vulnerabilities(json_file_path)
 
-    # base_directory = "Real_attack_dataset_format" 
-    # move_solidity_files(base_directory)
+    base_directory = "test-dataset" 
+    move_solidity_files(base_directory)
+    rename_files_in_directory(base_directory)
