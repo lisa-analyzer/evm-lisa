@@ -163,12 +163,24 @@ public abstract class TaintAbstractDomain
 					return resultStack;
 				}
 
+				case "CalldatacopyOperator": {
+					if (hasBottomUntil(3))
+						return bottom();
+
+					TaintAbstractDomain resultStack = clone();
+					resultStack.popX(3);
+
+					if (this.getTaintedOpcode().contains(op))
+						return mk(resultStack.circularArray, TaintElement.TAINT);
+
+					return resultStack;
+				}
+
 				case "BlobHashOperator":
 				case "BalanceOperator":
 				case "BlockhashOperator":
 				case "NotOperator":
 				case "CalldataloadOperator":
-				case "CalldatacopyOperator":
 				case "SloadOperator":
 				case "IszeroOperator": { // pop 1, push 1
 					if (hasBottomUntil(1))
