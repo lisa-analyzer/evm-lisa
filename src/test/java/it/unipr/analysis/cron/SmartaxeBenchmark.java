@@ -47,10 +47,8 @@ public class SmartaxeBenchmark {
 					Path abiDirectoryPath = dir.resolve("abi");
 					String name = dir.getFileName().toString();
 
-					if (name.equals("THORChain20210629")) {
-						EVMLiSA.setWorkingDirectory(workingDirectory.resolve(name));
-						bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, name));
-					}
+					EVMLiSA.setWorkingDirectory(workingDirectory.resolve(name));
+					bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, name));
 				}
 			}
 		} catch (IOException e) {
