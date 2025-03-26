@@ -386,13 +386,15 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Determines if the target statement is reachable from the start statement across
-	 * a cross-chain edge in the control flow graph (CFG).
+	 * Determines if the target statement is reachable from the start statement
+	 * across a cross-chain edge in the control flow graph (CFG).
 	 *
-	 * @param start the starting statement in the first control flow graph.
-	 * @param target the target statement which may belong to a different control flow graph.
-	 * @return true if the target statement is reachable from the start statement across
-	 *         a cross-chain edge; false otherwise.
+	 * @param start  the starting statement in the first control flow graph.
+	 * @param target the target statement which may belong to a different
+	 *                   control flow graph.
+	 * 
+	 * @return true if the target statement is reachable from the start
+	 *             statement across a cross-chain edge; false otherwise.
 	 */
 	public boolean reachableFromCrossingACrossChainEdge(Statement start, Statement target) {
 		if (start.getCFG().equals(target.getCFG()))
@@ -575,7 +577,8 @@ public class EVMCFG extends CFG {
 	 *             otherwise
 	 */
 	public boolean reachableFromWithoutTypes(Statement start, Statement target, Set<Class<?>> avoidTypes) {
-		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withouttypes" + avoidTypes.hashCode();
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withouttypes"
+				+ avoidTypes.hashCode();
 
 		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);
@@ -630,7 +633,8 @@ public class EVMCFG extends CFG {
 	}
 
 	public boolean reachableFromWithoutStatements(Statement start, Statement target, Set<Statement> avoidStatements) {
-		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withoutstatements" + avoidStatements.hashCode();
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withoutstatements"
+				+ avoidStatements.hashCode();
 
 		if (MyCache.getInstance().existsInReachableFrom(key))
 			return MyCache.getInstance().isReachableFrom(key);

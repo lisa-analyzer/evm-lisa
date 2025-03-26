@@ -95,12 +95,12 @@ public class RandomnessDependencyChecker implements
 	}
 
 	/**
-	 * Raises a warning indicating a randomness dependency vulnerability
-	 * in the analyzed program.
+	 * Raises a warning indicating a randomness dependency vulnerability in the
+	 * analyzed program.
 	 *
 	 * @param sink the statement causing the warning
 	 * @param tool the analysis tool and results used for the check
-	 * @param cfg the control flow graph where the warning is identified
+	 * @param cfg  the control flow graph where the warning is identified
 	 */
 	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
@@ -117,15 +117,17 @@ public class RandomnessDependencyChecker implements
 	}
 
 	/**
-	 * Logs a possible randomness dependency vulnerability warning and updates the tool and cache with the detected issue.
+	 * Logs a possible randomness dependency vulnerability warning and updates
+	 * the tool and cache with the detected issue.
 	 *
-	 * @param sink  the statement where the potential vulnerability is detected
-	 * @param tool  the analysis tool containing the current state and analysis results
-	 * @param cfg   the control flow graph associated with the statement
+	 * @param sink the statement where the potential vulnerability is detected
+	 * @param tool the analysis tool containing the current state and analysis
+	 *                 results
+	 * @param cfg  the control flow graph associated with the statement
 	 */
 	private void raisePossibleWarning(Statement sink, CheckToolWithAnalysisResults<
-									  SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
-							  EVMCFG cfg) {
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
 		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
 		log.warn("Randomness dependency vulnerability (possible) at pc {} (line {}).", sinkLoc.getPc(),
