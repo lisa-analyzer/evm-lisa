@@ -2,6 +2,7 @@ import os
 import shutil
 import json
 import argparse
+import re
 
 def move_solidity_files(base_dir):
     for root, dirs, files in os.walk(base_dir):
@@ -81,10 +82,37 @@ def analyze_vulnerabilities(json_path):
             print(f"  {key}: {value}")
         print("-" * 40)
 
+def simplify_imports_in_solidity_files(base_dir):
+    """
+    Explores all .sol files in the given directory and removes folder paths from import statements.
+    """
+    solidity_file_pattern = re.compile(r'import\s+["\'](.+?/.+?)["\'];')
+    
+    for root, _, files in os.walk(base_dir):
+        for file in files:
+            if file.endswith(".sol"):
+                file_path = os.path.join(root, file)
+                
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Replace import paths with only the file name
+                modified_content = solidity_file_pattern.sub(
+                    lambda match: f'import "./{os.path.basename(match.group(1))}";',
+                    content
+                )
+                
+                # Write the modified content back to the file
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(modified_content)
+                
+                print(f"Processed imports in: {file_path}")
+
 if __name__ == "__main__":
     # json_file_path = "benchmark_results.json"  
     # analyze_vulnerabilities(json_file_path)
 
-    base_directory = "test-dataset" 
-    move_solidity_files(base_directory)
+    base_directory = "cross-chain/smartaxe" 
+    # move_solidity_files(base_directory)
     rename_files_in_directory(base_directory)
+    simplify_imports_in_solidity_files(base_directory)
