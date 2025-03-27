@@ -108,11 +108,48 @@ def simplify_imports_in_solidity_files(base_dir):
                 
                 print(f"Processed imports in: {file_path}")
 
+def replace_specific_imports(base_dir):
+    """
+    Explores all .sol files in the given directory and replaces specific imports with updated paths.
+    """
+    # Mapping of old imports to new imports
+    import_replacements = {
+        './IERC20.sol': '@openzeppelin/contracts/token/ERC20/IERC20.sol',
+        './ECDSA.sol': '@openzeppelin/contracts/utils/cryptography/ECDSA.sol',
+        './ReentrancyGuard.sol': '@openzeppelin/contracts/utils/ReentrancyGuard.sol',
+        './AccessControl.sol': '@openzeppelin/contracts/access/AccessControl.sol',
+    }
+
+    # Regex pattern to match import statements
+    solidity_import_pattern = re.compile(r'import\s+["\'](.+?)["\'];')
+
+    for root, _, files in os.walk(base_dir):
+        for file in files:
+            if file.endswith(".sol"):
+                file_path = os.path.join(root, file)
+                
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Replace specific imports
+                modified_content = solidity_import_pattern.sub(
+                    lambda match: f'import "{import_replacements[match.group(1)]}";'
+                    if match.group(1) in import_replacements else match.group(0),
+                    content
+                )
+                
+                # Write the modified content back to the file
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(modified_content)
+                
+                print(f"Processed imports in: {file_path}")
+
 if __name__ == "__main__":
     # json_file_path = "benchmark_results.json"  
     # analyze_vulnerabilities(json_file_path)
 
     base_directory = "cross-chain/smartaxe" 
     # move_solidity_files(base_directory)
-    rename_files_in_directory(base_directory)
-    simplify_imports_in_solidity_files(base_directory)
+    # rename_files_in_directory(base_directory)
+    # simplify_imports_in_solidity_files(base_directory)
+    replace_specific_imports(base_directory)
