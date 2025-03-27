@@ -1,4 +1,5 @@
 file,original pragma version,compiled version,notes
+IERC20.sol,^0.8.0,0.8.0,
 TokenETH.sol,^0.8.6,0.8.6,
 Bridge.sol,^0.8.6,0.8.6,
 Migrations.sol,>=0.4.22 <0.9.0,0.4.22,

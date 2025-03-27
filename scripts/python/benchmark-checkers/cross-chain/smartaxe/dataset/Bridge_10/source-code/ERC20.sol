@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
-import "./AccessControl.sol";
+
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract ERC20 is AccessControl {
     string public name = "ExampleToken";

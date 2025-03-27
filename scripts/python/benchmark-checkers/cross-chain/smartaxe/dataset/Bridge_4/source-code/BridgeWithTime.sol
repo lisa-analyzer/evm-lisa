@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
-import "./IERC20.sol";
-import "./ECDSA.sol";
-import "./ReentrancyGuard.sol";
-import "./AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract BridgeWithTime is ReentrancyGuard, AccessControl {
     using ECDSA for bytes32;

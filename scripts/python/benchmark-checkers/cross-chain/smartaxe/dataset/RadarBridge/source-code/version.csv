@@ -1,0 +1,13 @@
+file,original pragma version,compiled version,notes
+IBridgedToken.sol,^0.8.0,0.8.0,
+IERC20.sol,^0.8.0,0.8.0,
+BOTS.sol,0.7.3,0.7.3,
+RadarBridgeProxy.sol,^0.8.0,0.8.0,
+SignatureLibrary.sol,^0.8.0,0.8.0,
+SafeERC20.sol,^0.8.0,0.8.0,
+Address.sol,^0.8.0,0.8.0,
+IRadarBridgeFeeManager.sol,^0.8.0,0.8.0,
+FeeManagerV1.sol,^0.8.0,0.8.0,
+IRadarBridgeFeeManager_1.sol,^0.8.0,0.8.0,
+IERC20_1.sol,^0.8.0,0.8.0,
+RadarBridge.sol,^0.8.0,0.8.0,

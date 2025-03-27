@@ -1,0 +1,4 @@
+file,original pragma version,compiled version,notes
+ERC20.sol,^0.8.0,0.8.0,
+IExampleToken.sol,^0.8.0,0.8.0,
+ChainBridge.sol,^0.8.0,0.8.0,

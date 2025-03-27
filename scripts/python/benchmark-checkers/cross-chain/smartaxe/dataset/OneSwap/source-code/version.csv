@@ -1,0 +1,7 @@
+file,original pragma version,compiled version,notes
+LockSend.sol,0.6.12,0.6.12,
+OneSwapRouter.sol,0.6.12,0.6.12,
+OneSwapToken.sol,0.6.12,0.6.12,
+OneSwapFactory.sol,0.6.12,0.6.12,
+OneSwapGov.sol,0.6.12,0.6.12,
+OneSwapPair.sol,0.6.12,0.6.12,

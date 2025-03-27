@@ -1,4 +1,4 @@
-pragma solidity ^0.6;
+pragma solidity ^0.6.0;
 
 interface INearProver {
     function proveOutcome(bytes calldata proofData, uint64 blockHeight) external view returns (bool);

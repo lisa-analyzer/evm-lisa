@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./IExampleToken.sol";
 
 contract ChainBridge is AccessControl{

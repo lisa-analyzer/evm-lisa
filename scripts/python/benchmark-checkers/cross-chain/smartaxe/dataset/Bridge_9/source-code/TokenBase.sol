@@ -1,11 +1,7 @@
 pragma solidity ^0.8.0;
 
-
-
-
-import "./ERC721.sol";
-import "./Ownable.sol";
-import "./Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract TokenBase is ERC721{
    using Counters for Counters.Counter;

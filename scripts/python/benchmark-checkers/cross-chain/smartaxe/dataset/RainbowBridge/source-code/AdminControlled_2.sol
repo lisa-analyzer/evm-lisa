@@ -1,4 +1,4 @@
-pragma solidity ^0.6;
+pragma solidity ^0.6.0;
 
 contract AdminControlled {
     address public admin;

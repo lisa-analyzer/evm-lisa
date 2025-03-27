@@ -1,0 +1,8 @@
+{
+    "Bridge": 1,
+    "BridgeToken": 2,
+    "BridgeTokenFactory": 3,
+    "IBridge": 4,
+    "Migrations": 5,
+    "Utils": 6
+}

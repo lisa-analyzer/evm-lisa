@@ -1,0 +1,10 @@
+file,original pragma version,compiled version,notes
+StandardToken.sol,^0.4.11,0.4.11,
+ERC20.sol,^0.4.11,0.4.11,
+Pausable.sol,^0.4.11,0.4.11,
+Ownable.sol,^0.4.11,0.4.11,
+SafeMath.sol,^0.4.11,0.4.11,
+WaxToken.sol,^0.4.13,0.4.13,
+Migrations.sol,^0.4.13,0.4.13,
+ERC20Basic.sol,^0.4.11,0.4.11,
+BasicToken.sol,^0.4.11,0.4.11,

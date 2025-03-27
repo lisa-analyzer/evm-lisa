@@ -1,0 +1,9 @@
+file,original pragma version,compiled version,notes
+BEP20TokenCloned.sol,0.5.17,0.5.17,
+CallistoBridge_1.sol,^0.8.0,0.8.0,
+CallistoBridge.sol,^0.8.0,0.8.0,
+MultisigWallet.sol,^0.8.0,0.8.0,
+CallistoBridge_2.sol,^0.8.0,0.8.0,
+CallistoBridge_3.sol,^0.8.0,0.8.0,
+ContractCaller.sol,^0.8.0,0.8.0,
+BridgeUpgradeableProxy.sol,^0.8.0,0.8.0,

@@ -2,9 +2,10 @@
     "Bridge": 1,
     "BridgeBSC": 2,
     "BridgeETH": 3,
-    "ITokenConfig": 4,
-    "Migrations": 5,
-    "TokenBSC": 6,
-    "TokenConfig": 7,
-    "TokenETH": 8
+    "IERC20": 4,
+    "ITokenConfig": 5,
+    "Migrations": 6,
+    "TokenBSC": 7,
+    "TokenConfig": 8,
+    "TokenETH": 9
 }

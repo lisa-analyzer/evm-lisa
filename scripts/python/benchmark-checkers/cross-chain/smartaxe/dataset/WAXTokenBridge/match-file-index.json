@@ -1,0 +1,11 @@
+{
+    "BasicToken": 1,
+    "ERC20": 2,
+    "ERC20Basic": 3,
+    "Migrations": 4,
+    "Ownable": 5,
+    "Pausable": 6,
+    "SafeMath": 7,
+    "StandardToken": 8,
+    "WaxToken": 9
+}

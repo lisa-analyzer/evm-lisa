@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.4;
 
-import {IArbSys as ArbitrumL2_Bridge} from "../../vendor/arbitrum/IArbSys.sol";
+import {IArbSys as ArbitrumL2_Bridge} from "./IArbSys.sol";
 import "./errors.sol";
 
 /**
