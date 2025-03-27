@@ -34,8 +34,6 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -247,18 +245,17 @@ public class xEVMLiSA {
 	public static void runInterCrossChainCheckers(Bridge bridge) {
 		log.info("[IN] Running inter cross-chain checkers.");
 
-		ExecutorService executor = Executors.newFixedThreadPool(EVMLiSA.getCores());
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : bridge) {
-			futures.add(executor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
 
 		for (SmartContract contract : bridge) {
-			futures.add(executor.submit(() -> runTimeSynchronizationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runTimeSynchronizationChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
@@ -270,7 +267,6 @@ public class xEVMLiSA {
 						.build());
 
 		log.info("[OUT] Inter cross-chain checkers results saved.");
-		executor.shutdown();
 	}
 
 	/**
