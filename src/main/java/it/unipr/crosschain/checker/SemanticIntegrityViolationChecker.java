@@ -2,10 +2,7 @@ package it.unipr.crosschain.checker;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jumpi;
-import it.unipr.cfg.Log0;
-import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.cfg.*;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -73,7 +70,7 @@ public class SemanticIntegrityViolationChecker implements
                             return true;
                         }
 
-                        checkForUncheckedExternalInfluence(node, tool, cfg);
+                        checkForSemanticIntegrityViolation(node, tool, cfg);
                     }
                 }
             }
