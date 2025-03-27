@@ -34,11 +34,7 @@ public class SemanticIntegrityViolationChecker implements
             CheckToolWithAnalysisResults<
                     SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
             CFG graph, Statement node) {
-        if (node instanceof Log0 ||
-                node instanceof Log1 ||
-                node instanceof Log2 ||
-                node instanceof Log3 ||
-                node instanceof Log4 ) {
+        if (node instanceof Log || node instanceof Jumpi) {
             EVMCFG cfg = ((EVMCFG) graph);
 
             for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -50,7 +46,7 @@ public class SemanticIntegrityViolationChecker implements
                 try {
                     analysisResult = result.getAnalysisStateBefore(node);
                 } catch (SemanticException e1) {
-                    log.error("(UncheckedExternalInfluenceChecker): {}", e1.getMessage());
+                    log.error("(SemanticIntegrityViolationChecker): {}", e1.getMessage());
                 }
 
                 TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
@@ -58,17 +54,56 @@ public class SemanticIntegrityViolationChecker implements
                 if (taintedStack.isBottom())
                     // Nothing to do
                     continue;
-                else {
+                else if (node instanceof Jumpi) {
+                    taintedJumpi.add(node);
+                    return true;
+                } else if(node instanceof Log0){
                     // Checks if either first or second element in the
                     // stack is tainted
                     if (TaintElement.isTaintedOrTop(
                             taintedStack.getElementAtPosition(1),
                             taintedStack.getElementAtPosition(2))) {
 
-                        if (node instanceof Jumpi) {
-                            taintedJumpi.add(node);
-                            return true;
-                        }
+
+
+                        checkForSemanticIntegrityViolation(node, tool, cfg);
+                    }
+                } else if (node instanceof Log1) {
+                    if (TaintElement.isTaintedOrTop(
+                            taintedStack.getElementAtPosition(1),
+                            taintedStack.getElementAtPosition(2),
+                            taintedStack.getElementAtPosition(3))) {
+
+                        checkForSemanticIntegrityViolation(node, tool, cfg);
+                    }
+                } else if (node instanceof Log2) {
+                    if (TaintElement.isTaintedOrTop(
+                            taintedStack.getElementAtPosition(1),
+                            taintedStack.getElementAtPosition(2),
+                            taintedStack.getElementAtPosition(3),
+                            taintedStack.getElementAtPosition(4))) {
+
+                        checkForSemanticIntegrityViolation(node, tool, cfg);
+                    }
+                } else if (node instanceof Log3) {
+                    if (TaintElement.isTaintedOrTop(
+                            taintedStack.getElementAtPosition(1),
+                            taintedStack.getElementAtPosition(2),
+                            taintedStack.getElementAtPosition(3),
+                            taintedStack.getElementAtPosition(4),
+                            taintedStack.getElementAtPosition(5))) {
+
+
+                        checkForSemanticIntegrityViolation(node, tool, cfg);
+                    }
+                } else if (node instanceof Log4) {
+                    if (TaintElement.isTaintedOrTop(
+                            taintedStack.getElementAtPosition(1),
+                            taintedStack.getElementAtPosition(2),
+                            taintedStack.getElementAtPosition(3),
+                            taintedStack.getElementAtPosition(4),
+                            taintedStack.getElementAtPosition(5),
+                            taintedStack.getElementAtPosition(6))) {
 
                         checkForSemanticIntegrityViolation(node, tool, cfg);
                     }
