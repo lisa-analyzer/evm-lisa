@@ -24,9 +24,9 @@ import java.util.Set;
 public class SemanticIntegrityViolationChecker implements 
         SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
-    private static final Logger log = LogManager.getLogger(UncheckedExternalInfluenceChecker.class);
+    private static final Logger log = LogManager.getLogger(SemanticIntegrityViolationChecker.class);
 
-    private Set<Statement> taintedJumpi = new HashSet<>();
+    private final Set<Statement> taintedJumpi = new HashSet<>();
 
 
     @Override
@@ -38,7 +38,7 @@ public class SemanticIntegrityViolationChecker implements
                 node instanceof Log1 ||
                 node instanceof Log2 ||
                 node instanceof Log3 ||
-                node instanceof Log4 ||) {
+                node instanceof Log4 ) {
             EVMCFG cfg = ((EVMCFG) graph);
 
             for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,

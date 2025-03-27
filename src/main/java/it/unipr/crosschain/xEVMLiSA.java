@@ -7,16 +7,10 @@ import it.unipr.cfg.Calldataload;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.cfg.Sstore;
-import it.unipr.crosschain.checker.TimeSynchronizationChecker;
-import it.unipr.crosschain.checker.UncheckedExternalInfluenceChecker;
-import it.unipr.crosschain.checker.UncheckedStateUpdateChecker;
-import it.unipr.crosschain.checker.VulnerableLOGsComputer;
+import it.unipr.crosschain.checker.*;
 import it.unipr.crosschain.edges.ConservativeCrossChainEdge;
 import it.unipr.crosschain.edges.CrossChainEdge;
-import it.unipr.crosschain.taint.TimeSynchronizationAbstractDomain;
-import it.unipr.crosschain.taint.UncheckedExternalInfluenceAbstractDomain;
-import it.unipr.crosschain.taint.UncheckedStateUpdateAbstractDomain;
-import it.unipr.crosschain.taint.VulnerableLOGsAbstractDomain;
+import it.unipr.crosschain.taint.*;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.EVMLiSAExecutor;
@@ -220,6 +214,7 @@ public class xEVMLiSA {
 			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(contract)));
 		}
 
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
@@ -298,6 +293,32 @@ public class xEVMLiSA {
 		log.info("[OUT] Unchecked external influence checker ended on {}, with {} vulnerabilities found.",
 				contract.getName(),
 				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
+	}
+	/**
+	 * Runs the Semantic Integrity Violation checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runSemanticIntegrityViolationChecker(SmartContract contract) {
+		log.info("[IN] Running semantic integrity violation checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Checker build
+		SemanticIntegrityViolationChecker checker = new SemanticIntegrityViolationChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new SemanticIntegrityViolationAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+
+		log.info("[OUT] Semantic integrity violation checker ended on {}, with {} vulnerabilities found.",
+				contract.getAddress(),
+				MyCache.getInstance().getSemanticIntegrityViolationWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
