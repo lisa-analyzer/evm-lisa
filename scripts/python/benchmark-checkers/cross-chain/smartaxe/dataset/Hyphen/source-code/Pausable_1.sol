@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "./Initializable.sol";
+import "./PausableUpgradeable.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop

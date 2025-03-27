@@ -3,11 +3,11 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "../interfaces/ISwap.sol";
-import "../interfaces/IMetaSwap.sol";
-import "../interfaces/IMetaSwapDeposit.sol";
+import "./Ownable.sol";
+import "./Clones.sol";
+import "./ISwap.sol";
+import "./IMetaSwap.sol";
+import "./IMetaSwapDeposit.sol";
 
 /**
  * @title MetaSwapDeployer

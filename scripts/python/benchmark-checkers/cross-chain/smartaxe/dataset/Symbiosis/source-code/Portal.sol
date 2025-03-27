@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
-import "./interfaces/IBridge.sol";
-import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
-import "../utils/RelayRecipientUpgradeable.sol";
-import "./interfaces/IWrapper.sol";
-import "./metarouter/interfaces/IMetaRouter.sol";
+import "./Ownable.sol";
+import "./draft-IERC20Permit.sol";
+import "./IBridge.sol";
+import "./TransferHelper.sol";
+import "./RelayRecipientUpgradeable.sol";
+import "./IWrapper.sol";
+import "./IMetaRouter.sol";
 
 /**
  * @title A contract that synthesizes tokens

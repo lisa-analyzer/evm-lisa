@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import './token/PoolsInterestBearingToken.sol';
-import './token/Bridge.sol';
-import './utils/MyPausableUpgradeable.sol';
-import 'hardhat/console.sol';
-import './interfaces/IBuyBackAndBurn.sol';
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./PoolsInterestBearingToken.sol";
+import "./Bridge.sol";
+import "./MyPausableUpgradeable.sol";
+import "./console.sol";
+import "./IBuyBackAndBurn.sol";
 
 interface IBridge is IERC20 {
   function burn(uint256 amount) external;

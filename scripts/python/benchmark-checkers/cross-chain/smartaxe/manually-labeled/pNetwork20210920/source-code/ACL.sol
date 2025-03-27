@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
-import "../apps/AragonApp.sol";
-import "../common/ConversionHelpers.sol";
-import "../common/TimeHelpers.sol";
+import "./AragonApp.sol";
+import "./ConversionHelpers.sol";
+import "./TimeHelpers.sol";
 import "./ACLSyntaxSugar.sol";
 import "./IACL.sol";
 import "./IACLOracle.sol";

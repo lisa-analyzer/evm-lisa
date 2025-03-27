@@ -6,15 +6,15 @@ pragma solidity ^0.8.0;
 // modified PRICE to 150
 // removed reveal_timestamp, creatorAddress, devAddress
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import './interfaces/IWFTM.sol';
+import "./ERC721.sol";
+import "./ERC721Enumerable.sol";
+import "./ERC721Burnable.sol";
+import "./IERC165.sol";
+import "./IERC20.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./Counters.sol";
+import "./IWFTM.sol";
 
 interface IERC2981 is IERC165 {
   /// @notice Called with the sale price to determine how much royalty

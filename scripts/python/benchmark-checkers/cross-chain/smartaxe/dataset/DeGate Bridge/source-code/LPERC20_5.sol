@@ -2,8 +2,8 @@
 // Copyright 2017 Loopring Technology Limited.
 pragma solidity ^0.7.0;
 
-import '../lib/ERC20.sol';
-import '../lib/MathUint.sol';
+import "./ERC20.sol";
+import "./MathUint.sol";
 
 contract LPERC20 is ERC20 {
     using MathUint for uint;

@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 
 
 
-import "./interfaces/IAllowList.sol";
+import "./IAllowList.sol";
 
 /// @author Matter Labs
 abstract contract AllowListed {

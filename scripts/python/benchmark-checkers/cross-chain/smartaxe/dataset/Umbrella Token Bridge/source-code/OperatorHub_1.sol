@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.7.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 
-import './HashStore.sol';
+import "./HashStore.sol";
 
 contract OperatorHub is Ownable {
   bytes constant public ETH_PREFIX = "\x19Ethereum Signed Message:\n32";

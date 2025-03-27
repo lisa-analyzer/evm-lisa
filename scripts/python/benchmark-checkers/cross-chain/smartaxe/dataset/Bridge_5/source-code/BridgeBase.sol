@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import './IToken.sol';
+import "./ERC20.sol";
+import "./IToken.sol";
 
 contract BridgeBase {
    address public admin;

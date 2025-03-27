@@ -1,15 +1,15 @@
 pragma solidity ^0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.sol";
-import "@openzeppelin/upgrades/contracts/upgradeability/InitializableAdminUpgradeabilityProxy.sol";
+import "./Initializable.sol";
+import "./SafeMath.sol";
+import "./ECDSA.sol";
+import "./InitializableAdminUpgradeabilityProxy.sol";
 
-import "../Governance/Claimable.sol";
-import "../libraries/String.sol";
+import "./Claimable.sol";
+import "./String.sol";
 import "./RenERC20.sol";
-import "./interfaces/IGateway.sol";
-import "../libraries/CanReclaimTokens.sol";
+import "./IGateway.sol";
+import "./CanReclaimTokens.sol";
 import "./MintGatewayV1.sol";
 
 contract MintGatewayStateV2 {

@@ -1,7 +1,7 @@
 pragma solidity 0.5.16;
 
-import "./BridgeBank/CosmosBankStorage.sol";
-import "./BridgeBank/EthereumBankStorage.sol";
+import "./CosmosBankStorage.sol";
+import "./EthereumBankStorage.sol";
 
 contract CosmosBridgeStorage {
     /**

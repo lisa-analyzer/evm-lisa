@@ -2,11 +2,11 @@
 
 pragma solidity 0.8.13;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/IUniswapV2Pair.sol";
-import "./interfaces/ISwapper.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./SafeERC20.sol";
+import "./IUniswapV2Pair.sol";
+import "./ISwapper.sol";
 
 
 contract Swapper is ISwapper, Ownable {

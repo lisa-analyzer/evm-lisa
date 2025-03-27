@@ -2,7 +2,7 @@
 // Copyright 2017 Loopring Technology Limited.
 pragma solidity ^0.7.0;
 
-import "../aux/access/DelayedOwner.sol";
+import "./DelayedOwner.sol";
 import "./DelayedTargetContract.sol";
 
 

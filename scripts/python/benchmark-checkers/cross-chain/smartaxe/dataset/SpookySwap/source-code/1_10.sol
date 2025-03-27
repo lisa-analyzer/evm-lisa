@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.13;
 
-import "./utils/SpookyApprovals.sol";
-import "./utils/SelfPermit.sol";
-import "./utils/Multicall.sol";
-import "./router/UniswapV2Router02.sol";
+import "./SpookyApprovals.sol";
+import "./SelfPermit.sol";
+import "./Multicall.sol";
+import "./UniswapV2Router02.sol";
 
 /// @notice boooo! spooooky!! nyahaha! ₍⸍⸌̣ʷ̣̫⸍̣⸌₎
 contract LiquidityBrewer is SpookyApprovals, UniswapV2Router02, SelfPermit, Multicall {

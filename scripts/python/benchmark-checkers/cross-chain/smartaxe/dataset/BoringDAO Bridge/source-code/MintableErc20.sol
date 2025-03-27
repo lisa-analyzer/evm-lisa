@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.10;
 
-import "../open-zeppelin/ERC20.sol";
+import "./ERC20.sol";
 
 /**
  * @title ERC20Mintable

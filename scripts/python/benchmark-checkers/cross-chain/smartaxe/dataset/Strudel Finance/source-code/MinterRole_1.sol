@@ -1,7 +1,7 @@
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "./Context.sol";
+import "./Ownable.sol";
 import "./Roles.sol";
 
 contract MinterRole is ContextUpgradeSafe, OwnableUpgradeSafe {

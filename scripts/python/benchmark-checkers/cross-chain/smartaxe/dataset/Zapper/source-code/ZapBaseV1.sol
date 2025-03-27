@@ -1,7 +1,7 @@
 pragma solidity ^0.5.7;
 
-import "../oz/ownership/Ownable.sol";
-import "../oz/token/ERC20/SafeERC20.sol";
+import "./Ownable.sol";
+import "./SafeERC20.sol";
 
 contract ZapBaseV1 is Ownable {
     using SafeMath for uint256;

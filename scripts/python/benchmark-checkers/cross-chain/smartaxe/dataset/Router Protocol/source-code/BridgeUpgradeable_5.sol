@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "./Initializable.sol";
+import "./PausableUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./UUPSUpgradeable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
 
-import "./interfaces/IVoterUpgradeable.sol";
-import "./interfaces/IERC20Upgradeable.sol";
+import "./IVoterUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
 
-import "./interfaces/IDepositExecute.sol";
-import "./interfaces/ILiquidityPool.sol";
-import "./interfaces/IERCHandler.sol";
-import "./interfaces/IERCHandlerDecimals.sol";
-import "./interfaces/IGenericHandler.sol";
-import "./interfaces/ISequencerHandler.sol";
-import "./interfaces/IWETH.sol";
+import "./IDepositExecute.sol";
+import "./ILiquidityPool.sol";
+import "./IERCHandler.sol";
+import "./IERCHandlerDecimals.sol";
+import "./IGenericHandler.sol";
+import "./ISequencerHandler.sol";
+import "./IWETH.sol";
 
 /// @title Facilitates deposits, creation and voting of deposit proposals, and deposit executions.
 /// @author Router Protocol

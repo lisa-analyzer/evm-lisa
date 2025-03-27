@@ -28,7 +28,7 @@ pragma solidity 0.7.6;
 
 // SPDX-License-Identifier: GPL-3.0-only
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 
 interface RocketTokenRETHInterface is IERC20 {
     function getEthValue(uint256 _rethAmount) external view returns (uint256);

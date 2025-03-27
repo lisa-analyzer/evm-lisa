@@ -12,7 +12,7 @@
 pragma solidity 0.6.6;
 
 // XXX: import "./SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 contract Timelock {
   using SafeMath for uint256;

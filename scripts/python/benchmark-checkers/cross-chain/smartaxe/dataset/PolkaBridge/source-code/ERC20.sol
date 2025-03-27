@@ -1,8 +1,8 @@
 pragma solidity ^0.6.0;
 
-import "../../GSN/Context.sol";
+import "./Context.sol";
 import "./IERC20.sol";
-import "../../math/SafeMath.sol";
+import "./SafeMath.sol";
 
 contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;

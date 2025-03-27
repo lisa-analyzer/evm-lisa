@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import "./AddressUpgradeable.sol";
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./ContextUpgradeable.sol";
+import "./ERC20Upgradeable.sol";
+import "./PausableUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
 
 contract RouterERC20Upgradable is
     Initializable,

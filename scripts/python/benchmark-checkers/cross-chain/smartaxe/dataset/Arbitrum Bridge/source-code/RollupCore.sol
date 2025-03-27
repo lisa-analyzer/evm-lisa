@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "./PausableUpgradeable.sol";
 
 import "./Node.sol";
 import "./IRollupCore.sol";
@@ -12,11 +12,11 @@ import "./RollupLib.sol";
 import "./IRollupEventInbox.sol";
 import "./IRollupCore.sol";
 
-import "../challenge/IChallengeManager.sol";
+import "./IChallengeManager.sol";
 
-import "../bridge/ISequencerInbox.sol";
-import "../bridge/IBridge.sol";
-import "../bridge/IOutbox.sol";
+import "./ISequencerInbox.sol";
+import "./IBridge.sol";
+import "./IOutbox.sol";
 
 import {NO_CHAL_INDEX} from "../libraries/Constants.sol";
 

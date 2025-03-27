@@ -2,9 +2,9 @@
 pragma solidity ^0.8.11;
 
 import "./IERC20.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./ECDSA.sol";
+import "./ReentrancyGuard.sol";
+import "./AccessControl.sol";
 
 contract Bridge is ReentrancyGuard, AccessControl {
     using ECDSA for bytes32;

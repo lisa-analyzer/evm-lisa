@@ -1,7 +1,7 @@
 pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./SafeERC20.sol";
+import "./Ownable.sol";
 
 contract Treasury is Ownable {
     uint256 public cliff;

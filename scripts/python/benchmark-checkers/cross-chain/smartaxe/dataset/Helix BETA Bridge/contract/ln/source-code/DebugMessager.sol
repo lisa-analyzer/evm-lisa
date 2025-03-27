@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../base/LnBridgeHelper.sol";
-import "../interface/ILnDefaultBridgeTarget.sol";
-import "../interface/ILnOppositeBridgeSource.sol";
+import "./LnBridgeHelper.sol";
+import "./ILnDefaultBridgeTarget.sol";
+import "./ILnOppositeBridgeSource.sol";
 
 contract DebugMessager {
     address public owner;

@@ -3,7 +3,7 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import '@openzeppelin/contracts/access/AccessControl.sol';
+import "./AccessControl.sol";
 
 contract PoolConfig is AccessControl {
   bytes32 public constant BRIDGEMANAGER_ROLE = keccak256('BRIDGEMANAGER_ROLE');

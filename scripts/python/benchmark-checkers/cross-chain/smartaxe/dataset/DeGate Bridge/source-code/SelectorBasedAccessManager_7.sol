@@ -3,9 +3,9 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../../core/iface/IExchangeV3.sol";
-import "../../lib/Claimable.sol";
-import "../../thirdparty/BytesUtil.sol";
+import "./IExchangeV3.sol";
+import "./Claimable.sol";
+import "./BytesUtil.sol";
 
 
 /// @title  SelectorBasedAccessManager

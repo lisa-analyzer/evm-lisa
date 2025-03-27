@@ -1,8 +1,8 @@
 pragma solidity >=0.6.0;
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "./SafeERC20.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
 import "./ReentrancyGuard.sol";
 
 contract PolkaBridgeLaunchPad is Ownable, ReentrancyGuard {

@@ -2,19 +2,19 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetLiquidity.sol";
-import "../../interfaces/IERC20.sol";
-import "../../interfaces/IMultiVaultToken.sol";
+import "./IMultiVaultFacetLiquidity.sol";
+import "./IERC20.sol";
+import "./IMultiVaultToken.sol";
 
-import "../../libraries/SafeERC20.sol";
+import "./SafeERC20.sol";
 
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultStorage.sol";
 
-import "../helpers/MultiVaultHelperReentrancyGuard.sol";
-import "../helpers/MultiVaultHelperLiquidity.sol";
-import "../helpers/MultiVaultHelperEmergency.sol";
-import "../helpers/MultiVaultHelperFee.sol";
-import "../helpers/MultiVaultHelperActors.sol";
+import "./MultiVaultHelperReentrancyGuard.sol";
+import "./MultiVaultHelperLiquidity.sol";
+import "./MultiVaultHelperEmergency.sol";
+import "./MultiVaultHelperFee.sol";
+import "./MultiVaultHelperActors.sol";
 
 
 contract MultiVaultFacetLiquidity is

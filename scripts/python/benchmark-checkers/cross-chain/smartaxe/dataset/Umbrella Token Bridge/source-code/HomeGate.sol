@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.7.0;
 
-import './OperatorHub.sol';
-import './ERC721Mintable.sol';
+import "./OperatorHub.sol";
+import "./ERC721Mintable.sol";
 
 contract HomeGate is OperatorHub {
   uint64 constant PREFIX = 0xef4810cde406e3f5; // random number

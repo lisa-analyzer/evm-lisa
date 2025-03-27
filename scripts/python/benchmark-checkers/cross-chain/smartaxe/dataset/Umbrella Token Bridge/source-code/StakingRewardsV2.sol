@@ -2,7 +2,7 @@
 pragma solidity 0.7.5;
 
 import "./StakingLockable.sol";
-import "../interfaces/IMigrationReceiver.sol";
+import "./IMigrationReceiver.sol";
 
 /// @author  umb.network
 contract StakingRewardsV2 is StakingLockable {

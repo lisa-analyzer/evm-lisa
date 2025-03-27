@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.10;
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 contract CosmosERC20 is ERC20 {
 	uint256 MAX_UINT = 2**256 - 1;

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./crosschain/optimism/CrossChainEnabledOptimismL2.sol";
+import "./CrossChainEnabledOptimismL2.sol";
 
 contract GreeterOptimismL2 is CrossChainEnabledOptimismL2 {
     string private _greeting;

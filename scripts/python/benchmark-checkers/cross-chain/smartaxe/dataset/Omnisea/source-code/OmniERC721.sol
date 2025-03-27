@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../interfaces/IOmniERC721.sol";
+import "./ERC721.sol";
+import "./IOmniERC721.sol";
 import "./ERC721A.sol";
 import {CreateParams, Allowlist} from "../structs/erc721/ERC721Structs.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "./Ownable.sol";
+import "./ReentrancyGuard.sol";
+import "./MerkleProof.sol";
 
 /**
  * @title OmniERC721

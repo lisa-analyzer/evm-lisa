@@ -35,7 +35,7 @@ pragma solidity ^0.6.12;
 * SOFTWARE.
 */
 
-import "../library/BEP20Upgradeable.sol";
+import "./BEP20Upgradeable.sol";
 
 
 contract QBridgeToken is BEP20Upgradeable {

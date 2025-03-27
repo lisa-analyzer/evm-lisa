@@ -2,7 +2,7 @@
 // OpenZeppelin Contracts v4.4.0 (utils/Context.sol)
 
 pragma solidity ^0.8.0;
-import "../proxy/utils/Initializable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev Provides information about the current execution context, including the

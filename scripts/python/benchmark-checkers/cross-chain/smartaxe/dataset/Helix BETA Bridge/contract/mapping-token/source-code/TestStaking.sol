@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0;
-import "hardhat/console.sol";
+import "./console.sol";
 
 contract TestStaking {
     function stakingRewards(uint _value, uint _month) view public returns (uint) {

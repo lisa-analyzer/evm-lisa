@@ -31,9 +31,9 @@ pragma solidity 0.6.6;
 // ----------------------------------------------------------------------------
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "./IERC20.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
 import "./CloneFactory.sol";
 import "./IDutchAuction.sol";
 

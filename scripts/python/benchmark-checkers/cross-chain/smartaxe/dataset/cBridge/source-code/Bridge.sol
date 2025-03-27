@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./libraries/PbBridge.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./PbBridge.sol";
 import "./Pool.sol";
 
 contract Bridge is Pool {

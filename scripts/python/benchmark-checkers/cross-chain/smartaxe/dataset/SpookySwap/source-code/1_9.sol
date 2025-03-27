@@ -2,11 +2,11 @@
 
 pragma solidity 0.8.10;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
-import "./interfaces/IRewarder.sol";
-import "./interfaces/IMasterChef.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./Ownable.sol";
+import "./IRewarder.sol";
+import "./IMasterChef.sol";
 
 
 /// @notice The (older) MasterChef contract gives out a constant number of BOO tokens per second.

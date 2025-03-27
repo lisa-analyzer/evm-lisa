@@ -1,11 +1,11 @@
 pragma solidity ^0.5.17;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./Ownable.sol";
+import "./ERC20.sol";
+import "./SafeERC20.sol";
+import "./Initializable.sol";
 
-import "../Governance/Claimable.sol";
+import "./Claimable.sol";
 
 contract CanReclaimTokens is Claimable {
     using SafeERC20 for ERC20;

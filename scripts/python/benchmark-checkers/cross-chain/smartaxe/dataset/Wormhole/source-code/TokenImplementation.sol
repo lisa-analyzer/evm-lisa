@@ -4,9 +4,9 @@
 pragma solidity ^0.8.0;
 
 import "./TokenState.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "./Ownable.sol";
+import "./Context.sol";
+import "./BeaconProxy.sol";
 
 // Based on the OpenZepplin ERC20 implementation, licensed under MIT
 contract TokenImplementation is TokenState, Context {

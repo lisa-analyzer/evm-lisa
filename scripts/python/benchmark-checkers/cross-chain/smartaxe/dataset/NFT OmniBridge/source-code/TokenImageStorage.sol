@@ -1,7 +1,7 @@
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "../../../Ownable.sol";
+import "./Address.sol";
+import "./Ownable.sol";
 
 /**
  * @title TokenImageStorage

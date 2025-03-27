@@ -4,14 +4,14 @@
 
 pragma solidity 0.4.24;
 
-import "@aragon/os/contracts/apps/AragonApp.sol";
-import "@aragon/os/contracts/common/IForwarder.sol";
-import "@aragon/os/contracts/acl/IACLOracle.sol";
-import "@aragon/os/contracts/lib/token/ERC20.sol";
-import "@aragon/os/contracts/lib/math/SafeMath.sol";
-import "@aragon/os/contracts/lib/math/SafeMath64.sol";
-import "@aragon/minime/contracts/MiniMeToken.sol";
-import "@1hive/apps-token-manager/contracts/TokenManagerHook.sol";
+import "./AragonApp.sol";
+import "./IForwarder.sol";
+import "./IACLOracle.sol";
+import "./ERC20.sol";
+import "./SafeMath.sol";
+import "./SafeMath64.sol";
+import "./MiniMeToken.sol";
+import "./TokenManagerHook.sol";
 import "./SigUtils.sol";
 
 

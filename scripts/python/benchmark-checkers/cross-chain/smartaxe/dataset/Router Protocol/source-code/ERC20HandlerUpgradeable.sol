@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.2;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "./SafeMathUpgradeable.sol";
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "./Initializable.sol";
+import "./ContextUpgradeable.sol";
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 
-import "../interfaces/IDepositExecute.sol";
-import "../interfaces/ILiquidityPool.sol";
-import "../interfaces/IOneSplitWrap.sol";
-import "../interfaces/IWETH.sol";
-import "../interfaces/IERC20Upgradeable.sol";
+import "./IDepositExecute.sol";
+import "./ILiquidityPool.sol";
+import "./IOneSplitWrap.sol";
+import "./IWETH.sol";
+import "./IERC20Upgradeable.sol";
 import "./HandlerHelpersUpgradeable.sol";
-import "../interfaces/IUsdcDepositAndBurn.sol";
+import "./IUsdcDepositAndBurn.sol";
 
 /// @title Handles ERC20 deposits and deposit executions.
 /// @author Router Protocol.

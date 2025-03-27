@@ -4,8 +4,8 @@ pragma solidity ^0.8.13;
 
 
 
-import "../interfaces/IGovernance.sol";
-import "../../common/libraries/L2ContractHelper.sol";
+import "./IGovernance.sol";
+import "./L2ContractHelper.sol";
 import "./Base.sol";
 
 /// @title Governance Contract controls access rights for contract management.

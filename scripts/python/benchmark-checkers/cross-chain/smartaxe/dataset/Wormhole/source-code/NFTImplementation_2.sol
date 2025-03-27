@@ -4,15 +4,15 @@
 pragma solidity ^0.8.0;
 
 import "./NFTState.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "./Ownable.sol";
+import "./Context.sol";
+import "./Address.sol";
+import "./Strings.sol";
+import "./IERC721.sol";
+import "./IERC721Receiver.sol";
+import "./IERC721Metadata.sol";
+import "./ERC165.sol";
+import "./BeaconProxy.sol";
 
 // Based on the OpenZepplin ERC721 implementation, licensed under MIT
 contract NFTImplementation is NFTState, Context, IERC721, IERC721Metadata, ERC165 {

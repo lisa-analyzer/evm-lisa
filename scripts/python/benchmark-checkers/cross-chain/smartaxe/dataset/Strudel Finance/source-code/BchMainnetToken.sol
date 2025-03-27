@@ -2,10 +2,10 @@
 
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./erc20/ITokenRecipient.sol";
+import "./ERC20.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
+import "./ITokenRecipient.sol";
 
 /// @title  BCH Token.
 /// @notice This is the Strudel ERC20 contract.

@@ -5,11 +5,11 @@ pragma solidity ^0.8.0;
 
 import "./IERC1155Upgradeable.sol";
 import "./IERC1155ReceiverUpgradeable.sol";
-import "./extensions/IERC1155MetadataURIUpgradeable.sol";
-import "../../utils/AddressUpgradeable.sol";
-import "../../utils/ContextUpgradeable.sol";
-import "../../utils/introspection/ERC165Upgradeable.sol";
-import "../../proxy/utils/Initializable.sol";
+import "./IERC1155MetadataURIUpgradeable.sol";
+import "./AddressUpgradeable.sol";
+import "./ContextUpgradeable.sol";
+import "./ERC165Upgradeable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev Implementation of the basic standard multi-token.

@@ -3,9 +3,9 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../core/iface/IAgentRegistry.sol";
-import "../../lib/AddressSet.sol";
-import "../../lib/Claimable.sol";
+import "./IAgentRegistry.sol";
+import "./AddressSet.sol";
+import "./Claimable.sol";
 
 
 contract AgentRegistry is IAgentRegistry, AddressSet, Claimable

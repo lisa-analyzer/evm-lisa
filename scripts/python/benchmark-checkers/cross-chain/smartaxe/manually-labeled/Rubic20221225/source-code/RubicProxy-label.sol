@@ -13,8 +13,8 @@ pragma solidity ^0.8.10;
 
 */
 
-import 'rubic-bridge-base/contracts/architecture/OnlySourceFunctionality.sol';
-import 'rubic-bridge-base/contracts/libraries/SmartApprove.sol';
+import "./OnlySourceFunctionality.sol";
+import "./SmartApprove.sol";
 
 error DifferentAmountSpent();
 error RouterNotAvailable();

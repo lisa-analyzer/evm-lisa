@@ -2,28 +2,28 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetDeposit.sol";
-import "../../interfaces/multivault/IMultiVaultFacetFees.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetPendingWithdrawals.sol";
-import "../../interfaces/multivault/IMultiVaultFacetPendingWithdrawalsEvents.sol";
-import "../../interfaces/multivault/IMultiVaultFacetWithdraw.sol";
-import "../../interfaces/IMultiVaultToken.sol";
-import "../../interfaces/IEverscale.sol";
-import "../../interfaces/IERC20.sol";
-import "../../../interfaces/IWETH.sol";
+import "./IMultiVaultFacetDeposit.sol";
+import "./IMultiVaultFacetFees.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetPendingWithdrawals.sol";
+import "./IMultiVaultFacetPendingWithdrawalsEvents.sol";
+import "./IMultiVaultFacetWithdraw.sol";
+import "./IMultiVaultToken.sol";
+import "./IEverscale.sol";
+import "./IERC20.sol";
+import "./IWETH.sol";
 
-import "../../libraries/SafeERC20.sol";
+import "./SafeERC20.sol";
 
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultStorage.sol";
 
-import "../helpers/MultiVaultHelperEverscale.sol";
-import "../helpers/MultiVaultHelperReentrancyGuard.sol";
-import "../helpers/MultiVaultHelperTokens.sol";
-import "../helpers/MultiVaultHelperFee.sol";
-import "../helpers/MultiVaultHelperPendingWithdrawal.sol";
-import "../helpers/MultiVaultHelperCallback.sol";
-import "../helpers/MultiVaultHelperGas.sol";
+import "./MultiVaultHelperEverscale.sol";
+import "./MultiVaultHelperReentrancyGuard.sol";
+import "./MultiVaultHelperTokens.sol";
+import "./MultiVaultHelperFee.sol";
+import "./MultiVaultHelperPendingWithdrawal.sol";
+import "./MultiVaultHelperCallback.sol";
+import "./MultiVaultHelperGas.sol";
 
 
 contract MultiVaultFacetDeposit is

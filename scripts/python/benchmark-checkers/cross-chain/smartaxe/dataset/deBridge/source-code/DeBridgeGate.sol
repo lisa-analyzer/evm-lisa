@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "../interfaces/IERC20Permit.sol";
-import "../interfaces/IDeBridgeToken.sol";
-import "../interfaces/IDeBridgeTokenDeployer.sol";
-import "../interfaces/ISignatureVerifier.sol";
-import "../interfaces/IWETH.sol";
-import "../interfaces/IDeBridgeGate.sol";
-import "../interfaces/ICallProxy.sol";
-import "../libraries/SignatureUtil.sol";
-import "../libraries/Flags.sol";
-import "../interfaces/IWethGate.sol";
+import "./ERC20.sol";
+import "./IERC20MetadataUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./Initializable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./PausableUpgradeable.sol";
+import "./IERC20Permit.sol";
+import "./IDeBridgeToken.sol";
+import "./IDeBridgeTokenDeployer.sol";
+import "./ISignatureVerifier.sol";
+import "./IWETH.sol";
+import "./IDeBridgeGate.sol";
+import "./ICallProxy.sol";
+import "./SignatureUtil.sol";
+import "./Flags.sol";
+import "./IWethGate.sol";
 
 /// @dev Contract for assets transfers. The user can transfer the asset to any of the approved chains.
 /// The admin manages the assets, fees and other important protocol parameters.

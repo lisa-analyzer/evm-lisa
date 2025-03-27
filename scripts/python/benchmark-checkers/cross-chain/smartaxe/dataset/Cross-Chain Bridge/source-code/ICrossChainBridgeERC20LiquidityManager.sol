@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import '../token/MintableERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import "./MintableERC20.sol";
+import "./IERC20.sol";
 
 interface ICrossChainBridgeERC20LiquidityManager {
   function lpTokens(address spender) external returns (bool exists, IERC20 token);

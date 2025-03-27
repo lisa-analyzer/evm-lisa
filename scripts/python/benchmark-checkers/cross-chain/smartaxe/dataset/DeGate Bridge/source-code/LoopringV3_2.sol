@@ -3,12 +3,12 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../../lib/AddressUtil.sol";
-import "../../lib/ERC20SafeTransfer.sol";
-import "../../lib/MathUint.sol";
-import "../../lib/ReentrancyGuard.sol";
-import "../iface/IExchangeV3.sol";
-import "../iface/ILoopringV3.sol";
+import "./AddressUtil.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./ReentrancyGuard.sol";
+import "./IExchangeV3.sol";
+import "./ILoopringV3.sol";
 
 
 /// @title LoopringV3

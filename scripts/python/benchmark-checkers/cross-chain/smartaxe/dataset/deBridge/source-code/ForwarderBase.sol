@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./AccessControlUpgradeable.sol";
 
 contract ForwarderBase is Initializable, AccessControlUpgradeable {
 

@@ -1,11 +1,11 @@
 pragma solidity 0.4.24;
 
-import "../kernel/IKernel.sol";
-import "../kernel/Kernel.sol";
-import "../kernel/KernelProxy.sol";
+import "./IKernel.sol";
+import "./Kernel.sol";
+import "./KernelProxy.sol";
 
-import "../acl/IACL.sol";
-import "../acl/ACL.sol";
+import "./IACL.sol";
+import "./ACL.sol";
 
 import "./EVMScriptRegistryFactory.sol";
 

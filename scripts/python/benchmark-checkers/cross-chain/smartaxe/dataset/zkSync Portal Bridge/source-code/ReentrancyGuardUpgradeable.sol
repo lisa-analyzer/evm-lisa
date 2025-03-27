@@ -2,7 +2,7 @@
 // OpenZeppelin Contracts (last updated v4.8.0) (security/ReentrancyGuard.sol)
 
 pragma solidity ^0.8.0;
-import "../proxy/utils/Initializable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.

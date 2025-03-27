@@ -2,8 +2,8 @@
 pragma solidity 0.7.6;
 pragma abicoder v2;
 
-import "./lib/OracleLibrary.sol";
-import "@openzeppelin/contracts-v3/access/Ownable.sol";
+import "./OracleLibrary.sol";
+import "./Ownable.sol";
 
 
 contract UniswapV3Helper is Ownable {

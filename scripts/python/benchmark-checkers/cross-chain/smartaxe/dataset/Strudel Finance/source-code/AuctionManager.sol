@@ -1,14 +1,14 @@
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/Math.sol";
-import "./mocks/MockERC20.sol";
+import "./IERC20.sol";
+import "./ERC20.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./Math.sol";
+import "./MockERC20.sol";
 import "./GovernanceToken.sol";
-import "./dutchSwap/IDutchAuction.sol";
-import "./dutchSwap/IDutchSwapFactory.sol";
+import "./IDutchAuction.sol";
+import "./IDutchSwapFactory.sol";
 import "./IPriceOracle.sol";
 
 contract AuctionManager is OwnableUpgradeSafe, ERC20UpgradeSafe {

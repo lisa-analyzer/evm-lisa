@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zeppelin-solidity/contracts/security/Pausable.sol";
-import "../../utils/AccessController.sol";
-import "../../utils/TokenTransferHelper.sol";
+import "./Pausable.sol";
+import "./AccessController.sol";
+import "./TokenTransferHelper.sol";
 
 /// @title LnBridgeSourceV3
 /// @notice LnBridgeSourceV3 is a contract to help user lock token and then trigger remote chain relay

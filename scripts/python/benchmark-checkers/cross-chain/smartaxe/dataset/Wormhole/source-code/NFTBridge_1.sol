@@ -3,18 +3,18 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "./IERC721.sol";
+import "./IERC721Receiver.sol";
 
-import "../libraries/external/BytesLib.sol";
+import "./BytesLib.sol";
 
 import "./NFTBridgeGetters.sol";
 import "./NFTBridgeSetters.sol";
 import "./NFTBridgeStructs.sol";
 import "./NFTBridgeGovernance.sol";
 
-import "./token/NFT.sol";
-import "./token/NFTImplementation.sol";
+import "./NFT.sol";
+import "./NFTImplementation.sol";
 
 contract NFTBridge is NFTBridgeGovernance {
     using BytesLib for bytes;

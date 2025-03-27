@@ -3,8 +3,8 @@ pragma solidity 0.4.24;
 import "./IKernel.sol";
 import "./KernelConstants.sol";
 import "./KernelStorage.sol";
-import "../common/DepositableDelegateProxy.sol";
-import "../common/IsContract.sol";
+import "./DepositableDelegateProxy.sol";
+import "./IsContract.sol";
 
 
 contract KernelProxy is IKernelEvents, KernelStorage, KernelAppIds, KernelNamespaceConstants, IsContract, DepositableDelegateProxy {

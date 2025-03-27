@@ -4,11 +4,11 @@ pragma solidity ^0.8.13;
 
 
 
-import "../../zksync/interfaces/IZkSync.sol";
-import "../../vendor/AddressAliasHelper.sol";
-import "../../common/libraries/L2ContractHelper.sol";
-import "../../common/L2ContractAddresses.sol";
-import "../../common/interfaces/IL2ContractDeployer.sol";
+import "./IZkSync.sol";
+import "./AddressAliasHelper.sol";
+import "./L2ContractHelper.sol";
+import "./L2ContractAddresses.sol";
+import "./IL2ContractDeployer.sol";
 
 /// @author Matter Labs
 /// @dev A helper library for initializing L2 bridges in zkSync L2 network.

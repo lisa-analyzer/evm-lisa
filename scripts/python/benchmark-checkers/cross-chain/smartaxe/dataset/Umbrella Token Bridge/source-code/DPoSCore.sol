@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import "@openzeppelin/contracts/V4/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/V4/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/V4/access/Ownable.sol";
-import "@openzeppelin/contracts/V4/utils/cryptography/ECDSA.sol";
+import "./SafeERC20.sol";
+import "./IERC20.sol";
+import "./Ownable.sol";
+import "./ECDSA.sol";
 
 interface Token {
     function mint(address _holder, uint256 _amount) external;

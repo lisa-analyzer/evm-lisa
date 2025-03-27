@@ -4,9 +4,9 @@
 pragma solidity ^0.8.0;
 
 import "./IAccessControl.sol";
-import "../utils/Context.sol";
-import "../utils/Strings.sol";
-import "../utils/introspection/ERC165.sol";
+import "./Context.sol";
+import "./Strings.sol";
+import "./ERC165.sol";
 
 /**
  * @dev Contract module that allows children to implement role-based access

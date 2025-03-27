@@ -2,8 +2,8 @@
 // Copyright 2017 Loopring Technology Limited.
 pragma solidity ^0.7.0;
 
-import "../lib/AddressUtil.sol";
-import "../lib/ERC20SafeTransfer.sol";
+import "./AddressUtil.sol";
+import "./ERC20SafeTransfer.sol";
 
 
 contract TransferContract {

@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../challenge/ChallengeManager.sol";
+import "./ChallengeManager.sol";
 
 contract SingleExecutionChallenge is ChallengeManager {
     constructor(

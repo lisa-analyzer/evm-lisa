@@ -3,7 +3,7 @@
 pragma solidity ^0.7.0;
 pragma abicoder v2;
 
-import "./zeppelin/ownership/Secondary.sol";
+import "./Secondary.sol";
 import "./ISideTokenFactory.sol";
 import "./SideToken.sol";
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.10;
-import "@zeppelin-solidity/contracts/utils/math/SafeMath.sol";
-import "../../interfaces/IERC20.sol";
+import "./SafeMath.sol";
+import "./IERC20.sol";
 
 contract Erc20Sub2SubMigration {
     using SafeMath for uint256;

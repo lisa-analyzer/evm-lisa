@@ -2,13 +2,13 @@
 
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@uniswap/lib/contracts/libraries/Babylonian.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./Babylonian.sol";
 import {TypedMemView} from "./summa-tx/TypedMemView.sol";
 import {ViewBTC} from "./summa-tx/ViewBTC.sol";
 import {ViewSPV} from "./summa-tx/ViewSPV.sol";
-import "./summa-tx/IRelay.sol";
+import "./IRelay.sol";
 
 interface IERC20 {
   function mint(address account, uint256 amount) external returns (bool);

@@ -4,25 +4,25 @@ pragma solidity ^0.8.13;
 
 
 
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "./IERC20Metadata.sol";
+import "./SafeERC20.sol";
 
-import "./interfaces/IL1BridgeLegacy.sol";
-import "./interfaces/IL1Bridge.sol";
-import "./interfaces/IL2Bridge.sol";
-import "./interfaces/IL2ERC20Bridge.sol";
+import "./IL1BridgeLegacy.sol";
+import "./IL1Bridge.sol";
+import "./IL2Bridge.sol";
+import "./IL2ERC20Bridge.sol";
 
-import "./libraries/BridgeInitializationHelper.sol";
+import "./BridgeInitializationHelper.sol";
 
-import "../zksync/interfaces/IZkSync.sol";
-import "../common/interfaces/IL2ContractDeployer.sol";
-import "../common/interfaces/IAllowList.sol";
-import "../common/AllowListed.sol";
-import "../common/libraries/UnsafeBytes.sol";
-import "../common/libraries/L2ContractHelper.sol";
-import "../common/L2ContractAddresses.sol";
-import "../common/ReentrancyGuard.sol";
-import "../vendor/AddressAliasHelper.sol";
+import "./IZkSync.sol";
+import "./IL2ContractDeployer.sol";
+import "./IAllowList.sol";
+import "./AllowListed.sol";
+import "./UnsafeBytes.sol";
+import "./L2ContractHelper.sol";
+import "./L2ContractAddresses.sol";
+import "./ReentrancyGuard.sol";
+import "./AddressAliasHelper.sol";
 
 /// @author Matter Labs
 /// @notice Smart contract that allows depositing ERC20 tokens from Ethereum to zkSync v2.0

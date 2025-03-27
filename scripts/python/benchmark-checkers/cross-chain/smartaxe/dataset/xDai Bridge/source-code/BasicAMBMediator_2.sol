@@ -1,8 +1,8 @@
 pragma solidity 0.7.5;
 
 import "./Ownable.sol";
-import "../interfaces/IAMB.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+import "./IAMB.sol";
+import "./Address.sol";
 
 /**
  * @title BasicAMBMediator

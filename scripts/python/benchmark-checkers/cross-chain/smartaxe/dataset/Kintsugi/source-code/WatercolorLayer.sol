@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../../../V1/TypesV1.sol";
-import "../../../V1/RandomV1.sol";
-import "../../../V1/Trig256.sol";
-import "../../../V1/GraphicsV1.sol";
+import "./TypesV1.sol";
+import "./RandomV1.sol";
+import "./Trig256.sol";
+import "./GraphicsV1.sol";
 
 library WatercolorLayer {
     uint16 public constant MAX_POLYGONS = 40960;

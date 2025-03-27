@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
+import "./TransferHelper.sol";
 
 /**
  * @title MetaRouterGateway

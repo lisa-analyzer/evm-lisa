@@ -3,11 +3,11 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../../lib/ReentrancyGuard.sol";
-import "../../thirdparty/verifiers/BatchVerifier.sol";
-import "../../thirdparty/verifiers/Verifier.sol";
-import "../iface/ExchangeData.sol";
-import "../iface/IBlockVerifier.sol";
+import "./ReentrancyGuard.sol";
+import "./BatchVerifier.sol";
+import "./Verifier.sol";
+import "./ExchangeData.sol";
+import "./IBlockVerifier.sol";
 import "./VerificationKeys.sol";
 
 /// @title An Implementation of IBlockVerifier.

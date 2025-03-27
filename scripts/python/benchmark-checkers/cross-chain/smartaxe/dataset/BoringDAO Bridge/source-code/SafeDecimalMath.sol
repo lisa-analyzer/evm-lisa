@@ -2,7 +2,7 @@
 pragma solidity ^0.6.8;
 
 // Libraries
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 // https://docs.synthetix.io/contracts/SafeDecimalMath
 library SafeDecimalMath {

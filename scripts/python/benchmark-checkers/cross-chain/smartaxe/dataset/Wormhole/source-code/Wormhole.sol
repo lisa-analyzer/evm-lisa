@@ -4,11 +4,11 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./ERC20.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./SafeMath.sol";
+import "./ReentrancyGuard.sol";
 import "./BytesLib.sol";
 import "./WrappedAsset.sol";
 

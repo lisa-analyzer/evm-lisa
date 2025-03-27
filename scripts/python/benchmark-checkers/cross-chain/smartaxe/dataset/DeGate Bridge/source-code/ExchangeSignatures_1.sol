@@ -3,8 +3,8 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/SignatureUtil.sol";
-import "../../iface/ExchangeData.sol";
+import "./SignatureUtil.sol";
+import "./ExchangeData.sol";
 
 
 /// @title ExchangeSignatures.

@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./interface/IUniswapFactory.sol";
-import "./interface/IUniswapV2Factory.sol";
-import "./interface/IHandlerReserve.sol";
-import "./interface/IEthHandler.sol";
-import "./interface/IBridge.sol";
+import "./SafeMathUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./Initializable.sol";
+import "./UUPSUpgradeable.sol";
+import "./OwnableUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./IUniswapFactory.sol";
+import "./IUniswapV2Factory.sol";
+import "./IHandlerReserve.sol";
+import "./IEthHandler.sol";
+import "./IBridge.sol";
 import "./IOneSplit.sol";
 import "./UniversalERC20.sol";
-import "./interface/IWETH.sol";
-import "./libraries/TransferHelper.sol";
-import "./interface/IAugustusSwapper.sol";
-import "hardhat/console.sol";
+import "./IWETH.sol";
+import "./TransferHelper.sol";
+import "./IAugustusSwapper.sol";
+import "./console.sol";
 
 abstract contract IOneSplitView is IOneSplitConsts {
     function getExpectedReturn(

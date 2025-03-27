@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "../AccessController.sol";
-import "../../interfaces/ICrossChainFilter.sol";
-import "../../interfaces/IFeeMarket.sol";
-import "../../interfaces/IHelixApp.sol";
-import "../../interfaces/IInboundLane.sol";
-import "../../interfaces/IOutboundLane.sol";
+import "./AccessController.sol";
+import "./ICrossChainFilter.sol";
+import "./IFeeMarket.sol";
+import "./IHelixApp.sol";
+import "./IInboundLane.sol";
+import "./IOutboundLane.sol";
 
 contract DarwiniaSub2EthMessageEndpoint is ICrossChainFilter, AccessController {
     address immutable public inboundLane;

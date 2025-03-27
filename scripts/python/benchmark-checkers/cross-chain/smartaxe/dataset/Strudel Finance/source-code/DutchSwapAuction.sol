@@ -46,7 +46,7 @@ pragma solidity 0.6.6;
 // SPDX-License-Identifier: GPL-3.0-or-later
 // ---------------------------------------------------------------------
 
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 contract DutchSwapAuction {
   using SafeMath for uint256;

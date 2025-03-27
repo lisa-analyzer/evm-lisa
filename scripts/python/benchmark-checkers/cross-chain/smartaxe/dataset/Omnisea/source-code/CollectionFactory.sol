@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.7;
 
-import "../interfaces/ICollectionsRepository.sol";
-import "../interfaces/IOmniApp.sol";
-import "../interfaces/IOmnichainRouter.sol";
+import "./ICollectionsRepository.sol";
+import "./IOmniApp.sol";
+import "./IOmnichainRouter.sol";
 import { CreateParams } from "../structs/erc721/ERC721Structs.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 
 /**
  * @title CollectionFactory

@@ -16,8 +16,8 @@ import {
 } from "../libraries/Error.sol";
 import "./IBridge.sol";
 import "./IOutbox.sol";
-import "../libraries/MerkleLib.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./MerkleLib.sol";
+import "./DelegateCallAware.sol";
 
 /// @dev this error is thrown since certain functions are only expected to be used in simulations, not in actual txs
 error SimulationOnlyEntrypoint();

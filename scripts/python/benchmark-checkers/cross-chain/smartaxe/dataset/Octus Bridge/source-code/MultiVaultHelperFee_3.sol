@@ -2,12 +2,12 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetFees.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetLiquidity.sol";
-import "../../interfaces/multivault/IMultiVaultFacetFeesEvents.sol";
+import "./IMultiVaultFacetFees.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetLiquidity.sol";
+import "./IMultiVaultFacetFeesEvents.sol";
 
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultStorage.sol";
 import "./MultiVaultHelperLiquidity.sol";
 
 

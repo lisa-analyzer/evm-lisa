@@ -2,10 +2,10 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetPendingWithdrawals.sol";
-import "../../interfaces/multivault/IMultiVaultFacetPendingWithdrawalsEvents.sol";
+import "./IMultiVaultFacetPendingWithdrawals.sol";
+import "./IMultiVaultFacetPendingWithdrawalsEvents.sol";
 
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultStorage.sol";
 
 
 abstract contract MultiVaultHelperPendingWithdrawal is IMultiVaultFacetPendingWithdrawalsEvents {

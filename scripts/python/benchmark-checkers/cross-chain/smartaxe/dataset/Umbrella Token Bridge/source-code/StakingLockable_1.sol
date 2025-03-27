@@ -1,17 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./IERC20.sol";
+import "./ReentrancyGuard.sol";
 
 // Inheritance
-import "../interfaces/IStakingRewards.sol";
-import "../interfaces/Pausable.sol";
-import "../interfaces/IBurnableToken.sol";
-import "../interfaces/RewardsDistributionRecipient.sol";
-import "../interfaces/OnDemandToken.sol";
-import "../interfaces/LockSettings.sol";
-import "../interfaces/SwappableTokenV2.sol";
+import "./IStakingRewards.sol";
+import "./Pausable.sol";
+import "./IBurnableToken.sol";
+import "./RewardsDistributionRecipient.sol";
+import "./OnDemandToken.sol";
+import "./LockSettings.sol";
+import "./SwappableTokenV2.sol";
 
 /// @author  umb.network
 /// @notice Math is based on synthetix staking contract

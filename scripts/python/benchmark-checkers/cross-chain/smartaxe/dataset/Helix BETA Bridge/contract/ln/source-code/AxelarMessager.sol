@@ -2,10 +2,10 @@
 pragma solidity ^0.8.17;
 
 import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
-import "../interface/ILowLevelMessager.sol";
-import "../base/LnAccessController.sol";
-import "./interface/IAxelarGateway.sol";
-import "./interface/IAxelarGasReceiver.sol";
+import "./ILowLevelMessager.sol";
+import "./LnAccessController.sol";
+import "./IAxelarGateway.sol";
+import "./IAxelarGasReceiver.sol";
 
 contract AxelarMessager is LnAccessController {
     using StringToAddress for string;

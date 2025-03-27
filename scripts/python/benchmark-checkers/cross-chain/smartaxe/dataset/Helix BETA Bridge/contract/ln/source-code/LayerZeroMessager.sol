@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interface/ILayerZeroEndpoint.sol";
-import "../interface/ILowLevelMessager.sol";
-import "../base/LnAccessController.sol";
+import "./ILayerZeroEndpoint.sol";
+import "./ILowLevelMessager.sol";
+import "./LnAccessController.sol";
 
 contract LayerZeroMessager is LnAccessController {
     ILayerZeroEndpoint public endpoint;

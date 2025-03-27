@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0; 
 
 import "./BridgeNFT.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./Ownable.sol";
+import "./ERC721Enumerable.sol";
 
 contract XPNFT is Ownable, ERC721Enumerable, BridgeNFT {
     string public baseUri;

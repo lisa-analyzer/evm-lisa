@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.3;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 contract USDT is ERC20 {
     constructor(

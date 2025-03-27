@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-import "./interfaces/IMessageTransmitter.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./IMessageTransmitter.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./SafeMathUpgradeable.sol";
+import "./UUPSUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
 
 contract UsdcMinter is UUPSUpgradeable, AccessControlUpgradeable {
     using SafeMathUpgradeable for uint256;

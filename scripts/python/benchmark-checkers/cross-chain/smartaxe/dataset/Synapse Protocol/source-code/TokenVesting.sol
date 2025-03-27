@@ -2,9 +2,9 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeERC20.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
 
 /**
  * @title TokenVesting

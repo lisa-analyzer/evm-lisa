@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "../interfaces/IDeBridgeToken.sol";
+import "./ERC20Upgradeable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./IDeBridgeToken.sol";
 
 contract DeBridgeToken is ERC20Upgradeable, AccessControlUpgradeable, IDeBridgeToken {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE"); // minter role identifier

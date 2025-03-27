@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import "openzeppelin/access/AccessControl.sol";
-import "openzeppelin/token/ERC20/IERC20.sol";
-import "openzeppelin/token/ERC20/utils/SafeERC20.sol";
+import "./AccessControl.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
 
 import {Auth} from "./Auth.sol";
 

@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./access/Ownable.sol";
-import "./utils/ECDSA.sol";
+import "./Ownable.sol";
+import "./ECDSA.sol";
 
 contract ChainIdValidators is Ownable {
     using ECDSA for bytes32;

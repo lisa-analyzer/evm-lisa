@@ -2,7 +2,7 @@
 
 pragma solidity 0.6.12;
 
-import "../Swap.sol";
+import "./Swap.sol";
 import "./MetaSwapUtils.sol";
 
 /**

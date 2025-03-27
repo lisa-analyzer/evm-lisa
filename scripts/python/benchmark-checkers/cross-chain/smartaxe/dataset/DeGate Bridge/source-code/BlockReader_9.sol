@@ -4,8 +4,8 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../thirdparty/BytesUtil.sol";
-import "../../iface/ExchangeData.sol";
+import "./BytesUtil.sol";
+import "./ExchangeData.sol";
 
 /// @title BlockReader
 /// @author Brecht Devos - <brecht@loopring.org>

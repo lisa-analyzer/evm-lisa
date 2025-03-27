@@ -2,9 +2,9 @@
 
 pragma solidity ^0.6.0;
 
-import "@pancakeswap/pancake-swap-lib/contracts/token/BEP20/IBEP20.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./IBEP20.sol";
+import "./OwnableUpgradeable.sol";
+import "./SafeMath.sol";
 
 abstract contract BEP20Upgradeable is IBEP20, OwnableUpgradeable {
     using SafeMath for uint;

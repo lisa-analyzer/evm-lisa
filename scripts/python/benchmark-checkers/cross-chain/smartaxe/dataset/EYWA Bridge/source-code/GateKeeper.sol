@@ -2,10 +2,10 @@
 // Copyright (c) Eywa.Fi, 2021-2023 - all rights reserved
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./AccessControlEnumerable.sol";
+import "./Address.sol";
+import "./SafeERC20.sol";
+import "./ReentrancyGuard.sol";
 import "Typecast.sol";
 import "RequestIdLib.sol";
 import "IBridgeV2.sol";

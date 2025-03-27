@@ -4,12 +4,12 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/EIP712.sol";
-import "../../../lib/ERC20.sol";
-import "../../../lib/MathUint248.sol";
-import "../../../lib/SignatureUtil.sol";
-import "../../../thirdparty/BytesUtil.sol";
-import "../../iface/ExchangeData.sol";
+import "./EIP712.sol";
+import "./ERC20.sol";
+import "./MathUint248.sol";
+import "./SignatureUtil.sol";
+import "./BytesUtil.sol";
+import "./ExchangeData.sol";
 
 /// @title DepositTransaction
 /// @author Brecht Devos - <brecht@loopring.org>

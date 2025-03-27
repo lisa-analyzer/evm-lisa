@@ -2,16 +2,16 @@
 
 pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interface/ILiquidate.sol";
-import "../interface/IERC20Metadata.sol";
-import "../interface/IOracle.sol";
-import "../interface/IPair.sol";
-import "../lib/SafeDecimalMath.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./EnumerableSet.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
+import "./ILiquidate.sol";
+import "./IERC20Metadata.sol";
+import "./IOracle.sol";
+import "./IPair.sol";
+import "./SafeDecimalMath.sol";
 
 contract BoringSatelliteChef is Ownable, ILiquidateArray {
     using SafeMath for uint256;

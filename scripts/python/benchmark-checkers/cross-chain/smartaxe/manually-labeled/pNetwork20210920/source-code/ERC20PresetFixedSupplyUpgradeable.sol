@@ -2,8 +2,8 @@
 // OpenZeppelin Contracts (last updated v4.5.0) (token/ERC20/presets/ERC20PresetFixedSupply.sol)
 pragma solidity ^0.8.0;
 
-import "../extensions/ERC20BurnableUpgradeable.sol";
-import "../../../proxy/utils/Initializable.sol";
+import "./ERC20BurnableUpgradeable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev {ERC20} token, including:

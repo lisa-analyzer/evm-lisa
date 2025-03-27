@@ -7,15 +7,15 @@
 
 pragma solidity >=0.8.10;
 
-import "@zeppelin-solidity/contracts/access/Ownable.sol";
-import "@zeppelin-solidity/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "@zeppelin-solidity/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@zeppelin-solidity/contracts/token/ERC721/IERC721.sol";
-import "@zeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol";
-import "@zeppelin-solidity/contracts/utils/Address.sol";
-import "@zeppelin-solidity/contracts/utils/introspection/ERC165.sol";
-import "@zeppelin-solidity/contracts/utils/Strings.sol";
-import "../../interfaces/IErc721MappingToken.sol";
+import "./Ownable.sol";
+import "./IERC721Enumerable.sol";
+import "./IERC721Metadata.sol";
+import "./IERC721.sol";
+import "./IERC721Receiver.sol";
+import "./Address.sol";
+import "./ERC165.sol";
+import "./Strings.sol";
+import "./IErc721MappingToken.sol";
 
 contract Erc721MappingToken is ERC165, IERC721Enumerable, IErc721MappingToken, IERC721Metadata, Ownable {
     using Address for address;

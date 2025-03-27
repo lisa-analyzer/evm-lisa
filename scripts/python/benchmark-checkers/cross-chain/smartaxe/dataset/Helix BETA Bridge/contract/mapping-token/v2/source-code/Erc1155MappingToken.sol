@@ -4,12 +4,12 @@
 
 pragma solidity ^0.8.10;
 
-import "@zeppelin-solidity/contracts/access/Ownable.sol";
-import "@zeppelin-solidity/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
-import "@zeppelin-solidity/contracts/token/ERC1155/IERC1155.sol";
-import "@zeppelin-solidity/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "@zeppelin-solidity/contracts/utils/Address.sol";
-import "@zeppelin-solidity/contracts/utils/introspection/ERC165.sol";
+import "./Ownable.sol";
+import "./IERC1155MetadataURI.sol";
+import "./IERC1155.sol";
+import "./IERC1155Receiver.sol";
+import "./Address.sol";
+import "./ERC165.sol";
 
 /**
  * @dev Implementation of the basic standard multi-token.

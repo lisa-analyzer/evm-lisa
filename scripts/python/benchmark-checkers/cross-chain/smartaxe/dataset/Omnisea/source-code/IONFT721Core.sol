@@ -2,7 +2,7 @@
 
 pragma solidity >=0.5.0;
 
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import "./IERC165.sol";
 
 /**
  * @dev Interface of the ONFT Core standard

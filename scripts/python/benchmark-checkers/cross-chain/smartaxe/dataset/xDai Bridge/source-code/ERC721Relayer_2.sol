@@ -1,7 +1,7 @@
 pragma solidity 0.7.5;
 
-import "../../../../interfaces/IBurnableMintableERC721Token.sol";
-import "../../../ReentrancyGuard.sol";
+import "./IBurnableMintableERC721Token.sol";
+import "./ReentrancyGuard.sol";
 import "./BaseRelayer.sol";
 
 /**

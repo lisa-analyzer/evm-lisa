@@ -36,11 +36,11 @@ pragma experimental ABIEncoderV2;
 * SOFTWARE.
 */
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../interfaces/IQBridgeHandler.sol";
-import "../interfaces/IQBridgeDelegator.sol";
-import "../library/SafeToken.sol";
+import "./OwnableUpgradeable.sol";
+import "./SafeMath.sol";
+import "./IQBridgeHandler.sol";
+import "./IQBridgeDelegator.sol";
+import "./SafeToken.sol";
 import "./QBridgeToken.sol";
 
 

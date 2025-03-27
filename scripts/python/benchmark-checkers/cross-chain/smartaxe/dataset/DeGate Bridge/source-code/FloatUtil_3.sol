@@ -3,7 +3,7 @@
 pragma solidity ^0.7.0;
 
 import "./MathUint.sol";
-import "../thirdparty/SafeCast.sol";
+import "./SafeCast.sol";
 
 
 /// @title Utility Functions for floats

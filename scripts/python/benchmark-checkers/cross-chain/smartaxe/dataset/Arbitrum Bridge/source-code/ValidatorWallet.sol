@@ -4,11 +4,11 @@
 
 pragma solidity ^0.8.0;
 
-import "../challenge/IChallengeManager.sol";
-import "../libraries/DelegateCallAware.sol";
-import "../libraries/IGasRefunder.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "./IChallengeManager.sol";
+import "./DelegateCallAware.sol";
+import "./IGasRefunder.sol";
+import "./Address.sol";
+import "./OwnableUpgradeable.sol";
 
 /// @dev thrown when arrays provided don't have the expected length
 error BadArrayLength(uint256 expected, uint256 actual);

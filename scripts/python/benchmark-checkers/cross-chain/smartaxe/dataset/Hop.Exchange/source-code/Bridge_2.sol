@@ -4,7 +4,7 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "./Accounting.sol";
-import "../libraries/Lib_MerkleTree.sol";
+import "./Lib_MerkleTree.sol";
 
 /**
  * @dev Bridge extends the accounting system and encapsulates the logic that is shared by both the

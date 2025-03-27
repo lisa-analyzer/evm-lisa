@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/ParticleSetV1.sol";
-import "../V1/ParticleV1.sol";
-import "../V1/RandomV1.sol";
+import "./ParticleSetV1.sol";
+import "./ParticleV1.sol";
+import "./RandomV1.sol";
 
 /*
     A noise-based particle simulator, built for generative art that uses flow fields.

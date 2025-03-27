@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.7;
 
-import "../interfaces/IOmniERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../interfaces/IOmniApp.sol";
-import "../interfaces/IOmnichainRouter.sol";
-import "../interfaces/IOmniseaPointsRepository.sol";
+import "./IOmniERC721.sol";
+import "./IERC20.sol";
+import "./IOmniApp.sol";
+import "./IOmnichainRouter.sol";
+import "./IOmniseaPointsRepository.sol";
 import { MintParams, Asset } from "../structs/erc721/ERC721Structs.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./Ownable.sol";
+import "./ReentrancyGuard.sol";
 
 /**
  * @title TokenFactory

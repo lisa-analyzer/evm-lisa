@@ -1,7 +1,7 @@
 pragma solidity ^0.8.10;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import './XToken.sol';
+import "./IERC20.sol";
+import "./XToken.sol";
 
 contract BridgeBase {
   address public admin;

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import './interfaces/IUniswapV2Pair.sol';
-import './UniswapV2ERC20.sol';
-import './libraries/Math.sol';
-import './libraries/UQ112x112.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/IUniswapV2Factory.sol';
+import "./IUniswapV2Pair.sol";
+import "./UniswapV2ERC20.sol";
+import "./Math.sol";
+import "./UQ112x112.sol";
+import "./IERC20.sol";
+import "./IUniswapV2Factory.sol";
 
 contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     using UQ112x112 for uint224;

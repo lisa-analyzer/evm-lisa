@@ -2,17 +2,17 @@
 
 pragma solidity >=0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
 
 import "./PbBridge.sol";
 import "./PbPegged.sol";
 import "./PbPool.sol";
-import "../interfaces/IBridge.sol";
-import "../interfaces/IOriginalTokenVault.sol";
-import "../interfaces/IOriginalTokenVaultV2.sol";
-import "../interfaces/IPeggedTokenBridge.sol";
-import "../interfaces/IPeggedTokenBridgeV2.sol";
+import "./IBridge.sol";
+import "./IOriginalTokenVault.sol";
+import "./IOriginalTokenVaultV2.sol";
+import "./IPeggedTokenBridge.sol";
+import "./IPeggedTokenBridgeV2.sol";
 
 interface INativeWrap {
     function nativeWrap() external view returns (address);

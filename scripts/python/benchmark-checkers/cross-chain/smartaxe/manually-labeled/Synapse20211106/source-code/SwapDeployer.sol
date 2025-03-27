@@ -2,9 +2,9 @@
 
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "./interfaces/ISwap.sol";
+import "./Ownable.sol";
+import "./Clones.sol";
+import "./ISwap.sol";
 
 contract SwapDeployer is Ownable {
     event NewSwapPool(

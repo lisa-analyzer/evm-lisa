@@ -2,10 +2,10 @@
 
 pragma solidity 0.6.12;
 
-import "../../interfaces/IWithdrawalDelayer.sol";
+import "./IWithdrawalDelayer.sol";
 import "./HermezHelpers.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 
 contract InstantWithdrawManager is HermezHelpers {

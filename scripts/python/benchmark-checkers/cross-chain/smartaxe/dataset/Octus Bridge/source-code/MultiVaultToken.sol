@@ -3,13 +3,13 @@
 pragma solidity 0.8.0;
 
 
-import "./interfaces/IERC20.sol";
-import "./interfaces/IERC20Metadata.sol";
-import "./interfaces/IMultiVaultToken.sol";
+import "./IERC20.sol";
+import "./IERC20Metadata.sol";
+import "./IMultiVaultToken.sol";
 
-import "./libraries/Address.sol";
+import "./Address.sol";
 
-import "./utils/Ownable.sol";
+import "./Ownable.sol";
 
 
 contract MultiVaultToken is IMultiVaultToken, Context, IERC20, IERC20Metadata, Ownable {

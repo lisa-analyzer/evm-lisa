@@ -2,8 +2,8 @@
 pragma solidity >=0.6.0;
 import "./MockMessageVerifier.sol";
 import "./MockInboundLane.sol";
-import "../interfaces/IOutboundLane.sol";
-import "hardhat/console.sol";
+import "./IOutboundLane.sol";
+import "./console.sol";
 
 contract MockOutboundLane is MockMessageVerifier {
     IOutboundLane.OutboundLaneNonce public outboundLaneNonce;

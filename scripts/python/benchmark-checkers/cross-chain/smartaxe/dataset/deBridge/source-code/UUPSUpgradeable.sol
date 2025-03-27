@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../ERC1967/ERC1967Upgrade.sol";
+import "./ERC1967Upgrade.sol";
 
 /**
  * @dev Base contract for building openzeppelin-upgrades compatible implementations for the {ERC1967Proxy}. It includes

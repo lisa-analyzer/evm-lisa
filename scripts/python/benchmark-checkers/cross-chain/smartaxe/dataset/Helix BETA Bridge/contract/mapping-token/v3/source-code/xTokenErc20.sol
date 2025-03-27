@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "@zeppelin-solidity/contracts/utils/math/SafeMath.sol";
+import "./IERC20.sol";
+import "./SafeMath.sol";
 
 contract xTokenErc20 is IERC20 {
     using SafeMath for uint256;

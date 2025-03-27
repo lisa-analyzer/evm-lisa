@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../libraries/AdminFallbackProxy.sol";
+import "./AdminFallbackProxy.sol";
 import "./IRollupLogic.sol";
 
 contract RollupProxy is AdminFallbackProxy {

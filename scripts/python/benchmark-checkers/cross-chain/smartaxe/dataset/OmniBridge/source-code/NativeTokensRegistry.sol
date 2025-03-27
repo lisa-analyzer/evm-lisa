@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "../../../../upgradeability/EternalStorage.sol";
+import "./EternalStorage.sol";
 
 /**
  * @title NativeTokensRegistry

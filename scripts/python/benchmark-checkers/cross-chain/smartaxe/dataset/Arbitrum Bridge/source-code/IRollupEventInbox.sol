@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../bridge/IBridge.sol";
+import "./IBridge.sol";
 
 interface IRollupEventInbox {
     function bridge() external view returns (IBridge);

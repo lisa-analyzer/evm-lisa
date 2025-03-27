@@ -26,11 +26,11 @@
 // SPDX-License-Identifier: GPL-2.0
 
 pragma solidity ^0.8.0;
-import "./ERC1155/ERC1155.sol";
-import "./access/Ownable.sol";
-import "./SignatureVerifier/SignatureVerifier_V2.sol";
-import "./ERC1155/IERC1155.sol";
-import "./utils/Strings.sol";
+import "./ERC1155.sol";
+import "./Ownable.sol";
+import "./SignatureVerifier_V2.sol";
+import "./IERC1155.sol";
+import "./Strings.sol";
 
 contract Zapper_NFT_V2_0_1 is ERC1155, Ownable, SignatureVerifier_V2 {
     // Used in pausable modifier

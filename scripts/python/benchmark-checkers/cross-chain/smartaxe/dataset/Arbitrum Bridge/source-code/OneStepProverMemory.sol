@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../state/Value.sol";
-import "../state/Machine.sol";
-import "../state/Deserialize.sol";
+import "./Value.sol";
+import "./Machine.sol";
+import "./Deserialize.sol";
 import "./IOneStepProver.sol";
 
 contract OneStepProverMemory is IOneStepProver {

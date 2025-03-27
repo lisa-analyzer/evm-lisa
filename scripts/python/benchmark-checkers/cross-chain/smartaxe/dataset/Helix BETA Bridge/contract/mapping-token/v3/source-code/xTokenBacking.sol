@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 import "./xTokenBridgeBase.sol";
-import "../interfaces/IxTokenIssuing.sol";
-import "../../interfaces/IGuard.sol";
-import "../../interfaces/IWToken.sol";
-import "../../../utils/TokenTransferHelper.sol";
+import "./IxTokenIssuing.sol";
+import "./IGuard.sol";
+import "./IWToken.sol";
+import "./TokenTransferHelper.sol";
 
 // The contract implements the backing side of the Helix xToken protocol. 
 // When sending cross-chain transactions, the user locks the Token in the contract, and when the message reaches the target chain, the corresponding mapped asset (xToken) will be issued;

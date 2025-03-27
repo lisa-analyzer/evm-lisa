@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../state/ValueArray.sol";
+import "./ValueArray.sol";
 
 contract ValueArrayTester {
     using ValueArrayLib for ValueArray;

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
+import "./IERC20Upgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./draft-IERC20Permit.sol";
 
-import "./interfaces/IDeBridgeGate.sol";
-import "./interfaces/ICrossChainForwarder.sol";
-import "./libraries/SignatureUtil.sol";
+import "./IDeBridgeGate.sol";
+import "./ICrossChainForwarder.sol";
+import "./SignatureUtil.sol";
 import "./ForwarderBase.sol";
 
 contract CrosschainForwarder is ForwarderBase, ICrossChainForwarder {

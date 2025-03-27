@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.0;
 
-import "../Layers/KintsugiLayer.sol";
-import "../../../V1/ParticleSetV1.sol";
-import "../../../V1/GraphicsV1.sol";
-import "../../../V1/ProcessingV1.sol";
-import "../../../V1/GeometryV1.sol";
+import "./KintsugiLayer.sol";
+import "./ParticleSetV1.sol";
+import "./GraphicsV1.sol";
+import "./ProcessingV1.sol";
+import "./GeometryV1.sol";
 
 library KintsugiDraw {
 

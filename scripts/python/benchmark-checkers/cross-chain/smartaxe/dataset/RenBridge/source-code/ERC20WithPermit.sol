@@ -1,9 +1,9 @@
 pragma solidity ^0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20Detailed.sol";
+import "./Initializable.sol";
+import "./ERC20.sol";
+import "./SafeMath.sol";
+import "./ERC20Detailed.sol";
 
 /// @notice Taken from the DAI token.
 contract ERC20WithPermit is Initializable, ERC20, ERC20Detailed {

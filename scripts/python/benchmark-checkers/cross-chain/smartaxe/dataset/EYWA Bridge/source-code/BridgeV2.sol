@@ -2,9 +2,9 @@
 // Copyright (c) Eywa.Fi, 2021-2023 - all rights reserved
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./Address.sol";
+import "./AccessControlEnumerable.sol";
+import "./ReentrancyGuard.sol";
 import "IBridgeV2.sol";
 import "Block.sol";
 import "Bls.sol";

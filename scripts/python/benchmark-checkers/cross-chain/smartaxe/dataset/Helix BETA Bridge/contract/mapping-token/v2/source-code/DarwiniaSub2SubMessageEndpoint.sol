@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "../AccessController.sol";
-import "@darwinia/contracts-periphery/contracts/s2s/MessageEndpoint.sol";
+import "./AccessController.sol";
+import "./MessageEndpoint.sol";
 
 contract DarwiniaSub2SubMessageEndpoint is AccessController, MessageEndpoint {
     constructor(uint16 _version, bytes4 _outboundLaneId, bytes4 _inboundLaneId) MessageEndpoint(_version, _outboundLaneId, _inboundLaneId) {

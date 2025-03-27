@@ -2,8 +2,8 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetWithdraw.sol";
-import "../../interfaces/multivault/IOctusCallback.sol";
+import "./IMultiVaultFacetWithdraw.sol";
+import "./IOctusCallback.sol";
 
 abstract contract MultiVaultHelperCallback {
     modifier checkCallbackRecipient(address recipient) {

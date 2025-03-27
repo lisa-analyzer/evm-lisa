@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "../UniversalERC20.sol";
+import "./MathUpgradeable.sol";
+import "./SafeMathUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./UniversalERC20.sol";
 
 interface IUniswapV2Exchange {
     function getReserves()

@@ -4,7 +4,7 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "./Bridge.sol";
-import "../interfaces/IMessengerWrapper.sol";
+import "./IMessengerWrapper.sol";
 
 /**
  * @dev L1_Bridge is responsible for the bonding and challenging of TransferRoots. All TransferRoots

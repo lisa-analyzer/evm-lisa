@@ -2,11 +2,11 @@
 pragma solidity ^0.8.2;
 
 import "./MerkleProof.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import "@openzeppelin/contracts/utils/structs/BitMaps.sol";
+import "./Ownable.sol";
+import "./ERC20.sol";
+import "./draft-ERC20Permit.sol";
+import "./ERC20Votes.sol";
+import "./BitMaps.sol";
 
 /**
  * @dev An ERC20 token for HOP.

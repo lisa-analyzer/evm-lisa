@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "@1hive/apps-dandelion-voting/contracts/DandelionVoting.sol";
+import "./DandelionVoting.sol";
 
 
 // NOTE: used because truffle does not support function overloading

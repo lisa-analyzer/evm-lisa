@@ -2,10 +2,10 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "../utils/EnumerableSetUpgradeable.sol";
-import "../utils/AddressUpgradeable.sol";
-import "../utils/ContextUpgradeable.sol";
-import "../proxy/Initializable.sol";
+import "./EnumerableSetUpgradeable.sol";
+import "./AddressUpgradeable.sol";
+import "./ContextUpgradeable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev Contract module that allows children to implement role-based access

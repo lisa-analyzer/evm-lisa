@@ -2,8 +2,8 @@
 
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
+import "./ERC20.sol";
+import "./Ownable.sol";
 import "./IBorrower.sol";
 import "./ILender.sol";
 

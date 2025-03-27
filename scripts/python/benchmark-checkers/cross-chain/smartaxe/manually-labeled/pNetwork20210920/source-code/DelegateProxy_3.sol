@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
-import "../common/IsContract.sol";
-import "../lib/misc/ERCProxy.sol";
+import "./IsContract.sol";
+import "./ERCProxy.sol";
 
 
 contract DelegateProxy is ERCProxy, IsContract {

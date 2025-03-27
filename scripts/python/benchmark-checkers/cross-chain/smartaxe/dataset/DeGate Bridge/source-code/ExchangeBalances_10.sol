@@ -4,9 +4,9 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/MathUint.sol";
-import "../../../lib/Poseidon.sol";
-import "../../iface/ExchangeData.sol";
+import "./MathUint.sol";
+import "./Poseidon.sol";
+import "./ExchangeData.sol";
 
 
 /// @title ExchangeBalances.

@@ -1,6 +1,6 @@
 pragma solidity ^0.8.7;
 
-import "../oft/OFT.sol";
+import "./OFT.sol";
 
 contract OSEABridge {
 

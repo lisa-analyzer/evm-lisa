@@ -5,14 +5,14 @@ pragma solidity ^0.8.13;
 
 
 import "./Base.sol";
-import "../Config.sol";
-import "../interfaces/IExecutor.sol";
-import "../libraries/PairingsBn254.sol";
-import "../libraries/PriorityQueue.sol";
-import "../../common/libraries/UncheckedMath.sol";
-import "../../common/libraries/UnsafeBytes.sol";
-import "../../common/libraries/L2ContractHelper.sol";
-import "../../common/L2ContractAddresses.sol";
+import "./Config.sol";
+import "./IExecutor.sol";
+import "./PairingsBn254.sol";
+import "./PriorityQueue.sol";
+import "./UncheckedMath.sol";
+import "./UnsafeBytes.sol";
+import "./L2ContractHelper.sol";
+import "./L2ContractAddresses.sol";
 
 /// @title zkSync Executor contract capable of processing events emitted in the zkSync protocol.
 /// @author Matter Labs

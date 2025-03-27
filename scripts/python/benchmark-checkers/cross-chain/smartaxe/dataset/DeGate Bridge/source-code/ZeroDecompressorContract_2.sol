@@ -3,7 +3,7 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../aux/compression/ZeroDecompressor.sol";
+import "./ZeroDecompressor.sol";
 
 contract ZeroDecompressorContract {
     function decompress(

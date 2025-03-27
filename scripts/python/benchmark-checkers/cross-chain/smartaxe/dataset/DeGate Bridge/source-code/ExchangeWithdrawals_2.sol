@@ -4,10 +4,10 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/AddressUtil.sol";
-import "../../../lib/MathUint248.sol";
-import "../../../thirdparty/BytesUtil.sol";
-import "../../iface/ExchangeData.sol";
+import "./AddressUtil.sol";
+import "./MathUint248.sol";
+import "./BytesUtil.sol";
+import "./ExchangeData.sol";
 import "./ExchangeBalances.sol";
 import "./ExchangeMode.sol";
 import "./ExchangeTokens.sol";

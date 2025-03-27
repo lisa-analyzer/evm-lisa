@@ -3,9 +3,9 @@
 pragma solidity ^0.8.1;
 
 import "./AnyCallApp.sol";
-import "./interfaces/IDecimal.sol";
-import "./interfaces/IERC20MessageGateway.sol";
-import "./GatewayClients/IERC20MessageGatewayReceiver.sol";
+import "./IDecimal.sol";
+import "./IERC20MessageGateway.sol";
+import "./IERC20MessageGatewayReceiver.sol";
 
 
 abstract contract ERC20MessageGateway is IERC20MessageGateway, AnyCallApp {

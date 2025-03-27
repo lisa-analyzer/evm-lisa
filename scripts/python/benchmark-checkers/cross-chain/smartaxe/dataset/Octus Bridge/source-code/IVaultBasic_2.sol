@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.2;
 
-import "../IEverscale.sol";
+import "./IEverscale.sol";
 
 
 interface IVaultBasic is IEverscale {

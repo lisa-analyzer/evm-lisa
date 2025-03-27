@@ -6,9 +6,9 @@ import "./Controllable.sol";
 import "./IERC721Bridgable.sol";
 import "./IERC1155Bridgable.sol";
 import "./IMessageReceiver.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/utils/ERC721HolderUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./ERC1155HolderUpgradeable.sol";
+import "./ERC721HolderUpgradeable.sol";
 
 contract Bridge is IBridgeComplete, Controllable, ERC1155HolderUpgradeable, ERC721HolderUpgradeable {
 	// Errors

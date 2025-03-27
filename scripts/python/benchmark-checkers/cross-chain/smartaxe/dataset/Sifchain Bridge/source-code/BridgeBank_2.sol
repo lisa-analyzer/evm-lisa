@@ -4,8 +4,8 @@ import "./CosmosBank.sol";
 import "./EthereumBank.sol";
 import "./EthereumWhitelist.sol";
 import "./CosmosWhiteList.sol";
-import "../Oracle.sol";
-import "../CosmosBridge.sol";
+import "./Oracle.sol";
+import "./CosmosBridge.sol";
 import "./BankStorage.sol";
 import "./Pausable.sol";
 

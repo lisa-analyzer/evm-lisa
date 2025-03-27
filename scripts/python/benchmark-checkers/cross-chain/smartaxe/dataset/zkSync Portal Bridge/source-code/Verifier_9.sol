@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 
 import "./Plonk4VerifierWithAccessToDNext.sol";
-import "../common/libraries/UncheckedMath.sol";
+import "./UncheckedMath.sol";
 
 contract Verifier is Plonk4VerifierWithAccessToDNext {
     using UncheckedMath for uint256;

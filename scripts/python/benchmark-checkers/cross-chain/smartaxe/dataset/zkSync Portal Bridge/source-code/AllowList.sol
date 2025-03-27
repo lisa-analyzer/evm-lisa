@@ -4,10 +4,10 @@ pragma solidity ^0.8.13;
 
 
 
-import "@openzeppelin/contracts/access/Ownable2Step.sol";
+import "./Ownable2Step.sol";
 
-import "./interfaces/IAllowList.sol";
-import "./libraries/UncheckedMath.sol";
+import "./IAllowList.sol";
+import "./UncheckedMath.sol";
 
 /// @author Matter Labs
 /// @notice The smart contract that stores the permissions to call the function on different contracts.

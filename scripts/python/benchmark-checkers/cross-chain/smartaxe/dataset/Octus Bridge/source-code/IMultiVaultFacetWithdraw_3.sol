@@ -3,7 +3,7 @@ pragma solidity 0.8.0;
 
 
 import "./IMultiVaultFacetTokens.sol";
-import "../IEverscale.sol";
+import "./IEverscale.sol";
 
 
 interface IMultiVaultFacetWithdraw {

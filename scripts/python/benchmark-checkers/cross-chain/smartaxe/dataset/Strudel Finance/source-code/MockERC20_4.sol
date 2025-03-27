@@ -1,6 +1,6 @@
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 contract MockERC20 is ERC20UpgradeSafe {
   constructor(

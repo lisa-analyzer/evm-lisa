@@ -607,10 +607,10 @@ contract ERC677Receiver {
 
 pragma solidity 0.4.24;
 
-//import "openzeppelin-eth/contracts/token/ERC20/ERC20Mintable.sol";
+//import "./ERC20Mintable.sol";
 
 
-//import "openzeppelin-eth/contracts/ownership/Ownerable.sol";
+//import "./Ownerable.sol";
 
 
 

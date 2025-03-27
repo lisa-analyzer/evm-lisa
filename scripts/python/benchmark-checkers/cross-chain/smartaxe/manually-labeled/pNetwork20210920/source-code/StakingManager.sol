@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "@aragon/os/contracts/apps/AragonApp.sol";
-import "@aragon/os/contracts/common/SafeERC20.sol";
-import "@aragon/os/contracts/lib/token/ERC20.sol";
-import "@aragon/apps-token-manager/contracts/TokenManager.sol";
-import "@aragon/apps-vault/contracts/Vault.sol";
-import "@aragon/os/contracts/lib/math/SafeMath.sol";
-import "@aragon/os/contracts/lib/math/SafeMath64.sol";
+import "./AragonApp.sol";
+import "./SafeERC20.sol";
+import "./ERC20.sol";
+import "./TokenManager.sol";
+import "./Vault.sol";
+import "./SafeMath.sol";
+import "./SafeMath64.sol";
 
 
 contract StakingManager is AragonApp {

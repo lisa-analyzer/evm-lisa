@@ -1,6 +1,6 @@
 pragma solidity 0.6.4;
 
-import "../interfaces/IERCHandler.sol";
+import "./IERCHandler.sol";
 
 /**
     @title Function used across handler contracts.

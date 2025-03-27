@@ -4,8 +4,8 @@ pragma solidity ^0.7.0;
 pragma abicoder v2;
 
 // Upgradables
-import "./zeppelin/upgradable/Initializable.sol";
-import "./zeppelin/upgradable/ownership/UpgradableOwnable.sol";
+import "./Initializable.sol";
+import "./UpgradableOwnable.sol";
 
 import "./IBridge.sol";
 

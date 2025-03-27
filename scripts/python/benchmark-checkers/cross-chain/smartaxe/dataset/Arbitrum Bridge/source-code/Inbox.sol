@@ -22,8 +22,8 @@ import "./ISequencerInbox.sol";
 import "./IBridge.sol";
 
 import "./Messages.sol";
-import "../libraries/AddressAliasHelper.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./AddressAliasHelper.sol";
+import "./DelegateCallAware.sol";
 import {
     L2_MSG,
     L1MessageType_L2FundedByL1,
@@ -34,8 +34,8 @@ import {
 } from "../libraries/MessageTypes.sol";
 import {MAX_DATA_SIZE} from "../libraries/Constants.sol";
 
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "./AddressUpgradeable.sol";
+import "./PausableUpgradeable.sol";
 
 /**
  * @title Inbox for user and contract originated messages

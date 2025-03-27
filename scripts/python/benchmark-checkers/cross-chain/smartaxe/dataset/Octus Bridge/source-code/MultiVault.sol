@@ -2,17 +2,17 @@
 pragma solidity 0.8.0;
 
 
-import "./interfaces/IERC20.sol";
-import "./interfaces/IMultiVault.sol";
-import "./interfaces/IMultiVaultToken.sol";
-import "./interfaces/IBridge.sol";
+import "./IERC20.sol";
+import "./IMultiVault.sol";
+import "./IMultiVaultToken.sol";
+import "./IBridge.sol";
 
-import "./libraries/SafeERC20.sol";
-import "./libraries/MultiVaultLibrary.sol";
+import "./SafeERC20.sol";
+import "./MultiVaultLibrary.sol";
 
-import "./utils/Initializable.sol";
-import "./utils/ReentrancyGuard.sol";
-import "./utils/ChainId.sol";
+import "./Initializable.sol";
+import "./ReentrancyGuard.sol";
+import "./ChainId.sol";
 
 import "./MultiVaultToken.sol";
 

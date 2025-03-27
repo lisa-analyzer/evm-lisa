@@ -2,13 +2,13 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetWithdraw.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokensEvents.sol";
-import "../../interfaces/IEverscale.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetWithdraw.sol";
+import "./IMultiVaultFacetTokensEvents.sol";
+import "./IEverscale.sol";
 
-import "../../MultiVaultToken.sol";
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultToken.sol";
+import "./MultiVaultStorage.sol";
 import "./MultiVaultHelperEmergency.sol";
 
 

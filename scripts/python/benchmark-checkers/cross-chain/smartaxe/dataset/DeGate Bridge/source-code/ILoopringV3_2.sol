@@ -3,7 +3,7 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../../lib/Claimable.sol";
+import "./Claimable.sol";
 
 
 /// @title ILoopringV3

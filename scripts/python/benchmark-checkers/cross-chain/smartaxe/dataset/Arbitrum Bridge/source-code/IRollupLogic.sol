@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 
 import "./RollupLib.sol";
 import "./IRollupCore.sol";
-import "../bridge/ISequencerInbox.sol";
-import "../bridge/IOutbox.sol";
-import "../bridge/IOwnable.sol";
+import "./ISequencerInbox.sol";
+import "./IOutbox.sol";
+import "./IOwnable.sol";
 
 interface IRollupUserAbs is IRollupCore, IOwnable {
     /// @dev the user logic just validated configuration and shouldn't write to state during init

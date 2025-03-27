@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Burnable.sol";
+import "./Ownable.sol";
+import "./ERC721Burnable.sol";
 
 abstract contract ERC721Mintable is ERC721Burnable, Ownable {
   constructor(string memory _name, string memory _symbol)

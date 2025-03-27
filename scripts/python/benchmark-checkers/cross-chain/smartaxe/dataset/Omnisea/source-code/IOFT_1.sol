@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./IOFTCore.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 
 /**
  * @dev Interface of the OFT standard

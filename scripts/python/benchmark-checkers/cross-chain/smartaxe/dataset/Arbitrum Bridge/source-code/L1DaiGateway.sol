@@ -16,7 +16,7 @@
 pragma solidity ^0.6.11;
 
 import "./L1ITokenGateway.sol";
-import "../l2/L2ITokenGateway.sol";
+import "./L2ITokenGateway.sol";
 import "./L1CrossDomainEnabled.sol";
 
 interface TokenLike {

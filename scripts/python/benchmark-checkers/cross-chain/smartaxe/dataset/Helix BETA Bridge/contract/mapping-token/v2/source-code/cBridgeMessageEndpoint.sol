@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "sgn-v2-contracts/contracts/message/interfaces/IMessageBus.sol";
-import "sgn-v2-contracts/contracts/message/interfaces/IMessageReceiverApp.sol";
-import "../AccessController.sol";
-import "../../interfaces/IHelixMessageEndpoint.sol";
+import "./IMessageBus.sol";
+import "./IMessageReceiverApp.sol";
+import "./AccessController.sol";
+import "./IHelixMessageEndpoint.sol";
 
 contract cBridgeMessageEndpoint is IHelixMessageEndpoint, AccessController {
     address public messageBus;

@@ -2,8 +2,8 @@
 
 pragma solidity 0.6.6;
 
-import "@uniswap/lib/contracts/libraries/FixedPoint.sol";
-import "../IPriceOracle.sol";
+import "./FixedPoint.sol";
+import "./IPriceOracle.sol";
 
 contract MockPriceOracle is IPriceOracle {
   using FixedPoint for *;

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "./magicat/MagicatRarity.sol";
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./MagicatRarity.sol";
+import "./SafeERC20.sol";
+import "./IERC721.sol";
+import "./EnumerableSet.sol";
+import "./ReentrancyGuard.sol";
 
 interface IERC20Ext is IERC20 {
     function decimals() external returns (uint);

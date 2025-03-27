@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/interfaces/IERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "./Ownable.sol";
+import "./IERC721.sol";
+import "./Counters.sol";
 import "./ERC721A.sol";
 
 contract Ronin is ERC721A, Ownable {

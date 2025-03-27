@@ -28,7 +28,7 @@ pragma solidity 0.7.6;
 
 // SPDX-License-Identifier: GPL-3.0-only
 
-import "../interface/RocketStorageInterface.sol";
+import "./RocketStorageInterface.sol";
 
 /// @title Base settings / modifiers for each contract in Rocket Pool
 /// @author David Rugendyke

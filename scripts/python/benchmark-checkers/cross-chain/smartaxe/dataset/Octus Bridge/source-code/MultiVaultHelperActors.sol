@@ -2,7 +2,7 @@
 pragma solidity 0.8.0;
 
 
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultStorage.sol";
 
 
 abstract contract MultiVaultHelperActors {

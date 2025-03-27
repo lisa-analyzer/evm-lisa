@@ -3,8 +3,8 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../lib/Poseidon.sol";
-import "../core/iface/ExchangeData.sol";
+import "./Poseidon.sol";
+import "./ExchangeData.sol";
 
 
 contract PoseidonContract {

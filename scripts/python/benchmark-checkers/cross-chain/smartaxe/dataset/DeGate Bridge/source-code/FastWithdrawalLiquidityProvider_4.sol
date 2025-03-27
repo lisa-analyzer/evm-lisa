@@ -4,14 +4,14 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../agents/FastWithdrawalAgent.sol";
-import "../../lib/OwnerManagable.sol";
-import "../../lib/EIP712.sol";
-import "../../lib/ERC20.sol";
-import "../../lib/ERC20SafeTransfer.sol";
-import "../../lib/MathUint.sol";
-import "../../lib/ReentrancyGuard.sol";
-import "../../lib/SignatureUtil.sol";
+import "./FastWithdrawalAgent.sol";
+import "./OwnerManagable.sol";
+import "./EIP712.sol";
+import "./ERC20.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./ReentrancyGuard.sol";
+import "./SignatureUtil.sol";
 
 
 /// @title Basic contract storing funds for a liquidity provider.

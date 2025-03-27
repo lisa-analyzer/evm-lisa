@@ -2,10 +2,10 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/IEverscale.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetPendingWithdrawals.sol";
-import "../../interfaces/multivault/IMultiVaultFacetLiquidity.sol";
+import "./IEverscale.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetPendingWithdrawals.sol";
+import "./IMultiVaultFacetLiquidity.sol";
 
 
 library MultiVaultStorage {

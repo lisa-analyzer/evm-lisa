@@ -8,7 +8,7 @@
     "EthCrossChainManager": 7,
     "EthCrossChainManagerProxy": 8,
     "FiatTokenProxy": 9,
-    "FiatTokenV2_1": 10,
+    "FiatTokenV2": 10,
     "IERC165": 11,
     "IERC165_1": 12,
     "IERC165_2": 13,

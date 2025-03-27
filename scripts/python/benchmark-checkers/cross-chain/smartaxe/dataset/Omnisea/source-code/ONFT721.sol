@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 
 import "./IONFT721.sol";
 import "./ONFT721Core.sol";
-import "../interfaces/IERC2981Royalties.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "./IERC2981Royalties.sol";
+import "./ERC721.sol";
+import "./Strings.sol";
 
 contract ONFT721 is ONFT721Core, ERC721, IONFT721, IERC2981Royalties {
     using Strings for uint256;

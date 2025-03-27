@@ -1,8 +1,8 @@
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../interfaces/IOwnable.sol";
-import "../interfaces/IBurnableMintableERC721Token.sol";
+import "./ERC721.sol";
+import "./IOwnable.sol";
+import "./IBurnableMintableERC721Token.sol";
 
 /**
  * @title ERC721BridgeToken

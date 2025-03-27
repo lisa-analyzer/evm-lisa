@@ -4,7 +4,7 @@
 pragma solidity ^0.8.4;
 
 import {IArbSys as ArbitrumL2_Bridge} from "../../vendor/arbitrum/IArbSys.sol";
-import "../errors.sol";
+import "./errors.sol";
 
 /**
  * @dev Primitives for cross-chain aware contracts for

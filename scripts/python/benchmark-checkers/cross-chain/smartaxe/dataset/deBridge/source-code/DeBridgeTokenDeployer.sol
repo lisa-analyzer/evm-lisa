@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./AccessControlUpgradeable.sol";
 
-import "../interfaces/IDeBridgeTokenDeployer.sol";
-import "../periphery/DeBridgeToken.sol";
-import "../periphery/DeBridgeTokenProxy.sol";
+import "./IDeBridgeTokenDeployer.sol";
+import "./DeBridgeToken.sol";
+import "./DeBridgeTokenProxy.sol";
 
 contract DeBridgeTokenDeployer is
     Initializable,

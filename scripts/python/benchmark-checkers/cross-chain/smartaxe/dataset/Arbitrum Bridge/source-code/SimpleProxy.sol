@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/proxy/Proxy.sol";
+import "./Proxy.sol";
 
 contract SimpleProxy is Proxy {
     address private immutable impl;

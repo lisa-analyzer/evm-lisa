@@ -8,7 +8,7 @@ import "./GovernanceStructs.sol";
 import "./Messages.sol";
 import "./Setters.sol";
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import "./ERC1967Upgrade.sol";
 
 /**
  * @dev `Governance` defines a means to enacting changes to the core bridge contract,

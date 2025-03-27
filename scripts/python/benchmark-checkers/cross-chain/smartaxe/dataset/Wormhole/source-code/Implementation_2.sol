@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "./Governance.sol";
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import "./ERC1967Upgrade.sol";
 
 contract Implementation is Governance {
     event LogMessagePublished(address indexed sender, uint64 sequence, uint32 nonce, bytes payload, uint8 consistencyLevel);

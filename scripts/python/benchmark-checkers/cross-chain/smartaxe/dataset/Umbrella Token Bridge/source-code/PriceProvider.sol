@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.7.6 <0.9.0;
 
-import "../lib/Ping.sol";
-import "../interfaces/IPriceProvider.sol";
-import "../interfaces/IPriceProvidersRepository.sol";
+import "./Ping.sol";
+import "./IPriceProvider.sol";
+import "./IPriceProvidersRepository.sol";
 
 /// @title PriceProvider
 /// @notice Abstract PriceProvider contract, parent of all PriceProviders

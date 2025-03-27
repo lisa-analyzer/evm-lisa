@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/Fix64V1.sol";
-import "../V1/Trig256.sol";
-import "../V1/LCG64.sol";
+import "./Fix64V1.sol";
+import "./Trig256.sol";
+import "./LCG64.sol";
 
 /*
     An implementation of fixed-point noise in Q31.Q32 format.

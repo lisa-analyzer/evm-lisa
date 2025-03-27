@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interface/ITokenForBridge.sol";
-import "hardhat/console.sol";
+import "./ECDSA.sol";
+import "./Ownable.sol";
+import "./ITokenForBridge.sol";
+import "./console.sol";
 error ZeroAddress();
 error ZeroChainId();
 error IncorrectAction(address, bool);

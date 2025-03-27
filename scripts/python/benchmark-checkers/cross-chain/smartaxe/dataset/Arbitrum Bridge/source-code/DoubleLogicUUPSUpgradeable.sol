@@ -5,7 +5,7 @@
 pragma solidity ^0.8.0;
 
 import {DoubleLogicERC1967Upgrade} from "./AdminFallbackProxy.sol";
-import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
+import "./UUPSUpgradeable.sol";
 
 /// @notice An extension to OZ's UUPSUpgradeable contract to be used for handling UUPS upgrades with a DoubleLogicERC1967Upgrade proxy
 ///         The should be used in the primary implementation slot of the DoubleLogicUUPS proxy

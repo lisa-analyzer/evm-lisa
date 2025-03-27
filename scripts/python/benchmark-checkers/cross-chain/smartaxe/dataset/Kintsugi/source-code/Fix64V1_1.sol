@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/MathV1.sol";
+import "./MathV1.sol";
 
 /*
     Provides mathematical operations and representation in Q31.Q32 format.

@@ -2,13 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import "../interfaces/ISigsVerifier.sol";
-import "../interfaces/IPeggedToken.sol";
-import "../interfaces/IPeggedTokenBurnFrom.sol";
-import "../libraries/PbPegged.sol";
-import "../safeguard/Pauser.sol";
-import "../safeguard/VolumeControl.sol";
-import "../safeguard/DelayedTransfer.sol";
+import "./ISigsVerifier.sol";
+import "./IPeggedToken.sol";
+import "./IPeggedTokenBurnFrom.sol";
+import "./PbPegged.sol";
+import "./Pauser.sol";
+import "./VolumeControl.sol";
+import "./DelayedTransfer.sol";
 
 /**
  * @title The bridge contract to mint and burn pegged tokens

@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../../../V1/ProcessingV1.sol";
-import "../Layers/WatercolorLayer.sol";
+import "./ProcessingV1.sol";
+import "./WatercolorLayer.sol";
 
 library WatercolorDraw {
     uint16 public constant MAX_POLYGONS = 40960;

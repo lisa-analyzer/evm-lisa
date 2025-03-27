@@ -3,8 +3,8 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./SafeMath.sol";
+import "./ReentrancyGuard.sol";
 
 /**
  * @dev Accounting is an abstract contract that encapsulates the most critical logic in the Hop contracts.

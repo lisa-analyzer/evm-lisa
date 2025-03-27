@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 // solhint-disable avoid-low-level-calls
 
-import "./libraries/BoringERC20.sol";
+import "./BoringERC20.sol";
 
 // T1 - T4: OK
 contract BaseBoringBatchable {

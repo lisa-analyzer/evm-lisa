@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 
 // Inspired by https://github.com/reverendus/tx-manager
 
-import "../ScriptHelpers.sol";
+import "./ScriptHelpers.sol";
 import "./BaseEVMScriptExecutor.sol";
 
 

@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../utils/ContextUpgradeable.sol";
-import "../proxy/utils/Initializable.sol";
+import "./ContextUpgradeable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where

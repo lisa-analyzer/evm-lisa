@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../bridge/Messages.sol";
+import "./Messages.sol";
 
 contract MessageTester {
     function messageHash(

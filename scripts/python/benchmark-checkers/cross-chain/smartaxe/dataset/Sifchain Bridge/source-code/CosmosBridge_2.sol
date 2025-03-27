@@ -1,9 +1,9 @@
 pragma solidity 0.5.16;
 
-import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 import "./Valset.sol";
 import "./Oracle.sol";
-import "./BridgeBank/BridgeBank.sol";
+import "./BridgeBank.sol";
 import "./CosmosBridgeStorage.sol";
 
 

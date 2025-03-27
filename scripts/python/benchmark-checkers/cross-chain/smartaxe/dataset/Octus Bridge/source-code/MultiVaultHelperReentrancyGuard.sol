@@ -2,7 +2,7 @@
 pragma solidity 0.8.0;
 
 
-import "./../storage/MultiVaultStorageReentrancyGuard.sol";
+import "./MultiVaultStorageReentrancyGuard.sol";
 
 
 abstract contract MultiVaultHelperReentrancyGuard {

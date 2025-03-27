@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "../../../../libraries/Bytes.sol";
+import "./Bytes.sol";
 
 /**
  * @title BaseRelayer

@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "../interfaces/IONFTCopy.sol";
+import "./ERC721URIStorage.sol";
+import "./IONFTCopy.sol";
 
 contract ONFTCopy is IONFTCopy, ERC721URIStorage {
     constructor(

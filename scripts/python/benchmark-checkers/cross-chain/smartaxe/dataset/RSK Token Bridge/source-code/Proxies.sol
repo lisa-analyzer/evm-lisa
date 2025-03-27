@@ -3,7 +3,7 @@
 pragma solidity ^0.7.0;
 pragma abicoder v2;
 
-import "./zeppelin/upgradable/proxy/TransparentUpgradeableProxy.sol";
+import "./TransparentUpgradeableProxy.sol";
 
 contract BridgeProxy is TransparentUpgradeableProxy {
     constructor(address _logic, address _admin, bytes memory _data) TransparentUpgradeableProxy(_logic,_admin, _data) payable {}

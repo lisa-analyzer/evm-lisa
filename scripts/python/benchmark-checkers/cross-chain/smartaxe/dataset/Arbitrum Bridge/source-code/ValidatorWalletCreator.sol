@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./ProxyAdmin.sol";
+import "./TransparentUpgradeableProxy.sol";
+import "./Ownable.sol";
 
 import "./ValidatorWallet.sol";
 

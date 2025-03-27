@@ -1,13 +1,13 @@
 pragma solidity >=0.6.0;
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "./SafeERC20.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
 import "./PolkaBridge.sol";
 
-// import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-//import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-//import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+// import "./AggregatorV3Interface.sol";
+//import "./ERC20.sol";
+//import "./IUniswapV2Router02.sol";
 
 contract PolkaBridgeMasterFarm is Ownable {
     string public name = "PolkaBridge: Deflationary Farming";

@@ -1,6 +1,6 @@
 pragma solidity ^0.6;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 library Borsh {
     using SafeMath for uint256;

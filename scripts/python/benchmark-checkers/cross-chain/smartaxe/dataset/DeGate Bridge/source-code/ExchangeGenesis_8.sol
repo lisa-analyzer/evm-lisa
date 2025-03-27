@@ -4,11 +4,11 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/MathUint.sol";
-import "../../iface/ExchangeData.sol";
-import "../../iface/IAgentRegistry.sol";
-import "../../iface/IBlockVerifier.sol";
-import "../../iface/ILoopringV3.sol";
+import "./MathUint.sol";
+import "./ExchangeData.sol";
+import "./IAgentRegistry.sol";
+import "./IBlockVerifier.sol";
+import "./ILoopringV3.sol";
 import "./ExchangeTokens.sol";
 
 

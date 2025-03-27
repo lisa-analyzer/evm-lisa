@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import "./TransparentUpgradeableProxy.sol";
+import "./ProxyAdmin.sol";
 
 contract TransparentUpgradeableProxyHelper is TransparentUpgradeableProxy {
     constructor(

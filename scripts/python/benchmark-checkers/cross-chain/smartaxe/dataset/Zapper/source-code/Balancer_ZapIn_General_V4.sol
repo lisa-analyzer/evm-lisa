@@ -21,7 +21,7 @@
 ///@notice this contract adds liquidity to Balancer liquidity pools in one transaction
 
 pragma solidity ^0.8.0;
-import "../_base/ZapInBaseV3_1.sol";
+import "./ZapInBaseV3_1.sol";
 
 interface IWETH {
     function deposit() external payable;

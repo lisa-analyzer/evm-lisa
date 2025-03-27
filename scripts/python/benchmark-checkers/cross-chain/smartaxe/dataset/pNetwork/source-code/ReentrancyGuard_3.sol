@@ -4,7 +4,7 @@
 
 pragma solidity ^0.4.24;
 
-import "../common/UnstructuredStorage.sol";
+import "./UnstructuredStorage.sol";
 
 
 contract ReentrancyGuard {

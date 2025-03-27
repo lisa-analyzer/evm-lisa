@@ -3,12 +3,12 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "@boringcrypto/boring-solidity/contracts/libraries/BoringMath.sol";
-import "@boringcrypto/boring-solidity/contracts/BoringBatchable.sol";
-import "@boringcrypto/boring-solidity/contracts/BoringOwnable.sol";
-import "./libraries/SignedSafeMath.sol";
-import "./interfaces/IRewarder.sol";
-import "./interfaces/IMasterChef.sol";
+import "./BoringMath.sol";
+import "./BoringBatchable.sol";
+import "./BoringOwnable.sol";
+import "./SignedSafeMath.sol";
+import "./IRewarder.sol";
+import "./IMasterChef.sol";
 
 /// @notice The (older) MasterChef contract gives out a constant number of SYNAPSE tokens per block.
 /// It is the only address with minting rights for SYNAPSE.

@@ -3,7 +3,7 @@
 // solhint-disable-next-line compiler-version
 pragma solidity >=0.4.24 <0.8.0;
 
-import "../utils/AddressUpgradeable.sol";
+import "./AddressUpgradeable.sol";
 
 /**
  * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed

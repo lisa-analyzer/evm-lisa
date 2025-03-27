@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interface/IZksyncMailbox.sol";
-import "../base/LnAccessController.sol";
-import "../interface/ILowLevelMessager.sol";
+import "./IZksyncMailbox.sol";
+import "./LnAccessController.sol";
+import "./ILowLevelMessager.sol";
 
 // from ethereum to zkSync messager
 contract Eth2ZkSyncSendService is ILowLevelMessageSender, LnAccessController {

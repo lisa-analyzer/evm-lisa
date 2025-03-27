@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
-import "../common/UnstructuredStorage.sol";
-import "../common/IsContract.sol";
+import "./UnstructuredStorage.sol";
+import "./IsContract.sol";
 import "./AppProxyBase.sol";
 
 

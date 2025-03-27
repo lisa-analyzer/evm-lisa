@@ -2,14 +2,14 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokensEvents.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetTokensEvents.sol";
 
-import "../../MultiVaultToken.sol";
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultToken.sol";
+import "./MultiVaultStorage.sol";
 
-import "../helpers/MultiVaultHelperActors.sol";
-import "../helpers/MultiVaultHelperTokens.sol";
+import "./MultiVaultHelperActors.sol";
+import "./MultiVaultHelperTokens.sol";
 
 
 contract MultiVaultFacetTokens is

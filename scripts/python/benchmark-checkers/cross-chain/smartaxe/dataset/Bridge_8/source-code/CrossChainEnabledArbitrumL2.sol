@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.4;
 
-import "../CrossChainEnabled.sol";
+import "./CrossChainEnabled.sol";
 import "./LibArbitrumL2.sol";
 
 /**

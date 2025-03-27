@@ -2,15 +2,15 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/IEverscale.sol";
-import "../../interfaces/IERC20.sol";
-import "../../interfaces/IBridge.sol";
-import "../../interfaces/IMultiVaultToken.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetWithdrawEvents.sol";
+import "./IEverscale.sol";
+import "./IERC20.sol";
+import "./IBridge.sol";
+import "./IMultiVaultToken.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetWithdrawEvents.sol";
 
-import "../storage/MultiVaultStorage.sol";
-import "../../libraries/SafeERC20.sol";
+import "./MultiVaultStorage.sol";
+import "./SafeERC20.sol";
 
 
 abstract contract MultiVaultHelperWithdraw is IMultiVaultFacetWithdrawEvents {

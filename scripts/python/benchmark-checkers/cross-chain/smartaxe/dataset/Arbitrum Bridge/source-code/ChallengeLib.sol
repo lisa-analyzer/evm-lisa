@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../state/Machine.sol";
-import "../state/GlobalState.sol";
+import "./Machine.sol";
+import "./GlobalState.sol";
 
 library ChallengeLib {
     using MachineLib for Machine;

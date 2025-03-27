@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol';
-import '../RewardPoolsV1.sol';
-import '../utils/MyPausable.sol';
+import "./ERC20Burnable.sol";
+import "./RewardPoolsV1.sol";
+import "./MyPausable.sol";
 
 interface IPools {
   function transferInterestBearingTokenHandler(

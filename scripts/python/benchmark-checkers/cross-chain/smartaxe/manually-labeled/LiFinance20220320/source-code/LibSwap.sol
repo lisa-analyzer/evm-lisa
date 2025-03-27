@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import { LibAsset } from "./LibAsset.sol";
 import { LibUtil } from "./LibUtil.sol";
-import { InvalidContract, NoSwapFromZeroBalance, InsufficientBalance } from "../Errors/GenericErrors.sol";
+import { InvalidContract, NoSwapFromZeroBalance, InsufficientBalance } from "./GenericErrors.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 library LibSwap {

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0
 pragma solidity ^0.8.0;
 
-import "../oz/0.8.0/access/Ownable.sol";
-import "../oz/0.8.0/token/ERC20/utils/SafeERC20.sol";
+import "./Ownable.sol";
+import "./SafeERC20.sol";
 
 abstract contract ZapBaseV2_1 is Ownable {
     using SafeERC20 for IERC20;

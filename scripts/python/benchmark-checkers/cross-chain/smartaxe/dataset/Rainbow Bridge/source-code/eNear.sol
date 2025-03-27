@@ -2,10 +2,10 @@
 
 pragma solidity 0.6.12;
 
-import "rainbow-bridge/contracts/eth/nearprover/contracts/ProofDecoder.sol";
-import "rainbow-bridge/contracts/eth/nearbridge/contracts/Borsh.sol";
-import "rainbow-bridge/contracts/eth/nearbridge/contracts/AdminControlled.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ProofDecoder.sol";
+import "./Borsh.sol";
+import "./AdminControlled.sol";
+import "./ERC20.sol";
 import { Bridge, INearProver } from "./Bridge.sol";
 
 contract eNear is ERC20, Bridge, AdminControlled {

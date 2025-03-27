@@ -3,12 +3,12 @@
 // P1 - P3: OK
 pragma solidity 0.8.13;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./interfaces/IUniswapV2Pair.sol";
-import "./interfaces/IUniswapV2Factory.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./SafeERC20.sol";
+import "./ReentrancyGuard.sol";
+import "./IUniswapV2Pair.sol";
+import "./IUniswapV2Factory.sol";
 import "./Swapper.sol";
 
 // BrewBoo is MasterChef's left hand and kinda a wizard. He can brew Boo from pretty much anything!

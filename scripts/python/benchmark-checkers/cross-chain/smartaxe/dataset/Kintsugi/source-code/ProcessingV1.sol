@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/TypesV1.sol";
-import "../V1/GraphicsV1.sol";
-import "../V1/GeometryV1.sol";
-import "../V1/RandomV1.sol";
-import "../V1/MathV1.sol";
+import "./TypesV1.sol";
+import "./GraphicsV1.sol";
+import "./GeometryV1.sol";
+import "./RandomV1.sol";
+import "./MathV1.sol";
 
 library ProcessingV1 {
     uint32 internal constant BG_COLOR = 0xFFD3D3D3;

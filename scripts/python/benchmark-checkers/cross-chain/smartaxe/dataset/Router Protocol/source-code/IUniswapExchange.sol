@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "./IERC20Upgradeable.sol";
 
 interface IUniswapExchange {
     function getEthToTokenInputPrice(uint256 ethSold) external view returns (uint256 tokensBought);

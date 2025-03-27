@@ -4,10 +4,10 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "./IERC20Upgradeable.sol";
 
 import {IRollupUser} from "./IRollupLogic.sol";
-import "../libraries/UUPSNotUpgradeable.sol";
+import "./UUPSNotUpgradeable.sol";
 import "./RollupCore.sol";
 
 abstract contract AbsRollupUserLogic is

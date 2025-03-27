@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
-import '../utils/MyPausableUpgradeable.sol';
-import 'hardhat/console.sol';
-import '../RewardPoolsV1.sol';
+import "./ERC20Upgradeable.sol";
+import "./MyPausableUpgradeable.sol";
+import "./console.sol";
+import "./RewardPoolsV1.sol";
 
 contract Bridge is ERC20Upgradeable, MyPausableUpgradeable {
   bytes32 public constant MANAGE_TOKEN_ROLE = keccak256('MANAGE_TOKEN_ROLE');

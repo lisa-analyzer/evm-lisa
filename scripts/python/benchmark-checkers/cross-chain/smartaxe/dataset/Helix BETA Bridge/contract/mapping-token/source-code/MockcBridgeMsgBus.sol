@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
-import "sgn-v2-contracts/contracts/message/interfaces/IMessageReceiverApp.sol";
-import "sgn-v2-contracts/contracts/message/interfaces/IMessageBus.sol";
+import "./IMessageReceiverApp.sol";
+import "./IMessageBus.sol";
 
 interface IMsgBus is IMessageBus {
     function executeMessage(

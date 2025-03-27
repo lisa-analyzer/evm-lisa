@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 import "./ECDSAUpgradeable.sol";
-import "../../proxy/utils/Initializable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev https://eips.ethereum.org/EIPS/eip-712[EIP 712] is a standard for hashing and signing of typed structured data.

@@ -2,8 +2,8 @@
 pragma solidity 0.8.0;
 
 
-import "./../storage/MultiVaultStorageInitializable.sol";
-import "../../libraries/AddressUpgradeable.sol";
+import "./MultiVaultStorageInitializable.sol";
+import "./AddressUpgradeable.sol";
 
 
 abstract contract MultiVaultHelperInitializable {

@@ -3,9 +3,9 @@ pragma solidity ^0.8.17;
 
 import "./xTokenBridgeBase.sol";
 import "./xTokenErc20.sol";
-import "../interfaces/IxTokenBacking.sol";
-import "../../interfaces/IGuard.sol";
-import "../../../utils/TokenTransferHelper.sol";
+import "./IxTokenBacking.sol";
+import "./IGuard.sol";
+import "./TokenTransferHelper.sol";
 
 contract xTokenIssuing is xTokenBridgeBase {
     struct OriginalTokenInfo {

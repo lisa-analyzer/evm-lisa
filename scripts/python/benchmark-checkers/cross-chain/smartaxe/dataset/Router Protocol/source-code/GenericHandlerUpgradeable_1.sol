@@ -2,16 +2,16 @@
 pragma solidity ^0.8.2;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/interfaces/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
-import "../interfaces/IGenericHandler.sol";
-import "../interfaces/iRouterCrossTalk.sol";
-import "../interfaces/iGBridge.sol";
-import "../interfaces/IFeeManagerGeneric.sol";
+import "./Initializable.sol";
+import "./AddressUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./IERC20MetadataUpgradeable.sol";
+import "./IGenericHandler.sol";
+import "./iRouterCrossTalk.sol";
+import "./iGBridge.sol";
+import "./IFeeManagerGeneric.sol";
 
 /// @title Handles generic deposits and deposit executions.
 /// @author Router Protocol

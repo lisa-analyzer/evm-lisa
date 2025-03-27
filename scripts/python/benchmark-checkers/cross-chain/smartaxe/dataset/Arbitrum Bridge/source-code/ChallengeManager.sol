@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../libraries/DelegateCallAware.sol";
-import "../osp/IOneStepProofEntry.sol";
-import "../state/GlobalState.sol";
+import "./DelegateCallAware.sol";
+import "./IOneStepProofEntry.sol";
+import "./GlobalState.sol";
 import "./IChallengeResultReceiver.sol";
 import "./ChallengeLib.sol";
 import "./IChallengeManager.sol";

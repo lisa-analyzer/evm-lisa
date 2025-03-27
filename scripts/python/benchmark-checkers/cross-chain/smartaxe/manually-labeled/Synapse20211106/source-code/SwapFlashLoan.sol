@@ -3,7 +3,7 @@
 pragma solidity 0.6.12;
 
 import "./Swap.sol";
-import "./interfaces/IFlashLoanReceiver.sol";
+import "./IFlashLoanReceiver.sol";
 
 /**
  * @title Swap - A StableSwap implementation in solidity.

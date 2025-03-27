@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "../../../../interfaces/IERC1155TokenReceiver.sol";
+import "./IERC1155TokenReceiver.sol";
 import "./BaseRelayer.sol";
 
 /**

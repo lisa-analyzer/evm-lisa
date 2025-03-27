@@ -6,7 +6,7 @@
 pragma solidity >=0.6.9 <0.9.0;
 pragma experimental ABIEncoderV2;
 
-import "../libraries/IGasRefunder.sol";
+import "./IGasRefunder.sol";
 import "./IDelayedMessageProvider.sol";
 import "./IBridge.sol";
 

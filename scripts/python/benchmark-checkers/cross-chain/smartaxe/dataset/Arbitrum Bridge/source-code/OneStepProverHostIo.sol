@@ -4,12 +4,12 @@
 
 pragma solidity ^0.8.0;
 
-import "../state/Value.sol";
-import "../state/Machine.sol";
-import "../state/Deserialize.sol";
+import "./Value.sol";
+import "./Machine.sol";
+import "./Deserialize.sol";
 import "./IOneStepProver.sol";
-import "../bridge/Messages.sol";
-import "../bridge/IBridge.sol";
+import "./Messages.sol";
+import "./IBridge.sol";
 
 contract OneStepProverHostIo is IOneStepProver {
     using GlobalStateLib for GlobalState;

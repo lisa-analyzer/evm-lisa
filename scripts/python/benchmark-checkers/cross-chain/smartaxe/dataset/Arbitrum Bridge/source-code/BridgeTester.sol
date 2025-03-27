@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import "./Initializable.sol";
+import "./AddressUpgradeable.sol";
 
 import {
     NotContract,
@@ -15,9 +15,9 @@ import {
     NotOutbox,
     InvalidOutboxSet
 } from "../libraries/Error.sol";
-import "../bridge/IBridge.sol";
-import "../bridge/Messages.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./IBridge.sol";
+import "./Messages.sol";
+import "./DelegateCallAware.sol";
 
 /**
  * @title Staging ground for incoming and outgoing messages

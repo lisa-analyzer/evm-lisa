@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/Fix64V1.sol";
-import "../V1/Trig256.sol";
+import "./Fix64V1.sol";
+import "./Trig256.sol";
 
 /*
     An implementation of a Linear Congruential Generator in Q31.Q32 format.

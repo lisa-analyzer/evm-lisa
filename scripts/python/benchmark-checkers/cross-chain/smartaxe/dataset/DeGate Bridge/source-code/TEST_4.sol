@@ -2,8 +2,8 @@
 // Copyright 2017 Loopring Technology Limited.
 pragma solidity ^0.7.0;
 
-import "../DummyToken.sol";
-import "../../core/iface/IExchangeV3.sol";
+import "./DummyToken.sol";
+import "./IExchangeV3.sol";
 
 /// @author Brecht Devos - <brecht@loopring.org>
 contract TEST is DummyToken {

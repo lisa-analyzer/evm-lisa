@@ -21,7 +21,7 @@
     "ERC2771ContextUpgradeable": 20,
     "ERC2771ContextUpgradeable_1": 21,
     "FiatTokenProxy": 22,
-    "FiatTokenV2_1": 23,
+    "FiatTokenV2": 23,
     "Hyphen": 24,
     "Hyphen_1": 25,
     "IBeacon": 26,

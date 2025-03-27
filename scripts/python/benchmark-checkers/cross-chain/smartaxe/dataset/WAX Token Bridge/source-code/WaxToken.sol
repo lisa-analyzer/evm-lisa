@@ -1,8 +1,8 @@
 pragma solidity ^0.4.13;
 
 
-import "./zeppelin-solidity/contracts/token/StandardToken.sol";
-import "./zeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "./StandardToken.sol";
+import "./Pausable.sol";
 
 
 /**

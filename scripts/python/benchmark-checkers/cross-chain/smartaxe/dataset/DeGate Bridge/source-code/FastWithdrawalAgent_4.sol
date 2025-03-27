@@ -4,14 +4,14 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../core/iface/IAgentRegistry.sol";
-import "../../core/iface/IExchangeV3.sol";
-import "../../lib/Claimable.sol";
-import "../../lib/EIP712.sol";
-import "../../lib/ERC20SafeTransfer.sol";
-import "../../lib/MathUint.sol";
-import "../../lib/ReentrancyGuard.sol";
-import "../../lib/SignatureUtil.sol";
+import "./IAgentRegistry.sol";
+import "./IExchangeV3.sol";
+import "./Claimable.sol";
+import "./EIP712.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./ReentrancyGuard.sol";
+import "./SignatureUtil.sol";
 
 /// @title Fast withdrawal agent implementation. With the help of liquidity providers (LPs),
 ///        exchange operators can convert any normal withdrawals into fast withdrawals.

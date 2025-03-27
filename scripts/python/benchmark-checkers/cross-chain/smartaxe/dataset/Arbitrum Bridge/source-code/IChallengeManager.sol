@@ -4,10 +4,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../state/Machine.sol";
-import "../bridge/IBridge.sol";
-import "../bridge/ISequencerInbox.sol";
-import "../osp/IOneStepProofEntry.sol";
+import "./Machine.sol";
+import "./IBridge.sol";
+import "./ISequencerInbox.sol";
+import "./IOneStepProofEntry.sol";
 
 import "./IChallengeResultReceiver.sol";
 

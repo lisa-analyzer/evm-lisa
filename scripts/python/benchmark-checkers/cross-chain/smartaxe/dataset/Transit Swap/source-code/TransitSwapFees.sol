@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./libraries/Ownable.sol";
-import "./libraries/SafeMath.sol";
-import "./interfaces/IERC20.sol";
-import "./libraries/TransferHelper.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./IERC20.sol";
+import "./TransferHelper.sol";
 
 contract TransitSwapFees is Ownable {
 

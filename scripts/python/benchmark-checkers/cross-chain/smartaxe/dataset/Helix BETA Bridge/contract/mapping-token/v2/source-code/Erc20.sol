@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "@zeppelin-solidity/contracts/utils/math/SafeMath.sol";
-import "@zeppelin-solidity/contracts/access/Ownable.sol";
+import "./IERC20.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
 
 contract Erc20 is IERC20, Ownable {
     using SafeMath for uint256;

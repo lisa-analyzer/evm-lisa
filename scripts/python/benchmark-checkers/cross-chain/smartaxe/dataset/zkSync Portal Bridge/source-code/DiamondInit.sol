@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 
 
 
-import "../common/interfaces/IAllowList.sol";
-import "./interfaces/IExecutor.sol";
-import "./libraries/Diamond.sol";
-import "./facets/Base.sol";
+import "./IAllowList.sol";
+import "./IExecutor.sol";
+import "./Diamond.sol";
+import "./Base.sol";
 import "./Config.sol";
 
 /// @author Matter Labs

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./ERC1155.sol";
+import "./Strings.sol";
+import "./Ownable.sol";
 
 contract PolkaBridgeNFT is ERC1155, Ownable {
     string public name = "PolkaBridge NFT";

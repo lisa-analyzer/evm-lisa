@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../../../V1/TypesV1.sol";
-import "../../../V1/GraphicsV1.sol";
-import "../../../V1/ProcessingV1.sol";
-import "../Layers/HatchLayer.sol";
+import "./TypesV1.sol";
+import "./GraphicsV1.sol";
+import "./ProcessingV1.sol";
+import "./HatchLayer.sol";
 
 library HatchDraw {
 

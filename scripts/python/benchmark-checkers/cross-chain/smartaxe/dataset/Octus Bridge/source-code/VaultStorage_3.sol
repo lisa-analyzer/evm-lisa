@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./Initializable.sol";
+import "./ReentrancyGuard.sol";
 
-import "../interfaces/IVault.sol";
+import "./IVault.sol";
 
 abstract contract VaultStorage is IVault, Initializable, ReentrancyGuard {
     uint256 constant MAX_BPS = 10_000;

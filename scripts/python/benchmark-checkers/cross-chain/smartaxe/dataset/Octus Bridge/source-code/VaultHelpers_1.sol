@@ -2,10 +2,10 @@
 pragma solidity ^0.8.2;
 
 
-import "../libraries/Math.sol";
-import "../interfaces/IStrategy.sol";
+import "./Math.sol";
+import "./IStrategy.sol";
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 
 import "./VaultStorage.sol";
 

@@ -1,15 +1,15 @@
 pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./utils/Pausable.sol";
-import "./utils/ReducedSafeMath.sol";
-import "./interfaces/IDepositExecute.sol";
-import "./interfaces/IBridge.sol";
-import "./interfaces/IERCHandler.sol";
-import "./interfaces/IERC20Handler.sol";
-import "./interfaces/IGenericHandler.sol";
+import "./AccessControl.sol";
+import "./SafeERC20.sol";
+import "./Pausable.sol";
+import "./ReducedSafeMath.sol";
+import "./IDepositExecute.sol";
+import "./IBridge.sol";
+import "./IERCHandler.sol";
+import "./IERC20Handler.sol";
+import "./IGenericHandler.sol";
 
 /**
     @title Facilitates deposits, creation and votiing of deposit proposals, and deposit executions.

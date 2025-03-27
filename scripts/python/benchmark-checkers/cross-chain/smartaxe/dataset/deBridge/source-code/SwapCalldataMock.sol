@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.7;
 
-import "../libraries/CalldataUtils.sol";
-import "../libraries/SwapCalldataUtils.sol";
+import "./CalldataUtils.sol";
+import "./SwapCalldataUtils.sol";
 
 contract SwapCalldataMock {
     using CalldataUtils for bytes;

@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/RandomV1.sol";
+import "./RandomV1.sol";
 
 interface IRenderer {
 

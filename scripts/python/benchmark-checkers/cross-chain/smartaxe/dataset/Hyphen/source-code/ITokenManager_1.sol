@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "../structures/TokenConfig.sol";
+import "./TokenConfig.sol";
 
 interface ITokenManager {
     function getEquilibriumFee(address tokenAddress) external view returns (uint256);

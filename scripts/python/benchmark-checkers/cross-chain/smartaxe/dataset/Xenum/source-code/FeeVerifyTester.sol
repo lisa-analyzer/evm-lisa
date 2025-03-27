@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "./TollBridge.sol";
-import "hardhat/console.sol";
+import "./console.sol";
 
 contract FeeVerifyTester is TollBridge {
 	using ECDSAUpgradeable for bytes32;

@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "./ERC165.sol";
 
 /**
 * @dev Interface for the NFT Royalty Standard

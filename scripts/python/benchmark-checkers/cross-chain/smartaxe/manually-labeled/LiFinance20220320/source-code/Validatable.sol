@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import { LibAsset } from "../Libraries/LibAsset.sol";
-import { LibUtil } from "../Libraries/LibUtil.sol";
-import { InvalidReceiver, InformationMismatch, InvalidSendingToken, InvalidAmount, NativeAssetNotSupported, InvalidDestinationChain, CannotBridgeToSameNetwork } from "../Errors/GenericErrors.sol";
-import { ILiFi } from "../Interfaces/ILiFi.sol";
-import { LibSwap } from "../Libraries/LibSwap.sol";
+import { LibAsset } from "./LibAsset.sol";
+import { LibUtil } from "./LibUtil.sol";
+import { InvalidReceiver, InformationMismatch, InvalidSendingToken, InvalidAmount, NativeAssetNotSupported, InvalidDestinationChain, CannotBridgeToSameNetwork } from "./GenericErrors.sol";
+import { ILiFi } from "./ILiFi.sol";
+import { LibSwap } from "./LibSwap.sol";
 
 contract Validatable {
     modifier validateBridgeData(ILiFi.BridgeData memory _bridgeData) {

@@ -4,14 +4,14 @@
 
 pragma solidity ^0.8.0;
 
-import "../challenge/IChallengeManager.sol";
-import "../challenge/ChallengeLib.sol";
-import "../state/GlobalState.sol";
-import "../bridge/ISequencerInbox.sol";
+import "./IChallengeManager.sol";
+import "./ChallengeLib.sol";
+import "./GlobalState.sol";
+import "./ISequencerInbox.sol";
 
-import "../bridge/IBridge.sol";
-import "../bridge/IOutbox.sol";
-import "../bridge/IInbox.sol";
+import "./IBridge.sol";
+import "./IOutbox.sol";
+import "./IInbox.sol";
 import "./IRollupEventInbox.sol";
 import "./IRollupLogic.sol";
 

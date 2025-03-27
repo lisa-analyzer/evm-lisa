@@ -12,18 +12,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "./metatx/ERC2771ContextUpgradeable.sol";
+import "./Initializable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./OwnableUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./ERC2771ContextUpgradeable.sol";
 
-import "../security/Pausable.sol";
-import "./interfaces/ILPToken.sol";
-import "./interfaces/ITokenManager.sol";
-import "./interfaces/IWhiteListPeriodManager.sol";
-import "./interfaces/ILiquidityPool.sol";
+import "./Pausable.sol";
+import "./ILPToken.sol";
+import "./ITokenManager.sol";
+import "./IWhiteListPeriodManager.sol";
+import "./ILiquidityPool.sol";
 
 contract LiquidityProviders is
     Initializable,

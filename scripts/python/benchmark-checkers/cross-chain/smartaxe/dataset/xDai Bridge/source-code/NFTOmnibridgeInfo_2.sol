@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "../../../VersionableBridge.sol";
+import "./VersionableBridge.sol";
 
 /**
  * @title NFTOmnibridgeInfo

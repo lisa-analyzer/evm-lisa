@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.8.0;
 
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20BurnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/drafts/ERC20PermitUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/proxy/Initializable.sol';
+import "./ERC20Upgradeable.sol";
+import "./ERC20BurnableUpgradeable.sol";
+import "./ERC20PermitUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./Initializable.sol";
 
 contract SynapseERC20 is
   Initializable,

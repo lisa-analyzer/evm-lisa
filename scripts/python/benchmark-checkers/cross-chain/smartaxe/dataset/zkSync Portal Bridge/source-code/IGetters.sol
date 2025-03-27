@@ -4,8 +4,8 @@ pragma solidity ^0.8.13;
 
 
 
-import "../Storage.sol";
-import "../libraries/PriorityQueue.sol";
+import "./Storage.sol";
+import "./PriorityQueue.sol";
 import {VerifierParams} from "../Storage.sol";
 
 interface IGetters {

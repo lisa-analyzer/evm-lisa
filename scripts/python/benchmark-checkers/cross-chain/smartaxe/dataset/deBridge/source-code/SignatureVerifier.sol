@@ -2,8 +2,8 @@
 pragma solidity 0.8.7;
 
 import "./OraclesManager.sol";
-import "../interfaces/ISignatureVerifier.sol";
-import "../libraries/SignatureUtil.sol";
+import "./ISignatureVerifier.sol";
+import "./SignatureUtil.sol";
 
 /// @dev It's used to verify that a transfer is signed by oracles.
 contract SignatureVerifier is OraclesManager, ISignatureVerifier {

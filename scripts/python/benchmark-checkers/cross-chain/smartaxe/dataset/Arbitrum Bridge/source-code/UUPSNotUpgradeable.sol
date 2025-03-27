@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/interfaces/draft-IERC1822.sol";
+import "./draft-IERC1822.sol";
 import {DoubleLogicERC1967Upgrade} from "./AdminFallbackProxy.sol";
 
 /**

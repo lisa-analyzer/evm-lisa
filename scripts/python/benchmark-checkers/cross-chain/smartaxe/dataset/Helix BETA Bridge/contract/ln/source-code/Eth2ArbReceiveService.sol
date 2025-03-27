@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@arbitrum/nitro-contracts/src/libraries/AddressAliasHelper.sol";
-import "../base/LnAccessController.sol";
-import "../interface/ILowLevelMessager.sol";
+import "./AddressAliasHelper.sol";
+import "./LnAccessController.sol";
+import "./ILowLevelMessager.sol";
 
 // from ethereum to arbitrum messager
 contract Eth2ArbReceiveService is ILowLevelMessageReceiver, LnAccessController {

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "./OwnableUpgradeable.sol";
 
 abstract contract RelayRecipientUpgradeable is OwnableUpgradeable {
     address private _trustedForwarder;

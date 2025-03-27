@@ -2,17 +2,17 @@
 
 pragma solidity ^0.7.0;
 
-import "../../utils/Context.sol";
+import "./Context.sol";
 import "./IERC721.sol";
 import "./IERC721Metadata.sol";
 import "./IERC721Enumerable.sol";
 import "./IERC721Receiver.sol";
-import "../../introspection/ERC165.sol";
-import "../../math/SafeMath.sol";
-import "../../utils/Address.sol";
-import "../../utils/EnumerableSet.sol";
-import "../../utils/EnumerableMap.sol";
-import "../../utils/Strings.sol";
+import "./ERC165.sol";
+import "./SafeMath.sol";
+import "./Address.sol";
+import "./EnumerableSet.sol";
+import "./EnumerableMap.sol";
+import "./Strings.sol";
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation

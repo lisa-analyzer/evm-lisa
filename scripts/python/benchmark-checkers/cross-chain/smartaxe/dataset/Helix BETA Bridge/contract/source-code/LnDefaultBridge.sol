@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zeppelin-solidity/contracts/proxy/utils/Initializable.sol";
-import "./base/LnAccessController.sol";
-import "./base/LnDefaultBridgeSource.sol";
-import "./base/LnDefaultBridgeTarget.sol";
-import "./interface/ILowLevelMessager.sol";
+import "./Initializable.sol";
+import "./LnAccessController.sol";
+import "./LnDefaultBridgeSource.sol";
+import "./LnDefaultBridgeTarget.sol";
+import "./ILowLevelMessager.sol";
 
 contract LnDefaultBridge is Initializable, LnAccessController, LnDefaultBridgeSource, LnDefaultBridgeTarget {
     struct MessagerService {

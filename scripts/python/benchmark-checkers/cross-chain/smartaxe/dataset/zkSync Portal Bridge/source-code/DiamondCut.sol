@@ -4,10 +4,10 @@ pragma solidity ^0.8.13;
 
 
 
-import "../../common/libraries/UncheckedMath.sol";
-import "../interfaces/IDiamondCut.sol";
-import "../libraries/Diamond.sol";
-import "../Config.sol";
+import "./UncheckedMath.sol";
+import "./IDiamondCut.sol";
+import "./Diamond.sol";
+import "./Config.sol";
 import "./Base.sol";
 
 /// @title DiamondCutFacet - contract responsible for the management of upgrades.

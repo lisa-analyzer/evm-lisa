@@ -2,14 +2,14 @@
 // Copyright 2017 Loopring Technology Limited.
 pragma solidity ^0.7.0;
 
-import "../../lib/AddressUtil.sol";
-import "../../lib/BurnableERC20.sol";
-import "../../lib/Claimable.sol";
-import "../../lib/ERC20.sol";
-import "../../lib/ERC20SafeTransfer.sol";
-import "../../lib/MathUint.sol";
-import "../../lib/ReentrancyGuard.sol";
-import "../token-sellers/ITokenSeller.sol";
+import "./AddressUtil.sol";
+import "./BurnableERC20.sol";
+import "./Claimable.sol";
+import "./ERC20.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./ReentrancyGuard.sol";
+import "./ITokenSeller.sol";
 import "./IProtocolFeeVault.sol";
 
 

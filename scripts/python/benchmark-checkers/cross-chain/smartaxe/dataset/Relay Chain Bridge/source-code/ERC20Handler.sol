@@ -1,11 +1,11 @@
 pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IDepositExecute.sol";
-import "../interfaces/IERC20Handler.sol";
+import "./IDepositExecute.sol";
+import "./IERC20Handler.sol";
 import "./HandlerHelpers.sol";
-import "../ERC20Safe.sol";
-import "../ERC20PresetMinterPauser.sol";
+import "./ERC20Safe.sol";
+import "./ERC20PresetMinterPauser.sol";
 
 /**
     @title Handles ERC20 deposits and deposit executions.

@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../state/Deserialize.sol";
-import "../state/Machine.sol";
-import "../state/MerkleProof.sol";
+import "./Deserialize.sol";
+import "./Machine.sol";
+import "./MerkleProof.sol";
 import "./IOneStepProver.sol";
 import "./IOneStepProofEntry.sol";
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import { IDiamondCut } from "../Interfaces/IDiamondCut.sol";
+import { IDiamondCut } from "./IDiamondCut.sol";
 
 library LibDiamond {
     bytes32 internal constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");

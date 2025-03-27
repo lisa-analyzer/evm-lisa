@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
-import "../utils/RevertMessageParser.sol";
+import "./IERC20.sol";
+import "./Context.sol";
+import "./TransferHelper.sol";
+import "./RevertMessageParser.sol";
 
 /**
  * @title A contract that implements the chain of the calls on different contracts

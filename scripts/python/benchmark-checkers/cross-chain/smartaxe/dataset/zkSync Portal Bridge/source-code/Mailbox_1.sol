@@ -4,18 +4,18 @@ pragma solidity ^0.8.13;
 
 
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./Math.sol";
 
-import "../interfaces/IMailbox.sol";
-import "../libraries/Merkle.sol";
-import "../libraries/PriorityQueue.sol";
-import "../Storage.sol";
-import "../Config.sol";
-import "../../common/libraries/UncheckedMath.sol";
-import "../../common/libraries/UnsafeBytes.sol";
-import "../../common/libraries/L2ContractHelper.sol";
-import "../../common/L2ContractAddresses.sol";
-import "../../vendor/AddressAliasHelper.sol";
+import "./IMailbox.sol";
+import "./Merkle.sol";
+import "./PriorityQueue.sol";
+import "./Storage.sol";
+import "./Config.sol";
+import "./UncheckedMath.sol";
+import "./UnsafeBytes.sol";
+import "./L2ContractHelper.sol";
+import "./L2ContractAddresses.sol";
+import "./AddressAliasHelper.sol";
 import "./Base.sol";
 
 /// @title zkSync Mailbox contract providing interfaces for L1 <-> L2 interaction.

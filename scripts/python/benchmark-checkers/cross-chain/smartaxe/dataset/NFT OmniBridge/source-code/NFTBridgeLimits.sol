@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "../../../Ownable.sol";
+import "./Ownable.sol";
 
 /**
  * @title NFTBridgeLimits

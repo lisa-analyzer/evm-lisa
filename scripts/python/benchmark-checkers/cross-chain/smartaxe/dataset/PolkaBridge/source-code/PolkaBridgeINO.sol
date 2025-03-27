@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
-// import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "./lib/IWETH.sol";
-import "./lib/IERC20.sol";
+import "./ERC1155.sol";
+import "./IERC1155Receiver.sol";
+// import "./IERC1155Receiver.sol";
+import "./Counters.sol";
+import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./Strings.sol";
+import "./IWETH.sol";
+import "./IERC20.sol";
 import "./ReentrancyGuard.sol";
 import "./PolkaBridgeNFT.sol";
 

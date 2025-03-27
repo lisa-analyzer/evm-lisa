@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import "@openzeppelin/contracts/V4/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 
 contract BalanceResolver {
     function balanceOf(IERC20 token, address[] memory addresses) external view returns (uint256[] memory balances) {

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./libraries/ReentrancyGuard.sol";
-import "./libraries/RevertReasonParser.sol";
-import "./libraries/TransferHelper.sol";
-import "./libraries/TransitStructs.sol";
-import "./libraries/Ownable.sol";
-import "./libraries/Pausable.sol";
-import "./libraries/SafeMath.sol";
-import "./interfaces/IERC20.sol";
-import "./interfaces/ITransitSwapFees.sol";
+import "./ReentrancyGuard.sol";
+import "./RevertReasonParser.sol";
+import "./TransferHelper.sol";
+import "./TransitStructs.sol";
+import "./Ownable.sol";
+import "./Pausable.sol";
+import "./SafeMath.sol";
+import "./IERC20.sol";
+import "./ITransitSwapFees.sol";
 
 contract TransitSwapRouter is Ownable, ReentrancyGuard, Pausable {
 

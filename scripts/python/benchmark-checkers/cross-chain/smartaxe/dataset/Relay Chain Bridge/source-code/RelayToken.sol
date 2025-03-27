@@ -1,9 +1,9 @@
 pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+import "./AccessControlEnumerable.sol";
+import "./ERC20Burnable.sol";
+import "./ERC20Capped.sol";
+import "./draft-ERC20Permit.sol";
 
 contract RelayToken is ERC20Burnable, ERC20Capped, ERC20Permit, AccessControlEnumerable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");

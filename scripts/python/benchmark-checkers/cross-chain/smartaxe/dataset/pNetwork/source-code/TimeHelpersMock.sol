@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
-import "@aragon/os/contracts/common/TimeHelpers.sol";
-import "@aragon/os/contracts/lib/math/SafeMath.sol";
-import "@aragon/os/contracts/lib/math/SafeMath64.sol";
+import "./TimeHelpers.sol";
+import "./SafeMath.sol";
+import "./SafeMath64.sol";
 
 
 contract TimeHelpersMock is TimeHelpers {

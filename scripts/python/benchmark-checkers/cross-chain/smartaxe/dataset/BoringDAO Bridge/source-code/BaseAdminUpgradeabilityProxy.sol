@@ -1,6 +1,6 @@
 pragma solidity ^0.6.0;
 
-import './UpgradeabilityProxy.sol';
+import "./UpgradeabilityProxy.sol";
 
 /**
  * @title BaseAdminUpgradeabilityProxy

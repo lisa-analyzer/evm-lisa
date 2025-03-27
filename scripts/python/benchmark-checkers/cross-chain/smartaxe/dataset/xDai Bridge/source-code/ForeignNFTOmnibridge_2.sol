@@ -3,7 +3,7 @@ pragma solidity 0.7.5;
 pragma abicoder v2;
 
 import "./BasicNFTOmnibridge.sol";
-import "./components/common/GasLimitManager.sol";
+import "./GasLimitManager.sol";
 
 /**
  * @title ForeignNFTOmnibridge

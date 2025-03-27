@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "./interface/IBoringDAO.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./interface/IAddressResolver.sol";
-import "./interface/ITunnel.sol";
+import "./IBoringDAO.sol";
+import "./AccessControl.sol";
+import "./Pausable.sol";
+import "./IERC20.sol";
+import "./SafeMath.sol";
+import "./IAddressResolver.sol";
+import "./ITunnel.sol";
 import "./ParamBook.sol";
-import "./lib/SafeDecimalMath.sol";
-import "./interface/IMintProposal.sol";
-import "./interface/IOracle.sol";
-import "./interface/ITrusteeFeePool.sol";
+import "./SafeDecimalMath.sol";
+import "./IMintProposal.sol";
+import "./IOracle.sol";
+import "./ITrusteeFeePool.sol";
 
 /**
 @notice The BoringDAO contract is the entrance to the entire system, 

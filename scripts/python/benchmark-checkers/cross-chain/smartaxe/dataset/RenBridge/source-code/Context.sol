@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./Initializable.sol";
 
 /*
  * @dev Provides information about the current execution context, including the

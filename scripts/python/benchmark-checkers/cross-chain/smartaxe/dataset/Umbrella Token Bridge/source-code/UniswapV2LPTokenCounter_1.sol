@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 interface IStaking {
     function balanceOf(address _account) external view returns (uint256);
@@ -15,7 +15,7 @@ interface ILP {
     function totalSupply() external view returns (uint256);
 }
 
-import "hardhat/console.sol";
+import "./console.sol";
 
 // This contracts calculates balance of target token, that was provided as liquidity and then staked
 contract UniswapV2LPTokenCounter is ERC20 {

@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/TypesV1.sol";
+import "./TypesV1.sol";
 
 library GeometryV1 {
         

@@ -2,10 +2,10 @@
 // Copyright 2017 Loopring Technology Limited.
 pragma solidity ^0.7.0;
 
-import "../core/iface/IExchangeV3.sol";
+import "./IExchangeV3.sol";
 
-import "../lib/AddressUtil.sol";
-import "../lib/MathUint.sol";
+import "./AddressUtil.sol";
+import "./MathUint.sol";
 
 
 contract TestAccountContract {

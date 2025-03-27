@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../challenge/IChallengeResultReceiver.sol";
-import "../challenge/IChallengeManager.sol";
+import "./IChallengeResultReceiver.sol";
+import "./IChallengeManager.sol";
 
 contract MockResultReceiver is IChallengeResultReceiver {
     IChallengeManager public manager;

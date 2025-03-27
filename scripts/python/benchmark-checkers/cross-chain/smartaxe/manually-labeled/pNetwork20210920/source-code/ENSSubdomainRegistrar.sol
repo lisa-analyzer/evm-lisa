@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
-import "../lib/ens/AbstractENS.sol";
-import "../lib/ens/PublicResolver.sol";
+import "./AbstractENS.sol";
+import "./PublicResolver.sol";
 import "./ENSConstants.sol";
 
-import "../apps/AragonApp.sol";
+import "./AragonApp.sol";
 
 
 /* solium-disable function-order */

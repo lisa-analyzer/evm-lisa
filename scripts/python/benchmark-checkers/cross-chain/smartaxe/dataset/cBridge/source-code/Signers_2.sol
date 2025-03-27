@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/ISigsVerifier.sol";
+import "./ECDSA.sol";
+import "./Ownable.sol";
+import "./ISigsVerifier.sol";
 
 contract Signers is Ownable, ISigsVerifier {
     using ECDSA for bytes32;

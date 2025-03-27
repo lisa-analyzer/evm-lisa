@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./LzApp.sol";
-import "../util/ExcessivelySafeCall.sol";
+import "./ExcessivelySafeCall.sol";
 
 abstract contract NonblockingLzApp is LzApp {
     using ExcessivelySafeCall for address;

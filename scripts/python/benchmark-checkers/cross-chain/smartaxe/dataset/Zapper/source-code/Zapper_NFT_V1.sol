@@ -22,10 +22,10 @@
 // SPDX-License-Identifier: GPL-2.0
 
 pragma solidity ^0.8.0;
-import "./ERC1155/ERC1155.sol";
-import "./access/Ownable.sol";
-import "./utils/Counters.sol";
-import "./SignatureVerifier/SignatureVerifier.sol";
+import "./ERC1155.sol";
+import "./Ownable.sol";
+import "./Counters.sol";
+import "./SignatureVerifier.sol";
 
 contract Zapper_NFT_V1_0_5 is ERC1155, Ownable, SignatureVerifier {
     using Counters for Counters.Counter;

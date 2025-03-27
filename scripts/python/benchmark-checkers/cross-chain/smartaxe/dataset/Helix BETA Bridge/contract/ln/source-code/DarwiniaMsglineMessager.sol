@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../interface/ILowLevelMessager.sol";
-import "../base/LnAccessController.sol";
-import "./interface/IDarwiniaMsgline.sol";
+import "./ILowLevelMessager.sol";
+import "./LnAccessController.sol";
+import "./IDarwiniaMsgline.sol";
 
 contract DarwiniaMsglineMessager is Application, LnAccessController {
     IMessageLine public immutable msgline;

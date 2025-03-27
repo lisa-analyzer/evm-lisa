@@ -7,10 +7,10 @@
 pragma solidity ^0.8.10;
 
 import "./Erc1155MappingToken.sol";
-import "../MappingTokenFactory.sol";
-import "../../interfaces/IErc1155Backing.sol";
-import "../../interfaces/IErc1155MappingToken.sol";
-import "../../interfaces/IHelixMessageEndpoint.sol";
+import "./MappingTokenFactory.sol";
+import "./IErc1155Backing.sol";
+import "./IErc1155MappingToken.sol";
+import "./IHelixMessageEndpoint.sol";
 
 contract Erc1155MappingTokenFactorySupportingConfirm is MappingTokenFactory {
     struct UnconfirmedInfo {

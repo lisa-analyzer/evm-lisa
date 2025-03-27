@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity >=0.7.0 <0.9.0;
 
-import "../common/Enum.sol";
-import "../common/SelfAuthorized.sol";
+import "./Enum.sol";
+import "./SelfAuthorized.sol";
 
 interface Guard {
     function checkTransaction(

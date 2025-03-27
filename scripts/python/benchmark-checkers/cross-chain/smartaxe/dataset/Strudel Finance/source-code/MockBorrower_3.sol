@@ -1,7 +1,7 @@
 pragma solidity 0.6.6;
 
-import "../IBorrower.sol";
-import "../ILender.sol";
+import "./IBorrower.sol";
+import "./ILender.sol";
 
 contract MockBorrower is IBorrower {
   address lender;

@@ -3,14 +3,14 @@ pragma solidity 0.4.24;
 import "./IKernel.sol";
 import "./KernelConstants.sol";
 import "./KernelStorage.sol";
-import "../acl/IACL.sol";
-import "../acl/ACLSyntaxSugar.sol";
-import "../common/ConversionHelpers.sol";
-import "../common/IsContract.sol";
-import "../common/Petrifiable.sol";
-import "../common/VaultRecoverable.sol";
-import "../factory/AppProxyFactory.sol";
-import "../lib/misc/ERCProxy.sol";
+import "./IACL.sol";
+import "./ACLSyntaxSugar.sol";
+import "./ConversionHelpers.sol";
+import "./IsContract.sol";
+import "./Petrifiable.sol";
+import "./VaultRecoverable.sol";
+import "./AppProxyFactory.sol";
+import "./ERCProxy.sol";
 
 
 // solium-disable-next-line max-len

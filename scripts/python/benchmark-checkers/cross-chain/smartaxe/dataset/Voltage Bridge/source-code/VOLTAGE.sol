@@ -21,7 +21,7 @@ pragma solidity ^0.8.0;
      \/   $VOLT'
  */
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/presets/ERC20PresetMinterPauserUpgradeable.sol";
+import "./ERC20PresetMinterPauserUpgradeable.sol";
 
 interface ISupDucks {
 	function balanceOf(address owner) external view returns(uint256);

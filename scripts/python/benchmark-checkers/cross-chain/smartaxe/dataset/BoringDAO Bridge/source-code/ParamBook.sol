@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 
 contract ParamBook is Ownable {
     mapping(bytes32 => uint256) public params;

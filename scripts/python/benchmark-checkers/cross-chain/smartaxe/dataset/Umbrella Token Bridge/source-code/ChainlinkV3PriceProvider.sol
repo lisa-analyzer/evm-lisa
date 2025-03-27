@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "./SafeMath.sol";
+import "./AggregatorV3Interface.sol";
 
-import "../PriceProvider.sol";
-import "../IERC20LikeV2.sol";
+import "./PriceProvider.sol";
+import "./IERC20LikeV2.sol";
 
 contract ChainlinkV3PriceProvider is PriceProvider {
     using SafeMath for uint256;

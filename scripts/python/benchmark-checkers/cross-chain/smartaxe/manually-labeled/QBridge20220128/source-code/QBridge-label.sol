@@ -36,12 +36,12 @@ pragma experimental ABIEncoderV2;
 * SOFTWARE.
 */
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
-import "../interfaces/IQBridgeHandler.sol";
-import "../library/PausableUpgradeable.sol";
-import "../library/AccessControlIndexUpgradeable.sol";
-import "../library/SafeToken.sol";
+import "./IQBridgeHandler.sol";
+import "./PausableUpgradeable.sol";
+import "./AccessControlIndexUpgradeable.sol";
+import "./SafeToken.sol";
 
 
 contract QBridge is PausableUpgradeable, AccessControlIndexUpgradeable {

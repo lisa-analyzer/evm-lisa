@@ -13,10 +13,10 @@
 
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "../balancer/BMath.sol";
-import "../balancer/IBPool.sol";
+import "./BMath.sol";
+import "./IBPool.sol";
 
 contract BPool is ERC20UpgradeSafe, BMath, IBPool {
   struct Record {

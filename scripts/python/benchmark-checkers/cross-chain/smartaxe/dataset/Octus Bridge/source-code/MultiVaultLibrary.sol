@@ -2,8 +2,8 @@
 pragma solidity 0.8.0;
 
 
-import "./../interfaces/IMultiVault.sol";
-import "./../interfaces/IEverscale.sol";
+import "./IMultiVault.sol";
+import "./IEverscale.sol";
 
 
 library MultiVaultLibrary {

@@ -1,12 +1,12 @@
 pragma solidity 0.4.24;
 
-import "../evmscript/IEVMScriptExecutor.sol";
-import "../evmscript/EVMScriptRegistry.sol";
+import "./IEVMScriptExecutor.sol";
+import "./EVMScriptRegistry.sol";
 
-import "../evmscript/executors/CallsScript.sol";
+import "./CallsScript.sol";
 
-import "../kernel/Kernel.sol";
-import "../acl/ACL.sol";
+import "./Kernel.sol";
+import "./ACL.sol";
 
 
 contract EVMScriptRegistryFactory is EVMScriptRegistryConstants {

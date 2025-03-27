@@ -1,17 +1,17 @@
 pragma solidity 0.4.24;
 
-import "@aragon/os/contracts/acl/ACL.sol";
-import "@aragon/os/contracts/kernel/Kernel.sol";
-import "@aragon/os/contracts/factory/DAOFactory.sol";
-import "@aragon/os/contracts/factory/APMRegistryFactory.sol";
-import "@aragon/os/contracts/factory/ENSFactory.sol";
-import "@aragon/os/contracts/apm/APMRegistry.sol";
-import "@aragon/os/contracts/apm/Repo.sol";
-import "@aragon/os/contracts/ens/ENSSubdomainRegistrar.sol";
-import "@aragon/os/contracts/lib/ens/ENS.sol";
-import "@aragon/os/contracts/lib/ens/AbstractENS.sol";
-import "@aragon/os/contracts/lib/ens/PublicResolver.sol";
-import "@aragon/test-helpers/contracts/TokenMock.sol";
+import "./ACL.sol";
+import "./Kernel.sol";
+import "./DAOFactory.sol";
+import "./APMRegistryFactory.sol";
+import "./ENSFactory.sol";
+import "./APMRegistry.sol";
+import "./Repo.sol";
+import "./ENSSubdomainRegistrar.sol";
+import "./ENS.sol";
+import "./AbstractENS.sol";
+import "./PublicResolver.sol";
+import "./TokenMock.sol";
 
 
 contract Imports {

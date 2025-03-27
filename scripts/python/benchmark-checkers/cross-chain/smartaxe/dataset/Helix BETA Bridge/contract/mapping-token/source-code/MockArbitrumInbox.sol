@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0;
-import "hardhat/console.sol";
+import "./console.sol";
 
 contract MockArbitrumInbox {
     function calculateRetryableSubmissionFee(uint256 length, uint256 baseFee) external returns(uint256) {

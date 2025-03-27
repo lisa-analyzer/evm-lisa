@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8;
 
-import './interfaces/IUniswapV2Router02.sol';
-import './interfaces/IUniswapV2Factory.sol';
-import './libraries/UniswapV2Library.sol';
-import './libraries/TransferHelper.sol';
-import './libraries/SafeMath.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/IWETH.sol';
+import "./IUniswapV2Router02.sol";
+import "./IUniswapV2Factory.sol";
+import "./UniswapV2Library.sol";
+import "./TransferHelper.sol";
+import "./SafeMath.sol";
+import "./IERC20.sol";
+import "./IWETH.sol";
 
 contract UniswapV2Router02 is IUniswapV2Router02 {
     using SafeMath for uint;

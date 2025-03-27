@@ -2,17 +2,17 @@
 
 pragma solidity 0.6.12;
 
-import '@openzeppelin/contracts-upgradeable/proxy/Initializable.sol';
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol';
-import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import "./Initializable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./PausableUpgradeable.sol";
+import "./SafeERC20.sol";
+import "./ERC20Burnable.sol";
+import "./IERC20.sol";
+import "./SafeMath.sol";
 
-import './interfaces/ISwap.sol';
-import './interfaces/IWETH9.sol';
+import "./ISwap.sol";
+import "./IWETH9.sol";
 
 interface IERC20Mintable is IERC20 {
   function mint(address to, uint256 amount) external;

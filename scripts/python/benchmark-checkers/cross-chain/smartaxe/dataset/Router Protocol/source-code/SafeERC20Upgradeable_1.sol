@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../IERC20Upgradeable.sol";
-import "../../../utils/AddressUpgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./AddressUpgradeable.sol";
 
 /**
  * @title SafeERC20

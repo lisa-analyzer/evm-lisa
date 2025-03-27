@@ -2,9 +2,9 @@
 
 pragma solidity 0.6.12;
 
-import "rainbow-bridge/contracts/eth/nearprover/contracts/INearProver.sol";
-import "rainbow-bridge/contracts/eth/nearprover/contracts/ProofDecoder.sol";
-import "rainbow-bridge/contracts/eth/nearbridge/contracts/Borsh.sol";
+import "./INearProver.sol";
+import "./ProofDecoder.sol";
+import "./Borsh.sol";
 
 contract Bridge {
     using Borsh for Borsh.Data;

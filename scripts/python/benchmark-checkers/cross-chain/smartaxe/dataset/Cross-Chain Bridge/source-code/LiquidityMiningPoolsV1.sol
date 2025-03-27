@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import './token/PoolsInterestBearingToken.sol';
-import './interfaces/ICrossChainBridgeERC20.sol';
-import './interfaces/IBuyBackAndBurn.sol';
-import './utils/MyPausableUpgradeable.sol';
-import './interfaces/ICrossChainBridgeERC20LiquidityManager.sol';
-import 'hardhat/console.sol';
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./PoolsInterestBearingToken.sol";
+import "./ICrossChainBridgeERC20.sol";
+import "./IBuyBackAndBurn.sol";
+import "./MyPausableUpgradeable.sol";
+import "./ICrossChainBridgeERC20LiquidityManager.sol";
+import "./console.sol";
 
 contract LiquidityMiningPoolsV1 is MyPausableUpgradeable, IPools {
   using SafeERC20 for IERC20;

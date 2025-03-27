@@ -4,7 +4,7 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../core/iface/ExchangeData.sol";
+import "./ExchangeData.sol";
 
 /// @title IBlockReceiver
 /// @author Brecht Devos - <brecht@loopring.org>

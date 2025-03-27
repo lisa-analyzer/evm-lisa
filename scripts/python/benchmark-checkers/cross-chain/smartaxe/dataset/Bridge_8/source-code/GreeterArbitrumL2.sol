@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./crosschain/arbitrum/CrossChainEnabledArbitrumL2.sol";
+import "./CrossChainEnabledArbitrumL2.sol";
 
 contract GreeterArbitrumL2 is CrossChainEnabledArbitrumL2 {
     string private _greeting;

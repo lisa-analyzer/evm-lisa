@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.10;
 
-import "../interfaces/IERC20.sol";
+import "./IERC20.sol";
 
 contract DoubleTransferHelper {
 

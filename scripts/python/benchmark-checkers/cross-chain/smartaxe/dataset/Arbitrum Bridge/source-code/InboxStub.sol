@@ -4,10 +4,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../bridge/IInbox.sol";
-import "../bridge/IBridge.sol";
+import "./IInbox.sol";
+import "./IBridge.sol";
 
-import "../bridge/Messages.sol";
+import "./Messages.sol";
 import "./BridgeStub.sol";
 import {
     L2_MSG,

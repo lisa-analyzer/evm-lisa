@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: Apache 2
 
 pragma solidity ^0.8.0;
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./ERC1967Upgrade.sol";
 
-import "../libraries/external/BytesLib.sol";
+import "./BytesLib.sol";
 
 import "./NFTBridgeGetters.sol";
 import "./NFTBridgeSetters.sol";
 import "./NFTBridgeStructs.sol";
 
-import "./token/NFT.sol";
-import "./token/NFTImplementation.sol";
+import "./NFT.sol";
+import "./NFTImplementation.sol";
 
-import "../interfaces/IWormhole.sol";
+import "./IWormhole.sol";
 
 contract NFTBridgeGovernance is NFTBridgeGetters, NFTBridgeSetters, ERC1967Upgrade {
     using BytesLib for bytes;

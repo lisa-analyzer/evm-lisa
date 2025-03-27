@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "../interfaces/ICallProxy.sol";
-import "../libraries/Flags.sol";
-import "../libraries/BytesLib.sol";
-import "../libraries/MultiSendCallOnly.sol";
+import "./AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./IERC20Upgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./AddressUpgradeable.sol";
+import "./ICallProxy.sol";
+import "./Flags.sol";
+import "./BytesLib.sol";
+import "./MultiSendCallOnly.sol";
 
 /// @dev Proxy to execute the other contract calls.
 /// This contract is used when a user requests transfer with specific call of other contract.

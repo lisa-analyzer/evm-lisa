@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol";
-import "../interfaces/IDeBridgeToken.sol";
+import "./AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./ERC20PausableUpgradeable.sol";
+import "./IDeBridgeToken.sol";
 
 /// @dev ERC20 token that is used as wrapped asset to represent the native token value on the other chains.
 contract DeBridgeToken is

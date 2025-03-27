@@ -1,13 +1,13 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.7.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./SafeMath.sol";
+import "./IERC721.sol";
+import "./IERC20.sol";
+import "./Ownable.sol";
 
-import './OperatorHub.sol';
-import './ERC721Mintable.sol';
+import "./OperatorHub.sol";
+import "./ERC721Mintable.sol";
 
 contract ForeignGate is OperatorHub {
   uint64 constant PREFIX = 0x9da38c22b41d70ee; // random number

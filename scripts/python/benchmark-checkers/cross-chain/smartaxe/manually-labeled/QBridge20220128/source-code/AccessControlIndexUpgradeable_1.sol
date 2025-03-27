@@ -2,9 +2,9 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/utils/EnumerableSetUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol";
+import "./EnumerableSetUpgradeable.sol";
+import "./AddressUpgradeable.sol";
+import "./ContextUpgradeable.sol";
 
 
 /**

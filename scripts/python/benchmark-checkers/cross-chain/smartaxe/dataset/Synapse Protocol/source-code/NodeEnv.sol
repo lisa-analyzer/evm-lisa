@@ -3,8 +3,8 @@
 pragma solidity >=0.6.0 <0.8.0;
 pragma experimental ABIEncoderV2;
 
-import '@openzeppelin/contracts/access/AccessControl.sol';
-import "./utils/EnumerableStringMap.sol";
+import "./AccessControl.sol";
+import "./EnumerableStringMap.sol";
 
 /**
  * @title NodeEnv contract

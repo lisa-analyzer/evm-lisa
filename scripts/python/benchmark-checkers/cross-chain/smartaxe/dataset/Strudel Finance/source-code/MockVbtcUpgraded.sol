@@ -2,7 +2,7 @@
 
 pragma solidity 0.6.6;
 
-import "../VbtcToken.sol";
+import "./VbtcToken.sol";
 
 /// @title  VBTC Token.
 /// @notice This is the VBTC ERC20 contract.

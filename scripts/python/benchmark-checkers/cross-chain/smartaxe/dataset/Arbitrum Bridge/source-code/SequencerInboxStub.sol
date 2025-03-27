@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../bridge/SequencerInbox.sol";
+import "./SequencerInbox.sol";
 
 contract SequencerInboxStub is SequencerInbox {
     constructor(

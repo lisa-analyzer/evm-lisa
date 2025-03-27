@@ -7,9 +7,9 @@ pragma solidity ^0.4.24;
 import "./IEVMScriptExecutor.sol";
 import "./IEVMScriptRegistry.sol";
 
-import "../apps/AppStorage.sol";
-import "../kernel/KernelConstants.sol";
-import "../common/Initializable.sol";
+import "./AppStorage.sol";
+import "./KernelConstants.sol";
+import "./Initializable.sol";
 
 
 contract EVMScriptRunner is AppStorage, Initializable, EVMScriptRegistryConstants, KernelNamespaceConstants {

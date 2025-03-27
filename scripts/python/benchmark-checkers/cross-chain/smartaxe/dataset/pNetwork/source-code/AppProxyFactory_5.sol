@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
-import "../apps/AppProxyUpgradeable.sol";
-import "../apps/AppProxyPinned.sol";
+import "./AppProxyUpgradeable.sol";
+import "./AppProxyPinned.sol";
 
 
 contract AppProxyFactory {

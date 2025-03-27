@@ -3,7 +3,7 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../thirdparty/BytesUtil.sol";
+import "./BytesUtil.sol";
 import "./AddressUtil.sol";
 import "./MathUint.sol";
 import "./ERC1271.sol";

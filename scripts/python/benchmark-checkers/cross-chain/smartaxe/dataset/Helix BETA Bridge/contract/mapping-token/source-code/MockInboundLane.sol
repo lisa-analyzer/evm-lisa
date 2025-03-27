@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0;
 import "./MockMessageVerifier.sol";
-import "../interfaces/ICrossChainFilter.sol";
-import "../interfaces/IInboundLane.sol";
-import "hardhat/console.sol";
+import "./ICrossChainFilter.sol";
+import "./IInboundLane.sol";
+import "./console.sol";
 
 contract MockInboundLane is MockMessageVerifier {
     IInboundLane.InboundLaneNonce public inboundLaneNonce;

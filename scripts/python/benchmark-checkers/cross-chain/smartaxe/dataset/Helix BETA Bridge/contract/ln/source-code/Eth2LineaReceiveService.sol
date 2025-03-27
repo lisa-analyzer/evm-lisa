@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interface/ILineaMessageService.sol";
-import "../base/LnAccessController.sol";
-import "../interface/ILowLevelMessager.sol";
+import "./ILineaMessageService.sol";
+import "./LnAccessController.sol";
+import "./ILowLevelMessager.sol";
 
 // from ethereum to linea messager
 contract Eth2LineaReceiveService is ILowLevelMessageReceiver, LnAccessController {

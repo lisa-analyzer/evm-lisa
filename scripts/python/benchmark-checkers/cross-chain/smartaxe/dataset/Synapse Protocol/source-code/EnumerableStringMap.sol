@@ -2,7 +2,7 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "./EnumerableSet.sol";
 
 /**
  * @title EnumerableStringMap

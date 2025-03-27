@@ -5,8 +5,8 @@ pragma solidity ^0.8.13;
 
 
 import "./Verifier.sol";
-import "../common/interfaces/IAllowList.sol";
-import "./libraries/PriorityQueue.sol";
+import "./IAllowList.sol";
+import "./PriorityQueue.sol";
 
 /// @notice Indicates whether an upgrade is initiated and if yes what type
 /// @param None Upgrade is NOT initiated

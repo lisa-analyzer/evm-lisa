@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "../v2/AccessController.sol";
-import "hardhat/console.sol";
+import "./AccessController.sol";
+import "./console.sol";
 
 contract MockSub2SubMessageEndpoint is AccessController {
     address remoteHelix;

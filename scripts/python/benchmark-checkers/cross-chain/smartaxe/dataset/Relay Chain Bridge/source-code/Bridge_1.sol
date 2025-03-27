@@ -1,13 +1,13 @@
 pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./utils/Pausable.sol";
-import "./utils/SafeMath.sol";
-import "./interfaces/IDepositExecute.sol";
-import "./interfaces/IBridge.sol";
-import "./interfaces/IERCHandler.sol";
-import "./interfaces/IGenericHandler.sol";
+import "./AccessControl.sol";
+import "./Pausable.sol";
+import "./SafeMath.sol";
+import "./IDepositExecute.sol";
+import "./IBridge.sol";
+import "./IERCHandler.sol";
+import "./IGenericHandler.sol";
 
 /**
     @title Facilitates deposits, creation and votiing of deposit proposals, and deposit executions.

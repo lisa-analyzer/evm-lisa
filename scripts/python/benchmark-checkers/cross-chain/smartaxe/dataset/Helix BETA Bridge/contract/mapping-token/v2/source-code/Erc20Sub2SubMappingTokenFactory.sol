@@ -5,15 +5,15 @@
 // Only we need is to verify the sourceAccount is expected. And we add it to the Filter.
 pragma solidity ^0.8.10;
 
-import "@zeppelin-solidity/contracts/utils/structs/BitMaps.sol";
+import "./BitMaps.sol";
 import "./Erc20.sol";
-import "../MappingTokenFactory.sol";
-import "../../interfaces/IBacking.sol";
-import "../../interfaces/IGuard.sol";
-import "../../interfaces/IHelixApp.sol";
-import "../../interfaces/IHelixSub2SubMessageEndpoint.sol";
-import "../../interfaces/IErc20MappingTokenFactory.sol";
-import "../../../utils/DailyLimit.sol";
+import "./MappingTokenFactory.sol";
+import "./IBacking.sol";
+import "./IGuard.sol";
+import "./IHelixApp.sol";
+import "./IHelixSub2SubMessageEndpoint.sol";
+import "./IErc20MappingTokenFactory.sol";
+import "./DailyLimit.sol";
 
 contract Erc20Sub2SubMappingTokenFactory is DailyLimit, IErc20MappingTokenFactory, MappingTokenFactory {
     struct BurnInfo {

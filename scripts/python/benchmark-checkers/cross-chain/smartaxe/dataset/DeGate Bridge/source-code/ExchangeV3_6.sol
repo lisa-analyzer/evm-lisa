@@ -4,23 +4,23 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../lib/AddressUtil.sol";
-import "../../lib/EIP712.sol";
-import "../../lib/ERC20SafeTransfer.sol";
-import "../../lib/MathUint.sol";
-import "../../lib/ReentrancyGuard.sol";
-import "../../thirdparty/proxies/OwnedUpgradabilityProxy.sol";
-import "../iface/IAgentRegistry.sol";
-import "../iface/IExchangeV3.sol";
-import "../iface/IBlockVerifier.sol";
-import "./libexchange/ExchangeAdmins.sol";
-import "./libexchange/ExchangeBalances.sol";
-import "./libexchange/ExchangeBlocks.sol";
-import "./libexchange/ExchangeDeposits.sol";
-import "./libexchange/ExchangeGenesis.sol";
-import "./libexchange/ExchangeMode.sol";
-import "./libexchange/ExchangeTokens.sol";
-import "./libexchange/ExchangeWithdrawals.sol";
+import "./AddressUtil.sol";
+import "./EIP712.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./ReentrancyGuard.sol";
+import "./OwnedUpgradabilityProxy.sol";
+import "./IAgentRegistry.sol";
+import "./IExchangeV3.sol";
+import "./IBlockVerifier.sol";
+import "./ExchangeAdmins.sol";
+import "./ExchangeBalances.sol";
+import "./ExchangeBlocks.sol";
+import "./ExchangeDeposits.sol";
+import "./ExchangeGenesis.sol";
+import "./ExchangeMode.sol";
+import "./ExchangeTokens.sol";
+import "./ExchangeWithdrawals.sol";
 
 /// @title An Implementation of IExchangeV3.
 /// @dev This contract supports upgradability proxy, therefore its constructor

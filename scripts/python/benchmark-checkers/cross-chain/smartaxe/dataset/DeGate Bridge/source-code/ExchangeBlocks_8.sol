@@ -4,15 +4,15 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/AddressUtil.sol";
-import "../../../lib/MathUint.sol";
-import "../../../thirdparty/BytesUtil.sol";
-import "../../iface/ExchangeData.sol";
-import "../../iface/IBlockVerifier.sol";
-import "../libtransactions/BlockReader.sol";
-import "../libtransactions/AccountUpdateTransaction.sol";
-import "../libtransactions/DepositTransaction.sol";
-import "../libtransactions/WithdrawTransaction.sol";
+import "./AddressUtil.sol";
+import "./MathUint.sol";
+import "./BytesUtil.sol";
+import "./ExchangeData.sol";
+import "./IBlockVerifier.sol";
+import "./BlockReader.sol";
+import "./AccountUpdateTransaction.sol";
+import "./DepositTransaction.sol";
+import "./WithdrawTransaction.sol";
 import "./ExchangeMode.sol";
 import "./ExchangeWithdrawals.sol";
 

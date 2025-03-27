@@ -13,10 +13,10 @@ import {
     AlreadySpent,
     BridgeCallFailed
 } from "../libraries/Error.sol";
-import "../bridge/IBridge.sol";
-import "../bridge/IOutbox.sol";
-import "../libraries/MerkleLib.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./IBridge.sol";
+import "./IOutbox.sol";
+import "./MerkleLib.sol";
+import "./DelegateCallAware.sol";
 
 contract OutboxWithoutOptTester is DelegateCallAware, IOutbox {
     address public rollup; // the rollup contract

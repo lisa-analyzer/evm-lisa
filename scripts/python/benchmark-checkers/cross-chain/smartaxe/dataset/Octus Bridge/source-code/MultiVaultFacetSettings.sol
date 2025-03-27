@@ -2,18 +2,18 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/IEverscale.sol";
-import "../../interfaces/multivault/IMultiVaultFacetTokens.sol";
-import "../../interfaces/multivault/IMultiVaultFacetSettings.sol";
-import "../../interfaces/multivault/IMultiVaultFacetSettingsEvents.sol";
+import "./IEverscale.sol";
+import "./IMultiVaultFacetTokens.sol";
+import "./IMultiVaultFacetSettings.sol";
+import "./IMultiVaultFacetSettingsEvents.sol";
 
-import "../helpers/MultiVaultHelperInitializable.sol";
-import "../helpers/MultiVaultHelperTokens.sol";
-import "../helpers/MultiVaultHelperActors.sol";
-import "../helpers/MultiVaultHelperFee.sol";
+import "./MultiVaultHelperInitializable.sol";
+import "./MultiVaultHelperTokens.sol";
+import "./MultiVaultHelperActors.sol";
+import "./MultiVaultHelperFee.sol";
 
-import "../storage/MultiVaultStorage.sol";
-import "../storage/MultiVaultStorageInitializable.sol";
+import "./MultiVaultStorage.sol";
+import "./MultiVaultStorageInitializable.sol";
 
 
 interface IERC173 {

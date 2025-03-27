@@ -2,13 +2,13 @@
 pragma solidity ^0.8.2;
 pragma experimental ABIEncoderV2;
 
-import "./../interfaces/IBridge.sol";
-import "./../libraries/ECDSA.sol";
+import "./IBridge.sol";
+import "./ECDSA.sol";
 
-import "./../utils/Cache.sol";
+import "./Cache.sol";
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "./OwnableUpgradeable.sol";
+import "./PausableUpgradeable.sol";
 
 
 /// @title Ethereum Bridge contract

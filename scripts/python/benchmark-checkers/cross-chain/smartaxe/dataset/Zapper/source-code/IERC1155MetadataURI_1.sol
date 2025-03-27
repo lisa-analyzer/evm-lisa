@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../IERC1155.sol";
+import "./IERC1155.sol";
 
 /**
  * @dev Interface of the optional ERC1155MetadataExtension interface, as defined

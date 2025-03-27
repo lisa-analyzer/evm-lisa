@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/IERC20.sol";
-import "./utils/token/SafeERC20.sol";
-import "./utils/ECDSA.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./ECDSA.sol";
 import "./Validators.sol";
 
 contract TimeLocker is Validators {

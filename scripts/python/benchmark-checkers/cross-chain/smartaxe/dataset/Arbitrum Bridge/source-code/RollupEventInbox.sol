@@ -5,9 +5,9 @@
 pragma solidity ^0.8.0;
 
 import "./IRollupEventInbox.sol";
-import "../bridge/IBridge.sol";
-import "../bridge/IDelayedMessageProvider.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./IBridge.sol";
+import "./IDelayedMessageProvider.sol";
+import "./DelegateCallAware.sol";
 import {INITIALIZATION_MSG_TYPE} from "../libraries/MessageTypes.sol";
 import {AlreadyInit, HadZeroInit} from "../libraries/Error.sol";
 

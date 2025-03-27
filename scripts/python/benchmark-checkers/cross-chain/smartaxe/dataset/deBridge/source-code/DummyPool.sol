@@ -1,13 +1,13 @@
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./Address.sol";
+import "./SafeERC20.sol";
+import "./ERC20.sol";
+import "./IERC20.sol";
 
-import "../interfaces/ICurve.sol";
-import "../libraries/SwapCalldataUtils.sol";
-import "../libraries/Flags.sol";
+import "./ICurve.sol";
+import "./SwapCalldataUtils.sol";
+import "./Flags.sol";
 
 contract DummyPool is ICurve {
     using SwapCalldataUtils for bytes;

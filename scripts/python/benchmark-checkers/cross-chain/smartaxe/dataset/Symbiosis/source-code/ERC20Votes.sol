@@ -3,9 +3,9 @@
 pragma solidity ^0.8.0;
 
 import "./draft-ERC20Permit.sol";
-import "../../../utils/math/Math.sol";
-import "../../../utils/math/SafeCast.sol";
-import "../../../utils/cryptography/ECDSA.sol";
+import "./Math.sol";
+import "./SafeCast.sol";
+import "./ECDSA.sol";
 
 /**
  * @dev Extension of ERC20 to support Compound-like voting and delegation. This version is more generic than Compound's,

@@ -4,8 +4,8 @@ pragma solidity ^0.8.13;
 
 
 
-import "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import "../../common/libraries/UncheckedMath.sol";
+import "./SafeCast.sol";
+import "./UncheckedMath.sol";
 
 /// @author Matter Labs
 /// @notice The helper library for managing the EIP-2535 diamond proxy.

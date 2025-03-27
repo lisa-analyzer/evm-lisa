@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache 2
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/GSN/Context.sol";
+import "./IERC20.sol";
+import "./SafeMath.sol";
+import "./Address.sol";
+import "./Context.sol";
 
 contract WrappedAsset is IERC20, Context {
     uint8 public assetChain;

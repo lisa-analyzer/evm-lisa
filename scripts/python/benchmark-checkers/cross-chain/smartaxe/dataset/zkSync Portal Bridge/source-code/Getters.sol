@@ -5,10 +5,10 @@ pragma solidity ^0.8.13;
 
 
 import "./Base.sol";
-import "../libraries/Diamond.sol";
-import "../libraries/PriorityQueue.sol";
-import "../../common/libraries/UncheckedMath.sol";
-import "../interfaces/IGetters.sol";
+import "./Diamond.sol";
+import "./PriorityQueue.sol";
+import "./UncheckedMath.sol";
+import "./IGetters.sol";
 
 /// @title Getters Contract implements functions for getting contract state from outside the blockchain.
 /// @author Matter Labs

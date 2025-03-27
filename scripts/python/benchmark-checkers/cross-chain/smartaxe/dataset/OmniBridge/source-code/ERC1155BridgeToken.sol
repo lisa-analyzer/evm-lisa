@@ -1,8 +1,8 @@
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "../interfaces/IOwnable.sol";
-import "../interfaces/IBurnableMintableERC1155Token.sol";
+import "./ERC1155.sol";
+import "./IOwnable.sol";
+import "./IBurnableMintableERC1155Token.sol";
 
 /**
  * @title ERC1155BridgeToken

@@ -4,11 +4,11 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../core/iface/IExchangeV3.sol";
-import "../../lib/ReentrancyGuard.sol";
-import "../../lib/OwnerManagable.sol";
-import "../../lib/AddressUtil.sol";
-import "../../lib/Drainable.sol";
+import "./IExchangeV3.sol";
+import "./ReentrancyGuard.sol";
+import "./OwnerManagable.sol";
+import "./AddressUtil.sol";
+import "./Drainable.sol";
 
 /// @author Kongliang Zhong - <kongliang@loopring.org>
 contract ForcedWithdrawalAgent is ReentrancyGuard, OwnerManagable, Drainable

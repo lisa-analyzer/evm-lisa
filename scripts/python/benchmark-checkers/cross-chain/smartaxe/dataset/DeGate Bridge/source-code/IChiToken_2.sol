@@ -2,7 +2,7 @@
 
 pragma solidity ^0.7.0;
 
-import "../../lib/ERC20.sol";
+import "./ERC20.sol";
 
 
 abstract contract IChiToken is ERC20

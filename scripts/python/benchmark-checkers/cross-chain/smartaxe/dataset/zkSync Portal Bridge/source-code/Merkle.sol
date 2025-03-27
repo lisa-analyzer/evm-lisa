@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 
 
 
-import "../../common/libraries/UncheckedMath.sol";
+import "./UncheckedMath.sol";
 
 /// @author Matter Labs
 library Merkle {

@@ -2,10 +2,10 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "../../utils/ContextUpgradeable.sol";
+import "./ContextUpgradeable.sol";
 import "./IERC20Upgradeable.sol";
-import "../../math/SafeMathUpgradeable.sol";
-import "../../proxy/Initializable.sol";
+import "./SafeMathUpgradeable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.

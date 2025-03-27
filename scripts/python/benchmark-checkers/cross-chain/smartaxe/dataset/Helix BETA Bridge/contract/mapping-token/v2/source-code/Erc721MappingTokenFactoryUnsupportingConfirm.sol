@@ -7,11 +7,11 @@
 pragma solidity ^0.8.10;
 
 import "./Erc721MappingToken.sol";
-import "../MappingTokenFactory.sol";
-import "../../interfaces/IErc721AttrSerializer.sol";
-import "../../interfaces/IErc721Backing.sol";
-import "../../interfaces/IErc721MappingToken.sol";
-import "../../interfaces/IHelixMessageEndpoint.sol";
+import "./MappingTokenFactory.sol";
+import "./IErc721AttrSerializer.sol";
+import "./IErc721Backing.sol";
+import "./IErc721MappingToken.sol";
+import "./IHelixMessageEndpoint.sol";
 
 contract Erc721MappingTokenFactoryUnsupportingConfirm is MappingTokenFactory {
     event IssuingERC721Created(address originalToken, address mappingToken);

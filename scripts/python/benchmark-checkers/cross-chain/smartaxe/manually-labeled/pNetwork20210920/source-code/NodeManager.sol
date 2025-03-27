@@ -1,11 +1,11 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "@aragon/os/contracts/apps/AragonApp.sol";
-import "@aragon/apps-vault/contracts/Vault.sol";
-import "@aragon/os/contracts/lib/math/SafeMath.sol";
-import "@aragon/os/contracts/lib/math/SafeMath64.sol";
-import "@pnetwork/staking-manager/contracts/StakingManager.sol";
+import "./AragonApp.sol";
+import "./Vault.sol";
+import "./SafeMath.sol";
+import "./SafeMath64.sol";
+import "./StakingManager.sol";
 import "./SigUtils.sol";
 
 

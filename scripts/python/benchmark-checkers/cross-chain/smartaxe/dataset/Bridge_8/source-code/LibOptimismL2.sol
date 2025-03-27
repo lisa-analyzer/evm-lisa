@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 
 import {ICrossDomainMessenger} from "../../vendor/optimism/ICrossDomainMessenger.sol";
 import {IL2StandardBridge} from "../../vendor/optimism/IL2StandardBridge.sol";
-import "../errors.sol";
+import "./errors.sol";
 
 /**
  * @dev Primitives for cross-chain aware contracts for https://www.optimism.io/[Optimism].

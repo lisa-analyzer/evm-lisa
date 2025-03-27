@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
-import "../structures/SwapRequest.sol";
+import "./SwapRequest.sol";
 
 interface ISwapAdaptor {
     function swap(

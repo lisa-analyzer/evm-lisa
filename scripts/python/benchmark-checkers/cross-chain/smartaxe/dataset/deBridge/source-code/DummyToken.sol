@@ -1,6 +1,6 @@
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 contract DummyToken is ERC20 {
     uint8 _decimals;

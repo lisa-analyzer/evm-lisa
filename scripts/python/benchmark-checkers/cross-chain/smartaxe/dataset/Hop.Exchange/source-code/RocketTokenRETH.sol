@@ -28,13 +28,13 @@ pragma solidity 0.7.6;
 
 // SPDX-License-Identifier: GPL-3.0-only
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
-import "../RocketBase.sol";
-import "../../interface/deposit/RocketDepositPoolInterface.sol";
-import "../../interface/network/RocketNetworkBalancesInterface.sol";
-import "../../interface/token/RocketTokenRETHInterface.sol";
-import "../../interface/dao/protocol/settings/RocketDAOProtocolSettingsNetworkInterface.sol";
+import "./RocketBase.sol";
+import "./RocketDepositPoolInterface.sol";
+import "./RocketNetworkBalancesInterface.sol";
+import "./RocketTokenRETHInterface.sol";
+import "./RocketDAOProtocolSettingsNetworkInterface.sol";
 
 // rETH is a tokenised stake in the Rocket Pool network
 // rETH is backed by ETH (subject to liquidity) at a variable exchange rate

@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/Fix64V1.sol";
-import "../V1/Trig256.sol";
-import "../V1/MathV1.sol";
+import "./Fix64V1.sol";
+import "./Trig256.sol";
+import "./MathV1.sol";
 
 /*
     A pseudo-random number generator, adapted from and matching the algorithm for .NET maximum compatibility Random implementation.

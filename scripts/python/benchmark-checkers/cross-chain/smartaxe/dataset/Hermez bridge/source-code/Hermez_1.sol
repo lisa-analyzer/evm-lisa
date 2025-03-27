@@ -2,11 +2,11 @@
 
 pragma solidity 0.6.12;
 
-import "./lib/InstantWithdrawManager.sol";
-import "./interfaces/VerifierRollupInterface.sol";
-import "./interfaces/VerifierWithdrawInterface.sol";
-import "../interfaces/IHermezAuctionProtocol.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./InstantWithdrawManager.sol";
+import "./VerifierRollupInterface.sol";
+import "./VerifierWithdrawInterface.sol";
+import "./IHermezAuctionProtocol.sol";
+import "./IERC20.sol";
 
 contract Hermez is InstantWithdrawManager {
     struct VerifierRollup {

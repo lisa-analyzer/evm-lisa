@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../../interfaces/draft-IERC1822.sol";
-import "../ERC1967/ERC1967Upgrade.sol";
+import "./draft-IERC1822.sol";
+import "./ERC1967Upgrade.sol";
 
 /**
  * @dev An upgradeability mechanism designed for UUPS proxies. The functions included here can perform an upgrade of an

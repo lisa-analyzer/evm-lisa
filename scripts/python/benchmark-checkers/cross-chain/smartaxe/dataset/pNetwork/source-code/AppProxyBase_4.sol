@@ -1,9 +1,9 @@
 pragma solidity 0.4.24;
 
 import "./AppStorage.sol";
-import "../common/DepositableDelegateProxy.sol";
-import "../kernel/KernelConstants.sol";
-import "../kernel/IKernel.sol";
+import "./DepositableDelegateProxy.sol";
+import "./KernelConstants.sol";
+import "./IKernel.sol";
 
 
 contract AppProxyBase is AppStorage, DepositableDelegateProxy, KernelNamespaceConstants {

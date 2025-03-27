@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@zeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "@zeppelin-solidity/contracts/utils/structs/BitMaps.sol";
-import "../Backing.sol";
-import "../../interfaces/IBacking.sol";
-import "../../interfaces/IErc20MappingTokenFactory.sol";
-import "../../interfaces/IGuard.sol";
-import "../../interfaces/IHelixApp.sol";
-import "../../interfaces/IHelixSub2SubMessageEndpoint.sol";
-import "../../interfaces/IWToken.sol";
-import "../../../utils/DailyLimit.sol";
+import "./IERC20.sol";
+import "./BitMaps.sol";
+import "./Backing.sol";
+import "./IBacking.sol";
+import "./IErc20MappingTokenFactory.sol";
+import "./IGuard.sol";
+import "./IHelixApp.sol";
+import "./IHelixSub2SubMessageEndpoint.sol";
+import "./IWToken.sol";
+import "./DailyLimit.sol";
 
 contract Erc20Sub2SubBacking is Backing, DailyLimit, IBacking {
     struct LockedInfo {

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./utils/ECDSA.sol";
+import "./ECDSA.sol";
 import "./ChainIdValidators.sol";
 
 contract Validators is ChainIdValidators {

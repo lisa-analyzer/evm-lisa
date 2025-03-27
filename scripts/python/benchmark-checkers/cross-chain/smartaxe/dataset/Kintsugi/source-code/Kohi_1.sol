@@ -3,16 +3,16 @@
 
 pragma solidity ^0.8.0;
 
-import "./V1/IRenderer.sol";
-import "./V1/IAttributes.sol";
-import "./V1/RandomV1.sol";
+import "./IRenderer.sol";
+import "./IAttributes.sol";
+import "./RandomV1.sol";
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "./ERC721.sol";
+import "./ERC721Enumerable.sol";
+import "./ERC721Pausable.sol";
+import "./ERC721Burnable.sol";
+import "./IERC721Metadata.sol";
+import "./AccessControlEnumerable.sol";
 
 contract Kohi is Context, AccessControlEnumerable, ERC721, ERC721Enumerable, ERC721Pausable, ERC721Burnable {
 

@@ -2,12 +2,12 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/IEverscale.sol";
-import "../../interfaces/IERC20Metadata.sol";
-import "../../interfaces/multivault/IMultiVaultFacetDepositEvents.sol";
-import "../../interfaces/multivault/IMultiVaultFacetDeposit.sol";
+import "./IEverscale.sol";
+import "./IERC20Metadata.sol";
+import "./IMultiVaultFacetDepositEvents.sol";
+import "./IMultiVaultFacetDeposit.sol";
 
-import "../storage/MultiVaultStorage.sol";
+import "./MultiVaultStorage.sol";
 
 
 abstract contract MultiVaultHelperEverscale is IMultiVaultFacetDepositEvents {

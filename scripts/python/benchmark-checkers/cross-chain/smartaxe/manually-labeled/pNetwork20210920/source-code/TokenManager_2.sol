@@ -6,13 +6,13 @@
 
 pragma solidity 0.4.24;
 
-import "@aragon/os/contracts/apps/AragonApp.sol";
-import "@aragon/os/contracts/common/IForwarder.sol";
+import "./AragonApp.sol";
+import "./IForwarder.sol";
 
-import "@aragon/os/contracts/lib/math/SafeMath.sol";
+import "./SafeMath.sol";
 
-import "@aragon/apps-shared-minime/contracts/ITokenController.sol";
-import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
+import "./ITokenController.sol";
+import "./MiniMeToken.sol";
 
 
 contract TokenManager is ITokenController, IForwarder, AragonApp {

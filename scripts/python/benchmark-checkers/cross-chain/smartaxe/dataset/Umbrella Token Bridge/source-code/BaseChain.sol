@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@umb-network/toolbox/dist/contracts/lib/ValueDecoder.sol";
+import "./Ownable.sol";
+import "./MerkleProof.sol";
+import "./ValueDecoder.sol";
 
-import "./interfaces/IBaseChainV1.sol";
-import "./interfaces/IStakingBank.sol";
-import "./extensions/Registrable.sol";
+import "./IBaseChainV1.sol";
+import "./IStakingBank.sol";
+import "./Registrable.sol";
 import "./Registry.sol";
 
 abstract contract BaseChain is Registrable, Ownable {

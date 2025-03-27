@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interface/IScrollMessenger.sol";
-import "../base/LnAccessController.sol";
-import "../interface/ILowLevelMessager.sol";
+import "./IScrollMessenger.sol";
+import "./LnAccessController.sol";
+import "./ILowLevelMessager.sol";
 
 contract Eth2ScrollSendService is ILowLevelMessageSender, LnAccessController {
     uint256 immutable public REMOTE_CHAINID;

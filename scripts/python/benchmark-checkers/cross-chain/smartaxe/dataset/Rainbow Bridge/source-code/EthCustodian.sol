@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.6.12;
 
-import 'rainbow-bridge/contracts/eth/nearbridge/contracts/AdminControlled.sol';
-import 'rainbow-bridge/contracts/eth/nearbridge/contracts/Borsh.sol';
-import 'rainbow-bridge/contracts/eth/nearprover/contracts/ProofDecoder.sol';
+import "./AdminControlled.sol";
+import "./Borsh.sol";
+import "./ProofDecoder.sol";
 import { INearProver, ProofKeeper } from './ProofKeeper.sol';
 
 contract EthCustodian is ProofKeeper, AdminControlled {

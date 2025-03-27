@@ -4,12 +4,12 @@
 pragma solidity 0.8.9;
 
 import "./NonblockingLzApp.sol";
-import "../interfaces/IOmniApp.sol";
+import "./IOmniApp.sol";
 import {IAxelarExecutable} from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarExecutable.sol';
 import {IAxelarGateway} from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGateway.sol';
 import {IAxelarGasService} from '@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol';
 import {AddressToString, StringToAddress} from '../libs/StringAddressUtils.sol';
-import "../interfaces/IOmnichainRouter.sol";
+import "./IOmnichainRouter.sol";
 
 /**
  * @title OmnichainRouter

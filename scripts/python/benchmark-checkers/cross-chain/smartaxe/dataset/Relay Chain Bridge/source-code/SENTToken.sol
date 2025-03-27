@@ -1,6 +1,6 @@
 pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
 contract SENTToken is ERC20 {
     constructor(

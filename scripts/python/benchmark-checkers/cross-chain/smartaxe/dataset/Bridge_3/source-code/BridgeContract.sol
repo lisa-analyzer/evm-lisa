@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BlockchainBic
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "./ECDSA.sol";
 import "./BridgeToken.sol";
 
 contract BridgeContract {

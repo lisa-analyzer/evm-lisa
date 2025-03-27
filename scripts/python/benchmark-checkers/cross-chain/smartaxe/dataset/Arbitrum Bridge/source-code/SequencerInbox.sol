@@ -24,12 +24,12 @@ import {
 import "./IBridge.sol";
 import "./IInbox.sol";
 import "./ISequencerInbox.sol";
-import "../rollup/IRollupLogic.sol";
+import "./IRollupLogic.sol";
 import "./Messages.sol";
 
 import {L1MessageType_batchPostingReport} from "../libraries/MessageTypes.sol";
 import {GasRefundEnabled, IGasRefunder} from "../libraries/IGasRefunder.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./DelegateCallAware.sol";
 import {MAX_DATA_SIZE} from "../libraries/Constants.sol";
 
 /**

@@ -4,8 +4,8 @@ pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
 
-import "../../lib/ReentrancyGuard.sol";
-import "../../lib/Drainable.sol";
+import "./ReentrancyGuard.sol";
+import "./Drainable.sol";
 
 abstract contract ILoopringV3Partial
 {

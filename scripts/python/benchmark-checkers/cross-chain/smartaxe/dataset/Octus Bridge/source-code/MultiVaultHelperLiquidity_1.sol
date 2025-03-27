@@ -2,12 +2,12 @@
 pragma solidity 0.8.0;
 
 
-import "../../interfaces/multivault/IMultiVaultFacetLiquidityEvents.sol";
-import "../../interfaces/multivault/IMultiVaultFacetLiquidity.sol";
-import "../../interfaces/IMultiVaultToken.sol";
-import "../storage/MultiVaultStorage.sol";
+import "./IMultiVaultFacetLiquidityEvents.sol";
+import "./IMultiVaultFacetLiquidity.sol";
+import "./IMultiVaultToken.sol";
+import "./MultiVaultStorage.sol";
 
-import "../../MultiVaultToken.sol";
+import "./MultiVaultToken.sol";
 
 
 abstract contract MultiVaultHelperLiquidity is IMultiVaultFacetLiquidityEvents {

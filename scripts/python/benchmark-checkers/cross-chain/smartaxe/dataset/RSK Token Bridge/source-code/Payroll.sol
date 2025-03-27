@@ -3,12 +3,12 @@
 pragma solidity ^0.8.0;
 pragma abicoder v2;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "./interfaces/IERC20Basic.sol";
-import "./interfaces/IUniswap.sol";
-import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+import "./OwnableUpgradeable.sol";
+import "./Initializable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./IERC20Basic.sol";
+import "./IUniswap.sol";
+import "./TransferHelper.sol";
 import "./BytesLib.sol";
 
 /**

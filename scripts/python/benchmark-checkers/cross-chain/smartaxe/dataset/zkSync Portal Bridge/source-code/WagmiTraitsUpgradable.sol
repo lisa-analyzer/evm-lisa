@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable//utils/cryptography/ECDSAUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155BurnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155SupplyUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "operator-filter-registry/src/upgradeable/DefaultOperatorFiltererUpgradeable.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import "./ERC1155Upgradeable.sol";
+import "./ERC2981Upgradeable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./OwnableUpgradeable.sol";
+import "./PausableUpgradeable.sol";
+import "./ECDSAUpgradeable.sol";
+import "./ERC1155BurnableUpgradeable.sol";
+import "./ERC1155SupplyUpgradeable.sol";
+import "./Initializable.sol";
+import "./DefaultOperatorFiltererUpgradeable.sol";
+import "./TransparentUpgradeableProxy.sol";
+import "./ProxyAdmin.sol";
 
 contract WagmiTraits is Initializable, ERC1155Upgradeable, ERC2981Upgradeable, ReentrancyGuardUpgradeable, OwnableUpgradeable, PausableUpgradeable, ERC1155BurnableUpgradeable, ERC1155SupplyUpgradeable, DefaultOperatorFiltererUpgradeable {
     string public name = "WAGMI Traits";

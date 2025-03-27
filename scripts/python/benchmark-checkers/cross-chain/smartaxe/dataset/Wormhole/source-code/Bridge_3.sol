@@ -3,18 +3,18 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
 
-import "../libraries/external/BytesLib.sol";
+import "./BytesLib.sol";
 
 import "./BridgeGetters.sol";
 import "./BridgeSetters.sol";
 import "./BridgeStructs.sol";
 import "./BridgeGovernance.sol";
 
-import "./token/Token.sol";
-import "./token/TokenImplementation.sol";
+import "./Token.sol";
+import "./TokenImplementation.sol";
 
 contract Bridge is BridgeGovernance {
     using BytesLib for bytes;

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../interface/ILnBridgeSourceV3.sol";
-import "../../utils/TokenTransferHelper.sol";
+import "./ILnBridgeSourceV3.sol";
+import "./TokenTransferHelper.sol";
 
 contract LnBridgeTargetV3 {
     uint256 constant public SLASH_EXPIRE_TIME = 60 * 60;

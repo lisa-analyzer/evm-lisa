@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "../Libraries/LibBytes.sol";
-import "../Libraries/LibUtil.sol";
-import "../Libraries/LibDiamond.sol";
+import "./LibBytes.sol";
+import "./LibUtil.sol";
+import "./LibDiamond.sol";
 
 interface Home {
     function dispatch(

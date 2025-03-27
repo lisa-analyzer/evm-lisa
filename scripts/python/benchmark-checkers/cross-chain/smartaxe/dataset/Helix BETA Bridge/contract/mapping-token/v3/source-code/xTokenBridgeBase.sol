@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zeppelin-solidity/contracts/proxy/utils/Initializable.sol";
-import "@zeppelin-solidity/contracts/security/Pausable.sol";
-import "../../../interfaces/IMessager.sol";
-import "../../../utils/AccessController.sol";
-import "../../../utils/DailyLimit.sol";
-import "../../../utils/TokenTransferHelper.sol";
+import "./Initializable.sol";
+import "./Pausable.sol";
+import "./IMessager.sol";
+import "./AccessController.sol";
+import "./DailyLimit.sol";
+import "./TokenTransferHelper.sol";
 
 // The Base contract for xToken protocol
 // Backing or Issuing contract will inherit the contract.

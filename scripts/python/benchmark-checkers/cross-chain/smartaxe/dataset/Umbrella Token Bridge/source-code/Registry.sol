@@ -2,9 +2,9 @@
 pragma solidity 0.6.8;
 
 // Inheritance
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 
-import "./extensions/Registrable.sol";
+import "./Registrable.sol";
 
 contract Registry is Ownable {
   mapping(bytes32 => address) public registry;

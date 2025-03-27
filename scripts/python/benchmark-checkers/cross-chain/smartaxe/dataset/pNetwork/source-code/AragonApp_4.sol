@@ -5,12 +5,12 @@
 pragma solidity ^0.4.24;
 
 import "./AppStorage.sol";
-import "../acl/ACLSyntaxSugar.sol";
-import "../common/Autopetrified.sol";
-import "../common/ConversionHelpers.sol";
-import "../common/ReentrancyGuard.sol";
-import "../common/VaultRecoverable.sol";
-import "../evmscript/EVMScriptRunner.sol";
+import "./ACLSyntaxSugar.sol";
+import "./Autopetrified.sol";
+import "./ConversionHelpers.sol";
+import "./ReentrancyGuard.sol";
+import "./VaultRecoverable.sol";
+import "./EVMScriptRunner.sol";
 
 
 // Contracts inheriting from AragonApp are, by default, immediately petrified upon deployment so

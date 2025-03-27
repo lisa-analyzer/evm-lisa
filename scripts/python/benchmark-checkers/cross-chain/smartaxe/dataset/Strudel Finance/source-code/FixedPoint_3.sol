@@ -2,7 +2,7 @@
 
 pragma solidity >=0.4.0;
 
-import './Babylonian.sol';
+import "./Babylonian.sol";
 
 // a library for handling binary fixed point numbers (https://en.wikipedia.org/wiki/Q_(number_format))
 library FixedPoint {

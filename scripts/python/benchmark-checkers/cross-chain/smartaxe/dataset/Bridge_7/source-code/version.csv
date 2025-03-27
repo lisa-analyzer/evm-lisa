@@ -1,0 +1,9 @@
+file,original pragma version,compiled version,notes
+TokenETH.sol,^0.8.6,0.8.6,
+Bridge.sol,^0.8.6,0.8.6,
+Migrations.sol,>=0.4.22 <0.9.0,0.4.22,
+BridgeBSC.sol,^0.8.6,0.8.6,
+BridgeETH.sol,^0.8.6,0.8.6,
+ITokenConfig.sol,^0.8.6,0.8.6,
+TokenConfig.sol,^0.8.6,0.8.6,
+TokenBSC.sol,^0.8.6,0.8.6,

@@ -2,7 +2,7 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "../math/SafeMathUpgradeable.sol";
+import "./SafeMathUpgradeable.sol";
 
 /**
  * @title Counters

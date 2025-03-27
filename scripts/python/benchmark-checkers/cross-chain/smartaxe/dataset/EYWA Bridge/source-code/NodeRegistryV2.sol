@@ -2,11 +2,11 @@
 // Copyright (c) Eywa.Fi, 2021-2023 - all rights reserved
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "./AccessControlEnumerable.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "./ERC20Burnable.sol";
 
 contract NodeRegistryV2 is AccessControlEnumerable {
     using SafeERC20 for IERC20;

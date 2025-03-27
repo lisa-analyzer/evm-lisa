@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.2;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./ContextUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
 
-import "../interfaces/IWETH.sol";
-import "../interfaces/IOneSplitWrap.sol";
-import "../ERC20SafeUpgradeable.sol";
+import "./IWETH.sol";
+import "./IOneSplitWrap.sol";
+import "./ERC20SafeUpgradeable.sol";
 
-import "../interfaces/IEthHandler.sol";
+import "./IEthHandler.sol";
 
 contract HandlerReserveUpgradeable is
     Initializable,

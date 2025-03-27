@@ -22,10 +22,10 @@
 // SPDX-License-Identifier: GPL-2.0
 
 pragma solidity ^0.8.0;
-import "../_base/ZapInBaseV3_1.sol";
-import "../_base/ZapOutBaseV3_1.sol";
+import "./ZapInBaseV3_1.sol";
+import "./ZapOutBaseV3_1.sol";
 import "./ibTokenInterface.sol";
-import "../Cream/CreamInterface.sol";
+import "./CreamInterface.sol";
 
 interface IWETH {
     function deposit() external payable;

@@ -1,7 +1,7 @@
 pragma solidity >=0.5.0 <0.7.0;
-import "./base/WrapManager.sol";
-import "./external/SafeMath.sol";
-import "./interfaces/ERC721TokenReceiver.sol";
+import "./WrapManager.sol";
+import "./SafeMath.sol";
+import "./ERC721TokenReceiver.sol";
 
 contract WrapMultisig
     is MultisigManager, ERC721TokenReceiver {

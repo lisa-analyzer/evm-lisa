@@ -2,10 +2,10 @@
 pragma solidity 0.7.5;
 
 // Inheritance
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
-import "../interfaces/Owned.sol";
-import "../interfaces/ISwapReceiver.sol";
+import "./Owned.sol";
+import "./ISwapReceiver.sol";
 
 
 /// @title   Umbrella Rewards contract V2

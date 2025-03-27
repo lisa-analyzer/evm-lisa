@@ -2,10 +2,10 @@
 pragma solidity 0.8.13;
 
 // Inheritance
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 
-import "./extensions/Registrable.sol";
-import "./interfaces/IRegistry.sol";
+import "./Registrable.sol";
+import "./IRegistry.sol";
 
 /// @dev contracts registry
 /// protocol uses this registry to fetch current contract addresses

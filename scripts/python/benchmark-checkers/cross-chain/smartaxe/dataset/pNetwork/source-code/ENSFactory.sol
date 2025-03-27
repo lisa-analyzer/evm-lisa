@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
-import "../lib/ens/ENS.sol";
-import "../lib/ens/PublicResolver.sol";
-import "../ens/ENSConstants.sol";
+import "./ENS.sol";
+import "./PublicResolver.sol";
+import "./ENSConstants.sol";
 
 
 // WARNING: This is an incredibly trustful ENS deployment, do NOT use in production!

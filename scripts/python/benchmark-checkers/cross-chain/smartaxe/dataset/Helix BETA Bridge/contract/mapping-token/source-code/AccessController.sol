@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@zeppelin-solidity/contracts/access/AccessControlEnumerable.sol";
-import "@zeppelin-solidity/contracts/security/Pausable.sol";
+import "./AccessControlEnumerable.sol";
+import "./Pausable.sol";
 
 contract AccessController is AccessControlEnumerable, Pausable {
     bytes32 public constant DAO_ADMIN_ROLE = keccak256("DAO_ADMIN_ROLE");

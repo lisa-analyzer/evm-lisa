@@ -2,10 +2,10 @@
 pragma solidity ^0.8.2;
 
 
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./Initializable.sol";
+import "./ReentrancyGuard.sol";
 
-import "./../interfaces/vault/IVault.sol";
+import "./IVault.sol";
 
 
 abstract contract VaultStorage is IVault, Initializable, ReentrancyGuard {

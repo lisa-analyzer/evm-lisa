@@ -1,8 +1,8 @@
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "../../../../upgradeability/Proxy.sol";
-import "../../../../interfaces/IOwnable.sol";
+import "./Address.sol";
+import "./Proxy.sol";
+import "./IOwnable.sol";
 
 /**
  * @title ERC1155TokenProxy

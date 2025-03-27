@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 
 
 
-import "./libraries/PairingsBn254.sol";
-import "./libraries/TranscriptLib.sol";
-import "../common/libraries/UncheckedMath.sol";
+import "./PairingsBn254.sol";
+import "./TranscriptLib.sol";
+import "./UncheckedMath.sol";
 
 uint256 constant STATE_WIDTH = 4;
 uint256 constant NUM_G2_ELS = 2;

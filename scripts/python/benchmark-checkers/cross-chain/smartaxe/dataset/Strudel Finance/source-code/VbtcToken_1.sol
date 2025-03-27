@@ -2,14 +2,14 @@
 
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20Capped.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@uniswap/lib/contracts/libraries/Babylonian.sol";
+import "./ERC20Capped.sol";
+import "./ERC20.sol";
+import "./Babylonian.sol";
 import {TypedMemView} from "./summa-tx/TypedMemView.sol";
 import {ViewBTC} from "./summa-tx/ViewBTC.sol";
 import {ViewSPV} from "./summa-tx/ViewSPV.sol";
-import "./erc20/ITokenRecipient.sol";
-import "./summa-tx/IRelay.sol";
+import "./ITokenRecipient.sol";
+import "./IRelay.sol";
 import "./StrudelToken.sol";
 import "./FlashERC20.sol";
 

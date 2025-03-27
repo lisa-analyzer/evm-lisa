@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "../interfaces/IWETH.sol";
-import "../interfaces/IWethGate.sol";
+import "./IWETH.sol";
+import "./IWethGate.sol";
 
 contract WethGate is IWethGate
 {

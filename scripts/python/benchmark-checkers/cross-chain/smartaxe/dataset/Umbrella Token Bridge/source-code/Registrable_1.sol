@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../interfaces/IRegistry.sol";
-import "../interfaces/IStakingBank.sol";
+import "./ERC20.sol";
+import "./IRegistry.sol";
+import "./IStakingBank.sol";
 
 /// @dev Any contract that we want to register in ContractRegistry, must inherit from Registrable
 abstract contract Registrable {

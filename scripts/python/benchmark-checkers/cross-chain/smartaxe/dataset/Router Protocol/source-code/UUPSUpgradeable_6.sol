@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../../interfaces/draft-IERC1822Upgradeable.sol";
-import "../ERC1967/ERC1967UpgradeUpgradeable.sol";
+import "./draft-IERC1822Upgradeable.sol";
+import "./ERC1967UpgradeUpgradeable.sol";
 import "./Initializable.sol";
 
 /**

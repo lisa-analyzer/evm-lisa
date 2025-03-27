@@ -15,19 +15,19 @@
 pragma solidity 0.8.0;
 pragma abicoder v2;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "./metatx/ERC2771ContextUpgradeable.sol";
-import "../security/Pausable.sol";
-import "./structures/TokenConfig.sol";
-import "./interfaces/IExecutorManager.sol";
-import "./interfaces/ILiquidityProviders.sol";
-import "../interfaces/IERC20Permit.sol";
-import "./interfaces/ITokenManager.sol";
-import "./interfaces/ISwapAdaptor.sol";
+import "./Initializable.sol";
+import "./OwnableUpgradeable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./ERC2771ContextUpgradeable.sol";
+import "./Pausable.sol";
+import "./TokenConfig.sol";
+import "./IExecutorManager.sol";
+import "./ILiquidityProviders.sol";
+import "./IERC20Permit.sol";
+import "./ITokenManager.sol";
+import "./ISwapAdaptor.sol";
 
 contract LiquidityPool is
     Initializable,

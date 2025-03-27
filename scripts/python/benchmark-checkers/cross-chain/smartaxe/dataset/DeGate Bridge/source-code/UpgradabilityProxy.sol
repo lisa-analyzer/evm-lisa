@@ -3,7 +3,7 @@
 // with minor modifications.
 pragma solidity ^0.7.0;
 
-import './Proxy.sol';
+import "./Proxy.sol";
 
 
 /**

@@ -1,14 +1,14 @@
 pragma solidity ^0.5.16;
 
-import "openzeppelin-solidity-2.3.0/contracts/math/Math.sol";
-import "openzeppelin-solidity-2.3.0/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity-2.3.0/contracts/token/ERC20/ERC20Detailed.sol";
-import "openzeppelin-solidity-2.3.0/contracts/token/ERC20/SafeERC20.sol";
-import "openzeppelin-solidity-2.3.0/contracts/utils/ReentrancyGuard.sol";
-import "openzeppelin-solidity-2.3.0/contracts/ownership/Ownable.sol";
+import "./Math.sol";
+import "./SafeMath.sol";
+import "./ERC20Detailed.sol";
+import "./SafeERC20.sol";
+import "./ReentrancyGuard.sol";
+import "./Ownable.sol";
 
 // Inheritance
-import "./interfaces/IStakingRewards.sol";
+import "./IStakingRewards.sol";
 
 contract StakingRewardsStandaloneMul is IStakingRewards, Ownable, ReentrancyGuard {
     using SafeMath for uint256;

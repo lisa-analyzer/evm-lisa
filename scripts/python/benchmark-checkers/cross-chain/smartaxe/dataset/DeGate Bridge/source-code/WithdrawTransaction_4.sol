@@ -4,15 +4,15 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/EIP712.sol";
-import "../../../lib/FloatUtil.sol";
-import "../../../lib/MathUint.sol";
-import "../../../lib/SignatureUtil.sol";
-import "../../../thirdparty/BytesUtil.sol";
-import "../../iface/ExchangeData.sol";
-import "../libexchange/ExchangeMode.sol";
-import "../libexchange/ExchangeSignatures.sol";
-import "../libexchange/ExchangeWithdrawals.sol";
+import "./EIP712.sol";
+import "./FloatUtil.sol";
+import "./MathUint.sol";
+import "./SignatureUtil.sol";
+import "./BytesUtil.sol";
+import "./ExchangeData.sol";
+import "./ExchangeMode.sol";
+import "./ExchangeSignatures.sol";
+import "./ExchangeWithdrawals.sol";
 
 
 /// @title WithdrawTransaction

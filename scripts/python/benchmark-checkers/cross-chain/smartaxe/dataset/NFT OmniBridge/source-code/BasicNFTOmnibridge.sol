@@ -2,23 +2,23 @@ pragma solidity 0.7.5;
 // solhint-disable-next-line compiler-version
 pragma abicoder v2;
 
-import "../Initializable.sol";
-import "../Upgradeable.sol";
-import "../../interfaces/IBurnableMintableERC1155Token.sol";
-import "./components/common/BridgeOperationsStorage.sol";
-import "./components/common/FailedMessagesProcessor.sol";
-import "./components/common/NFTBridgeLimits.sol";
-import "./components/common/ERC721Relayer.sol";
-import "./components/common/ERC1155Relayer.sol";
-import "./components/common/NFTOmnibridgeInfo.sol";
-import "./components/native/NativeTokensRegistry.sol";
-import "./components/native/MetadataReader.sol";
-import "./components/bridged/BridgedTokensRegistry.sol";
-import "./components/bridged/TokenImageStorage.sol";
-import "./components/bridged/ERC721TokenProxy.sol";
-import "./components/bridged/ERC1155TokenProxy.sol";
-import "./components/native/NFTMediatorBalanceStorage.sol";
-import "../../tokens/ERC721BridgeToken.sol";
+import "./Initializable.sol";
+import "./Upgradeable.sol";
+import "./IBurnableMintableERC1155Token.sol";
+import "./BridgeOperationsStorage.sol";
+import "./FailedMessagesProcessor.sol";
+import "./NFTBridgeLimits.sol";
+import "./ERC721Relayer.sol";
+import "./ERC1155Relayer.sol";
+import "./NFTOmnibridgeInfo.sol";
+import "./NativeTokensRegistry.sol";
+import "./MetadataReader.sol";
+import "./BridgedTokensRegistry.sol";
+import "./TokenImageStorage.sol";
+import "./ERC721TokenProxy.sol";
+import "./ERC1155TokenProxy.sol";
+import "./NFTMediatorBalanceStorage.sol";
+import "./ERC721BridgeToken.sol";
 
 /**
  * @title BasicNFTOmnibridge

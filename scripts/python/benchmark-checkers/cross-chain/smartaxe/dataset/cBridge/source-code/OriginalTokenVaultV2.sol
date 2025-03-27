@@ -2,15 +2,15 @@
 
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "../interfaces/ISigsVerifier.sol";
-import "../interfaces/IWETH.sol";
-import "../libraries/PbPegged.sol";
-import "../safeguard/Pauser.sol";
-import "../safeguard/VolumeControl.sol";
-import "../safeguard/DelayedTransfer.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./ReentrancyGuard.sol";
+import "./ISigsVerifier.sol";
+import "./IWETH.sol";
+import "./PbPegged.sol";
+import "./Pauser.sol";
+import "./VolumeControl.sol";
+import "./DelayedTransfer.sol";
 
 /**
  * @title the vault to deposit and withdraw original tokens

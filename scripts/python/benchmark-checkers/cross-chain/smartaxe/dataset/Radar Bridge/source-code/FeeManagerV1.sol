@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./../IRadarBridgeFeeManager.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./IRadarBridgeFeeManager.sol";
+import "./IERC20.sol";
 
 contract FeeManagerV1 is IRadarBridgeFeeManager {
     mapping(address => uint256) private maxTokenFee;

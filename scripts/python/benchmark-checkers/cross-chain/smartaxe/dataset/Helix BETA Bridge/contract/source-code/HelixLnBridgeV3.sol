@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@zeppelin-solidity/contracts/proxy/utils/Initializable.sol";
-import "./base/LnBridgeSourceV3.sol";
-import "./base/LnBridgeTargetV3.sol";
-import "../interfaces/IMessager.sol";
+import "./Initializable.sol";
+import "./LnBridgeSourceV3.sol";
+import "./LnBridgeTargetV3.sol";
+import "./IMessager.sol";
 
 contract HelixLnBridgeV3 is Initializable, LnBridgeSourceV3, LnBridgeTargetV3 {
     struct MessagerService {

@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 
 
 
-import "../libraries/Diamond.sol";
+import "./Diamond.sol";
 
 interface IDiamondCut {
     function proposeTransparentUpgrade(Diamond.DiamondCutData calldata _diamondCut, uint40 _proposalId) external;

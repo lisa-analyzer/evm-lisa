@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
-import "@aragon/os/contracts/apps/AragonApp.sol";
-import "@aragon/os/contracts/common/DepositableStorage.sol";
-import "@aragon/os/contracts/common/EtherTokenConstant.sol";
-import "@aragon/os/contracts/common/SafeERC20.sol";
-import "@aragon/os/contracts/lib/token/ERC20.sol";
+import "./AragonApp.sol";
+import "./DepositableStorage.sol";
+import "./EtherTokenConstant.sol";
+import "./SafeERC20.sol";
+import "./ERC20.sol";
 
 
 contract Vault is EtherTokenConstant, AragonApp, DepositableStorage {

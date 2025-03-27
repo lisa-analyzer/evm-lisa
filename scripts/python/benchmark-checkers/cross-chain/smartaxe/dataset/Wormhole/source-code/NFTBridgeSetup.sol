@@ -6,7 +6,7 @@ pragma experimental ABIEncoderV2;
 
 import "./NFTBridgeGovernance.sol";
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import "./ERC1967Upgrade.sol";
 
 contract NFTBridgeSetup is NFTBridgeSetters, ERC1967Upgrade {
     function setup(

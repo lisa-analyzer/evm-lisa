@@ -2,8 +2,8 @@
 
 pragma solidity 0.6.6;
 
-import "./erc20/ITokenRecipient.sol";
-import "./erc20/MinterRole.sol";
+import "./ITokenRecipient.sol";
+import "./MinterRole.sol";
 
 interface IStrudel {
   function mint(address account, uint256 amount) external returns (bool);

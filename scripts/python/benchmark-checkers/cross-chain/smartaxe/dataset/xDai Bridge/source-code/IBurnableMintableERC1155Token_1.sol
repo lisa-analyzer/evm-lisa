@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "./IERC1155.sol";
 
 interface IBurnableMintableERC1155Token is IERC1155 {
     function mint(

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./IBridge.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
+import "./IERC1155ReceiverUpgradeable.sol";
 
 /**
  * @dev Interface for bridge contract with added support for MixedFungible tokens that follow the ERC-1155 standard

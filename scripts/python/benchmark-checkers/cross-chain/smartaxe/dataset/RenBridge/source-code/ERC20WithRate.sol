@@ -1,10 +1,10 @@
 pragma solidity ^0.5.17;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "./Initializable.sol";
+import "./ERC20.sol";
+import "./SafeMath.sol";
 
-import "../Governance/Claimable.sol";
+import "./Claimable.sol";
 
 /// @notice ERC20WithRate allows for a more dynamic fee model by storing a rate
 /// that tracks the number of the underlying asset's unit represented by a

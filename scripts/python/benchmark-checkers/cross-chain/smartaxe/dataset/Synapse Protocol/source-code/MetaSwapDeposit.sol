@@ -2,13 +2,13 @@
 
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "../LPToken.sol";
-import "../interfaces/ISwap.sol";
-import "../interfaces/IMetaSwap.sol";
+import "./SafeMath.sol";
+import "./SafeERC20.sol";
+import "./Initializable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
+import "./LPToken.sol";
+import "./ISwap.sol";
+import "./IMetaSwap.sol";
 
 /**
  * @title MetaSwapDeposit

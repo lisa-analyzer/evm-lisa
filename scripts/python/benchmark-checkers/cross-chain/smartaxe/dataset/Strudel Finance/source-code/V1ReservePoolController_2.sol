@@ -3,21 +3,21 @@
 pragma solidity 0.6.6;
 
 // Imports
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "@uniswap/lib/contracts/libraries/Babylonian.sol";
-import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "../balancer/IBFactory.sol";
-import "../balancer/IBPool.sol";
-import "../IBtcPriceOracle.sol";
-import "../balancer/BMath.sol";
-import "../uniswap/IWETH9.sol";
-import "../VbtcToken.sol";
-import "../IBorrower.sol";
-import "../ILender.sol";
+import "./IERC20.sol";
+import "./ERC20.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
+import "./IUniswapV2Pair.sol";
+import "./Babylonian.sol";
+import "./IUniswapV2Router02.sol";
+import "./IBFactory.sol";
+import "./IBPool.sol";
+import "./IBtcPriceOracle.sol";
+import "./BMath.sol";
+import "./IWETH9.sol";
+import "./VbtcToken.sol";
+import "./IBorrower.sol";
+import "./ILender.sol";
 
 /**
  *

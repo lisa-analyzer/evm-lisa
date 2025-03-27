@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+import "./BytesLib.sol";
 
 library Utils {
     /* @notice      Convert the bytes array to bytes32 type, the bytes array length must be 32

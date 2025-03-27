@@ -23,7 +23,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../_base/ZapBaseV2.sol";
+import "./ZapBaseV2.sol";
 
 // PoS Bridge
 interface IRootChainManager {

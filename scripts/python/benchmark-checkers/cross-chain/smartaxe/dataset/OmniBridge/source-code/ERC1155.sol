@@ -5,10 +5,10 @@ pragma solidity ^0.7.0;
 import "./IERC1155.sol";
 import "./IERC1155MetadataURI.sol";
 import "./IERC1155Receiver.sol";
-import "../../utils/Context.sol";
-import "../../introspection/ERC165.sol";
-import "../../math/SafeMath.sol";
-import "../../utils/Address.sol";
+import "./Context.sol";
+import "./ERC165.sol";
+import "./SafeMath.sol";
+import "./Address.sol";
 
 /**
  *

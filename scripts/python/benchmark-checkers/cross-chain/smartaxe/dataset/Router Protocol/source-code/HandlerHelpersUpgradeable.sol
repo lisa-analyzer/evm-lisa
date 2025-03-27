@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.2;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./Initializable.sol";
+import "./ContextUpgradeable.sol";
+import "./AccessControlUpgradeable.sol";
 
-import "../interfaces/IERCHandler.sol";
-import "../interfaces/IFeeManager.sol";
-import "../interfaces/IHandlerReserve.sol";
+import "./IERCHandler.sol";
+import "./IFeeManager.sol";
+import "./IHandlerReserve.sol";
 
 /// @title Function used across handler contracts.
 /// @author Router Protocol.

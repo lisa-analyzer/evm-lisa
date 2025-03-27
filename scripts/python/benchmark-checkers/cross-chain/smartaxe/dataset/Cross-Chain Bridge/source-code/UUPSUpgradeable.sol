@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../ERC1967/ERC1967UpgradeUpgradeable.sol";
+import "./ERC1967UpgradeUpgradeable.sol";
 import "./Initializable.sol";
 
 /**

@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
-import "../lib/ens/AbstractENS.sol";
-import "../ens/ENSSubdomainRegistrar.sol";
-import "../factory/AppProxyFactory.sol";
-import "../apps/AragonApp.sol";
-import "../acl/ACL.sol";
+import "./AbstractENS.sol";
+import "./ENSSubdomainRegistrar.sol";
+import "./AppProxyFactory.sol";
+import "./AragonApp.sol";
+import "./ACL.sol";
 import "./Repo.sol";
 
 

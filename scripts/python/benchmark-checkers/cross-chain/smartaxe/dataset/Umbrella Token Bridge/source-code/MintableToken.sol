@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 
-import "../interfaces/Owned.sol";
-import "../interfaces/IBurnableToken.sol";
+import "./Owned.sol";
+import "./IBurnableToken.sol";
 
 /// @author  umb.network
 abstract contract MintableToken is Owned, ERC20, IBurnableToken {

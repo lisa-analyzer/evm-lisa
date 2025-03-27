@@ -3,18 +3,18 @@
 
 pragma solidity ^0.8.0;
 
-import "../../V1/ProcessingV1.sol";
-import "../../V1/IRenderer.sol";
-import "../../V1/IAttributes.sol";
-import "./Layers/HatchLayer.sol";
-import "./Layers/WatercolorLayer.sol";
-import "./Layers/KintsugiLayer.sol";
-import "./Draw/HatchDraw.sol";
-import "./Draw/KintsugiDraw.sol";
-import "./Draw/WatercolorDraw.sol";
+import "./ProcessingV1.sol";
+import "./IRenderer.sol";
+import "./IAttributes.sol";
+import "./HatchLayer.sol";
+import "./WatercolorLayer.sol";
+import "./KintsugiLayer.sol";
+import "./HatchDraw.sol";
+import "./KintsugiDraw.sol";
+import "./WatercolorDraw.sol";
 
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+import "./Strings.sol";
+import "./Address.sol";
 
 contract Kintsugi is IRenderer, IAttributes {
 

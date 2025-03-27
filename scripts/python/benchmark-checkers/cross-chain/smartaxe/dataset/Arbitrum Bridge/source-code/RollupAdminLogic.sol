@@ -6,11 +6,11 @@ pragma solidity ^0.8.0;
 
 import {IRollupAdmin, IRollupUser} from "./IRollupLogic.sol";
 import "./RollupCore.sol";
-import "../bridge/IOutbox.sol";
-import "../bridge/ISequencerInbox.sol";
-import "../challenge/IChallengeManager.sol";
-import "../libraries/DoubleLogicUUPSUpgradeable.sol";
-import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "./IOutbox.sol";
+import "./ISequencerInbox.sol";
+import "./IChallengeManager.sol";
+import "./DoubleLogicUUPSUpgradeable.sol";
+import "./UpgradeableBeacon.sol";
 
 import {NO_CHAL_INDEX} from "../libraries/Constants.sol";
 

@@ -3,7 +3,7 @@
 // with minor modifications.
 pragma solidity ^0.7.0;
 
-import './UpgradabilityProxy.sol';
+import "./UpgradabilityProxy.sol";
 
 
 /**

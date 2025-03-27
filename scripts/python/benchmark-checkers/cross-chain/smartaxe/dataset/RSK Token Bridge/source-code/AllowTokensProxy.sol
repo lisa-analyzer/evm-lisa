@@ -179,8 +179,8 @@ library Address {
 // pragma solidity ^0.7.0;
 // pragma abicoder v2;
 
-// import "contracts/zeppelin/upgradable/proxy/Proxy.sol";
-// import "contracts/zeppelin/utils/Address.sol";
+// import "./Proxy.sol";
+// import "./Address.sol";
 
 /**
  * @dev This contract implements an upgradeable proxy. It is upgradeable because calls are delegated to an
@@ -261,7 +261,7 @@ contract UpgradeableProxy is Proxy {
 // pragma solidity ^0.7.0;
 // pragma abicoder v2;
 
-// import "contracts/zeppelin/upgradable/proxy/UpgradeableProxy.sol";
+// import "./UpgradeableProxy.sol";
 
 /**
  * @dev This contract implements a proxy that is upgradeable by an admin.
@@ -416,7 +416,7 @@ contract TransparentUpgradeableProxy is UpgradeableProxy {
 pragma solidity ^0.7.0;
 pragma abicoder v2;
 
-// import "contracts/zeppelin/upgradable/proxy/TransparentUpgradeableProxy.sol";
+// import "./TransparentUpgradeableProxy.sol";
 
 contract BridgeProxy is TransparentUpgradeableProxy {
     constructor(address _logic, address _admin, bytes memory _data) TransparentUpgradeableProxy(_logic,_admin, _data) payable {}

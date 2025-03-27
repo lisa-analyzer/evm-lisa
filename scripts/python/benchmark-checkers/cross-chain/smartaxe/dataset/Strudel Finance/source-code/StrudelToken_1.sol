@@ -2,10 +2,10 @@
 
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "./erc20/MinterRole.sol";
-import "./erc20/ITokenRecipient.sol";
+import "./ERC20.sol";
+import "./SafeMath.sol";
+import "./MinterRole.sol";
+import "./ITokenRecipient.sol";
 
 /// @title  Strudel Token.
 /// @notice This is the Strudel ERC20 contract.

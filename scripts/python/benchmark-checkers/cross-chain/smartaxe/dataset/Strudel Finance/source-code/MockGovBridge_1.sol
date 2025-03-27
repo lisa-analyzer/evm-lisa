@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.6.6;
 
-import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import "./IERC20.sol";
 import {IGovBridge} from "../IGovBridge.sol";
 
 contract MockGovBridge {

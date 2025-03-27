@@ -4,16 +4,16 @@
 
 pragma solidity ^0.8.0;
 
-import "../bridge/Bridge.sol";
-import "../bridge/SequencerInbox.sol";
-import "../bridge/ISequencerInbox.sol";
-import "../bridge/Inbox.sol";
-import "../bridge/Outbox.sol";
+import "./Bridge.sol";
+import "./SequencerInbox.sol";
+import "./ISequencerInbox.sol";
+import "./Inbox.sol";
+import "./Outbox.sol";
 import "./RollupEventInbox.sol";
 
-import "../bridge/IBridge.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import "./IBridge.sol";
+import "./Ownable.sol";
+import "./ProxyAdmin.sol";
 
 contract BridgeCreator is Ownable {
     Bridge public bridgeTemplate;

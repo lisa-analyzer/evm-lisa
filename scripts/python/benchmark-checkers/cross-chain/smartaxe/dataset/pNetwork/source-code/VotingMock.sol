@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
-import "../../DandelionVoting.sol";
-import "@aragon/contract-test-helpers/contracts/TimeHelpersMock.sol";
+import "./DandelionVoting.sol";
+import "./TimeHelpersMock.sol";
 
 
 contract VotingMock is DandelionVoting, TimeHelpersMock {

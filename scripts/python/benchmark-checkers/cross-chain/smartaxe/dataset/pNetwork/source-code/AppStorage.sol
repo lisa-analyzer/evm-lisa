@@ -4,8 +4,8 @@
 
 pragma solidity ^0.4.24;
 
-import "../common/UnstructuredStorage.sol";
-import "../kernel/IKernel.sol";
+import "./UnstructuredStorage.sol";
+import "./IKernel.sol";
 
 
 contract AppStorage {

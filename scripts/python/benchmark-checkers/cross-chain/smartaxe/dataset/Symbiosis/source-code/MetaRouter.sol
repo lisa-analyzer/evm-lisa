@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./Context.sol";
+import "./IERC20.sol";
 import "./MetaRouteStructs.sol";
 import "./MetaRouterGateway.sol";
-import "../../utils/RevertMessageParser.sol";
+import "./RevertMessageParser.sol";
 
 /**
  * @title MetaRouterV3

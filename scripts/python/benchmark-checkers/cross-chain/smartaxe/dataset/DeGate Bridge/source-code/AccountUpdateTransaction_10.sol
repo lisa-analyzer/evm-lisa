@@ -4,11 +4,11 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/EIP712.sol";
-import "../../../lib/FloatUtil.sol";
-import "../../../thirdparty/BytesUtil.sol";
-import "../../iface/ExchangeData.sol";
-import "../libexchange/ExchangeSignatures.sol";
+import "./EIP712.sol";
+import "./FloatUtil.sol";
+import "./BytesUtil.sol";
+import "./ExchangeData.sol";
+import "./ExchangeSignatures.sol";
 
 
 /// @title AccountUpdateTransaction

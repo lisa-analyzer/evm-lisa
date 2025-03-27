@@ -4,9 +4,9 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../../lib/ERC20SafeTransfer.sol";
-import "../../../lib/MathUint.sol";
-import "../../iface/ExchangeData.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./ExchangeData.sol";
 import "./ExchangeMode.sol";
 
 /// @title ExchangeTokens.

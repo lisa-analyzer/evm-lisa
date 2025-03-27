@@ -22,7 +22,7 @@
 // SPDX-License-Identifier: GPL-2.0
 
 pragma solidity ^0.5.7;
-import "../_base/ZapOutBaseV2.sol";
+import "./ZapOutBaseV2.sol";
 import "./Curve_Registry_V2.sol";
 
 interface ICurveSwap {

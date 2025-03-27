@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./SafeERC20.sol";
+import "./IERC20Metadata.sol";
+import "./IERC20.sol";
 
-import "../libraries/Math.sol";
+import "./Math.sol";
 
-import "../interfaces/vault/IVault.sol";
-import "../interfaces/IBridge.sol";
-import "../interfaces/IStrategy.sol";
+import "./IVault.sol";
+import "./IBridge.sol";
+import "./IStrategy.sol";
 
 import "./VaultHelpers.sol";
 

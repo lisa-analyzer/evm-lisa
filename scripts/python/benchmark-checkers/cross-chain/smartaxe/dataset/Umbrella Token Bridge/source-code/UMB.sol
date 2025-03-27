@@ -907,7 +907,7 @@ abstract contract Airdrop is ERC20 {
 
 pragma solidity 0.7.5;
 
-// import "@nomiclabs/buidler/console.sol";
+// import "./console.sol";
 
 // Inheritance
 

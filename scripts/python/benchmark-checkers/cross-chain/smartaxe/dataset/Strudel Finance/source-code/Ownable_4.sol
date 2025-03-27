@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
-import "../GSN/Context.sol";
-import "../Initializable.sol";
+import "./Context.sol";
+import "./Initializable.sol";
 /**
  * @dev Contract module which provides a basic access control mechanism, where
  * there is an account (an owner) that can be granted exclusive access to

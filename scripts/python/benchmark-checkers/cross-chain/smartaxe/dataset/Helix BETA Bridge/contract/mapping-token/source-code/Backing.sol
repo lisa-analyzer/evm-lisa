@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@zeppelin-solidity/contracts/proxy/utils/Initializable.sol";
+import "./Initializable.sol";
 import "./AccessController.sol";
 
 contract Backing is AccessController, Initializable {

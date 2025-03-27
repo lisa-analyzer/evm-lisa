@@ -1,6 +1,6 @@
 pragma solidity 0.7.5;
 
-import "../../../BasicAMBMediator.sol";
+import "./BasicAMBMediator.sol";
 import "./BridgeOperationsStorage.sol";
 
 /**

@@ -5,7 +5,7 @@
 // solhint-disable-next-line compiler-version
 pragma solidity >=0.6.9 <0.9.0;
 
-import "../bridge/IBridge.sol";
-import "../bridge/IOutbox.sol";
-import "../bridge/IInbox.sol";
-import "../bridge/ISequencerInbox.sol";
+import "./IBridge.sol";
+import "./IOutbox.sol";
+import "./IInbox.sol";
+import "./ISequencerInbox.sol";

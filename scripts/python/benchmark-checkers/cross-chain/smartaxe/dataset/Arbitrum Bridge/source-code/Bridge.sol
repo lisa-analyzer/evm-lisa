@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import "./Initializable.sol";
+import "./AddressUpgradeable.sol";
 
 import {
     NotContract,
@@ -17,7 +17,7 @@ import {
 } from "../libraries/Error.sol";
 import "./IBridge.sol";
 import "./Messages.sol";
-import "../libraries/DelegateCallAware.sol";
+import "./DelegateCallAware.sol";
 
 import {L1MessageType_batchPostingReport} from "../libraries/MessageTypes.sol";
 

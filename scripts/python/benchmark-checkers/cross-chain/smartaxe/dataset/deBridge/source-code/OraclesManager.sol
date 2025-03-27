@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "../interfaces/IOraclesManager.sol";
+import "./Initializable.sol";
+import "./AccessControlUpgradeable.sol";
+import "./IOraclesManager.sol";
 
 /// @dev The base contract for oracles management. Allows adding/removing oracles,
 /// managing the minimal required amount of confirmations.

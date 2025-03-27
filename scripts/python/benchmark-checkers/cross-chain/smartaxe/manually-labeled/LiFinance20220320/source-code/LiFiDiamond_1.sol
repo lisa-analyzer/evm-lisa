@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import { LibDiamond } from "./Libraries/LibDiamond.sol";
-import { IDiamondCut } from "./Interfaces/IDiamondCut.sol";
+import { LibDiamond } from "./LibDiamond.sol";
+import { IDiamondCut } from "./IDiamondCut.sol";
 
 contract LiFiDiamond {
     constructor(address _contractOwner, address _diamondCutFacet) payable {

@@ -4,7 +4,7 @@
 
 pragma solidity 0.4.24;
 
-import "@aragon/os/contracts/common/ReentrancyGuard.sol";
+import "./ReentrancyGuard.sol";
 
 
 /**

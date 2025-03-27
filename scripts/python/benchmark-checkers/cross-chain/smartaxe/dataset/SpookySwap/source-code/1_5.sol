@@ -3,13 +3,13 @@
 // P1 - P3: OK
 pragma solidity 0.6.12;
 
-import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
-import '@openzeppelin/contracts/math/SafeMath.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
-import "./interfaces/IUniswapV2ERC20.sol";
-import "./interfaces/IUniswapV2Pair.sol";
-import "./interfaces/IUniswapV2Factory.sol";
+import "./SafeERC20.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
+import "./ReentrancyGuard.sol";
+import "./IUniswapV2ERC20.sol";
+import "./IUniswapV2Pair.sol";
+import "./IUniswapV2Factory.sol";
 
 // BrewBoo is MasterChef's left hand and kinda a wizard. He can brew Boo from pretty much anything!
 // This contract handles "serving up" rewards for xBoo holders by trading tokens collected from fees for Boo.

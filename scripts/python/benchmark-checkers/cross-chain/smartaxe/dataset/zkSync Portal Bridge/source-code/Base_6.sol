@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 
 
 
-import "../Storage.sol";
-import "../../common/ReentrancyGuard.sol";
-import "../../common/AllowListed.sol";
+import "./Storage.sol";
+import "./ReentrancyGuard.sol";
+import "./AllowListed.sol";
 
 /// @title Base contract containing functions accessible to the other facets.
 /// @author Matter Labs

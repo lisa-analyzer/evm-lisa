@@ -4,10 +4,10 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/proxy/Proxy.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/StorageSlot.sol";
+import "./Proxy.sol";
+import "./ERC1967Upgrade.sol";
+import "./Address.sol";
+import "./StorageSlot.sol";
 
 /// @notice An extension to OZ's ERC1967Upgrade implementation to support two logic contracts
 abstract contract DoubleLogicERC1967Upgrade is ERC1967Upgrade {

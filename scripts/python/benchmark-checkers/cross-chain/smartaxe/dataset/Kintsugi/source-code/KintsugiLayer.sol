@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../../../V1/ParticleSetV1.sol";
-import "../../../V1/ParticleSetFactoryV1.sol";
-import "../../../V1/RandomV1.sol";
-import "../../../V1/LCG64.sol";
+import "./ParticleSetV1.sol";
+import "./ParticleSetFactoryV1.sol";
+import "./RandomV1.sol";
+import "./LCG64.sol";
 
 library KintsugiLayer {
 

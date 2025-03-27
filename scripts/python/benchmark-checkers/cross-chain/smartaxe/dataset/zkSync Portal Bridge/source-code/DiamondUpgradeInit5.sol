@@ -4,11 +4,11 @@ pragma solidity ^0.8.13;
 
 
 
-import "../Config.sol";
-import "../facets/Mailbox.sol";
-import "../libraries/Diamond.sol";
-import "../../common/libraries/L2ContractHelper.sol";
-import "../../common/L2ContractAddresses.sol";
+import "./Config.sol";
+import "./Mailbox.sol";
+import "./Diamond.sol";
+import "./L2ContractHelper.sol";
+import "./L2ContractAddresses.sol";
 
 /// @author Matter Labs
 contract DiamondUpgradeInit5 is MailboxFacet {

@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import "../interfaces/ILayerZeroReceiver.sol";
-import "../interfaces/ILayerZeroUserApplicationConfig.sol";
-import "../interfaces/ILayerZeroEndpoint.sol";
-import "../util/BytesLib.sol";
+import "./ILayerZeroReceiver.sol";
+import "./ILayerZeroUserApplicationConfig.sol";
+import "./ILayerZeroEndpoint.sol";
+import "./BytesLib.sol";
 
 abstract contract LzApp is ILayerZeroReceiver, ILayerZeroUserApplicationConfig {
     uint constant public DEFAULT_PAYLOAD_SIZE_LIMIT = 10000;

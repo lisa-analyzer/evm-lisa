@@ -253,9 +253,9 @@ abstract contract  Context {
 // pragma solidity ^0.7.0;
 // pragma abicoder v2;
 
-// import "contracts/zeppelin/upgradable/Initializable.sol";
+// import "./Initializable.sol";
 
-// import "contracts/zeppelin/GSN/Context.sol";
+// import "./Context.sol";
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -339,9 +339,9 @@ contract UpgradableOwnable is Initializable, Context {
 // pragma solidity ^0.7.0;
 // pragma abicoder v2;
 
-// import "contracts/zeppelin/upgradable/Initializable.sol";
+// import "./Initializable.sol";
 
-// import "contracts/zeppelin/GSN/Context.sol";
+// import "./Context.sol";
 
 /**
  * @dev A Secondary contract can only be used by its primary account (the one that created it).
@@ -450,13 +450,13 @@ interface IAllowTokens {
 pragma solidity ^0.7.0;
 pragma abicoder v2;
 
-// import "contracts/zeppelin/math/SafeMath.sol";
+// import "./SafeMath.sol";
 // Upgradables
-// import "contracts/zeppelin/upgradable/Initializable.sol";
-// import "contracts/zeppelin/upgradable/ownership/UpgradableOwnable.sol";
-// import "contracts/zeppelin/upgradable/ownership/UpgradableSecondary.sol";
+// import "./Initializable.sol";
+// import "./UpgradableOwnable.sol";
+// import "./UpgradableSecondary.sol";
 
-// import "contracts/IAllowTokens.sol";
+// import "./IAllowTokens.sol";
 
 contract AllowTokens is Initializable, UpgradableOwnable, UpgradableSecondary, IAllowTokens {
     using SafeMath for uint256;

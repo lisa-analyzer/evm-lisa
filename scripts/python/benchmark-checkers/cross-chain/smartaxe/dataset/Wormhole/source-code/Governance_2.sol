@@ -8,7 +8,7 @@ import "./GovernanceStructs.sol";
 import "./Messages.sol";
 import "./Setters.sol";
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import "./ERC1967Upgrade.sol";
 
 abstract contract Governance is GovernanceStructs, Messages, Setters, ERC1967Upgrade {
     event ContractUpgraded(address indexed oldContract, address indexed newContract);

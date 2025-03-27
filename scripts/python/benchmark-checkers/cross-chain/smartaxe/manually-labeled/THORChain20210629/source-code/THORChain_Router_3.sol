@@ -3,7 +3,7 @@
 */
 
 //1.semantic inconsistency
-getassetfrom
+// getassetfrom
 
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.3;

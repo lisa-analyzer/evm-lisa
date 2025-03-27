@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.7.5;
 
-import "./interfaces/rUMBV2.sol";
-import "./interfaces/Blacklisted.sol";
-import "./interfaces/OnDemandTokenBridgable.sol";
+import "./rUMBV2.sol";
+import "./Blacklisted.sol";
+import "./OnDemandTokenBridgable.sol";
 
 contract rUMB2 is Blacklisted, rUMBV2, OnDemandTokenBridgable {
      constructor (

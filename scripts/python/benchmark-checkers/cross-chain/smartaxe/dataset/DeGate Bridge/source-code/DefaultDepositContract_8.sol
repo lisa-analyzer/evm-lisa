@@ -3,13 +3,13 @@
 // Modified by DeGate DAO, 2022
 pragma solidity ^0.7.0;
 
-import "../../lib/AddressUtil.sol";
-import "../../lib/Claimable.sol";
-import "../../lib/ERC20.sol";
-import "../../lib/ERC20SafeTransfer.sol";
-import "../../lib/MathUint.sol";
-import "../../thirdparty/SafeCast.sol";
-import "../iface/IDepositContract.sol";
+import "./AddressUtil.sol";
+import "./Claimable.sol";
+import "./ERC20.sol";
+import "./ERC20SafeTransfer.sol";
+import "./MathUint.sol";
+import "./SafeCast.sol";
+import "./IDepositContract.sol";
 
 
 /// @title DefaultDepositContract

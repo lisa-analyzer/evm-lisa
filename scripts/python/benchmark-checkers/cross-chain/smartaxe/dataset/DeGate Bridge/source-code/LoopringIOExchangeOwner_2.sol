@@ -4,14 +4,14 @@
 pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../../aux/compression/ZeroDecompressor.sol";
-import "../../core/iface/IExchangeV3.sol";
-import "../../thirdparty/BytesUtil.sol";
-import "../../lib/AddressUtil.sol";
-import "../../lib/Drainable.sol";
-import "../../lib/ERC1271.sol";
-import "../../lib/MathUint.sol";
-import "../../lib/SignatureUtil.sol";
+import "./ZeroDecompressor.sol";
+import "./IExchangeV3.sol";
+import "./BytesUtil.sol";
+import "./AddressUtil.sol";
+import "./Drainable.sol";
+import "./ERC1271.sol";
+import "./MathUint.sol";
+import "./SignatureUtil.sol";
 import "./SelectorBasedAccessManager.sol";
 import "./IBlockReceiver.sol";
 

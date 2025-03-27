@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.7;
 
-import "../interfaces/IOmniApp.sol";
-import "../interfaces/IOmnichainRouter.sol";
-import "../interfaces/IONFTCopy.sol";
+import "./IOmniApp.sol";
+import "./IOmnichainRouter.sol";
+import "./IONFTCopy.sol";
 import "./ONFTCopy.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./IERC721Metadata.sol";
+import "./IERC721.sol";
+import "./Ownable.sol";
 
 contract ONFTGateway is IOmniApp, Ownable {
 

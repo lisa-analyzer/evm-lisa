@@ -3,9 +3,9 @@ pragma solidity 0.7.6;
 
 // source: @uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol
 
-import "@uniswap/v3-core/contracts/libraries/FullMath.sol";
-import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import "./FullMath.sol";
+import "./TickMath.sol";
+import "./IUniswapV3Pool.sol";
 
 
 /// @title Oracle library

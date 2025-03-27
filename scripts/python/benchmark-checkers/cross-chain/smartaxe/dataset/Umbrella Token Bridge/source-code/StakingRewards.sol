@@ -1,17 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.7.5;
 
-import "@openzeppelin/contracts/math/Math.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./Math.sol";
+import "./ERC20.sol";
+import "./SafeERC20.sol";
+import "./ReentrancyGuard.sol";
+import "./SafeMath.sol";
 
 // Inheritance
-import "../interfaces/IStakingRewards.sol";
-import "../interfaces/Pausable.sol";
-import "../interfaces/RewardsDistributionRecipient.sol";
-import "../interfaces/MintableToken.sol";
+import "./IStakingRewards.sol";
+import "./Pausable.sol";
+import "./RewardsDistributionRecipient.sol";
+import "./MintableToken.sol";
 
 // based on synthetix
 contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard, Pausable {

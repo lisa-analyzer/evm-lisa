@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol';
-import './interfaces/IBuyBackAndBurn.sol';
-import './interfaces/ICrossChainBridgeERC20LiquidityManager.sol';
-import './interfaces/ICrossChainBridgeERC20.sol';
-import './interfaces/IMultiSignatureOracle.sol';
-import './interfaces/INativeToken.sol';
-import './token/MintableERC20.sol';
-import './utils/MyPausableUpgradeable.sol';
-import 'hardhat/console.sol';
+import "./SafeERC20.sol";
+import "./ERC20Burnable.sol";
+import "./IBuyBackAndBurn.sol";
+import "./ICrossChainBridgeERC20LiquidityManager.sol";
+import "./ICrossChainBridgeERC20.sol";
+import "./IMultiSignatureOracle.sol";
+import "./INativeToken.sol";
+import "./MintableERC20.sol";
+import "./MyPausableUpgradeable.sol";
+import "./console.sol";
 
 /**
  * @title CrossChainBridgeERC20LiquidityManager

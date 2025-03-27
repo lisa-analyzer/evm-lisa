@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.0;
 
-import "../ERC20Upgradeable.sol";
-import "../extensions/ERC20BurnableUpgradeable.sol";
-import "../extensions/ERC20PausableUpgradeable.sol";
-import "../../../access/AccessControlEnumerableUpgradeable.sol";
-import "../../../utils/ContextUpgradeable.sol";
-import "../../../proxy/utils/Initializable.sol";
+import "./ERC20Upgradeable.sol";
+import "./ERC20BurnableUpgradeable.sol";
+import "./ERC20PausableUpgradeable.sol";
+import "./AccessControlEnumerableUpgradeable.sol";
+import "./ContextUpgradeable.sol";
+import "./Initializable.sol";
 
 /**
  * @dev {ERC20} token, including:

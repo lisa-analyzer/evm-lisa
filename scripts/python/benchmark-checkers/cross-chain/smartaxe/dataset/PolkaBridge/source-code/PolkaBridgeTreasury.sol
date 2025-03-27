@@ -1,8 +1,8 @@
 pragma solidity >=0.6.0;
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "./SafeERC20.sol";
 
-import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "./Ownable.sol";
 
 contract PolkaBridgeTreasury is Ownable {
     string public name = "PolkaBridge: Treasury";

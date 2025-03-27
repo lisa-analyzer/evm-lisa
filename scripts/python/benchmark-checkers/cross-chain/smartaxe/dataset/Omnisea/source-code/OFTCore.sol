@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-import "../../lzApp/NonblockingLzApp.sol";
+import "./NonblockingLzApp.sol";
 import "./IOFTCore.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "./ERC165.sol";
 
 abstract contract OFTCore is NonblockingLzApp, ERC165, IOFTCore {
     constructor(address _lzEndpoint) NonblockingLzApp(_lzEndpoint) {}

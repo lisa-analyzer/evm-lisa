@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 
-import "../V1/Fix64V1.sol";
-import "../V1/SinLut256.sol";
+import "./Fix64V1.sol";
+import "./SinLut256.sol";
 
 /*
     Provides trigonometric functions in Q31.Q32 format.

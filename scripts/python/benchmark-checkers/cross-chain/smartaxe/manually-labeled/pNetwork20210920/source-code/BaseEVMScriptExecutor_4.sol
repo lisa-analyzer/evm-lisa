@@ -4,8 +4,8 @@
 
 pragma solidity ^0.4.24;
 
-import "../../common/Autopetrified.sol";
-import "../IEVMScriptExecutor.sol";
+import "./Autopetrified.sol";
+import "./IEVMScriptExecutor.sol";
 
 
 contract BaseEVMScriptExecutor is IEVMScriptExecutor, Autopetrified {
