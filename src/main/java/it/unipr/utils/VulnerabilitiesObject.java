@@ -1,8 +1,7 @@
 package it.unipr.utils;
 
-import org.json.JSONObject;
-
 import it.unipr.cfg.EVMCFG;
+import org.json.JSONObject;
 
 /**
  * The {@code VulnerabilitiesObject} class represents a data model to hold

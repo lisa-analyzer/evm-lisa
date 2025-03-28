@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SemanticIntegrityViolationChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(SemanticIntegrityViolationChecker.class);
 
@@ -29,7 +29,8 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 
 		EVMCFG cfg = ((EVMCFG) graph);
@@ -40,7 +41,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 
 					AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
-					TypeEnvironment<InferredTypes>>> analysisResult = null;
+							TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 					try {
 						analysisResult = result.getAnalysisStateBefore(node);
@@ -61,7 +62,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		if (node instanceof Log) {
 			EVMCFG cfg = ((EVMCFG) graph);
@@ -70,7 +71,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
-				TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
@@ -158,7 +159,7 @@ SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvir
 				}
 			}
 		}
-		return true;				
+		return true;
 	}
 
 	private void raiseDefiniteSemanticIntegrityViolation(Statement logx, CheckToolWithAnalysisResults<
