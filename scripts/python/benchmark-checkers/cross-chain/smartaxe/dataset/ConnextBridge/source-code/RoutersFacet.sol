@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import {TypeCasts} from "../../../shared/libraries/TypeCasts.sol";
+import {TypeCasts} from "./TypeCasts.sol";
 
-import {Constants} from "../libraries/Constants.sol";
-import {AssetLogic} from "../libraries/AssetLogic.sol";
-import {RouterConfig} from "../libraries/LibConnextStorage.sol";
-import {TokenId} from "../libraries/TokenId.sol";
+import {Constants} from "./Constants.sol";
+import {AssetLogic} from "./AssetLogic.sol";
+import {RouterConfig} from "./LibConnextStorage.sol";
+import {TokenId} from "./TokenId.sol";
 
 import {BaseConnextFacet} from "./BaseConnextFacet.sol";
 

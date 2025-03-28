@@ -5,9 +5,9 @@ pragma solidity 0.6.6;
 import "./Ownable.sol";
 import "./SafeMath.sol";
 import "./Babylonian.sol";
-import {TypedMemView} from "./summa-tx/TypedMemView.sol";
-import {ViewBTC} from "./summa-tx/ViewBTC.sol";
-import {ViewSPV} from "./summa-tx/ViewSPV.sol";
+import {TypedMemView} from "./TypedMemView.sol";
+import {ViewBTC} from "./ViewBTC.sol";
+import {ViewSPV} from "./ViewSPV.sol";
 import "./IRelay.sol";
 
 interface IERC20 {

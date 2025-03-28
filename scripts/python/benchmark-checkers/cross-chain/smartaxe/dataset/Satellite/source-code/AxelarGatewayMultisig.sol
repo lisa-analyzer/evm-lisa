@@ -191,7 +191,7 @@ interface IAxelarGateway {
 
 // pragma solidity 0.8.9;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
 
 interface IAxelarGatewayMultisig is IAxelarGateway {
     event OwnershipTransferred(address[] preOwners, uint256 prevThreshold, address[] newOwners, uint256 newThreshold);
@@ -425,9 +425,9 @@ abstract contract Context {
 
 // pragma solidity 0.8.9;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
+// import {IERC20} from "./IERC20.sol";
 
-// import { Context } from 'src/Context.sol';
+// import {Context} from "./Context.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -686,7 +686,7 @@ contract ERC20 is Context, IERC20 {
 
 // pragma solidity 0.8.9;
 
-// import { ERC20 } from 'src/ERC20.sol';
+// import {ERC20} from "./ERC20.sol";
 
 abstract contract ERC20Permit is ERC20 {
     bytes32 public DOMAIN_SEPARATOR;
@@ -779,9 +779,9 @@ abstract contract Ownable {
 
 // pragma solidity 0.8.9;
 
-// import { ERC20 } from 'src/ERC20.sol';
-// import { ERC20Permit } from 'src/ERC20Permit.sol';
-// import { Ownable } from 'src/Ownable.sol';
+// import {ERC20} from "./ERC20.sol";
+// import {ERC20Permit} from "./ERC20Permit.sol";
+// import {Ownable} from "./Ownable.sol";
 
 contract MintableCappedERC20 is ERC20, ERC20Permit, Ownable {
     uint256 public cap;
@@ -938,9 +938,9 @@ contract EternalStorage {
 
 // pragma solidity 0.8.9;
 
-// import { MintableCappedERC20 } from 'src/MintableCappedERC20.sol';
-// import { DepositHandler } from 'src/DepositHandler.sol';
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {MintableCappedERC20} from "./MintableCappedERC20.sol";
+// import {DepositHandler} from "./DepositHandler.sol";
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract BurnableMintableCappedERC20 is MintableCappedERC20 {
     // keccak256('token-frozen')
@@ -1002,7 +1002,7 @@ contract BurnableMintableCappedERC20 is MintableCappedERC20 {
 
 // pragma solidity 0.8.9;
 
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract AdminMultisigBase is EternalStorage {
     error NotAdmin();
@@ -1205,7 +1205,7 @@ contract AdminMultisigBase is EternalStorage {
 
 // pragma solidity 0.8.9;
 
-// import { BurnableMintableCappedERC20 } from 'src/BurnableMintableCappedERC20.sol';
+// import {BurnableMintableCappedERC20} from "./BurnableMintableCappedERC20.sol";
 
 contract TokenDeployer {
     function deployToken(
@@ -1225,14 +1225,14 @@ contract TokenDeployer {
 
 // pragma solidity 0.8.9;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
-// import { IERC20BurnFrom } from 'src/interfaces/IERC20BurnFrom.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
+// import {IERC20} from "./IERC20.sol";
+// import {IERC20BurnFrom} from "./IERC20BurnFrom.sol";
 
-// import { BurnableMintableCappedERC20 } from 'src/BurnableMintableCappedERC20.sol';
-// import { DepositHandler } from 'src/DepositHandler.sol';
-// import { AdminMultisigBase } from 'src/AdminMultisigBase.sol';
-// import { TokenDeployer } from 'src/TokenDeployer.sol';
+// import {BurnableMintableCappedERC20} from "./BurnableMintableCappedERC20.sol";
+// import {DepositHandler} from "./DepositHandler.sol";
+// import {AdminMultisigBase} from "./AdminMultisigBase.sol";
+// import {TokenDeployer} from "./TokenDeployer.sol";
 
 abstract contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
     error NotSelf();
@@ -1845,10 +1845,10 @@ abstract contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
 
 pragma solidity 0.8.9;
 
-// import { IAxelarGatewayMultisig } from 'src/interfaces/IAxelarGatewayMultisig.sol';
+// import {IAxelarGatewayMultisig} from "./IAxelarGatewayMultisig.sol";
 
-// import { ECDSA } from 'src/ECDSA.sol';
-// import { AxelarGateway } from 'src/AxelarGateway.sol';
+// import {ECDSA} from "./ECDSA.sol";
+// import {AxelarGateway} from "./AxelarGateway.sol";
 
 contract AxelarGatewayMultisig is IAxelarGatewayMultisig, AxelarGateway {
     error InvalidAddress();

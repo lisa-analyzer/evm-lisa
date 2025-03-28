@@ -3,17 +3,17 @@ pragma solidity >=0.6.11;
 
 // ============ Internal Imports ============
 import {TokenRegistry} from "./TokenRegistry.sol";
-import {Router} from "../Router.sol";
-import {XAppConnectionClient} from "../XAppConnectionClient.sol";
-import {IBridgeToken} from "../../interfaces/bridge/IBridgeToken.sol";
+import {Router} from "./Router.sol";
+import {XAppConnectionClient} from "./XAppConnectionClient.sol";
+import {IBridgeToken} from "./IBridgeToken.sol";
 import {BridgeMessage} from "./BridgeMessage.sol";
 // ============ External Imports ============
-import {Home} from "@celo-org/optics-sol/contracts/Home.sol";
-import {Version0} from "@celo-org/optics-sol/contracts/Version0.sol";
-import {TypeCasts} from "@celo-org/optics-sol/contracts/XAppConnectionManager.sol";
-import {TypedMemView} from "@summa-tx/memview-sol/contracts/TypedMemView.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import {Home} from "./Home.sol";
+import {Version0} from "./Version0.sol";
+import {TypeCasts} from "./XAppConnectionManager.sol";
+import {TypedMemView} from "./TypedMemView.sol";
+import {IERC20} from "./IERC20.sol";
+import {SafeERC20} from "./SafeERC20.sol";
 
 /**
  * @title BridgeRouter

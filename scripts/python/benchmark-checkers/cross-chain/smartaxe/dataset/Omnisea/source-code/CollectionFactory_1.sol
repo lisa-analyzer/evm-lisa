@@ -7,7 +7,7 @@ import "./ICollectionsRepository.sol";
 import "./IOmniApp.sol";
 import "./IOmnichainRouter.sol";
 import "./IOmniseaPointsRepository.sol";
-import { CreateParams } from "../structs/erc721/ERC721Structs.sol";
+import {CreateParams} from "./ERC721Structs.sol";
 import "./Ownable.sol";
 
 /**

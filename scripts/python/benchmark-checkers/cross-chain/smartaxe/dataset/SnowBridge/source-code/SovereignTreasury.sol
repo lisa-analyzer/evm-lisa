@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import {AccessControl} from "openzeppelin/access/AccessControl.sol";
+import {AccessControl} from "./AccessControl.sol";
 import {Vault} from "./Vault.sol";
 import {Auth} from "./Auth.sol";
 import {Gateway} from "./Gateway.sol";

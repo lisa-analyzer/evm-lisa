@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /* Library Imports */
-import { MerkleTrie } from "./MerkleTrie.sol";
+import {MerkleTrie} from "./MerkleTrie.sol";
 
 /**
  * @title SecureMerkleTrie

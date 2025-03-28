@@ -4,7 +4,7 @@ pragma solidity 0.7.6;
 // ============ Internal Imports ============
 import {XAppConnectionClient} from "./XAppConnectionClient.sol";
 // ============ External Imports ============
-import {IMessageRecipient} from "@nomad-xyz/contracts-core/contracts/interfaces/IMessageRecipient.sol";
+import {IMessageRecipient} from "./IMessageRecipient.sol";
 
 abstract contract Router is XAppConnectionClient, IMessageRecipient {
     // ============ Mutable Storage ============

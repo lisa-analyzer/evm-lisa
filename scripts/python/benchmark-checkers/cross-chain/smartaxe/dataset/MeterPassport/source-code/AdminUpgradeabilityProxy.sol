@@ -24,7 +24,7 @@
 
 pragma solidity ^0.6.8;
 
-import { UpgradeabilityProxy } from "./UpgradeabilityProxy.sol";
+import {UpgradeabilityProxy} from "./UpgradeabilityProxy.sol";
 
 
 /**

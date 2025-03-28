@@ -70,7 +70,7 @@ interface IAxelarGateway {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
 
 interface IAxelarGatewayMultisig is IAxelarGateway {
 
@@ -274,9 +274,9 @@ abstract contract Context {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
+// import {IERC20} from "./IERC20.sol";
 
-// import { Context } from 'src/Context.sol';
+// import {Context} from "./Context.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -564,7 +564,7 @@ abstract contract Ownable {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { BurnableMintableCappedERC20 } from 'src/BurnableMintableCappedERC20.sol';
+// import {BurnableMintableCappedERC20} from "./BurnableMintableCappedERC20.sol";
 
 contract Burner {
     constructor(address tokenAddress, bytes32 salt) {
@@ -674,10 +674,10 @@ contract EternalStorage {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { ERC20 } from 'src/ERC20.sol';
-// import { Ownable } from 'src/Ownable.sol';
-// import { Burner } from 'src/Burner.sol';
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {ERC20} from "./ERC20.sol";
+// import {Ownable} from "./Ownable.sol";
+// import {Burner} from "./Burner.sol";
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract BurnableMintableCappedERC20 is ERC20, Ownable {
     uint256 public cap;
@@ -748,7 +748,7 @@ contract BurnableMintableCappedERC20 is ERC20, Ownable {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract AdminMultisigBase is EternalStorage {
     // AUDIT: slot names should be prefixed with some standard string
@@ -941,10 +941,10 @@ contract AdminMultisigBase is EternalStorage {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
 
-// import { BurnableMintableCappedERC20 } from 'src/BurnableMintableCappedERC20.sol';
-// import { AdminMultisigBase } from 'src/AdminMultisigBase.sol';
+// import {BurnableMintableCappedERC20} from "./BurnableMintableCappedERC20.sol";
+// import {AdminMultisigBase} from "./AdminMultisigBase.sol";
 
 abstract contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
     /// @dev Storage slot with the address of the current factory. `keccak256('eip1967.proxy.implementation') - 1`.
@@ -1125,10 +1125,10 @@ abstract contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-// import { IAxelarGatewayMultisig } from 'src/interfaces/IAxelarGatewayMultisig.sol';
+// import {IAxelarGatewayMultisig} from "./IAxelarGatewayMultisig.sol";
 
-// import { ECDSA } from 'src/ECDSA.sol';
-// import { AxelarGateway } from 'src/AxelarGateway.sol';
+// import {ECDSA} from "./ECDSA.sol";
+// import {AxelarGateway} from "./AxelarGateway.sol";
 
 contract AxelarGatewayMultisig is IAxelarGatewayMultisig, AxelarGateway {
     // AUDIT: slot names should be prefixed with some standard string

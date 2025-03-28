@@ -98,7 +98,7 @@ contract EternalStorage {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract AdminMultisigBase is EternalStorage {
     // AUDIT: slot names should be prefixed with some standard string

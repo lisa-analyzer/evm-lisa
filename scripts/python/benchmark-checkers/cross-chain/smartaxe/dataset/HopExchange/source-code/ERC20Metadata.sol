@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import {ERC20MetadataStorage} from './ERC20MetadataStorage.sol';
-import {IERC20Metadata} from './IERC20Metadata.sol';
+import {ERC20MetadataStorage} from "./ERC20MetadataStorage.sol";
+import {IERC20Metadata} from "./IERC20Metadata.sol";
 
 /**
  * @title ERC20 metadata extensions

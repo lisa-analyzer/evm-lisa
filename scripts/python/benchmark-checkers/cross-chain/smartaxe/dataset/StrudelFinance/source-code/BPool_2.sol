@@ -14,7 +14,7 @@
 pragma solidity 0.6.6;
 
 import "./ERC20.sol";
-import {IERC20} from "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "./IERC20.sol";
 import "./BMath.sol";
 import "./IBPool.sol";
 

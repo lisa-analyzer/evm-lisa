@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import {Strings} from "./Strings.sol";
 
 /**
  * @title Semver

@@ -4,7 +4,7 @@ pragma solidity 0.6.6;
 /** @author Summa (https://summa.one) */
 
 import {TypedMemView} from "./TypedMemView.sol";
-import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {SafeMath} from "./SafeMath.sol";
 
 library ViewBTC {
   using TypedMemView for bytes29;

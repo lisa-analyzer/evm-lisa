@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC20Internal} from './IERC20Internal.sol';
+import {IERC20Internal} from "./IERC20Internal.sol";
 
 /**
  * @title ERC20 interface

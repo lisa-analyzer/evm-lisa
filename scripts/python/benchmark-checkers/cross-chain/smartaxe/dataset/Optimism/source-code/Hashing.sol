@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { Types } from "./Types.sol";
-import { Encoding } from "./Encoding.sol";
+import {Types} from "./Types.sol";
+import {Encoding} from "./Encoding.sol";
 
 /**
  * @title Hashing

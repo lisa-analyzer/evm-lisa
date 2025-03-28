@@ -5,7 +5,7 @@ pragma solidity ^0.8.7;
 import "./ERC721.sol";
 import "./IOmniERC721.sol";
 import "./ERC721A.sol";
-import {CreateParams, Allowlist} from "../structs/erc721/ERC721Structs.sol";
+import {CreateParams, Allowlist} from "./ERC721Structs.sol";
 import "./Ownable.sol";
 import "./ReentrancyGuard.sol";
 import "./MerkleProof.sol";

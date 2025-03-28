@@ -442,7 +442,7 @@ library SwapUtils {
      *
      * @return an array of amounts "scaled" to the pool's precision
      */
-      CCV vulnerability function
+      // CCV vulnerability function
     function _xp(
         uint256[] memory balances,
         uint256[] memory precisionMultipliers

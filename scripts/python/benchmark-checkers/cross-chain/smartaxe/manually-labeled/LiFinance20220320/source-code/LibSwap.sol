@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { LibAsset } from "./LibAsset.sol";
-import { LibUtil } from "./LibUtil.sol";
-import { InvalidContract, NoSwapFromZeroBalance, InsufficientBalance } from "./GenericErrors.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibUtil} from "./LibUtil.sol";
+import {InvalidContract, NoSwapFromZeroBalance, InsufficientBalance} from "./GenericErrors.sol";
+import {IERC20} from "./IERC20.sol";
 
 library LibSwap {
     struct SwapData {

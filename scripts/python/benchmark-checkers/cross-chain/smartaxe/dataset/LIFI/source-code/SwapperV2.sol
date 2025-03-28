@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { ILiFi } from "../Interfaces/ILiFi.sol";
-import { LibSwap } from "../Libraries/LibSwap.sol";
-import { LibAsset } from "../Libraries/LibAsset.sol";
-import { LibAllowList } from "../Libraries/LibAllowList.sol";
-import { ContractCallNotAllowed, NoSwapDataProvided, CumulativeSlippageTooHigh } from "../Errors/GenericErrors.sol";
+import {ILiFi} from "./ILiFi.sol";
+import {LibSwap} from "./LibSwap.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibAllowList} from "./LibAllowList.sol";
+import {ContractCallNotAllowed, NoSwapDataProvided, CumulativeSlippageTooHigh} from "./GenericErrors.sol";
 
 /// @title Swapper
 /// @author LI.FI (https://li.fi)

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.12;
 
-import {IInitializableDebtToken} from './IInitializableDebtToken.sol';
-import {IAaveIncentivesController} from './IAaveIncentivesController.sol';
+import {IInitializableDebtToken} from "./IInitializableDebtToken.sol";
+import {IAaveIncentivesController} from "./IAaveIncentivesController.sol";
 
 /**
  * @title IStableDebtToken

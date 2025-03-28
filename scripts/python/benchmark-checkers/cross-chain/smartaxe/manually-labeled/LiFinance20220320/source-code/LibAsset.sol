@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
-import { InsufficientBalance, NullAddrIsNotAnERC20Token, NullAddrIsNotAValidSpender, NoTransferToNullAddress, InvalidAmount, NativeAssetTransferFailed } from "../Errors/GenericErrors.sol";
+import {InsufficientBalance, NullAddrIsNotAnERC20Token, NullAddrIsNotAValidSpender, NoTransferToNullAddress, InvalidAmount, NativeAssetTransferFailed} from "./GenericErrors.sol";
 import "./SafeERC20.sol";
 import "./IERC20.sol";
-import { LibSwap } from "./LibSwap.sol";
+import {LibSwap} from "./LibSwap.sol";
 
 /// @title LibAsset
 /// @notice This library contains helpers for dealing with onchain transfers

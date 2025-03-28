@@ -111,9 +111,9 @@ abstract contract Context {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
+// import {IERC20} from "./IERC20.sol";
 
-// import { Context } from 'src/Context.sol';
+// import {Context} from "./Context.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -401,7 +401,7 @@ abstract contract Ownable {
 
 // pragma solidity >=0.8.0 <0.9.0;
 
-// import { BurnableMintableCappedERC20 } from 'src/BurnableMintableCappedERC20.sol';
+// import {BurnableMintableCappedERC20} from "./BurnableMintableCappedERC20.sol";
 
 contract Burner {
     constructor(address tokenAddress, bytes32 salt) {
@@ -511,10 +511,10 @@ contract EternalStorage {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-// import { ERC20 } from 'src/ERC20.sol';
-// import { Ownable } from 'src/Ownable.sol';
-// import { Burner } from 'src/Burner.sol';
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {ERC20} from "./ERC20.sol";
+// import {Ownable} from "./Ownable.sol";
+// import {Burner} from "./Burner.sol";
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract BurnableMintableCappedERC20 is ERC20, Ownable {
     uint256 public cap;

@@ -3,19 +3,19 @@
 // solhint-disable-next-line
 pragma solidity ^0.8.0;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
-import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {Initializable} from "./Initializable.sol";
+import {AccessControlEnumerableUpgradeable} from "./AccessControlEnumerableUpgradeable.sol";
+import {AccessControlUpgradeable} from "./AccessControlUpgradeable.sol";
+import {OwnableUpgradeable} from "./OwnableUpgradeable.sol";
+import {StringsUpgradeable} from "./StringsUpgradeable.sol";
+import {IERC20} from "./IERC20.sol";
+import {TransparentUpgradeableProxy} from "./TransparentUpgradeableProxy.sol";
 
-import {IMintGateway} from "../Gateways/interfaces/IMintGateway.sol";
-import {ILockGateway} from "../Gateways/interfaces/ILockGateway.sol";
-import {String} from "../libraries/String.sol";
+import {IMintGateway} from "./IMintGateway.sol";
+import {ILockGateway} from "./ILockGateway.sol";
+import {String} from "./String.sol";
 import {RenAssetFactory} from "./RenAssetFactory.sol";
-import {StringSet} from "../libraries/StringSet.sol";
+import {StringSet} from "./StringSet.sol";
 
 contract GatewayRegistryStateV2 {
     struct GatewayDetails {

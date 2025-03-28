@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import {TransferInfo, AppStorage, Role} from "../libraries/LibConnextStorage.sol";
-import {LibDiamond} from "../libraries/LibDiamond.sol";
-import {AssetLogic} from "../libraries/AssetLogic.sol";
-import {TokenId} from "../libraries/TokenId.sol";
-import {Constants} from "../libraries/Constants.sol";
+import {TransferInfo, AppStorage, Role} from "./LibConnextStorage.sol";
+import {LibDiamond} from "./LibDiamond.sol";
+import {AssetLogic} from "./AssetLogic.sol";
+import {TokenId} from "./TokenId.sol";
+import {Constants} from "./Constants.sol";
 
 contract BaseConnextFacet {
   AppStorage internal s;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeERC20, IERC20} from "./SafeERC20.sol";
 
-import {LPToken} from "../helpers/LPToken.sol";
+import {LPToken} from "./LPToken.sol";
 
 import {AmplificationUtils} from "./AmplificationUtils.sol";
 import {MathUtils} from "./MathUtils.sol";

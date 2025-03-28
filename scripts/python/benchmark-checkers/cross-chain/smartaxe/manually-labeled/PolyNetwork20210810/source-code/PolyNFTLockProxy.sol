@@ -2,16 +2,16 @@
 
 pragma solidity ^0.6.0;
 
-import "Ownable.sol";
-import "ZeroCopySink.sol";
-import "ZeroCopySource.sol";
-import "Utils.sol";
-import "Address.sol";
-import "IERC721Metadata.sol";
-import "IERC721Receiver.sol";
-import "SafeMath.sol";
-import "IEthCrossChainManager.sol";
-import "IEthCrossChainManagerProxy.sol";
+import "./Ownable.sol";
+import "./ZeroCopySink.sol";
+import "./ZeroCopySource.sol";
+import "./Utils.sol";
+import "./Address.sol";
+import "./IERC721Metadata.sol";
+import "./IERC721Receiver.sol";
+import "./SafeMath.sol";
+import "./IEthCrossChainManager.sol";
+import "./IEthCrossChainManagerProxy.sol";
 
 contract PolyNFTLockProxy is IERC721Receiver, Ownable {
     using SafeMath for uint;

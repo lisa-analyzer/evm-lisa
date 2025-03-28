@@ -24,9 +24,9 @@
 
 pragma solidity ^0.6.8;
 
-import { Ownable } from "./Ownable.sol";
-import { IERC20 } from "./IERC20.sol";
-import { SafeERC20 } from "./SafeERC20.sol";
+import {Ownable} from "./Ownable.sol";
+import {IERC20} from "./IERC20.sol";
+import {SafeERC20} from "./SafeERC20.sol";
 
 
 contract Rescuable is Ownable {

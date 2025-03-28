@@ -7,7 +7,7 @@ import "./IERC20.sol";
 import "./IOmniApp.sol";
 import "./IOmnichainRouter.sol";
 import "./IOmniseaPointsRepository.sol";
-import { MintParams, Asset } from "../structs/erc721/ERC721Structs.sol";
+import {MintParams, Asset} from "./ERC721Structs.sol";
 import "./Ownable.sol";
 import "./ReentrancyGuard.sol";
 

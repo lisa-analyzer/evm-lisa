@@ -16,10 +16,10 @@
 
 pragma solidity >=0.7.6;
 
-import {iOVM_L1ERC20Bridge} from "@eth-optimism/contracts/iOVM/bridge/tokens/iOVM_L1ERC20Bridge.sol";
-import {iOVM_L2ERC20Bridge} from "@eth-optimism/contracts/iOVM/bridge/tokens/iOVM_L2ERC20Bridge.sol";
-import {OVM_CrossDomainEnabled} from "@eth-optimism/contracts/libraries/bridge/OVM_CrossDomainEnabled.sol";
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import {iOVM_L1ERC20Bridge} from "./iOVM_L1ERC20Bridge.sol";
+import {iOVM_L2ERC20Bridge} from "./iOVM_L2ERC20Bridge.sol";
+import {OVM_CrossDomainEnabled} from "./OVM_CrossDomainEnabled.sol";
+import {Address} from "./Address.sol";
 
 interface TokenLike {
   function transferFrom(address _from, address _to, uint256 _value) external returns (bool success);

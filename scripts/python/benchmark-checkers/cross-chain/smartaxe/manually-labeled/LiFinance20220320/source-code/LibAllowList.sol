@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { InvalidContract } from "./GenericErrors.sol";
+import {InvalidContract} from "./GenericErrors.sol";
 
 /// @title Lib Allow List
 /// @author LI.FI (https://li.fi)

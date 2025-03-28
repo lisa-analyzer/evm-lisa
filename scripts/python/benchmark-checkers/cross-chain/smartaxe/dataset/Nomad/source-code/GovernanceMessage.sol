@@ -3,7 +3,7 @@ pragma solidity >=0.6.11;
 pragma experimental ABIEncoderV2;
 
 // ============ External Imports ============
-import {TypedMemView} from "@summa-tx/memview-sol/contracts/TypedMemView.sol";
+import {TypedMemView} from "./TypedMemView.sol";
 
 library GovernanceMessage {
     using TypedMemView for bytes;

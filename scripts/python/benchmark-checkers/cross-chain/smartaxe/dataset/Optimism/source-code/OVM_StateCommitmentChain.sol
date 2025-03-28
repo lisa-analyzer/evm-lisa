@@ -3,16 +3,16 @@ pragma solidity >0.5.0 <0.8.0;
 pragma experimental ABIEncoderV2;
 
 /* Library Imports */
-import { Lib_OVMCodec } from "../../libraries/codec/Lib_OVMCodec.sol";
-import { Lib_AddressResolver } from "../../libraries/resolver/Lib_AddressResolver.sol";
-import { Lib_MerkleTree } from "../../libraries/utils/Lib_MerkleTree.sol";
+import {Lib_OVMCodec} from "./Lib_OVMCodec.sol";
+import {Lib_AddressResolver} from "./Lib_AddressResolver.sol";
+import {Lib_MerkleTree} from "./Lib_MerkleTree.sol";
 
 /* Interface Imports */
-import { iOVM_FraudVerifier } from "../../iOVM/verification/iOVM_FraudVerifier.sol";
-import { iOVM_StateCommitmentChain } from "../../iOVM/chain/iOVM_StateCommitmentChain.sol";
-import { iOVM_CanonicalTransactionChain } from "../../iOVM/chain/iOVM_CanonicalTransactionChain.sol";
-import { iOVM_BondManager } from "../../iOVM/verification/iOVM_BondManager.sol";
-import { iOVM_ChainStorageContainer } from "../../iOVM/chain/iOVM_ChainStorageContainer.sol";
+import {iOVM_FraudVerifier} from "./iOVM_FraudVerifier.sol";
+import {iOVM_StateCommitmentChain} from "./iOVM_StateCommitmentChain.sol";
+import {iOVM_CanonicalTransactionChain} from "./iOVM_CanonicalTransactionChain.sol";
+import {iOVM_BondManager} from "./iOVM_BondManager.sol";
+import {iOVM_ChainStorageContainer} from "./iOVM_ChainStorageContainer.sol";
 
 /* External Imports */
 import "./SafeMath.sol";

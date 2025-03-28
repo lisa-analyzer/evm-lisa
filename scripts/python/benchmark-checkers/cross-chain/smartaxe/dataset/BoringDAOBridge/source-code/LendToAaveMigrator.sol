@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.10;
 
-import {IERC20} from "../interfaces/IERC20.sol";
-import {SafeMath} from "../open-zeppelin/SafeMath.sol";
-import {VersionedInitializable} from "../utils/VersionedInitializable.sol";
+import {IERC20} from "./IERC20.sol";
+import {SafeMath} from "./SafeMath.sol";
+import {VersionedInitializable} from "./VersionedInitializable.sol";
 
 
 /**

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import {CreateParams} from "../structs/erc721/ERC721Structs.sol";
+import {CreateParams} from "./ERC721Structs.sol";
 
 interface ICollectionsRepository {
     /**

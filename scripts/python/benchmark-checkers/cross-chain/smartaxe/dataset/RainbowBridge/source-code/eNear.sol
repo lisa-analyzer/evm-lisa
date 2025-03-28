@@ -6,7 +6,7 @@ import "./ProofDecoder.sol";
 import "./Borsh.sol";
 import "./AdminControlled.sol";
 import "./ERC20.sol";
-import { Bridge, INearProver } from "./Bridge.sol";
+import {Bridge, INearProver} from "./Bridge.sol";
 
 contract eNear is ERC20, Bridge, AdminControlled {
 

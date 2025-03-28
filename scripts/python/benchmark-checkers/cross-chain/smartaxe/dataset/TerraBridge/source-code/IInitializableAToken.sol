@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.12;
 
-import {ILendingPool} from './ILendingPool.sol';
-import {IAaveIncentivesController} from './IAaveIncentivesController.sol';
+import {ILendingPool} from "./ILendingPool.sol";
+import {IAaveIncentivesController} from "./IAaveIncentivesController.sol";
 
 /**
  * @title IInitializableAToken

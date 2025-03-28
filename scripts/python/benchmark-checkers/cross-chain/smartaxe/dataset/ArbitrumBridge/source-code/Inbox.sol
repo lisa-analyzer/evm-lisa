@@ -32,7 +32,7 @@ import {
     L2MessageType_unsignedEOATx,
     L2MessageType_unsignedContractTx
 } from "../libraries/MessageTypes.sol";
-import {MAX_DATA_SIZE} from "../libraries/Constants.sol";
+import {MAX_DATA_SIZE} from "./Constants.sol";
 
 import "./AddressUpgradeable.sol";
 import "./PausableUpgradeable.sol";

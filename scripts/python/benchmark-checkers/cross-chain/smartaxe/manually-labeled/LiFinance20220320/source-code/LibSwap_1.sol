@@ -2,8 +2,8 @@
 pragma solidity ^0.8.7;
 
 import "./ERC20.sol";
-import { LibAsset } from "./LibAsset.sol";
-import { LibUtil } from "./LibUtil.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibUtil} from "./LibUtil.sol";
 
 library LibSwap {
     uint256 private constant MAX_INT = 2**256 - 1;

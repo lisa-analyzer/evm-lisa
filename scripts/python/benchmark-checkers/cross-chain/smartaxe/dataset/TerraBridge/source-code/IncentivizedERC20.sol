@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.12;
 
-import {Context} from '../../dependencies/openzeppelin/contracts/Context.sol';
-import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';
-import {IERC20Detailed} from '../../dependencies/openzeppelin/contracts/IERC20Detailed.sol';
-import {SafeMath} from '../../dependencies/openzeppelin/contracts/SafeMath.sol';
-import {IAaveIncentivesController} from '../../interfaces/IAaveIncentivesController.sol';
+import {Context} from "./Context.sol";
+import {IERC20} from "./IERC20.sol";
+import {IERC20Detailed} from "./IERC20Detailed.sol";
+import {SafeMath} from "./SafeMath.sol";
+import {IAaveIncentivesController} from "./IAaveIncentivesController.sol";
 
 /**
  * @title ERC20

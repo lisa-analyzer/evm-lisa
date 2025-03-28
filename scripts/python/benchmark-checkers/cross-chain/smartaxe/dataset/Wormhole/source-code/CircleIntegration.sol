@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache 2
 pragma solidity ^0.8.19;
 
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {IWormhole} from "wormhole/interfaces/IWormhole.sol";
-import {BytesLib} from "wormhole/libraries/external/BytesLib.sol";
+import {ReentrancyGuard} from "./ReentrancyGuard.sol";
+import {IERC20} from "./IERC20.sol";
+import {SafeERC20} from "./SafeERC20.sol";
+import {IWormhole} from "./IWormhole.sol";
+import {BytesLib} from "./BytesLib.sol";
 
-import {ICircleBridge} from "../interfaces/circle/ICircleBridge.sol";
+import {ICircleBridge} from "./ICircleBridge.sol";
 
 import {CircleIntegrationGovernance} from "./CircleIntegrationGovernance.sol";
 import {CircleIntegrationMessages} from "./CircleIntegrationMessages.sol";

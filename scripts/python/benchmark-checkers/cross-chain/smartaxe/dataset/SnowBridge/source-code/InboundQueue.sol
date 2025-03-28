@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import {MerkleProof} from "openzeppelin/utils/cryptography/MerkleProof.sol";
-import {AccessControl} from "openzeppelin/access/AccessControl.sol";
+import {MerkleProof} from "./MerkleProof.sol";
+import {AccessControl} from "./AccessControl.sol";
 import {IParachainClient, ParachainClient} from "./ParachainClient.sol";
 import {Registry} from "./Registry.sol";
 import {RegistryLookup} from "./RegistryLookup.sol";

@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import {ECDSA} from "openzeppelin/utils/cryptography/ECDSA.sol";
-import {Ownable} from "openzeppelin/access/Ownable.sol";
+import {ECDSA} from "./ECDSA.sol";
+import {Ownable} from "./Ownable.sol";
 import {MerkleProof} from "./MerkleProof.sol";
 import {Bitfield} from "./Bitfield.sol";
 import {MMRProof} from "./MMRProof.sol";

@@ -12,7 +12,7 @@ import "./IChallengeManager.sol";
 import "./DoubleLogicUUPSUpgradeable.sol";
 import "./UpgradeableBeacon.sol";
 
-import {NO_CHAL_INDEX} from "../libraries/Constants.sol";
+import {NO_CHAL_INDEX} from "./Constants.sol";
 
 contract RollupAdminLogic is RollupCore, IRollupAdmin, DoubleLogicUUPSUpgradeable {
     function initialize(Config calldata config, ContractDependencies calldata connectedContracts)

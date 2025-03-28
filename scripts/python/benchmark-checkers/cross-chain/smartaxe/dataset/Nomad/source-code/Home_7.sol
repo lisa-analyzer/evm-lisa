@@ -4,14 +4,14 @@ pragma solidity 0.7.6;
 // ============ Internal Imports ============
 import {Version0} from "./Version0.sol";
 import {NomadBase} from "./NomadBase.sol";
-import {QueueLib} from "./libs/Queue.sol";
-import {MerkleLib} from "./libs/Merkle.sol";
-import {Message} from "./libs/Message.sol";
+import {QueueLib} from "./Queue.sol";
+import {MerkleLib} from "./Merkle.sol";
+import {Message} from "./Message.sol";
 import {MerkleTreeManager} from "./Merkle.sol";
 import {QueueManager} from "./Queue.sol";
-import {IUpdaterManager} from "./interfaces/IUpdaterManager.sol";
+import {IUpdaterManager} from "./IUpdaterManager.sol";
 // ============ External Imports ============
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./Address.sol";
 
 /**
  * @title Home

@@ -5,7 +5,7 @@ import "./IERC20Upgradeable.sol";
 import "./SafeERC20Upgradeable.sol";
 import "./draft-IERC20Permit.sol";
 
-import { IDeBridgeGateExtended as IDeBridgeGate } from "@debridge-finance/debridge-protocol-evm-interfaces/contracts/interfaces/IDeBridgeGateExtended.sol";
+import {IDeBridgeGateExtended as IDeBridgeGate} from "./IDeBridgeGateExtended.sol";
 
 import "./ICrossChainForwarder.sol";
 import "./SignatureUtil.sol";

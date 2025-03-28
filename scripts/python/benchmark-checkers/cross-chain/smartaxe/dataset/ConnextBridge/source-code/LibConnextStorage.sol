@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import {IStableSwap} from "../interfaces/IStableSwap.sol";
-import {IConnectorManager} from "../../../messaging/interfaces/IConnectorManager.sol";
+import {IStableSwap} from "./IStableSwap.sol";
+import {IConnectorManager} from "./IConnectorManager.sol";
 import {SwapUtils} from "./SwapUtils.sol";
 import {TokenId} from "./TokenId.sol";
 

@@ -4,7 +4,7 @@ pragma solidity ^0.6.12;
 import "./AdminControlled.sol";
 import "./Borsh.sol";
 import "./ProofDecoder.sol";
-import { INearProver, ProofKeeper } from './ProofKeeper.sol';
+import {INearProver, ProofKeeper} from "./ProofKeeper.sol";
 
 contract EthCustodian is ProofKeeper, AdminControlled {
 

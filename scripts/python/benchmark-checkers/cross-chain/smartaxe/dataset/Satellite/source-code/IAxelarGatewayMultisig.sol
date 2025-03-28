@@ -70,7 +70,7 @@ interface IAxelarGateway {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
 
 interface IAxelarGatewayMultisig is IAxelarGateway {
 

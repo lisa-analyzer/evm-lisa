@@ -4,8 +4,8 @@ pragma solidity 0.8.15;
 import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import { Semver } from "../universal/Semver.sol";
-import { ResourceMetering } from "./ResourceMetering.sol";
+import {Semver} from "./Semver.sol";
+import {ResourceMetering} from "./ResourceMetering.sol";
 
 /**
  * @title SystemConfig

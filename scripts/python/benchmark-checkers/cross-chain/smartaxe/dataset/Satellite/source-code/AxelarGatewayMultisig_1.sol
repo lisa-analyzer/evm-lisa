@@ -191,7 +191,7 @@ interface IAxelarGateway {
 
 // pragma solidity 0.8.9;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
 
 interface IAxelarGatewayMultisig is IAxelarGateway {
     event OwnershipTransferred(address[] preOwners, uint256 prevThreshold, address[] newOwners, uint256 newThreshold);
@@ -449,9 +449,9 @@ interface IOwnable {
 
 // pragma solidity 0.8.9;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
-// import { IERC20Permit } from 'src/interfaces/IERC20Permit.sol';
-// import { IOwnable } from 'src/interfaces/IOwnable.sol';
+// import {IERC20} from "./IERC20.sol";
+// import {IERC20Permit} from "./IERC20Permit.sol";
+// import {IOwnable} from "./IOwnable.sol";
 
 interface IMintableCappedERC20 is IERC20, IERC20Permit, IOwnable {
     error CapExceeded();
@@ -467,9 +467,9 @@ interface IMintableCappedERC20 is IERC20, IERC20Permit, IOwnable {
 
 // pragma solidity 0.8.9;
 
-// import { IERC20Burn } from 'src/interfaces/IERC20Burn.sol';
-// import { IERC20BurnFrom } from 'src/interfaces/IERC20BurnFrom.sol';
-// import { IMintableCappedERC20 } from 'src/interfaces/IMintableCappedERC20.sol';
+// import {IERC20Burn} from "./IERC20Burn.sol";
+// import {IERC20BurnFrom} from "./IERC20BurnFrom.sol";
+// import {IMintableCappedERC20} from "./IMintableCappedERC20.sol";
 
 interface IBurnableMintableCappedERC20 is IERC20Burn, IERC20BurnFrom, IMintableCappedERC20 {
     error IsFrozen();
@@ -626,7 +626,7 @@ contract EternalStorage {
 
 // pragma solidity 0.8.9;
 
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract AdminMultisigBase is EternalStorage {
     error NotAdmin();
@@ -829,15 +829,15 @@ contract AdminMultisigBase is EternalStorage {
 
 // pragma solidity 0.8.9;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
-// import { IERC20Burn } from 'src/interfaces/IERC20Burn.sol';
-// import { IERC20BurnFrom } from 'src/interfaces/IERC20BurnFrom.sol';
-// import { IBurnableMintableCappedERC20 } from 'src/interfaces/IBurnableMintableCappedERC20.sol';
-// import { ITokenDeployer } from 'src/interfaces/ITokenDeployer.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
+// import {IERC20} from "./IERC20.sol";
+// import {IERC20Burn} from "./IERC20Burn.sol";
+// import {IERC20BurnFrom} from "./IERC20BurnFrom.sol";
+// import {IBurnableMintableCappedERC20} from "./IBurnableMintableCappedERC20.sol";
+// import {ITokenDeployer} from "./ITokenDeployer.sol";
 
-// import { DepositHandler } from 'src/DepositHandler.sol';
-// import { AdminMultisigBase } from 'src/AdminMultisigBase.sol';
+// import {DepositHandler} from "./DepositHandler.sol";
+// import {AdminMultisigBase} from "./AdminMultisigBase.sol";
 
 abstract contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
     error NotSelf();
@@ -1453,10 +1453,10 @@ abstract contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
 
 pragma solidity 0.8.9;
 
-// import { IAxelarGatewayMultisig } from 'src/interfaces/IAxelarGatewayMultisig.sol';
+// import {IAxelarGatewayMultisig} from "./IAxelarGatewayMultisig.sol";
 
-// import { ECDSA } from 'src/ECDSA.sol';
-// import { AxelarGateway } from 'src/AxelarGateway.sol';
+// import {ECDSA} from "./ECDSA.sol";
+// import {AxelarGateway} from "./AxelarGateway.sol";
 
 contract AxelarGatewayMultisig is IAxelarGatewayMultisig, AxelarGateway {
     error InvalidAddress();

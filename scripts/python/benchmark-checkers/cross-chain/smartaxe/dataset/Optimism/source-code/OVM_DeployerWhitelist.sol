@@ -2,7 +2,7 @@
 pragma solidity >0.5.0 <0.8.0;
 
 /* Interface Imports */
-import { iOVM_DeployerWhitelist } from "../../iOVM/predeploys/iOVM_DeployerWhitelist.sol";
+import {iOVM_DeployerWhitelist} from "./iOVM_DeployerWhitelist.sol";
 
 /**
  * @title OVM_DeployerWhitelist

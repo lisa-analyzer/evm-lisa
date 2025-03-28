@@ -2,7 +2,7 @@
 pragma solidity >=0.6.11;
 
 // ============ External Imports ============
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./Address.sol";
 
 /**
  * @title UpgradeBeacon

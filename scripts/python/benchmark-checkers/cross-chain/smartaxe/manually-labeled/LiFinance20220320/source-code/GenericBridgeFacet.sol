@@ -2,10 +2,10 @@
 pragma solidity ^0.8.7;
 
 import "./ERC20.sol";
-import { ILiFi } from "../ILiFi.sol";
-import { LibAsset } from "./LibAsset.sol";
-import { LibSwap } from "./LibSwap.sol";
-import { LibUtil } from "./LibUtil.sol";
+import {ILiFi} from "./ILiFi.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibSwap} from "./LibSwap.sol";
+import {LibUtil} from "./LibUtil.sol";
 
 contract GenericBridgeFacet is ILiFi {
     /* ========== Types ========== */

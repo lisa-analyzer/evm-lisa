@@ -4,8 +4,8 @@ pragma solidity >0.5.0 <0.8.0;
 pragma experimental ABIEncoderV2;
 
 /* Library Imports */
-import { Lib_RLPWriter } from "../rlp/Lib_RLPWriter.sol";
-import { Lib_Bytes32Utils } from "./Lib_Bytes32Utils.sol";
+import {Lib_RLPWriter} from "./Lib_RLPWriter.sol";
+import {Lib_Bytes32Utils} from "./Lib_Bytes32Utils.sol";
 
 /**
  * @title Lib_EthUtils

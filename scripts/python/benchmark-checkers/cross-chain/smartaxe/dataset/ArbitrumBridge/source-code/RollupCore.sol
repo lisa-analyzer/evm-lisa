@@ -18,7 +18,7 @@ import "./ISequencerInbox.sol";
 import "./IBridge.sol";
 import "./IOutbox.sol";
 
-import {NO_CHAL_INDEX} from "../libraries/Constants.sol";
+import {NO_CHAL_INDEX} from "./Constants.sol";
 
 abstract contract RollupCore is IRollupCore, PausableUpgradeable {
     using NodeLib for Node;

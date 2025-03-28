@@ -3,15 +3,15 @@ pragma solidity >=0.6.11;
 pragma experimental ABIEncoderV2;
 
 // ============ Internal Imports ============
-import {Home} from "../Home.sol";
-import {Version0} from "../Version0.sol";
-import {XAppConnectionManager, TypeCasts} from "../XAppConnectionManager.sol";
-import {IMessageRecipient} from "../../interfaces/IMessageRecipient.sol";
+import {Home} from "./Home.sol";
+import {Version0} from "./Version0.sol";
+import {XAppConnectionManager, TypeCasts} from "./XAppConnectionManager.sol";
+import {IMessageRecipient} from "./IMessageRecipient.sol";
 import {GovernanceMessage} from "./GovernanceMessage.sol";
 // ============ External Imports ============
-import {Initializable} from "@openzeppelin/contracts/proxy/Initializable.sol";
-import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
-import {TypedMemView} from "@summa-tx/memview-sol/contracts/TypedMemView.sol";
+import {Initializable} from "./Initializable.sol";
+import {SafeMath} from "./SafeMath.sol";
+import {TypedMemView} from "./TypedMemView.sol";
 
 contract GovernanceRouter is Version0, Initializable, IMessageRecipient {
     // ============ Libraries ============

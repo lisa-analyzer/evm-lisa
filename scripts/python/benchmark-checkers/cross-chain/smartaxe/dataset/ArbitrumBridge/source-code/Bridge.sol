@@ -19,7 +19,7 @@ import "./IBridge.sol";
 import "./Messages.sol";
 import "./DelegateCallAware.sol";
 
-import {L1MessageType_batchPostingReport} from "../libraries/MessageTypes.sol";
+import {L1MessageType_batchPostingReport} from "./MessageTypes.sol";
 
 /**
  * @title Staging ground for incoming and outgoing messages

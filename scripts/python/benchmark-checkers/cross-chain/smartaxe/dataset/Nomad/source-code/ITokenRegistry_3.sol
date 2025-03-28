@@ -3,10 +3,10 @@ pragma solidity >=0.6.11;
 
 // ============ Internal Imports ============
 import {IBridgeToken} from "./IBridgeToken.sol";
-import {BridgeMessage} from "../../contracts/bridge/BridgeMessage.sol";
+import {BridgeMessage} from "./BridgeMessage.sol";
 
 // ============ External Imports ============
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "./IERC20.sol";
 
 interface ITokenRegistry {
     function isLocalOrigin(address _token) external view returns (bool);

@@ -2,13 +2,13 @@
 
 pragma solidity >=0.5.0;
 
-import "SafeMath.sol";
-import "ZeroCopySink.sol";
-import "ZeroCopySource.sol";
-import "IERC721.sol";
-import "IERC721Enumerable.sol";
-import "IERC721Metadata.sol";
-import "IPolyNFTLockProxy.sol";
+import "./SafeMath.sol";
+import "./ZeroCopySink.sol";
+import "./ZeroCopySource.sol";
+import "./IERC721.sol";
+import "./IERC721Enumerable.sol";
+import "./IERC721Metadata.sol";
+import "./IPolyNFTLockProxy.sol";
 
 contract PolyNFTQuery {
     using SafeMath for uint;

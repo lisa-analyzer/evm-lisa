@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import { SafeCall } from "../libraries/SafeCall.sol";
-import { L2OutputOracle } from "./L2OutputOracle.sol";
-import { SystemConfig } from "./SystemConfig.sol";
-import { Constants } from "../libraries/Constants.sol";
-import { Types } from "../libraries/Types.sol";
-import { Hashing } from "../libraries/Hashing.sol";
-import { SecureMerkleTrie } from "../libraries/trie/SecureMerkleTrie.sol";
-import { AddressAliasHelper } from "../vendor/AddressAliasHelper.sol";
-import { ResourceMetering } from "./ResourceMetering.sol";
-import { Semver } from "../universal/Semver.sol";
+import {Initializable} from "./Initializable.sol";
+import {SafeCall} from "./SafeCall.sol";
+import {L2OutputOracle} from "./L2OutputOracle.sol";
+import {SystemConfig} from "./SystemConfig.sol";
+import {Constants} from "./Constants.sol";
+import {Types} from "./Types.sol";
+import {Hashing} from "./Hashing.sol";
+import {SecureMerkleTrie} from "./SecureMerkleTrie.sol";
+import {AddressAliasHelper} from "./AddressAliasHelper.sol";
+import {ResourceMetering} from "./ResourceMetering.sol";
+import {Semver} from "./Semver.sol";
 
 /**
  * @custom:proxied

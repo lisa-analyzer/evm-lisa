@@ -3,13 +3,13 @@
 // solhint-disable-next-line
 pragma solidity ^0.8.0;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {IERC20} from "./IERC20.sol";
+import {SafeERC20} from "./SafeERC20.sol";
+import {Context} from "./Context.sol";
 
-import {IGatewayRegistry} from "./GatewayRegistry/interfaces/IGatewayRegistry.sol";
-import {IMintGateway} from "./Gateways/interfaces/IMintGateway.sol";
-import {ILockGateway} from "./Gateways/interfaces/ILockGateway.sol";
+import {IGatewayRegistry} from "./IGatewayRegistry.sol";
+import {IMintGateway} from "./IMintGateway.sol";
+import {ILockGateway} from "./ILockGateway.sol";
 
 contract BasicBridge is Context {
     using SafeERC20 for IERC20;

@@ -3,10 +3,10 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {BridgeConfig} from './BridgeConfig.sol';
-import {AccessControl} from './BridgeConfig.sol';
-import {SafeMath} from './BridgeConfig.sol';
-import {PoolConfig} from './PoolConfig.sol';
+import {BridgeConfig} from "./BridgeConfig.sol";
+import {AccessControl} from "./BridgeConfig.sol";
+import {SafeMath} from "./BridgeConfig.sol";
+import {PoolConfig} from "./PoolConfig.sol";
 
 /**
  * @title BridgeConfigV2 contract

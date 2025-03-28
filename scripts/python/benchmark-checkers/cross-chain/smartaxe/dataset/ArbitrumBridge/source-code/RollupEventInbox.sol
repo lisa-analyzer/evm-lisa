@@ -8,8 +8,8 @@ import "./IRollupEventInbox.sol";
 import "./IBridge.sol";
 import "./IDelayedMessageProvider.sol";
 import "./DelegateCallAware.sol";
-import {INITIALIZATION_MSG_TYPE} from "../libraries/MessageTypes.sol";
-import {AlreadyInit, HadZeroInit} from "../libraries/Error.sol";
+import {INITIALIZATION_MSG_TYPE} from "./MessageTypes.sol";
+import {AlreadyInit, HadZeroInit} from "./Error.sol";
 
 /**
  * @title The inbox for rollup protocol events

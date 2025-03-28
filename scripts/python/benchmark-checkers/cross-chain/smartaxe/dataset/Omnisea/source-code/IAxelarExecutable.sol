@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarGateway } from './IAxelarGateway.sol';
+import {IAxelarGateway} from "./IAxelarGateway.sol";
 
 abstract contract IAxelarExecutable {
     error NotApprovedByGateway();

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import { IDiamondCut } from "../IDiamondCut.sol";
-import { LibDiamond } from "./LibDiamond.sol";
+import {IDiamondCut} from "./IDiamondCut.sol";
+import {LibDiamond} from "./LibDiamond.sol";
 
 contract DiamondCutFacet is IDiamondCut {
     /// @notice Add/replace/remove any number of functions and optionally execute

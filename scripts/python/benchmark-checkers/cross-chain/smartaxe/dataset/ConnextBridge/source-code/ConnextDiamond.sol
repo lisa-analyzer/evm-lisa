@@ -8,8 +8,8 @@ pragma solidity 0.8.17;
 * Implementation of a diamond.
 /******************************************************************************/
 
-import {LibDiamond} from "../libraries/LibDiamond.sol";
-import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
+import {LibDiamond} from "./LibDiamond.sol";
+import {IDiamondCut} from "./IDiamondCut.sol";
 
 contract ConnextDiamond {
   struct Initialization {

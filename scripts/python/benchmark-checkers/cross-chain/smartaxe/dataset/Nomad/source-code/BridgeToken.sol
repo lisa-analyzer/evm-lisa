@@ -2,13 +2,13 @@
 pragma solidity >=0.6.11;
 
 // ============ Internal Imports ============
-import {IBridgeToken} from "../../interfaces/bridge/IBridgeToken.sol";
-import {ERC20} from "./vendored/OZERC20.sol";
+import {IBridgeToken} from "./IBridgeToken.sol";
+import {ERC20} from "./OZERC20.sol";
 import {BridgeMessage} from "./BridgeMessage.sol";
 // ============ External Imports ============
-import {Version0} from "@nomad-xyz/nomad-core-sol/contracts/Version0.sol";
-import {TypeCasts} from "@nomad-xyz/nomad-core-sol/contracts/XAppConnectionManager.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Version0} from "./Version0.sol";
+import {TypeCasts} from "./XAppConnectionManager.sol";
+import {OwnableUpgradeable} from "./OwnableUpgradeable.sol";
 
 contract BridgeToken is Version0, IBridgeToken, OwnableUpgradeable, ERC20 {
     // ============ Immutables ============

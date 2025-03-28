@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache 2
 pragma solidity ^0.8.19;
 
-import {ERC1967Upgrade} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import {ERC1967Upgrade} from "./ERC1967Upgrade.sol";
 
 import {CircleIntegration} from "./CircleIntegration.sol";
 

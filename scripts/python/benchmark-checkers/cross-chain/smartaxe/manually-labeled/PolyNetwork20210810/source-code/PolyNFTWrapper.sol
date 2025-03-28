@@ -2,17 +2,17 @@
 
 pragma solidity >=0.5.0;
 
-import "Ownable.sol";
-import "SafeERC20.sol";
-import "SafeMath.sol";
-import "Pausable.sol";
-import "ZeroCopySink.sol";
-import "ZeroCopySource.sol";
-import "IERC721.sol";
-import "IERC721Enumerable.sol";
-import "IERC721Metadata.sol";
-import "ReentrancyGuard.sol";
-import "IPolyNFTLockProxy.sol";
+import "./Ownable.sol";
+import "./SafeERC20.sol";
+import "./SafeMath.sol";
+import "./Pausable.sol";
+import "./ZeroCopySink.sol";
+import "./ZeroCopySource.sol";
+import "./IERC721.sol";
+import "./IERC721Enumerable.sol";
+import "./IERC721Metadata.sol";
+import "./ReentrancyGuard.sol";
+import "./IPolyNFTLockProxy.sol";
 
 contract PolyNFTWrapper is Ownable, Pausable, ReentrancyGuard {
     using SafeMath for uint;

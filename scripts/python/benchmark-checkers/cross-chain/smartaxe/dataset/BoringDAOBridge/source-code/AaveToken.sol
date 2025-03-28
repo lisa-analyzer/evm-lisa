@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.10;
 
-import {ERC20} from "../open-zeppelin/ERC20.sol";
-import {ITransferHook} from "../interfaces/ITransferHook.sol";
-import {VersionedInitializable} from "../utils/VersionedInitializable.sol";
+import {ERC20} from "./ERC20.sol";
+import {ITransferHook} from "./ITransferHook.sol";
+import {VersionedInitializable} from "./VersionedInitializable.sol";
 
 
 /**

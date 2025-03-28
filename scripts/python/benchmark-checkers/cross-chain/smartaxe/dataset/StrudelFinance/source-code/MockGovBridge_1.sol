@@ -2,7 +2,7 @@
 pragma solidity 0.6.6;
 
 import "./IERC20.sol";
-import {IGovBridge} from "../IGovBridge.sol";
+import {IGovBridge} from "./IGovBridge.sol";
 
 contract MockGovBridge {
   event Deposit(address indexed receiver);

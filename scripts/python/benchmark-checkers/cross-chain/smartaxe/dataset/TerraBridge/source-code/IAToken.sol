@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.12;
 
-import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
-import {IScaledBalanceToken} from './IScaledBalanceToken.sol';
-import {IInitializableAToken} from './IInitializableAToken.sol';
-import {IAaveIncentivesController} from './IAaveIncentivesController.sol';
+import {IERC20} from "./IERC20.sol";
+import {IScaledBalanceToken} from "./IScaledBalanceToken.sol";
+import {IInitializableAToken} from "./IInitializableAToken.sol";
+import {IAaveIncentivesController} from "./IAaveIncentivesController.sol";
 
 interface IAToken is IERC20, IScaledBalanceToken, IInitializableAToken {
   /**

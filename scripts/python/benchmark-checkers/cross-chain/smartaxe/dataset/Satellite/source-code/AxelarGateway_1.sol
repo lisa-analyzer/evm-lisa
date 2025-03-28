@@ -2,15 +2,15 @@
 
 pragma solidity 0.8.9;
 
-import { IAxelarGateway } from './interfaces/IAxelarGateway.sol';
-import { IAxelarAuth } from './interfaces/IAxelarAuth.sol';
-import { IERC20 } from './interfaces/IERC20.sol';
-import { IBurnableMintableCappedERC20 } from './interfaces/IBurnableMintableCappedERC20.sol';
-import { ITokenDeployer } from './interfaces/ITokenDeployer.sol';
+import {IAxelarGateway} from "./IAxelarGateway.sol";
+import {IAxelarAuth} from "./IAxelarAuth.sol";
+import {IERC20} from "./IERC20.sol";
+import {IBurnableMintableCappedERC20} from "./IBurnableMintableCappedERC20.sol";
+import {ITokenDeployer} from "./ITokenDeployer.sol";
 
-import { ECDSA } from './ECDSA.sol';
-import { DepositHandler } from './DepositHandler.sol';
-import { AdminMultisigBase } from './AdminMultisigBase.sol';
+import {ECDSA} from "./ECDSA.sol";
+import {DepositHandler} from "./DepositHandler.sol";
+import {AdminMultisigBase} from "./AdminMultisigBase.sol";
 
 contract AxelarGateway is IAxelarGateway, AdminMultisigBase {
     enum TokenType {

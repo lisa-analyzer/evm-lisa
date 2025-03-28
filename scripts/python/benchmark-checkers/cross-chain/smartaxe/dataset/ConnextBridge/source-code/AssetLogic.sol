@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import {SafeERC20} from "./SafeERC20.sol";
+import {IERC20Metadata} from "./IERC20Metadata.sol";
 
-import {TypeCasts} from "../../../shared/libraries/TypeCasts.sol";
+import {TypeCasts} from "./TypeCasts.sol";
 
-import {IStableSwap} from "../interfaces/IStableSwap.sol";
+import {IStableSwap} from "./IStableSwap.sol";
 
 import {LibConnextStorage, AppStorage, TokenConfig} from "./LibConnextStorage.sol";
 import {SwapUtils} from "./SwapUtils.sol";

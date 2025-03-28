@@ -27,10 +27,10 @@ import "./ISequencerInbox.sol";
 import "./IRollupLogic.sol";
 import "./Messages.sol";
 
-import {L1MessageType_batchPostingReport} from "../libraries/MessageTypes.sol";
-import {GasRefundEnabled, IGasRefunder} from "../libraries/IGasRefunder.sol";
+import {L1MessageType_batchPostingReport} from "./MessageTypes.sol";
+import {GasRefundEnabled, IGasRefunder} from "./IGasRefunder.sol";
 import "./DelegateCallAware.sol";
-import {MAX_DATA_SIZE} from "../libraries/Constants.sol";
+import {MAX_DATA_SIZE} from "./Constants.sol";
 
 /**
  * @title Accepts batches from the sequencer and adds them to the rollup inbox.

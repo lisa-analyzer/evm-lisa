@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-import { Predeploys } from "../libraries/Predeploys.sol";
-import { StandardBridge } from "../universal/StandardBridge.sol";
-import { Semver } from "../universal/Semver.sol";
+import {Predeploys} from "./Predeploys.sol";
+import {StandardBridge} from "./StandardBridge.sol";
+import {Semver} from "./Semver.sol";
 
 /**
  * @custom:proxied

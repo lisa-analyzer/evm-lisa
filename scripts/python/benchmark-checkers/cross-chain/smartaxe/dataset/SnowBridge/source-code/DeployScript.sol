@@ -2,20 +2,20 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import {WETH9} from "canonical-weth/WETH9.sol";
-import {Script} from "forge-std/Script.sol";
-import {BeefyClient} from "../src/BeefyClient.sol";
-import {ParachainClient} from "../src/ParachainClient.sol";
-import {InboundQueue} from "../src/InboundQueue.sol";
-import {IRecipient} from "../src/IRecipient.sol";
-import {OutboundQueue} from "../src/OutboundQueue.sol";
-import {NativeTokens} from "../src/NativeTokens.sol";
-import {TokenVault} from "../src/TokenVault.sol";
-import {Vault} from "../src/Vault.sol";
-import {UpgradeProxy} from "../src/UpgradeProxy.sol";
-import {SovereignTreasury} from "../src/SovereignTreasury.sol";
-import {Registry} from "../src/Registry.sol";
-import {ParaID} from "../src/Types.sol";
+import {WETH9} from "./WETH9.sol";
+import {Script} from "./Script.sol";
+import {BeefyClient} from "./BeefyClient.sol";
+import {ParachainClient} from "./ParachainClient.sol";
+import {InboundQueue} from "./InboundQueue.sol";
+import {IRecipient} from "./IRecipient.sol";
+import {OutboundQueue} from "./OutboundQueue.sol";
+import {NativeTokens} from "./NativeTokens.sol";
+import {TokenVault} from "./TokenVault.sol";
+import {Vault} from "./Vault.sol";
+import {UpgradeProxy} from "./UpgradeProxy.sol";
+import {SovereignTreasury} from "./SovereignTreasury.sol";
+import {Registry} from "./Registry.sol";
+import {ParaID} from "./Types.sol";
 
 contract DeployScript is Script {
     Registry public registry;

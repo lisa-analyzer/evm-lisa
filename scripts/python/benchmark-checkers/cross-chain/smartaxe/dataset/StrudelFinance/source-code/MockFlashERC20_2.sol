@@ -1,6 +1,6 @@
 pragma solidity 0.6.6;
 
-import {FlashERC20} from "../FlashERC20.sol";
+import {FlashERC20} from "./FlashERC20.sol";
 
 contract MockFlashERC20 is FlashERC20 {
   bytes32 public DOMAIN_SEPARATOR;

@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.10;
 
-import {IInbox} from '../dependencies/arbitrum/interfaces/IInbox.sol';
-import {IBridge} from '../dependencies/arbitrum/interfaces/IBridge.sol';
-import {ISequencerInbox} from '../dependencies/arbitrum/interfaces/ISequencerInbox.sol';
+import {IInbox} from "./IInbox.sol";
+import {IBridge} from "./IBridge.sol";
+import {ISequencerInbox} from "./ISequencerInbox.sol";
 
 contract MockInbox is IInbox {
   uint256 public messageNum;

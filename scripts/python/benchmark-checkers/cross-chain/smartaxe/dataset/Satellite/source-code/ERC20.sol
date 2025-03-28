@@ -111,9 +111,9 @@ abstract contract Context {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
+// import {IERC20} from "./IERC20.sol";
 
-// import { Context } from 'src/Context.sol';
+// import {Context} from "./Context.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.

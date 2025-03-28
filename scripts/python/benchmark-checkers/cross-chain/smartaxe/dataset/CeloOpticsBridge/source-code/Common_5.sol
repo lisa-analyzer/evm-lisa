@@ -2,10 +2,10 @@
 pragma solidity >=0.6.11;
 
 // ============ Internal Imports ============
-import {Message} from "../libs/Message.sol";
+import {Message} from "./Message.sol";
 // ============ External Imports ============
-import {ECDSA} from "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import {ECDSA} from "./ECDSA.sol";
+import {Initializable} from "./Initializable.sol";
 
 /**
  * @title Common

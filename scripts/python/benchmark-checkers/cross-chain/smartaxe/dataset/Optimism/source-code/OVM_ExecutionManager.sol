@@ -4,23 +4,23 @@ pragma solidity >0.5.0 <0.8.0;
 pragma experimental ABIEncoderV2;
 
 /* Library Imports */
-import { Lib_OVMCodec } from "../../libraries/codec/Lib_OVMCodec.sol";
-import { Lib_AddressResolver } from "../../libraries/resolver/Lib_AddressResolver.sol";
-import { Lib_Bytes32Utils } from "../../libraries/utils/Lib_Bytes32Utils.sol";
-import { Lib_EthUtils } from "../../libraries/utils/Lib_EthUtils.sol";
-import { Lib_ErrorUtils } from "../../libraries/utils/Lib_ErrorUtils.sol";
-import { Lib_PredeployAddresses } from "../../libraries/constants/Lib_PredeployAddresses.sol";
+import {Lib_OVMCodec} from "./Lib_OVMCodec.sol";
+import {Lib_AddressResolver} from "./Lib_AddressResolver.sol";
+import {Lib_Bytes32Utils} from "./Lib_Bytes32Utils.sol";
+import {Lib_EthUtils} from "./Lib_EthUtils.sol";
+import {Lib_ErrorUtils} from "./Lib_ErrorUtils.sol";
+import {Lib_PredeployAddresses} from "./Lib_PredeployAddresses.sol";
 
 /* Interface Imports */
-import { iOVM_ExecutionManager } from "../../iOVM/execution/iOVM_ExecutionManager.sol";
-import { iOVM_StateManager } from "../../iOVM/execution/iOVM_StateManager.sol";
-import { iOVM_SafetyChecker } from "../../iOVM/execution/iOVM_SafetyChecker.sol";
+import {iOVM_ExecutionManager} from "./iOVM_ExecutionManager.sol";
+import {iOVM_StateManager} from "./iOVM_StateManager.sol";
+import {iOVM_SafetyChecker} from "./iOVM_SafetyChecker.sol";
 
 /* Contract Imports */
-import { OVM_DeployerWhitelist } from "../predeploys/OVM_DeployerWhitelist.sol";
+import {OVM_DeployerWhitelist} from "./OVM_DeployerWhitelist.sol";
 
 /* External Imports */
-import { Math } from "@openzeppelin/contracts/math/Math.sol";
+import {Math} from "./Math.sol";
 
 /**
  * @title OVM_ExecutionManager

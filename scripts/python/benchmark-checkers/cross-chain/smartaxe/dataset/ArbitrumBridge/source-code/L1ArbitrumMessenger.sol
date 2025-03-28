@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {IBridge} from "../../arbitrum/IBridge.sol";
-import {IInbox} from "../../arbitrum/IInbox.sol";
-import {IOutbox} from "../../arbitrum/IOutbox.sol";
+import {IBridge} from "./IBridge.sol";
+import {IInbox} from "./IInbox.sol";
+import {IOutbox} from "./IOutbox.sol";
 
 abstract contract L1ArbitrumMessenger {
     IInbox public immutable inbox;

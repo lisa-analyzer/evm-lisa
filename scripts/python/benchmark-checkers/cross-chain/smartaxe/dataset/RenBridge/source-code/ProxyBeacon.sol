@@ -3,13 +3,13 @@
 // solhint-disable-next-line
 pragma solidity ^0.8.0;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {AccessControl} from "./AccessControl.sol";
+import {UpgradeableBeacon} from "./UpgradeableBeacon.sol";
+import {Context} from "./Context.sol";
+import {Ownable} from "./Ownable.sol";
+import {Address} from "./Address.sol";
 
-import {BeaconProxy} from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import {BeaconProxy} from "./BeaconProxy.sol";
 
 contract ProxyBeacon is Context, UpgradeableBeacon {
     event LogProxyDeployerUpdated(address indexed oldProxyDeployer, address indexed newProxyDeployer);

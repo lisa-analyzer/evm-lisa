@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.10;
 
-import {AddressAliasHelper} from './../dependencies/arbitrum/AddressAliasHelper.sol';
+import {AddressAliasHelper} from "./AddressAliasHelper.sol";
 
 contract ArbGreeter {
   event Senders(address msgSender, address applyAlias, address undoAlias);

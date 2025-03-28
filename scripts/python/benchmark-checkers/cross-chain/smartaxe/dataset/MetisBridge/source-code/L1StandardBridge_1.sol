@@ -2,18 +2,18 @@
 pragma solidity ^0.8.9;
 
 /* Interface Imports */
-import { IL1StandardBridge } from "./IL1StandardBridge.sol";
-import { IL1ERC20Bridge } from "./IL1ERC20Bridge.sol";
-import { IL2ERC20Bridge } from "../../L2/messaging/IL2ERC20Bridge.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IL1StandardBridge} from "./IL1StandardBridge.sol";
+import {IL1ERC20Bridge} from "./IL1ERC20Bridge.sol";
+import {IL2ERC20Bridge} from "./IL2ERC20Bridge.sol";
+import {IERC20} from "./IERC20.sol";
 
 /* Library Imports */
-import { CrossDomainEnabled } from "../../libraries/bridge/CrossDomainEnabled.sol";
-import { Lib_PredeployAddresses } from "../../libraries/constants/Lib_PredeployAddresses.sol";
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { iMVM_DiscountOracle } from "../../MVM/iMVM_DiscountOracle.sol";
-import { Lib_AddressManager } from "../../libraries/resolver/Lib_AddressManager.sol";
+import {CrossDomainEnabled} from "./CrossDomainEnabled.sol";
+import {Lib_PredeployAddresses} from "./Lib_PredeployAddresses.sol";
+import {Address} from "./Address.sol";
+import {SafeERC20} from "./SafeERC20.sol";
+import {iMVM_DiscountOracle} from "./iMVM_DiscountOracle.sol";
+import {Lib_AddressManager} from "./Lib_AddressManager.sol";
 
 /**
  * @title L1StandardBridge

@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import {Ownable} from "openzeppelin/access/Ownable.sol";
-import {AccessControl} from "openzeppelin/access/AccessControl.sol";
-import {IERC20Metadata} from "openzeppelin/token/ERC20/extensions/IERC20Metadata.sol";
+import {Ownable} from "./Ownable.sol";
+import {AccessControl} from "./AccessControl.sol";
+import {IERC20Metadata} from "./IERC20Metadata.sol";
 
 import {TokenVault} from "./TokenVault.sol";
 import {SubstrateTypes} from "./SubstrateTypes.sol";

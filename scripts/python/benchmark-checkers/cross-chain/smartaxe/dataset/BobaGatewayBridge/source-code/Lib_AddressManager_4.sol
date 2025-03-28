@@ -2,7 +2,7 @@
 pragma solidity >0.5.0 <0.8.0;
 
 /* External Imports */
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "./Ownable.sol";
 
 /**
  * @title Lib_AddressManager

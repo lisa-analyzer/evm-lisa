@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.10;
 
-import {ITransferHook} from "../interfaces/ITransferHook.sol";
+import {ITransferHook} from "./ITransferHook.sol";
 
 contract MockTransferHook is ITransferHook {
     event MockHookEvent();

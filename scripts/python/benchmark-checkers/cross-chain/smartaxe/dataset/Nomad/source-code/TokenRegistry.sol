@@ -3,17 +3,17 @@ pragma solidity >=0.6.11;
 
 // ============ Nomad Contracts ============
 import {BridgeMessage} from "./BridgeMessage.sol";
-import {XAppConnectionClient} from "../XAppConnectionClient.sol";
+import {XAppConnectionClient} from "./XAppConnectionClient.sol";
 import {Encoding} from "./Encoding.sol";
-import {TypeCasts} from "@nomad-xyz/nomad-core-sol/contracts/XAppConnectionManager.sol";
-import {UpgradeBeaconProxy} from "@nomad-xyz/nomad-core-sol/contracts/upgrade/UpgradeBeaconProxy.sol";
+import {TypeCasts} from "./XAppConnectionManager.sol";
+import {UpgradeBeaconProxy} from "./UpgradeBeaconProxy.sol";
 // ============ Interfaces ============
-import {ITokenRegistry} from "../../interfaces/bridge/ITokenRegistry.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IBridgeToken} from "../../interfaces/bridge/IBridgeToken.sol";
+import {ITokenRegistry} from "./ITokenRegistry.sol";
+import {IERC20} from "./IERC20.sol";
+import {IBridgeToken} from "./IBridgeToken.sol";
 // ============ External Contracts ============
-import {TypedMemView} from "@summa-tx/memview-sol/contracts/TypedMemView.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import {TypedMemView} from "./TypedMemView.sol";
+import {Initializable} from "./Initializable.sol";
 
 /**
  * @title TokenRegistry

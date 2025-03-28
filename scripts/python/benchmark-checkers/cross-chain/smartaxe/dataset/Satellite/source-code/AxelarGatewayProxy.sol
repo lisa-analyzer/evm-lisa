@@ -98,7 +98,7 @@ contract EternalStorage {
 
 pragma solidity >=0.8.0 <0.9.0;
 
-// import { EternalStorage } from 'src/EternalStorage.sol';
+// import {EternalStorage} from "./EternalStorage.sol";
 
 contract AxelarGatewayProxy is EternalStorage {
     /// @dev Storage slot with the address of the current factory. `keccak256('eip1967.proxy.implementation') - 1`.

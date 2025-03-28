@@ -3,12 +3,12 @@ pragma solidity ^0.8.9;
 pragma experimental ABIEncoderV2;
 
 /* Library Imports */
-import { CrossDomainEnabled } from "../libraries/bridge/CrossDomainEnabled.sol";
-import { Lib_PredeployAddresses } from "../libraries/constants/Lib_PredeployAddresses.sol";
-import { Lib_AddressManager } from "../libraries/resolver/Lib_AddressManager.sol";
-import { iOVM_SequencerFeeVault } from "../L2/predeploys/iOVM_SequencerFeeVault.sol";
-import { iMVM_L2ChainManagerOnL1 } from "./iMVM_L2ChainManagerOnL1.sol";
-import { iMVM_DiscountOracle } from "./iMVM_DiscountOracle.sol";
+import {CrossDomainEnabled} from "./CrossDomainEnabled.sol";
+import {Lib_PredeployAddresses} from "./Lib_PredeployAddresses.sol";
+import {Lib_AddressManager} from "./Lib_AddressManager.sol";
+import {iOVM_SequencerFeeVault} from "./iOVM_SequencerFeeVault.sol";
+import {iMVM_L2ChainManagerOnL1} from "./iMVM_L2ChainManagerOnL1.sol";
+import {iMVM_DiscountOracle} from "./iMVM_DiscountOracle.sol";
 /* Interface Imports */
 
 /* External Imports */

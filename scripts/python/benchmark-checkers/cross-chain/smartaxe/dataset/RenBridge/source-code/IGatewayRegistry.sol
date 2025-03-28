@@ -3,10 +3,10 @@
 // solhint-disable-next-line
 pragma solidity ^0.8.0;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "./IERC20.sol";
 
-import {IMintGateway} from "../../Gateways/interfaces/IMintGateway.sol";
-import {ILockGateway} from "../../Gateways/interfaces/ILockGateway.sol";
+import {IMintGateway} from "./IMintGateway.sol";
+import {ILockGateway} from "./ILockGateway.sol";
 
 abstract contract IGatewayRegistry {
     function signatureVerifier() external view virtual returns (address);

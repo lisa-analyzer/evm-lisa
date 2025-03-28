@@ -2,9 +2,9 @@
 // Copyright (c) Eywa.Fi, 2021-2023 - all rights reserved
 pragma solidity 0.8.17;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "./Ownable.sol";
 import "./ERC20Burnable.sol";
-import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+import {ERC20Permit} from "./draft-ERC20Permit.sol";
 
 contract EPOA is Ownable, ERC20Permit {
     address public nodeRegistry;

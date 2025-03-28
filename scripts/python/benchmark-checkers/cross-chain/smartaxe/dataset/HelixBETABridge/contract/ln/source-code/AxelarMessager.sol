@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import { StringToAddress, AddressToString } from '@axelar-network/axelar-gmp-sdk-solidity/contracts/libs/AddressString.sol';
+import {StringToAddress, AddressToString} from "./AddressString.sol";
 import "./ILowLevelMessager.sol";
 import "./LnAccessController.sol";
 import "./IAxelarGateway.sol";

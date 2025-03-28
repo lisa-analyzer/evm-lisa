@@ -3,19 +3,19 @@ pragma solidity 0.7.6;
 
 // ============ Internal Imports ============
 import {BridgeMessage} from "./BridgeMessage.sol";
-import {IBridgeToken} from "./interfaces/IBridgeToken.sol";
-import {ITokenRegistry} from "./interfaces/ITokenRegistry.sol";
-import {IBridgeHook} from "./interfaces/IBridgeHook.sol";
-import {IEventAccountant} from "./interfaces/IEventAccountant.sol";
+import {IBridgeToken} from "./IBridgeToken.sol";
+import {ITokenRegistry} from "./ITokenRegistry.sol";
+import {IBridgeHook} from "./IBridgeHook.sol";
+import {IEventAccountant} from "./IEventAccountant.sol";
 // ============ External Imports ============
-import {XAppConnectionClient} from "@nomad-xyz/contracts-router/contracts/XAppConnectionClient.sol";
-import {Router} from "@nomad-xyz/contracts-router/contracts/Router.sol";
-import {Home} from "@nomad-xyz/contracts-core/contracts/Home.sol";
-import {TypeCasts} from "@nomad-xyz/contracts-core/contracts/libs/TypeCasts.sol";
-import {Version0} from "@nomad-xyz/contracts-core/contracts/Version0.sol";
-import {TypedMemView} from "@summa-tx/memview-sol/contracts/TypedMemView.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import {XAppConnectionClient} from "./XAppConnectionClient.sol";
+import {Router} from "./Router.sol";
+import {Home} from "./Home.sol";
+import {TypeCasts} from "./TypeCasts.sol";
+import {Version0} from "./Version0.sol";
+import {TypedMemView} from "./TypedMemView.sol";
+import {IERC20} from "./IERC20.sol";
+import {SafeERC20} from "./SafeERC20.sol";
 
 /**
  * @title BaseBridgeRouter

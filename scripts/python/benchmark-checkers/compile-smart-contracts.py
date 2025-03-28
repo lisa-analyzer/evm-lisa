@@ -348,8 +348,8 @@ def compile_bridges(base_path):
             compile_bridge(subfolder_path)
 
 def compile_bridge(name):
-    extract_solidity_versions(src_folder=f'./{name}/source-code',
-                              output_csv=f'./{name}/source-code/version.csv')
+    # extract_solidity_versions(src_folder=f'./{name}/source-code',
+    #                           output_csv=f'./{name}/source-code/version.csv')
     
     compile_solidity_sources_with_different_version(source_dir=f'./{name}/source-code',
                                                     json_dir=f'./{name}/json',
@@ -367,7 +367,7 @@ def compile_bridge(name):
                                 file_index=match_file_index)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     parser = argparse.ArgumentParser(description="Compile datasets.")
     parser.add_argument("--solidifi", action="store_true", help="Compile SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Compile SmartBugs dataset")
@@ -378,8 +378,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.cross_chain:
-        compile_bridges('cross-chain/smartaxe/dataset')
-        # compile_bridges('cross-chain/smartaxe/manually-labeled')
+        # compile_bridges('cross-chain/smartaxe/dataset')
+        compile_bridges('cross-chain/smartaxe/manually-labeled')
         # compile_bridge('cross-chain/time-synchronization')
         # compile_bridge('cross-chain/dummy-bridge')
 

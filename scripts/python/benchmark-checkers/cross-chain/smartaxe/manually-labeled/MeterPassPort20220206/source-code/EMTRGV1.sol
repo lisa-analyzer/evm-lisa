@@ -2,9 +2,9 @@
 
 pragma solidity ^0.6.8;
 
-import { MeterGovERC20 } from "./EMTRG.sol";
-import { Pausable } from "./Pausable.sol";
-import { Rescuable } from "./Rescuable.sol";
+import {MeterGovERC20} from "./EMTRG.sol";
+import {Pausable} from "./Pausable.sol";
+import {Rescuable} from "./Rescuable.sol";
 
 
 /**

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.9;
 
 /* Library Imports */
-import { Lib_BytesUtils } from "../utils/Lib_BytesUtils.sol";
-import { Lib_RLPReader } from "../rlp/Lib_RLPReader.sol";
-import { Lib_RLPWriter } from "../rlp/Lib_RLPWriter.sol";
+import {Lib_BytesUtils} from "./Lib_BytesUtils.sol";
+import {Lib_RLPReader} from "./Lib_RLPReader.sol";
+import {Lib_RLPWriter} from "./Lib_RLPWriter.sol";
 
 /**
  * @title Lib_MerkleTrie

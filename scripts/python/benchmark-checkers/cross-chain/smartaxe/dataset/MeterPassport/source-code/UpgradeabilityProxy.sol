@@ -24,8 +24,8 @@
 
 pragma solidity ^0.6.8;
 
-import { Proxy } from "./Proxy.sol";
-import { Address } from "./Address.sol";
+import {Proxy} from "./Proxy.sol";
+import {Address} from "./Address.sol";
 
 
 /**

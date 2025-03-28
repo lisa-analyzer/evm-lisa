@@ -352,9 +352,9 @@ interface IOwnable {
 
 // pragma solidity 0.8.9;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
-// import { IERC20Permit } from 'src/interfaces/IERC20Permit.sol';
-// import { IOwnable } from 'src/interfaces/IOwnable.sol';
+// import {IERC20} from "./IERC20.sol";
+// import {IERC20Permit} from "./IERC20Permit.sol";
+// import {IOwnable} from "./IOwnable.sol";
 
 interface IMintableCappedERC20 is IERC20, IERC20Permit, IOwnable {
     error CapExceeded();
@@ -370,9 +370,9 @@ interface IMintableCappedERC20 is IERC20, IERC20Permit, IOwnable {
 
 // pragma solidity 0.8.9;
 
-// import { IERC20Burn } from 'src/interfaces/IERC20Burn.sol';
-// import { IERC20BurnFrom } from 'src/interfaces/IERC20BurnFrom.sol';
-// import { IMintableCappedERC20 } from 'src/interfaces/IMintableCappedERC20.sol';
+// import {IERC20Burn} from "./IERC20Burn.sol";
+// import {IERC20BurnFrom} from "./IERC20BurnFrom.sol";
+// import {IMintableCappedERC20} from "./IMintableCappedERC20.sol";
 
 interface IBurnableMintableCappedERC20 is IERC20Burn, IERC20BurnFrom, IMintableCappedERC20 {
     error IsFrozen();
@@ -390,7 +390,7 @@ interface IBurnableMintableCappedERC20 is IERC20Burn, IERC20BurnFrom, IMintableC
 
 // pragma solidity 0.8.9;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
+// import {IERC20} from "./IERC20.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -653,10 +653,10 @@ contract ERC20 is IERC20 {
 
 // pragma solidity 0.8.9;
 
-// import { IERC20 } from 'src/interfaces/IERC20.sol';
-// import { IERC20Permit } from 'src/interfaces/IERC20Permit.sol';
+// import {IERC20} from "./IERC20.sol";
+// import {IERC20Permit} from "./IERC20Permit.sol";
 
-// import { ERC20 } from 'src/ERC20.sol';
+// import {ERC20} from "./ERC20.sol";
 
 abstract contract ERC20Permit is IERC20, IERC20Permit, ERC20 {
     error PermitExpired();
@@ -728,7 +728,7 @@ abstract contract ERC20Permit is IERC20, IERC20Permit, ERC20 {
 
 // pragma solidity 0.8.9;
 
-// import { IOwnable } from 'src/interfaces/IOwnable.sol';
+// import {IOwnable} from "./IOwnable.sol";
 
 abstract contract Ownable is IOwnable {
     address public owner;
@@ -758,11 +758,11 @@ abstract contract Ownable is IOwnable {
 
 // pragma solidity 0.8.9;
 
-// import { IMintableCappedERC20 } from 'src/interfaces/IMintableCappedERC20.sol';
+// import {IMintableCappedERC20} from "./IMintableCappedERC20.sol";
 
-// import { ERC20 } from 'src/ERC20.sol';
-// import { ERC20Permit } from 'src/ERC20Permit.sol';
-// import { Ownable } from 'src/Ownable.sol';
+// import {ERC20} from "./ERC20.sol";
+// import {ERC20Permit} from "./ERC20Permit.sol";
+// import {Ownable} from "./Ownable.sol";
 
 contract MintableCappedERC20 is IMintableCappedERC20, ERC20, ERC20Permit, Ownable {
     uint256 public immutable cap;
@@ -831,11 +831,11 @@ contract DepositHandler {
 
 // pragma solidity 0.8.9;
 
-// import { IAxelarGateway } from 'src/interfaces/IAxelarGateway.sol';
-// import { IBurnableMintableCappedERC20 } from 'src/interfaces/IBurnableMintableCappedERC20.sol';
+// import {IAxelarGateway} from "./IAxelarGateway.sol";
+// import {IBurnableMintableCappedERC20} from "./IBurnableMintableCappedERC20.sol";
 
-// import { MintableCappedERC20 } from 'src/MintableCappedERC20.sol';
-// import { DepositHandler } from 'src/DepositHandler.sol';
+// import {MintableCappedERC20} from "./MintableCappedERC20.sol";
+// import {DepositHandler} from "./DepositHandler.sol";
 
 contract BurnableMintableCappedERC20 is IBurnableMintableCappedERC20, MintableCappedERC20 {
     // keccak256('token-frozen')
@@ -898,9 +898,9 @@ contract BurnableMintableCappedERC20 is IBurnableMintableCappedERC20, MintableCa
 
 pragma solidity 0.8.9;
 
-// import { ITokenDeployer } from 'src/interfaces/ITokenDeployer.sol';
+// import {ITokenDeployer} from "./ITokenDeployer.sol";
 
-// import { BurnableMintableCappedERC20 } from 'src/BurnableMintableCappedERC20.sol';
+// import {BurnableMintableCappedERC20} from "./BurnableMintableCappedERC20.sol";
 
 contract TokenDeployer is ITokenDeployer {
     function deployToken(

@@ -2,7 +2,7 @@
 pragma solidity 0.7.6;
 
 // ============ External Imports ============
-import {TypedMemView} from "@summa-tx/memview-sol/contracts/TypedMemView.sol";
+import {TypedMemView} from "./TypedMemView.sol";
 
 library BridgeMessage {
     // ============ Libraries ============

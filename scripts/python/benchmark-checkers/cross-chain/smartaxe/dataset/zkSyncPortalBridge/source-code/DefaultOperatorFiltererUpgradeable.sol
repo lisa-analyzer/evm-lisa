@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {OperatorFiltererUpgradeable} from "./OperatorFiltererUpgradeable.sol";
-import {CANONICAL_CORI_SUBSCRIPTION} from "../lib/Constants.sol";
+import {CANONICAL_CORI_SUBSCRIPTION} from "./Constants.sol";
 
 /**
  * @title  DefaultOperatorFiltererUpgradeable

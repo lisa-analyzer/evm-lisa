@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.0;
 
-import "Context.sol";
+import "./Context.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -44,7 +44,7 @@ contract Pausable is Context {
      * @dev Modifier to make a function callable only when the contract is not paused.
      */
     modifier whenNotPaused() {
-        require(!_paused, "Pausable: paused");
+        require(!_paused, "./Pausable: paused");
         _;
     }
 
@@ -52,7 +52,7 @@ contract Pausable is Context {
      * @dev Modifier to make a function callable only when the contract is paused.
      */
     modifier whenPaused() {
-        require(_paused, "Pausable: not paused");
+        require(_paused, "./Pausable: not paused");
         _;
     }
 

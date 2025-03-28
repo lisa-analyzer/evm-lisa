@@ -3,8 +3,8 @@ pragma solidity ^0.8.9;
 
 /* External Imports */
 
-import { iOVM_SequencerFeeVault } from "./iOVM_SequencerFeeVault.sol";
-import { Lib_PredeployAddresses } from "../../libraries/constants/Lib_PredeployAddresses.sol";
+import {iOVM_SequencerFeeVault} from "./iOVM_SequencerFeeVault.sol";
+import {Lib_PredeployAddresses} from "./Lib_PredeployAddresses.sol";
 
 /**
  * @title OVM_GasPriceOracle

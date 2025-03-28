@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.19;
 
-import {IWormhole} from "wormhole/interfaces/IWormhole.sol";
-import {ICircleBridge} from "./circle/ICircleBridge.sol";
-import {IMessageTransmitter} from "./circle/IMessageTransmitter.sol";
+import {IWormhole} from "./IWormhole.sol";
+import {ICircleBridge} from "./ICircleBridge.sol";
+import {IMessageTransmitter} from "./IMessageTransmitter.sol";
 
 interface ICircleIntegration {
     struct TransferParameters {

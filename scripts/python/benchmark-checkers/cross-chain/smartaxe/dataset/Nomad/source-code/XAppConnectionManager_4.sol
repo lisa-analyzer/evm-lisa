@@ -4,10 +4,10 @@ pragma solidity 0.7.6;
 // ============ Internal Imports ============
 import {Home} from "./Home.sol";
 import {Replica} from "./Replica.sol";
-import {TypeCasts} from "./libs/TypeCasts.sol";
+import {TypeCasts} from "./TypeCasts.sol";
 // ============ External Imports ============
-import {ECDSA} from "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ECDSA} from "./ECDSA.sol";
+import {Ownable} from "./Ownable.sol";
 
 /**
  * @title XAppConnectionManager

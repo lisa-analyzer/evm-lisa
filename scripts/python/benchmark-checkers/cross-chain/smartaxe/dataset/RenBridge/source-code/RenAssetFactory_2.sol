@@ -3,15 +3,15 @@
 // solhint-disable-next-line
 pragma solidity ^0.8.0;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import {BeaconProxy} from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Initializable} from "./Initializable.sol";
+import {ContextUpgradeable} from "./ContextUpgradeable.sol";
+import {BeaconProxy} from "./BeaconProxy.sol";
+import {IERC20} from "./IERC20.sol";
 
-import {IMintGateway} from "../Gateways/interfaces/IMintGateway.sol";
-import {ILockGateway} from "../Gateways/interfaces/ILockGateway.sol";
+import {IMintGateway} from "./IMintGateway.sol";
+import {ILockGateway} from "./ILockGateway.sol";
 import {RenAssetProxyBeacon, MintGatewayProxyBeacon, LockGatewayProxyBeacon} from "./ProxyBeacon.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "./Ownable.sol";
 
 contract RenAssetFactoryState {
     RenAssetProxyBeacon internal _renAssetProxyBeacon;

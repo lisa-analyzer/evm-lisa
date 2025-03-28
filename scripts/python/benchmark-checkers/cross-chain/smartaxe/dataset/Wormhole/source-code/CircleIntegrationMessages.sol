@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache 2
 pragma solidity ^0.8.19;
 
-import {BytesLib} from "wormhole/libraries/external/BytesLib.sol";
+import {BytesLib} from "./BytesLib.sol";
 
 import {CircleIntegrationStructs} from "./CircleIntegrationStructs.sol";
 

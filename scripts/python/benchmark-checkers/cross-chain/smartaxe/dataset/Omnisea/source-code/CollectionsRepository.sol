@@ -4,7 +4,7 @@ pragma solidity ^0.8.7;
 
 import "./OmniERC721.sol";
 import "./ICollectionsRepository.sol";
-import { CreateParams } from "../structs/erc721/ERC721Structs.sol";
+import {CreateParams} from "./ERC721Structs.sol";
 import "./Ownable.sol";
 
 /**

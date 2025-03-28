@@ -5,7 +5,7 @@ pragma solidity 0.6.6;
 
 import {TypedMemView} from "./TypedMemView.sol";
 import {ViewBTC} from "./ViewBTC.sol";
-import {SafeMath} from "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import {SafeMath} from "./SafeMath.sol";
 
 library ViewSPV {
   using TypedMemView for bytes;

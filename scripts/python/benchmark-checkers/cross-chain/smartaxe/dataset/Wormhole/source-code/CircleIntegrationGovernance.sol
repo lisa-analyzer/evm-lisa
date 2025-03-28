@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache 2
 pragma solidity ^0.8.19;
 
-import {ERC1967Upgrade} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
+import {ERC1967Upgrade} from "./ERC1967Upgrade.sol";
 
-import {IWormhole} from "wormhole/interfaces/IWormhole.sol";
-import {BytesLib} from "wormhole/libraries/external/BytesLib.sol";
+import {IWormhole} from "./IWormhole.sol";
+import {BytesLib} from "./BytesLib.sol";
 
 import {CircleIntegrationSetters} from "./CircleIntegrationSetters.sol";
 import {CircleIntegrationGetters} from "./CircleIntegrationGetters.sol";
 import {CircleIntegrationState} from "./CircleIntegrationState.sol";
-import {ICircleIntegration} from "../interfaces/ICircleIntegration.sol";
+import {ICircleIntegration} from "./ICircleIntegration.sol";
 
 contract CircleIntegrationGovernance is CircleIntegrationGetters, ERC1967Upgrade {
     using BytesLib for bytes;

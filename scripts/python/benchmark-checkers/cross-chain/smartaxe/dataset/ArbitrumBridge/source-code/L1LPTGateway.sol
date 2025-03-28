@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {ControlledGateway} from "../../ControlledGateway.sol";
+import {ControlledGateway} from "./ControlledGateway.sol";
 import {L1ArbitrumMessenger} from "./L1ArbitrumMessenger.sol";
 import {IL1LPTGateway} from "./IL1LPTGateway.sol";
-import {IL2LPTGateway} from "../../L2/gateway/IL2LPTGateway.sol";
+import {IL2LPTGateway} from "./IL2LPTGateway.sol";
 
 interface TokenLike {
     function transferFrom(

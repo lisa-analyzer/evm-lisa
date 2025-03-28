@@ -2,11 +2,11 @@
 pragma solidity ^0.8.9;
 
 /* Library Imports */
-import { Lib_PredeployAddresses } from "../../libraries/constants/Lib_PredeployAddresses.sol";
+import {Lib_PredeployAddresses} from "./Lib_PredeployAddresses.sol";
 
 /* Contract Imports */
-import { L2StandardBridge } from "../messaging/L2StandardBridge.sol";
-import { CrossDomainEnabled } from "../../libraries/bridge/CrossDomainEnabled.sol";
+import {L2StandardBridge} from "./L2StandardBridge.sol";
+import {CrossDomainEnabled} from "./CrossDomainEnabled.sol";
 
 /**
  * @title OVM_SequencerFeeVault

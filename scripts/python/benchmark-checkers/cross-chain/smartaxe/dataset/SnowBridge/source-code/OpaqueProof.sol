@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2023 Snowfork <hello@snowfork.com>
 pragma solidity 0.8.20;
 
-import {ParachainClient} from "../ParachainClient.sol";
+import {ParachainClient} from "./ParachainClient.sol";
 
 // This contract is a hack which allows us to ABI-encode `ParachainClient.Proof` in the off-chain relayer.
 // It is only used to generate client bindings and is never deployed.

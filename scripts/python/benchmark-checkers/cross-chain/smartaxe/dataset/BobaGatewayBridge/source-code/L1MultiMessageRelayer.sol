@@ -3,10 +3,10 @@ pragma solidity >0.7.5;
 pragma experimental ABIEncoderV2;
 
 /* Interface Imports */
-import {IL1CrossDomainMessenger} from './IL1CrossDomainMessenger.sol';
+import {IL1CrossDomainMessenger} from "./IL1CrossDomainMessenger.sol";
 
 /* Library Imports */
-import {Lib_AddressResolver} from '../../libraries/resolver/Lib_AddressResolver.sol';
+import {Lib_AddressResolver} from "./Lib_AddressResolver.sol";
 
 /**
  * @title L1MultiMessageRelayer

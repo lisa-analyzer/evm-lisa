@@ -3,9 +3,9 @@ pragma solidity >=0.6.11;
 
 // ============ Internal Imports ============
 import {BridgeRouter} from "./BridgeRouter.sol";
-import {IWeth} from "../../interfaces/bridge/IWeth.sol";
+import {IWeth} from "./IWeth.sol";
 // ============ External Imports ============
-import {TypeCasts} from "@celo-org/optics-sol/contracts/XAppConnectionManager.sol";
+import {TypeCasts} from "./XAppConnectionManager.sol";
 
 contract ETHHelper {
     // ============ Immutables ============

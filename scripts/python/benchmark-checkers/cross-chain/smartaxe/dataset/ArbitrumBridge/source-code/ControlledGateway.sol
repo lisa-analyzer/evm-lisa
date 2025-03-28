@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Pausable} from "./Pausable.sol";
+import {AccessControl} from "./AccessControl.sol";
 
 /**
  * @title ControlledGateway

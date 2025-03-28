@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache 2
 pragma solidity ^0.8.19;
 
-import {IWormhole} from "wormhole/interfaces/IWormhole.sol";
-import {ICircleBridge} from "../interfaces/circle/ICircleBridge.sol";
-import {IMessageTransmitter} from "../interfaces/circle/IMessageTransmitter.sol";
-import {ITokenMinter} from "../interfaces/circle/ITokenMinter.sol";
+import {IWormhole} from "./IWormhole.sol";
+import {ICircleBridge} from "./ICircleBridge.sol";
+import {IMessageTransmitter} from "./IMessageTransmitter.sol";
+import {ITokenMinter} from "./ITokenMinter.sol";
 
 import {CircleIntegrationSetters} from "./CircleIntegrationSetters.sol";
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.10;
 
-import {AddressAliasHelper} from '../dependencies/arbitrum/AddressAliasHelper.sol';
-import {L2BridgeExecutor} from './L2BridgeExecutor.sol';
+import {AddressAliasHelper} from "./AddressAliasHelper.sol";
+import {L2BridgeExecutor} from "./L2BridgeExecutor.sol";
 
 /**
  * @title ArbitrumBridgeExecutor

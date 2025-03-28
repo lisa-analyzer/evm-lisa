@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import { EternalStorage } from './EternalStorage.sol';
+import {EternalStorage} from "./EternalStorage.sol";
 
 contract AdminMultisigBase is EternalStorage {
     error NotAdmin();

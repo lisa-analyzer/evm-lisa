@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC20Internal} from '../IERC20Internal.sol';
-import {ERC20BaseStorage} from './ERC20BaseStorage.sol';
+import {IERC20Internal} from "./IERC20Internal.sol";
+import {ERC20BaseStorage} from "./ERC20BaseStorage.sol";
 
 /**
  * @title Base ERC20 implementation, excluding optional extensions

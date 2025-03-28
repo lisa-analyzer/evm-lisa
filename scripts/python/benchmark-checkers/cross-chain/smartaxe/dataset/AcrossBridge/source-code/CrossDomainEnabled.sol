@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /* Interface Imports */
-import { ICrossDomainMessenger } from "@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol";
+import {ICrossDomainMessenger} from "./ICrossDomainMessenger.sol";
 
 /**
  * @title CrossDomainEnabled
