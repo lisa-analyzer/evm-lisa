@@ -97,7 +97,7 @@ public class MyCache {
 	 * Puts a key-value pair into the cache.
 	 *
 	 * @param key   the key, a {@link Pair} of {@link String} and
-	 *              {@link it.unipr.analysis.Number}.
+	 *                  {@link it.unipr.analysis.Number}.
 	 * @param value the value, a {@link StackElement}.
 	 */
 	public void put(Pair<String, it.unipr.analysis.Number> key, StackElement value) {
@@ -110,9 +110,10 @@ public class MyCache {
 	 * Retrieves a value from the cache by its key.
 	 *
 	 * @param key the key, a {@link Pair} of {@link String} and
-	 *            {@link it.unipr.analysis.Number}.
+	 *                {@link it.unipr.analysis.Number}.
+	 * 
 	 * @return the value associated with the key, or {@code null} if the key is
-	 * not in the cache.
+	 *             not in the cache.
 	 */
 	public StackElement get(Pair<String, Number> key) {
 		synchronized (_map) {
@@ -136,8 +137,8 @@ public class MyCache {
 	 * the specified amount of time to the existing total.
 	 *
 	 * @param timeLostToGetStorage the amount of time (in milliseconds) to add
-	 *                             to the total time lost due to fetching
-	 *                             storage
+	 *                                 to the total time lost due to fetching
+	 *                                 storage
 	 */
 	public void updateTimeLostToGetStorage(String address, long timeLostToGetStorage) {
 		if (address == null)
@@ -166,7 +167,7 @@ public class MyCache {
 	 * it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addReentrancyWarning(Integer key, Object warning) {
@@ -183,9 +184,10 @@ public class MyCache {
 	 * This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getReentrancyWarnings(Integer key) {
 		synchronized (_reentrancyWarnings) {
@@ -199,7 +201,7 @@ public class MyCache {
 	 * it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addEventOrderWarning(Integer key, Object warning) {
@@ -216,9 +218,10 @@ public class MyCache {
 	 * returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getEventOrderWarnings(Integer key) {
 		synchronized (_eventOrderWarnings) {
@@ -232,7 +235,7 @@ public class MyCache {
 	 * warning is added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addUncheckedStateUpdateWarning(Integer key, Object warning) {
@@ -249,9 +252,10 @@ public class MyCache {
 	 * returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getUncheckedStateUpdateWarnings(Integer key) {
 		synchronized (_uncheckedStateUpdateWarnings) {
@@ -265,7 +269,7 @@ public class MyCache {
 	 * warning is added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleUncheckedStateUpdateWarning(Integer key, Object warning) {
@@ -282,9 +286,10 @@ public class MyCache {
 	 * key, the method returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getPossibleUncheckedStateUpdateWarnings(Integer key) {
 		synchronized (_possibleUncheckedStateUpdateWarnings) {
@@ -300,7 +305,7 @@ public class MyCache {
 	 * warning is added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addUncheckedExternalInfluenceWarning(Integer key, Object warning) {
@@ -317,9 +322,10 @@ public class MyCache {
 	 * method returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getUncheckedExternalInfluenceWarnings(Integer key) {
 		synchronized (_uncheckedExternalInfluenceWarnings) {
@@ -335,7 +341,7 @@ public class MyCache {
 	 * the warning is added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleUncheckedExternalInfluenceWarning(Integer key, Object warning) {
@@ -352,9 +358,10 @@ public class MyCache {
 	 * key, the method returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of possible warnings associated with the key, or 0 if
-	 * none exist
+	 *             none exist
 	 */
 	public int getPossibleUncheckedExternalInfluenceWarnings(Integer key) {
 		synchronized (_possibleUncheckedExternalInfluenceWarnings) {
@@ -365,12 +372,11 @@ public class MyCache {
 	}
 
 	/**
-	 \* Adds a semantic integrity violation warning for the specified key.
-	 \* If no warnings are associated, a new set is created and the warning is added.
-	 \* This method is thread-safe.
-	 \*
-	 \* @param key     the integer key identifying the entity for which the warning applies
-	 \* @param warning the warning object to be added
+	 * \* Adds a semantic integrity violation warning for the specified key. \*
+	 * If no warnings are associated, a new set is created and the warning is
+	 * added. \* This method is thread-safe. \* \* @param key the integer key
+	 * identifying the entity for which the warning applies \* @param warning
+	 * the warning object to be added
 	 */
 	public void addSemanticIntegrityViolationWarning(int key, Object warning) {
 		synchronized (_semanticIntegrityViolationWarnings) {
@@ -381,26 +387,26 @@ public class MyCache {
 	}
 
 	/**
-	 \* Retrieves the number of semantic integrity violation warnings associated
-	 \* with the specified key. If none are associated, returns 0.
-	 \* This method is thread-safe.
-	 \*
-	 \* @param key the integer key identifying the entity whose warnings to retrieve
-	 \* @return the number of warnings for the specified key
+	 * \* Retrieves the number of semantic integrity violation warnings
+	 * associated \* with the specified key. If none are associated, returns 0.
+	 * \* This method is thread-safe. \* \* @param key the integer key
+	 * identifying the entity whose warnings to retrieve \* @return the number
+	 * of warnings for the specified key
 	 */
 	public int getSemanticIntegrityViolationWarnings(Integer key) {
 		synchronized (_semanticIntegrityViolationWarnings) {
-			return (_semanticIntegrityViolationWarnings).get(key) != null ? _semanticIntegrityViolationWarnings.get(key).size() : 0;
+			return (_semanticIntegrityViolationWarnings).get(key) != null
+					? _semanticIntegrityViolationWarnings.get(key).size()
+					: 0;
 		}
 	}
 
 	/**
-	 \* Adds a possible semantic integrity violation warning for the specified key.
-	 \* If no warnings are associated, a new set is created and the warning is added.
-	 \* This method is thread-safe.
-	 \*
-	 \* @param key     the integer key identifying the entity for which the warning applies
-	 \* @param warning the warning object to be added
+	 * \* Adds a possible semantic integrity violation warning for the specified
+	 * key. \* If no warnings are associated, a new set is created and the
+	 * warning is added. \* This method is thread-safe. \* \* @param key the
+	 * integer key identifying the entity for which the warning applies
+	 * \* @param warning the warning object to be added
 	 */
 
 	public void addPossibleSemanticIntegrityViolationWarning(Integer key, Object warning) {
@@ -412,17 +418,18 @@ public class MyCache {
 	}
 
 	/**
-	 \* Retrieves the number of possible semantic integrity violation warnings
-	 \* associated with the specified key. If none are associated, returns 0.
-	 \* This method is thread-safe.
-	 \*
-	 \* @param key the integer key identifying the entity whose warnings to retrieve
-	 \* @return the number of possible warnings for the specified key
+	 * \* Retrieves the number of possible semantic integrity violation warnings
+	 * \* associated with the specified key. If none are associated, returns 0.
+	 * \* This method is thread-safe. \* \* @param key the integer key
+	 * identifying the entity whose warnings to retrieve \* @return the number
+	 * of possible warnings for the specified key
 	 */
 
 	public int getPossibleSemanticIntegrityViolationWarnings(Integer key) {
 		synchronized (_possibleSemanticIntegrityViolationWarnings) {
-			return (_possibleSemanticIntegrityViolationWarnings).get(key) != null ? _possibleSemanticIntegrityViolationWarnings.get(key).size() : 0;
+			return (_possibleSemanticIntegrityViolationWarnings).get(key) != null
+					? _possibleSemanticIntegrityViolationWarnings.get(key).size()
+					: 0;
 		}
 	}
 
@@ -448,8 +455,9 @@ public class MyCache {
 	 * This method is thread-safe.
 	 *
 	 * @param key The statement whose event exit points are being queried.
+	 * 
 	 * @return A set of event signatures associated with the given statement, or
-	 * an empty set if none exist.
+	 *             an empty set if none exist.
 	 */
 	public Set<String> getEventExitPoints(Statement key) {
 		synchronized (_eventsExitPoints) {
@@ -462,8 +470,9 @@ public class MyCache {
 	 * statement.
 	 *
 	 * @param key The statement to check.
+	 * 
 	 * @return {@code true} if the statement has associated event exit points,
-	 * {@code false} otherwise.
+	 *             {@code false} otherwise.
 	 */
 	public boolean containsEventExitPoints(Statement key) {
 		synchronized (_eventsExitPoints) {
@@ -477,7 +486,7 @@ public class MyCache {
 	 *
 	 * @param key             the key representing the element to update
 	 * @param isReachableFrom {@code true} if the element is reachable,
-	 *                        {@code false} otherwise
+	 *                            {@code false} otherwise
 	 */
 	public void addReachableFrom(String key, boolean isReachableFrom) {
 		synchronized (_reachableFrom) {
@@ -489,8 +498,10 @@ public class MyCache {
 	 * Checks if a specific key is marked as reachable in the reachability map.
 	 *
 	 * @param key the key representing the element to check
+	 * 
 	 * @return {@code true} if the key is marked as reachable, {@code false}
-	 * otherwise
+	 *             otherwise
+	 * 
 	 * @throws NullPointerException if the key does not exist in the map
 	 */
 	public boolean isReachableFrom(String key) {
@@ -503,8 +514,9 @@ public class MyCache {
 	 * Checks if a specific key exists in the reachability map.
 	 *
 	 * @param key the key representing the element to check
+	 * 
 	 * @return {@code true} if the key exists in the map, {@code false}
-	 * otherwise
+	 *             otherwise
 	 */
 	public boolean existsInReachableFrom(String key) {
 		synchronized (_reachableFrom) {
@@ -518,7 +530,7 @@ public class MyCache {
 	 * it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addTxOriginWarning(Integer key, Object warning) {
@@ -535,9 +547,10 @@ public class MyCache {
 	 * This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getTxOriginWarnings(Integer key) {
 		synchronized (_txOriginWarnings) {
@@ -551,7 +564,7 @@ public class MyCache {
 	 * added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleTxOriginWarning(Integer key, Object warning) {
@@ -568,9 +581,10 @@ public class MyCache {
 	 * returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of possible warnings associated with the key, or 0 if
-	 * none exist
+	 *             none exist
 	 */
 	public int getPossibleTxOriginWarnings(Integer key) {
 		synchronized (_possibleTxOriginWarnings) {
@@ -584,7 +598,7 @@ public class MyCache {
 	 * warning is added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
-	 *                the warning applies
+	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
 	public void addRandomnessDependencyWarning(Integer key, Object warning) {
@@ -601,9 +615,10 @@ public class MyCache {
 	 * returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
-	 *            warnings are to be retrieved
+	 *                warnings are to be retrieved
+	 * 
 	 * @return the number of warnings associated with the key, or 0 if none
-	 * exist
+	 *             exist
 	 */
 	public int getRandomnessDependencyWarnings(Integer key) {
 		synchronized (_randomnessDependencyWarnings) {
@@ -617,9 +632,9 @@ public class MyCache {
 	 * of warnings collection.
 	 *
 	 * @param key     an integer key representing the category or type of the
-	 *                warning
+	 *                    warning
 	 * @param warning an object representing the warning message or detail to be
-	 *                added
+	 *                    added
 	 */
 	public void addPossibleRandomnessDependencyWarning(Integer key, Object warning) {
 		synchronized (_possibleRandomnessDependencyWarnings) {
@@ -636,10 +651,11 @@ public class MyCache {
 	 * exists; otherwise, it returns zero.
 	 *
 	 * @param key the key used to identify the list of randomness dependency
-	 *            warnings in the internal map. It can be null.
+	 *                warnings in the internal map. It can be null.
+	 * 
 	 * @return the number of randomness dependency warnings associated with the
-	 * specified key. Returns 0 if the key is not present or there
-	 * are no warnings associated with it.
+	 *             specified key. Returns 0 if the key is not present or there
+	 *             are no warnings associated with it.
 	 */
 	public int getPossibleRandomnessDependencyWarnings(Integer key) {
 		synchronized (_possibleRandomnessDependencyWarnings) {
@@ -655,7 +671,7 @@ public class MyCache {
 	 * associated with the given key.
 	 *
 	 * @param warning the warning object to be added to the corresponding set of
-	 *                warnings for the given key
+	 *                    warnings for the given key
 	 */
 	public void addTimeSynchronizationWarning(String warning) {
 		synchronized (_timeSynchronizationWarnings) {
@@ -668,8 +684,8 @@ public class MyCache {
 	 * given key.
 	 *
 	 * @return the count of time synchronization warnings associated with the
-	 * provided key; returns 0 if the key is not present or no
-	 * warnings exist
+	 *             provided key; returns 0 if the key is not present or no
+	 *             warnings exist
 	 */
 	public int getTimeSynchronizationWarnings() {
 		synchronized (_timeSynchronizationWarnings) {

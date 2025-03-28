@@ -294,8 +294,10 @@ public class xEVMLiSA {
 				contract.getName(),
 				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
 	}
+
 	/**
-	 * Runs the Semantic Integrity Violation checker on the given smart contract.
+	 * Runs the Semantic Integrity Violation checker on the given smart
+	 * contract.
 	 *
 	 * @param contract The smart contract to analyze.
 	 */

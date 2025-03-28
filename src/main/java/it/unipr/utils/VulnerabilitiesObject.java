@@ -246,8 +246,8 @@ public class VulnerabilitiesObject {
 	/**
 	 * Sets the possible semantic integrity violation vulnerability score.
 	 *
-	 * @param possibleSemanticIntegrityViolation the semantic integrity violation
-	 *                                               score
+	 * @param possibleSemanticIntegrityViolation the semantic integrity
+	 *                                               violation score
 	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
