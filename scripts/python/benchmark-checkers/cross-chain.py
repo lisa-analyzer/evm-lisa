@@ -108,6 +108,33 @@ def simplify_imports_in_solidity_files(base_dir):
                 
                 print(f"Processed imports in: {file_path}")
 
+def simplify_named_imports(base_dir):
+    """
+    Explores all .sol files in the given directory and simplifies named imports by removing folder paths.
+    """
+    # Regex pattern to match named imports with paths
+    solidity_named_import_pattern = re.compile(r'import\s+\{(.+?)\}\s+from\s+["\'](.+?/.+?)["\'];')
+
+    for root, _, files in os.walk(base_dir):
+        for file in files:
+            if file.endswith(".sol"):
+                file_path = os.path.join(root, file)
+                
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Replace import paths with only the file name
+                modified_content = solidity_named_import_pattern.sub(
+                    lambda match: f'import {{{match.group(1).strip()}}} from "./{os.path.basename(match.group(2))}";',
+                    content
+                )
+                
+                # Write the modified content back to the file
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(modified_content)
+                
+                print(f"Processed named imports in: {file_path}")
+
 def replace_specific_imports(base_dir):
     """
     Explores all .sol files in the given directory and replaces specific imports with updated paths.
@@ -152,4 +179,5 @@ if __name__ == "__main__":
     # move_solidity_files(base_directory)
     # rename_files_in_directory(base_directory)
     # simplify_imports_in_solidity_files(base_directory)
-    replace_specific_imports(base_directory)
+    simplify_named_imports(base_directory)
+    # replace_specific_imports(base_directory)
