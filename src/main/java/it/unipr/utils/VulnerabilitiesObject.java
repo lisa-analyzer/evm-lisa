@@ -1,9 +1,8 @@
 package it.unipr.utils;
 
-import it.unipr.cfg.EVMCFG;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+
+import it.unipr.cfg.EVMCFG;
 
 /**
  * The {@code VulnerabilitiesObject} class represents a data model to hold
@@ -11,8 +10,6 @@ import org.json.JSONObject;
  * manage and build these scores, including utilities for JSON representation.
  */
 public class VulnerabilitiesObject {
-	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
-
 	private int reentrancy;
 
 	private int randomness;
@@ -301,6 +298,8 @@ public class VulnerabilitiesObject {
 						.getUncheckedStateUpdateWarnings(cfg.hashCode()))
 				.semanticIntegrityViolation(MyCache.getInstance()
 						.getSemanticIntegrityViolationWarnings(cfg.hashCode()))
+				.possibleSemanticIntegrityViolation(MyCache.getInstance()
+						.getPossibleSemanticIntegrityViolationWarnings(cfg.hashCode()))
 				.possibleUncheckedStateUpdate(MyCache.getInstance()
 						.getPossibleUncheckedStateUpdateWarnings(cfg.hashCode()))
 				.build();

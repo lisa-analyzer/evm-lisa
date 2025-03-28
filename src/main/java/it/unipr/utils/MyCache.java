@@ -387,11 +387,12 @@ public class MyCache {
 	}
 
 	/**
-	 * \* Retrieves the number of semantic integrity violation warnings
-	 * associated \* with the specified key. If none are associated, returns 0.
-	 * \* This method is thread-safe. \* \* @param key the integer key
-	 * identifying the entity whose warnings to retrieve \* @return the number
-	 * of warnings for the specified key
+	 * Retrieves the number of semantic integrity violation warnings
+	 * associated with the specified key. If none are associated, returns 0.
+	 * This method is thread-safe.
+	 * 
+	 * @param key the integer key identifying the entity whose warnings to retrieve 
+	 * @return the number of warnings for the specified key
 	 */
 	public int getSemanticIntegrityViolationWarnings(Integer key) {
 		synchronized (_semanticIntegrityViolationWarnings) {
@@ -402,11 +403,12 @@ public class MyCache {
 	}
 
 	/**
-	 * \* Adds a possible semantic integrity violation warning for the specified
-	 * key. \* If no warnings are associated, a new set is created and the
-	 * warning is added. \* This method is thread-safe. \* \* @param key the
-	 * integer key identifying the entity for which the warning applies
-	 * \* @param warning the warning object to be added
+	 * Adds a possible semantic integrity violation warning for the specified
+	 * key. If no warnings are associated, a new set is created and the
+	 * warning is added. This method is thread-safe. 
+	 * 
+	 * @param key the
+	 * @param warning the warning object to be added
 	 */
 
 	public void addPossibleSemanticIntegrityViolationWarning(Integer key, Object warning) {
@@ -418,11 +420,13 @@ public class MyCache {
 	}
 
 	/**
-	 * \* Retrieves the number of possible semantic integrity violation warnings
-	 * \* associated with the specified key. If none are associated, returns 0.
-	 * \* This method is thread-safe. \* \* @param key the integer key
-	 * identifying the entity whose warnings to retrieve \* @return the number
-	 * of possible warnings for the specified key
+	 * Retrieves the number of possible semantic integrity violation warnings
+	 * associated with the specified key. If none are associated, returns 0.
+	 * This method is thread-safe.
+	 * 
+	 * @param key the integer key
+	 * identifying the entity whose warnings to retrieve 
+	 * @return the number of possible warnings for the specified key
 	 */
 
 	public int getPossibleSemanticIntegrityViolationWarnings(Integer key) {

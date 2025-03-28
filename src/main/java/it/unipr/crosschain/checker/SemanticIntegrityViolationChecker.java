@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SemanticIntegrityViolationChecker implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(SemanticIntegrityViolationChecker.class);
 
@@ -29,17 +29,48 @@ public class SemanticIntegrityViolationChecker implements
 
 	@Override
 	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph) {
+
+		EVMCFG cfg = ((EVMCFG) graph);
+
+		for (Statement node : cfg.getNodes())
+			if (node instanceof Jumpi)
+				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
+
+					AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+					TypeEnvironment<InferredTypes>>> analysisResult = null;
+
+					try {
+						analysisResult = result.getAnalysisStateBefore(node);
+					} catch (SemanticException e1) {
+						log.error("(SemanticIntegrityViolationChecker): {}", e1.getMessage());
+					}
+
+					TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
+
+					if (taintedStack.isBottom())
+						// Nothing to do
+						continue;
+					taintedJumpi.add(node);
+				}
+		return true;
+	}
+
+	@Override
+	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
-		if (node instanceof Log || node instanceof Jumpi) {
+		if (node instanceof Log) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
-						TypeEnvironment<InferredTypes>>> analysisResult = null;
+				TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
@@ -52,63 +83,85 @@ public class SemanticIntegrityViolationChecker implements
 				if (taintedStack.isBottom())
 					// Nothing to do
 					continue;
-				else if (node instanceof Jumpi) {
-					taintedJumpi.add(node);
-					return true;
-				} else if (node instanceof Log0) {
+				else if (node instanceof Log0) {
 					// Checks if either first or second element in the
 					// stack is tainted
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2))) {
-
-						checkForSemanticIntegrityViolation(node, tool, cfg);
+						raiseDefiniteSemanticIntegrityViolation(node, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2))) {
+						raisePossibleSemanticIntegrityViolation(node, tool, cfg);
 					}
 				} else if (node instanceof Log1) {
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2),
 							taintedStack.getElementAtPosition(3))) {
-
-						checkForSemanticIntegrityViolation(node, tool, cfg);
+						raiseDefiniteSemanticIntegrityViolation(node, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2),
+							taintedStack.getElementAtPosition(3))) {
+						raisePossibleSemanticIntegrityViolation(node, tool, cfg);
 					}
 				} else if (node instanceof Log2) {
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2),
 							taintedStack.getElementAtPosition(3),
 							taintedStack.getElementAtPosition(4))) {
-
-						checkForSemanticIntegrityViolation(node, tool, cfg);
+						raiseDefiniteSemanticIntegrityViolation(node, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2),
+							taintedStack.getElementAtPosition(3),
+							taintedStack.getElementAtPosition(4))) {
+						raisePossibleSemanticIntegrityViolation(node, tool, cfg);
 					}
 				} else if (node instanceof Log3) {
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2),
 							taintedStack.getElementAtPosition(3),
 							taintedStack.getElementAtPosition(4),
 							taintedStack.getElementAtPosition(5))) {
-
-						checkForSemanticIntegrityViolation(node, tool, cfg);
+						raiseDefiniteSemanticIntegrityViolation(node, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2),
+							taintedStack.getElementAtPosition(3),
+							taintedStack.getElementAtPosition(4),
+							taintedStack.getElementAtPosition(5))) {
+						raisePossibleSemanticIntegrityViolation(node, tool, cfg);
 					}
 				} else if (node instanceof Log4) {
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2),
 							taintedStack.getElementAtPosition(3),
 							taintedStack.getElementAtPosition(4),
 							taintedStack.getElementAtPosition(5),
 							taintedStack.getElementAtPosition(6))) {
-
-						checkForSemanticIntegrityViolation(node, tool, cfg);
+						raiseDefiniteSemanticIntegrityViolation(node, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2),
+							taintedStack.getElementAtPosition(3),
+							taintedStack.getElementAtPosition(4),
+							taintedStack.getElementAtPosition(5),
+							taintedStack.getElementAtPosition(6))) {
+						raisePossibleSemanticIntegrityViolation(node, tool, cfg);
 					}
 				}
 			}
 		}
-		return true;
+		return true;				
 	}
 
-	private void checkForSemanticIntegrityViolation(Statement logx, CheckToolWithAnalysisResults<
+	private void raiseDefiniteSemanticIntegrityViolation(Statement logx, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 		Set<Statement> externalDatas = cfg.getExternalData();
@@ -118,15 +171,38 @@ public class SemanticIntegrityViolationChecker implements
 
 				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
 
-				log.warn("Semantic Integrity Violation at pc {} at line {} coming from line {}.",
+				log.warn("[DEFINITE] Semantic integrity violation at pc {} at line {} coming from line {}.",
 						logxLocation.getPc(),
 						logxLocation.getSourceCodeLine(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
-				String warn = "Semantic Integrity Violation vulnerability at "
+				String warn = "[DEFINITE] Semantic Integrity Violation vulnerability at "
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addSemanticIntegrityViolationWarning(cfg.hashCode(), warn);
+			}
+		}
+	}
+
+	private void raisePossibleSemanticIntegrityViolation(Statement logx, CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
+		Set<Statement> externalDatas = cfg.getExternalData();
+
+		for (Statement data : externalDatas) {
+			if (cfg.reachableFromWithoutStatements(data, logx, taintedJumpi)) {
+
+				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
+
+				log.warn("[POSSIBLE] Semantic integrity violation at pc {} at line {} coming from line {}.",
+						logxLocation.getPc(),
+						logxLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
+
+				String warn = "[POSSIBLE] Semantic integrity violation vulnerability at "
+						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
+				tool.warn(warn);
+				MyCache.getInstance().addPossibleSemanticIntegrityViolationWarning(cfg.hashCode(), warn);
 			}
 		}
 	}

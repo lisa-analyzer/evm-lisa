@@ -296,7 +296,7 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the Semantic Integrity Violation checker on the given smart
+	 * Runs the Semantic integrity violation checker on the given smart
 	 * contract.
 	 *
 	 * @param contract The smart contract to analyze.
@@ -318,9 +318,11 @@ public class xEVMLiSA {
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 
-		log.info("[OUT] Semantic integrity violation checker ended on {}, with {} vulnerabilities found.",
-				contract.getAddress(),
-				MyCache.getInstance().getSemanticIntegrityViolationWarnings(contract.getCFG().hashCode()));
+		log.info(
+				"[OUT] Semantic integrity violation checker ended on {}, with {} definite and {} possible vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getSemanticIntegrityViolationWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleSemanticIntegrityViolationWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
