@@ -28,8 +28,8 @@ public class SemanticIntegrityViolationAbstractDomain extends TaintAbstractDomai
 
 	@Override
 	public boolean isTainted(Statement stmt) {
-		return stmt instanceof Calldataload ||
-				stmt instanceof Calldatacopy;
+		return stmt instanceof Calldataload
+				|| stmt instanceof Calldatacopy;
 	}
 
 	@Override

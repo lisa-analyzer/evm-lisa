@@ -54,7 +54,11 @@ public class SemanticIntegrityViolationChecker implements
 					if (taintedStack.isBottom())
 						// Nothing to do
 						continue;
-					taintedJumpi.add(node);
+
+					if (TaintElement.isAtLeastOneTainted(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2)))
+						taintedJumpi.add(node);
 				}
 		return true;
 	}
@@ -172,7 +176,7 @@ public class SemanticIntegrityViolationChecker implements
 
 				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
 
-				log.warn("[DEFINITE] Semantic integrity violation at pc {} at line {} coming from line {}.",
+				log.warn("[DEFINITE] Semantic integrity violation at pc {} (line {}) coming from line {}.",
 						logxLocation.getPc(),
 						logxLocation.getSourceCodeLine(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
@@ -195,7 +199,7 @@ public class SemanticIntegrityViolationChecker implements
 
 				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
 
-				log.warn("[POSSIBLE] Semantic integrity violation at pc {} at line {} coming from line {}.",
+				log.warn("[POSSIBLE] Semantic integrity violation at pc {} (line {}) coming from line {}.",
 						logxLocation.getPc(),
 						logxLocation.getSourceCodeLine(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
