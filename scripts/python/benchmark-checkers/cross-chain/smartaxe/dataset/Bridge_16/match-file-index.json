@@ -1,0 +1,10 @@
+{
+    "BridgeBSC": 1,
+    "BridgeBase": 2,
+    "BridgeETH": 3,
+    "Migrations": 4,
+    "TokenBase": 5,
+    "WBSCToken": 6,
+    "WETHToken": 7,
+    "XToken": 8
+}

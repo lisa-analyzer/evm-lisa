@@ -1,0 +1,8 @@
+{
+    "EthVault.impl": 1,
+    "EthVault.impl_1": 2,
+    "EthVault": 3,
+    "EthVaultImpl": 4,
+    "MultiSigWallet": 5,
+    "SafeMath": 6
+}

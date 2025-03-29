@@ -1,0 +1,4 @@
+file,original pragma version,compiled version,notes
+LINKEthManager.sol,0.5.17,0.5.17,
+BUSDEthManager.sol,0.5.17,0.5.17,
+ERC20EthManager.sol,^0.5.0,0.5.0,

@@ -1,0 +1,6 @@
+file,original pragma version,compiled version,notes
+WETH9.sol,^0.4.18,0.4.18,
+TokenSafe.sol,<6.0 >=0.4.0,6.0,
+TokenList.sol,<6.0 >=0.4.0,6.0,
+TokenCashier.sol,<6.0 >=0.4.0,6.0,
+MinterPool.sol,<6.0 >=0.4.0,6.0,

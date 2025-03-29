@@ -1,0 +1,14 @@
+{
+    "Address": 1,
+    "BOTS": 2,
+    "FeeManagerV1": 3,
+    "IBridgedToken": 4,
+    "IERC20": 5,
+    "IERC20_1": 6,
+    "IRadarBridgeFeeManager": 7,
+    "IRadarBridgeFeeManager_1": 8,
+    "RadarBridge": 9,
+    "RadarBridgeProxy": 10,
+    "SafeERC20": 11,
+    "SignatureLibrary": 12
+}

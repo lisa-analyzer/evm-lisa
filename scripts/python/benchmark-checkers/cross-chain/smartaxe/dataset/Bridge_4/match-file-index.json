@@ -1,0 +1,7 @@
+{
+    "BridgeWithTime": 1,
+    "IERC20": 2,
+    "NewBridge": 3,
+    "OldBridge": 4,
+    "TestToken": 5
+}

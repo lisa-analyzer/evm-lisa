@@ -1,0 +1,15 @@
+{
+    "Address": 1,
+    "Context": 2,
+    "ERC1967Proxy": 3,
+    "ERC1967Upgrade": 4,
+    "IBeacon": 5,
+    "Ownable": 6,
+    "Proxiable": 7,
+    "Proxy": 8,
+    "ProxyAdmin": 9,
+    "StorageSlot": 10,
+    "TransparentUpgradeableProxy": 11,
+    "UUPSUpgradeable": 12,
+    "import": 13
+}

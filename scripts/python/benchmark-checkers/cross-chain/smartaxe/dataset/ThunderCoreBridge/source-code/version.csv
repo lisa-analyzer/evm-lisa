@@ -1,0 +1,8 @@
+file,original pragma version,compiled version,notes
+ERC677InitializableToken.sol,>=0.4.24 <0.6.0,0.4.24,
+BridgeValidators.sol,0.4.24,0.4.24,
+ERC677InitializableBridgeToken.sol,>=0.4.24 <0.6.0,0.4.24,
+ForeignBridgeERC677ToNativeV2.sol,0.4.24,0.4.24,
+ForeignBridgeErcToErc.sol,0.4.24,0.4.24,
+ForeignBridgeErcToErcV2.sol,0.4.24,0.4.24,
+ForeignBridgeErcToErcV2_1.sol,0.4.24,0.4.24,

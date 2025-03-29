@@ -2,8 +2,8 @@
 
 pragma solidity 0.6.12;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "./SafeMath.sol";
+import "./SafeERC20.sol";
 import "./LPToken.sol";
 import "./MathUtils.sol";
 
@@ -442,7 +442,7 @@ library SwapUtils {
      *
      * @return an array of amounts "scaled" to the pool's precision
      */
-      CCV vulnerability function
+      // CCV vulnerability function
     function _xp(
         uint256[] memory balances,
         uint256[] memory precisionMultipliers

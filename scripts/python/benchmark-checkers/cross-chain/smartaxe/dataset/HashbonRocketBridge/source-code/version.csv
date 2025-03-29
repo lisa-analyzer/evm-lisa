@@ -1,0 +1,5 @@
+file,original pragma version,compiled version,notes
+Ownable.sol,^0.8.0,0.8.0,
+Context.sol,^0.8.0,0.8.0,
+TransferHelper.sol,>=0.6.0,0.6.0,
+HashBridge.sol,^0.8.0,0.8.0,

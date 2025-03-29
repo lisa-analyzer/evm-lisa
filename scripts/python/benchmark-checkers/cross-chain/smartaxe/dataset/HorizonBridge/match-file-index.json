@@ -1,0 +1,5 @@
+{
+    "BUSDEthManager": 1,
+    "ERC20EthManager": 2,
+    "LINKEthManager": 3
+}

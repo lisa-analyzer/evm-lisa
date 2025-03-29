@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { LibAsset } from "../Libraries/LibAsset.sol";
-import { ILiFi } from "../Interfaces/ILiFi.sol";
-import { LibSwap } from "../Libraries/LibSwap.sol";
-import { ICBridge } from "../Interfaces/ICBridge.sol";
-import { LibDiamond } from "../Libraries/LibDiamond.sol";
+import "./ERC20.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {ILiFi} from "./ILiFi.sol";
+import {LibSwap} from "./LibSwap.sol";
+import {ICBridge} from "./ICBridge.sol";
+import {LibDiamond} from "./LibDiamond.sol";
 
 contract CBridgeFacet is ILiFi {
     /* ========== Storage ========== */

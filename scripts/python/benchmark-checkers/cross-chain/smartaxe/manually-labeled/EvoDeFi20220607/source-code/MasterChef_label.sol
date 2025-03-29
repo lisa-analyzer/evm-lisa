@@ -2,14 +2,14 @@
 
 pragma solidity 0.8.0;
 
-import "../oz/utils/structs/EnumerableSet.sol";
-import "../oz/access/Ownable.sol";
-import "../oz/token/ERC20/ERC20.sol";
-import "../oz/token/ERC20/IERC20.sol";
-import "../oz/token/ERC20/utils/SafeERC20.sol";
-import "../oz/token/ERC721/utils/ERC721Holder.sol";
-import '../oz/token/ERC721/IERC721.sol';
-import "../oz/utils/math/SafeMath.sol";
+import "./EnumerableSet.sol";
+import "./Ownable.sol";
+import "./ERC20.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./ERC721Holder.sol";
+import "./IERC721.sol";
+import "./SafeMath.sol";
 import "./GenToken.sol";
 
 

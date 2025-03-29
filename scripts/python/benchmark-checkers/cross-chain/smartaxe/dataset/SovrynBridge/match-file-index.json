@@ -1,0 +1,21 @@
+{
+    "Address": 1,
+    "AdminUpgradeabilityProxy": 2,
+    "AllowTokens": 3,
+    "Context": 4,
+    "Dai": 5,
+    "ERC777": 6,
+    "Federation": 7,
+    "FiatTokenProxy": 8,
+    "IERC1820Registry": 9,
+    "IERC20": 10,
+    "IERC677Receiver": 11,
+    "IERC777": 12,
+    "IERC777Recipient": 13,
+    "IERC777Sender": 14,
+    "ISideToken": 15,
+    "MultiSigWallet": 16,
+    "SafeMath": 17,
+    "SideToken": 18,
+    "TetherToken": 19
+}

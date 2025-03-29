@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { ILiFi } from "../Interfaces/ILiFi.sol";
-import { IBiconomyRouter } from "../Interfaces/IBiconomyRouter.sol";
-import { LibDiamond } from "../Libraries/LibDiamond.sol";
-import { LibAsset } from "../Libraries/LibAsset.sol";
-import { LibSwap } from "../Libraries/LibSwap.sol";
+import "./ERC20.sol";
+import "./IERC20.sol";
+import {ILiFi} from "./ILiFi.sol";
+import {IBiconomyRouter} from "./IBiconomyRouter.sol";
+import {LibDiamond} from "./LibDiamond.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibSwap} from "./LibSwap.sol";
 
 contract BiconomyFacet is ILiFi {
     /* ========== Storage ========== */

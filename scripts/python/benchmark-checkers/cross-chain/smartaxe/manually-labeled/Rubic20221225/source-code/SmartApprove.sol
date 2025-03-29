@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.4;
 
-import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol';
+import "./SafeERC20Upgradeable.sol";
+import "./IERC20Upgradeable.sol";
 
-import '../errors/Errors.sol';
+import "./Errors.sol";
 
 library SmartApprove {
     using SafeERC20Upgradeable for IERC20Upgradeable;

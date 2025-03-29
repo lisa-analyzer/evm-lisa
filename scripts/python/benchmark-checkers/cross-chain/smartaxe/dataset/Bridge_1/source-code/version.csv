@@ -1,0 +1,7 @@
+file,original pragma version,compiled version,notes
+IERC20.sol,^0.8.0,0.8.0,
+sideBridge.sol,^0.8.0,0.8.0,
+ERC20.sol,^0.8.0,0.8.0,
+TokenA_flat.sol,^0.8.0,0.8.0,
+mainBridge.sol,^0.8.0,0.8.0,
+TokenB_flat.sol,^0.8.0,0.8.0,

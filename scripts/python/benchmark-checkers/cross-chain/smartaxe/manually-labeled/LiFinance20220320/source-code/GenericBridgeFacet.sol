@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { ILiFi } from "../Interfaces/ILiFi.sol";
-import { LibAsset } from "../Libraries/LibAsset.sol";
-import { LibSwap } from "../Libraries/LibSwap.sol";
-import { LibUtil } from "../Libraries/LibUtil.sol";
+import "./ERC20.sol";
+import {ILiFi} from "./ILiFi.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibSwap} from "./LibSwap.sol";
+import {LibUtil} from "./LibUtil.sol";
 
 contract GenericBridgeFacet is ILiFi {
     /* ========== Types ========== */

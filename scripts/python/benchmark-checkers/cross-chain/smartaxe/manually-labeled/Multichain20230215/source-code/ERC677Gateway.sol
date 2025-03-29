@@ -3,8 +3,8 @@
 pragma solidity ^0.8.1;
 
 import "./AnyCallApp.sol";
-import "./interfaces/IDecimal.sol";
-import "./interfaces/IERC677Gateway.sol";
+import "./IDecimal.sol";
+import "./IERC677Gateway.sol";
 
 interface IERC677 {
     function transferAndCall(address receiver, uint amount, bytes memory data) external returns (bool success);

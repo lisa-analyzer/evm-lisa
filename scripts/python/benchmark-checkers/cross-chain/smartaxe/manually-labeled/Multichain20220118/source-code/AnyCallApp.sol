@@ -1,8 +1,8 @@
 pragma solidity ^0.8.1;
 
 import "./Administrable.sol";
-import "./interfaces/IAnycallV6Proxy.sol";
-import "./interfaces/IExecutor.sol";
+import "./IAnycallV6Proxy.sol";
+import "./IExecutor.sol";
 
 abstract contract AnyCallApp is Administrable {
     uint256 public flag; // 0: pay on dest chain, 2: pay on source chain

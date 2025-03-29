@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-import '../BridgeBase.sol';
+import "./BridgeBase.sol";
 
 contract OnlySourceFunctionality is BridgeBase {
     event RequestSent(BaseCrossChainParams parameters);

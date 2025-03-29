@@ -1,0 +1,3 @@
+file,original pragma version,compiled version,notes
+WanchainContribution.sol,^0.4.11,0.4.11,
+WanToken.sol,^0.4.11,0.4.11,

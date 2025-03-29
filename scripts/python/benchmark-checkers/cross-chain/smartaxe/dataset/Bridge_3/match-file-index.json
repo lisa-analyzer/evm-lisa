@@ -1,0 +1,10 @@
+{
+    "AVAXBridge": 1,
+    "BSCBridge": 2,
+    "BridgeContract": 3,
+    "BridgeToken": 4,
+    "CronosBridge": 5,
+    "ETHBridge": 6,
+    "MaticBridge": 7,
+    "Migrations": 8
+}

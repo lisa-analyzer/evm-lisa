@@ -1,0 +1,5 @@
+file,original pragma version,compiled version,notes
+MockERC20.sol,^0.8.4,0.8.4,
+Bridge.sol,^0.8.4,0.8.4,
+FuseBlock.sol,^0.8.4,0.8.4,
+TokenBridge.sol,^0.8.4,0.8.4,

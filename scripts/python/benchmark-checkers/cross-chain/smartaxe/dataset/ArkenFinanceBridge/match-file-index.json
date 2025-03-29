@@ -1,0 +1,8 @@
+{
+    "ArkenApprove": 1,
+    "ArkenDexV3": 2,
+    "GnosisSafeProxy": 3,
+    "ProxyAdmin": 4,
+    "TimelockController": 5,
+    "TransparentUpgradeableProxy": 6
+}

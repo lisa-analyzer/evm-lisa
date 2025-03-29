@@ -2,16 +2,16 @@
 
 pragma solidity ^0.8.4;
 
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import "./AccessControlUpgradeable.sol";
+import "./PausableUpgradeable.sol";
+import "./SafeERC20Upgradeable.sol";
+import "./IERC20Upgradeable.sol";
+import "./EnumerableSetUpgradeable.sol";
+import "./ReentrancyGuardUpgradeable.sol";
 
-import './libraries/FullMath.sol';
+import "./FullMath.sol";
 
-import './errors/Errors.sol';
+import "./Errors.sol";
 
 contract BridgeBase is
     AccessControlUpgradeable,

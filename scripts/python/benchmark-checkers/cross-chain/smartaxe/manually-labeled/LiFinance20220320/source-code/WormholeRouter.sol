@@ -4,12 +4,12 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol";
-import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
+import "./IERC20.sol";
+import "./SafeERC20.sol";
+import "./ERC1967Upgrade.sol";
+import "./BeaconProxy.sol";
+import "./Ownable.sol";
+import "./Context.sol";
 
 interface Structs {
     struct Provider {

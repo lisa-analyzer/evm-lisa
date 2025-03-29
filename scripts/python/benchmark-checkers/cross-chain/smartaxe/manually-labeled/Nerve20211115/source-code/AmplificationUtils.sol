@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "./SafeERC20.sol";
 import "./SwapUtils.sol";
 
 pragma solidity 0.6.12;

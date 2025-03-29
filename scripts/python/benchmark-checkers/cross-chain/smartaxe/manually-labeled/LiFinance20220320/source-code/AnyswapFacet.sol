@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { ILiFi } from "../Interfaces/ILiFi.sol";
-import { IAnyswapRouter } from "../Interfaces/IAnyswapRouter.sol";
-import { LibDiamond } from "../Libraries/LibDiamond.sol";
-import { LibAsset } from "../Libraries/LibAsset.sol";
-import { LibSwap } from "../Libraries/LibSwap.sol";
-import { IAnyswapToken } from "../Interfaces/IAnyswapToken.sol";
-import { LibDiamond } from "../Libraries/LibDiamond.sol";
+import "./ERC20.sol";
+import {ILiFi} from "./ILiFi.sol";
+import {IAnyswapRouter} from "./IAnyswapRouter.sol";
+import {LibDiamond} from "./LibDiamond.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibSwap} from "./LibSwap.sol";
+import {IAnyswapToken} from "./IAnyswapToken.sol";
+import {LibDiamond} from "./LibDiamond.sol";
 
 contract AnyswapFacet is ILiFi {
     /* ========== Types ========== */

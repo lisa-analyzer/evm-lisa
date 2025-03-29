@@ -1,0 +1,7 @@
+{
+    "MinterPool": 1,
+    "TokenCashier": 2,
+    "TokenList": 3,
+    "TokenSafe": 4,
+    "WETH9": 5
+}

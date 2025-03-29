@@ -1,7 +1,7 @@
 pragma solidity ^0.8.1;
 
 import "./AnyCallApp.sol";
-import "./interfaces/IERC721Gateway.sol";
+import "./IERC721Gateway.sol";
 
 
 abstract contract ERC721Gateway is IERC721Gateway, AnyCallApp {

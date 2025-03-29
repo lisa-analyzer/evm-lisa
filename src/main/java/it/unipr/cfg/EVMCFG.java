@@ -1,6 +1,7 @@
 package it.unipr.cfg;
 
 import it.unipr.analysis.Number;
+import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.cfg.push.Push;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 public class EVMCFG extends CFG {
 	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
+	private Set<BasicBlock> _basicBlocks;
 	private Set<Statement> jumpDestsNodes;
 	private Set<Statement> jumpNodes;
 	private Set<Statement> pushedJumps;
@@ -185,50 +187,6 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the SSTORE statements in the CFG.
-	 *
-	 * @return a set of all the SSTORE statements in the CFG
-	 */
-	public Set<Statement> getAllSstore() {
-		if (sstores == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sstores = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Sstore) {
-					sstores.add(statement);
-				}
-			}
-
-			return this.sstores = sstores;
-		}
-
-		return sstores;
-	}
-
-	/**
-	 * Returns a set of all the SHA3 statements in the CFG.
-	 *
-	 * @return a set of all the SHA3 statements in the CFG
-	 */
-	public Set<Statement> getAllSha3() {
-		if (sha3s == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sha3s = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Sha3) {
-					sha3s.add(statement);
-				}
-			}
-
-			return this.sha3s = sha3s;
-		}
-
-		return sha3s;
-	}
-
-	/**
 	 * Returns a set of all the JUMPDEST statements in the CFG.
 	 *
 	 * @return a set of all the JUMPDEST statements in the CFG
@@ -259,6 +217,39 @@ public class EVMCFG extends CFG {
 	 */
 	public Set<Statement> getAllJumps() {
 		return jumpNodes;
+	}
+
+	/**
+	 * Retrieves all basic blocks in this control-flow graph (CFG). If the basic
+	 * blocks have not been computed yet, they are generated.
+	 *
+	 * @return a set containing all {@link BasicBlock} instances in the CFG
+	 */
+	public Set<BasicBlock> getAllBasicBlocks() {
+		if (this._basicBlocks == null)
+			this._basicBlocks = BasicBlock.getBasicBlocks(this);
+		return this._basicBlocks;
+	}
+
+	/**
+	 * Finds the basic block that contains the given statement. If the basic
+	 * blocks have not been computed yet, they are generated first.
+	 *
+	 * @param stmt the statement to search for within the basic blocks
+	 * 
+	 * @return the {@link BasicBlock} containing the given statement, or
+	 *             {@code null} if not found
+	 */
+	public BasicBlock getBasicBlock(Statement stmt) {
+		if (this._basicBlocks == null)
+			this._basicBlocks = BasicBlock.getBasicBlocks(this);
+
+		for (BasicBlock bb : this._basicBlocks)
+			for (Statement s : bb.getStatements())
+				if (s.equals(stmt))
+					return bb;
+
+		return null;
 	}
 
 	public int getOpcodeCount() {

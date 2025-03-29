@@ -125,7 +125,7 @@ def compile_solidity_sources_with_different_version(source_dir, json_dir, versio
             # Command to compile and save the bytecode in JSON format
             command = (
                 f"solc-select use {compiled_version} > /dev/null && "
-                f"solc --combined-json bin,bin-runtime,abi {input_file} > {output_file} 2> /dev/null" 
+                f"solc --combined-json bin,bin-runtime,abi {input_file} > {output_file} 2>> errors.txt" 
             )
             
             # Execute the compilation command
@@ -279,59 +279,59 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
     num_files = [f for f in os.listdir(json_dir) if f.endswith('.json')]
 
     # Progress bar setup
-    with tqdm(total=len(num_files), desc="Extracting files...") as pbar:
-        for json_filename in os.listdir(json_dir):
-            if json_filename.endswith(".json"):
-                json_filepath = os.path.join(json_dir, json_filename)
-                with open(json_filepath, 'r') as json_file:
-                    # Check if the file is empty by reading the first character
-                    if json_file.read(1) == "":
-                        # print(f"Skipping empty file: {json_filename}")
-                        pbar.update(1)
-                        continue
-                    json_file.seek(0)  # Reset the file pointer to the beginning
-                    
-                    data = json.load(json_file)
-                    contracts = data.get("contracts", {})
-                    count = 1  # Sequential counter for each bytecode in the same JSON
-                    abi = None
+    # with tqdm(total=len(num_files), desc="Extracting files...") as pbar:
+    for json_filename in os.listdir(json_dir):
+        if json_filename.endswith(".json"):
+            json_filepath = os.path.join(json_dir, json_filename)
+            with open(json_filepath, 'r') as json_file:
+                # Check if the file is empty by reading the first character
+                if json_file.read(1) == "":
+                    # print(f"Skipping empty file: {json_filename}")
+                    # pbar.update(1)
+                    continue
+                json_file.seek(0)  # Reset the file pointer to the beginning
+                
+                data = json.load(json_file)
+                contracts = data.get("contracts", {})
+                count = 1  # Sequential counter for each bytecode in the same JSON
+                abi = None
 
-                    for contract_name, contract_data in contracts.items():
-                        if(is_ethersolve):
-                            bytecode = contract_data.get("bin")
-                        else:
-                            bytecode = contract_data.get("bin-runtime")
-                        abi = contract_data.get("abi")
-                            
-                        if bytecode:
+                for contract_name, contract_data in contracts.items():
+                    if(is_ethersolve):
+                        bytecode = contract_data.get("bin")
+                    else:
+                        bytecode = contract_data.get("bin-runtime")
+                    abi = contract_data.get("abi")
+                        
+                    if bytecode:
+                        bytecode_filename = os.path.join(
+                            bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
+                        )
+
+                        if file_index is not None:
+                            file_id = file_index.get(os.path.splitext(json_filename)[0]) # Match string name to integer
+                            # Add a sequential number to the filename
                             bytecode_filename = os.path.join(
-                                bytecode_dir, f"{os.path.splitext(json_filename)[0]}_{count}.bytecode"
+                                bytecode_dir, f"{file_id}_{count}.bytecode"
                             )
 
-                            if file_index is not None:
-                                file_id = file_index.get(os.path.splitext(json_filename)[0]) # Match string name to integer
-                                # Add a sequential number to the filename
-                                bytecode_filename = os.path.join(
-                                    bytecode_dir, f"{file_id}_{count}.bytecode"
-                                )
+                        with open(bytecode_filename, 'w') as bytecode_file:                
+                            bytecode_file.write("0x" + bytecode)
 
-                            with open(bytecode_filename, 'w') as bytecode_file:                
-                                bytecode_file.write("0x" + bytecode)
+                        # Save ABI if available
+                        if abi and abi_dir is not None:
+                            abi_filename = os.path.join(abi_dir, f"{file_id}_{count}.abi")
+                            
+                            if isinstance(abi, str):  
+                                abi = json.loads(abi)
+                            
+                            with open(abi_filename, 'w') as abi_file:
+                                json.dump(abi, abi_file, indent=4)
 
-                            # Save ABI if available
-                            if abi and abi_dir is not None:
-                                abi_filename = os.path.join(abi_dir, f"{file_id}_{count}.abi")
-                                
-                                if isinstance(abi, str):  
-                                    abi = json.loads(abi)
-                                
-                                with open(abi_filename, 'w') as abi_file:
-                                    json.dump(abi, abi_file, indent=4)
-
-                            # print(f"Extracted bytecode to {bytecode_filename}")
-                            count += 1  # Increment counter for next bytecode
+                        # print(f"Extracted bytecode to {bytecode_filename}")
+                        count += 1  # Increment counter for next bytecode
             # Update the progress bar
-            pbar.update(1)
+            # pbar.update(1)
 
 def compile_bridges(base_path):
     """
@@ -348,8 +348,8 @@ def compile_bridges(base_path):
             compile_bridge(subfolder_path)
 
 def compile_bridge(name):
-    extract_solidity_versions(src_folder=f'./{name}/source-code',
-                              output_csv=f'./{name}/source-code/version.csv')
+    # extract_solidity_versions(src_folder=f'./{name}/source-code',
+    #                           output_csv=f'./{name}/source-code/version.csv')
     
     compile_solidity_sources_with_different_version(source_dir=f'./{name}/source-code',
                                                     json_dir=f'./{name}/json',
@@ -367,7 +367,7 @@ def compile_bridge(name):
                                 file_index=match_file_index)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     parser = argparse.ArgumentParser(description="Compile datasets.")
     parser.add_argument("--solidifi", action="store_true", help="Compile SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Compile SmartBugs dataset")
@@ -378,9 +378,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.cross_chain:
+        # compile_bridges('cross-chain/smartaxe/dataset')
         compile_bridges('cross-chain/smartaxe/manually-labeled')
-        compile_bridge('cross-chain/time-synchronization')
-        compile_bridge('cross-chain/dummy-bridge')
+        # compile_bridge('cross-chain/time-synchronization')
+        # compile_bridge('cross-chain/dummy-bridge')
 
     if args.solidifi:
         compile_solidity_sources('./solidifi/reentrancy/source-code',

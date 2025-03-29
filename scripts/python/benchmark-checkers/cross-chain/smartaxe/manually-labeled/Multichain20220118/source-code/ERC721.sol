@@ -1,6 +1,6 @@
 pragma solidity ^0.8.1;
 
-import "./interfaces/IERC721.sol";
+import "./IERC721.sol";
 
 contract ERC721 is IERC721 {
     // Token name

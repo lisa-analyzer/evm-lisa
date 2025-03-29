@@ -1,0 +1,12 @@
+{
+    "BridgeBase": 1,
+    "BridgeBsc": 2,
+    "BridgeEth": 3,
+    "ConvertLib": 4,
+    "IToken": 5,
+    "MetaCoin": 6,
+    "Migrations": 7,
+    "TokenBase": 8,
+    "TokenBsc": 9,
+    "TokenEth": 10
+}

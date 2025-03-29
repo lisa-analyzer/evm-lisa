@@ -1,0 +1,9 @@
+{
+    "Bridge": 1,
+    "BridgeInterface": 2,
+    "ERC20": 3,
+    "IERC20": 4,
+    "SignatureChecker": 5,
+    "TonUtils": 6,
+    "WrappedTON": 7
+}

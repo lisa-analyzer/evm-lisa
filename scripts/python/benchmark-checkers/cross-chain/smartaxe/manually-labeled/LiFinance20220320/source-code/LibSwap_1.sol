@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { LibAsset } from "./LibAsset.sol";
-import { LibUtil } from "./LibUtil.sol";
+import "./ERC20.sol";
+import {LibAsset} from "./LibAsset.sol";
+import {LibUtil} from "./LibUtil.sol";
 
 library LibSwap {
     uint256 private constant MAX_INT = 2**256 - 1;
