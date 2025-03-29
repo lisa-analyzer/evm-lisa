@@ -364,12 +364,12 @@ contract Swap is OwnerPausableUpgradeable, ReentrancyGuardUpgradeable {
         uint256 tokenAmount,
         uint8 tokenIndex
     ) external view virtual returns (uint256 availableTokenAmount) {
-        return
-            swapStorage.calculateWithdrawOneToken(
+            (uint256 amount, uint256 fees) = swapStorage.calculateWithdrawOneToken(
                 account,
                 tokenAmount,
                 tokenIndex
             );
+            return amount;
     }
 
     /**

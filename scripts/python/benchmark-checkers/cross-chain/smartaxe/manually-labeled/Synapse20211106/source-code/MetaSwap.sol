@@ -222,7 +222,7 @@ contract MetaSwap is Swap {
         address account,
         uint256[] calldata amounts,
         bool deposit
-    ) external view virtual override returns (uint256) {
+    ) external view virtual returns (uint256) {
         return
             swapStorage.calculateTokenAmount(
                 metaSwapStorage,
@@ -245,7 +245,7 @@ contract MetaSwap is Swap {
         address account,
         uint256 tokenAmount,
         uint8 tokenIndex
-    ) external view virtual override returns (uint256) {
+    ) external view virtual returns (uint256) {
         return
             swapStorage.calculateWithdrawOneToken(
                 metaSwapStorage,

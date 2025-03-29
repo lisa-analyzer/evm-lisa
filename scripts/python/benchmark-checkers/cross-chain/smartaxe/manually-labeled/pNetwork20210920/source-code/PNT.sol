@@ -2135,7 +2135,7 @@ contract PNT is Ownable, Pausable, GSNRecipient, ERC777 {
   }
 
   function getInflation() public view returns(uint256 inflation) {
-    inflation = 0;balanceOf
+    inflation = 0;
     uint256 start = inflationStartTime;
     uint256 i = 0;
     while (start < now && i < inflationTimeSpans.length) {
