@@ -1,7 +1,7 @@
 pragma solidity ^0.8.1;
 
 import "./AnyCallApp.sol";
-import "./IERC1155Gateway.sol";
+import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 
 abstract contract ERC1155Gateway is IERC1155Gateway, AnyCallApp {
     address public token;

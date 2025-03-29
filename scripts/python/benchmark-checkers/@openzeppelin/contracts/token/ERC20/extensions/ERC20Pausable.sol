@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/extensions/ERC20Pausable.sol)
+// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/extensions/ERC20Pausable.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
-import {ERC20} from "../ERC20.sol";
-import {Pausable} from "../../../utils/Pausable.sol";
+import "../ERC20.sol";
+import "../../../security/Pausable.sol";
 
 /**
- * @dev ERC-20 token with pausable token transfers, minting and burning.
+ * @dev ERC20 token with pausable token transfers, minting and burning.
  *
  * Useful for scenarios such as preventing trades until the end of an evaluation
  * period, or having an emergency switch for freezing all token transfers in the
@@ -17,17 +17,19 @@ import {Pausable} from "../../../utils/Pausable.sol";
  * addition to inheriting this contract, you must define both functions, invoking the
  * {Pausable-_pause} and {Pausable-_unpause} internal functions, with appropriate
  * access control, e.g. using {AccessControl} or {Ownable}. Not doing so will
- * make the contract pause mechanism of the contract unreachable, and thus unusable.
+ * make the contract unpausable.
  */
 abstract contract ERC20Pausable is ERC20, Pausable {
     /**
-     * @dev See {ERC20-_update}.
+     * @dev See {ERC20-_beforeTokenTransfer}.
      *
      * Requirements:
      *
      * - the contract must not be paused.
      */
-    function _update(address from, address to, uint256 value) internal virtual override whenNotPaused {
-        super._update(from, to, value);
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+        super._beforeTokenTransfer(from, to, amount);
+
+        require(!paused(), "ERC20Pausable: token transfer while paused");
     }
 }

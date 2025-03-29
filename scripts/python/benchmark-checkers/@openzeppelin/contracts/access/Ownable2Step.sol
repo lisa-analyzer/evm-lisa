@@ -1,22 +1,16 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.1.0) (access/Ownable2Step.sol)
+// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable2Step.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
-import {Ownable} from "./Ownable.sol";
+import "./Ownable.sol";
 
 /**
  * @dev Contract module which provides access control mechanism, where
  * there is an account (an owner) that can be granted exclusive access to
  * specific functions.
  *
- * This extension of the {Ownable} contract includes a two-step mechanism to transfer
- * ownership, where the new owner must call {acceptOwnership} in order to replace the
- * old one. This can help prevent common mistakes, such as transfers of ownership to
- * incorrect accounts, or to contracts that are unable to interact with the
- * permission system.
- *
- * The initial owner is specified at deployment time in the constructor for `Ownable`. This
+ * By default, the owner account will be the one that deploys the contract. This
  * can later be changed with {transferOwnership} and {acceptOwnership}.
  *
  * This module is used through inheritance. It will make available all functions
@@ -37,8 +31,6 @@ abstract contract Ownable2Step is Ownable {
     /**
      * @dev Starts the ownership transfer of the contract to a new account. Replaces the pending transfer if there is one.
      * Can only be called by the current owner.
-     *
-     * Setting `newOwner` to the zero address is allowed; this can be used to cancel an initiated ownership transfer.
      */
     function transferOwnership(address newOwner) public virtual override onlyOwner {
         _pendingOwner = newOwner;
@@ -59,9 +51,7 @@ abstract contract Ownable2Step is Ownable {
      */
     function acceptOwnership() public virtual {
         address sender = _msgSender();
-        if (pendingOwner() != sender) {
-            revert OwnableUnauthorizedAccount(sender);
-        }
+        require(pendingOwner() == sender, "Ownable2Step: caller is not the new owner");
         _transferOwnership(sender);
     }
 }

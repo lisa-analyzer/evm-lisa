@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.1.0) (governance/extensions/GovernorTimelockCompound.sol)
+// OpenZeppelin Contracts (last updated v4.9.0) (governance/extensions/GovernorTimelockCompound.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
-import {IGovernor, Governor} from "../Governor.sol";
-import {ICompoundTimelock} from "../../vendor/compound/ICompoundTimelock.sol";
-import {Address} from "../../utils/Address.sol";
-import {SafeCast} from "../../utils/math/SafeCast.sol";
+import "./IGovernorTimelock.sol";
+import "../Governor.sol";
+import "../../utils/math/SafeCast.sol";
+import "../../vendor/compound/ICompoundTimelock.sol";
 
 /**
  * @dev Extension of {Governor} that binds the execution process to a Compound Timelock. This adds a delay, enforced by
@@ -16,10 +16,15 @@ import {SafeCast} from "../../utils/math/SafeCast.sol";
  *
  * Using this model means the proposal will be operated by the {TimelockController} and not by the {Governor}. Thus,
  * the assets and permissions must be attached to the {TimelockController}. Any asset sent to the {Governor} will be
- * inaccessible from a proposal, unless executed via {Governor-relay}.
+ * inaccessible.
+ *
+ * _Available since v4.3._
  */
-abstract contract GovernorTimelockCompound is Governor {
+abstract contract GovernorTimelockCompound is IGovernorTimelock, Governor {
     ICompoundTimelock private _timelock;
+
+    /// @custom:oz-retyped-from mapping(uint256 => GovernorTimelockCompound.ProposalTimelock)
+    mapping(uint256 => uint64) private _proposalTimelocks;
 
     /**
      * @dev Emitted when the timelock controller used for proposal execution is modified.
@@ -34,79 +39,95 @@ abstract contract GovernorTimelockCompound is Governor {
     }
 
     /**
-     * @dev Overridden version of the {Governor-state} function with added support for the `Expired` state.
+     * @dev See {IERC165-supportsInterface}.
      */
-    function state(uint256 proposalId) public view virtual override returns (ProposalState) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, Governor) returns (bool) {
+        return interfaceId == type(IGovernorTimelock).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Overridden version of the {Governor-state} function with added support for the `Queued` and `Expired` state.
+     */
+    function state(uint256 proposalId) public view virtual override(IGovernor, Governor) returns (ProposalState) {
         ProposalState currentState = super.state(proposalId);
 
-        return
-            (currentState == ProposalState.Queued &&
-                block.timestamp >= proposalEta(proposalId) + _timelock.GRACE_PERIOD())
-                ? ProposalState.Expired
-                : currentState;
+        if (currentState != ProposalState.Succeeded) {
+            return currentState;
+        }
+
+        uint256 eta = proposalEta(proposalId);
+        if (eta == 0) {
+            return currentState;
+        } else if (block.timestamp >= eta + _timelock.GRACE_PERIOD()) {
+            return ProposalState.Expired;
+        } else {
+            return ProposalState.Queued;
+        }
     }
 
     /**
      * @dev Public accessor to check the address of the timelock
      */
-    function timelock() public view virtual returns (address) {
+    function timelock() public view virtual override returns (address) {
         return address(_timelock);
     }
 
     /**
-     * @dev See {IGovernor-proposalNeedsQueuing}.
+     * @dev Public accessor to check the eta of a queued proposal
      */
-    function proposalNeedsQueuing(uint256) public view virtual override returns (bool) {
-        return true;
+    function proposalEta(uint256 proposalId) public view virtual override returns (uint256) {
+        return _proposalTimelocks[proposalId];
     }
 
     /**
      * @dev Function to queue a proposal to the timelock.
      */
-    function _queueOperations(
-        uint256 proposalId,
+    function queue(
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
-        bytes32 /*descriptionHash*/
-    ) internal virtual override returns (uint48) {
-        uint48 etaSeconds = SafeCast.toUint48(block.timestamp + _timelock.delay());
+        bytes32 descriptionHash
+    ) public virtual override returns (uint256) {
+        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+
+        require(state(proposalId) == ProposalState.Succeeded, "Governor: proposal not successful");
+
+        uint256 eta = block.timestamp + _timelock.delay();
+        _proposalTimelocks[proposalId] = SafeCast.toUint64(eta);
 
         for (uint256 i = 0; i < targets.length; ++i) {
-            if (
-                _timelock.queuedTransactions(keccak256(abi.encode(targets[i], values[i], "", calldatas[i], etaSeconds)))
-            ) {
-                revert GovernorAlreadyQueuedProposal(proposalId);
-            }
-            _timelock.queueTransaction(targets[i], values[i], "", calldatas[i], etaSeconds);
+            require(
+                !_timelock.queuedTransactions(keccak256(abi.encode(targets[i], values[i], "", calldatas[i], eta))),
+                "GovernorTimelockCompound: identical proposal action already queued"
+            );
+            _timelock.queueTransaction(targets[i], values[i], "", calldatas[i], eta);
         }
 
-        return etaSeconds;
+        emit ProposalQueued(proposalId, eta);
+
+        return proposalId;
     }
 
     /**
-     * @dev Overridden version of the {Governor-_executeOperations} function that run the already queued proposal
-     * through the timelock.
+     * @dev Overridden execute function that run the already queued proposal through the timelock.
      */
-    function _executeOperations(
+    function _execute(
         uint256 proposalId,
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 /*descriptionHash*/
     ) internal virtual override {
-        uint256 etaSeconds = proposalEta(proposalId);
-        if (etaSeconds == 0) {
-            revert GovernorNotQueuedProposal(proposalId);
-        }
+        uint256 eta = proposalEta(proposalId);
+        require(eta > 0, "GovernorTimelockCompound: proposal not yet queued");
         Address.sendValue(payable(_timelock), msg.value);
         for (uint256 i = 0; i < targets.length; ++i) {
-            _timelock.executeTransaction(targets[i], values[i], "", calldatas[i], etaSeconds);
+            _timelock.executeTransaction(targets[i], values[i], "", calldatas[i], eta);
         }
     }
 
     /**
-     * @dev Overridden version of the {Governor-_cancel} function to cancel the timelocked proposal if it has already
+     * @dev Overridden version of the {Governor-_cancel} function to cancel the timelocked proposal if it as already
      * been queued.
      */
     function _cancel(
@@ -117,11 +138,13 @@ abstract contract GovernorTimelockCompound is Governor {
     ) internal virtual override returns (uint256) {
         uint256 proposalId = super._cancel(targets, values, calldatas, descriptionHash);
 
-        uint256 etaSeconds = proposalEta(proposalId);
-        if (etaSeconds > 0) {
+        uint256 eta = proposalEta(proposalId);
+        if (eta > 0) {
+            // update state first
+            delete _proposalTimelocks[proposalId];
             // do external call later
             for (uint256 i = 0; i < targets.length; ++i) {
-                _timelock.cancelTransaction(targets[i], values[i], "", calldatas[i], etaSeconds);
+                _timelock.cancelTransaction(targets[i], values[i], "", calldatas[i], eta);
             }
         }
 

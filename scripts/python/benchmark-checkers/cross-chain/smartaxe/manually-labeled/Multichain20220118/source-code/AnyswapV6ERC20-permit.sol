@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.10;
 
-import "./draft-ERC20Permit.sol";
-import "./SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract AnyswapV6ERC20 is ERC20Permit {
     using SafeERC20 for IERC20;

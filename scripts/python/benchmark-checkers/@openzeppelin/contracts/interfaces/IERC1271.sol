@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/IERC1271.sol)
+// OpenZeppelin Contracts v4.4.1 (interfaces/IERC1271.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 /**
- * @dev Interface of the ERC-1271 standard signature validation method for
+ * @dev Interface of the ERC1271 standard signature validation method for
  * contracts as defined in https://eips.ethereum.org/EIPS/eip-1271[ERC-1271].
+ *
+ * _Available since v4.1._
  */
 interface IERC1271 {
     /**

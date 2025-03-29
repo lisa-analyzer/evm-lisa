@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/IERC3156FlashBorrower.sol)
+// OpenZeppelin Contracts (last updated v4.9.0) (interfaces/IERC3156FlashBorrower.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 /**
- * @dev Interface of the ERC-3156 FlashBorrower, as defined in
+ * @dev Interface of the ERC3156 FlashBorrower, as defined in
  * https://eips.ethereum.org/EIPS/eip-3156[ERC-3156].
+ *
+ * _Available since v4.1._
  */
 interface IERC3156FlashBorrower {
     /**

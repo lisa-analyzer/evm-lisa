@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/TimelockController.sol)
+// OpenZeppelin Contracts (last updated v4.9.0) (governance/TimelockController.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
-import {AccessControl} from "../access/AccessControl.sol";
-import {ERC721Holder} from "../token/ERC721/utils/ERC721Holder.sol";
-import {ERC1155Holder} from "../token/ERC1155/utils/ERC1155Holder.sol";
-import {Address} from "../utils/Address.sol";
+import "../access/AccessControl.sol";
+import "../token/ERC721/IERC721Receiver.sol";
+import "../token/ERC1155/IERC1155Receiver.sol";
 
 /**
  * @dev Contract module which acts as a timelocked controller. When set as the
@@ -20,51 +19,18 @@ import {Address} from "../utils/Address.sol";
  * is in charge of proposing (resp executing) operations. A common use case is
  * to position this {TimelockController} as the owner of a smart contract, with
  * a multisig or a DAO as the sole proposer.
+ *
+ * _Available since v3.3._
  */
-contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
+contract TimelockController is AccessControl, IERC721Receiver, IERC1155Receiver {
+    bytes32 public constant TIMELOCK_ADMIN_ROLE = keccak256("TIMELOCK_ADMIN_ROLE");
     bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
     bytes32 public constant CANCELLER_ROLE = keccak256("CANCELLER_ROLE");
     uint256 internal constant _DONE_TIMESTAMP = uint256(1);
 
-    mapping(bytes32 id => uint256) private _timestamps;
+    mapping(bytes32 => uint256) private _timestamps;
     uint256 private _minDelay;
-
-    enum OperationState {
-        Unset,
-        Waiting,
-        Ready,
-        Done
-    }
-
-    /**
-     * @dev Mismatch between the parameters length for an operation call.
-     */
-    error TimelockInvalidOperationLength(uint256 targets, uint256 payloads, uint256 values);
-
-    /**
-     * @dev The schedule operation doesn't meet the minimum delay.
-     */
-    error TimelockInsufficientDelay(uint256 delay, uint256 minDelay);
-
-    /**
-     * @dev The current state of an operation is not as required.
-     * The `expectedStates` is a bitmap with the bits enabled for each OperationState enum position
-     * counting from right to left.
-     *
-     * See {_encodeStateBitmap}.
-     */
-    error TimelockUnexpectedOperationState(bytes32 operationId, bytes32 expectedStates);
-
-    /**
-     * @dev The predecessor to an operation not yet done.
-     */
-    error TimelockUnexecutedPredecessor(bytes32 predecessorId);
-
-    /**
-     * @dev The caller account is not authorized.
-     */
-    error TimelockUnauthorizedCaller(address caller);
 
     /**
      * @dev Emitted when a call is scheduled as part of operation `id`.
@@ -102,7 +68,7 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     /**
      * @dev Initializes the contract with the following parameters:
      *
-     * - `minDelay`: initial minimum delay in seconds for operations
+     * - `minDelay`: initial minimum delay for operations
      * - `proposers`: accounts to be granted proposer and canceller roles
      * - `executors`: accounts to be granted executor role
      * - `admin`: optional account to be granted admin role; disable with zero address
@@ -113,23 +79,28 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      * this admin to the deployer automatically and should be renounced as well.
      */
     constructor(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin) {
+        _setRoleAdmin(TIMELOCK_ADMIN_ROLE, TIMELOCK_ADMIN_ROLE);
+        _setRoleAdmin(PROPOSER_ROLE, TIMELOCK_ADMIN_ROLE);
+        _setRoleAdmin(EXECUTOR_ROLE, TIMELOCK_ADMIN_ROLE);
+        _setRoleAdmin(CANCELLER_ROLE, TIMELOCK_ADMIN_ROLE);
+
         // self administration
-        _grantRole(DEFAULT_ADMIN_ROLE, address(this));
+        _setupRole(TIMELOCK_ADMIN_ROLE, address(this));
 
         // optional admin
         if (admin != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, admin);
+            _setupRole(TIMELOCK_ADMIN_ROLE, admin);
         }
 
         // register proposers and cancellers
         for (uint256 i = 0; i < proposers.length; ++i) {
-            _grantRole(PROPOSER_ROLE, proposers[i]);
-            _grantRole(CANCELLER_ROLE, proposers[i]);
+            _setupRole(PROPOSER_ROLE, proposers[i]);
+            _setupRole(CANCELLER_ROLE, proposers[i]);
         }
 
         // register executors
         for (uint256 i = 0; i < executors.length; ++i) {
-            _grantRole(EXECUTOR_ROLE, executors[i]);
+            _setupRole(EXECUTOR_ROLE, executors[i]);
         }
 
         _minDelay = minDelay;
@@ -157,40 +128,38 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(AccessControl, ERC1155Holder) returns (bool) {
-        return super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, AccessControl) returns (bool) {
+        return interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev Returns whether an id corresponds to a registered operation. This
-     * includes both Waiting, Ready, and Done operations.
+     * @dev Returns whether an id correspond to a registered operation. This
+     * includes both Pending, Ready and Done operations.
      */
-    function isOperation(bytes32 id) public view returns (bool) {
-        return getOperationState(id) != OperationState.Unset;
+    function isOperation(bytes32 id) public view virtual returns (bool) {
+        return getTimestamp(id) > 0;
     }
 
     /**
      * @dev Returns whether an operation is pending or not. Note that a "pending" operation may also be "ready".
      */
-    function isOperationPending(bytes32 id) public view returns (bool) {
-        OperationState state = getOperationState(id);
-        return state == OperationState.Waiting || state == OperationState.Ready;
+    function isOperationPending(bytes32 id) public view virtual returns (bool) {
+        return getTimestamp(id) > _DONE_TIMESTAMP;
     }
 
     /**
      * @dev Returns whether an operation is ready for execution. Note that a "ready" operation is also "pending".
      */
-    function isOperationReady(bytes32 id) public view returns (bool) {
-        return getOperationState(id) == OperationState.Ready;
+    function isOperationReady(bytes32 id) public view virtual returns (bool) {
+        uint256 timestamp = getTimestamp(id);
+        return timestamp > _DONE_TIMESTAMP && timestamp <= block.timestamp;
     }
 
     /**
      * @dev Returns whether an operation is done or not.
      */
-    function isOperationDone(bytes32 id) public view returns (bool) {
-        return getOperationState(id) == OperationState.Done;
+    function isOperationDone(bytes32 id) public view virtual returns (bool) {
+        return getTimestamp(id) == _DONE_TIMESTAMP;
     }
 
     /**
@@ -202,23 +171,7 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     }
 
     /**
-     * @dev Returns operation state.
-     */
-    function getOperationState(bytes32 id) public view virtual returns (OperationState) {
-        uint256 timestamp = getTimestamp(id);
-        if (timestamp == 0) {
-            return OperationState.Unset;
-        } else if (timestamp == _DONE_TIMESTAMP) {
-            return OperationState.Done;
-        } else if (timestamp > block.timestamp) {
-            return OperationState.Waiting;
-        } else {
-            return OperationState.Ready;
-        }
-    }
-
-    /**
-     * @dev Returns the minimum delay in seconds for an operation to become valid.
+     * @dev Returns the minimum delay for an operation to become valid.
      *
      * This value can be changed by executing an operation that calls `updateDelay`.
      */
@@ -296,9 +249,8 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
         bytes32 salt,
         uint256 delay
     ) public virtual onlyRole(PROPOSER_ROLE) {
-        if (targets.length != values.length || targets.length != payloads.length) {
-            revert TimelockInvalidOperationLength(targets.length, payloads.length, values.length);
-        }
+        require(targets.length == values.length, "TimelockController: length mismatch");
+        require(targets.length == payloads.length, "TimelockController: length mismatch");
 
         bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
         _schedule(id, delay);
@@ -314,13 +266,8 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      * @dev Schedule an operation that is to become valid after a given delay.
      */
     function _schedule(bytes32 id, uint256 delay) private {
-        if (isOperation(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Unset));
-        }
-        uint256 minDelay = getMinDelay();
-        if (delay < minDelay) {
-            revert TimelockInsufficientDelay(delay, minDelay);
-        }
+        require(!isOperation(id), "TimelockController: operation already scheduled");
+        require(delay >= getMinDelay(), "TimelockController: insufficient delay");
         _timestamps[id] = block.timestamp + delay;
     }
 
@@ -332,12 +279,7 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      * - the caller must have the 'canceller' role.
      */
     function cancel(bytes32 id) public virtual onlyRole(CANCELLER_ROLE) {
-        if (!isOperationPending(id)) {
-            revert TimelockUnexpectedOperationState(
-                id,
-                _encodeStateBitmap(OperationState.Waiting) | _encodeStateBitmap(OperationState.Ready)
-            );
-        }
+        require(isOperationPending(id), "TimelockController: operation cannot be cancelled");
         delete _timestamps[id];
 
         emit Cancelled(id);
@@ -389,9 +331,8 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
         bytes32 predecessor,
         bytes32 salt
     ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
-        if (targets.length != values.length || targets.length != payloads.length) {
-            revert TimelockInvalidOperationLength(targets.length, payloads.length, values.length);
-        }
+        require(targets.length == values.length, "TimelockController: length mismatch");
+        require(targets.length == payloads.length, "TimelockController: length mismatch");
 
         bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
 
@@ -410,29 +351,23 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      * @dev Execute an operation's call.
      */
     function _execute(address target, uint256 value, bytes calldata data) internal virtual {
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
-        Address.verifyCallResult(success, returndata);
+        (bool success, ) = target.call{value: value}(data);
+        require(success, "TimelockController: underlying transaction reverted");
     }
 
     /**
      * @dev Checks before execution of an operation's calls.
      */
     function _beforeCall(bytes32 id, bytes32 predecessor) private view {
-        if (!isOperationReady(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Ready));
-        }
-        if (predecessor != bytes32(0) && !isOperationDone(predecessor)) {
-            revert TimelockUnexecutedPredecessor(predecessor);
-        }
+        require(isOperationReady(id), "TimelockController: operation is not ready");
+        require(predecessor == bytes32(0) || isOperationDone(predecessor), "TimelockController: missing dependency");
     }
 
     /**
      * @dev Checks after execution of an operation's calls.
      */
     function _afterCall(bytes32 id) private {
-        if (!isOperationReady(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Ready));
-        }
+        require(isOperationReady(id), "TimelockController: operation is not ready");
         _timestamps[id] = _DONE_TIMESTAMP;
     }
 
@@ -447,26 +382,41 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      * an operation where the timelock is the target and the data is the ABI-encoded call to this function.
      */
     function updateDelay(uint256 newDelay) external virtual {
-        address sender = _msgSender();
-        if (sender != address(this)) {
-            revert TimelockUnauthorizedCaller(sender);
-        }
+        require(msg.sender == address(this), "TimelockController: caller must be timelock");
         emit MinDelayChange(_minDelay, newDelay);
         _minDelay = newDelay;
     }
 
     /**
-     * @dev Encodes a `OperationState` into a `bytes32` representation where each bit enabled corresponds to
-     * the underlying position in the `OperationState` enum. For example:
-     *
-     * 0x000...1000
-     *   ^^^^^^----- ...
-     *         ^---- Done
-     *          ^--- Ready
-     *           ^-- Waiting
-     *            ^- Unset
+     * @dev See {IERC721Receiver-onERC721Received}.
      */
-    function _encodeStateBitmap(OperationState operationState) internal pure returns (bytes32) {
-        return bytes32(1 << uint8(operationState));
+    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    /**
+     * @dev See {IERC1155Receiver-onERC1155Received}.
+     */
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual override returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    /**
+     * @dev See {IERC1155Receiver-onERC1155BatchReceived}.
+     */
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) public virtual override returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
     }
 }

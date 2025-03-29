@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.1.0) (governance/extensions/GovernorCountingSimple.sol)
+// OpenZeppelin Contracts (last updated v4.9.0) (governance/extensions/GovernorCountingSimple.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
-import {Governor} from "../Governor.sol";
+import "../Governor.sol";
 
 /**
  * @dev Extension of {Governor} for simple, 3 options, vote counting.
+ *
+ * _Available since v4.3._
  */
 abstract contract GovernorCountingSimple is Governor {
     /**
@@ -22,10 +24,10 @@ abstract contract GovernorCountingSimple is Governor {
         uint256 againstVotes;
         uint256 forVotes;
         uint256 abstainVotes;
-        mapping(address voter => bool) hasVoted;
+        mapping(address => bool) hasVoted;
     }
 
-    mapping(uint256 proposalId => ProposalVote) private _proposalVotes;
+    mapping(uint256 => ProposalVote) private _proposalVotes;
 
     /**
      * @dev See {IGovernor-COUNTING_MODE}.
@@ -77,26 +79,22 @@ abstract contract GovernorCountingSimple is Governor {
         uint256 proposalId,
         address account,
         uint8 support,
-        uint256 totalWeight,
+        uint256 weight,
         bytes memory // params
-    ) internal virtual override returns (uint256) {
+    ) internal virtual override {
         ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
-        if (proposalVote.hasVoted[account]) {
-            revert GovernorAlreadyCastVote(account);
-        }
+        require(!proposalVote.hasVoted[account], "GovernorVotingSimple: vote already cast");
         proposalVote.hasVoted[account] = true;
 
         if (support == uint8(VoteType.Against)) {
-            proposalVote.againstVotes += totalWeight;
+            proposalVote.againstVotes += weight;
         } else if (support == uint8(VoteType.For)) {
-            proposalVote.forVotes += totalWeight;
+            proposalVote.forVotes += weight;
         } else if (support == uint8(VoteType.Abstain)) {
-            proposalVote.abstainVotes += totalWeight;
+            proposalVote.abstainVotes += weight;
         } else {
-            revert GovernorInvalidVoteType();
+            revert("GovernorVotingSimple: invalid value for enum VoteType");
         }
-
-        return totalWeight;
     }
 }

@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC2309.sol)
+// OpenZeppelin Contracts (last updated v4.8.0) (interfaces/IERC2309.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 /**
  * @dev ERC-2309: ERC-721 Consecutive Transfer Extension.
+ *
+ * _Available since v4.8._
  */
 interface IERC2309 {
     /**
