@@ -1,13 +1,17 @@
 package it.unipr.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMLiSAExecutor {
-	private static final int CORES = Runtime.getRuntime().availableProcessors() - 1;
-	private static final ExecutorService _executor = Executors.newFixedThreadPool(CORES);
+	private static final Logger log = LogManager.getLogger(EVMLiSAExecutor.class);
+
+	private static int CORES = Runtime.getRuntime().availableProcessors() - 1;
+	private static ExecutorService _executor = Executors.newFixedThreadPool(CORES);
+
+	private static long tasksInQueue = 0;
 
 	/**
 	 * Submits a task for execution in the thread pool.
@@ -17,7 +21,7 @@ public class EVMLiSAExecutor {
 	 * @return a Future representing the pending result of the task
 	 */
 	public static Future<?> submit(Runnable task) {
-		return _executor.submit(task);
+		return _executor.submit(new EVMLiSAExecutorTask(task));
 	}
 
 	/**
@@ -32,7 +36,7 @@ public class EVMLiSAExecutor {
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (Runnable task : tasks)
-			futures.add(submit(task));
+			futures.add(submit(new EVMLiSAExecutorTask(task)));
 
 		return futures;
 	}
@@ -60,12 +64,12 @@ public class EVMLiSAExecutor {
 	 * @return a CompletableFuture that completes when all tasks are finished
 	 */
 	public static CompletableFuture<Void> runAsync(Runnable mainTask, Set<Runnable> secondaryTasks) {
-		return CompletableFuture.runAsync(mainTask, _executor)
+		return CompletableFuture.runAsync(new EVMLiSAExecutorTask(mainTask), _executor)
 				.thenCompose(ignored -> {
 					List<CompletableFuture<Void>> checkerFutures = new ArrayList<>();
-					for (Runnable r : secondaryTasks) {
-						checkerFutures.add(CompletableFuture.runAsync(r, _executor));
-					}
+					for (Runnable secondaryTask : secondaryTasks)
+						checkerFutures
+								.add(CompletableFuture.runAsync(new EVMLiSAExecutorTask(secondaryTask), _executor));
 					return CompletableFuture.allOf(checkerFutures.toArray(new CompletableFuture[0]));
 				});
 	}
@@ -104,6 +108,62 @@ public class EVMLiSAExecutor {
 	 */
 	public static void shutdown() {
 		_executor.shutdown();
+	}
+
+	public static void setCoresAvailable(int cores) {
+		if (cores > Runtime.getRuntime().availableProcessors())
+			cores = Runtime.getRuntime().availableProcessors() - 1;
+
+		if (CORES == cores)
+			return;
+
+		shutdown();
+		CORES = Math.max(cores, 1);
+		_executor = Executors.newFixedThreadPool(CORES);
+	}
+
+	public static int getCoresAvailable() {
+		return CORES;
+	}
+
+	/**
+	 * A private static class that wraps a {@link Runnable} task and manages
+	 * task execution tracking. It increments the count of tasks in the queue
+	 * upon creation and decrements it upon completion.
+	 */
+	private static class EVMLiSAExecutorTask implements Runnable {
+		private final Runnable task;
+
+		/**
+		 * Creates a new {@code MyTask} instance wrapping the given task. It
+		 * increments the count of tasks in the queue upon instantiation.
+		 *
+		 * @param task the {@code Runnable} task to be executed.
+		 */
+		public EVMLiSAExecutorTask(Runnable task) {
+			this.task = task;
+
+			synchronized (_executor) {
+				tasksInQueue++;
+			}
+		}
+
+		/**
+		 * Executes the wrapped task and updates the task queue count.
+		 */
+		@Override
+		public void run() {
+			task.run();
+
+			synchronized (_executor) {
+				tasksInQueue--;
+			}
+
+			if (tasksInQueue % 10 == 0 || tasksInQueue < 100)
+				log.debug("{} tasks in progress, {} tasks in queue to be analyzed.",
+						((tasksInQueue - CORES) > 0 ? CORES : tasksInQueue),
+						((tasksInQueue - CORES) > 0 ? (tasksInQueue - CORES) : 0));
+		}
 	}
 
 }

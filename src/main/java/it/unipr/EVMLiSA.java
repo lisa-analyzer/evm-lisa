@@ -48,7 +48,6 @@ public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
 
 	// Configuration
-	private static int CORES = 1;
 	private static boolean TEST_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
@@ -94,7 +93,7 @@ public class EVMLiSA {
 	}
 
 	public static int getCores() {
-		return EVMLiSA.CORES;
+		return EVMLiSAExecutor.getCoresAvailable();
 	}
 
 	/**
@@ -103,9 +102,7 @@ public class EVMLiSA {
 	 * @param cores the number of cores
 	 */
 	public static void setCores(int cores) {
-		if (cores > Runtime.getRuntime().availableProcessors())
-			cores = Runtime.getRuntime().availableProcessors() - 1;
-		EVMLiSA.CORES = Math.max(cores, 1);
+		EVMLiSAExecutor.setCoresAvailable(cores);
 	}
 
 	/**
@@ -251,7 +248,8 @@ public class EVMLiSA {
 		for (SmartContract contract : contracts)
 			futures.add(EVMLiSAExecutor.submit(() -> analyzeContract(contract)));
 
-		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(), CORES);
+		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(),
+				EVMLiSAExecutor.getCoresAvailable());
 
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
@@ -644,10 +642,11 @@ public class EVMLiSA {
 
 	private void setupGlobalOptions(CommandLine cmd) {
 		try {
-			CORES = cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1;
+			EVMLiSAExecutor
+					.setCoresAvailable(cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1);
 		} catch (Exception e) {
 			log.warn("Cores set to 1: {}", e.getMessage());
-			CORES = 1;
+			EVMLiSAExecutor.setCoresAvailable(1);
 		}
 
 		if (cmd.hasOption("checker-reentrancy") || cmd.hasOption("checker-all"))
