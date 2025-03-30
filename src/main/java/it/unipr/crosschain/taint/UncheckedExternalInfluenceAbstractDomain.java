@@ -2,6 +2,7 @@ package it.unipr.crosschain.taint;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
+import it.unipr.cfg.Calldatacopy;
 import it.unipr.cfg.Calldataload;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
@@ -45,7 +46,8 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 
 	@Override
 	public boolean isTainted(Statement stmt) {
-		return stmt instanceof Calldataload;
+		return stmt instanceof Calldataload
+				|| stmt instanceof Calldatacopy;
 	}
 
 	@Override
