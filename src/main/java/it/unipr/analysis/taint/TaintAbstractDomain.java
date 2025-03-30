@@ -22,6 +22,21 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+/**
+ * An abstract domain for taint analysis of EVM smart contracts.
+ * <p>
+ * This abstract class provides the framework to track and propagate taint
+ * information along the symbolic execution of EVM bytecode. It models a
+ * circular stack of {@link TaintElement} objects and an associated memory
+ * element. Concrete implementations should define how to determine whether a
+ * statement is tainted and provide a set of sanitizing opcodes, as well as
+ * instantiate new instances of the domain.
+ * </p>
+ *
+ * @see TaintElement
+ * @see ValueDomain
+ * @see BaseLattice
+ */
 public abstract class TaintAbstractDomain
 		implements ValueDomain<TaintAbstractDomain>, BaseLattice<TaintAbstractDomain> {
 

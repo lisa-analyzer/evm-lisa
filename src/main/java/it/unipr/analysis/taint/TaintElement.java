@@ -6,6 +6,25 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.Objects;
 
+/**
+ * Represents an element in the taint abstract domain for EVM bytecode analysis.
+ * <p>
+ * This class models a taint element using a simple byte value and defines
+ * several special constants:
+ * <ul>
+ * <li><b>TOP</b>: Represents the highest abstract value, indicating an unknown
+ * or over-approximated value.</li>
+ * <li><b>BOTTOM</b>: Represents the lowest abstract value, indicating the
+ * absence of any information or an error state.</li>
+ * <li><b>TAINT</b>: Marks an element as tainted, meaning it carries untrusted
+ * or external data that may lead to vulnerabilities.</li>
+ * <li><b>CLEAN</b>: Marks an element as clean, meaning it is not tainted.</li>
+ * </ul>
+ * </p>
+ *
+ * @see BaseLattice
+ * @see Lattice
+ */
 public class TaintElement implements BaseLattice<TaintElement> {
 
 	public static final TaintElement TOP = new TaintElement((byte) 0);
