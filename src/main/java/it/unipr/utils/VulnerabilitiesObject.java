@@ -25,7 +25,7 @@ public class VulnerabilitiesObject {
 	private int uncheckedStateUpdate;
 	private int possibleUncheckedStateUpdate;
 
-	private int SemanticIntegrityViolation;
+	private int semanticIntegrityViolation;
 	private int possibleSemanticIntegrityViolation;
 
 	private int timeSynchronization;
@@ -49,7 +49,7 @@ public class VulnerabilitiesObject {
 		this.uncheckedStateUpdate = 0;
 		this.possibleUncheckedStateUpdate = 0;
 
-		this.SemanticIntegrityViolation = 0;
+		this.semanticIntegrityViolation = 0;
 		this.possibleSemanticIntegrityViolation = 0;
 
 		this.timeSynchronization = 0;
@@ -63,7 +63,7 @@ public class VulnerabilitiesObject {
 			int uncheckedExternalInfluence, int possibleUncheckedExternalInfluence,
 			int eventOrder,
 			int uncheckedStateUpdate, int possibleUncheckedStateUpdate,
-			int SemanticIntegrityViolation, int possibleSemanticIntegrityViolation,
+			int semanticIntegrityViolation, int possibleSemanticIntegrityViolation,
 			int timeSynchronization,
 			JSONObject json) {
 
@@ -77,7 +77,7 @@ public class VulnerabilitiesObject {
 		this.eventOrder = eventOrder;
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
 		this.possibleUncheckedStateUpdate = possibleUncheckedStateUpdate;
-		this.SemanticIntegrityViolation = SemanticIntegrityViolation;
+		this.semanticIntegrityViolation = semanticIntegrityViolation;
 		this.possibleSemanticIntegrityViolation = possibleSemanticIntegrityViolation;
 		this.timeSynchronization = timeSynchronization;
 		this.json = json;
@@ -87,12 +87,12 @@ public class VulnerabilitiesObject {
 		this.json.put("randomness_dependency_possible", this.possibleRandomness);
 		this.json.put("tx_origin", this.txOrigin);
 		this.json.put("tx_origin_possible", this.possibleTxOrigin);
-		this.json.put("unchecked_external_influence", this.uncheckedExternalInfluence);
+		this.json.put("unchecked_external_influence_definite", this.uncheckedExternalInfluence);
 		this.json.put("unchecked_external_influence_possible", this.possibleUncheckedExternalInfluence);
-		this.json.put("semantic_integrity_violation", this.SemanticIntegrityViolation);
+		this.json.put("semantic_integrity_violation_definite", this.semanticIntegrityViolation);
 		this.json.put("semantic_integrity_violation_possible", this.possibleSemanticIntegrityViolation);
 		this.json.put("event_order", this.eventOrder);
-		this.json.put("unchecked_state_update", this.uncheckedStateUpdate);
+		this.json.put("unchecked_state_update_definite", this.uncheckedStateUpdate);
 		this.json.put("unchecked_state_update_possible", this.possibleUncheckedStateUpdate);
 		this.json.put("time_synchronization", this.timeSynchronization);
 	}
@@ -230,12 +230,12 @@ public class VulnerabilitiesObject {
 	/**
 	 * Sets the semantic integrity violation vulnerability score.
 	 *
-	 * @param SemanticIntegrityViolation the semantic integrity violation score
+	 * @param semanticIntegrityViolation the semantic integrity violation score
 	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject semanticIntegrityViolation(int SemanticIntegrityViolation) {
-		this.SemanticIntegrityViolation = SemanticIntegrityViolation;
+	public VulnerabilitiesObject semanticIntegrityViolation(int semanticIntegrityViolation) {
+		this.semanticIntegrityViolation = semanticIntegrityViolation;
 		return this;
 	}
 
@@ -316,7 +316,7 @@ public class VulnerabilitiesObject {
 				uncheckedExternalInfluence, possibleUncheckedExternalInfluence,
 				eventOrder,
 				uncheckedStateUpdate, possibleUncheckedStateUpdate,
-				SemanticIntegrityViolation, possibleSemanticIntegrityViolation,
+				semanticIntegrityViolation, possibleSemanticIntegrityViolation,
 				timeSynchronization,
 				json);
 	}
