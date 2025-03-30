@@ -21,39 +21,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This checker detects instances where a smart contract updates its state based
- * on external inputs (such as msg.sender or function parameters) without proper
- * validation.
- * <p>
- * <b>Analysis Method:</b>
- * </p>
+ * This checker detects cases where a smart contract updates its state based on
+ * external inputs without proper validation. In particular, it tracks tainted
+ * values derived from external sources (e.g., CALLDATALOAD, CALLDATACOPY) and
+ * monitors if these unvalidated values influence state modifications (via
+ * SSTORE) or are passed to event emission functions. Analysis process:
  * <ul>
- * <li>Uses <b>Taint Analysis</b> similar to the EventOrderChecker case 2.</li>
- * <li><b>Sources:</b> msg.sender, function parameters.</li>
- * <li><b>Sink:</b> SSTORE.</li>
- * <li>If a tainted value reaches an SSTORE without passing through a control
- * JUMPI, the contract is vulnerable.</li>
+ * <li>Identifies JUMPI nodes where tainted values (from external inputs) are
+ * present.</li>
+ * <li>For each state update (e.g., SSTORE), it checks whether the tainted
+ * values have been propagated without a proper validation step (such as a
+ * conditional jump via JUMPI).</li>
+ * <li>Raises a definite violation if the tainted value is confirmed, or a
+ * possible violation if the value remains ambiguous (e.g., marked as TOP).</li>
  * </ul>
- * <p>
- * <b>Detection Logic:</b>
- * </p>
- * <ul>
- * <li>Iterates over the program's statements and identifies SSTORE
- * operations.</li>
- * <li>Retrieves the symbolic execution stack to check if the stored value is
- * tainted.</li>
- * <li>If tainted, verifies whether it was properly validated via a conditional
- * JUMPI before reaching SSTORE.</li>
- * <li>If no validation is detected, logs the vulnerability and adds it to the
- * cache.</li>
- * </ul>
- * <p>
- * <b>Potential Security Issue:</b>
- * </p>
- * <ul>
- * <li>Contracts that fail to verify external input sources before modifying
- * their state are susceptible to malicious manipulation.</li>
- * </ul>
+ *
+ * @see TaintAbstractDomain
  */
 public class UncheckedExternalInfluenceChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
@@ -62,13 +45,68 @@ public class UncheckedExternalInfluenceChecker implements
 
 	private Set<Statement> taintedJumpi = new HashSet<>();
 
+	/**
+	 * Visits all nodes in the CFG and records any JUMPI nodes that have tainted
+	 * stack values.
+	 *
+	 * @param tool  the analysis tool providing semantic check results
+	 * @param graph the control-flow graph (CFG) of the smart contract
+	 * 
+	 * @return always returns true after processing all nodes
+	 */
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph) {
+
+		EVMCFG cfg = ((EVMCFG) graph);
+
+		for (Statement node : cfg.getNodes())
+			if (node instanceof Jumpi)
+				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
+
+					AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+							TypeEnvironment<InferredTypes>>> analysisResult = null;
+
+					try {
+						analysisResult = result.getAnalysisStateBefore(node);
+					} catch (SemanticException e1) {
+						log.error("(SemanticIntegrityViolationChecker): {}", e1.getMessage());
+					}
+
+					TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
+
+					if (taintedStack.isBottom())
+						// Nothing to do
+						continue;
+
+					if (TaintElement.isAtLeastOneTainted(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2)))
+						taintedJumpi.add(node);
+				}
+		return true;
+	}
+
+	/**
+	 * Visits a given log node in the CFG and determines whether it is affected
+	 * by an unchecked external influence
+	 *
+	 * @param tool  the analysis tool providing semantic check results
+	 * @param graph the control-flow graph (CFG) of the smart contract
+	 * @param node  the node to analyze
+	 * 
+	 * @return always returns true after processing the node
+	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Sstore || node instanceof Jumpi) {
+		if (node instanceof Sstore) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -89,30 +127,17 @@ public class UncheckedExternalInfluenceChecker implements
 					// Nothing to do
 					continue;
 				else {
-
 					// Checks if either first or second element in the
 					// stack is tainted
 					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2))) {
-
-						if (node instanceof Jumpi) {
-							taintedJumpi.add(node);
-							return true;
-						}
 						checkForUncheckedExternalInfluence(node, tool, cfg);
-
 					} else if (TaintElement.isAtLeastOneTop(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2))) {
-
-						if (node instanceof Jumpi) {
-							taintedJumpi.add(node);
-							return true;
-						}
 						checkForPossibleUncheckedExternalInfluence(node, tool, cfg);
 					}
-
 				}
 			}
 		}
@@ -141,12 +166,13 @@ public class UncheckedExternalInfluenceChecker implements
 
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-				log.warn("Unchecked External Influence vulnerability at pc {}  (line {}) coming from line {}.",
+				log.warn(
+						"[DEFINITE] Unchecked External Influence vulnerability at pc {}  (line {}) coming from line {}.",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
-				String warn = "Unchecked External Influence vulnerability at "
+				String warn = "[DEFINITE] Unchecked External Influence vulnerability at "
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
@@ -166,12 +192,12 @@ public class UncheckedExternalInfluenceChecker implements
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
 				log.warn(
-						"Unchecked External Influence vulnerability (possible) at pc {} (line {}) coming from line {}.",
+						"[POSSIBLE] Unchecked External Influence vulnerability at pc {} (line {}) coming from line {}.",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
-				String warn = "Unchecked External Influence vulnerability (possible) at "
+				String warn = "[POSSIBLE] Unchecked External Influence vulnerability at "
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addPossibleUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);

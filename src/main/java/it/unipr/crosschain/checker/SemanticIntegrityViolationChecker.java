@@ -20,6 +20,26 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * This checker identifies semantic integrity violations in cross-chain bridge
+ * contracts, specifically where unvalidated external input is passed to event
+ * emission without proper verification. It operates by tracking tainted values
+ * from external sources (e.g., CALLDATALOAD, CALLDATACOPY) and checking if
+ * these values propagate to event parameters without encountering a validation
+ * step (e.g., via a JUMPI). The checker performs the following:
+ * <ul>
+ * <li>Phase 1: Iterates through the CFG to record JUMPI nodes that exhibit
+ * tainted values.</li>
+ * <li>Phase 2: For each log event node, analyzes the tainted stack to determine
+ * if a definite or possible violation exists based on the propagation of
+ * unvalidated external inputs.</li>
+ * </ul>
+ * Definite violations are raised when tainted values are confirmed, while
+ * possible violations are flagged when the values are indeterminate (marked as
+ * TOP).
+ *
+ * @see TaintAbstractDomain
+ */
 public class SemanticIntegrityViolationChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
@@ -27,6 +47,15 @@ public class SemanticIntegrityViolationChecker implements
 
 	private final Set<Statement> taintedJumpi = new HashSet<>();
 
+	/**
+	 * Visits all nodes in the CFG and records any JUMPI nodes that have tainted
+	 * stack values.
+	 *
+	 * @param tool  the analysis tool providing semantic check results
+	 * @param graph the control-flow graph (CFG) of the smart contract
+	 * 
+	 * @return always returns true after processing all nodes
+	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
@@ -63,6 +92,16 @@ public class SemanticIntegrityViolationChecker implements
 		return true;
 	}
 
+	/**
+	 * Visits a given log node in the CFG and determines whether it is affected
+	 * by a semantic integrity violation.
+	 *
+	 * @param tool  the analysis tool providing semantic check results
+	 * @param graph the control-flow graph (CFG) of the smart contract
+	 * @param node  the log node to analyze
+	 * 
+	 * @return always returns true after processing the node
+	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
