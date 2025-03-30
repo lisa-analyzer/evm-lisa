@@ -79,7 +79,8 @@ public class SmartaxeBenchmark {
 								() -> EVMLiSA.runRandomnessDependencyChecker(contract),
 								() -> xEVMLiSA.runEventOrderChecker(contract),
 								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
-								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract))));
+								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract),
+								() -> xEVMLiSA.runSemanticIntegrityViolationChecker(contract))));
 			}
 		}
 		EVMLiSAExecutor.awaitCompletionCompletableFutures(futures); // barrier
