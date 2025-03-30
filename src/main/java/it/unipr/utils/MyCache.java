@@ -372,11 +372,13 @@ public class MyCache {
 	}
 
 	/**
-	 * \* Adds a semantic integrity violation warning for the specified key. \*
-	 * If no warnings are associated, a new set is created and the warning is
-	 * added. \* This method is thread-safe. \* \* @param key the integer key
-	 * identifying the entity for which the warning applies \* @param warning
-	 * the warning object to be added
+	 * Adds a semantic integrity violation warning for the specified key. If no
+	 * warnings are associated, a new set is created and the warning is added.
+	 * This method is thread-safe.
+	 *
+	 * @param key     the integer key identifying the entity for which the
+	 *                    warning applies
+	 * @param warning the warning object to be added
 	 */
 	public void addSemanticIntegrityViolationWarning(int key, Object warning) {
 		synchronized (_semanticIntegrityViolationWarnings) {

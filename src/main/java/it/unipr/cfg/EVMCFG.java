@@ -624,16 +624,18 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * \* Determines if the 'target' statement is reachable from the 'start'
-	 * statement \* while avoiding any statements in 'avoidStatements'. Results
-	 * are cached to \* avoid repeated computations. \* \* @param start the
-	 * starting statement for the search \* @param target the target statement
-	 * to verify reachability \* @param avoidStatements the set of statements to
-	 * ignore during traversal \* @return true if the 'target' is reachable from
-	 * 'start' without going \* through any of the 'avoidStatements' it return
-	 * false otherwise
+	 * Determines if the 'target' statement is reachable from the 'start'
+	 * statement while avoiding any statements in 'avoidStatements'. Results are
+	 * cached to avoid repeated computations.
+	 *
+	 * @param start           the starting statement for the search
+	 * @param target          the target statement to verify reachability
+	 * @param avoidStatements the set of statements to ignore during traversal
+	 *
+	 * @return true if the 'target' is reachable from 'start' without going
+	 *             through any of the 'avoidStatements' it return false
+	 *             otherwise
 	 */
-
 	public boolean reachableFromWithoutStatements(Statement start, Statement target, Set<Statement> avoidStatements) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "withoutstatements"
 				+ avoidStatements.hashCode();
