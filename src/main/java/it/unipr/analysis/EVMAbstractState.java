@@ -975,14 +975,20 @@ public class EVMAbstractState
 						} else if (memory.isTop()) {
 							resultStack.push(StackElement.TOP);
 						} else {
-							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
+							try {
+								byte[] mloadValue = memory.mload(offset.getNumber().intValue());
 
-							StackElement mload = StackElement.fromBytes(mloadValue);
+								StackElement mload = StackElement.fromBytes(mloadValue);
 
-							if (mload.isBottom())
-								continue;
+								if (mload.isBottom())
+									continue;
 
-							resultStack.push(mload);
+								resultStack.push(mload);
+							} catch (Exception e) {
+								log.error("Error while loading {} from memory, pushing TOP",
+										offset.getNumber().intValue(), e);
+								resultStack.push(StackElement.TOP);
+							}
 						}
 
 						result.add(resultStack);
