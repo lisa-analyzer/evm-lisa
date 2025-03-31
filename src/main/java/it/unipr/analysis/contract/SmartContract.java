@@ -252,7 +252,15 @@ public class SmartContract {
 		this._eventsSignature = ABIManager.parseEventsFromABI(abiFilePath);
 	}
 
-	///////////////////// GETTERs
+	/**
+	 * Returns the contract name.
+	 *
+	 * @return The contract name.
+	 */
+	public String getName() {
+		return this._name;
+	}
+
 	/**
 	 * Returns the contract address.
 	 *
@@ -372,11 +380,18 @@ public class SmartContract {
 		return this._vulnerabilities;
 	}
 
-	public String getName() {
-		return this._name;
+	/**
+	 * Sets the contract name.
+	 *
+	 * @param name The contract name.
+	 *
+	 * @return This SmartContract instance for method chaining.
+	 */
+	public SmartContract setName(String name) {
+		this._name = name;
+		return this;
 	}
 
-	///////////////////// SETTERs
 	/**
 	 * Sets the contract address.
 	 *
