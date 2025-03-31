@@ -93,10 +93,11 @@ public class TxOriginChecker implements
 
 		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
 
-		log.warn("Tx. Origin attack at pc {} (line {}).", nodeLocation.getPc(),
+		log.warn("[DEFINITE] Tx.Origin attack at pc {} (line {}).",
+				nodeLocation.getPc(),
 				nodeLocation.getSourceCodeLine());
 
-		String warn = "TxOrigin attack at "
+		String warn = "[DEFINITE] TxOrigin attack at "
 				+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
 		MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
@@ -108,10 +109,10 @@ public class TxOriginChecker implements
 
 		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
 
-		log.warn("Tx. Origin attack (possible) at pc {} (line {}).", nodeLocation.getPc(),
+		log.warn("[POSSIBLE] Tx.Origin attack at pc {} (line {}).", nodeLocation.getPc(),
 				nodeLocation.getSourceCodeLine());
 
-		String warn = "TxOrigin attack (possible) at "
+		String warn = "[POSSIBLE] Tx.Origin attack at "
 				+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
 		MyCache.getInstance().addPossibleTxOriginWarning(cfg.hashCode(), warn);

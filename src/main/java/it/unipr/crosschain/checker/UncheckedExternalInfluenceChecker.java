@@ -167,9 +167,10 @@ public class UncheckedExternalInfluenceChecker implements
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
 				log.warn(
-						"[DEFINITE] Unchecked External Influence vulnerability at pc {}  (line {}) coming from line {}.",
+						"[DEFINITE] Unchecked External Influence vulnerability at pc {}  (line {}) coming from pc {} (line {}).",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getPc(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
 				String warn = "[DEFINITE] Unchecked External Influence vulnerability at "
@@ -192,9 +193,10 @@ public class UncheckedExternalInfluenceChecker implements
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
 				log.warn(
-						"[POSSIBLE] Unchecked External Influence vulnerability at pc {} (line {}) coming from line {}.",
+						"[POSSIBLE] Unchecked External Influence vulnerability at pc {} (line {}) coming from pc {} (line {}).",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getPc(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
 				String warn = "[POSSIBLE] Unchecked External Influence vulnerability at "

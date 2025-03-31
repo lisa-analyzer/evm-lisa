@@ -90,15 +90,16 @@ public class TimeSynchronizationChecker implements
 					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
 
 					log.warn(
-							"Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (cfg={})",
+							"Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
 							nodeLocation.getPc(),
 							nodeLocation.getSourceCodeLine(),
 							cfg.hashCode(),
+							((ProgramCounterLocation) logVulnerable.getLocation()).getPc(),
 							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
 							logVulnerable.getCFG().hashCode());
 
 					String warn = "Time Synchronization vulnerability at pc "
-							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine()
+							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
 					MyCache.getInstance().addTimeSynchronizationWarning(warn);
 					tool.warn(warn);

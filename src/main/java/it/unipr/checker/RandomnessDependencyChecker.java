@@ -105,10 +105,11 @@ public class RandomnessDependencyChecker implements
 			EVMCFG cfg) {
 		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		log.warn("Randomness dependency vulnerability at pc {} (line {}).", sinkLoc.getPc(),
+		log.warn("[DEFINITE] Randomness dependency vulnerability at pc {} (line {}).",
+				sinkLoc.getPc(),
 				sinkLoc.getSourceCodeLine());
 
-		String warn = "Randomness dependency vulnerability at pc "
+		String warn = "[DEFINITE] Randomness dependency vulnerability at pc "
 				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
 		MyCache.getInstance().addRandomnessDependencyWarning(cfg.hashCode(), warn);
@@ -128,10 +129,11 @@ public class RandomnessDependencyChecker implements
 			EVMCFG cfg) {
 		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		log.warn("Randomness dependency vulnerability (possible) at pc {} (line {}).", sinkLoc.getPc(),
+		log.warn("[POSSIBLE] Randomness dependency vulnerability at pc {} (line {}).",
+				sinkLoc.getPc(),
 				sinkLoc.getSourceCodeLine());
 
-		String warn = "Randomness dependency vulnerability (possible) at pc "
+		String warn = "[POSSIBLE] Randomness dependency vulnerability at pc "
 				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
 		MyCache.getInstance().addPossibleRandomnessDependencyWarning(cfg.hashCode(), warn);

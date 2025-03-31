@@ -148,9 +148,11 @@ public class UncheckedStateUpdateChecker implements
 
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-				log.warn("[DEFINITE] Unchecked State Update vulnerability at pc {} (line {}) coming from line {}.",
+				log.warn(
+						"[DEFINITE] Unchecked State Update vulnerability at pc {} (line {}) coming from pc {} (line {}).",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) call.getLocation()).getPc(),
 						((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
 
 				String warn = "[DEFINITE] Unchecked State Update vulnerability at "
@@ -172,9 +174,11 @@ public class UncheckedStateUpdateChecker implements
 
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
-				log.warn("[POSSIBLE] Unchecked State Update vulnerability at pc {} (line {}) coming from line {}.",
+				log.warn(
+						"[POSSIBLE] Unchecked State Update vulnerability at pc {} (line {}) coming from pc {} (line {}).",
 						sstoreLocation.getPc(),
 						sstoreLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) call.getLocation()).getPc(),
 						((ProgramCounterLocation) call.getLocation()).getSourceCodeLine());
 
 				String warn = "[POSSIBLE] Unchecked State Update vulnerability at "

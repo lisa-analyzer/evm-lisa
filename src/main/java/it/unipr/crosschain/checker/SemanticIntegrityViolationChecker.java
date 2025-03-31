@@ -215,9 +215,10 @@ public class SemanticIntegrityViolationChecker implements
 
 				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
 
-				log.warn("[DEFINITE] Semantic integrity violation at pc {} (line {}) coming from line {}.",
+				log.warn("[DEFINITE] Semantic integrity violation at pc {} (line {}) coming from pc {} (line {}).",
 						logxLocation.getPc(),
 						logxLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getPc(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
 				String warn = "[DEFINITE] Semantic Integrity Violation vulnerability at "
@@ -238,9 +239,10 @@ public class SemanticIntegrityViolationChecker implements
 
 				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
 
-				log.warn("[POSSIBLE] Semantic integrity violation at pc {} (line {}) coming from line {}.",
+				log.warn("[POSSIBLE] Semantic integrity violation at pc {} (line {}) coming from pc {} (line {}).",
 						logxLocation.getPc(),
 						logxLocation.getSourceCodeLine(),
+						((ProgramCounterLocation) data.getLocation()).getPc(),
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
 				String warn = "[POSSIBLE] Semantic integrity violation vulnerability at "

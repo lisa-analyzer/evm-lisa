@@ -29,8 +29,7 @@ public class VulnerableLOGsComputer implements
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Log
-				|| node instanceof Calldataload) {
+		if (node instanceof Log) {
 
 			EVMCFG cfg = ((EVMCFG) graph);
 
@@ -100,7 +99,9 @@ public class VulnerableLOGsComputer implements
 		MyCache.getInstance().addVulnerableLogStatementForTimeSynchronizationChecker(node);
 
 		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
-		log.warn("(Time Synchronization vulnerability) LOG possibly vulnerable at pc {} at line {}.",
-				nodeLocation.getPc(), nodeLocation.getSourceCodeLine());
+		log.warn("(Time Synchronization vulnerability) LOG possibly vulnerable at pc {} (line {}) (cfg={}).",
+				nodeLocation.getPc(),
+				nodeLocation.getSourceCodeLine(),
+				node.getCFG().hashCode());
 	}
 }
