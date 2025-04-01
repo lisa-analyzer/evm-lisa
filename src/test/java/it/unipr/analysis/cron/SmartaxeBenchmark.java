@@ -6,6 +6,11 @@ import it.unipr.crosschain.Bridge;
 import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.MyCache;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,10 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.concurrent.TimeUnit;
 
 public class SmartaxeBenchmark {
 	private static final Logger log = LogManager.getLogger(SmartaxeBenchmark.class);
@@ -28,17 +30,24 @@ public class SmartaxeBenchmark {
 	public static void main(String[] args) {
 		EVMLiSA.setWorkingDirectory(workingDirectory);
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
+//		EVMLiSA.setStackLimit(64);
+//		EVMLiSA.setStackSetSize(32);
 		EVMLiSAExecutor.setCoresAvailable(Runtime.getRuntime().availableProcessors() - 1);
 
 		log.info("Cores available: {}", EVMLiSAExecutor.getCoresAvailable());
 
-		new SmartaxeBenchmark().runBenchmarkOnManuallyLabeled();
+		try {
+			new SmartaxeBenchmark().runBenchmarkWithInterCrossChainCheckers();
+		} catch (Exception e) {
+			e.printStackTrace();
+			EVMLiSAExecutor.shutdown();
+		}
 
 		log.debug("Cache used {} times.", MyCache.getTimesUsed());
 		EVMLiSAExecutor.shutdown();
 	}
 
-	private void runBenchmarkOnManuallyLabeled() {
+	private void runBenchmarkWithIntraCrossChainCheckers() {
 		workingDirectory = workingDirectory.resolve("manually-labeled");
 		Path datasetPath = Paths.get("scripts", "python", "benchmark-checkers", "cross-chain", "smartaxe",
 				"manually-labeled");
@@ -74,16 +83,16 @@ public class SmartaxeBenchmark {
 				futures.add(EVMLiSAExecutor.runAsync(
 						() -> EVMLiSA.buildCFG(contract),
 						Set.of(
-								() -> EVMLiSA.runReentrancyChecker(contract),
-								() -> EVMLiSA.runTxOriginChecker(contract),
-								() -> EVMLiSA.runRandomnessDependencyChecker(contract),
+//								() -> EVMLiSA.runReentrancyChecker(contract),
+//								() -> EVMLiSA.runTxOriginChecker(contract),
+//								() -> EVMLiSA.runRandomnessDependencyChecker(contract),
 								() -> xEVMLiSA.runEventOrderChecker(contract),
 								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
 								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract),
 								() -> xEVMLiSA.runSemanticIntegrityViolationChecker(contract))));
 			}
 		}
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(futures); // barrier
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(futures, 7, TimeUnit.HOURS); // barrier
 
 		// Save results
 		JSONArray bridgesVulnerabilities = new JSONArray();
@@ -109,15 +118,17 @@ public class SmartaxeBenchmark {
 			Files.writeString(resultFilePath, bridgesVulnerabilities.toString(4));
 
 			log.info("Results saved in: {}/benchmark_results.json", workingDirectory);
+
+			System.err.println(bridgesVulnerabilities.toString(4));
 		} catch (IOException e) {
 			log.error("An error occurred while saving the benchmark results: {}", e.getMessage());
 		}
 	}
 
-	private void runBenchmarkOnDataset() {
+	private void runBenchmarkWithInterCrossChainCheckers() {
 		workingDirectory = workingDirectory.resolve("dataset");
 		Path datasetPath = Paths.get("scripts", "python", "benchmark-checkers", "cross-chain", "smartaxe",
-				"dataset");
+				"manually-labeled");
 		Set<Bridge> bridges = new HashSet<>();
 
 		try {
@@ -149,10 +160,15 @@ public class SmartaxeBenchmark {
 				futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.buildCFG(contract)));
 			EVMLiSAExecutor.awaitCompletionFutures(futures);
 
+			bridge.buildPartialXCFG();
+			bridge.addEdges(
+					xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+
 			xEVMLiSA.runInterCrossChainCheckers(bridge);
 
 			JSONObject bridgeVulnerabilities = new JSONObject();
 			bridgeVulnerabilities.put("name", bridge.getName());
+			bridgeVulnerabilities.put("number_of_contracts", bridge.getSmartContracts().size());
 			bridgeVulnerabilities.put("vulnerabilities", bridge.getVulnerabilities().toJson());
 			bridgesVulnerabilities.put(bridgeVulnerabilities);
 
@@ -163,6 +179,8 @@ public class SmartaxeBenchmark {
 				Path resultFilePath = workingDirectory
 						.resolve(Path.of(bridge.getName(), "vulnerabilities_results.json"));
 				Files.writeString(resultFilePath, bridgeVulnerabilities.toString(4));
+
+				System.err.println(bridgeVulnerabilities.toString(4));
 				log.info("Vulnerabilities of {} saved in: {}.", bridge.getName(), resultFilePath);
 			} catch (IOException e) {
 				log.error("An error occurred while saving vulnerabilities results of {}: {}", bridge.getName(),
@@ -175,6 +193,8 @@ public class SmartaxeBenchmark {
 			Files.writeString(resultFilePath, bridgesVulnerabilities.toString(4));
 
 			log.info("Results saved in: {}/benchmark_results.json", workingDirectory);
+
+			System.err.println(bridgesVulnerabilities.toString(4));
 		} catch (IOException e) {
 			log.error("An error occurred while saving the benchmark results: {}", e.getMessage());
 		}
