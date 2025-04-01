@@ -84,7 +84,7 @@ public class xEVMLiSA {
 	 *
 	 * @return A list of added cross-chain edges.
 	 */
-	private static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
+	public static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
 		Set<Edge> crossChainEdges = new HashSet<>();
 
 		log.info("Computing cross chain edge.");
@@ -133,7 +133,7 @@ public class xEVMLiSA {
 	 *
 	 * @return A list of added cross-chain edges.
 	 */
-	private static Set<Edge> getCrossChainEdgesUsingEventsEntrypoint(Bridge bridge) {
+	public static Set<Edge> getCrossChainEdgesUsingEventsEntrypoint(Bridge bridge) {
 		Set<Statement> emittingBlocks = new HashSet<>();
 		Set<Statement> informationBlocks = new HashSet<>();
 
@@ -161,7 +161,7 @@ public class xEVMLiSA {
 	 * @return A set of cross-chain edges connecting the given sources to the
 	 *             targets.
 	 */
-	private static Set<Edge> addCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
+	public static Set<Edge> addCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();
 
 		for (Statement source : sources)
@@ -181,7 +181,7 @@ public class xEVMLiSA {
 	 * @return A set of conservative cross-chain edges connecting the given
 	 *             sources to the targets.
 	 */
-	private static Set<Edge> addConservativeCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
+	public static Set<Edge> addConservativeCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();
 
 		for (Statement source : sources)
@@ -204,7 +204,6 @@ public class xEVMLiSA {
 		log.info("[IN] Running intra cross-chain checkers.");
 
 		List<Future<?>> futures = new ArrayList<>();
-
 		for (SmartContract contract : bridge) {
 			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runRandomnessDependencyChecker(contract)));
@@ -214,11 +213,9 @@ public class xEVMLiSA {
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(contract)));
 		}
-
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving intra cross-chain checkers results.");
-
 		for (SmartContract contract : bridge) {
 			contract.setVulnerabilities(
 					VulnerabilitiesObject.buildFromCFG(
@@ -242,20 +239,21 @@ public class xEVMLiSA {
 
 		List<Future<?>> futures = new ArrayList<>();
 
-		for (SmartContract contract : bridge) {
+		log.info("[TimeSynchronizationChecker] Computing vulnerable LOGs.");
+		for (SmartContract contract : bridge)
 			futures.add(EVMLiSAExecutor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
-		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
+		log.info("[TimeSynchronizationChecker] Vulnerable LOGs computed.");
 
+		log.info("[TimeSynchronizationChecker] Computing tainted CallData.");
 		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
+		log.info("[TimeSynchronizationChecker] Tainted CallData computed.");
 
-		for (SmartContract contract : bridge) {
+		for (SmartContract contract : bridge)
 			futures.add(EVMLiSAExecutor.submit(() -> runTimeSynchronizationChecker(contract)));
-		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving inter cross-chain checkers results.");
-
 		bridge.setVulnerabilities(
 				VulnerabilitiesObject.newVulnerabilitiesObject()
 						.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
@@ -424,25 +422,30 @@ public class xEVMLiSA {
 		EVMCFG xcfg = bridge.getXCFG();
 		Set<Statement> logsVulnerable = MyCache.getInstance()
 				.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
+		List<Future<?>> futures = new ArrayList<>();
 
 		for (Statement logVulnerable : logsVulnerable) {
-			for (Statement externalDataStatement : xcfg.getExternalData()) {
-				if (externalDataStatement instanceof Calldataload
-						&& xcfg.reachableFromCrossingACrossChainEdge(logVulnerable, externalDataStatement)) {
+			futures.add(EVMLiSAExecutor.submit(() -> {
+				for (Statement externalDataStatement : xcfg.getExternalData()) {
+					if (externalDataStatement instanceof Calldataload
+							&& xcfg.reachableFromCrossingACrossChainEdge(logVulnerable, externalDataStatement)) {
 
-					MyCache.getInstance().addLinkFromLogToCallDataLoad(logVulnerable, externalDataStatement);
-					MyCache.getInstance().addTaintedCallDataLoad(externalDataStatement);
+						MyCache.getInstance().addLinkFromLogToCallDataLoad(logVulnerable, externalDataStatement);
+						MyCache.getInstance().addTaintedCallDataLoad(externalDataStatement);
 
-					log.debug(
-							"(Time Synchronization vulnerability) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
-							logVulnerable, ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
-							logVulnerable.getCFG().hashCode(),
-							externalDataStatement,
-							((ProgramCounterLocation) externalDataStatement.getLocation()).getSourceCodeLine(),
-							externalDataStatement.getCFG().hashCode());
+						log.debug(
+								"(Time Synchronization vulnerability) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
+								logVulnerable,
+								((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
+								logVulnerable.getCFG().hashCode(),
+								externalDataStatement,
+								((ProgramCounterLocation) externalDataStatement.getLocation()).getSourceCodeLine(),
+								externalDataStatement.getCFG().hashCode());
+					}
 				}
-			}
+			}));
 		}
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 	}
 
 	/**
