@@ -218,7 +218,7 @@ public class SemanticIntegrityViolationChecker implements
 		for (Statement data : externalDatas) {
 			if (cfg.reachableFromWithoutStatements(data, logx, taintedJumpi)) {
 
-				if(!xCFG.hasAtLeastOneCrossChainEdge(logx)) {
+				if (!xCFG.hasAtLeastOneCrossChainEdge(logx)) {
 					raisePossibleSemanticIntegrityViolation(data, tool, cfg);
 					continue;
 				}

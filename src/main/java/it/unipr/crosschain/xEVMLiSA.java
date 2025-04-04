@@ -472,34 +472,34 @@ public class xEVMLiSA {
 	 * @param bridge The bridge object containing the cross-chain control flow
 	 *                   graph (xCFG) and other data necessary for the analysis.
 	 */
-	private static void computeTaintedCallDataForTimeSynchronizationChecker(Bridge bridge) {
+	public static void computeTaintedCallDataForTimeSynchronizationChecker(Bridge bridge) {
 		EVMCFG xcfg = bridge.getXCFG();
 		Set<Statement> logsVulnerable = MyCache.getInstance()
 				.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
-		List<Future<?>> futures = new ArrayList<>();
+//		List<Future<?>> futures = new ArrayList<>();
 
 		for (Statement logVulnerable : logsVulnerable) {
-			futures.add(EVMLiSAExecutor.submit(() -> {
-				for (Statement externalDataStatement : xcfg.getExternalData()) {
-					if (externalDataStatement instanceof Calldataload
-							&& xcfg.reachableFromCrossingACrossChainEdge(logVulnerable, externalDataStatement)) {
+//			futures.add(EVMLiSAExecutor.submit(() -> {
+			for (Statement externalDataStatement : xcfg.getExternalData()) {
+				if (externalDataStatement instanceof Calldataload
+						&& xcfg.reachableFromCrossingACrossChainEdge(logVulnerable, externalDataStatement)) {
 
-						MyCache.getInstance().addLinkFromLogToCallDataLoad(logVulnerable, externalDataStatement);
-						MyCache.getInstance().addTaintedCallDataLoad(externalDataStatement);
+					MyCache.getInstance().addLinkFromLogToCallDataLoad(logVulnerable, externalDataStatement);
+					MyCache.getInstance().addTaintedCallDataLoad(externalDataStatement);
 
-						log.debug(
-								"(Time Synchronization vulnerability) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
-								logVulnerable,
-								((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
-								logVulnerable.getCFG().hashCode(),
-								externalDataStatement,
-								((ProgramCounterLocation) externalDataStatement.getLocation()).getSourceCodeLine(),
-								externalDataStatement.getCFG().hashCode());
-					}
+					log.debug(
+							"(Time Synchronization vulnerability) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
+							logVulnerable,
+							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
+							logVulnerable.getCFG().hashCode(),
+							externalDataStatement,
+							((ProgramCounterLocation) externalDataStatement.getLocation()).getSourceCodeLine(),
+							externalDataStatement.getCFG().hashCode());
 				}
-			}));
+			}
+//			}));
 		}
-		EVMLiSAExecutor.awaitCompletionFutures(futures);
+//		EVMLiSAExecutor.awaitCompletionFutures(futures);
 	}
 
 	/**
