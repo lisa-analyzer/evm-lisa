@@ -6,11 +6,6 @@ import it.unipr.crosschain.Bridge;
 import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.MyCache;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +17,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SmartaxeBenchmark {
 	private static final Logger log = LogManager.getLogger(SmartaxeBenchmark.class);
@@ -86,7 +85,8 @@ public class SmartaxeBenchmark {
 								() -> xEVMLiSA.runEventOrderChecker(bridge, contract),
 								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
 								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract),
-								() -> xEVMLiSA.runSemanticIntegrityViolationChecker(contract))));
+								() -> xEVMLiSA.runSemanticIntegrityViolationChecker(contract),
+								() -> xEVMLiSA.runMissingEventNotificationChecker(contract))));
 			}
 		}
 		EVMLiSAExecutor.awaitCompletionCompletableFutures(futures, 7, TimeUnit.HOURS); // barrier

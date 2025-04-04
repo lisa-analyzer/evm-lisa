@@ -44,11 +44,11 @@ public class EVMCFG extends CFG {
 	private Set<Statement> pushedJumps;
 	private Set<Statement> sstores;
 	private Set<Number> jumpDestsNodesLocations;
-	public Set<Statement> sha3s;
 	public Set<Statement> logxs;
 	public Set<Statement> calls;
 	public Set<Statement> externalData;
 	public Set<Statement> jumpI;
+	public Set<Statement> successfullyTerminationStatements;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -113,6 +113,47 @@ public class EVMCFG extends CFG {
 		}
 
 		return this.externalData;
+	}
+
+	/**
+	 * Returns a set of all the SSTORE statements in the CFG.
+	 *
+	 * @return a set of all the SSTORE statements in the CFG
+	 */
+	public Set<Statement> getAllSstore() {
+		if (this.sstores == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> sstores = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Sstore)
+					sstores.add(statement);
+
+			return this.sstores = sstores;
+		}
+
+		return this.sstores;
+	}
+
+	/**
+	 * Returns a set of all the STOP and RETURN statements in the CFG.
+	 *
+	 * @return a set of all the STOP and RETURN statements in the CFG
+	 */
+	public Set<Statement> getAllSuccessfullyTerminationStatements() {
+		if (this.successfullyTerminationStatements == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> successfullyTerminationStatements = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Stop
+						|| statement instanceof Return)
+					successfullyTerminationStatements.add(statement);
+
+			return this.successfullyTerminationStatements = successfullyTerminationStatements;
+		}
+
+		return this.successfullyTerminationStatements;
 	}
 
 	/**

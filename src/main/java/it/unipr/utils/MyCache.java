@@ -23,24 +23,37 @@ public class MyCache {
 
 	private final LRUMap<Pair<String, Number>, StackElement> _map;
 	private final LRUMap<String, Long> _timeLostToGetStorage;
+	private final LRUMap<String, Boolean> _reachableFrom;
+
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
+
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleTxOriginWarnings;
-	private final LRUMap<String, Boolean> _reachableFrom;
+
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleEventOrderWarnings;
+
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleUncheckedStateUpdateWarnings;
+
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalInfluenceWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleSemanticIntegrityViolationWarnings;
+
 	private final LRUMap<Integer, Set<Object>> _semanticIntegrityViolationWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleSemanticIntegrityViolationWarnings;
+
 	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
+
+	private final LRUMap<Integer, Set<Object>> _missingEventNotificationWarnings;
+
 	private final Set<String> _timeSynchronizationWarnings;
-	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
+
+	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
+
 	private final Set<Statement> _taintedCallDataLoad;
+
 	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
 
 	/**
@@ -74,24 +87,37 @@ public class MyCache {
 	private MyCache() {
 		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
+		this._reachableFrom = new LRUMap<String, Boolean>(5000);
+
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(5000);
+
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleTxOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._reachableFrom = new LRUMap<String, Boolean>(5000);
+
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleEventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
+
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleUncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
+
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleUncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
+
 		this._semanticIntegrityViolationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleSemanticIntegrityViolationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
+
 		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
+
+		this._missingEventNotificationWarnings = new LRUMap<Integer, Set<Object>>(5000);
+
 		this._timeSynchronizationWarnings = new HashSet<>();
 		this._vulnerableLogStatement = new LRUMap<>(5000);
+
+		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
+
 		this._taintedCallDataLoad = new HashSet<>();
+
 		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
 	}
 
@@ -232,9 +258,9 @@ public class MyCache {
 	}
 
 	/**
-	 * Adds a possible event order warning for the specified key. If no warnings are
-	 * associated with the key, a new set is created and the warning is added to
-	 * it. This method is thread-safe.
+	 * Adds a possible event order warning for the specified key. If no warnings
+	 * are associated with the key, a new set is created and the warning is
+	 * added to it. This method is thread-safe.
 	 *
 	 * @param key     the key identifying the smart contract or entity for which
 	 *                    the warning applies
@@ -262,6 +288,42 @@ public class MyCache {
 	public int getPossibleEventOrderWarnings(Integer key) {
 		synchronized (_possibleEventOrderWarnings) {
 			return (_possibleEventOrderWarnings.get(key) != null) ? _possibleEventOrderWarnings.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Adds a missing event notification warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addMissingEventNotificationWarning(Integer key, Object warning) {
+		synchronized (_missingEventNotificationWarnings) {
+			_missingEventNotificationWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of missing event notification warnings associated
+	 * with the specified key. If no warnings are associated with the key, the
+	 * method returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getMissingEventNotificationWarnings(Integer key) {
+		synchronized (_missingEventNotificationWarnings) {
+			return (_missingEventNotificationWarnings.get(key) != null)
+					? _missingEventNotificationWarnings.get(key).size()
+					: 0;
 		}
 	}
 

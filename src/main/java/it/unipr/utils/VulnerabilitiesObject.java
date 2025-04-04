@@ -31,6 +31,8 @@ public class VulnerabilitiesObject {
 
 	private int timeSynchronization;
 
+	private int missingEventNotification;
+
 	private JSONObject json;
 
 	private VulnerabilitiesObject() {
@@ -56,6 +58,8 @@ public class VulnerabilitiesObject {
 
 		this.timeSynchronization = 0;
 
+		this.missingEventNotification = 0;
+
 		this.json = new JSONObject();
 	}
 
@@ -67,22 +71,33 @@ public class VulnerabilitiesObject {
 			int uncheckedStateUpdate, int possibleUncheckedStateUpdate,
 			int semanticIntegrityViolation, int possibleSemanticIntegrityViolation,
 			int timeSynchronization,
+			int missingEventNotification,
 			JSONObject json) {
 
 		this.reentrancy = reentrancy;
+
 		this.randomness = randomness;
 		this.possibleRandomness = possibleRandomness;
+
 		this.txOrigin = txOrigin;
 		this.possibleTxOrigin = possibleTxOrigin;
+
 		this.uncheckedExternalInfluence = uncheckedExternalInfluence;
 		this.possibleUncheckedExternalInfluence = possibleUncheckedExternalInfluence;
+
 		this.eventOrder = eventOrder;
 		this.possibleEventOrder = possibleEventOrder;
+
 		this.uncheckedStateUpdate = uncheckedStateUpdate;
 		this.possibleUncheckedStateUpdate = possibleUncheckedStateUpdate;
+
 		this.semanticIntegrityViolation = semanticIntegrityViolation;
 		this.possibleSemanticIntegrityViolation = possibleSemanticIntegrityViolation;
+
 		this.timeSynchronization = timeSynchronization;
+
+		this.missingEventNotification = missingEventNotification;
+
 		this.json = json;
 
 		this.json.put("reentrancy", this.reentrancy);
@@ -99,6 +114,7 @@ public class VulnerabilitiesObject {
 		this.json.put("unchecked_state_update_definite", this.uncheckedStateUpdate);
 		this.json.put("unchecked_state_update_possible", this.possibleUncheckedStateUpdate);
 		this.json.put("time_synchronization", this.timeSynchronization);
+		this.json.put("missing_event_notification", this.missingEventNotification);
 	}
 
 	/**
@@ -281,6 +297,18 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
+	 * Sets the missing event notification vulnerability score.
+	 *
+	 * @param missingEventNotification the missing event notification score
+	 *
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject missingEventNotification(int missingEventNotification) {
+		this.missingEventNotification = missingEventNotification;
+		return this;
+	}
+
+	/**
 	 * Builds a {@link VulnerabilitiesObject} from the given EVM control-flow
 	 * graph (CFG). This method retrieves various vulnerability warnings from
 	 * the cache based on the CFG's hash code and compiles them into a
@@ -319,6 +347,8 @@ public class VulnerabilitiesObject {
 						.getPossibleSemanticIntegrityViolationWarnings(cfg.hashCode()))
 				.possibleUncheckedStateUpdate(MyCache.getInstance()
 						.getPossibleUncheckedStateUpdateWarnings(cfg.hashCode()))
+				.missingEventNotification(MyCache.getInstance()
+						.getMissingEventNotificationWarnings(cfg.hashCode()))
 				.build();
 	}
 
@@ -336,6 +366,7 @@ public class VulnerabilitiesObject {
 				uncheckedStateUpdate, possibleUncheckedStateUpdate,
 				semanticIntegrityViolation, possibleSemanticIntegrityViolation,
 				timeSynchronization,
+				missingEventNotification,
 				json);
 	}
 

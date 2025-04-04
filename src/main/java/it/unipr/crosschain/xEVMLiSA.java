@@ -3,10 +3,7 @@ package it.unipr.crosschain;
 import it.unipr.EVMLiSA;
 import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
-import it.unipr.cfg.Calldataload;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.cfg.Sstore;
+import it.unipr.cfg.*;
 import it.unipr.crosschain.checker.*;
 import it.unipr.crosschain.edges.ConservativeCrossChainEdge;
 import it.unipr.crosschain.edges.CrossChainEdge;
@@ -212,6 +209,7 @@ public class xEVMLiSA {
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
@@ -351,7 +349,7 @@ public class xEVMLiSA {
 	 * instructions). It identifies vulnerabilities where an event is emitted
 	 * without prior state changes, potentially leading to inconsistencies.
 	 *
-	 * @param bridge The bridge that contains the smart contract and the xCFG.
+	 * @param bridge   The bridge that contains the smart contract and the xCFG.
 	 * @param contract The smart contract to analyze.
 	 */
 	public static void runEventOrderChecker(Bridge bridge, SmartContract contract) {
@@ -401,6 +399,47 @@ public class xEVMLiSA {
 				contract.getName(),
 				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()),
 				MyCache.getInstance().getPossibleEventOrderWarnings(contract.getCFG().hashCode()));
+	}
+
+	/**
+	 * Runs the missing event notification checker on the given smart contract.
+	 * This method analyzes the contract's CFG to detect if a state update
+	 * (SSTORE) reaches a termination statement (STOP or RETURN) without an
+	 * intervening event (Log), indicating a missing event notification.
+	 *
+	 * @param contract the smart contract to analyze.
+	 */
+	public static void runMissingEventNotificationChecker(SmartContract contract) {
+		log.info("[IN] Running missing event notification checker on {}.", contract.getName());
+
+		EVMCFG cfg = contract.getCFG();
+		Collection<Statement> sstores = cfg.getAllSstore();
+		Collection<Statement> endPoints = cfg.getAllSuccessfullyTerminationStatements();
+
+		for (Statement sstore : sstores) {
+			for (Statement endpoint : endPoints) {
+				if (cfg.reachableFromWithoutTypes(sstore, endpoint, Collections.singleton(Log.class))) {
+
+					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
+							.getLocation();
+					ProgramCounterLocation endpointLocation = (ProgramCounterLocation) endpoint.getLocation();
+
+					String warn = "Missing Event Notification vulnerability at " + sstoreLocation.getPc();
+
+					log.warn("Missing Event Notification vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+							endpointLocation.getPc(),
+							endpointLocation.getSourceCodeLine(),
+							sstoreLocation.getPc(),
+							sstoreLocation.getSourceCodeLine());
+
+					MyCache.getInstance().addMissingEventNotificationWarning(cfg.hashCode(), warn);
+				}
+			}
+		}
+
+		log.info("[OUT] Missing event notification checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getMissingEventNotificationWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
