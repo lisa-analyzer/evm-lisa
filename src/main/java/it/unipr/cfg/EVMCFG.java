@@ -3,6 +3,7 @@ package it.unipr.cfg;
 import it.unipr.analysis.Number;
 import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.cfg.push.Push;
+import it.unipr.crosschain.edges.CrossChainEdge;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -803,5 +804,12 @@ public class EVMCFG extends CFG {
 		}
 
 		return null;
+	}
+
+	public boolean hasAtLeastOneCrossChainEdge(Statement node) {
+		for (Edge edge : getOutgoingEdges(node))
+			if (edge instanceof CrossChainEdge)
+				return true;
+		return false;
 	}
 }

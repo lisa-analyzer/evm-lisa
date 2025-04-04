@@ -208,7 +208,7 @@ public class xEVMLiSA {
 			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
@@ -293,7 +293,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	public static void runSemanticIntegrityViolationChecker(SmartContract contract) {
+	public static void runSemanticIntegrityViolationChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running semantic integrity violation checker on {}.", contract.getName());
 
 		// Setup configuration
@@ -303,7 +303,7 @@ public class xEVMLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		// Checker build
-		SemanticIntegrityViolationChecker checker = new SemanticIntegrityViolationChecker();
+		SemanticIntegrityViolationChecker checker = new SemanticIntegrityViolationChecker(bridge.getXCFG());
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new SemanticIntegrityViolationAbstractDomain(),
@@ -370,7 +370,7 @@ public class xEVMLiSA {
 							.getLocation();
 					ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
 
-					if (isAtLeastOneCrossChainEdge(bridge.getXCFG().getOutgoingEdges(emitEvent))) {
+					if (bridge.getXCFG().hasAtLeastOneCrossChainEdge(emitEvent)) {
 						String warn = "[DEFINITE] Event Order vulnerability at " + emitEventLocation.getPc();
 
 						log.warn("[DEFINITE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
@@ -522,13 +522,6 @@ public class xEVMLiSA {
 				new TimeSynchronizationAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
-	}
-
-	private static boolean isAtLeastOneCrossChainEdge(Collection<Edge> edges) {
-		for (Edge edge : edges)
-			if (edge instanceof CrossChainEdge)
-				return true;
-		return false;
 	}
 
 	/**

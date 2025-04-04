@@ -46,6 +46,11 @@ public class SemanticIntegrityViolationChecker implements
 	private static final Logger log = LogManager.getLogger(SemanticIntegrityViolationChecker.class);
 
 	private final Set<Statement> taintedJumpi = new HashSet<>();
+	private final EVMCFG xCFG;
+
+	public SemanticIntegrityViolationChecker(EVMCFG xCFG) {
+		this.xCFG = xCFG;
+	}
 
 	/**
 	 * Visits all nodes in the CFG and records any JUMPI nodes that have tainted
@@ -212,6 +217,11 @@ public class SemanticIntegrityViolationChecker implements
 
 		for (Statement data : externalDatas) {
 			if (cfg.reachableFromWithoutStatements(data, logx, taintedJumpi)) {
+
+				if(!xCFG.hasAtLeastOneCrossChainEdge(logx)) {
+					raisePossibleSemanticIntegrityViolation(data, tool, cfg);
+					continue;
+				}
 
 				ProgramCounterLocation logxLocation = (ProgramCounterLocation) logx.getLocation();
 
