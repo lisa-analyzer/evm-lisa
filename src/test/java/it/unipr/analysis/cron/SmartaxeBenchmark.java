@@ -6,6 +6,7 @@ import it.unipr.crosschain.Bridge;
 import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.MyCache;
+import it.unipr.utils.VulnerabilitiesObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,14 +30,12 @@ public class SmartaxeBenchmark {
 	public static void main(String[] args) {
 		EVMLiSA.setWorkingDirectory(workingDirectory);
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
-//		EVMLiSA.setStackLimit(64);
-//		EVMLiSA.setStackSetSize(32);
 		EVMLiSAExecutor.setCoresAvailable(Runtime.getRuntime().availableProcessors() - 1);
 
 		log.info("Cores available: {}", EVMLiSAExecutor.getCoresAvailable());
 
 		try {
-			new SmartaxeBenchmark().runBenchmarkWithInterCrossChainCheckers();
+			new SmartaxeBenchmark().runBenchmarkWithIntraCrossChainCheckers();
 		} catch (Exception e) {
 			e.printStackTrace();
 			EVMLiSAExecutor.shutdown();
@@ -75,23 +74,40 @@ public class SmartaxeBenchmark {
 			numberOfContract += bridge.getSmartContracts().size();
 		log.info("Number of contracts to be analyzed: {}.", numberOfContract);
 
-		// Submit tasks
-		List<CompletableFuture<Void>> futures = new ArrayList<>();
-		for (Bridge bridge : bridges) {
-			for (SmartContract contract : bridge) {
-				futures.add(EVMLiSAExecutor.runAsync(
+		List<CompletableFuture<Void>> completablesFutures = new ArrayList<>();
+		List<Future<?>> futures = new ArrayList<>();
+
+		// Submit tasks: build the CFG for each contract and run intra cross
+		// chain checkers
+		for (Bridge bridge : bridges)
+			for (SmartContract contract : bridge)
+				completablesFutures.add(EVMLiSAExecutor.runAsync(
 						() -> EVMLiSA.buildCFG(contract),
 						Set.of(
-								() -> xEVMLiSA.runEventOrderChecker(bridge, contract),
 								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
 								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract),
-								() -> xEVMLiSA.runSemanticIntegrityViolationChecker(contract),
 								() -> xEVMLiSA.runMissingEventNotificationChecker(contract))));
-			}
-		}
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(futures, 7, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 7, TimeUnit.HOURS); // barrier
 
-		// Save results
+		// Submit tasks: build the xCFG for each bridge
+		for (Bridge bridge : bridges)
+			futures.add(EVMLiSAExecutor.submit(() -> {
+				bridge.buildPartialXCFG();
+				bridge.addEdges(
+						xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+			}));
+		EVMLiSAExecutor.awaitCompletionFuturesWithTimeout(futures, 5, TimeUnit.HOURS); // barrier
+
+		// Submit tasks: run intra cross chain checkers using xCFG
+		for (Bridge bridge : bridges)
+			for (SmartContract contract : bridge) {
+				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
+				futures.add(
+						EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
+			}
+		EVMLiSAExecutor.awaitCompletionFuturesWithTimeout(futures, 7, TimeUnit.HOURS); // barrier
+
+		// Saving results
 		JSONArray bridgesVulnerabilities = new JSONArray();
 		for (Bridge bridge : bridges) {
 			JSONObject bridgeVulnerabilities = new JSONObject();
@@ -122,7 +138,7 @@ public class SmartaxeBenchmark {
 		}
 	}
 
-	private void runBenchmarkWithInterCrossChainCheckers() {
+	private void runBenchmarkWithTimeSynchronizationChecker() {
 		workingDirectory = workingDirectory.resolve("dataset");
 		Path datasetPath = Paths.get("scripts", "python", "benchmark-checkers", "cross-chain", "smartaxe",
 				"manually-labeled");
@@ -143,34 +159,59 @@ public class SmartaxeBenchmark {
 			log.error("An error occurred while listing directories: {}", e.getMessage());
 		}
 
+		// Info prints
 		log.info("Number of bridges to be analyzed: {}.", bridges.size());
+		int numberOfContract = 0;
+		for (Bridge bridge : bridges)
+			numberOfContract += bridge.getSmartContracts().size();
+		log.info("Number of contracts to be analyzed: {}.", numberOfContract);
 
-		int counter = 0;
-		JSONArray bridgesVulnerabilities = new JSONArray();
+		List<CompletableFuture<Void>> completablesFutures = new ArrayList<>();
+		List<Future<?>> futures = new ArrayList<>();
 
-		for (Bridge bridge : bridges) {
-			log.info("[IN] Analyzing bridge {} with {} contracts.",
-					bridge.getName(), bridge.getSmartContracts().size());
-
-			List<Future<?>> futures = new ArrayList<>();
+		// Submit tasks: build the CFG for each contract in bridges and compute
+		// the vulnerable logs
+		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
-				futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.buildCFG(contract)));
-			EVMLiSAExecutor.awaitCompletionFutures(futures);
+				completablesFutures.add(EVMLiSAExecutor.runAsync(
+						() -> EVMLiSA.buildCFG(contract),
+						Set.of(
+								() -> xEVMLiSA.computeVulnerablesLOGsForTimeSynchronizationChecker(contract))));
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 7, TimeUnit.HOURS); // barrier
 
-			bridge.buildPartialXCFG();
-			bridge.addEdges(
-					xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+		// Submit tasks: build the xCFG for each bridge and compute the tainted
+		// call data
+		for (Bridge bridge : bridges)
+			completablesFutures.add(EVMLiSAExecutor.runAsync(
+					() -> {
+						bridge.buildPartialXCFG();
+						bridge.addEdges(
+								xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+					},
+					Set.of(
+							() -> xEVMLiSA.computeTaintedCallDataForTimeSynchronizationChecker(bridge))));
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 7, TimeUnit.HOURS); // barrier
 
-			xEVMLiSA.runInterCrossChainCheckers(bridge);
+		// Submit tasks: run time synchronization checker for each contract in
+		// bridges
+		for (Bridge bridge : bridges)
+			for (SmartContract contract : bridge)
+				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runTimeSynchronizationChecker(contract)));
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
+
+		// Saving results
+		JSONArray bridgesVulnerabilities = new JSONArray();
+		for (Bridge bridge : bridges) {
+			bridge.setVulnerabilities(
+					VulnerabilitiesObject.newVulnerabilitiesObject()
+							.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
+							.build());
 
 			JSONObject bridgeVulnerabilities = new JSONObject();
 			bridgeVulnerabilities.put("name", bridge.getName());
 			bridgeVulnerabilities.put("number_of_contracts", bridge.getSmartContracts().size());
 			bridgeVulnerabilities.put("vulnerabilities", bridge.getVulnerabilities().toJson());
 			bridgesVulnerabilities.put(bridgeVulnerabilities);
-
-			log.info("[OUT] Bridge analyzed {}.", bridge.getName());
-			log.info("Analyzed {}/{} bridges.", ++counter, bridges.size());
 
 			try {
 				Path resultFilePath = workingDirectory
@@ -196,5 +237,4 @@ public class SmartaxeBenchmark {
 			log.error("An error occurred while saving the benchmark results: {}", e.getMessage());
 		}
 	}
-
 }
