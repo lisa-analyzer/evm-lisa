@@ -208,7 +208,7 @@ public class xEVMLiSA {
 			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runRandomnessDependencyChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedStateUpdateChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(contract)));
@@ -351,9 +351,10 @@ public class xEVMLiSA {
 	 * instructions). It identifies vulnerabilities where an event is emitted
 	 * without prior state changes, potentially leading to inconsistencies.
 	 *
+	 * @param bridge The bridge that contains the smart contract and the xCFG.
 	 * @param contract The smart contract to analyze.
 	 */
-	public static void runEventOrderChecker(SmartContract contract) {
+	public static void runEventOrderChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running event order checker on {}.", contract.getName());
 
 		Set<Statement> functionsEntrypoints = new HashSet<>();
@@ -371,21 +372,35 @@ public class xEVMLiSA {
 							.getLocation();
 					ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
 
-					String warn = "Event Order vulnerability at " + emitEventLocation.getPc();
+					if (isAtLeastOneCrossChainEdge(bridge.getXCFG().getOutgoingEdges(emitEvent))) {
+						String warn = "[DEFINITE] Event Order vulnerability at " + emitEventLocation.getPc();
 
-					log.warn("Event Order vulnerability at pc {} at line {} coming from line {}.",
-							emitEventLocation.getPc(),
-							emitEventLocation.getSourceCodeLine(),
-							functionEntrypointLocation.getSourceCodeLine());
+						log.warn("[DEFINITE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+								emitEventLocation.getPc(),
+								emitEventLocation.getSourceCodeLine(),
+								functionEntrypointLocation.getPc(),
+								functionEntrypointLocation.getSourceCodeLine());
 
-					MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
+						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
+					} else {
+						String warn = "[POSSIBLE] Event Order vulnerability at " + emitEventLocation.getPc();
+
+						log.warn("[POSSIBLE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+								emitEventLocation.getPc(),
+								emitEventLocation.getSourceCodeLine(),
+								functionEntrypointLocation.getPc(),
+								functionEntrypointLocation.getSourceCodeLine());
+
+						MyCache.getInstance().addPossibleEventOrderWarning(cfg.hashCode(), warn);
+					}
 				}
 			}
 		}
 
-		log.info("[OUT] Event order checker ended on {}, with {} vulnerabilities found.",
+		log.info("[OUT] Event order checker ended on {}, with {} definite and {} possible vulnerabilities found.",
 				contract.getName(),
-				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
+				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleEventOrderWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -468,6 +483,13 @@ public class xEVMLiSA {
 				new TimeSynchronizationAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
+	}
+
+	private static boolean isAtLeastOneCrossChainEdge(Collection<Edge> edges) {
+		for (Edge edge : edges)
+			if (edge instanceof CrossChainEdge)
+				return true;
+		return false;
 	}
 
 	/**

@@ -83,10 +83,7 @@ public class SmartaxeBenchmark {
 				futures.add(EVMLiSAExecutor.runAsync(
 						() -> EVMLiSA.buildCFG(contract),
 						Set.of(
-//								() -> EVMLiSA.runReentrancyChecker(contract),
-//								() -> EVMLiSA.runTxOriginChecker(contract),
-//								() -> EVMLiSA.runRandomnessDependencyChecker(contract),
-								() -> xEVMLiSA.runEventOrderChecker(contract),
+								() -> xEVMLiSA.runEventOrderChecker(bridge, contract),
 								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
 								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract),
 								() -> xEVMLiSA.runSemanticIntegrityViolationChecker(contract))));
