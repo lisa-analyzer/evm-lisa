@@ -1,5 +1,6 @@
 package it.unipr.crosschain.checker;
 
+import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
@@ -22,6 +23,11 @@ public class TimeSynchronizationChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(TimeSynchronizationChecker.class);
+	private final SmartContract contract;
+
+	public TimeSynchronizationChecker(SmartContract contract) {
+		this.contract = contract;
+	}
 
 	@Override
 	public boolean visit(
@@ -70,7 +76,7 @@ public class TimeSynchronizationChecker implements
 	 * provided analysis tool.
 	 *
 	 * @param jumpi The statement being analyzed for reachability and
-	 *                  vulnerability. Typically represents a conditional jump
+	 *                  vulnerability. It represents a conditional jump
 	 *                  in the control flow.
 	 * @param tool  The analysis tool containing results of the analysis and
 	 *                  methods for reporting warnings about identified
@@ -101,7 +107,7 @@ public class TimeSynchronizationChecker implements
 					String warn = "Time Synchronization vulnerability at pc "
 							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
-					MyCache.getInstance().addTimeSynchronizationWarning(warn);
+					MyCache.getInstance().addTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
 				}
 			}

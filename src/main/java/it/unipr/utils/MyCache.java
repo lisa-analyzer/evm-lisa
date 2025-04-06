@@ -47,7 +47,7 @@ public class MyCache {
 
 	private final LRUMap<Integer, Set<Object>> _missingEventNotificationWarnings;
 
-	private final Set<String> _timeSynchronizationWarnings;
+	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
 
 	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
@@ -111,7 +111,7 @@ public class MyCache {
 
 		this._missingEventNotificationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
-		this._timeSynchronizationWarnings = new HashSet<>();
+		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._vulnerableLogStatement = new LRUMap<>(5000);
 
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
@@ -780,9 +780,11 @@ public class MyCache {
 	 * @param warning the warning object to be added to the corresponding set of
 	 *                    warnings for the given key
 	 */
-	public void addTimeSynchronizationWarning(String warning) {
+	public void addTimeSynchronizationWarning(Integer key, Object warning) {
 		synchronized (_timeSynchronizationWarnings) {
-			_timeSynchronizationWarnings.add(warning);
+			_timeSynchronizationWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
 		}
 	}
 
@@ -794,9 +796,11 @@ public class MyCache {
 	 *             provided key; returns 0 if the key is not present or no
 	 *             warnings exist
 	 */
-	public int getTimeSynchronizationWarnings() {
+	public int getTimeSynchronizationWarnings(Integer key) {
 		synchronized (_timeSynchronizationWarnings) {
-			return _timeSynchronizationWarnings.size();
+			return (_timeSynchronizationWarnings.get(key) != null)
+					? _timeSynchronizationWarnings.get(key).size()
+					: 0;
 		}
 	}
 

@@ -349,6 +349,8 @@ public class VulnerabilitiesObject {
 						.getPossibleUncheckedStateUpdateWarnings(cfg.hashCode()))
 				.missingEventNotification(MyCache.getInstance()
 						.getMissingEventNotificationWarnings(cfg.hashCode()))
+				.timeSynchronization(MyCache.getInstance()
+						.getTimeSynchronizationWarnings(cfg.hashCode()))
 				.build();
 	}
 

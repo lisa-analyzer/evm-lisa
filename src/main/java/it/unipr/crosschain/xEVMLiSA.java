@@ -252,9 +252,12 @@ public class xEVMLiSA {
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving inter cross-chain checkers results.");
+		int warnings = 0;
+		for (SmartContract contract : bridge)
+			warnings += MyCache.getInstance().getTimeSynchronizationWarnings(contract.getCFG().hashCode());
 		bridge.setVulnerabilities(
 				VulnerabilitiesObject.newVulnerabilitiesObject()
-						.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
+						.timeSynchronization(warnings)
 						.build());
 
 		log.info("[OUT] Inter cross-chain checkers results saved.");
@@ -516,7 +519,7 @@ public class xEVMLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		// Time synchronization checker
-		TimeSynchronizationChecker checker = new TimeSynchronizationChecker();
+		TimeSynchronizationChecker checker = new TimeSynchronizationChecker(contract);
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new TimeSynchronizationAbstractDomain(),

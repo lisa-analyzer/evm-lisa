@@ -205,15 +205,19 @@ public class SmartaxeBenchmark {
 		// Saving results
 		JSONArray bridgesVulnerabilities = new JSONArray();
 		for (Bridge bridge : bridges) {
+			int warnings = 0;
+			for (SmartContract contract : bridge)
+				warnings += MyCache.getInstance().getTimeSynchronizationWarnings(contract.getCFG().hashCode());
 			bridge.setVulnerabilities(
 					VulnerabilitiesObject.newVulnerabilitiesObject()
-							.timeSynchronization(MyCache.getInstance().getTimeSynchronizationWarnings())
+							.timeSynchronization(warnings)
 							.build());
 
 			JSONObject bridgeVulnerabilities = new JSONObject();
 			bridgeVulnerabilities.put("name", bridge.getName());
 			bridgeVulnerabilities.put("number_of_contracts", bridge.getSmartContracts().size());
-			bridgeVulnerabilities.put("vulnerabilities", bridge.getVulnerabilities().toJson());
+			bridgeVulnerabilities.put("bridge_vulnerabilities", bridge.getVulnerabilities().toJson());
+			bridgeVulnerabilities.put("contract_vulnerabilities", bridge.vulnerabilitiesToJson());
 			bridgesVulnerabilities.put(bridgeVulnerabilities);
 
 			try {
