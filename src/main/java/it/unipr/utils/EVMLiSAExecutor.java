@@ -140,7 +140,7 @@ public class EVMLiSAExecutor {
 	 * @param timeout the maximum time to wait for each future
 	 * @param unit    the time unit of the timeout argument
 	 */
-	public static void awaitCompletionFuturesWithTimeout(List<Future<?>> futures, long timeout, TimeUnit unit) {
+	public static void awaitCompletionFutures(List<Future<?>> futures, long timeout, TimeUnit unit) {
 		for (Future<?> future : futures) {
 			try {
 				future.get(timeout, unit);
