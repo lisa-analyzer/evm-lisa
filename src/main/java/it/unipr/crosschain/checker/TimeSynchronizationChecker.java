@@ -57,10 +57,15 @@ public class TimeSynchronizationChecker implements
 					// Nothing to do
 					continue;
 				else {
-					if (TaintElement.isTaintedOrTop(
+					if (TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
-							taintedStack.getElementAtPosition(2)))
+							taintedStack.getElementAtPosition(2))) {
 						throwVulnerability(node, tool, cfg);
+					} else if (TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(1),
+							taintedStack.getElementAtPosition(2))) {
+						throwPossibleVulnerability(node, tool, cfg);
+					}
 				}
 			}
 		}
@@ -96,7 +101,7 @@ public class TimeSynchronizationChecker implements
 					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
 
 					log.warn(
-							"Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
+							"[DEFINITE] Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
 							nodeLocation.getPc(),
 							nodeLocation.getSourceCodeLine(),
 							cfg.hashCode(),
@@ -104,10 +109,39 @@ public class TimeSynchronizationChecker implements
 							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
 							logVulnerable.getCFG().hashCode());
 
-					String warn = "Time Synchronization vulnerability at pc "
+					String warn = "[DEFINITE] Time Synchronization vulnerability at pc "
 							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
 					MyCache.getInstance().addTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
+					tool.warn(warn);
+				}
+			}
+		}
+	}
+
+	private void throwPossibleVulnerability(Statement jumpi, CheckToolWithAnalysisResults<
+											SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+									EVMCFG cfg) {
+
+		for (Statement externalData : cfg.getExternalData()) {
+			if (cfg.reachableFrom(externalData, jumpi)) {
+				for (Statement logVulnerable : MyCache.getInstance()
+						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
+					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
+
+					log.warn(
+							"[POSSIBLE] Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
+							nodeLocation.getPc(),
+							nodeLocation.getSourceCodeLine(),
+							cfg.hashCode(),
+							((ProgramCounterLocation) logVulnerable.getLocation()).getPc(),
+							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
+							logVulnerable.getCFG().hashCode());
+
+					String warn = "[POSSIBLE] Time Synchronization vulnerability at pc "
+							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
+							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
+					MyCache.getInstance().addPossibleTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
 				}
 			}

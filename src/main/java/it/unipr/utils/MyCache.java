@@ -48,6 +48,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _missingEventNotificationWarnings;
 
 	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleTimeSynchronizationWarnings;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
 
 	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
@@ -112,6 +113,7 @@ public class MyCache {
 		this._missingEventNotificationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
 		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleTimeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._vulnerableLogStatement = new LRUMap<>(5000);
 
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
@@ -800,6 +802,38 @@ public class MyCache {
 		synchronized (_timeSynchronizationWarnings) {
 			return (_timeSynchronizationWarnings.get(key) != null)
 					? _timeSynchronizationWarnings.get(key).size()
+					: 0;
+		}
+	}
+
+	/**
+	 * Adds a possible time synchronization warning to the internal tracking map. If the
+	 * key does not already exist, a new synchronized set will be created and
+	 * associated with the given key.
+	 *
+	 * @param warning the warning object to be added to the corresponding set of
+	 *                    warnings for the given key
+	 */
+	public void addPossibleTimeSynchronizationWarning(Integer key, Object warning) {
+		synchronized (_possibleTimeSynchronizationWarnings) {
+			_possibleTimeSynchronizationWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of possible time synchronization warnings associated with the
+	 * given key.
+	 *
+	 * @return the count of time synchronization warnings associated with the
+	 *             provided key; returns 0 if the key is not present or no
+	 *             warnings exist
+	 */
+	public int getPossibleTimeSynchronizationWarnings(Integer key) {
+		synchronized (_possibleTimeSynchronizationWarnings) {
+			return (_possibleTimeSynchronizationWarnings.get(key) != null)
+					? _possibleTimeSynchronizationWarnings.get(key).size()
 					: 0;
 		}
 	}
