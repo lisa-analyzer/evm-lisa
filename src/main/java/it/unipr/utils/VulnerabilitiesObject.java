@@ -114,8 +114,8 @@ public class VulnerabilitiesObject {
 		this.json.put("semantic_integrity_violation_possible", this.possibleSemanticIntegrityViolation);
 		this.json.put("event_order_definite", this.eventOrder);
 		this.json.put("event_order_possible", this.possibleEventOrder);
-		this.json.put("unchecked_state_update_definite", this.uncheckedExternalCall);
-		this.json.put("unchecked_state_update_possible", this.possibleUncheckedExternalCall);
+		this.json.put("unchecked_external_call_definite", this.uncheckedExternalCall);
+		this.json.put("unchecked_external_call_possible", this.possibleUncheckedExternalCall);
 		this.json.put("time_synchronization_definite", this.timeSynchronization);
 		this.json.put("time_synchronization_possible", this.possibleTimeSynchronization);
 		this.json.put("missing_event_notification", this.missingEventNotification);
