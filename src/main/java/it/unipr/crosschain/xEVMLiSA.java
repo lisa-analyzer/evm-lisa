@@ -520,12 +520,10 @@ public class xEVMLiSA {
 		EVMCFG xcfg = bridge.getXCFG();
 		Set<Statement> logsVulnerable = MyCache.getInstance()
 				.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
-//		List<Future<?>> futures = new ArrayList<>();
 
 		for (Statement logVulnerable : logsVulnerable) {
-//			futures.add(EVMLiSAExecutor.submit(() -> {
 			for (Statement externalDataStatement : xcfg.getExternalData()) {
-				if (externalDataStatement instanceof Calldataload
+				if ((externalDataStatement instanceof Calldataload || externalDataStatement instanceof Calldatacopy)
 						&& xcfg.reachableFromCrossingACrossChainEdge(logVulnerable, externalDataStatement)) {
 
 					MyCache.getInstance().addLinkFromLogToCallDataLoad(logVulnerable, externalDataStatement);
@@ -541,9 +539,7 @@ public class xEVMLiSA {
 							externalDataStatement.getCFG().hashCode());
 				}
 			}
-//			}));
 		}
-//		EVMLiSAExecutor.awaitCompletionFutures(futures);
 	}
 
 	/**
