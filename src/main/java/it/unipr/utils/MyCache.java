@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONArray;
+
+import javax.json.JsonArray;
 
 /**
  * Singleton class implementing a cache with an LRU (Least Recently Used)
@@ -33,8 +36,8 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleEventOrderWarnings;
 
-	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleUncheckedStateUpdateWarnings;
+	private final LRUMap<Integer, Set<Object>> _uncheckedExternalCallWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalCallWarnings;
 
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalInfluenceWarnings;
@@ -56,6 +59,8 @@ public class MyCache {
 	private final Set<Statement> _taintedCallDataLoad;
 
 	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
+
+	private final LRUMap<Integer, Set<Object>> _vulnerabilityPerOlli;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -98,8 +103,8 @@ public class MyCache {
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleEventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
-		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleUncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._uncheckedExternalCallWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleUncheckedExternalCallWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleUncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
@@ -121,6 +126,29 @@ public class MyCache {
 		this._taintedCallDataLoad = new HashSet<>();
 
 		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
+
+		this._vulnerabilityPerOlli = new LRUMap<>(10000);
+	}
+
+	public void addOlli(Integer key, Object warning) {
+		synchronized (_vulnerabilityPerOlli) {
+			_vulnerabilityPerOlli
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	public JSONArray getOlli(Integer key) {
+		synchronized (_vulnerabilityPerOlli) {
+			if (_vulnerabilityPerOlli.get(key) == null)
+				return new JSONArray();
+
+			JSONArray results = new JSONArray();
+			for(Object warning : _vulnerabilityPerOlli.get(key)) {
+				results.put(warning);
+			}
+			return results;
+		}
 	}
 
 	/**
@@ -330,7 +358,7 @@ public class MyCache {
 	}
 
 	/**
-	 * Adds an unchecked state update warning for the specified key. If no
+	 * Adds an unchecked external call warning for the specified key. If no
 	 * warnings are associated with the key, a new set is created and the
 	 * warning is added to it. This method is thread-safe.
 	 *
@@ -338,16 +366,16 @@ public class MyCache {
 	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
-	public void addUncheckedStateUpdateWarning(Integer key, Object warning) {
-		synchronized (_uncheckedStateUpdateWarnings) {
-			_uncheckedStateUpdateWarnings
+	public void addUncheckedExternalCallWarning(Integer key, Object warning) {
+		synchronized (_uncheckedExternalCallWarnings) {
+			_uncheckedExternalCallWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
 	}
 
 	/**
-	 * Retrieves the number of unchecked state update warnings associated with
+	 * Retrieves the number of unchecked external call warnings associated with
 	 * the specified key. If no warnings are associated with the key, the method
 	 * returns 0. This method is thread-safe.
 	 *
@@ -357,14 +385,14 @@ public class MyCache {
 	 * @return the number of warnings associated with the key, or 0 if none
 	 *             exist
 	 */
-	public int getUncheckedStateUpdateWarnings(Integer key) {
-		synchronized (_uncheckedStateUpdateWarnings) {
-			return (_uncheckedStateUpdateWarnings.get(key) != null) ? _uncheckedStateUpdateWarnings.get(key).size() : 0;
+	public int getUncheckedExternalCallWarnings(Integer key) {
+		synchronized (_uncheckedExternalCallWarnings) {
+			return (_uncheckedExternalCallWarnings.get(key) != null) ? _uncheckedExternalCallWarnings.get(key).size() : 0;
 		}
 	}
 
 	/**
-	 * Adds a possible unchecked state update warning for the specified key. If
+	 * Adds a possible unchecked external call warning for the specified key. If
 	 * no warnings are associated with the key, a new set is created and the
 	 * warning is added to it. This method is thread-safe.
 	 *
@@ -372,16 +400,16 @@ public class MyCache {
 	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
-	public void addPossibleUncheckedStateUpdateWarning(Integer key, Object warning) {
-		synchronized (_possibleUncheckedStateUpdateWarnings) {
-			_possibleUncheckedStateUpdateWarnings
+	public void addPossibleUncheckedExternalCallWarning(Integer key, Object warning) {
+		synchronized (_possibleUncheckedExternalCallWarnings) {
+			_possibleUncheckedExternalCallWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
 	}
 
 	/**
-	 * Retrieves the number of possible unchecked state update warnings
+	 * Retrieves the number of possible unchecked external call warnings
 	 * associated with the specified key. If no warnings are associated with the
 	 * key, the method returns 0. This method is thread-safe.
 	 *
@@ -391,10 +419,10 @@ public class MyCache {
 	 * @return the number of warnings associated with the key, or 0 if none
 	 *             exist
 	 */
-	public int getPossibleUncheckedStateUpdateWarnings(Integer key) {
-		synchronized (_possibleUncheckedStateUpdateWarnings) {
-			return (_possibleUncheckedStateUpdateWarnings.get(key) != null)
-					? _possibleUncheckedStateUpdateWarnings.get(key).size()
+	public int getPossibleUncheckedExternalCallWarnings(Integer key) {
+		synchronized (_possibleUncheckedExternalCallWarnings) {
+			return (_possibleUncheckedExternalCallWarnings.get(key) != null)
+					? _possibleUncheckedExternalCallWarnings.get(key).size()
 					: 0;
 		}
 	}

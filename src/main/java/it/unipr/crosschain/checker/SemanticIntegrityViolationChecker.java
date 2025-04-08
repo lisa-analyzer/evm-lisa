@@ -1,5 +1,6 @@
 package it.unipr.crosschain.checker;
 
+import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
@@ -47,8 +48,10 @@ public class SemanticIntegrityViolationChecker implements
 
 	private final Set<Statement> taintedJumpi = new HashSet<>();
 	private final EVMCFG xCFG;
+	private final SmartContract contract;
 
-	public SemanticIntegrityViolationChecker(EVMCFG xCFG) {
+	public SemanticIntegrityViolationChecker(SmartContract contract, EVMCFG xCFG) {
+		this.contract = contract;
 		this.xCFG = xCFG;
 	}
 
@@ -218,6 +221,11 @@ public class SemanticIntegrityViolationChecker implements
 		for (Statement data : externalDatas) {
 			if (cfg.reachableFromWithoutStatements(data, logx, taintedJumpi)) {
 
+				String functionSignatureByStatement = contract.getFunctionSignatureByStatement(data);
+				// It means that this vulnerability is inside a private function
+				if (functionSignatureByStatement.equals("no-function-found"))
+					continue;
+
 				if (!xCFG.hasAtLeastOneCrossChainEdge(logx)) {
 					raisePossibleSemanticIntegrityViolation(data, tool, cfg);
 					continue;
@@ -235,6 +243,9 @@ public class SemanticIntegrityViolationChecker implements
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addSemanticIntegrityViolationWarning(cfg.hashCode(), warn);
+
+				warn = "[DEFINITE] Semantic Integrity Violation vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}
 	}
@@ -259,6 +270,9 @@ public class SemanticIntegrityViolationChecker implements
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addPossibleSemanticIntegrityViolationWarning(cfg.hashCode(), warn);
+
+//				warn = "[POSSIBLE] Semantic Integrity Violation vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(data);
+//				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}
 	}

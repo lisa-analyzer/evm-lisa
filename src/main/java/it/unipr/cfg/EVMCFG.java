@@ -418,6 +418,43 @@ public class EVMCFG extends CFG {
 		return result;
 	}
 
+	public boolean reachableFromReverse(Statement start, Statement target) {
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "reverse";
+
+		if (MyCache.getInstance().existsInReachableFrom(key))
+			return MyCache.getInstance().isReachableFrom(key);
+
+		boolean result = dfsReverse(start, target, new HashSet<>());
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
+	}
+
+	public Statement reachableFromReversePerOlli(Statement start, Set<Statement> entrypoints) {
+		return bfsOlli(start, entrypoints, new HashSet<>());
+	}
+
+	private Statement bfsOlli(Statement start, Set<Statement> entrypoints, Set<Statement> visited) {
+		Queue<Statement> queue = new LinkedList<>();
+		queue.offer(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+
+			for (Edge edge : list.getIngoingEdges(current)) {
+				Statement next = edge.getSource();
+				if (visited.add(next)) {  // add returns true if next was not already in visited
+					queue.offer(next);
+				}
+				if(entrypoints.contains(next)) {
+					return next;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Determines if the target statement is reachable from the start statement
 	 * across a cross-chain edge in the control flow graph (CFG).
@@ -460,6 +497,80 @@ public class EVMCFG extends CFG {
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
 						stack.push(next);
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Performs a breadth-first search (BFS) to determine if the target statement
+	 * is reachable from the start statement.
+	 *
+	 * @param start   The starting statement.
+	 * @param target  The target statement.
+	 * @param visited A set of visited statements to avoid cycles.
+	 * @return True if the target is reachable from the start, false otherwise.
+	 */
+	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
+		Queue<Statement> queue = new LinkedList<>();
+		queue.offer(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+			if (current.equals(target))
+				return true;
+
+			for (Edge edge : list.getOutgoingEdges(current)) {
+				Statement next = edge.getDestination();
+				if (visited.add(next)) {  // add returns true if next was not already in visited
+					queue.offer(next);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private boolean dfsReverse(Statement start, Statement target, Set<Statement> visited) {
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target))
+				return true;
+
+			if (visited.add(current)) {
+				for (Edge edge : list.getIngoingEdges(current)) {
+					Statement next = edge.getSource();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private boolean bfsReverse(Statement start, Statement target, Set<Statement> visited) {
+		Queue<Statement> queue = new LinkedList<>();
+		queue.offer(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+			if (current.equals(target))
+				return true;
+
+			for (Edge edge : list.getIngoingEdges(current)) {
+				Statement next = edge.getSource();
+				if (visited.add(next)) {  // add returns true if next was not already in visited
+					queue.offer(next);
 				}
 			}
 		}

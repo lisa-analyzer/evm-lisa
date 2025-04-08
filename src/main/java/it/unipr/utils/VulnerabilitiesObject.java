@@ -23,8 +23,8 @@ public class VulnerabilitiesObject {
 	private int eventOrder;
 	private int possibleEventOrder;
 
-	private int uncheckedStateUpdate;
-	private int possibleUncheckedStateUpdate;
+	private int uncheckedExternalCall;
+	private int possibleUncheckedExternalCall;
 
 	private int semanticIntegrityViolation;
 	private int possibleSemanticIntegrityViolation;
@@ -51,8 +51,8 @@ public class VulnerabilitiesObject {
 		this.eventOrder = 0;
 		this.possibleEventOrder = 0;
 
-		this.uncheckedStateUpdate = 0;
-		this.possibleUncheckedStateUpdate = 0;
+		this.uncheckedExternalCall = 0;
+		this.possibleUncheckedExternalCall = 0;
 
 		this.semanticIntegrityViolation = 0;
 		this.possibleSemanticIntegrityViolation = 0;
@@ -70,7 +70,7 @@ public class VulnerabilitiesObject {
 			int txOrigin, int possibleTxOrigin,
 			int uncheckedExternalInfluence, int possibleUncheckedExternalInfluence,
 			int eventOrder, int possibleEventOrder,
-			int uncheckedStateUpdate, int possibleUncheckedStateUpdate,
+			int uncheckedExternalCall, int possibleUncheckedExternalCall,
 			int semanticIntegrityViolation, int possibleSemanticIntegrityViolation,
 			int timeSynchronization, int possibleTimeSynchronization,
 			int missingEventNotification,
@@ -90,8 +90,8 @@ public class VulnerabilitiesObject {
 		this.eventOrder = eventOrder;
 		this.possibleEventOrder = possibleEventOrder;
 
-		this.uncheckedStateUpdate = uncheckedStateUpdate;
-		this.possibleUncheckedStateUpdate = possibleUncheckedStateUpdate;
+		this.uncheckedExternalCall = uncheckedExternalCall;
+		this.possibleUncheckedExternalCall = possibleUncheckedExternalCall;
 
 		this.semanticIntegrityViolation = semanticIntegrityViolation;
 		this.possibleSemanticIntegrityViolation = possibleSemanticIntegrityViolation;
@@ -114,8 +114,8 @@ public class VulnerabilitiesObject {
 		this.json.put("semantic_integrity_violation_possible", this.possibleSemanticIntegrityViolation);
 		this.json.put("event_order_definite", this.eventOrder);
 		this.json.put("event_order_possible", this.possibleEventOrder);
-		this.json.put("unchecked_state_update_definite", this.uncheckedStateUpdate);
-		this.json.put("unchecked_state_update_possible", this.possibleUncheckedStateUpdate);
+		this.json.put("unchecked_state_update_definite", this.uncheckedExternalCall);
+		this.json.put("unchecked_state_update_possible", this.possibleUncheckedExternalCall);
 		this.json.put("time_synchronization_definite", this.timeSynchronization);
 		this.json.put("time_synchronization_possible", this.possibleTimeSynchronization);
 		this.json.put("missing_event_notification", this.missingEventNotification);
@@ -240,26 +240,26 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
-	 * Sets the unchecked state update vulnerability score.
+	 * Sets the unchecked external call vulnerability score.
 	 *
-	 * @param uncheckedStateUpdate the unchecked state update score
+	 * @param uncheckedExternalCall the unchecked external call score
 	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject uncheckedStateUpdate(int uncheckedStateUpdate) {
-		this.uncheckedStateUpdate = uncheckedStateUpdate;
+	public VulnerabilitiesObject uncheckedExternalCall(int uncheckedExternalCall) {
+		this.uncheckedExternalCall = uncheckedExternalCall;
 		return this;
 	}
 
 	/**
-	 * Sets the possible unchecked state update vulnerability score.
+	 * Sets the possible unchecked external call vulnerability score.
 	 *
-	 * @param possibleUncheckedStateUpdate the unchecked state update score
+	 * @param possibleUncheckedExternalCall the unchecked external call score
 	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject possibleUncheckedStateUpdate(int possibleUncheckedStateUpdate) {
-		this.possibleUncheckedStateUpdate = possibleUncheckedStateUpdate;
+	public VulnerabilitiesObject possibleUncheckedExternalCall(int possibleUncheckedExternalCall) {
+		this.possibleUncheckedExternalCall = possibleUncheckedExternalCall;
 		return this;
 	}
 
@@ -355,14 +355,14 @@ public class VulnerabilitiesObject {
 						.getUncheckedExternalInfluenceWarnings(cfg.hashCode()))
 				.possibleUncheckedExternalInfluence(MyCache.getInstance()
 						.getPossibleUncheckedExternalInfluenceWarnings(cfg.hashCode()))
-				.uncheckedStateUpdate(MyCache.getInstance()
-						.getUncheckedStateUpdateWarnings(cfg.hashCode()))
+				.uncheckedExternalCall(MyCache.getInstance()
+						.getUncheckedExternalCallWarnings(cfg.hashCode()))
 				.semanticIntegrityViolation(MyCache.getInstance()
 						.getSemanticIntegrityViolationWarnings(cfg.hashCode()))
 				.possibleSemanticIntegrityViolation(MyCache.getInstance()
 						.getPossibleSemanticIntegrityViolationWarnings(cfg.hashCode()))
-				.possibleUncheckedStateUpdate(MyCache.getInstance()
-						.getPossibleUncheckedStateUpdateWarnings(cfg.hashCode()))
+				.possibleUncheckedExternalCall(MyCache.getInstance()
+						.getPossibleUncheckedExternalCallWarnings(cfg.hashCode()))
 				.missingEventNotification(MyCache.getInstance()
 						.getMissingEventNotificationWarnings(cfg.hashCode()))
 				.timeSynchronization(MyCache.getInstance()
@@ -383,7 +383,7 @@ public class VulnerabilitiesObject {
 				txOrigin, possibleTxOrigin,
 				uncheckedExternalInfluence, possibleUncheckedExternalInfluence,
 				eventOrder, possibleEventOrder,
-				uncheckedStateUpdate, possibleUncheckedStateUpdate,
+				uncheckedExternalCall, possibleUncheckedExternalCall,
 				semanticIntegrityViolation, possibleSemanticIntegrityViolation,
 				timeSynchronization, possibleTimeSynchronization,
 				missingEventNotification,

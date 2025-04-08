@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +32,7 @@ public class SmartaxeBenchmark {
 		log.info("Cores available: {}", EVMLiSAExecutor.getCoresAvailable());
 
 		try {
-			new SmartaxeBenchmark().runBenchmarkWithTimeSynchronizationChecker();
+			new SmartaxeBenchmark().runBenchmarkWithIntraCrossChainCheckers();
 		} catch (Exception e) {
 			e.printStackTrace();
 			EVMLiSAExecutor.shutdown();
@@ -43,6 +40,7 @@ public class SmartaxeBenchmark {
 
 		log.debug("Cache used {} times.", MyCache.getTimesUsed());
 		EVMLiSAExecutor.shutdown();
+		System.exit(0);
 	}
 
 	private void runBenchmarkWithIntraCrossChainCheckers() {
@@ -85,9 +83,8 @@ public class SmartaxeBenchmark {
 						() -> EVMLiSA.buildCFG(contract),
 						Set.of(
 								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
-								() -> xEVMLiSA.runUncheckedStateUpdateChecker(contract),
 								() -> xEVMLiSA.runMissingEventNotificationChecker(contract))));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 8, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 10, TimeUnit.HOURS); // barrier
 
 		// Submit tasks: build the xCFG for each bridge
 		for (Bridge bridge : bridges)
@@ -96,16 +93,16 @@ public class SmartaxeBenchmark {
 				bridge.addEdges(
 						xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
 			}));
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 8, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
 		// Submit tasks: run intra cross chain checkers using xCFG
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge) {
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
-				futures.add(
-						EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
+				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
+				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
 			}
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 8, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 14, TimeUnit.HOURS); // barrier
 
 		// Saving results
 		JSONArray bridgesVulnerabilities = new JSONArray();
@@ -139,10 +136,49 @@ public class SmartaxeBenchmark {
 		} catch (IOException e) {
 			log.error("An error occurred while saving the benchmark results: {}", e.getMessage());
 		}
+
+		try {
+			JSONArray results = new JSONArray();
+			for (Bridge bridge : bridges) {
+				Map<String, Integer> map = readJsonToMap(datasetPath.resolve(bridge.getName()).resolve("match-file-index.json"));
+
+				JSONObject json = new JSONObject();
+				log.info("Bridge {}", bridge.getName());
+				json.put("bridge", bridge.getName());
+
+				JSONArray contracts = new JSONArray();
+
+				for (SmartContract contract : bridge) {
+					JSONObject contractJson = new JSONObject();
+					contractJson.put("bytecode-name",
+							contract.getName());
+					contractJson.put("source-code-name",
+							getMatchingKey(
+									contract.getName(),
+									map));
+					contractJson.put("vulnerabilities",
+							MyCache.getInstance().getOlli(
+									contract.getCFG().hashCode()));
+					contracts.put(contractJson);
+				}
+				json.put("contracts", contracts);
+				results.put(json);
+			}
+
+			System.err.println(results.toString(4));
+
+			Path resultFilePath = workingDirectory.resolve("benchmark_results_function.json");
+			Files.writeString(resultFilePath, results.toString(4));
+
+			log.info("Results saved in: {}/benchmark_results_function.json", workingDirectory);
+
+		} catch (Exception e){
+			log.error("An error occurred while saving the benchmark_results_functions: {}", e.getMessage());
+		}
 	}
 
 	private void runBenchmarkWithTimeSynchronizationChecker() {
-		workingDirectory = workingDirectory.resolve("dataset");
+		workingDirectory = workingDirectory.resolve("manually-labeled");
 		Path datasetPath = Paths.get("scripts", "python", "benchmark-checkers", "cross-chain", "smartaxe",
 				"manually-labeled");
 		Set<Bridge> bridges = new HashSet<>();
@@ -180,7 +216,7 @@ public class SmartaxeBenchmark {
 						() -> EVMLiSA.buildCFG(contract),
 						Set.of(
 								() -> xEVMLiSA.computeVulnerablesLOGsForTimeSynchronizationChecker(contract))));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 10, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 12, TimeUnit.HOURS); // barrier
 
 		// Submit tasks: build the xCFG for each bridge and compute the tainted
 		// call data
@@ -193,14 +229,14 @@ public class SmartaxeBenchmark {
 					},
 					Set.of(
 							() -> xEVMLiSA.computeTaintedCallDataForTimeSynchronizationChecker(bridge))));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 24, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 12, TimeUnit.HOURS); // barrier
 
 		// Submit tasks: run time synchronization checker for each contract in
 		// bridges
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runTimeSynchronizationChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 10, TimeUnit.HOURS);
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS);
 
 		// Saving results
 		JSONArray bridgesVulnerabilities = new JSONArray();
@@ -244,5 +280,90 @@ public class SmartaxeBenchmark {
 		} catch (IOException e) {
 			log.error("An error occurred while saving the benchmark results: {}", e.getMessage());
 		}
+
+		try {
+			JSONArray results = new JSONArray();
+			for (Bridge bridge : bridges) {
+				Map<String, Integer> map = readJsonToMap(datasetPath.resolve(bridge.getName()).resolve("match-file-index.json"));
+
+				JSONObject json = new JSONObject();
+				log.info("Bridge {}", bridge.getName());
+				json.put("bridge", bridge.getName());
+
+				JSONArray contracts = new JSONArray();
+
+				for (SmartContract contract : bridge) {
+					JSONObject contractJson = new JSONObject();
+					contractJson.put("bytecode-name",
+							contract.getName());
+					contractJson.put("source-code-name",
+							getMatchingKey(
+									contract.getName(),
+									map));
+					contractJson.put("vulnerabilities",
+							MyCache.getInstance().getOlli(
+									contract.getCFG().hashCode()));
+					contracts.put(contractJson);
+				}
+				json.put("contracts", contracts);
+				results.put(json);
+			}
+
+			System.err.println(results.toString(4));
+
+			Path resultFilePath = workingDirectory.resolve("benchmark_results_function.json");
+			Files.writeString(resultFilePath, results.toString(4));
+
+			log.info("Results saved in: {}/benchmark_results_function.json", workingDirectory);
+
+		} catch (Exception e){
+			log.error("An error occurred while saving the benchmark_results_functions: {}", e.getMessage());
+		}
+	}
+
+	/**
+	 * Reads a JSON file and returns its contents as a map where keys are strings and values are integers.
+	 *
+	 * @param jsonPath the path to the JSON file
+	 * @return a Map containing the JSON key-value pairs
+	 * @throws IOException if an I/O error occurs reading from the file or a malformed or unmappable byte sequence is read
+	 */
+	public static Map<String, Integer> readJsonToMap(Path jsonPath) throws IOException {
+		String content = Files.readString(jsonPath);
+		JSONObject jsonObject = new JSONObject(content);
+		Map<String, Integer> resultMap = new HashMap<>();
+
+		for (String key : jsonObject.keySet()) {
+			resultMap.put(key, jsonObject.getInt(key));
+		}
+
+		return resultMap;
+	}
+
+	/**
+	 * Given a string in the format "number_other", this method extracts the number
+	 * before the underscore, converts it to an integer, and checks if this integer is present
+	 * as a value in the provided map. If a matching entry is found, the method returns the corresponding key.
+	 *
+	 * @param input the input string in the format "number_other"
+	 * @param map   the map with keys of type String and values of type Integer
+	 * @return the key from the map whose value equals the extracted number, or null if no match is found
+	 * @throws NumberFormatException if the number cannot be parsed from the input string
+	 */
+	public static String getMatchingKey(String input, Map<String, Integer> map) {
+		// Extract the substring before the underscore
+		String numberStr = input.split("_")[0];
+		// Convert the extracted string to an integer
+		int number = Integer.parseInt(numberStr);
+
+		// Iterate over the map entries to find a key with a matching value
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+			if (entry.getValue() == number) {
+				return entry.getKey();
+			}
+		}
+
+		// Return null if no matching value is found in the map
+		return null;
 	}
 }

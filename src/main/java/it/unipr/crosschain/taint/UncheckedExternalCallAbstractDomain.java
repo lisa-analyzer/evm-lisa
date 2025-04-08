@@ -21,17 +21,17 @@ import java.util.Set;
  *
  * @see TaintAbstractDomain
  */
-public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
+public class UncheckedExternalCallAbstractDomain extends TaintAbstractDomain {
 
-	private static final UncheckedStateUpdateAbstractDomain TOP = new UncheckedStateUpdateAbstractDomain(
+	private static final UncheckedExternalCallAbstractDomain TOP = new UncheckedExternalCallAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final UncheckedStateUpdateAbstractDomain BOTTOM = new UncheckedStateUpdateAbstractDomain(
+	private static final UncheckedExternalCallAbstractDomain BOTTOM = new UncheckedExternalCallAbstractDomain(
 			null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public UncheckedStateUpdateAbstractDomain() {
+	public UncheckedExternalCallAbstractDomain() {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
@@ -41,7 +41,7 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected UncheckedStateUpdateAbstractDomain(TaintElement[] stack, TaintElement memory) {
+	protected UncheckedExternalCallAbstractDomain(TaintElement[] stack, TaintElement memory) {
 		super(stack, memory);
 	}
 
@@ -58,17 +58,17 @@ public class UncheckedStateUpdateAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public UncheckedStateUpdateAbstractDomain top() {
+	public UncheckedExternalCallAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public UncheckedStateUpdateAbstractDomain bottom() {
+	public UncheckedExternalCallAbstractDomain bottom() {
 		return BOTTOM;
 	}
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return new UncheckedStateUpdateAbstractDomain(stack, memory);
+		return new UncheckedExternalCallAbstractDomain(stack, memory);
 	}
 }

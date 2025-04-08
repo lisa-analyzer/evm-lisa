@@ -98,6 +98,12 @@ public class TimeSynchronizationChecker implements
 			if (cfg.reachableFrom(externalData, jumpi)) {
 				for (Statement logVulnerable : MyCache.getInstance()
 						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
+
+					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(jumpi);
+					// It means that this vulnerability is inside a private function
+					if (functionSignatureByStatement.equals("no-function-found"))
+						continue;
+
 					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
 
 					log.warn(
@@ -114,6 +120,9 @@ public class TimeSynchronizationChecker implements
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
 					MyCache.getInstance().addTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
+
+					warn = "[DEFINITE] Time Synchronization vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 				}
 			}
 		}
@@ -143,6 +152,9 @@ public class TimeSynchronizationChecker implements
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
 					MyCache.getInstance().addPossibleTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
+
+//					warn = "[POSSIBLE] Time Synchronization vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(jumpi);
+//					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 				}
 			}
 		}

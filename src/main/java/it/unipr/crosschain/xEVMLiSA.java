@@ -28,6 +28,8 @@ import java.util.*;
 import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class xEVMLiSA {
 	private static final Logger log = LogManager.getLogger(xEVMLiSA.class);
@@ -50,11 +52,29 @@ public class xEVMLiSA {
 
 		analyzeBridge(bridge);
 
-		runIntraCrossChainCheckers(bridge);
 		runInterCrossChainCheckers(bridge);
+		runIntraCrossChainCheckers(bridge);
 
 		printVulnerabilities(bridge);
 		EVMLiSAExecutor.shutdown();
+
+		JSONObject json = new JSONObject();
+		log.info("Bridge {}", bridge.getName());
+		json.put("bridge", bridge.getName());
+
+		JSONArray contracts = new JSONArray();
+
+		for (SmartContract contract : bridge) {
+			JSONObject contractJson = new JSONObject();
+			contractJson.put("contract",
+					contract.getName());
+			contractJson.put("vulnerabilities",
+					MyCache.getInstance().getOlli(
+							contract.getCFG().hashCode()));
+			contracts.put(contractJson);
+		}
+		json.put("contracts", contracts);
+		log.info(json.toString(4));
 	}
 
 	/**
@@ -202,11 +222,11 @@ public class xEVMLiSA {
 
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
-			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runRandomnessDependencyChecker(contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
+//			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
+//			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runRandomnessDependencyChecker(contract)));
+//			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedStateUpdateChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalCallChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
@@ -252,13 +272,14 @@ public class xEVMLiSA {
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving inter cross-chain checkers results.");
-		int warnings = 0;
+/*		int warnings = 0;
+		int possibleW
 		for (SmartContract contract : bridge)
 			warnings += MyCache.getInstance().getTimeSynchronizationWarnings(contract.getCFG().hashCode());
 		bridge.setVulnerabilities(
 				VulnerabilitiesObject.newVulnerabilitiesObject()
 						.timeSynchronization(warnings)
-						.build());
+						.build());*/
 
 		log.info("[OUT] Inter cross-chain checkers results saved.");
 	}
@@ -278,7 +299,7 @@ public class xEVMLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		// Unchecked external influence checker
-		UncheckedExternalInfluenceChecker checker = new UncheckedExternalInfluenceChecker();
+		UncheckedExternalInfluenceChecker checker = new UncheckedExternalInfluenceChecker(contract);
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new UncheckedExternalInfluenceAbstractDomain(),
@@ -306,7 +327,7 @@ public class xEVMLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		// Checker build
-		SemanticIntegrityViolationChecker checker = new SemanticIntegrityViolationChecker(bridge.getXCFG());
+		SemanticIntegrityViolationChecker checker = new SemanticIntegrityViolationChecker(contract, bridge.getXCFG());
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new SemanticIntegrityViolationAbstractDomain(),
@@ -325,7 +346,7 @@ public class xEVMLiSA {
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
-	public static void runUncheckedStateUpdateChecker(SmartContract contract) {
+	public static void runUncheckedExternalCallChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running unchecked state update checker on {}.", contract.getName());
 
 		// Setup configuration
@@ -335,15 +356,15 @@ public class xEVMLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		// Unchecked state update checker
-		UncheckedStateUpdateChecker checker = new UncheckedStateUpdateChecker();
+		UncheckedExternalCallChecker checker = new UncheckedExternalCallChecker(contract, bridge.getXCFG());
 		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedStateUpdateAbstractDomain(),
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedExternalCallAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 
 		log.info("[OUT] Unchecked state update checker ended on {}, with {} vulnerabilities found.",
 				contract.getName(),
-				MyCache.getInstance().getUncheckedStateUpdateWarnings(contract.getCFG().hashCode()));
+				MyCache.getInstance().getUncheckedExternalCallWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -369,6 +390,11 @@ public class xEVMLiSA {
 			for (Statement emitEvent : cfg.getAllLogX()) {
 				if (cfg.reachableFromWithoutTypes(functionEntrypoint, emitEvent, Collections.singleton(Sstore.class))) {
 
+					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(emitEvent);
+					// It means that this vulnerability is inside a private function
+					if (functionSignatureByStatement.equals("no-function-found"))
+						continue;
+
 					ProgramCounterLocation functionEntrypointLocation = (ProgramCounterLocation) functionEntrypoint
 							.getLocation();
 					ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
@@ -383,6 +409,10 @@ public class xEVMLiSA {
 								functionEntrypointLocation.getSourceCodeLine());
 
 						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
+
+						warn = "[DEFINITE] Event Order vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+						MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+
 					} else {
 						String warn = "[POSSIBLE] Event Order vulnerability at " + emitEventLocation.getPc();
 
@@ -393,6 +423,9 @@ public class xEVMLiSA {
 								functionEntrypointLocation.getSourceCodeLine());
 
 						MyCache.getInstance().addPossibleEventOrderWarning(cfg.hashCode(), warn);
+
+//						warn = "[POSSIBLE] Event Order vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(emitEvent);
+//						MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 					}
 				}
 			}
@@ -423,6 +456,11 @@ public class xEVMLiSA {
 			for (Statement endpoint : endPoints) {
 				if (cfg.reachableFromWithoutTypes(sstore, endpoint, Collections.singleton(Log.class))) {
 
+					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(sstore);
+					// It means that this vulnerability is inside a private function
+					if (functionSignatureByStatement.equals("no-function-found"))
+						continue;
+
 					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
 							.getLocation();
 					ProgramCounterLocation endpointLocation = (ProgramCounterLocation) endpoint.getLocation();
@@ -436,6 +474,9 @@ public class xEVMLiSA {
 							sstoreLocation.getSourceCodeLine());
 
 					MyCache.getInstance().addMissingEventNotificationWarning(cfg.hashCode(), warn);
+
+					warn = "Missing Event Notification vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 				}
 			}
 		}
@@ -491,7 +532,7 @@ public class xEVMLiSA {
 					MyCache.getInstance().addTaintedCallDataLoad(externalDataStatement);
 
 					log.debug(
-							"(Time Synchronization vulnerability) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
+							"(computeTaintedCallDataForTimeSynchronizationChecker) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
 							logVulnerable,
 							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
 							logVulnerable.getCFG().hashCode(),

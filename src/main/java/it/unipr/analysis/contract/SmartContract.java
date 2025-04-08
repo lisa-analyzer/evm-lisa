@@ -71,6 +71,8 @@ public class SmartContract {
 	/** Event signatures extracted from the contract ABI. */
 	private Set<Signature> _eventsSignature;
 
+	private Set<Statement> _allFunctionsEntryPoints;
+
 	/**
 	 * Constructs a new SmartContract with a generated address.
 	 */
@@ -678,6 +680,32 @@ public class SmartContract {
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
 		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(this), dotFile.toString());
 		log.info("Generated CFG at {}", dotFile);
+	}
+
+	public Set<Statement> getAllFunctionEntryPoints() {
+		if (_allFunctionsEntryPoints == null) {
+			Set<Statement> result = new HashSet<>();
+			for (Signature signature : _functionsSignature)
+                result.addAll(signature.getEntryPoints());
+			_allFunctionsEntryPoints = result;
+		}
+		return _allFunctionsEntryPoints;
+	}
+
+	public String getFunctionSignatureFromEntryPoint(Statement entryPoint) {
+		for (Signature signature : _functionsSignature)
+			for (Statement entry : signature.getEntryPoints())
+				if (entry.equals(entryPoint))
+					return signature.getFullSignature();
+		return "no-function-found";
+	}
+
+	public String getFunctionSignatureByStatement(Statement statement) {
+		Statement ep = _cfg.reachableFromReversePerOlli(statement, getAllFunctionEntryPoints());
+
+		if (getFunctionSignatureFromEntryPoint(ep) != null)
+			return getFunctionSignatureFromEntryPoint(ep);
+		return "";
 	}
 
 	/**

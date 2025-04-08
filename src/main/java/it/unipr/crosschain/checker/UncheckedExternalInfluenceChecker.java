@@ -1,5 +1,6 @@
 package it.unipr.crosschain.checker;
 
+import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
@@ -44,6 +45,11 @@ public class UncheckedExternalInfluenceChecker implements
 	private static final Logger log = LogManager.getLogger(UncheckedExternalInfluenceChecker.class);
 
 	private Set<Statement> taintedJumpi = new HashSet<>();
+	private SmartContract contract;
+
+	public UncheckedExternalInfluenceChecker(SmartContract contract) {
+		this.contract = contract;
+	}
 
 	/**
 	 * Visits all nodes in the CFG and records any JUMPI nodes that have tainted
@@ -164,6 +170,11 @@ public class UncheckedExternalInfluenceChecker implements
 		for (Statement data : externalDatas) {
 			if (cfg.reachableFromWithoutStatements(data, sstore, taintedJumpi)) {
 
+				String functionSignatureByStatement = contract.getFunctionSignatureByStatement(data);
+				// It means that this vulnerability is inside a private function
+				if (functionSignatureByStatement.equals("no-function-found"))
+					continue;
+
 				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore.getLocation();
 
 				log.warn(
@@ -177,6 +188,9 @@ public class UncheckedExternalInfluenceChecker implements
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
+
+				warn = "[DEFINITE] Unchecked External Influence vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}
 	}
@@ -203,6 +217,9 @@ public class UncheckedExternalInfluenceChecker implements
 						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
 				tool.warn(warn);
 				MyCache.getInstance().addPossibleUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
+
+//				warn = "[POSSIBLE] Unchecked External Influence vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(data);
+//				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}
 	}
