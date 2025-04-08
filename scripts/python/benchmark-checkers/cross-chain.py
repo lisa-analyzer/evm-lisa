@@ -51,6 +51,46 @@ def rename_files_in_directory(directory_path):
                 os.rename(old_path, new_path)
                 print(f"Renamed: {old_path} -> {new_path}")
 
+def analyze_vulnerabilities_bridge(json_path):
+    """Reads a JSON file and prints the vulnerability data for each bridge."""
+    with open(json_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    for bridge in data:
+        name = bridge.get("name", "Unnamed Bridge")
+        num_contracts = bridge.get("number_of_contracts", "N/A")
+        print(f"Bridge: {name}")
+        print(f"  Number of contracts: {num_contracts}")
+        
+        # Print aggregate vulnerability data
+        aggregate_vulns = bridge.get("bridge_vulnerabilities", {})
+        if not aggregate_vulns:
+            print("  No aggregate vulnerability data available.")
+        else:
+            print("  Aggregate vulnerabilities:")
+            for key, value in aggregate_vulns.items():
+                print(f"    {key}: {value}")
+        
+        # Print per-contract vulnerability data
+        contracts_vulns = bridge.get("contract_vulnerabilities", [])
+        if not contracts_vulns:
+            print("  No contract vulnerability data available.")
+        else:
+            total_contracts = len(contracts_vulns)
+            print(f"  Vulnerability data for {total_contracts} contracts:")
+            
+            # Sum vulnerabilities per type across contracts
+            total_vulnerabilities = {}
+            for vuln_entry in contracts_vulns:
+                vuln_data = vuln_entry.get("vulnerabilities", {})
+                for key, value in vuln_data.items():
+                    total_vulnerabilities[key] = total_vulnerabilities.get(key, 0) + value
+
+            for key, value in total_vulnerabilities.items():
+                print(f"    {key}: {value}")
+
+        print("-" * 40)
+
 def analyze_vulnerabilities(json_path):
     """Reads a JSON file and prints the number of vulnerabilities for each bridge."""
     with open(json_path, "r", encoding="utf-8") as file:
@@ -172,12 +212,12 @@ def replace_specific_imports(base_dir):
                 print(f"Processed imports in: {file_path}")
 
 if __name__ == "__main__":
-    # json_file_path = "benchmark_results.json"  
-    # analyze_vulnerabilities(json_file_path)
+    json_file_path = "benchmark_results.json"  
+    analyze_vulnerabilities(json_file_path)
 
     base_directory = "cross-chain/smartaxe" 
     # move_solidity_files(base_directory)
     # rename_files_in_directory(base_directory)
     # simplify_imports_in_solidity_files(base_directory)
-    simplify_named_imports(base_directory)
+    # simplify_named_imports(base_directory)
     # replace_specific_imports(base_directory)
