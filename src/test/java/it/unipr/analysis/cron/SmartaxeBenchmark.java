@@ -99,7 +99,8 @@ public class SmartaxeBenchmark {
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge) {
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
-				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
+				futures.add(
+						EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
 			}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 14, TimeUnit.HOURS); // barrier
@@ -140,7 +141,8 @@ public class SmartaxeBenchmark {
 		try {
 			JSONArray results = new JSONArray();
 			for (Bridge bridge : bridges) {
-				Map<String, Integer> map = readJsonToMap(datasetPath.resolve(bridge.getName()).resolve("match-file-index.json"));
+				Map<String, Integer> map = readJsonToMap(
+						datasetPath.resolve(bridge.getName()).resolve("match-file-index.json"));
 
 				JSONObject json = new JSONObject();
 				log.info("Bridge {}", bridge.getName());
@@ -172,7 +174,7 @@ public class SmartaxeBenchmark {
 
 			log.info("Results saved in: {}/benchmark_results_function.json", workingDirectory);
 
-		} catch (Exception e){
+		} catch (Exception e) {
 			log.error("An error occurred while saving the benchmark_results_functions: {}", e.getMessage());
 		}
 	}
@@ -226,10 +228,14 @@ public class SmartaxeBenchmark {
 						bridge.buildPartialXCFG();
 						bridge.addEdges(
 								xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
-					},
-					Set.of(
-							() -> xEVMLiSA.computeTaintedCallDataForTimeSynchronizationChecker(bridge))));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 12, TimeUnit.HOURS); // barrier
+					}));
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 3, TimeUnit.HOURS); // barrier
+
+		for (Bridge bridge : bridges)
+			for (SmartContract contract : bridge)
+				futures.add(EVMLiSAExecutor
+						.submit(() -> xEVMLiSA.computeTaintedCallDataForTimeSynchronizationChecker(contract)));
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 8, TimeUnit.HOURS);
 
 		// Submit tasks: run time synchronization checker for each contract in
 		// bridges
@@ -284,7 +290,8 @@ public class SmartaxeBenchmark {
 		try {
 			JSONArray results = new JSONArray();
 			for (Bridge bridge : bridges) {
-				Map<String, Integer> map = readJsonToMap(datasetPath.resolve(bridge.getName()).resolve("match-file-index.json"));
+				Map<String, Integer> map = readJsonToMap(
+						datasetPath.resolve(bridge.getName()).resolve("match-file-index.json"));
 
 				JSONObject json = new JSONObject();
 				log.info("Bridge {}", bridge.getName());
@@ -316,17 +323,21 @@ public class SmartaxeBenchmark {
 
 			log.info("Results saved in: {}/benchmark_results_function.json", workingDirectory);
 
-		} catch (Exception e){
+		} catch (Exception e) {
 			log.error("An error occurred while saving the benchmark_results_functions: {}", e.getMessage());
 		}
 	}
 
 	/**
-	 * Reads a JSON file and returns its contents as a map where keys are strings and values are integers.
+	 * Reads a JSON file and returns its contents as a map where keys are
+	 * strings and values are integers.
 	 *
 	 * @param jsonPath the path to the JSON file
+	 * 
 	 * @return a Map containing the JSON key-value pairs
-	 * @throws IOException if an I/O error occurs reading from the file or a malformed or unmappable byte sequence is read
+	 * 
+	 * @throws IOException if an I/O error occurs reading from the file or a
+	 *                         malformed or unmappable byte sequence is read
 	 */
 	public static Map<String, Integer> readJsonToMap(Path jsonPath) throws IOException {
 		String content = Files.readString(jsonPath);
@@ -341,14 +352,19 @@ public class SmartaxeBenchmark {
 	}
 
 	/**
-	 * Given a string in the format "number_other", this method extracts the number
-	 * before the underscore, converts it to an integer, and checks if this integer is present
-	 * as a value in the provided map. If a matching entry is found, the method returns the corresponding key.
+	 * Given a string in the format "number_other", this method extracts the
+	 * number before the underscore, converts it to an integer, and checks if
+	 * this integer is present as a value in the provided map. If a matching
+	 * entry is found, the method returns the corresponding key.
 	 *
 	 * @param input the input string in the format "number_other"
 	 * @param map   the map with keys of type String and values of type Integer
-	 * @return the key from the map whose value equals the extracted number, or null if no match is found
-	 * @throws NumberFormatException if the number cannot be parsed from the input string
+	 * 
+	 * @return the key from the map whose value equals the extracted number, or
+	 *             null if no match is found
+	 * 
+	 * @throws NumberFormatException if the number cannot be parsed from the
+	 *                                   input string
 	 */
 	public static String getMatchingKey(String input, Map<String, Integer> map) {
 		// Extract the substring before the underscore
