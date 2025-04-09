@@ -686,7 +686,7 @@ public class SmartContract {
 		if (_allFunctionsEntryPoints == null) {
 			Set<Statement> result = new HashSet<>();
 			for (Signature signature : _functionsSignature)
-                result.addAll(signature.getEntryPoints());
+				result.addAll(signature.getEntryPoints());
 			_allFunctionsEntryPoints = result;
 		}
 		return _allFunctionsEntryPoints;

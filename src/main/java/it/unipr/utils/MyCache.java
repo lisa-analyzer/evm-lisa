@@ -2,6 +2,7 @@ package it.unipr.utils;
 
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
+import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.taint.TaintElement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collections;
@@ -11,8 +12,6 @@ import java.util.Set;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
-
-import javax.json.JsonArray;
 
 /**
  * Singleton class implementing a cache with an LRU (Least Recently Used)
@@ -61,6 +60,7 @@ public class MyCache {
 	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
 
 	private final LRUMap<Integer, Set<Object>> _vulnerabilityPerOlli;
+	private final LRUMap<Signature, Set<Signature>> _mapEventsFunctions;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -128,6 +128,21 @@ public class MyCache {
 		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
 
 		this._vulnerabilityPerOlli = new LRUMap<>(10000);
+		this._mapEventsFunctions = new LRUMap<>(10000);
+	}
+
+	public void addMapEventsFunctions(Signature event, Signature function) {
+		synchronized (_mapEventsFunctions) {
+			_mapEventsFunctions
+					.computeIfAbsent(event, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(function);
+		}
+	}
+
+	public Set<Signature> getMapEventsFunctions(Signature event) {
+		synchronized (_mapEventsFunctions) {
+			return _mapEventsFunctions.get(event);
+		}
 	}
 
 	public void addOlli(Integer key, Object warning) {
@@ -144,7 +159,7 @@ public class MyCache {
 				return new JSONArray();
 
 			JSONArray results = new JSONArray();
-			for(Object warning : _vulnerabilityPerOlli.get(key)) {
+			for (Object warning : _vulnerabilityPerOlli.get(key)) {
 				results.put(warning);
 			}
 			return results;
@@ -387,7 +402,8 @@ public class MyCache {
 	 */
 	public int getUncheckedExternalCallWarnings(Integer key) {
 		synchronized (_uncheckedExternalCallWarnings) {
-			return (_uncheckedExternalCallWarnings.get(key) != null) ? _uncheckedExternalCallWarnings.get(key).size() : 0;
+			return (_uncheckedExternalCallWarnings.get(key) != null) ? _uncheckedExternalCallWarnings.get(key).size()
+					: 0;
 		}
 	}
 
@@ -835,9 +851,9 @@ public class MyCache {
 	}
 
 	/**
-	 * Adds a possible time synchronization warning to the internal tracking map. If the
-	 * key does not already exist, a new synchronized set will be created and
-	 * associated with the given key.
+	 * Adds a possible time synchronization warning to the internal tracking
+	 * map. If the key does not already exist, a new synchronized set will be
+	 * created and associated with the given key.
 	 *
 	 * @param warning the warning object to be added to the corresponding set of
 	 *                    warnings for the given key
@@ -851,8 +867,8 @@ public class MyCache {
 	}
 
 	/**
-	 * Retrieves the number of possible time synchronization warnings associated with the
-	 * given key.
+	 * Retrieves the number of possible time synchronization warnings associated
+	 * with the given key.
 	 *
 	 * @return the count of time synchronization warnings associated with the
 	 *             provided key; returns 0 if the key is not present or no

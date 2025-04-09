@@ -112,15 +112,16 @@ public class xEVMLiSA {
 		for (Signature event : bridge.getEvents()) {
 			for (Signature function : bridge.getFunctions()) {
 				/*
-				 * TODO: We may perform additional checks (e.g., parameter
-				 * types, parameter count, etc.) to link an event to a function,
-				 * as currently we are only linking them based on matching
-				 * names.
+				 * We may perform additional checks (e.g., parameter types,
+				 * parameter count, etc.) to link an event to a function, as
+				 * currently we are only linking them based on matching names.
 				 */
 				if (event.getName().equalsIgnoreCase(function.getName())) {
 
 					crossChainEdges.addAll(
 							addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
+
+					MyCache.getInstance().addMapEventsFunctions(event, function);
 
 					// Debug print
 					for (Statement e : event.getExitPoints()) {
@@ -227,7 +228,7 @@ public class xEVMLiSA {
 //			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalCallChecker(bridge, contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
+//			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
 		}
@@ -264,7 +265,9 @@ public class xEVMLiSA {
 		log.info("[TimeSynchronizationChecker] Vulnerable LOGs computed.");
 
 		log.info("[TimeSynchronizationChecker] Computing tainted CallData.");
-		computeTaintedCallDataForTimeSynchronizationChecker(bridge);
+		for (SmartContract contract : bridge)
+			futures.add(EVMLiSAExecutor.submit(() -> computeTaintedCallDataForTimeSynchronizationChecker(contract)));
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 		log.info("[TimeSynchronizationChecker] Tainted CallData computed.");
 
 		for (SmartContract contract : bridge)
@@ -272,14 +275,6 @@ public class xEVMLiSA {
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving inter cross-chain checkers results.");
-/*		int warnings = 0;
-		int possibleW
-		for (SmartContract contract : bridge)
-			warnings += MyCache.getInstance().getTimeSynchronizationWarnings(contract.getCFG().hashCode());
-		bridge.setVulnerabilities(
-				VulnerabilitiesObject.newVulnerabilitiesObject()
-						.timeSynchronization(warnings)
-						.build());*/
 
 		log.info("[OUT] Inter cross-chain checkers results saved.");
 	}
@@ -391,7 +386,10 @@ public class xEVMLiSA {
 				if (cfg.reachableFromWithoutTypes(functionEntrypoint, emitEvent, Collections.singleton(Sstore.class))) {
 
 					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(emitEvent);
-					// It means that this vulnerability is inside a private function
+					/*
+					 * It means that this vulnerability is inside a private
+					 * function
+					 */
 					if (functionSignatureByStatement.equals("no-function-found"))
 						continue;
 
@@ -410,7 +408,10 @@ public class xEVMLiSA {
 
 						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
 
-						warn = "[DEFINITE] Event Order vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+						warn = "[DEFINITE] Event Order vulnerability in " + contract.getName() + " at "
+								+ functionSignatureByStatement
+								+ " (pc: " + emitEventLocation.getPc() + ", "
+								+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
 						MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 
 					} else {
@@ -439,9 +440,10 @@ public class xEVMLiSA {
 
 	/**
 	 * Runs the missing event notification checker on the given smart contract.
-	 * This method analyzes the contract's CFG to detect if a state update
-	 * (SSTORE) reaches a termination statement (STOP or RETURN) without an
-	 * intervening event (Log), indicating a missing event notification.
+	 * This method analyzes the contract's CFG to detect if in a function of the
+	 * given contract there is (at least) a state update and there is no event
+	 * notification (identified by the LOG instruction). If this condition is
+	 * true, it indicates that there is a missing event notification.
 	 *
 	 * @param contract the smart contract to analyze.
 	 */
@@ -449,34 +451,53 @@ public class xEVMLiSA {
 		log.info("[IN] Running missing event notification checker on {}.", contract.getName());
 
 		EVMCFG cfg = contract.getCFG();
-		Collection<Statement> sstores = cfg.getAllSstore();
-		Collection<Statement> endPoints = cfg.getAllSuccessfullyTerminationStatements();
 
-		for (Statement sstore : sstores) {
-			for (Statement endpoint : endPoints) {
-				if (cfg.reachableFromWithoutTypes(sstore, endpoint, Collections.singleton(Log.class))) {
+		for (Signature function : contract.getFunctionsSignature()) {
+			for (Statement entrypoint : function.getEntryPoints()) {
+				/*
+				 * It means that this vulnerability is inside a private
+				 * function: we need to check only the public functions
+				 */
+				if (contract.getFunctionSignatureFromEntryPoint(entrypoint).equals("no-function-found"))
+					continue;
 
-					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(sstore);
-					// It means that this vulnerability is inside a private function
-					if (functionSignatureByStatement.equals("no-function-found"))
+				for (Statement exitpoint : function.getExitPoints()) {
+					/* We need to check only the successful termination paths */
+					if (!(exitpoint instanceof Stop
+							|| exitpoint instanceof Return))
 						continue;
 
-					ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
-							.getLocation();
-					ProgramCounterLocation endpointLocation = (ProgramCounterLocation) endpoint.getLocation();
+					/* We take only the state update inside the function */
+					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
+							Set.of(Sstore.class));
 
-					String warn = "Missing Event Notification vulnerability at " + sstoreLocation.getPc();
+					for (Statement sstore : sstores) {
+						if (cfg.reachableFromWithoutTypes(entrypoint, sstore, Set.of(Log.class))
+								&& cfg.reachableFromWithoutTypes(sstore, exitpoint, Set.of(Log.class))) {
 
-					log.warn("Missing Event Notification vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-							endpointLocation.getPc(),
-							endpointLocation.getSourceCodeLine(),
-							sstoreLocation.getPc(),
-							sstoreLocation.getSourceCodeLine());
+							ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
+									.getLocation();
+							ProgramCounterLocation exitpointLocation = (ProgramCounterLocation) exitpoint
+									.getLocation();
 
-					MyCache.getInstance().addMissingEventNotificationWarning(cfg.hashCode(), warn);
+							String warn = "Missing Event Notification vulnerability at " + sstoreLocation.getPc();
+							log.warn(
+									"Missing Event Notification vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+									exitpointLocation.getPc(),
+									exitpointLocation.getSourceCodeLine(),
+									sstoreLocation.getPc(),
+									sstoreLocation.getSourceCodeLine());
 
-					warn = "Missing Event Notification vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
-					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+							MyCache.getInstance().addMissingEventNotificationWarning(cfg.hashCode(), warn);
+
+							warn = "Missing Event Notification vulnerability in " + contract.getName() + " at "
+									+ contract.getFunctionSignatureFromEntryPoint(entrypoint)
+									+ " (pc: " + sstoreLocation.getPc() + ", "
+									+ "line: " + sstoreLocation.getSourceCodeLine() + ")";
+							MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+						}
+					}
+
 				}
 			}
 		}
@@ -513,30 +534,56 @@ public class xEVMLiSA {
 	 * that are reachable from vulnerable log statements via cross-chain edges,
 	 * marking them as tainted.
 	 *
-	 * @param bridge The bridge object containing the cross-chain control flow
-	 *                   graph (xCFG) and other data necessary for the analysis.
+	 * @param contract The smart contract to be analyzed.
 	 */
-	public static void computeTaintedCallDataForTimeSynchronizationChecker(Bridge bridge) {
-		EVMCFG xcfg = bridge.getXCFG();
+	public static void computeTaintedCallDataForTimeSynchronizationChecker(SmartContract contract) {
 		Set<Statement> logsVulnerable = MyCache.getInstance()
 				.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
 
-		for (Statement logVulnerable : logsVulnerable) {
-			for (Statement externalDataStatement : xcfg.getExternalData()) {
-				if ((externalDataStatement instanceof Calldataload || externalDataStatement instanceof Calldatacopy)
-						&& xcfg.reachableFromCrossingACrossChainEdge(logVulnerable, externalDataStatement)) {
+		/* For each event of this event */
+		for (Signature event : contract.getEventsSignature()) {
+			for (Statement emit : event.getExitPoints()) {
 
-					MyCache.getInstance().addLinkFromLogToCallDataLoad(logVulnerable, externalDataStatement);
-					MyCache.getInstance().addTaintedCallDataLoad(externalDataStatement);
+				if (logsVulnerable.contains(emit)) {
 
-					log.debug(
-							"(computeTaintedCallDataForTimeSynchronizationChecker) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
-							logVulnerable,
-							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
-							logVulnerable.getCFG().hashCode(),
-							externalDataStatement,
-							((ProgramCounterLocation) externalDataStatement.getLocation()).getSourceCodeLine(),
-							externalDataStatement.getCFG().hashCode());
+					/* Functions linked to this event */
+					Set<Signature> functionsLinked = MyCache.getInstance().getMapEventsFunctions(event);
+					for (Signature functionLinked : functionsLinked) {
+						for (Statement entrypoint : functionLinked.getEntryPoints()) {
+							for (Statement exitpoint : functionLinked.getExitPoints()) {
+								/*
+								 * We need to check only the successful
+								 * termination paths
+								 */
+								if (!(exitpoint instanceof Stop
+										|| exitpoint instanceof Return))
+									continue;
+								/*
+								 * We take only the state update inside the
+								 * function
+								 */
+								Set<Statement> externalData = contract.getCFG()
+										.getStatementsInAPathWithTypes(
+												entrypoint,
+												exitpoint,
+												Set.of(Calldataload.class, Calldatacopy.class));
+
+								for (Statement data : externalData) {
+									MyCache.getInstance().addLinkFromLogToCallDataLoad(emit, data);
+									MyCache.getInstance().addTaintedCallDataLoad(data);
+
+									log.debug(
+											"(computeTaintedCallDataForTimeSynchronizationChecker) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
+											emit,
+											((ProgramCounterLocation) emit.getLocation()).getSourceCodeLine(),
+											emit.getCFG().hashCode(),
+											data,
+											((ProgramCounterLocation) data.getLocation()).getSourceCodeLine(),
+											data.getCFG().hashCode());
+								}
+							}
+						}
+					}
 				}
 			}
 		}
