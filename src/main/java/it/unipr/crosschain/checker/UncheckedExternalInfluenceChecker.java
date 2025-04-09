@@ -189,7 +189,8 @@ public class UncheckedExternalInfluenceChecker implements
 				tool.warn(warn);
 				MyCache.getInstance().addUncheckedExternalInfluenceWarning(cfg.hashCode(), warn);
 
-				warn = "[DEFINITE] Unchecked External Influence vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+				warn = "[DEFINITE] Unchecked External Influence vulnerability in " + contract.getName() + " at "
+						+ functionSignatureByStatement;
 				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}

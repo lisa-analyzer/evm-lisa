@@ -81,8 +81,8 @@ public class TimeSynchronizationChecker implements
 	 * provided analysis tool.
 	 *
 	 * @param jumpi The statement being analyzed for reachability and
-	 *                  vulnerability. It represents a conditional jump
-	 *                  in the control flow.
+	 *                  vulnerability. It represents a conditional jump in the
+	 *                  control flow.
 	 * @param tool  The analysis tool containing results of the analysis and
 	 *                  methods for reporting warnings about identified
 	 *                  vulnerabilities.
@@ -100,7 +100,8 @@ public class TimeSynchronizationChecker implements
 						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
 
 					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(jumpi);
-					// It means that this vulnerability is inside a private function
+					// It means that this vulnerability is inside a private
+					// function
 					if (functionSignatureByStatement.equals("no-function-found"))
 						continue;
 
@@ -121,7 +122,8 @@ public class TimeSynchronizationChecker implements
 					MyCache.getInstance().addTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
 
-					warn = "[DEFINITE] Time Synchronization vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+					warn = "[DEFINITE] Time Synchronization vulnerability in " + contract.getName() + " at "
+							+ functionSignatureByStatement;
 					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 				}
 			}
@@ -129,8 +131,8 @@ public class TimeSynchronizationChecker implements
 	}
 
 	private void throwPossibleVulnerability(Statement jumpi, CheckToolWithAnalysisResults<
-											SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
-									EVMCFG cfg) {
+			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
 
 		for (Statement externalData : cfg.getExternalData()) {
 			if (cfg.reachableFrom(externalData, jumpi)) {

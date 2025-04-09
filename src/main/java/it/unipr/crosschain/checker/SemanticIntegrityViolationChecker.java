@@ -240,11 +240,14 @@ public class SemanticIntegrityViolationChecker implements
 						((ProgramCounterLocation) data.getLocation()).getSourceCodeLine());
 
 				String warn = "[DEFINITE] Semantic Integrity Violation vulnerability at "
-						+ ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine();
+						+ ((ProgramCounterLocation) data.getLocation()).getPc();
 				tool.warn(warn);
 				MyCache.getInstance().addSemanticIntegrityViolationWarning(cfg.hashCode(), warn);
 
-				warn = "[DEFINITE] Semantic Integrity Violation vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+				warn = "[DEFINITE] Semantic Integrity Violation vulnerability in " + contract.getName() + " at "
+						+ functionSignatureByStatement
+						+ " (pc: " + ((ProgramCounterLocation) data.getLocation()).getPc() + ", "
+						+ "line: " + ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine() + ")";
 				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}

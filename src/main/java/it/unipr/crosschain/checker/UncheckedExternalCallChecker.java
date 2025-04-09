@@ -240,7 +240,10 @@ public class UncheckedExternalCallChecker implements
 				tool.warn(warn);
 				MyCache.getInstance().addUncheckedExternalCallWarning(cfg.hashCode(), warn);
 
-				warn = "[DEFINITE] Unchecked External Call vulnerability in " + contract.getName() + " at " + functionSignatureByStatement;
+				warn = "[DEFINITE] Unchecked External Call vulnerability in " + contract.getName() + " at "
+						+ functionSignatureByStatement
+						+ " (pc: " + ((ProgramCounterLocation) call.getLocation()).getPc() + ", "
+						+ "line: " + ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine() + ")";
 				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 			}
 		}
