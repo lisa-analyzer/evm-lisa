@@ -93,11 +93,9 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the CALLDATA, CALLVALUE, CALLER and ORIGIN
-	 * statements in the CFG.
+	 * Returns a set of all the CALLDATA and CALLDATACOPY statements in the CFG.
 	 *
-	 * @return a set of all the CALLDATA, CALLVALUE, CALLER and ORIGIN
-	 *             statements in the CFG
+	 * @return a set of all the CALLDATA and CALLDATACOPY statements in the CFG
 	 */
 	public Set<Statement> getExternalData() {
 		if (this.externalData == null) {
@@ -105,7 +103,8 @@ public class EVMCFG extends CFG {
 			Set<Statement> externalData = new HashSet<>();
 
 			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Calldataload) {
+				if (statement instanceof Calldataload
+						|| statement instanceof Calldatacopy) {
 					externalData.add(statement);
 				}
 			}
@@ -213,8 +212,7 @@ public class EVMCFG extends CFG {
 			Set<Statement> logxs = new HashSet<>();
 
 			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Log0
-						|| statement instanceof Log1
+				if (statement instanceof Log1
 						|| statement instanceof Log2
 						|| statement instanceof Log3
 						|| statement instanceof Log4) {
@@ -443,10 +441,11 @@ public class EVMCFG extends CFG {
 
 			for (Edge edge : list.getIngoingEdges(current)) {
 				Statement next = edge.getSource();
-				if (visited.add(next)) {  // add returns true if next was not already in visited
+				if (visited.add(next)) { // add returns true if next was not
+											// already in visited
 					queue.offer(next);
 				}
-				if(entrypoints.contains(next)) {
+				if (entrypoints.contains(next)) {
 					return next;
 				}
 			}
@@ -504,14 +503,14 @@ public class EVMCFG extends CFG {
 		return false;
 	}
 
-
 	/**
-	 * Performs a breadth-first search (BFS) to determine if the target statement
-	 * is reachable from the start statement.
+	 * Performs a breadth-first search (BFS) to determine if the target
+	 * statement is reachable from the start statement.
 	 *
 	 * @param start   The starting statement.
 	 * @param target  The target statement.
 	 * @param visited A set of visited statements to avoid cycles.
+	 * 
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
 	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
@@ -526,7 +525,8 @@ public class EVMCFG extends CFG {
 
 			for (Edge edge : list.getOutgoingEdges(current)) {
 				Statement next = edge.getDestination();
-				if (visited.add(next)) {  // add returns true if next was not already in visited
+				if (visited.add(next)) { // add returns true if next was not
+											// already in visited
 					queue.offer(next);
 				}
 			}
@@ -569,7 +569,8 @@ public class EVMCFG extends CFG {
 
 			for (Edge edge : list.getIngoingEdges(current)) {
 				Statement next = edge.getSource();
-				if (visited.add(next)) {  // add returns true if next was not already in visited
+				if (visited.add(next)) { // add returns true if next was not
+											// already in visited
 					queue.offer(next);
 				}
 			}
@@ -774,6 +775,36 @@ public class EVMCFG extends CFG {
 		}
 
 		return false;
+	}
+
+	public Set<Statement> getStatementsInAPathWithTypes(Statement start, Statement target, Set<Class<?>> getTypes) {
+		Set<Statement> visited = new HashSet<>();
+		Set<Statement> matchingStatements = new HashSet<>();
+		Stack<Statement> stack = new Stack<>();
+		stack.push(start);
+
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+
+			if (current.equals(target))
+				return matchingStatements;
+
+			if (!visited.contains(current)) {
+				visited.add(current);
+
+				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
+
+				for (Edge edge : outgoingEdges) {
+					if (getTypes.stream().anyMatch(type -> type.isInstance(edge.getSource())))
+						matchingStatements.add(edge.getDestination());
+					Statement next = edge.getDestination();
+					if (!visited.contains(next))
+						stack.push(next);
+				}
+			}
+		}
+
+		return matchingStatements;
 	}
 
 	/**
