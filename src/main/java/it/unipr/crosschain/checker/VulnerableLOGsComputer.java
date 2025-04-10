@@ -51,10 +51,6 @@ public class VulnerableLOGsComputer implements
 					// Nothing to do
 					continue;
 				else {
-					if (node instanceof Log0)
-						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
-								taintedStack.getElementAtPosition(2)))
-							addVulnerableLOG(node);
 					if (node instanceof Log1)
 						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
