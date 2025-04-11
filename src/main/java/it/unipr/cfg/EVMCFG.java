@@ -795,7 +795,7 @@ public class EVMCFG extends CFG {
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
 
 				for (Edge edge : outgoingEdges) {
-					if (getTypes.stream().anyMatch(type -> type.isInstance(edge.getSource())))
+					if (getTypes.stream().anyMatch(type -> type.isInstance(edge.getDestination())))
 						matchingStatements.add(edge.getDestination());
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
