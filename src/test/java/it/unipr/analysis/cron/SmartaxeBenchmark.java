@@ -32,7 +32,7 @@ public class SmartaxeBenchmark {
 		log.info("Cores available: {}", EVMLiSAExecutor.getCoresAvailable());
 
 		try {
-			new SmartaxeBenchmark().runBenchmarkWithIntraCrossChainCheckers();
+			new SmartaxeBenchmark().runBenchmarkWithTimeSynchronizationChecker();
 		} catch (Exception e) {
 			e.printStackTrace();
 			EVMLiSAExecutor.shutdown();
@@ -79,12 +79,8 @@ public class SmartaxeBenchmark {
 		// chain checkers
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
-				completablesFutures.add(EVMLiSAExecutor.runAsync(
-						() -> EVMLiSA.buildCFG(contract),
-						Set.of(
-								() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(contract),
-								() -> xEVMLiSA.runMissingEventNotificationChecker(contract))));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 10, TimeUnit.HOURS); // barrier
+				futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.buildCFG(contract)));
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 7, TimeUnit.HOURS); // barrier
 
 		// Submit tasks: build the xCFG for each bridge
 		for (Bridge bridge : bridges)
@@ -93,7 +89,7 @@ public class SmartaxeBenchmark {
 				bridge.addEdges(
 						xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
 			}));
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 3, TimeUnit.HOURS); // barrier
 
 		// Submit tasks: run intra cross chain checkers using xCFG
 		for (Bridge bridge : bridges)
@@ -102,8 +98,9 @@ public class SmartaxeBenchmark {
 				futures.add(
 						EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
+				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runMissingEventNotificationChecker(contract)));
 			}
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 14, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 13, TimeUnit.HOURS); // barrier
 
 		// Saving results
 		JSONArray bridgesVulnerabilities = new JSONArray();
@@ -218,31 +215,34 @@ public class SmartaxeBenchmark {
 						() -> EVMLiSA.buildCFG(contract),
 						Set.of(
 								() -> xEVMLiSA.computeVulnerablesLOGsForTimeSynchronizationChecker(contract))));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 12, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 6, TimeUnit.HOURS); // barrier
+		log.info("Built {} CFGs and computed vulnerable logs.", numberOfContract);
 
 		// Submit tasks: build the xCFG for each bridge and compute the tainted
 		// call data
 		for (Bridge bridge : bridges)
-			completablesFutures.add(EVMLiSAExecutor.runAsync(
+			futures.add(EVMLiSAExecutor.submit(
 					() -> {
 						bridge.buildPartialXCFG();
 						bridge.addEdges(
 								xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
 					}));
-		EVMLiSAExecutor.awaitCompletionCompletableFutures(completablesFutures, 3, TimeUnit.HOURS); // barrier
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 3, TimeUnit.HOURS); // barrier
+		log.info("Built {} xCFGs.", bridges.size());
 
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
 				futures.add(EVMLiSAExecutor
 						.submit(() -> xEVMLiSA.computeTaintedCallDataForTimeSynchronizationChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 8, TimeUnit.HOURS);
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 7, TimeUnit.HOURS);
+		log.info("Computed tainted call data.");
 
 		// Submit tasks: run time synchronization checker for each contract in
 		// bridges
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runTimeSynchronizationChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS);
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 7, TimeUnit.HOURS);
 
 		// Saving results
 		JSONArray bridgesVulnerabilities = new JSONArray();
@@ -333,9 +333,9 @@ public class SmartaxeBenchmark {
 	 * strings and values are integers.
 	 *
 	 * @param jsonPath the path to the JSON file
-	 * 
+	 *
 	 * @return a Map containing the JSON key-value pairs
-	 * 
+	 *
 	 * @throws IOException if an I/O error occurs reading from the file or a
 	 *                         malformed or unmappable byte sequence is read
 	 */
@@ -359,10 +359,10 @@ public class SmartaxeBenchmark {
 	 *
 	 * @param input the input string in the format "number_other"
 	 * @param map   the map with keys of type String and values of type Integer
-	 * 
+	 *
 	 * @return the key from the map whose value equals the extracted number, or
 	 *             null if no match is found
-	 * 
+	 *
 	 * @throws NumberFormatException if the number cannot be parsed from the
 	 *                                   input string
 	 */

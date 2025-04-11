@@ -141,7 +141,9 @@ public class MyCache {
 
 	public Set<Signature> getMapEventsFunctions(Signature event) {
 		synchronized (_mapEventsFunctions) {
-			return _mapEventsFunctions.get(event);
+			return (_mapEventsFunctions.get(event) != null)
+					? _mapEventsFunctions.get(event)
+					: Set.of();
 		}
 	}
 

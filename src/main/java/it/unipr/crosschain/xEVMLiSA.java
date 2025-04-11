@@ -75,6 +75,8 @@ public class xEVMLiSA {
 		}
 		json.put("contracts", contracts);
 		log.info(json.toString(4));
+
+//		log.debug(bridge);
 	}
 
 	/**
@@ -128,9 +130,9 @@ public class xEVMLiSA {
 						for (Statement f : function.getEntryPoints()) {
 							log.debug(
 									"Cross-chain edge added: event {} (name: {}, selector: {}, line: {}) -> function {} (name: {}, selector: {}, line: {}).",
-									e, event.getName(), event.getSelector(),
+									e, event.getFullSignature(), event.getSelector(),
 									((ProgramCounterLocation) e.getLocation()).getSourceCodeLine(),
-									f, function.getName(), function.getSelector(),
+									f, function.getFullSignature(), function.getSelector(),
 									((ProgramCounterLocation) f.getLocation()).getSourceCodeLine());
 						}
 					}
@@ -537,55 +539,70 @@ public class xEVMLiSA {
 	 * @param contract The smart contract to be analyzed.
 	 */
 	public static void computeTaintedCallDataForTimeSynchronizationChecker(SmartContract contract) {
-		Set<Statement> logsVulnerable = MyCache.getInstance()
-				.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
+		if (contract == null)
+			return;
 
-		/* For each event of this event */
-		for (Signature event : contract.getEventsSignature()) {
-			for (Statement emit : event.getExitPoints()) {
+		try {
+			Set<Statement> logsVulnerable = MyCache.getInstance()
+					.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
 
-				if (logsVulnerable.contains(emit)) {
+			/* For each event of this event */
+			for (Signature event : contract.getEventsSignature()) {
+				for (Statement emit : event.getExitPoints()) {
+					if (logsVulnerable.contains(emit)) {
+						/* Functions linked to this event */
+						Set<Signature> functionsLinked = MyCache.getInstance().getMapEventsFunctions(event);
+						log.warn("No linked function found for event {} in contract {}.", event.getFullSignature(), contract.getName());
+						for (Signature functionLinked : functionsLinked) {
 
-					/* Functions linked to this event */
-					Set<Signature> functionsLinked = MyCache.getInstance().getMapEventsFunctions(event);
-					for (Signature functionLinked : functionsLinked) {
-						for (Statement entrypoint : functionLinked.getEntryPoints()) {
-							for (Statement exitpoint : functionLinked.getExitPoints()) {
-								/*
-								 * We need to check only the successful
-								 * termination paths
-								 */
-								if (!(exitpoint instanceof Stop
-										|| exitpoint instanceof Return))
-									continue;
-								/*
-								 * We take only the state update inside the
-								 * function
-								 */
-								Set<Statement> externalData = contract.getCFG()
-										.getStatementsInAPathWithTypes(
-												entrypoint,
-												exitpoint,
-												Set.of(Calldataload.class, Calldatacopy.class));
+							for (Statement entrypoint : functionLinked.getEntryPoints()) {
+								for (Statement exitpoint : functionLinked.getExitPoints()) {
+									/*
+									 * We need to check only the successful
+									 * termination paths
+									 */
+									if (!(exitpoint instanceof Stop
+											|| exitpoint instanceof Return))
+										continue;
 
-								for (Statement data : externalData) {
-									MyCache.getInstance().addLinkFromLogToCallDataLoad(emit, data);
-									MyCache.getInstance().addTaintedCallDataLoad(data);
+									/*
+									 * We take only the call data inside the
+									 * function
+									 */
+									EVMCFG newCFG = (EVMCFG) entrypoint.getCFG();
+									Set<Statement> externalData = newCFG
+											.getStatementsInAPathWithTypes(
+													entrypoint,
+													exitpoint,
+													Set.of(Calldataload.class, Calldatacopy.class));
 
-									log.debug(
-											"(computeTaintedCallDataForTimeSynchronizationChecker) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}).",
-											emit,
-											((ProgramCounterLocation) emit.getLocation()).getSourceCodeLine(),
-											emit.getCFG().hashCode(),
-											data,
-											((ProgramCounterLocation) data.getLocation()).getSourceCodeLine(),
-											data.getCFG().hashCode());
+									for (Statement data : externalData) {
+										MyCache.getInstance().addLinkFromLogToCallDataLoad(emit, data);
+										MyCache.getInstance().addTaintedCallDataLoad(data);
+
+										log.debug(
+												"(computeTaintedCallData) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}). Event {} (contract {}) to function {}.",
+												emit,
+												((ProgramCounterLocation) emit.getLocation()).getSourceCodeLine(),
+												emit.getCFG().hashCode(),
+												data,
+												((ProgramCounterLocation) data.getLocation()).getSourceCodeLine(),
+												data.getCFG().hashCode(),
+												event.getFullSignature(),
+												contract.getName(),
+												functionLinked.getFullSignature()
+										);
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			System.err.println(contract);
 		}
 	}
 
