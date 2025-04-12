@@ -100,11 +100,18 @@ public class TimeSynchronizationChecker implements
 						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
 
 					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(jumpi);
-					/* It means that this vulnerability is inside a private function */
+					/*
+					 * It means that this vulnerability is inside a private
+					 * function
+					 */
 					if (functionSignatureByStatement.equals("no-function-found"))
 						continue;
 
-					/* To avoid double printing, we raise the warning only in the contract where is present the vulnerable log, i.e., the event emit */
+					/*
+					 * To avoid double printing, we raise the warning only in
+					 * the contract where is present the vulnerable log, i.e.,
+					 * the event emit
+					 */
 					if (cfg.hashCode() != logVulnerable.getCFG().hashCode())
 						continue;
 
@@ -128,7 +135,8 @@ public class TimeSynchronizationChecker implements
 					warn = "[DEFINITE] Time Synchronization vulnerability in " + contract.getName() + " at "
 							+ functionSignatureByStatement
 							+ " (pc: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getPc() + ", "
-							+ "line: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine() + ")";
+							+ "line: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine()
+							+ ")";
 					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 				}
 			}
@@ -139,14 +147,16 @@ public class TimeSynchronizationChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-
-
 		for (Statement externalData : cfg.getExternalData()) {
 			if (cfg.reachableFrom(externalData, jumpi)) {
 				for (Statement logVulnerable : MyCache.getInstance()
 						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
 
-					/* To avoid double printing, we raise the warning only in the contract where is present the vulnerable log, i.e., the event emit */
+					/*
+					 * To avoid double printing, we raise the warning only in
+					 * the contract where is present the vulnerable log, i.e.,
+					 * the event emit
+					 */
 					if (cfg.hashCode() != logVulnerable.getCFG().hashCode())
 						continue;
 
