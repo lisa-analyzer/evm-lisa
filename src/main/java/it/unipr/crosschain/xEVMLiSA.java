@@ -105,8 +105,10 @@ public class xEVMLiSA {
 	 */
 	public static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
 		Set<Edge> crossChainEdges = new HashSet<>();
+		Set<String> functionsUsed = new HashSet<>();
+		Set<String> eventUsed = new HashSet<>();
 
-		log.info("Computing cross chain edge.");
+		log.info("Computing cross chain edges of {}.", bridge.getName());
 		log.debug("Functions in bridge: {}.", bridge.getFunctions().size());
 		log.debug("Events in bridge: {}.", bridge.getEvents().size());
 		log.debug("Log statement in bridge: {}.", bridge.getXCFG().getAllLogX().size());
@@ -119,6 +121,8 @@ public class xEVMLiSA {
 				 * currently we are only linking them based on matching names.
 				 */
 				if (event.getName().equalsIgnoreCase(function.getName())) {
+					functionsUsed.add(function.getFullSignature());
+					eventUsed.add(event.getFullSignature());
 
 					crossChainEdges.addAll(
 							addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
@@ -142,7 +146,9 @@ public class xEVMLiSA {
 
 		log.debug("Added {} cross chain edges using events exit points and functions entry points.",
 				crossChainEdges.size());
-		log.info("Cross chain edges computed.");
+		log.info("Functions used: {}/{} ({})\"", functionsUsed.size(), bridge.getFunctions().size(), functionsUsed);
+		log.info("Events used: {}/{} ({})", eventUsed.size(), bridge.getEvents().size(), eventUsed);
+		log.info("Cross chain edges of {} computed.", bridge.getName());
 
 		return crossChainEdges;
 	}
@@ -376,59 +382,74 @@ public class xEVMLiSA {
 	public static void runEventOrderChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running event order checker on {}.", contract.getName());
 
-		Set<Statement> functionsEntrypoints = new HashSet<>();
-
-		for (Signature function : contract.getFunctionsSignature())
-			functionsEntrypoints.addAll(function.getEntryPoints());
-
 		EVMCFG cfg = contract.getCFG();
 
-		for (Statement functionEntrypoint : functionsEntrypoints) {
-			for (Statement emitEvent : cfg.getAllLogX()) {
-				if (cfg.reachableFromWithoutTypes(functionEntrypoint, emitEvent, Collections.singleton(Sstore.class))) {
+		for (Signature function : contract.getFunctionsSignature()) {
+			for (Statement entrypoint : function.getEntryPoints()) {
+				/*
+				 * It means that this vulnerability is inside a private
+				 * function: we need to check only the public functions
+				 */
+				if (contract.getFunctionSignatureFromEntryPoint(entrypoint).equals("no-function-found"))
+					continue;
 
-					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(emitEvent);
-					/*
-					 * It means that this vulnerability is inside a private
-					 * function
-					 */
-					if (functionSignatureByStatement.equals("no-function-found"))
+				for (Statement exitpoint : function.getExitPoints()) {
+					/* We need to check only the successful termination paths */
+					if (!(exitpoint instanceof Stop
+							|| exitpoint instanceof Return))
 						continue;
 
-					ProgramCounterLocation functionEntrypointLocation = (ProgramCounterLocation) functionEntrypoint
-							.getLocation();
-					ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
+					/* We take only the state updates inside the function */
+					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
+							Set.of(Sstore.class));
+					/* We take only the log instructions inside the function */
+					Set<Statement> logs = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
+							Set.of(Log1.class, Log2.class, Log3.class, Log4.class));
 
-					if (bridge.getXCFG().hasAtLeastOneCrossChainEdge(emitEvent)) {
-						String warn = "[DEFINITE] Event Order vulnerability at " + emitEventLocation.getPc();
+					/*
+					 * If there is no state update but at least a LOG
+					 * instruction, a (possible) warning is raised
+					 */
+					if (sstores.isEmpty() && !logs.isEmpty()) {
+						for (Statement emitEvent : logs) {
+							ProgramCounterLocation entrypointLocation = (ProgramCounterLocation) entrypoint
+									.getLocation();
+							ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
 
-						log.warn("[DEFINITE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-								emitEventLocation.getPc(),
-								emitEventLocation.getSourceCodeLine(),
-								functionEntrypointLocation.getPc(),
-								functionEntrypointLocation.getSourceCodeLine());
+							if (bridge.getXCFG().hasAtLeastOneCrossChainEdge(emitEvent)) {
+								String warn = "[DEFINITE] Event Order vulnerability at " + emitEventLocation.getPc();
 
-						MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
+								log.warn(
+										"[DEFINITE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+										emitEventLocation.getPc(),
+										emitEventLocation.getSourceCodeLine(),
+										entrypointLocation.getPc(),
+										entrypointLocation.getSourceCodeLine());
 
-						warn = "[DEFINITE] Event Order vulnerability in " + contract.getName() + " at "
-								+ functionSignatureByStatement
-								+ " (pc: " + emitEventLocation.getPc() + ", "
-								+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
-						MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+								MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
 
-					} else {
-						String warn = "[POSSIBLE] Event Order vulnerability at " + emitEventLocation.getPc();
+								warn = "[DEFINITE] Event Order vulnerability in " + contract.getName() + " at "
+										+ function.getFullSignature()
+										+ " (pc: " + emitEventLocation.getPc() + ", "
+										+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
+								MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 
-						log.warn("[POSSIBLE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-								emitEventLocation.getPc(),
-								emitEventLocation.getSourceCodeLine(),
-								functionEntrypointLocation.getPc(),
-								functionEntrypointLocation.getSourceCodeLine());
+							} else {
+								String warn = "[POSSIBLE] Event Order vulnerability at " + emitEventLocation.getPc();
 
-						MyCache.getInstance().addPossibleEventOrderWarning(cfg.hashCode(), warn);
+								log.warn(
+										"[POSSIBLE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+										emitEventLocation.getPc(),
+										emitEventLocation.getSourceCodeLine(),
+										entrypointLocation.getPc(),
+										entrypointLocation.getSourceCodeLine());
+
+								MyCache.getInstance().addPossibleEventOrderWarning(cfg.hashCode(), warn);
 
 //						warn = "[POSSIBLE] Event Order vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(emitEvent);
 //						MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+							}
+						}
 					}
 				}
 			}
@@ -552,7 +573,8 @@ public class xEVMLiSA {
 					if (logsVulnerable.contains(emit)) {
 						/* Functions linked to this event */
 						Set<Signature> functionsLinked = MyCache.getInstance().getMapEventsFunctions(event);
-						log.warn("No linked function found for event {} in contract {}.", event.getFullSignature(), contract.getName());
+						log.warn("No linked function found for event {} in contract {}.", event.getFullSignature(),
+								contract.getName());
 						for (Signature functionLinked : functionsLinked) {
 
 							for (Statement entrypoint : functionLinked.getEntryPoints()) {
@@ -590,8 +612,7 @@ public class xEVMLiSA {
 												data.getCFG().hashCode(),
 												event.getFullSignature(),
 												contract.getName(),
-												functionLinked.getFullSignature()
-										);
+												functionLinked.getFullSignature());
 									}
 								}
 							}
