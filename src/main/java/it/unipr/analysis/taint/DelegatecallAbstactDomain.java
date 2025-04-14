@@ -36,6 +36,8 @@ public class DelegatecallAbstactDomain extends TaintAbstractDomain  {
         return taintedOpcode;
     }
 
+
+
     @Override
     public Set<Operator> getSanitizedOpcode() {
         return Set.of();
