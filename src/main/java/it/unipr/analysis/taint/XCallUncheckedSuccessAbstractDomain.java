@@ -1,7 +1,6 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.operator.CalldatacopyOperator;
-import it.unipr.analysis.operator.CalldataloadOperator;
+import it.unipr.analysis.operator.*;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 
@@ -9,10 +8,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DelegatecallAbstactDomain extends TaintAbstractDomain  {
-    private static final DelegatecallAbstactDomain TOP = new DelegatecallAbstactDomain(
+public class XCallUncheckedSuccessAbstractDomain extends TaintAbstractDomain  {
+    private static final XCallUncheckedSuccessAbstractDomain TOP = new XCallUncheckedSuccessAbstractDomain(
             createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-    private static final DelegatecallAbstactDomain BOTTOM = new DelegatecallAbstactDomain(null, TaintElement.BOTTOM);
+    private static final XCallUncheckedSuccessAbstractDomain BOTTOM = new XCallUncheckedSuccessAbstractDomain(null, TaintElement.BOTTOM);
 
 
     private static TaintElement[] createFilledArray(int size, TaintElement element) {
@@ -21,9 +20,9 @@ public class DelegatecallAbstactDomain extends TaintAbstractDomain  {
         return array;
     }
 
-    public DelegatecallAbstactDomain() { super(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN); }
+    public XCallUncheckedSuccessAbstractDomain() { super(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN); }
 
-    protected DelegatecallAbstactDomain(TaintElement[] stack, TaintElement memory) {super(stack, memory);}
+    protected XCallUncheckedSuccessAbstractDomain(TaintElement[] stack, TaintElement memory) {super(stack, memory);}
 
     /**
      * returns the set of the tainted opcodes for the Abstract Domain
@@ -31,8 +30,10 @@ public class DelegatecallAbstactDomain extends TaintAbstractDomain  {
      */
     public Set<Operator> getTaintedOpcode() {
         Set<Operator> taintedOpcode = new HashSet<>();
+        taintedOpcode.add(CallOperator.INSTANCE);
+        taintedOpcode.add(StaticcallOperator.INSTANCE);
+        taintedOpcode.add(CallcodeOperator.INSTANCE);
         taintedOpcode.add(CalldatacopyOperator.INSTANCE);
-        taintedOpcode.add(CalldataloadOperator.INSTANCE);
         return taintedOpcode;
     }
 
@@ -45,14 +46,14 @@ public class DelegatecallAbstactDomain extends TaintAbstractDomain  {
 
     @Override
     public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-        return new DelegatecallAbstactDomain(array, memory);
+        return new XCallUncheckedSuccessAbstractDomain(array, memory);
     }
 
     @Override
-    public DelegatecallAbstactDomain top() { return TOP; }
+    public XCallUncheckedSuccessAbstractDomain top() { return TOP; }
 
     @Override
-    public DelegatecallAbstactDomain bottom() { return BOTTOM; }
+    public XCallUncheckedSuccessAbstractDomain bottom() { return BOTTOM; }
 
 
 

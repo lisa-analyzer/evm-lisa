@@ -21,6 +21,8 @@ public class MyCache {
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
 	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
+	private final LRUMap<Integer, Set<Object>> _xCallUncheckedSuccessWarnings;
+	private final LRUMap<Integer, Set<Object>> _delegatecallTaintAddressWarnings;
 	private final LRUMap<String, Boolean> _reachableFrom;
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _uncheckedStateUpdateWarnings;
@@ -51,6 +53,8 @@ public class MyCache {
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._xCallUncheckedSuccessWarnings = new LRUMap<Integer, Set<Object>>(1000);
+		this._delegatecallTaintAddressWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._reachableFrom = new LRUMap<String, Boolean>(2000);
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(1000);
 		this._uncheckedStateUpdateWarnings = new LRUMap<Integer, Set<Object>>(1000);
@@ -387,6 +391,71 @@ public class MyCache {
 	public int getTxOriginWarnings(Integer key) {
 		synchronized (_txOriginWarnings) {
 			return (_txOriginWarnings.get(key) != null) ? _txOriginWarnings.get(key).size() : 0;
+		}
+	}
+	/**
+	 * Adds a xcalluncheckedsuccess warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addXCallUncheckedSuccessWarning(Integer key, Object warning) {
+		synchronized (_xCallUncheckedSuccessWarnings) {
+			_xCallUncheckedSuccessWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+
+	/**
+	 * Retrieves the number of xcalluncheckedsuccess warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getXCallUncheckedSuccessWarnings(Integer key) {
+		synchronized (_xCallUncheckedSuccessWarnings) {
+			return (_xCallUncheckedSuccessWarnings.get(key) != null) ? _xCallUncheckedSuccessWarnings.get(key).size() : 0;
+		}
+	}
+	/**
+	 * Adds a delegatecalltaintaddress warning for the specified key. If no
+	 * warnings are associated with the key, a new set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addDelegatecallTaintAddressWarning(Integer key, Object warning) {
+		synchronized (_delegatecallTaintAddressWarnings) {
+			_delegatecallTaintAddressWarnings
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(warning);
+		}
+	}
+	/**
+	 * Retrieves the number of delegatecalltaintaddress warnings associated with
+	 * the specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getDelegatecallTaintAddressWarnings(Integer key) {
+		synchronized (_delegatecallTaintAddressWarnings) {
+			return (_delegatecallTaintAddressWarnings.get(key) != null) ? _delegatecallTaintAddressWarnings.get(key).size() : 0;
 		}
 	}
 

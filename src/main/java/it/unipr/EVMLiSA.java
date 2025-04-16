@@ -2,15 +2,14 @@ package it.unipr;
 
 import it.unipr.analysis.*;
 import it.unipr.analysis.contract.SmartContract;
+import it.unipr.analysis.taint.DelegatecallTaintaddressAbstactDomain;
 import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
+import it.unipr.analysis.taint.XCallUncheckedSuccessAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
-import it.unipr.checker.JumpSolver;
-import it.unipr.checker.ReentrancyChecker;
-import it.unipr.checker.TimestampDependencyChecker;
-import it.unipr.checker.TxOriginChecker;
+import it.unipr.checker.*;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.utils.*;
 import it.unive.lisa.LiSA;
@@ -134,6 +133,19 @@ public class EVMLiSA {
 		TxOriginChecker.enableChecker();
 	}
 
+	/**
+	 * Enables the xcalluncheckedsuccesschecker.
+	 */
+	public static void enableXCallUncheckedSuccessChecker() {
+		XCallUncheckedSuccessChecker.enableChecker();
+	}
+
+	/**
+	 * Enables the delegatecalltaintaddresschecker.
+	 */
+	public static void enableDelegatecallTaintAddressChecker() {
+		DelegatecallTaintAddressChecker.enableChecker();
+	}
 	/**
 	 * Enables the test mode (i.e., it does not compute functions, events).
 	 */
@@ -318,14 +330,43 @@ public class EVMLiSA {
 			log.info("{} vulnerabilities found",
 					MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
 		}
+		if (XCallUncheckedSuccessChecker.isEnabled()) {
+			log.info("Running xcall unchecked success checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new XCallUncheckedSuccessChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new XCallUncheckedSuccessAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+			log.info("{} vulnerabilities found",
+					MyCache.getInstance().getXCallUncheckedSuccessWarnings(checker.getComputedCFG().hashCode()));
+		}
+		if (DelegatecallTaintAddressChecker.isEnabled()) {
+			log.info("Running delegatecall taint address checker...");
+			conf.semanticChecks.clear();
+			conf.semanticChecks.add(new DelegatecallTaintAddressChecker());
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new DelegatecallTaintaddressAbstactDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+			log.info("{} vulnerabilities found",
+					MyCache.getInstance().getDelegatecallTaintAddressWarnings(checker.getComputedCFG().hashCode()));
+		}
 
 		contract.setVulnerabilities(
 				VulnerabilitiesObject.newVulnerabilitiesObject()
 						.reentrancy(
 								MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
-						.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
-						.timestamp(MyCache.getInstance()
-								.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
+						.txOrigin(
+								MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
+						.timestamp(
+								MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
+						.xCallUncheckedSuccess(
+								MyCache.getInstance().getXCallUncheckedSuccessWarnings(checker.getComputedCFG().hashCode())
+						)
+						.delegatecallTaintAddress(
+								MyCache.getInstance().getDelegatecallTaintAddressWarnings(checker.getComputedCFG().hashCode())
+						)
 						.build());
 		contract.generateCFGWithBasicBlocks();
 		contract.toFile();
@@ -566,7 +607,7 @@ public class EVMLiSA {
 		if (cmd.hasOption("etherscan-api-key"))
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
 	}
-
+	//TODO: add CLI option for Xcall and DelegatecallAdddress
 	private Options getOptions() {
 		Options options = new Options();
 

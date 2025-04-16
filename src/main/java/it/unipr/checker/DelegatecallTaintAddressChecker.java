@@ -7,6 +7,7 @@ import it.unipr.cfg.Delegatecall;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.cfg.Return;
+import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,11 +24,11 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Semantic checker wich detect a possible exploit through the delegatecall opcode.
- * This checker detect if the stack is tainted before a delegatecall opcode.
+ * This checker detect if the second element of the stack (address) is tainted before a delegatecall opcode.
  */
-public class DelegatecallChecker implements
+public class DelegatecallTaintAddressChecker implements
         SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
-    private static final Logger log = LogManager.getLogger(DelegatecallChecker.class);
+    private static final Logger log = LogManager.getLogger(DelegatecallTaintAddressChecker.class);
 
     public boolean visit(CheckToolWithAnalysisResults<
                                  SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
@@ -50,7 +51,7 @@ public class DelegatecallChecker implements
                 // Retrieve the symbolic stack from the analysis result
                 TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
-                // If the stack is bottom the node is unreacheble so there is not nothing to do
+                // If the stack is bottom the node is unreachable so there is not nothing to do
                 if(taintedStack.isBottom())
                     continue;
                 else if(node instanceof Delegatecall){
@@ -58,10 +59,7 @@ public class DelegatecallChecker implements
                     if(taintedAddress.isTaint()) {
                         raiseWarningTaintedAddr(node, tool, cfg);
                     }
-                } else if(node instanceof Return){
-
                 }
-
             }
 
         }
@@ -76,7 +74,7 @@ public class DelegatecallChecker implements
 
             String warn = "DelegatecallChecker: The address of delegate call is tainted at line " + loc.getSourceCodeLine();
             tool.warn(warn);
-            //TODO: cache stuff
+            MyCache.getInstance().addDelegatecallTaintAddressWarning(cfg.hashCode(), warn);
         }
 
         private static boolean isEnabled = false;
