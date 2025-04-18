@@ -399,6 +399,20 @@ public class xEVMLiSA {
 							|| exitpoint instanceof Return))
 						continue;
 
+					/*
+					 * Only paths congruent with the function's return type need
+					 * to be checked, i.e., if a function has return type void,
+					 * then the function's exitpoint will be indicated by the
+					 * Stop statement; if it returns something else, the
+					 * exitpoint will be indicated by the Return statement
+					 */
+					if (function.getOutputParamCount() > 0
+							&& exitpoint instanceof Stop)
+						continue;
+					if (function.getOutputParamCount() == 0
+							&& exitpoint instanceof Return)
+						continue;
+
 					/* We take only the state updates inside the function */
 					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
 							Set.of(Sstore.class));
@@ -488,6 +502,20 @@ public class xEVMLiSA {
 					/* We need to check only the successful termination paths */
 					if (!(exitpoint instanceof Stop
 							|| exitpoint instanceof Return))
+						continue;
+
+					/*
+					 * Only paths congruent with the function's return type need
+					 * to be checked, i.e., if a function has return type void,
+					 * then the function's exitpoint will be indicated by the
+					 * Stop statement; if it returns something else, the
+					 * exitpoint will be indicated by the Return statement
+					 */
+					if (function.getOutputParamCount() > 0
+							&& exitpoint instanceof Stop)
+						continue;
+					if (function.getOutputParamCount() == 0
+							&& exitpoint instanceof Return)
 						continue;
 
 					/* We take only the state update inside the function */
@@ -585,6 +613,22 @@ public class xEVMLiSA {
 									 */
 									if (!(exitpoint instanceof Stop
 											|| exitpoint instanceof Return))
+										continue;
+
+									/*
+									 * Only paths congruent with the function's
+									 * return type need to be checked, i.e., if
+									 * a function has return type void, then the
+									 * function's exitpoint will be indicated by
+									 * the Stop statement; if it returns
+									 * something else, the exitpoint will be
+									 * indicated by the Return statement
+									 */
+									if (functionLinked.getOutputParamCount() > 0
+											&& exitpoint instanceof Stop)
+										continue;
+									if (functionLinked.getOutputParamCount() == 0
+											&& exitpoint instanceof Return)
 										continue;
 
 									/*
