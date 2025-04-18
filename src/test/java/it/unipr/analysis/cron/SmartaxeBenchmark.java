@@ -175,7 +175,7 @@ public class SmartaxeBenchmark {
 									contract.getName(),
 									map));
 					contractJson.put("vulnerabilities",
-							MyCache.getInstance().getOlli(
+							MyCache.getInstance().getVulnerabilityPerFunction(
 									contract.getCFG().hashCode()));
 					contracts.put(contractJson);
 				}

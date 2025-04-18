@@ -137,7 +137,7 @@ public class LocalDependencyChecker implements
 							+ " (pc: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getPc() + ", "
 							+ "line: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine()
 							+ ")";
-					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+					MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
 				}
 			}
 		}

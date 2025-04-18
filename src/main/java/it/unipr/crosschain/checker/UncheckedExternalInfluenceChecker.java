@@ -214,9 +214,9 @@ public class UncheckedExternalInfluenceChecker implements
 	}
 
 	private void raiseDefiniteWarning(Statement logx,
-									  CheckToolWithAnalysisResults<
-											  SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
-									  EVMCFG cfg) {
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
 		Set<Statement> externalDatas = cfg.getExternalData();
 
 		for (Statement data : externalDatas) {
@@ -249,15 +249,15 @@ public class UncheckedExternalInfluenceChecker implements
 						+ functionSignatureByStatement
 						+ " (pc: " + ((ProgramCounterLocation) data.getLocation()).getPc() + ", "
 						+ "line: " + ((ProgramCounterLocation) data.getLocation()).getSourceCodeLine() + ")";
-				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+				MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
 			}
 		}
 	}
 
 	private void raisePossibleWarning(Statement logx,
-									  CheckToolWithAnalysisResults<
-											  SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
-									  EVMCFG cfg) {
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg) {
 		Set<Statement> externalDatas = cfg.getExternalData();
 
 		for (Statement data : externalDatas) {

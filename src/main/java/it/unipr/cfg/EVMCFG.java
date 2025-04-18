@@ -427,11 +427,31 @@ public class EVMCFG extends CFG {
 		return result;
 	}
 
-	public Statement reachableFromReversePerOlli(Statement start, Set<Statement> entrypoints) {
-		return bfsOlli(start, entrypoints, new HashSet<>());
+	/**
+	 * Attempts to find a reachable entrypoint statement by traversing the CFG
+	 * in reverse (following ingoing edges) from the specified start node.
+	 *
+	 * @param start       the node from which to begin the reverse search
+	 * @param entrypoints the set of candidate entrypoint statements to detect
+	 * 
+	 * @return the first entrypoint encountered, or null if none are reachable
+	 */
+	public Statement reachableFromReverse(Statement start, Set<Statement> entrypoints) {
+		return bfsReverse(start, entrypoints, new HashSet<>());
 	}
 
-	private Statement bfsOlli(Statement start, Set<Statement> entrypoints, Set<Statement> visited) {
+	/**
+	 * Performs a breadth‑first search on the reversed CFG, starting from a
+	 * given node, to locate any of a set of entrypoint statements.
+	 *
+	 * @param start       the initial node of the search
+	 * @param entrypoints the set of target statements to find
+	 * @param visited     the set of already visited nodes (to prevent cycles)
+	 * 
+	 * @return the first matching entrypoint found, or null if no entrypoint is
+	 *             reachable
+	 */
+	private Statement bfsReverse(Statement start, Set<Statement> entrypoints, Set<Statement> visited) {
 		Queue<Statement> queue = new LinkedList<>();
 		queue.offer(start);
 		visited.add(start);
@@ -441,8 +461,7 @@ public class EVMCFG extends CFG {
 
 			for (Edge edge : list.getIngoingEdges(current)) {
 				Statement next = edge.getSource();
-				if (visited.add(next)) { // add returns true if next was not
-											// already in visited
+				if (visited.add(next)) {
 					queue.offer(next);
 				}
 				if (entrypoints.contains(next)) {
@@ -550,28 +569,6 @@ public class EVMCFG extends CFG {
 					Statement next = edge.getSource();
 					if (!visited.contains(next))
 						stack.push(next);
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private boolean bfsReverse(Statement start, Statement target, Set<Statement> visited) {
-		Queue<Statement> queue = new LinkedList<>();
-		queue.offer(start);
-		visited.add(start);
-
-		while (!queue.isEmpty()) {
-			Statement current = queue.poll();
-			if (current.equals(target))
-				return true;
-
-			for (Edge edge : list.getIngoingEdges(current)) {
-				Statement next = edge.getSource();
-				if (visited.add(next)) { // add returns true if next was not
-											// already in visited
-					queue.offer(next);
 				}
 			}
 		}
@@ -748,36 +745,61 @@ public class EVMCFG extends CFG {
 	 *             statement without traversing through edges originating from
 	 *             nodes of the specified types, false otherwise
 	 */
-	private boolean dfsWithoutTypes(Statement start, Statement target, Set<Statement> visited,
+	private boolean dfsWithoutTypes(Statement start,
+			Statement target,
+			Set<Statement> visited,
 			Set<Class<?>> avoidTypes) {
 		Stack<Statement> stack = new Stack<>();
+		boolean noVisitedLogs = true;
 		stack.push(start);
 
 		while (!stack.isEmpty()) {
 			Statement current = stack.pop();
 
 			if (current.equals(target))
-				return true;
+				return noVisitedLogs;
 
 			if (!visited.contains(current)) {
 				visited.add(current);
-
 				Collection<Edge> outgoingEdges = list.getOutgoingEdges(current);
 
 				for (Edge edge : outgoingEdges) {
-					if (avoidTypes.stream().anyMatch(type -> type.isInstance(edge.getSource())))
+					if (avoidTypes.stream().anyMatch(type -> type.isInstance(edge.getSource()))) {
+						noVisitedLogs = false;
 						continue;
+					}
+
 					Statement next = edge.getDestination();
 					if (!visited.contains(next))
 						stack.push(next);
 				}
 			}
 		}
-
-		return false;
+		return noVisitedLogs;
 	}
 
-	public Set<Statement> getStatementsInAPathWithTypes(Statement start, Statement target, Set<Class<?>> getTypes) {
+	/**
+	 * Retrieves all statements of the specified types that lie on any
+	 * control‑flow path between two given statements in the CFG.
+	 * <p>
+	 * This method performs a depth‑first traversal from the {@code start}
+	 * statement until reaching the {@code target}. Along every explored path,
+	 * it collects any intermediate statements whose runtime class matches one
+	 * of the provided types.
+	 *
+	 * @param start    the entry point of the search
+	 * @param target   the termination point of the search
+	 * @param getTypes a set of statement classes to filter and collect along
+	 *                     the paths
+	 * 
+	 * @return a set of all matching statements encountered before reaching
+	 *             {@code target}, or an empty set if none are found
+	 */
+	public Set<Statement> getStatementsInAPathWithTypes(
+			Statement start,
+			Statement target,
+			Set<Class<?>> getTypes) {
+
 		Set<Statement> visited = new HashSet<>();
 		Set<Statement> matchingStatements = new HashSet<>();
 		Stack<Statement> stack = new Stack<>();
@@ -948,6 +970,15 @@ public class EVMCFG extends CFG {
 		return null;
 	}
 
+	/**
+	 * Determines whether a given node has at least one outgoing edge that
+	 * represents a cross‑chain transition.
+	 *
+	 * @param node the CFG statement to inspect
+	 * 
+	 * @return true if any outgoing edge is an instance of CrossChainEdge, false
+	 *             otherwise
+	 */
 	public boolean hasAtLeastOneCrossChainEdge(Statement node) {
 		for (Edge edge : getOutgoingEdges(node))
 			if (edge instanceof CrossChainEdge)

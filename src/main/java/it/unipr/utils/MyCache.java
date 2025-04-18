@@ -56,7 +56,7 @@ public class MyCache {
 
 	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
 
-	private final LRUMap<Integer, Set<Object>> _vulnerabilityPerOlli;
+	private final LRUMap<Integer, Set<Object>> _vulnerabilityPerFunction;
 	private final LRUMap<Signature, Set<Signature>> _mapEventsFunctions;
 
 	/**
@@ -121,7 +121,7 @@ public class MyCache {
 
 		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
 
-		this._vulnerabilityPerOlli = new LRUMap<>(10000);
+		this._vulnerabilityPerFunction = new LRUMap<>(10000);
 		this._mapEventsFunctions = new LRUMap<>(10000);
 	}
 
@@ -141,21 +141,46 @@ public class MyCache {
 		}
 	}
 
-	public void addOlli(Integer key, Object warning) {
-		synchronized (_vulnerabilityPerOlli) {
-			_vulnerabilityPerOlli
+	/**
+	 * Records a vulnerability warning for a specific function identified by its
+	 * key.
+	 * <p>
+	 * This method ensures thread-safe access to the internal map, creating a
+	 * new synchronized Set if none exists for the given key, and then adds the
+	 * warning object to that set.
+	 *
+	 * @param key     the identifier of the function (e.g., CFG hashcode or
+	 *                    program counter)
+	 * @param warning the vulnerability description or warning object to record
+	 */
+	public void addVulnerabilityPerFunction(Integer key, Object warning) {
+		synchronized (_vulnerabilityPerFunction) {
+			_vulnerabilityPerFunction
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
 	}
 
-	public JSONArray getOlli(Integer key) {
-		synchronized (_vulnerabilityPerOlli) {
-			if (_vulnerabilityPerOlli.get(key) == null)
+	/**
+	 * Retrieves all recorded vulnerability warnings for a specific function.
+	 * <p>
+	 * This method performs a thread-safe lookup in the internal map. If no
+	 * warnings have been recorded for the given key, it returns an empty
+	 * JSONArray; otherwise, it returns a JSONArray containing all stored
+	 * warnings.
+	 *
+	 * @param key the identifier of the function whose warnings are requested
+	 * 
+	 * @return a JSONArray of warning objects for the given function key, or an
+	 *             empty JSONArray if none are present
+	 */
+	public JSONArray getVulnerabilityPerFunction(Integer key) {
+		synchronized (_vulnerabilityPerFunction) {
+			if (_vulnerabilityPerFunction.get(key) == null)
 				return new JSONArray();
 
 			JSONArray results = new JSONArray();
-			for (Object warning : _vulnerabilityPerOlli.get(key)) {
+			for (Object warning : _vulnerabilityPerFunction.get(key)) {
 				results.put(warning);
 			}
 			return results;
@@ -807,36 +832,68 @@ public class MyCache {
 		}
 	}
 
+	/**
+	 * Marks a LOG statement as vulnerable for the Local Dependency Checker.
+	 * <p>
+	 * Associates the given LOG statement with a taint marker to indicate it
+	 * should be analyzed for local dependency issues.
+	 *
+	 * @param key the LOG statement to mark as vulnerable
+	 */
 	public void addVulnerableLogStatementForLocalDependencyChecker(Statement key) {
 		synchronized (_vulnerableLogStatement) {
 			_vulnerableLogStatement.put(key, TaintElement.TAINT);
 		}
 	}
 
+	/**
+	 * Retrieves all LOG statements previously marked as vulnerable for the
+	 * Local Dependency Checker.
+	 *
+	 * @return a set of LOG statements to be checked for local dependency
+	 */
 	public Set<Statement> getSetOfVulnerableLogStatementForLocalDependencyChecker() {
 		synchronized (_vulnerableLogStatement) {
 			return _vulnerableLogStatement.keySet();
 		}
 	}
 
+	/**
+	 * Records that a CALLDATALOAD statement has been tainted by a vulnerable
+	 * LOG statement in the Local Dependency analysis.
+	 *
+	 * @param stmt the CALLDATALOAD statement to mark as tainted
+	 */
 	public void addTaintedCallDataLoad(Statement stmt) {
 		synchronized (_taintedCallDataLoad) {
 			_taintedCallDataLoad.add(stmt);
 		}
 	}
 
+	/**
+	 * Checks whether a given CALLDATALOAD statement is marked as tainted by the
+	 * Local Dependency Checker.
+	 *
+	 * @param stmt the CALLDATALOAD statement to query
+	 * 
+	 * @return true if the statement is tainted, false otherwise
+	 */
 	public boolean isTaintedCallDataLoad(Statement stmt) {
 		synchronized (_taintedCallDataLoad) {
 			return _taintedCallDataLoad.contains(stmt);
 		}
 	}
 
-	public int getTaintedCallDataLoadSize() {
-		synchronized (_taintedCallDataLoad) {
-			return _taintedCallDataLoad.size();
-		}
-	}
-
+	/**
+	 * Links a vulnerable LOG statement to its corresponding tainted
+	 * CALLDATALOAD statement(s).
+	 * <p>
+	 * Stores a mapping from the LOG statement to one or more tainted
+	 * CALLDATALOAD warnings for cross-reference during analysis.
+	 *
+	 * @param key     the LOG statement
+	 * @param warning the tainted CALLDATALOAD statement or warning object
+	 */
 	public void addLinkFromLogToCallDataLoad(Statement key, Object warning) {
 		synchronized (_linkFromLogToCallDataLoad) {
 			_linkFromLogToCallDataLoad
@@ -845,6 +902,15 @@ public class MyCache {
 		}
 	}
 
+	/**
+	 * Retrieves the set of tainted CALLDATALOAD warnings associated with a
+	 * given LOG statement.
+	 *
+	 * @param key the LOG statement whose links are requested
+	 * 
+	 * @return a set of warning objects linked to that LOG statement, or an
+	 *             empty set if none exist
+	 */
 	public Set<Object> getLinkFromLogToCallDataLoad(Statement key) {
 		synchronized (_linkFromLogToCallDataLoad) {
 			return (_linkFromLogToCallDataLoad.get(key) != null) ? _linkFromLogToCallDataLoad.get(key)
@@ -852,6 +918,17 @@ public class MyCache {
 		}
 	}
 
+	/**
+	 * Finds all LOG statements that are linked to a specific tainted
+	 * CALLDATALOAD warning.
+	 * <p>
+	 * This is the reverse lookup of
+	 * {@link #getLinkFromLogToCallDataLoad(Statement)}.
+	 *
+	 * @param value the tainted CALLDATALOAD warning object
+	 * 
+	 * @return a set of LOG statements that reference the given warning
+	 */
 	public Set<Statement> getKeysContainingValueInLinkFromLogToCallDataLoad(Object value) {
 		synchronized (_linkFromLogToCallDataLoad) {
 			Set<Statement> keys = new HashSet<>();

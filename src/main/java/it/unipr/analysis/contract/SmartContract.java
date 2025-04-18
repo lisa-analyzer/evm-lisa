@@ -682,6 +682,12 @@ public class SmartContract {
 		log.info("Generated CFG at {}", dotFile);
 	}
 
+	/**
+	 * Retrieves all entry-point statements for every function in this contract.
+	 * Caches the result on first invocation for efficiency.
+	 *
+	 * @return a set containing the entry-point statements of all functions
+	 */
 	public Set<Statement> getAllFunctionEntryPoints() {
 		if (_allFunctionsEntryPoints == null) {
 			Set<Statement> result = new HashSet<>();
@@ -692,6 +698,16 @@ public class SmartContract {
 		return _allFunctionsEntryPoints;
 	}
 
+	/**
+	 * Determines the full function signature that corresponds to a given
+	 * entry-point statement. If no matching function is found, returns
+	 * "no-function-found".
+	 *
+	 * @param entryPoint the entry-point statement to look up
+	 * 
+	 * @return the full signature of the function owning that entry-point, or
+	 *             "no-function-found" if none matches
+	 */
 	public String getFunctionSignatureFromEntryPoint(Statement entryPoint) {
 		for (Signature signature : _functionsSignature)
 			for (Statement entry : signature.getEntryPoints())
@@ -700,8 +716,18 @@ public class SmartContract {
 		return "no-function-found";
 	}
 
+	/**
+	 * Locates the function signature for an arbitrary statement by performing a
+	 * reverse reachability search to its nearest entry-point, then mapping that
+	 * entry-point back to its function signature.
+	 *
+	 * @param statement any statement within the contract
+	 * 
+	 * @return the full signature of the containing function, or an empty string
+	 *             if no function context is found
+	 */
 	public String getFunctionSignatureByStatement(Statement statement) {
-		Statement ep = _cfg.reachableFromReversePerOlli(statement, getAllFunctionEntryPoints());
+		Statement ep = _cfg.reachableFromReverse(statement, getAllFunctionEntryPoints());
 
 		if (getFunctionSignatureFromEntryPoint(ep) != null)
 			return getFunctionSignatureFromEntryPoint(ep);

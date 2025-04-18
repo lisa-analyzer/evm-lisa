@@ -244,7 +244,7 @@ public class UncheckedExternalCallChecker implements
 						+ functionSignatureByStatement
 						+ " (pc: " + ((ProgramCounterLocation) call.getLocation()).getPc() + ", "
 						+ "line: " + ((ProgramCounterLocation) call.getLocation()).getSourceCodeLine() + ")";
-				MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+				MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
 			}
 		}
 	}

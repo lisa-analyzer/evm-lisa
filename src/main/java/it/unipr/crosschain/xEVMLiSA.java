@@ -46,7 +46,7 @@ public class xEVMLiSA {
 	 */
 	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
-		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() / 4 * 3);
+		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() - 1);
 
 		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath);
 
@@ -231,13 +231,16 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Executes the Local Dependency analysis for all contracts in the given bridge.
+	 * Executes the Local Dependency analysis for all contracts in the given
+	 * bridge.
 	 * <p>
 	 * This method performs three phases in parallel across all contracts:
 	 * <ol>
-	 *   <li>Identify vulnerable LOG statements for the Local Dependency Checker.</li>
-	 *   <li>Mark any CALLDATALOAD sites reachable from those LOGs as tainted.</li>
-	 *   <li>Run the core Local Dependency Checker logic on each contract.</li>
+	 * <li>Identify vulnerable LOG statements for the Local Dependency
+	 * Checker.</li>
+	 * <li>Mark any CALLDATALOAD sites reachable from those LOGs as
+	 * tainted.</li>
+	 * <li>Run the core Local Dependency Checker logic on each contract.</li>
 	 * </ol>
 	 *
 	 * @param bridge the Bridge instance whose contracts will be analyzed
@@ -270,9 +273,9 @@ public class xEVMLiSA {
 	 * Runs the Unchecked External Influence Checker on a single contract.
 	 * <p>
 	 * This sets up the LiSA analysis environment, registers the
-	 * UncheckedExternalInfluenceChecker, and executes the analysis
-	 * to find event emit influenced by unvalidated external inputs.
-	 * Reports definite and possible findings to the configured cache.
+	 * UncheckedExternalInfluenceChecker, and executes the analysis to find
+	 * event emit influenced by unvalidated external inputs. Reports definite
+	 * and possible findings to the configured cache.
 	 *
 	 * @param bridge   the Bridge providing the cross-chain CFG context
 	 * @param contract the specific SmartContract to analyze
@@ -304,8 +307,8 @@ public class xEVMLiSA {
 	/**
 	 * Runs the Unchecked External Call Checker on a single contract.
 	 * <p>
-	 * This configures and invokes LiSA with the UncheckedExternalCallChecker
-	 * to detect any CALL, STATICCALL or DELEGATECALL instructions whose results
+	 * This configures and invokes LiSA with the UncheckedExternalCallChecker to
+	 * detect any CALL, STATICCALL or DELEGATECALL instructions whose results
 	 * directly influence event emit without proper validation.
 	 *
 	 * @param bridge   the Bridge providing the cross-chain CFG context
@@ -337,10 +340,13 @@ public class xEVMLiSA {
 	 * <p>
 	 * For each public function:
 	 * <ul>
-	 *   <li>Follow only successful return paths (STOP for void, RETURN otherwise).</li>
-	 *   <li>Collect any SSTORE and LOG instructions on that path.</li>
-	 *   <li>If LOGs occur without a preceding SSTORE, flag an event-order issue.</li>
-	 *   <li>Classify as definite if across a cross‑chain edge, else possible.</li>
+	 * <li>Follow only successful return paths (STOP for void, RETURN
+	 * otherwise).</li>
+	 * <li>Collect any SSTORE and LOG instructions on that path.</li>
+	 * <li>If LOGs occur without a preceding SSTORE, flag an event-order
+	 * issue.</li>
+	 * <li>Classify as definite if across a cross‑chain edge, else
+	 * possible.</li>
 	 * </ul>
 	 *
 	 * @param bridge   the Bridge providing the cross-chain CFG context
@@ -413,7 +419,7 @@ public class xEVMLiSA {
 										+ function.getFullSignature()
 										+ " (pc: " + emitEventLocation.getPc() + ", "
 										+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
-								MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+								MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
 
 							} else {
 								String warn = "[POSSIBLE] Event Order vulnerability at " + emitEventLocation.getPc();
@@ -444,10 +450,12 @@ public class xEVMLiSA {
 	 * <p>
 	 * For each public function:
 	 * <ul>
-	 *   <li>Follow only successful return paths (STOP for void, RETURN otherwise).</li>
-	 *   <li>Identify any SSTORE instructions on that path.</li>
-	 *   <li>Ensure that each such SSTORE is followed by at least one LOG before termination.</li>
-	 *   <li>Flag any missing notifications as vulnerabilities.</li>
+	 * <li>Follow only successful return paths (STOP for void, RETURN
+	 * otherwise).</li>
+	 * <li>Identify any SSTORE instructions on that path.</li>
+	 * <li>Ensure that each such SSTORE is followed by at least one LOG before
+	 * termination.</li>
+	 * <li>Flag any missing notifications as vulnerabilities.</li>
 	 * </ul>
 	 *
 	 * @param contract the SmartContract to analyze for missing event logs
@@ -513,7 +521,7 @@ public class xEVMLiSA {
 									+ contract.getFunctionSignatureFromEntryPoint(entrypoint)
 									+ " (pc: " + sstoreLocation.getPc() + ", "
 									+ "line: " + sstoreLocation.getSourceCodeLine() + ")";
-							MyCache.getInstance().addOlli(cfg.hashCode(), warn);
+							MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
 						}
 					}
 
@@ -676,7 +684,8 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Prints the functions vulnerable of each smart contract in the given bridge.
+	 * Prints the functions vulnerable of each smart contract in the given
+	 * bridge.
 	 *
 	 * @param bridge The bridge containing the smart contracts to analyze for
 	 *                   vulnerabilities.
@@ -692,7 +701,7 @@ public class xEVMLiSA {
 			contractJson.put("contract",
 					contract.getName());
 			contractJson.put("vulnerabilities",
-					MyCache.getInstance().getOlli(
+					MyCache.getInstance().getVulnerabilityPerFunction(
 							contract.getCFG().hashCode()));
 			contracts.put(contractJson);
 		}
