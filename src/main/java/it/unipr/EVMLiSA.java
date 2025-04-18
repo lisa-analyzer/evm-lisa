@@ -312,10 +312,12 @@ public class EVMLiSA {
 		if (TEST_MODE)
 			return;
 
+		log.info("[IN] Computing functions and events of contract {}.", contract.getName());
 		contract.computeFunctionsSignatureEntryPoints();
 		contract.computeFunctionsSignatureExitPoints();
 		contract.computeEventsSignatureEntryPoints();
 		contract.computeEventsExitPoints();
+		log.info("[OUT] Functions and events of contract {} computed.", contract.getName());
 	}
 
 	/**
