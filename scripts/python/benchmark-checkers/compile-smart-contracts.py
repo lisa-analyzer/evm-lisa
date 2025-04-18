@@ -378,8 +378,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.cross_chain:
+        compile_bridge('cross-chain/smartaxe/manually-labeled/LiFinance20220320')
         # compile_bridges('cross-chain/smartaxe/dataset')
-        compile_bridges('cross-chain/smartaxe/manually-labeled')
+        # compile_bridges('cross-chain/smartaxe/manually-labeled')
         # compile_bridge('cross-chain/time-synchronization')
         # compile_bridge('cross-chain/dummy-bridge')
 
