@@ -8,18 +8,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
 
-/**
- * This abstract domain represents the taint analysis for detecting unchecked
- * external influences in smart contracts. It extends TaintAbstractDomain to
- * track whether values derived from external sources (msg.sender, callvalue,
- * etc.) influence the contract's state without validation. Analysis Process:
- * (i) Identifies operations that introduce tainted values from external input.
- * (ii) Tracks symbolic execution to determine if tainted values propagate to
- * SSTORE. (iii) Helps in detecting vulnerabilities where external inputs modify
- * contract state without verification.
- *
- * @see TaintAbstractDomain
- */
 public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomain {
 
 	private static final UncheckedExternalInfluenceAbstractDomain TOP = new UncheckedExternalInfluenceAbstractDomain(
@@ -34,12 +22,6 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
-	/**
-	 * Builds a taint abstract stack starting from a given stack and a list of
-	 * elements that push taint.
-	 *
-	 * @param stack the stack of values
-	 */
 	protected UncheckedExternalInfluenceAbstractDomain(TaintElement[] stack, TaintElement memory) {
 		super(stack, memory);
 	}
@@ -69,5 +51,4 @@ public class UncheckedExternalInfluenceAbstractDomain extends TaintAbstractDomai
 	public UncheckedExternalInfluenceAbstractDomain bottom() {
 		return BOTTOM;
 	}
-
 }

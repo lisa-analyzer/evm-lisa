@@ -26,9 +26,6 @@ public class VulnerabilitiesObject {
 	private int uncheckedExternalCall;
 	private int possibleUncheckedExternalCall;
 
-	private int semanticIntegrityViolation;
-	private int possibleSemanticIntegrityViolation;
-
 	private int localDependency;
 	private int possibleLocalDependency;
 
@@ -54,9 +51,6 @@ public class VulnerabilitiesObject {
 		this.uncheckedExternalCall = 0;
 		this.possibleUncheckedExternalCall = 0;
 
-		this.semanticIntegrityViolation = 0;
-		this.possibleSemanticIntegrityViolation = 0;
-
 		this.localDependency = 0;
 		this.possibleLocalDependency = 0;
 
@@ -71,7 +65,6 @@ public class VulnerabilitiesObject {
 			int uncheckedExternalInfluence, int possibleUncheckedExternalInfluence,
 			int eventOrder, int possibleEventOrder,
 			int uncheckedExternalCall, int possibleUncheckedExternalCall,
-			int semanticIntegrityViolation, int possibleSemanticIntegrityViolation,
 			int localDependency, int possibleLocalDependency,
 			int missingEventNotification,
 			JSONObject json) {
@@ -93,9 +86,6 @@ public class VulnerabilitiesObject {
 		this.uncheckedExternalCall = uncheckedExternalCall;
 		this.possibleUncheckedExternalCall = possibleUncheckedExternalCall;
 
-		this.semanticIntegrityViolation = semanticIntegrityViolation;
-		this.possibleSemanticIntegrityViolation = possibleSemanticIntegrityViolation;
-
 		this.localDependency = localDependency;
 		this.possibleLocalDependency = possibleLocalDependency;
 
@@ -110,14 +100,12 @@ public class VulnerabilitiesObject {
 		this.json.put("tx_origin_possible", this.possibleTxOrigin);
 		this.json.put("unchecked_external_influence_definite", this.uncheckedExternalInfluence);
 		this.json.put("unchecked_external_influence_possible", this.possibleUncheckedExternalInfluence);
-		this.json.put("semantic_integrity_violation_definite", this.semanticIntegrityViolation);
-		this.json.put("semantic_integrity_violation_possible", this.possibleSemanticIntegrityViolation);
 		this.json.put("event_order_definite", this.eventOrder);
 		this.json.put("event_order_possible", this.possibleEventOrder);
 		this.json.put("unchecked_external_call_definite", this.uncheckedExternalCall);
 		this.json.put("unchecked_external_call_possible", this.possibleUncheckedExternalCall);
-		this.json.put("time_synchronization_definite", this.localDependency);
-		this.json.put("time_synchronization_possible", this.possibleLocalDependency);
+		this.json.put("local_dependency_definite", this.localDependency);
+		this.json.put("local_dependency_possible", this.possibleLocalDependency);
 		this.json.put("missing_event_notification", this.missingEventNotification);
 	}
 
@@ -264,31 +252,6 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
-	 * Sets the semantic integrity violation vulnerability score.
-	 *
-	 * @param semanticIntegrityViolation the semantic integrity violation score
-	 *
-	 * @return the updated {@code VulnerabilitiesObject} instance
-	 */
-	public VulnerabilitiesObject semanticIntegrityViolation(int semanticIntegrityViolation) {
-		this.semanticIntegrityViolation = semanticIntegrityViolation;
-		return this;
-	}
-
-	/**
-	 * Sets the possible semantic integrity violation vulnerability score.
-	 *
-	 * @param possibleSemanticIntegrityViolation the semantic integrity
-	 *                                               violation score
-	 *
-	 * @return the updated {@code VulnerabilitiesObject} instance
-	 */
-	public VulnerabilitiesObject possibleSemanticIntegrityViolation(int possibleSemanticIntegrityViolation) {
-		this.possibleSemanticIntegrityViolation = possibleSemanticIntegrityViolation;
-		return this;
-	}
-
-	/**
 	 * Sets the local dependency vulnerability score.
 	 *
 	 * @param localDependency the local dependency score
@@ -357,10 +320,6 @@ public class VulnerabilitiesObject {
 						.getPossibleUncheckedExternalInfluenceWarnings(cfg.hashCode()))
 				.uncheckedExternalCall(MyCache.getInstance()
 						.getUncheckedExternalCallWarnings(cfg.hashCode()))
-				.semanticIntegrityViolation(MyCache.getInstance()
-						.getSemanticIntegrityViolationWarnings(cfg.hashCode()))
-				.possibleSemanticIntegrityViolation(MyCache.getInstance()
-						.getPossibleSemanticIntegrityViolationWarnings(cfg.hashCode()))
 				.possibleUncheckedExternalCall(MyCache.getInstance()
 						.getPossibleUncheckedExternalCallWarnings(cfg.hashCode()))
 				.missingEventNotification(MyCache.getInstance()
@@ -384,7 +343,6 @@ public class VulnerabilitiesObject {
 				uncheckedExternalInfluence, possibleUncheckedExternalInfluence,
 				eventOrder, possibleEventOrder,
 				uncheckedExternalCall, possibleUncheckedExternalCall,
-				semanticIntegrityViolation, possibleSemanticIntegrityViolation,
 				localDependency, possibleLocalDependency,
 				missingEventNotification,
 				json);

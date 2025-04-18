@@ -41,9 +41,6 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalInfluenceWarnings;
 
-	private final LRUMap<Integer, Set<Object>> _semanticIntegrityViolationWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleSemanticIntegrityViolationWarnings;
-
 	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
 
@@ -108,9 +105,6 @@ public class MyCache {
 
 		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleUncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._semanticIntegrityViolationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleSemanticIntegrityViolationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
 		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
@@ -513,77 +507,6 @@ public class MyCache {
 		synchronized (_possibleUncheckedExternalInfluenceWarnings) {
 			return (_possibleUncheckedExternalInfluenceWarnings.get(key) != null)
 					? _possibleUncheckedExternalInfluenceWarnings.get(key).size()
-					: 0;
-		}
-	}
-
-	/**
-	 * Adds a semantic integrity violation warning for the specified key. If no
-	 * warnings are associated, a new set is created and the warning is added.
-	 * This method is thread-safe.
-	 *
-	 * @param key     the integer key identifying the entity for which the
-	 *                    warning applies
-	 * @param warning the warning object to be added
-	 */
-	public void addSemanticIntegrityViolationWarning(int key, Object warning) {
-		synchronized (_semanticIntegrityViolationWarnings) {
-			_semanticIntegrityViolationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
-	}
-
-	/**
-	 * Retrieves the number of semantic integrity violation warnings associated
-	 * with the specified key. If none are associated, returns 0. This method is
-	 * thread-safe.
-	 * 
-	 * @param key the integer key identifying the entity whose warnings to
-	 *                retrieve
-	 * 
-	 * @return the number of warnings for the specified key
-	 */
-	public int getSemanticIntegrityViolationWarnings(Integer key) {
-		synchronized (_semanticIntegrityViolationWarnings) {
-			return (_semanticIntegrityViolationWarnings).get(key) != null
-					? _semanticIntegrityViolationWarnings.get(key).size()
-					: 0;
-		}
-	}
-
-	/**
-	 * Adds a possible semantic integrity violation warning for the specified
-	 * key. If no warnings are associated, a new set is created and the warning
-	 * is added. This method is thread-safe.
-	 * 
-	 * @param key     the
-	 * @param warning the warning object to be added
-	 */
-
-	public void addPossibleSemanticIntegrityViolationWarning(Integer key, Object warning) {
-		synchronized (_possibleSemanticIntegrityViolationWarnings) {
-			_possibleSemanticIntegrityViolationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
-	}
-
-	/**
-	 * Retrieves the number of possible semantic integrity violation warnings
-	 * associated with the specified key. If none are associated, returns 0.
-	 * This method is thread-safe.
-	 * 
-	 * @param key the integer key identifying the entity whose warnings to
-	 *                retrieve
-	 * 
-	 * @return the number of possible warnings for the specified key
-	 */
-
-	public int getPossibleSemanticIntegrityViolationWarnings(Integer key) {
-		synchronized (_possibleSemanticIntegrityViolationWarnings) {
-			return (_possibleSemanticIntegrityViolationWarnings).get(key) != null
-					? _possibleSemanticIntegrityViolationWarnings.get(key).size()
 					: 0;
 		}
 	}

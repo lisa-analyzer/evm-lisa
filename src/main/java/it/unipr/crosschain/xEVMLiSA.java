@@ -214,7 +214,7 @@ public class xEVMLiSA {
 		for (SmartContract contract : bridge) {
 			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalCallChecker(bridge, contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(bridge, contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
 		}
 		futures.add(EVMLiSAExecutor.submit(() -> runLocalDependencyCheckers(bridge)));
@@ -230,6 +230,18 @@ public class xEVMLiSA {
 		log.info("[OUT] Cross-chain checkers results saved.");
 	}
 
+	/**
+	 * Executes the Local Dependency analysis for all contracts in the given bridge.
+	 * <p>
+	 * This method performs three phases in parallel across all contracts:
+	 * <ol>
+	 *   <li>Identify vulnerable LOG statements for the Local Dependency Checker.</li>
+	 *   <li>Mark any CALLDATALOAD sites reachable from those LOGs as tainted.</li>
+	 *   <li>Run the core Local Dependency Checker logic on each contract.</li>
+	 * </ol>
+	 *
+	 * @param bridge the Bridge instance whose contracts will be analyzed
+	 */
 	public static void runLocalDependencyCheckers(Bridge bridge) {
 		log.info("[IN] Running Local Dependency checker.");
 
@@ -255,11 +267,17 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the unchecked state update checker on the given smart contract.
+	 * Runs the Unchecked External Influence Checker on a single contract.
+	 * <p>
+	 * This sets up the LiSA analysis environment, registers the
+	 * UncheckedExternalInfluenceChecker, and executes the analysis
+	 * to find event emit influenced by unvalidated external inputs.
+	 * Reports definite and possible findings to the configured cache.
 	 *
-	 * @param contract The smart contract to analyze.
+	 * @param bridge   the Bridge providing the cross-chain CFG context
+	 * @param contract the specific SmartContract to analyze
 	 */
-	public static void runUncheckedExternalInfluenceChecker(SmartContract contract) {
+	public static void runUncheckedExternalInfluenceChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running unchecked external influence checker on {}.", contract.getName());
 
 		// Setup configuration
@@ -269,52 +287,29 @@ public class xEVMLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		// Unchecked external influence checker
-		UncheckedExternalInfluenceChecker checker = new UncheckedExternalInfluenceChecker(contract);
+		UncheckedExternalInfluenceChecker checker = new UncheckedExternalInfluenceChecker(contract, bridge.getXCFG());
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new UncheckedExternalInfluenceAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 
-		log.info("[OUT] Unchecked external influence checker ended on {}, with {} vulnerabilities found.",
-				contract.getName(),
-				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
-	}
-
-	/**
-	 * Runs the Semantic integrity violation checker on the given smart
-	 * contract.
-	 *
-	 * @param contract The smart contract to analyze.
-	 */
-	public static void runSemanticIntegrityViolationChecker(Bridge bridge, SmartContract contract) {
-		log.info("[IN] Running semantic integrity violation checker on {}.", contract.getName());
-
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Checker build
-		SemanticIntegrityViolationChecker checker = new SemanticIntegrityViolationChecker(contract, bridge.getXCFG());
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new SemanticIntegrityViolationAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
-
 		log.info(
-				"[OUT] Semantic integrity violation checker ended on {}, with {} definite and {} possible vulnerabilities found.",
+				"[OUT] Unchecked external influence checker ended on {}, with {} definite and {} possible vulnerabilities found.",
 				contract.getName(),
-				MyCache.getInstance().getSemanticIntegrityViolationWarnings(contract.getCFG().hashCode()),
-				MyCache.getInstance().getPossibleSemanticIntegrityViolationWarnings(contract.getCFG().hashCode()));
+				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
-	 * Runs the unchecked external call checker on the given smart contract.
+	 * Runs the Unchecked External Call Checker on a single contract.
+	 * <p>
+	 * This configures and invokes LiSA with the UncheckedExternalCallChecker
+	 * to detect any CALL, STATICCALL or DELEGATECALL instructions whose results
+	 * directly influence event emit without proper validation.
 	 *
-	 * @param contract The smart contract to analyze.
+	 * @param bridge   the Bridge providing the cross-chain CFG context
+	 * @param contract the specific SmartContract to analyze
 	 */
 	public static void runUncheckedExternalCallChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running unchecked external call  checker on {}.", contract.getName());
@@ -338,13 +333,18 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the event order checker on the given smart contract. This method
-	 * verifies whether events are emitted before state modifications (SSTORE
-	 * instructions). It identifies vulnerabilities where an event is emitted
-	 * without prior state changes, potentially leading to inconsistencies.
+	 * Executes the Event Order Checker on a single contract.
+	 * <p>
+	 * For each public function:
+	 * <ul>
+	 *   <li>Follow only successful return paths (STOP for void, RETURN otherwise).</li>
+	 *   <li>Collect any SSTORE and LOG instructions on that path.</li>
+	 *   <li>If LOGs occur without a preceding SSTORE, flag an event-order issue.</li>
+	 *   <li>Classify as definite if across a cross‑chain edge, else possible.</li>
+	 * </ul>
 	 *
-	 * @param bridge   The bridge that contains the smart contract and the xCFG.
-	 * @param contract The smart contract to analyze.
+	 * @param bridge   the Bridge providing the cross-chain CFG context
+	 * @param contract the specific SmartContract to analyze
 	 */
 	public static void runEventOrderChecker(Bridge bridge, SmartContract contract) {
 		log.info("[IN] Running event order checker on {}.", contract.getName());
@@ -426,9 +426,6 @@ public class xEVMLiSA {
 										entrypointLocation.getSourceCodeLine());
 
 								MyCache.getInstance().addPossibleEventOrderWarning(cfg.hashCode(), warn);
-
-//						warn = "[POSSIBLE] Event Order vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(emitEvent);
-//						MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 							}
 						}
 					}
@@ -443,13 +440,17 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the missing event notification checker on the given smart contract.
-	 * This method analyzes the contract's CFG to detect if in a function of the
-	 * given contract there is (at least) a state update and there is no event
-	 * notification (identified by the LOG instruction). If this condition is
-	 * true, it indicates that there is a missing event notification.
+	 * Executes the Missing Event Notification Checker on a single contract.
+	 * <p>
+	 * For each public function:
+	 * <ul>
+	 *   <li>Follow only successful return paths (STOP for void, RETURN otherwise).</li>
+	 *   <li>Identify any SSTORE instructions on that path.</li>
+	 *   <li>Ensure that each such SSTORE is followed by at least one LOG before termination.</li>
+	 *   <li>Flag any missing notifications as vulnerabilities.</li>
+	 * </ul>
 	 *
-	 * @param contract the smart contract to analyze.
+	 * @param contract the SmartContract to analyze for missing event logs
 	 */
 	public static void runMissingEventNotificationChecker(SmartContract contract) {
 		log.info("[IN] Running missing event notification checker on {}.", contract.getName());

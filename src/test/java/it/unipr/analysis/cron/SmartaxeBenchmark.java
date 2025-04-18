@@ -106,7 +106,7 @@ public class SmartaxeBenchmark {
 			for (SmartContract contract : bridge) {
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
 				futures.add(
-						EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
+						EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(bridge, contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runMissingEventNotificationChecker(contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runLocalDependencyChecker(contract)));
