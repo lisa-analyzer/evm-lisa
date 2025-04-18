@@ -52,25 +52,25 @@ public class VulnerableLOGsComputer implements
 					continue;
 				else {
 					if (node instanceof Log1)
-						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3)))
 							addVulnerableLOG(node);
 					if (node instanceof Log2)
-						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3),
 								taintedStack.getElementAtPosition(4)))
 							addVulnerableLOG(node);
 					if (node instanceof Log3)
-						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3),
 								taintedStack.getElementAtPosition(4),
 								taintedStack.getElementAtPosition(5)))
 							addVulnerableLOG(node);
 					if (node instanceof Log4)
-						if (TaintElement.isTaintedOrTop(taintedStack.getElementAtPosition(1),
+						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2),
 								taintedStack.getElementAtPosition(3),
 								taintedStack.getElementAtPosition(4),
