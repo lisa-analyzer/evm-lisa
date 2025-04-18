@@ -50,7 +50,7 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _missingEventNotificationWarnings;
 
 	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleTimeSynchronizationWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleLocalDependencyWarnings;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
 
 	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
@@ -118,7 +118,7 @@ public class MyCache {
 		this._missingEventNotificationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
 		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleTimeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleLocalDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._vulnerableLogStatement = new LRUMap<>(5000);
 
 		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
@@ -828,7 +828,7 @@ public class MyCache {
 	 * @param warning the warning object to be added to the corresponding set of
 	 *                    warnings for the given key
 	 */
-	public void addTimeSynchronizationWarning(Integer key, Object warning) {
+	public void addLocalDependencyWarning(Integer key, Object warning) {
 		synchronized (_timeSynchronizationWarnings) {
 			_timeSynchronizationWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
@@ -844,7 +844,7 @@ public class MyCache {
 	 *             provided key; returns 0 if the key is not present or no
 	 *             warnings exist
 	 */
-	public int getTimeSynchronizationWarnings(Integer key) {
+	public int getLocalDependencyWarnings(Integer key) {
 		synchronized (_timeSynchronizationWarnings) {
 			return (_timeSynchronizationWarnings.get(key) != null)
 					? _timeSynchronizationWarnings.get(key).size()
@@ -860,9 +860,9 @@ public class MyCache {
 	 * @param warning the warning object to be added to the corresponding set of
 	 *                    warnings for the given key
 	 */
-	public void addPossibleTimeSynchronizationWarning(Integer key, Object warning) {
-		synchronized (_possibleTimeSynchronizationWarnings) {
-			_possibleTimeSynchronizationWarnings
+	public void addPossibleLocalDependencyWarning(Integer key, Object warning) {
+		synchronized (_possibleLocalDependencyWarnings) {
+			_possibleLocalDependencyWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
@@ -876,21 +876,21 @@ public class MyCache {
 	 *             provided key; returns 0 if the key is not present or no
 	 *             warnings exist
 	 */
-	public int getPossibleTimeSynchronizationWarnings(Integer key) {
-		synchronized (_possibleTimeSynchronizationWarnings) {
-			return (_possibleTimeSynchronizationWarnings.get(key) != null)
-					? _possibleTimeSynchronizationWarnings.get(key).size()
+	public int getPossibleLocalDependencyWarnings(Integer key) {
+		synchronized (_possibleLocalDependencyWarnings) {
+			return (_possibleLocalDependencyWarnings.get(key) != null)
+					? _possibleLocalDependencyWarnings.get(key).size()
 					: 0;
 		}
 	}
 
-	public void addVulnerableLogStatementForTimeSynchronizationChecker(Statement key) {
+	public void addVulnerableLogStatementForLocalDependencyChecker(Statement key) {
 		synchronized (_vulnerableLogStatement) {
 			_vulnerableLogStatement.put(key, TaintElement.TAINT);
 		}
 	}
 
-	public Set<Statement> getSetOfVulnerableLogStatementForTimeSynchronizationChecker() {
+	public Set<Statement> getSetOfVulnerableLogStatementForLocalDependencyChecker() {
 		synchronized (_vulnerableLogStatement) {
 			return _vulnerableLogStatement.keySet();
 		}

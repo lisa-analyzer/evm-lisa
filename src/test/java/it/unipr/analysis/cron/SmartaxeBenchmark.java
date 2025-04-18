@@ -90,7 +90,7 @@ public class SmartaxeBenchmark {
 			for (SmartContract contract : bridge)
 				futures.add(
 						EVMLiSAExecutor
-								.submit(() -> xEVMLiSA.computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
+								.submit(() -> xEVMLiSA.computeVulnerablesLOGsForLocalDependencyChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
@@ -98,9 +98,8 @@ public class SmartaxeBenchmark {
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
 				futures.add(EVMLiSAExecutor
-						.submit(() -> xEVMLiSA.computeTaintedCallDataForTimeSynchronizationChecker(contract)));
+						.submit(() -> xEVMLiSA.computeTaintedCallDataForLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
-		log.info("Computed tainted call data.");
 
 		/* Submit tasks: run cross chain checkers using xCFG */
 		for (Bridge bridge : bridges)
@@ -110,7 +109,7 @@ public class SmartaxeBenchmark {
 						EVMLiSAExecutor.submit(() -> xEVMLiSA.runSemanticIntegrityViolationChecker(bridge, contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
 				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runMissingEventNotificationChecker(contract)));
-				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runTimeSynchronizationChecker(contract)));
+				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runLocalDependencyChecker(contract)));
 			}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 18, TimeUnit.HOURS); // barrier
 

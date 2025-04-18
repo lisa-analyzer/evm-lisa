@@ -7,17 +7,17 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
 
-public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
+public class LocalDependencyAbstractDomain extends TaintAbstractDomain {
 
-	private static final TimeSynchronizationAbstractDomain TOP = new TimeSynchronizationAbstractDomain(
+	private static final LocalDependencyAbstractDomain TOP = new LocalDependencyAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TimeSynchronizationAbstractDomain BOTTOM = new TimeSynchronizationAbstractDomain(
+	private static final LocalDependencyAbstractDomain BOTTOM = new LocalDependencyAbstractDomain(
 			null, TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public TimeSynchronizationAbstractDomain() {
+	public LocalDependencyAbstractDomain() {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
@@ -26,7 +26,7 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TimeSynchronizationAbstractDomain(TaintElement[] stack, TaintElement memory) {
+	protected LocalDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
 		super(stack, memory);
 	}
 
@@ -42,16 +42,16 @@ public class TimeSynchronizationAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return new TimeSynchronizationAbstractDomain(stack, memory);
+		return new LocalDependencyAbstractDomain(stack, memory);
 	}
 
 	@Override
-	public TimeSynchronizationAbstractDomain top() {
+	public LocalDependencyAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public TimeSynchronizationAbstractDomain bottom() {
+	public LocalDependencyAbstractDomain bottom() {
 		return BOTTOM;
 	}
 }

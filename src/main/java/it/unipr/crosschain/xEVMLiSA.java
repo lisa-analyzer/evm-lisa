@@ -52,8 +52,7 @@ public class xEVMLiSA {
 
 		analyzeBridge(bridge);
 
-		runInterCrossChainCheckers(bridge);
-		runIntraCrossChainCheckers(bridge);
+		runCrossChainCheckers(bridge);
 
 		printVulnerabilities(bridge);
 		EVMLiSAExecutor.shutdown();
@@ -218,73 +217,59 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Executes a series of intra cross-chain checkers for the given bridge,
-	 * which analyze associated smart contracts for various vulnerabilities. The
+	 * Executes a series of cross-chain checkers for the given bridge, which
+	 * analyze associated smart contracts for various vulnerabilities. The
 	 * results of the checkers are saved and stored in the bridge and its smart
 	 * contracts.
 	 *
 	 * @param bridge The bridge containing the set of smart contracts to be
 	 *                   analyzed.
 	 */
-	public static void runIntraCrossChainCheckers(Bridge bridge) {
-		log.info("[IN] Running intra cross-chain checkers.");
+	public static void runCrossChainCheckers(Bridge bridge) {
+		log.info("[IN] Running cross-chain checkers.");
 
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
-//			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
-//			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runRandomnessDependencyChecker(contract)));
-//			futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.runTxOriginChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalCallChecker(bridge, contract)));
-//			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runSemanticIntegrityViolationChecker(bridge, contract)));
 			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
 		}
+		futures.add(EVMLiSAExecutor.submit(() -> runLocalDependencyCheckers(bridge)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
-		log.info("Saving intra cross-chain checkers results.");
+		log.info("Saving cross-chain checkers results.");
 		for (SmartContract contract : bridge) {
 			contract.setVulnerabilities(
 					VulnerabilitiesObject.buildFromCFG(
 							contract.getCFG()));
 		}
 
-		log.info("[OUT] Intra cross-chain checkers results saved.");
+		log.info("[OUT] Cross-chain checkers results saved.");
 	}
 
-	/**
-	 * Executes the inter cross-chain checkers to analyze vulnerabilities
-	 * related to time synchronization across the given bridge of smart
-	 * contracts (i.e., time synchronization dependency).
-	 *
-	 * @param bridge The bridge object which contains the collection of smart
-	 *                   contracts to be analyzed. It serves as the main context
-	 *                   for the inter cross-chain analysis.
-	 */
-	public static void runInterCrossChainCheckers(Bridge bridge) {
-		log.info("[IN] Running inter cross-chain checkers.");
+	public static void runLocalDependencyCheckers(Bridge bridge) {
+		log.info("[IN] Running Local Dependency checker.");
 
 		List<Future<?>> futures = new ArrayList<>();
 
-		log.info("[TimeSynchronizationChecker] Computing vulnerable LOGs.");
+		log.info("[LocalDependencyChecker] Computing vulnerable LOGs.");
 		for (SmartContract contract : bridge)
-			futures.add(EVMLiSAExecutor.submit(() -> computeVulnerablesLOGsForTimeSynchronizationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> computeVulnerablesLOGsForLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
-		log.info("[TimeSynchronizationChecker] Vulnerable LOGs computed.");
+		log.info("[LocalDependencyChecker] Vulnerable LOGs computed.");
 
-		log.info("[TimeSynchronizationChecker] Computing tainted CallData.");
+		log.info("[LocalDependencyChecker] Computing tainted Call Data.");
 		for (SmartContract contract : bridge)
-			futures.add(EVMLiSAExecutor.submit(() -> computeTaintedCallDataForTimeSynchronizationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> computeTaintedCallDataForLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
-		log.info("[TimeSynchronizationChecker] Tainted CallData computed.");
+		log.info("[LocalDependencyChecker] Tainted Call Data computed.");
 
 		for (SmartContract contract : bridge)
-			futures.add(EVMLiSAExecutor.submit(() -> runTimeSynchronizationChecker(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> runLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
-		log.info("Saving inter cross-chain checkers results.");
-
-		log.info("[OUT] Inter cross-chain checkers results saved.");
+		log.info("[OUT] Local Dependency checker ended.");
 	}
 
 	/**
@@ -345,12 +330,12 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the unchecked state update checker on the given smart contract.
+	 * Runs the unchecked external call checker on the given smart contract.
 	 *
 	 * @param contract The smart contract to analyze.
 	 */
 	public static void runUncheckedExternalCallChecker(Bridge bridge, SmartContract contract) {
-		log.info("[IN] Running unchecked state update checker on {}.", contract.getName());
+		log.info("[IN] Running unchecked external call  checker on {}.", contract.getName());
 
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
@@ -358,14 +343,14 @@ public class xEVMLiSA {
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		// Unchecked state update checker
+		// Unchecked external call checker
 		UncheckedExternalCallChecker checker = new UncheckedExternalCallChecker(contract, bridge.getXCFG());
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedExternalCallAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 
-		log.info("[OUT] Unchecked state update checker ended on {}, with {} vulnerabilities found.",
+		log.info("[OUT] Unchecked external call  checker ended on {}, with {} vulnerabilities found.",
 				contract.getName(),
 				MyCache.getInstance().getUncheckedExternalCallWarnings(contract.getCFG().hashCode()));
 	}
@@ -565,7 +550,7 @@ public class xEVMLiSA {
 	 * @param contract The smart contract to be analyzed for vulnerabilities
 	 *                     related to time synchronization.
 	 */
-	public static void computeVulnerablesLOGsForTimeSynchronizationChecker(SmartContract contract) {
+	public static void computeVulnerablesLOGsForLocalDependencyChecker(SmartContract contract) {
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
@@ -580,20 +565,20 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Computes and traces tainted call data in the context of the Time
-	 * Synchronization Checker. This method identifies and links call data loads
-	 * that are reachable from vulnerable log statements via cross-chain edges,
+	 * Computes and traces tainted call data in the context of the Local
+	 * Dependency Checker. This method identifies and links call data loads that
+	 * are reachable from vulnerable log statements via cross-chain edges,
 	 * marking them as tainted.
 	 *
 	 * @param contract The smart contract to be analyzed.
 	 */
-	public static void computeTaintedCallDataForTimeSynchronizationChecker(SmartContract contract) {
+	public static void computeTaintedCallDataForLocalDependencyChecker(SmartContract contract) {
 		if (contract == null)
 			return;
 
 		try {
 			Set<Statement> logsVulnerable = MyCache.getInstance()
-					.getSetOfVulnerableLogStatementForTimeSynchronizationChecker();
+					.getSetOfVulnerableLogStatementForLocalDependencyChecker();
 
 			/* For each event of this event */
 			for (Signature event : contract.getEventsSignature()) {
@@ -647,7 +632,7 @@ public class xEVMLiSA {
 										MyCache.getInstance().addTaintedCallDataLoad(data);
 
 										log.debug(
-												"(computeTaintedCallData) Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}). Event {} (contract {}) to function {}.",
+												"[computeTaintedCallData] Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}). Event {} (contract {}) to function {}.",
 												emit,
 												((ProgramCounterLocation) emit.getLocation()).getSourceCodeLine(),
 												emit.getCFG().hashCode(),
@@ -672,23 +657,23 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the time synchronization checker on the given smart contract.
+	 * Runs the Local Dependency checker on the given smart contract.
 	 *
-	 * @param contract The smart contract to analyze for time synchronization
+	 * @param contract The smart contract to analyze for Local Dependency
 	 *                     issues.
 	 */
-	public static void runTimeSynchronizationChecker(SmartContract contract) {
+	public static void runLocalDependencyChecker(SmartContract contract) {
 		// Setup configuration
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		// Time synchronization checker
-		TimeSynchronizationChecker checker = new TimeSynchronizationChecker(contract);
+		// Local dependency checker
+		LocalDependencyChecker checker = new LocalDependencyChecker(contract);
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new TimeSynchronizationAbstractDomain(),
+				new LocalDependencyAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 	}

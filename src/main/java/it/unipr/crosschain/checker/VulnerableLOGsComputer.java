@@ -92,7 +92,7 @@ public class VulnerableLOGsComputer implements
 	 *                 be added for time synchronization checking
 	 */
 	private void addVulnerableLOG(Statement node) {
-		MyCache.getInstance().addVulnerableLogStatementForTimeSynchronizationChecker(node);
+		MyCache.getInstance().addVulnerableLogStatementForLocalDependencyChecker(node);
 
 		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
 		log.warn("(Time Synchronization vulnerability) LOG possibly vulnerable at pc {} (line {}) (cfg={}).",

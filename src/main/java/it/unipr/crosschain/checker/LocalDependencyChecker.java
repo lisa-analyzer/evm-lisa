@@ -19,13 +19,13 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TimeSynchronizationChecker implements
+public class LocalDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger log = LogManager.getLogger(TimeSynchronizationChecker.class);
+	private static final Logger log = LogManager.getLogger(LocalDependencyChecker.class);
 	private final SmartContract contract;
 
-	public TimeSynchronizationChecker(SmartContract contract) {
+	public LocalDependencyChecker(SmartContract contract) {
 		this.contract = contract;
 	}
 
@@ -47,7 +47,7 @@ public class TimeSynchronizationChecker implements
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
 				} catch (SemanticException e1) {
-					log.error("(TimeSynchronizationChecker): {}", e1.getMessage());
+					log.error("(LocalDependencyChecker): {}", e1.getMessage());
 				}
 
 				// Retrieve the symbolic stack from the analysis result
@@ -74,11 +74,11 @@ public class TimeSynchronizationChecker implements
 	}
 
 	/**
-	 * Identifies and reports a Time Synchronization vulnerability within a
-	 * control flow graph (CFG). This method analyzes the reachability of
-	 * certain statements and logs warnings if potential vulnerabilities are
-	 * detected. The warnings are logged, stored in a cache, and reported to the
-	 * provided analysis tool.
+	 * Identifies and reports a Local Dependency vulnerability within a control
+	 * flow graph (CFG). This method analyzes the reachability of certain
+	 * statements and logs warnings if potential vulnerabilities are detected.
+	 * The warnings are logged, stored in a cache, and reported to the provided
+	 * analysis tool.
 	 *
 	 * @param jumpi The statement being analyzed for reachability and
 	 *                  vulnerability. It represents a conditional jump in the
@@ -118,7 +118,7 @@ public class TimeSynchronizationChecker implements
 					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
 
 					log.warn(
-							"[DEFINITE] Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
+							"[DEFINITE] Local Dependency vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
 							nodeLocation.getPc(),
 							nodeLocation.getSourceCodeLine(),
 							cfg.hashCode(),
@@ -126,13 +126,13 @@ public class TimeSynchronizationChecker implements
 							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
 							logVulnerable.getCFG().hashCode());
 
-					String warn = "[DEFINITE] Time Synchronization vulnerability at pc "
+					String warn = "[DEFINITE] Local Dependency vulnerability at pc "
 							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
-					MyCache.getInstance().addTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
+					MyCache.getInstance().addLocalDependencyWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
 
-					warn = "[DEFINITE] Time Synchronization vulnerability in " + contract.getName() + " at "
+					warn = "[DEFINITE] Local Dependency vulnerability in " + contract.getName() + " at "
 							+ functionSignatureByStatement
 							+ " (pc: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getPc() + ", "
 							+ "line: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine()
@@ -163,7 +163,7 @@ public class TimeSynchronizationChecker implements
 					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
 
 					log.warn(
-							"[POSSIBLE] Time Synchronization vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
+							"[POSSIBLE] Local Dependency vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
 							nodeLocation.getPc(),
 							nodeLocation.getSourceCodeLine(),
 							cfg.hashCode(),
@@ -171,14 +171,11 @@ public class TimeSynchronizationChecker implements
 							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
 							logVulnerable.getCFG().hashCode());
 
-					String warn = "[POSSIBLE] Time Synchronization vulnerability at pc "
+					String warn = "[POSSIBLE] Local Dependency vulnerability at pc "
 							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
 							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
-					MyCache.getInstance().addPossibleTimeSynchronizationWarning(contract.getCFG().hashCode(), warn);
+					MyCache.getInstance().addPossibleLocalDependencyWarning(contract.getCFG().hashCode(), warn);
 					tool.warn(warn);
-
-//					warn = "[POSSIBLE] Time Synchronization vulnerability in " + contract.getName() + " at " + contract.getFunctionSignatureByStatement(jumpi);
-//					MyCache.getInstance().addOlli(cfg.hashCode(), warn);
 				}
 			}
 		}

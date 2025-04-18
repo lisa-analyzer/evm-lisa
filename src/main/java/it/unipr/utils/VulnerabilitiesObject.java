@@ -29,8 +29,8 @@ public class VulnerabilitiesObject {
 	private int semanticIntegrityViolation;
 	private int possibleSemanticIntegrityViolation;
 
-	private int timeSynchronization;
-	private int possibleTimeSynchronization;
+	private int localDependency;
+	private int possibleLocalDependency;
 
 	private int missingEventNotification;
 
@@ -57,8 +57,8 @@ public class VulnerabilitiesObject {
 		this.semanticIntegrityViolation = 0;
 		this.possibleSemanticIntegrityViolation = 0;
 
-		this.timeSynchronization = 0;
-		this.possibleTimeSynchronization = 0;
+		this.localDependency = 0;
+		this.possibleLocalDependency = 0;
 
 		this.missingEventNotification = 0;
 
@@ -72,7 +72,7 @@ public class VulnerabilitiesObject {
 			int eventOrder, int possibleEventOrder,
 			int uncheckedExternalCall, int possibleUncheckedExternalCall,
 			int semanticIntegrityViolation, int possibleSemanticIntegrityViolation,
-			int timeSynchronization, int possibleTimeSynchronization,
+			int localDependency, int possibleLocalDependency,
 			int missingEventNotification,
 			JSONObject json) {
 
@@ -96,8 +96,8 @@ public class VulnerabilitiesObject {
 		this.semanticIntegrityViolation = semanticIntegrityViolation;
 		this.possibleSemanticIntegrityViolation = possibleSemanticIntegrityViolation;
 
-		this.timeSynchronization = timeSynchronization;
-		this.possibleTimeSynchronization = possibleTimeSynchronization;
+		this.localDependency = localDependency;
+		this.possibleLocalDependency = possibleLocalDependency;
 
 		this.missingEventNotification = missingEventNotification;
 
@@ -116,8 +116,8 @@ public class VulnerabilitiesObject {
 		this.json.put("event_order_possible", this.possibleEventOrder);
 		this.json.put("unchecked_external_call_definite", this.uncheckedExternalCall);
 		this.json.put("unchecked_external_call_possible", this.possibleUncheckedExternalCall);
-		this.json.put("time_synchronization_definite", this.timeSynchronization);
-		this.json.put("time_synchronization_possible", this.possibleTimeSynchronization);
+		this.json.put("time_synchronization_definite", this.localDependency);
+		this.json.put("time_synchronization_possible", this.possibleLocalDependency);
 		this.json.put("missing_event_notification", this.missingEventNotification);
 	}
 
@@ -289,26 +289,26 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
-	 * Sets the time synchronization vulnerability score.
+	 * Sets the local dependency vulnerability score.
 	 *
-	 * @param timeSynchronization the time synchronization score
+	 * @param localDependency the local dependency score
 	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject timeSynchronization(int timeSynchronization) {
-		this.timeSynchronization = timeSynchronization;
+	public VulnerabilitiesObject localDependency(int localDependency) {
+		this.localDependency = localDependency;
 		return this;
 	}
 
 	/**
-	 * Sets the possible time synchronization vulnerability score.
+	 * Sets the possible local dependency vulnerability score.
 	 *
-	 * @param possibleTimeSynchronization the time synchronization score
+	 * @param possibleLocalDependency the local dependency score
 	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject possibleTimeSynchronization(int possibleTimeSynchronization) {
-		this.possibleTimeSynchronization = possibleTimeSynchronization;
+	public VulnerabilitiesObject possibleLocalDependency(int possibleLocalDependency) {
+		this.possibleLocalDependency = possibleLocalDependency;
 		return this;
 	}
 
@@ -365,10 +365,10 @@ public class VulnerabilitiesObject {
 						.getPossibleUncheckedExternalCallWarnings(cfg.hashCode()))
 				.missingEventNotification(MyCache.getInstance()
 						.getMissingEventNotificationWarnings(cfg.hashCode()))
-				.timeSynchronization(MyCache.getInstance()
-						.getTimeSynchronizationWarnings(cfg.hashCode()))
-				.possibleTimeSynchronization(MyCache.getInstance()
-						.getPossibleTimeSynchronizationWarnings(cfg.hashCode()))
+				.localDependency(MyCache.getInstance()
+						.getLocalDependencyWarnings(cfg.hashCode()))
+				.possibleLocalDependency(MyCache.getInstance()
+						.getPossibleLocalDependencyWarnings(cfg.hashCode()))
 				.build();
 	}
 
@@ -385,7 +385,7 @@ public class VulnerabilitiesObject {
 				eventOrder, possibleEventOrder,
 				uncheckedExternalCall, possibleUncheckedExternalCall,
 				semanticIntegrityViolation, possibleSemanticIntegrityViolation,
-				timeSynchronization, possibleTimeSynchronization,
+				localDependency, possibleLocalDependency,
 				missingEventNotification,
 				json);
 	}
