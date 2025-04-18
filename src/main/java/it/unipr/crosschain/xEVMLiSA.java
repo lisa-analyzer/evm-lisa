@@ -55,27 +55,9 @@ public class xEVMLiSA {
 		runCrossChainCheckers(bridge);
 
 		printVulnerabilities(bridge);
+		printVulnerabilitiesPerFunction(bridge);
+
 		EVMLiSAExecutor.shutdown();
-
-		JSONObject json = new JSONObject();
-		log.info("Bridge {}", bridge.getName());
-		json.put("bridge", bridge.getName());
-
-		JSONArray contracts = new JSONArray();
-
-		for (SmartContract contract : bridge) {
-			JSONObject contractJson = new JSONObject();
-			contractJson.put("contract",
-					contract.getName());
-			contractJson.put("vulnerabilities",
-					MyCache.getInstance().getOlli(
-							contract.getCFG().hashCode()));
-			contracts.put(contractJson);
-		}
-		json.put("contracts", contracts);
-		log.info(json.toString(4));
-
-//		log.debug(bridge);
 	}
 
 	/**
@@ -690,6 +672,30 @@ public class xEVMLiSA {
 				return;
 			log.debug("Contract {} vulnerabilities: {}", contract.getName(), contract.getVulnerabilities());
 		}
-		log.debug("Bridge vulnerabilities: {}", bridge.getVulnerabilities());
+	}
+
+	/**
+	 * Prints the functions vulnerable of each smart contract in the given bridge.
+	 *
+	 * @param bridge The bridge containing the smart contracts to analyze for
+	 *                   vulnerabilities.
+	 */
+	public static void printVulnerabilitiesPerFunction(Bridge bridge) {
+		JSONObject json = new JSONObject();
+		json.put("bridge", bridge.getName());
+
+		JSONArray contracts = new JSONArray();
+
+		for (SmartContract contract : bridge) {
+			JSONObject contractJson = new JSONObject();
+			contractJson.put("contract",
+					contract.getName());
+			contractJson.put("vulnerabilities",
+					MyCache.getInstance().getOlli(
+							contract.getCFG().hashCode()));
+			contracts.put(contractJson);
+		}
+		json.put("contracts", contracts);
+		log.debug("Vulnerabilities per functions: {}", json.toString(4));
 	}
 }
