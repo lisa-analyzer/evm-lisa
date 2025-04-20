@@ -582,7 +582,10 @@ public class EVMLiSA {
 			TxOriginChecker.enableChecker();
 		if (cmd.hasOption("checker-timestampdependency") || cmd.hasOption("checker-all"))
 			TimestampDependencyChecker.enableChecker();
-
+		if(cmd.hasOption("checker-delegatecalladdr") || cmd.hasOption("checker-all"))
+			DelegatecallTaintAddressChecker.enableChecker();
+		if (cmd.hasOption("checker-xcalluncheckedsuccess") || cmd.hasOption("checker-all"))
+			XCallUncheckedSuccessChecker.enableChecker();
 		if (cmd.hasOption("output-directory-path"))
 			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
 		else
