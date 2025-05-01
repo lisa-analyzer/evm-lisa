@@ -306,7 +306,7 @@ def check_sound_analysis_evmlisa(directory_path):
     if sound:
         print("[EVMLiSA] All analysis are SOUND.")
 
-def get_results_evmlisa(directory_path, print_data):
+def get_results_evmlisa(directory_path, print_data, vulnerability_type):
     warnings_counts = {}
     failed = 0
 
@@ -318,14 +318,14 @@ def get_results_evmlisa(directory_path, print_data):
                     data = json.load(file)
                     if "vulnerabilities" in data:
                         vulnerabilities = data["vulnerabilities"]
-                        if "reentrancy" in vulnerabilities:
+                        if "reentrancy" in vulnerabilities and vulnerability_type == "reentrancy":
                             warnings_counts[filename] = vulnerabilities['reentrancy']
-                        elif "tx_origin" in vulnerabilities:
+                        elif "tx_origin" in vulnerabilities and vulnerability_type == "tx-origin":
                             warnings_counts[filename] = vulnerabilities['tx_origin']
-                        elif "timestamp_dependency" in vulnerabilities:
+                        elif "timestamp_dependency" in vulnerabilities and vulnerability_type == "timestamp-dependency":
                             warnings_counts[filename] = vulnerabilities['timestamp_dependency']
                         else:
-                            print(f"[EVMLiSA] Warning: 'reentrancy', 'tx_origin' and 'timestam_-dependency' not found in {filename}")
+                            print(f"[EVMLiSA] Warning: 'reentrancy', 'tx_origin' and 'timestam_dependency' not found in {filename}")
                     else:
                         print(f"[EVMLiSA] Warning: 'vulnerabilities' not found in {filename}")
             except Exception as e:
@@ -520,7 +520,6 @@ def get_results_solidifi(folder_path, type, print_data):
 
 
     sorted_data = dict(sorted(line_counts.items()))
-
     print(print_data)
     print(sorted_data)
 
@@ -677,8 +676,8 @@ if __name__ == "__main__":
                 check_sound_analysis_evmlisa('./solidifi/tx-origin/results/evmlisa')
 
             results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/tx.origin', 'tx-origin', 'solidify')
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/tx-origin/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla'))
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/tx-origin/results/evmlisa', 'evmlisa-buggy-solidifi', 'tx-origin'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'tx-origin'))
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
@@ -716,8 +715,8 @@ if __name__ == "__main__":
                 check_sound_analysis_evmlisa('./solidifi/timestamp-dependency/results/evmlisa')
 
             results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Timestamp-Dependency', 'timestamp-dependency', 'solidify')
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla'))
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-solidifi', 'timestamp-dependency'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'timestamp-dependency'))
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
@@ -745,8 +744,8 @@ if __name__ == "__main__":
 
             check_sound_analysis_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs')
-            results_smartbugs = get_results_smartbugs('./smartbugs/timestamp-dependency/source-code/vulnerabilities.json', 'smartbugs')
+            results_evmlisa = get_results_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs', 'timestamp-dependency')
+            results_smartbugs = get_results_smartbugs('./smartbugs/timestamp-dependency/source-code/vulnerabilities.json', 'smartbugs', 'timestamp-dependency')
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
@@ -794,8 +793,8 @@ if __name__ == "__main__":
                 check_sound_analysis_evmlisa('./solidifi/reentrancy/results/evmlisa')
                 check_sound_analysis_evmlisa('./solidifi/vanilla/results/evmlisa')
 
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/reentrancy/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla'))
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/reentrancy/results/evmlisa', 'evmlisa-buggy-solidifi', 'reentrancy'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'reentrancy'))
             results_ethersolve = subtract_dicts(get_results_ethersolve('./solidifi/reentrancy/results/ethersolve', 'ethersolve-buggy-solidifi'),
                                                 get_results_ethersolve('./solidifi/vanilla/results/ethersolve', 'ethersolve-solidifi/vanilla'))
             results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Re-entrancy', 'reentrancy', 'solidify')
@@ -839,7 +838,7 @@ if __name__ == "__main__":
 
                 check_sound_analysis_evmlisa('./smartbugs/reentrancy/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./smartbugs/reentrancy/results/evmlisa', 'evmlisa-buggy-smartbugs')
+            results_evmlisa = get_results_evmlisa('./smartbugs/reentrancy/results/evmlisa', 'evmlisa-buggy-smartbugs', 'reentrancy')
             results_ethersolve = get_results_ethersolve('./smartbugs/reentrancy/results/ethersolve', 'ethersolve-buggy-smartbugs')
             results_smartbugs = get_results_smartbugs('./smartbugs/reentrancy/source-code/vulnerabilities.json', 'smartbugs')
 
@@ -882,7 +881,7 @@ if __name__ == "__main__":
 
                 check_sound_analysis_evmlisa('./slise/reentrancy-db1/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./slise/reentrancy-db1/results/evmlisa', 'evmlisa-buggy-slise-db1')
+            results_evmlisa = get_results_evmlisa('./slise/reentrancy-db1/results/evmlisa', 'evmlisa-buggy-slise-db1', 'reentrancy')
             results_ethersolve = get_results_ethersolve('./slise/reentrancy-db1/results/ethersolve', 'ethersolve-buggy-slise-db1')
             results_slise = get_results_slise('./slise/reentrancy-db1/source-code/vulnerabilities.json', 'slise-db1')
 
