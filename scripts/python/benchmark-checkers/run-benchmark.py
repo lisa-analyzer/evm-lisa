@@ -745,7 +745,7 @@ if __name__ == "__main__":
             check_sound_analysis_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa')
 
             results_evmlisa = get_results_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs', 'timestamp-dependency')
-            results_smartbugs = get_results_smartbugs('./smartbugs/timestamp-dependency/source-code/vulnerabilities.json', 'smartbugs', 'timestamp-dependency')
+            results_smartbugs = get_results_smartbugs('./smartbugs/timestamp-dependency/source-code/vulnerabilities.json', 'smartbugs')
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
