@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=0-06:00:00
 #SBATCH --mem=16G
-#SBATCH --mail-user=saveriomattia.merenda@studenti.unipr.it 
+#SBATCH --mail-user=<email>
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=cpu
 #SBATCH --qos=cpu

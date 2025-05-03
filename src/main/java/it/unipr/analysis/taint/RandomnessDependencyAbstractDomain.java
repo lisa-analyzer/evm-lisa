@@ -1,20 +1,20 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.cfg.Origin;
+import it.unipr.cfg.*;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
 
-public class TxOriginAbstractDomain extends TaintAbstractDomain {
-
-	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
+public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
+	private static final RandomnessDependencyAbstractDomain TOP = new RandomnessDependencyAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
+	private static final RandomnessDependencyAbstractDomain BOTTOM = new RandomnessDependencyAbstractDomain(null,
+			TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public TxOriginAbstractDomain() {
+	public RandomnessDependencyAbstractDomain() {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
@@ -24,13 +24,16 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory) {
+	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
 		super(stack, memory);
 	}
 
 	@Override
 	public boolean isTainted(Statement stmt) {
-		return stmt instanceof Origin;
+		return stmt instanceof Timestamp
+				|| stmt instanceof Blockhash
+				|| stmt instanceof Difficulty
+				|| stmt instanceof Balance;
 	}
 
 	@Override
@@ -39,17 +42,18 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TxOriginAbstractDomain top() {
+	public RandomnessDependencyAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public TxOriginAbstractDomain bottom() {
+	public RandomnessDependencyAbstractDomain bottom() {
 		return BOTTOM;
 	}
 
 	@Override
 	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return new TxOriginAbstractDomain(stack, memory);
+		return new RandomnessDependencyAbstractDomain(stack, memory);
 	}
+
 }

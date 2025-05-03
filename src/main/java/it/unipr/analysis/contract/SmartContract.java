@@ -3,12 +3,7 @@ package it.unipr.analysis.contract;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
 import it.unipr.frontend.EVMFrontend;
-import it.unipr.frontend.EVMLiSAFeatures;
-import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.*;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +26,8 @@ import org.json.JSONObject;
  */
 public class SmartContract {
 	private static final Logger log = LogManager.getLogger(SmartContract.class);
+
+	private String _name;
 
 	/** Contract address on the Ethereum blockchain. */
 	private String _address;
@@ -74,6 +71,8 @@ public class SmartContract {
 	/** Event signatures extracted from the contract ABI. */
 	private Set<Signature> _eventsSignature;
 
+	private Set<Statement> _allFunctionsEntryPoints;
+
 	/** Execution time in milliseconds of the contract. */
 	private long _executionTime;
 
@@ -112,6 +111,7 @@ public class SmartContract {
 		}
 
 		this._address = address;
+		this._name = address;
 		Path outputDir = _workingDirectory.resolve(address);
 		this._abiFilePath = outputDir.resolve(address + ".abi");
 		this._bytecodeFilePath = outputDir.resolve(address + ".bytecode");
@@ -192,7 +192,6 @@ public class SmartContract {
 	 * @throws IllegalArgumentException If bytecodeFilePath is null.
 	 */
 	public SmartContract(Path bytecodeFilePath) {
-		this();
 		if (bytecodeFilePath == null) {
 			log.error("Bytecode file path is null");
 			System.err.println(JSONManager.throwNewError("Bytecode file path is null"));
@@ -203,7 +202,18 @@ public class SmartContract {
 			System.exit(1);
 		}
 
+		this._name = getFileNameWithoutExtension(bytecodeFilePath);
+		this._address = getFileNameWithoutExtension(bytecodeFilePath);
+
 		Path outputDir = _workingDirectory.resolve(_address);
+		try {
+			Files.createDirectories(outputDir);
+		} catch (IOException e) {
+			log.error("Unable to create output directory: {}", outputDir);
+			JSONManager.throwNewError("Unable to create output directory: " + outputDir);
+			System.exit(1);
+		}
+
 		this._bytecodeFilePath = outputDir.resolve(_address + ".bytecode");
 		this._mnemonicBytecodeFilePath = outputDir.resolve(_address + ".opcode");
 
@@ -249,7 +259,15 @@ public class SmartContract {
 		this._eventsSignature = ABIManager.parseEventsFromABI(abiFilePath);
 	}
 
-	///////////////////// GETTERs
+	/**
+	 * Returns the contract name.
+	 *
+	 * @return The contract name.
+	 */
+	public String getName() {
+		return this._name;
+	}
+
 	/**
 	 * Returns the contract address.
 	 *
@@ -373,10 +391,21 @@ public class SmartContract {
 	 * @return Vulnerabilities object.
 	 */
 	public VulnerabilitiesObject getVulnerabilities() {
-		return _vulnerabilities;
+		return this._vulnerabilities = VulnerabilitiesObject.buildFromCFG(this._cfg);
 	}
 
-	///////////////////// SETTERs
+	/**
+	 * Sets the contract name.
+	 *
+	 * @param name The contract name.
+	 *
+	 * @return This SmartContract instance for method chaining.
+	 */
+	public SmartContract setName(String name) {
+		this._name = name;
+		return this;
+	}
+
 	/**
 	 * Sets the contract address.
 	 *
@@ -658,15 +687,15 @@ public class SmartContract {
 			return;
 		}
 
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(this._cfg);
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
-		LiSA lisa = new LiSA(conf);
-
-		EventsExitPointsComputer checker = new EventsExitPointsComputer();
-		conf.semanticChecks.add(checker);
-		lisa.run(program);
+		Set<Statement> logStatements = _cfg.getAllLogX();
+		for (Signature signature : _eventsSignature) {
+			for (Statement eventEntryPoint : signature.getEntryPoints()) {
+				for (Statement logStatement : logStatements) {
+					if (_cfg.reachableFrom(eventEntryPoint, logStatement))
+						signature.addExitPoint(logStatement);
+				}
+			}
+		}
 	}
 
 	/**
@@ -677,6 +706,58 @@ public class SmartContract {
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
 		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(this), dotFile.toString());
 		log.info("Generated CFG at {}", dotFile);
+	}
+
+	/**
+	 * Retrieves all entry-point statements for every function in this contract.
+	 * Caches the result on first invocation for efficiency.
+	 *
+	 * @return a set containing the entry-point statements of all functions
+	 */
+	public Set<Statement> getAllFunctionEntryPoints() {
+		if (_allFunctionsEntryPoints == null) {
+			Set<Statement> result = new HashSet<>();
+			for (Signature signature : _functionsSignature)
+				result.addAll(signature.getEntryPoints());
+			_allFunctionsEntryPoints = result;
+		}
+		return _allFunctionsEntryPoints;
+	}
+
+	/**
+	 * Determines the full function signature that corresponds to a given
+	 * entry-point statement. If no matching function is found, returns
+	 * "no-function-found".
+	 *
+	 * @param entryPoint the entry-point statement to look up
+	 *
+	 * @return the full signature of the function owning that entry-point, or
+	 *             "no-function-found" if none matches
+	 */
+	public String getFunctionSignatureFromEntryPoint(Statement entryPoint) {
+		for (Signature signature : _functionsSignature)
+			for (Statement entry : signature.getEntryPoints())
+				if (entry.equals(entryPoint))
+					return signature.getFullSignature();
+		return "no-function-found";
+	}
+
+	/**
+	 * Locates the function signature for an arbitrary statement by performing a
+	 * reverse reachability search to its nearest entry-point, then mapping that
+	 * entry-point back to its function signature.
+	 *
+	 * @param statement any statement within the contract
+	 *
+	 * @return the full signature of the containing function, or an empty string
+	 *             if no function context is found
+	 */
+	public String getFunctionSignatureByStatement(Statement statement) {
+		Statement ep = _cfg.reachableFromReverse(statement, getAllFunctionEntryPoints());
+
+		if (getFunctionSignatureFromEntryPoint(ep) != null)
+			return getFunctionSignatureFromEntryPoint(ep);
+		return "";
 	}
 
 	/**
@@ -750,5 +831,18 @@ public class SmartContract {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Extracts the filename without extension from a given Path.
+	 *
+	 * @param path The file path
+	 *
+	 * @return The filename without extension
+	 */
+	private static String getFileNameWithoutExtension(Path path) {
+		String fileName = path.getFileName().toString();
+		int lastDotIndex = fileName.lastIndexOf('.');
+		return (lastDotIndex == -1) ? fileName : fileName.substring(0, lastDotIndex);
 	}
 }

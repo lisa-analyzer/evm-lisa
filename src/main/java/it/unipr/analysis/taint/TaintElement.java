@@ -2,11 +2,29 @@ package it.unipr.analysis.taint;
 
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.Objects;
 
+/**
+ * Represents an element in the taint abstract domain for EVM bytecode analysis.
+ * <p>
+ * This class models a taint element using a simple byte value and defines
+ * several special constants:
+ * <ul>
+ * <li><b>TOP</b>: Represents the highest abstract value, indicating an unknown
+ * or over-approximated value.</li>
+ * <li><b>BOTTOM</b>: Represents the lowest abstract value, indicating the
+ * absence of any information or an error state.</li>
+ * <li><b>TAINT</b>: Marks an element as tainted, meaning it carries untrusted
+ * or external data that may lead to vulnerabilities.</li>
+ * <li><b>CLEAN</b>: Marks an element as clean, meaning it is not tainted.</li>
+ * </ul>
+ * </p>
+ *
+ * @see BaseLattice
+ * @see Lattice
+ */
 public class TaintElement implements BaseLattice<TaintElement> {
 
 	public static final TaintElement TOP = new TaintElement((byte) 0);
@@ -71,18 +89,28 @@ public class TaintElement implements BaseLattice<TaintElement> {
 	}
 
 	@Override
-	public TaintElement lubAux(TaintElement other) throws SemanticException {
+	public TaintElement lubAux(TaintElement other) {
 		return TOP;
 	}
 
 	@Override
-	public boolean lessOrEqualAux(TaintElement other) throws SemanticException {
+	public boolean lessOrEqualAux(TaintElement other) {
 		return false;
 	}
 
 	@Override
-	public TaintElement glbAux(TaintElement other) throws SemanticException {
+	public TaintElement glbAux(TaintElement other) {
 		return BOTTOM;
+	}
+
+	@Override
+	public boolean isTop() {
+		return this == TOP;
+	}
+
+	@Override
+	public boolean isBottom() {
+		return this == BOTTOM;
 	}
 
 	/**
@@ -110,6 +138,53 @@ public class TaintElement implements BaseLattice<TaintElement> {
 			return TOP;
 
 		return CLEAN;
+	}
+
+	/**
+	 * Checks if any of the provided {@link TaintElement} objects is tainted or
+	 * has the top value.
+	 *
+	 * @param elements the array of {@link TaintElement} objects to check
+	 * 
+	 * @return {@code true} if at least one of the elements is tainted or has
+	 *             the top value, {@code false} otherwise
+	 */
+	public static boolean isTaintedOrTop(TaintElement... elements) {
+		return isAtLeastOneTainted(elements) || isAtLeastOneTop(elements);
+	}
+
+	/**
+	 * Checks if at least one of the provided {@link TaintElement} objects is
+	 * tainted.
+	 *
+	 * @param elements the array of {@link TaintElement} objects to check
+	 * 
+	 * @return {@code true} if at least one of the elements is tainted,
+	 *             {@code false} otherwise
+	 */
+	public static boolean isAtLeastOneTainted(TaintElement... elements) {
+		for (TaintElement element : elements) {
+			if (element.isTaint())
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if at least one of the provided {@link TaintElement} objects has
+	 * the top value.
+	 *
+	 * @param elements the array of {@link TaintElement} objects to check
+	 * 
+	 * @return {@code true} if at least one of the elements has the top value,
+	 *             {@code false} otherwise
+	 */
+	public static boolean isAtLeastOneTop(TaintElement... elements) {
+		for (TaintElement element : elements) {
+			if (element.isTop())
+				return true;
+		}
+		return false;
 	}
 
 	@Override
