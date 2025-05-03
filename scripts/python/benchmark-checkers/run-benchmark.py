@@ -140,7 +140,7 @@ def plot_results_timestamp(data_evmlisa, data_solidifi, name="no-name"):
 
     plt.xlabel('Problem ID')
     plt.ylabel('Value')
-    plt.title(f'[{name}] Comparison of results (timestamp-dependency)')
+    plt.title(f'[{name}] Comparison of results (randomness-dependency)')
     plt.xticks(sorted(set(keys2).union(keys3)))  # Show all problem IDs on x-axis
     plt.legend()
     plt.grid()
@@ -322,8 +322,8 @@ def get_results_evmlisa(directory_path, print_data, vulnerability_type):
                             warnings_counts[filename] = vulnerabilities['reentrancy']
                         elif "tx_origin" in vulnerabilities and vulnerability_type == "tx-origin":
                             warnings_counts[filename] = vulnerabilities['tx_origin']
-                        elif "timestamp_dependency" in vulnerabilities and vulnerability_type == "timestamp-dependency":
-                            warnings_counts[filename] = vulnerabilities['timestamp_dependency']
+                        elif "randomness_dependency" in vulnerabilities and vulnerability_type == "randomness-dependency":
+                            warnings_counts[filename] = vulnerabilities['randomness_dependency']
                         else:
                             print(f"[EVMLiSA] Warning: 'reentrancy', 'tx_origin' and 'timestam_dependency' not found in {filename}")
                     else:
@@ -493,7 +493,7 @@ def get_results_solidifi(folder_path, type, print_data):
         11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
-    timestampdependency_subtraction_values = {
+    randomnessdependency_subtraction_values = {
         11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
@@ -515,8 +515,8 @@ def get_results_solidifi(folder_path, type, print_data):
                 line_counts[problem_id] = num_lines - 1 - reentrancy_subtraction_values.get(problem_id, 0)
             elif type == 'tx-origin':
                 line_counts[problem_id] = num_lines - 1 - txorigin_subtraction_values.get(problem_id, 0)
-            elif type == 'timestamp-dependency':
-                line_counts[problem_id] = num_lines - 1 - timestampdependency_subtraction_values.get(problem_id, 0)
+            elif type == 'randomness-dependency':
+                line_counts[problem_id] = num_lines - 1 - randomnessdependency_subtraction_values.get(problem_id, 0)
 
 
     sorted_data = dict(sorted(line_counts.items()))
@@ -649,7 +649,7 @@ if __name__ == "__main__":
     parser.add_argument("--no-analysis", action="store_true", help="Do not run the analysis, compute only the results")
     parser.add_argument("--reentrancy", action="store_true", help="Run analysis on reentrancy contracts")
     parser.add_argument("--tx-origin", action="store_true", help="Run analysis on tx-origin contracts")
-    parser.add_argument("--timestamp-dependency", action="store_true", help="Run analysis on timestamp-dependency contracts")
+    parser.add_argument("--randomness-dependency", action="store_true", help="Run analysis on randomness-dependency contracts")
 
     args = parser.parse_args()
 
@@ -695,28 +695,28 @@ if __name__ == "__main__":
                         data_solidifi=results_solidifi,
                         name='solidifi_tx-origin')
 
-    if args.timestamp_dependency:
+    if args.randomness_dependency:
         if args.solidifi:
             if not args.no_analysis:
-                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/timestamp-dependency/bytecode/evmlisa',
-                                                                          'results_dir':        './solidifi/timestamp-dependency/results',
-                                                                          'result_evmlisa_dir': './solidifi/timestamp-dependency/results/evmlisa',
-                                                                          'type':               'timestampdependency'})
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/randomness-dependency/bytecode/evmlisa',
+                                                                          'results_dir':        './solidifi/randomness-dependency/results',
+                                                                          'result_evmlisa_dir': './solidifi/randomness-dependency/results/evmlisa',
+                                                                          'type':               'randomnessdependency'})
                 evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/vanilla/bytecode/evmlisa',
                                                                                   'results_dir':        './solidifi/vanilla/results',
                                                                                   'result_evmlisa_dir': './solidifi/vanilla/results/evmlisa',
-                                                                                  'type':               'timestampdependency'})
+                                                                                  'type':               'randomnessdependency'})
 
                 evmlisa_vanilla_thread.start()
                 evmlisa_thread.start()
                 evmlisa_thread.join()
                 evmlisa_vanilla_thread.join()
 
-                check_sound_analysis_evmlisa('./solidifi/timestamp-dependency/results/evmlisa')
+                check_sound_analysis_evmlisa('./solidifi/randomness-dependency/results/evmlisa')
 
-            results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Timestamp-Dependency', 'timestamp-dependency', 'solidify')
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-solidifi', 'timestamp-dependency'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'timestamp-dependency'))
+            results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Timestamp-Dependency', 'randomness-dependency', 'solidify')
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/randomness-dependency/results/evmlisa', 'evmlisa-buggy-solidifi', 'randomness-dependency'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'randomness-dependency'))
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
@@ -732,20 +732,20 @@ if __name__ == "__main__":
             # Plot results
             plot_results_timestamp(data_evmlisa=results_evmlisa,
                          data_solidifi=results_solidifi,
-                         name='solidifi_timestamp-dependency')
+                         name='solidifi_randomness-dependency')
         if args.smartbugs:
-            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './smartbugs/timestamp-dependency/bytecode/evmlisa',
-                                                                      'results_dir':        './smartbugs/timestamp-dependency/results',
-                                                                      'result_evmlisa_dir': './smartbugs/timestamp-dependency/results/evmlisa',
-                                                                      'type':               'timestampdependency'})
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './smartbugs/randomness-dependency/bytecode/evmlisa',
+                                                                      'results_dir':        './smartbugs/randomness-dependency/results',
+                                                                      'result_evmlisa_dir': './smartbugs/randomness-dependency/results/evmlisa',
+                                                                      'type':               'randomnessdependency'})
 
             evmlisa_thread.start()
             evmlisa_thread.join()
 
-            check_sound_analysis_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa')
+            check_sound_analysis_evmlisa('./smartbugs/randomness-dependency/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs', 'timestamp-dependency')
-            results_smartbugs = get_results_smartbugs('./smartbugs/timestamp-dependency/source-code/vulnerabilities.json', 'smartbugs')
+            results_evmlisa = get_results_evmlisa('./smartbugs/randomness-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs', 'randomness-dependency')
+            results_smartbugs = get_results_smartbugs('./smartbugs/randomness-dependency/source-code/vulnerabilities.json', 'smartbugs')
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
