@@ -273,7 +273,10 @@ public class EVMLiSA {
 		conf.semanticChecks.add(checker);
 
 		LiSA lisa = new LiSA(conf);
+
+		long startTime = System.currentTimeMillis();
 		lisa.run(program);
+		contract.setExecutionTime(System.currentTimeMillis() - startTime);
 
 		log.info("Analysis ended {}", contract.getAddress());
 

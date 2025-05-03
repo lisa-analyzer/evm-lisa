@@ -74,6 +74,9 @@ public class SmartContract {
 	/** Event signatures extracted from the contract ABI. */
 	private Set<Signature> _eventsSignature;
 
+	/** Execution time in milliseconds of the contract. */
+	private long _executionTime;
+
 	/**
 	 * Constructs a new SmartContract with a generated address.
 	 */
@@ -90,6 +93,7 @@ public class SmartContract {
 			JSONManager.throwNewError("Unable to create output directory: " + outputDir);
 			System.exit(1);
 		}
+		this._executionTime = 0;
 	}
 
 	/**
@@ -177,6 +181,7 @@ public class SmartContract {
 
 		this._functionsSignature = ABIManager.parseFunctionsFromABI(this._abiFilePath);
 		this._eventsSignature = ABIManager.parseEventsFromABI(this._abiFilePath);
+		this._executionTime = 0;
 	}
 
 	/**
@@ -297,6 +302,15 @@ public class SmartContract {
 	 */
 	public Path getWorkingDirectory() {
 		return _workingDirectory.resolve(this._address);
+	}
+
+	/**
+	 * Returns the execution time for this contract.
+	 *
+	 * @return Execution time in milliseconds.
+	 */
+	public long getExecutionTime() {
+		return _executionTime;
 	}
 
 	/**
@@ -565,6 +579,18 @@ public class SmartContract {
 	}
 
 	/**
+	 * Sets the execution time for this contract.
+	 *
+	 * @param executionTime Execution time in milliseconds.
+	 *
+	 * @return This SmartContract instance for method chaining.
+	 */
+	public SmartContract setExecutionTime(long executionTime) {
+		this._executionTime = executionTime;
+		return this;
+	}
+
+	/**
 	 * Identifies and associates entry points for each function signature in the
 	 * contract. Uses the selector from each signature to find matching Push
 	 * statements in the CFG.
@@ -683,6 +709,8 @@ public class SmartContract {
 
 		jsonObject.put("basic_blocks_pc", _basicBlocks != null ? BasicBlock.basicBlocksToLongArrayToString(
 				BasicBlock.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());
+
+		jsonObject.put("execution_time", _executionTime);
 
 		JSONArray functionsArray = new JSONArray();
 		if (_functionsSignature != null && !_functionsSignature.isEmpty())
