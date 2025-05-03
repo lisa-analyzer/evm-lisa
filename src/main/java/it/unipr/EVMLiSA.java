@@ -149,6 +149,10 @@ public class EVMLiSA {
 		TEST_MODE = true;
 	}
 
+	public static boolean isInTestMode() {
+		return TEST_MODE;
+	}
+
 	/**
 	 * Executes the analysis workflow.
 	 *
@@ -244,7 +248,7 @@ public class EVMLiSA {
 
 		log.info("Finished analysis of {} contracts.", contracts.size());
 
-		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("contracts-" + System.currentTimeMillis());
+		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("set-of-contracts");
 		try {
 			Files.createDirectories(outputDir);
 			Files.writeString(
@@ -295,12 +299,12 @@ public class EVMLiSA {
 		contract.setExecutionTime(System.currentTimeMillis() - startTime);
 
 		log.info("[OUT] CFG of contract {} built.", contract.getName());
-
+		log.info("[IN] Computing statistics of contract {}.", contract.getName());
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
 		contract.setCFG(checker.getComputedCFG());
 
-		log.debug("Contract {} statistics: {}", contract.getAddress(), contract.getStatistics());
+		log.debug("[OUT] Contract {} statistics: {}", contract.getAddress(), contract.getStatistics());
 
 		if (TEST_MODE)
 			return;
@@ -674,6 +678,8 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
+		if (cmd.hasOption("test-mode"))
+			EVMLiSA.setTestMode();
 	}
 
 	private Options getOptions() {
@@ -714,6 +720,7 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(true)
 				.build();
+
 		Option abiOption = Option.builder()
 				.longOpt("abi")
 				.desc("ABI of the bytecode to be analyzed (JSON format).")
@@ -798,18 +805,11 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
-		Option crossChainBytecodeDirectoryPathOption = Option.builder()
-				.longOpt("bytecode-directory-path")
-				.desc("Directory path of bytecode files.")
+		Option useTestModeOption = Option.builder()
+				.longOpt("test-mode")
+				.desc("Use the test mode (i.e., do not compute functions and events).")
 				.required(false)
-				.hasArg(true)
-				.build();
-
-		Option crossChainAbiDirectoryPathOption = Option.builder()
-				.longOpt("abi-directory-path")
-				.desc("Directory path of abi files.")
-				.required(false)
-				.hasArg(true)
+				.hasArg(false)
 				.build();
 
 		options.addOption(addressOption);
@@ -829,8 +829,7 @@ public class EVMLiSA {
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
 		options.addOption(abiOption);
-		options.addOption(crossChainBytecodeDirectoryPathOption);
-		options.addOption(crossChainAbiDirectoryPathOption);
+		options.addOption(useTestModeOption);
 
 		return options;
 	}

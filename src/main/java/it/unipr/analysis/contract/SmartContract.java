@@ -1,5 +1,6 @@
 package it.unipr.analysis.contract;
 
+import it.unipr.EVMLiSA;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
 import it.unipr.frontend.EVMFrontend;
@@ -779,9 +780,25 @@ public class SmartContract {
 		JSONObject jsonObject = new JSONObject();
 
 		jsonObject.put("address", _address != null ? _address : new JSONArray());
-		jsonObject.put("bytecode", _bytecode != null ? _bytecode : new JSONArray());
-		jsonObject.put("mnemonic_bytecode", _mnemonicBytecode != null ? _mnemonicBytecode : new JSONArray());
-		jsonObject.put("abi", _abi != null ? _abi : new JSONArray());
+		if (!EVMLiSA.isInTestMode()) {
+			jsonObject.put("bytecode", _bytecode != null ? _bytecode : new JSONArray());
+			jsonObject.put("mnemonic_bytecode", _mnemonicBytecode != null ? _mnemonicBytecode : new JSONArray());
+			jsonObject.put("abi", _abi != null ? _abi : new JSONArray());
+
+			jsonObject.put("basic_blocks",
+					_basicBlocks != null ? JSONManager.basicBlocksToJson(this) : new JSONArray());
+			JSONArray functionsArray = new JSONArray();
+			if (_functionsSignature != null && !_functionsSignature.isEmpty())
+				for (Signature signature : _functionsSignature)
+					functionsArray.put(signature.toJson());
+			jsonObject.put("functions_signature", !functionsArray.isEmpty() ? functionsArray : new JSONArray());
+
+			JSONArray eventsArray = new JSONArray();
+			if (_eventsSignature != null && !_eventsSignature.isEmpty())
+				for (Signature signature : _eventsSignature)
+					eventsArray.put(signature.toJson());
+			jsonObject.put("events_signature", !eventsArray.isEmpty() ? eventsArray : new JSONArray());
+		}
 
 		jsonObject.put("working_directory", _workingDirectory.toString());
 
@@ -794,25 +811,10 @@ public class SmartContract {
 
 		jsonObject.put("vulnerabilities", _vulnerabilities != null ? _vulnerabilities.toJson() : new JSONArray());
 
-		jsonObject.put("basic_blocks",
-				_basicBlocks != null ? JSONManager.basicBlocksToJson(this) : new JSONArray());
-
 		jsonObject.put("basic_blocks_pc", _basicBlocks != null ? BasicBlock.basicBlocksToLongArrayToString(
 				BasicBlock.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());
 
 		jsonObject.put("execution_time", _executionTime);
-
-		JSONArray functionsArray = new JSONArray();
-		if (_functionsSignature != null && !_functionsSignature.isEmpty())
-			for (Signature signature : _functionsSignature)
-				functionsArray.put(signature.toJson());
-		jsonObject.put("functions_signature", !functionsArray.isEmpty() ? functionsArray : new JSONArray());
-
-		JSONArray eventsArray = new JSONArray();
-		if (_eventsSignature != null && !_eventsSignature.isEmpty())
-			for (Signature signature : _eventsSignature)
-				eventsArray.put(signature.toJson());
-		jsonObject.put("events_signature", !eventsArray.isEmpty() ? eventsArray : new JSONArray());
 
 		return jsonObject;
 	}
