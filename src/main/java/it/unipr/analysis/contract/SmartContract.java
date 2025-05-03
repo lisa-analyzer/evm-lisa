@@ -703,6 +703,15 @@ public class SmartContract {
 	 * the graph to a file in the contract's working directory.
 	 */
 	public void generateCFGWithBasicBlocks() {
+		if (_functionsSignature == null) {
+			log.warn("Unable to generate CFG with Basic Blocks (_functionsSignature is null)");
+			return;
+		}
+		if (_eventsSignature == null) {
+			log.warn("Unable to generate CFG with Basic Blocks (_eventsSignature is null)");
+			return;
+		}
+
 		Path dotFile = _workingDirectory.resolve(_address).resolve("CFG.dot");
 		DOTFileManager.generateDotGraph(JSONManager.basicBlocksToJson(this), dotFile.toString());
 		log.info("Generated CFG at {}", dotFile);

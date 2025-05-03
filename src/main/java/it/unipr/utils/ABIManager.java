@@ -1,6 +1,5 @@
 package it.unipr.utils;
 
-import it.unipr.analysis.contract.EventKnowledge;
 import it.unipr.analysis.contract.Signature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -215,11 +214,6 @@ public class ABIManager {
 			log.info("Parsing events");
 			Set<Signature> events = parseEventsFromABI(abi);
 			verifyFunctionSelectors(events, bytecode);
-
-			log.info("Computing events knowledge");
-			for (Signature event : events) {
-				log.debug("{}: {}", event.getFullSignature(), EventKnowledge.getKnowledge(event.getName()));
-			}
 		} catch (Exception e) {
 			log.error("Error reading ABI or bytecode file", e);
 		}

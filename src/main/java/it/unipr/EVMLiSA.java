@@ -244,7 +244,7 @@ public class EVMLiSA {
 
 		log.info("Finished analysis of {} contracts.", contracts.size());
 
-		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("set-of-contracts");
+		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("contracts-" + System.currentTimeMillis());
 		try {
 			Files.createDirectories(outputDir);
 			Files.writeString(
@@ -256,6 +256,7 @@ public class EVMLiSA {
 			System.err.println(JSONManager.throwNewError("Failed to save results in " + outputDir));
 			System.exit(1);
 		}
+		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -556,8 +557,6 @@ public class EVMLiSA {
 				.unsoundJumps(unsoundJumps)
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.build();
-
-		// log.info("### Calculating statistics ###\n{}", stats);
 
 		return stats;
 	}

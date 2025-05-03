@@ -47,7 +47,7 @@ public class VulnerabilitiesObject {
 		this.json = json;
 
 		this.json.put("reentrancy", this.reentrancy);
-		this.json.put("randomness_dependency_definite", this.randomness);
+		this.json.put("randomness_dependency", this.randomness);
 		this.json.put("randomness_dependency_possible", this.possibleRandomness);
 		this.json.put("tx_origin", this.txOrigin);
 		this.json.put("tx_origin_possible", this.possibleTxOrigin);
