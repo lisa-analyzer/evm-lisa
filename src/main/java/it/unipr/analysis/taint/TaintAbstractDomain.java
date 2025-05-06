@@ -94,486 +94,486 @@ public abstract class TaintAbstractDomain
 
 			if (op != null) {
 				switch (op.getClass().getSimpleName()) {
-				case "TimestampOperator":
-				case "OriginOperator":
-				case "CodesizeOperator":
-				case "GaspriceOperator":
-				case "ReturndatasizeOperator":
-				case "CoinbaseOperator":
-				case "NumberOperator":
-				case "DifficultyOperator":
-				case "GaslimitOperator":
-				case "ChainidOperator":
-				case "SelfbalanceOperator":
-				case "PcOperator":
-				case "GasOperator":
-				case "MsizeOperator":
-				case "BlobBaseFeeOperator":
-				case "BasefeeOperator":
-				case "CalldatasizeOperator":
-				case "CallvalueOperator":
-				case "CallerOperator":
-				case "AddressOperator":
-				case "PushOperator":
-				case "Push0Operator": {
-					TaintAbstractDomain resultStack = clone();
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.CLEAN);
-					return resultStack;
-				}
-
-				case "JumpdestOperator": { // JUMPDEST
-					return this;
-				}
-
-				// Above, operators that do not perform pop()
-				// Below, operators that perform pop operation on the stack
-
-				case "JumpOperator": { // JUMP
-					if (hasBottomUntil(1))
-						return bottom();
-
-					TaintAbstractDomain resultStack = clone();
-					TaintElement opnd1 = resultStack.pop();
-
-					return resultStack;
-				}
-
-				case "TstoreOperator":
-				case "JumpiOperator": {
-					if (hasBottomUntil(2))
-						return bottom();
-
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(2);
-
-					return resultStack;
-				}
-
-				case "TloadOperator": {
-					if (hasBottomUntil(2))
-						return bottom();
-
-					TaintAbstractDomain resultStack = clone();
-					TaintElement key = resultStack.pop();
-					resultStack.push(TaintElement.TOP);
-
-					return resultStack;
-				}
-
-				case "CalldatacopyOperator": {
-					if (hasBottomUntil(3))
-						return bottom();
-
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(3);
-
-					if (this.getTaintedOpcode().contains(op))
-						return mk(resultStack.circularArray, TaintElement.TAINT);
-
-					return resultStack;
-				}
-
-				case "BlobHashOperator":
-				case "BalanceOperator":
-				case "BlockhashOperator":
-				case "NotOperator":
-				case "CalldataloadOperator":
-				case "SloadOperator":
-				case "IszeroOperator": { // pop 1, push 1
-					if (hasBottomUntil(1))
-						return bottom();
-
-					TaintAbstractDomain resultStack = clone();
-					TaintElement opnd1 = resultStack.pop();
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.semantics(opnd1));
-					return resultStack;
-				}
-
-				case "MloadOperator": { // pop 1, push 1
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.pop();
-					if (memory.isTaint())
-						resultStack.push(TaintElement.TAINT);
-					else if (memory.isClean())
-						resultStack.push(TaintElement.CLEAN);
-
-					return resultStack;
-				}
-
-				case "MstoreOperator":
-				case "Mstore8Operator": { // pops 2
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement value = resultStack.pop();
-
-					if (value.isTaint())
-						return mk(resultStack.circularArray, TaintElement.TAINT);
-
-					else if (value.isClean())
+					case "TimestampOperator":
+					case "OriginOperator":
+					case "CodesizeOperator":
+					case "GaspriceOperator":
+					case "ReturndatasizeOperator":
+					case "CoinbaseOperator":
+					case "NumberOperator":
+					case "DifficultyOperator":
+					case "GaslimitOperator":
+					case "ChainidOperator":
+					case "SelfbalanceOperator":
+					case "PcOperator":
+					case "GasOperator":
+					case "MsizeOperator":
+					case "BlobBaseFeeOperator":
+					case "BasefeeOperator":
+					case "CalldatasizeOperator":
+					case "CallvalueOperator":
+					case "CallerOperator":
+					case "AddressOperator":
+					case "PushOperator":
+					case "Push0Operator": {
+						TaintAbstractDomain resultStack = clone();
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.CLEAN);
 						return resultStack;
-				}
-				case "McopyOperator": { // pops 3
-					if (hasBottomUntil(3))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
+					}
 
-					resultStack.popX(3);
-					return resultStack;
-				}
+					case "JumpdestOperator": { // JUMPDEST
+						return this;
+					}
 
-				case "ByteOperator":
-				case "ShlOperator":
-				case "ShrOperator":
-				case "SarOperator":
-				case "Sha3Operator":
-				case "AndOperator":
-				case "OrOperator":
-				case "XorOperator":
-				case "ExpOperator":
-				case "SignextendOperator":
-				case "LtOperator":
-				case "SltOperator":
-				case "GtOperator":
-				case "SgtOperator":
-				case "EqOperator":
-				case "SmodOperator":
-				case "ModOperator":
-				case "SdivOperator":
-				case "DivOperator":
-				case "MulOperator":
-				case "SubOperator":
-				case "AddOperator": { // pops 2, push 1
-					if (hasBottomUntil(2))
-						return bottom();
+					// Above, operators that do not perform pop()
+					// Below, operators that perform pop operation on the stack
 
-					TaintAbstractDomain resultStack = clone();
-					TaintElement opnd1 = resultStack.pop();
-					TaintElement opnd2 = resultStack.pop();
+					case "JumpOperator": { // JUMP
+						if (hasBottomUntil(1))
+							return bottom();
 
-					resultStack.push(TaintElement.semantics(opnd1, opnd2));
-					return resultStack;
-				}
+						TaintAbstractDomain resultStack = clone();
+						TaintElement opnd1 = resultStack.pop();
 
-				case "MulmodOperator":
-				case "AddmodOperator": { // pops 3, push 1
-					if (hasBottomUntil(3))
-						return bottom();
+						return resultStack;
+					}
 
-					TaintAbstractDomain resultStack = clone();
-					TaintElement opnd1 = resultStack.pop();
-					TaintElement opnd2 = resultStack.pop();
-					TaintElement opnd3 = resultStack.pop();
+					case "TstoreOperator":
+					case "JumpiOperator": {
+						if (hasBottomUntil(2))
+							return bottom();
 
-					resultStack.push(TaintElement.semantics(opnd1, opnd2, opnd3));
-					return resultStack;
-				}
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(2);
 
-				case "PopOperator": { // POP
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.pop();
-					return resultStack;
-				}
+						return resultStack;
+					}
 
-				case "SstoreOperator": { // pops 2
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(2);
+					case "TloadOperator": {
+						if (hasBottomUntil(2))
+							return bottom();
 
-					return resultStack;
-				}
+						TaintAbstractDomain resultStack = clone();
+						TaintElement key = resultStack.pop();
+						resultStack.push(TaintElement.TOP);
 
-				case "Dup1Operator": { // DUP1
-					return dupXoperator(1, this);
-				}
-				case "Dup2Operator": { // DUP2
-					return dupXoperator(2, this);
-				}
-				case "Dup3Operator": { // DUP3
-					return dupXoperator(3, this);
-				}
-				case "Dup4Operator": { // DUP4
-					return dupXoperator(4, this);
-				}
-				case "Dup5Operator": { // DUP5
-					return dupXoperator(5, this);
-				}
-				case "Dup6Operator": { // DUP6
-					return dupXoperator(6, this);
-				}
-				case "Dup7Operator": { // DUP7
-					return dupXoperator(7, this);
-				}
-				case "Dup8Operator": { // DUP8
-					return dupXoperator(8, this);
-				}
-				case "Dup9Operator": { // DUP9
-					return dupXoperator(9, this);
-				}
-				case "Dup10Operator": { // DUP10
-					return dupXoperator(10, this);
-				}
-				case "Dup11Operator": { // DUP11
-					return dupXoperator(11, this);
-				}
-				case "Dup12Operator": { // DUP12
-					return dupXoperator(12, this);
-				}
-				case "Dup13Operator": { // DUP13
-					return dupXoperator(13, this);
-				}
-				case "Dup14Operator": { // DUP14
-					return dupXoperator(14, this);
-				}
-				case "Dup15Operator": { // DUP15
-					return dupXoperator(15, this);
-				}
-				case "Dup16Operator": { // DUP16
-					return dupXoperator(16, this);
-				}
-				case "Swap1Operator": { // SWAP1
-					return swapXoperator(1, this);
-				}
-				case "Swap2Operator": { // SWAP2
-					return swapXoperator(2, this);
-				}
-				case "Swap3Operator": { // SWAP3
-					return swapXoperator(3, this);
-				}
-				case "Swap4Operator": { // SWAP4
-					return swapXoperator(4, this);
-				}
-				case "Swap5Operator": { // SWAP5
-					return swapXoperator(5, this);
-				}
-				case "Swap6Operator": { // SWAP6
-					return swapXoperator(6, this);
-				}
-				case "Swap7Operator": { // SWAP7
-					return swapXoperator(7, this);
-				}
-				case "Swap8Operator": { // SWAP8
-					return swapXoperator(8, this);
-				}
-				case "Swap9Operator": { // SWAP9
-					return swapXoperator(9, this);
-				}
-				case "Swap10Operator": { // SWAP10
-					return swapXoperator(10, this);
-				}
-				case "Swap11Operator": { // SWAP11
-					return swapXoperator(11, this);
-				}
-				case "Swap12Operator": { // SWAP12
-					return swapXoperator(12, this);
-				}
-				case "Swap13Operator": { // SWAP13
-					return swapXoperator(13, this);
-				}
-				case "Swap14Operator": { // SWAP14
-					return swapXoperator(14, this);
-				}
-				case "Swap15Operator": { // SWAP15
-					return swapXoperator(15, this);
-				}
-				case "Swap16Operator": { // SWAP16
-					return swapXoperator(16, this);
-				}
-				case "Log0Operator": { // LOG0
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(2);
+						return resultStack;
+					}
 
-					return resultStack;
-				}
-				case "Log1Operator": { // LOG1
-					if (hasBottomUntil(3))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(3);
+					case "CalldatacopyOperator": {
+						if (hasBottomUntil(3))
+							return bottom();
 
-					return resultStack;
-				}
-				case "Log2Operator": { // LOG2
-					if (hasBottomUntil(4))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(4);
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(3);
 
-					return resultStack;
-				}
-				case "Log3Operator": { // LOG3
-					if (hasBottomUntil(5))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(5);
+						if (this.getTaintedOpcode().contains(op))
+							return resultStack.copyWithMemory(TaintElement.TAINT);
 
-					return resultStack;
-				}
-				case "Log4Operator": { // LOG4
-					if (hasBottomUntil(6))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(6);
+						return resultStack;
+					}
 
-					return resultStack;
-				}
-				case "CreateOperator": { // CREATE
-					if (hasBottomUntil(3))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement value = resultStack.pop();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+					case "BlobHashOperator":
+					case "BalanceOperator":
+					case "BlockhashOperator":
+					case "NotOperator":
+					case "CalldataloadOperator":
+					case "SloadOperator":
+					case "IszeroOperator": { // pop 1, push 1
+						if (hasBottomUntil(1))
+							return bottom();
 
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.semantics(value, offset, length));
-					return resultStack;
-				}
-				case "Create2Operator": { // CREATE2
-					if (hasBottomUntil(4))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement value = resultStack.pop();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
-					TaintElement salt = resultStack.pop();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement opnd1 = resultStack.pop();
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.semantics(opnd1));
+						return resultStack;
+					}
 
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.semantics(value, offset, length, salt));
-					return resultStack;
-				}
-				case "CallOperator":
-				case "CallcodeOperator": { // pops 7, push 1
-					if (hasBottomUntil(7))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement gas = resultStack.pop();
-					TaintElement to = resultStack.pop();
-					TaintElement value = resultStack.pop();
-					TaintElement inOffset = resultStack.pop();
-					TaintElement inLength = resultStack.pop();
-					TaintElement outOffset = resultStack.pop();
-					TaintElement outLength = resultStack.pop();
+					case "MloadOperator": { // pop 1, push 1
+						if (hasBottomUntil(1))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.pop();
+						if (memory.isTaint())
+							resultStack.push(TaintElement.TAINT);
+						else if (memory.isClean())
+							resultStack.push(TaintElement.CLEAN);
 
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack
-								.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
-					return resultStack;
-				}
-				case "ReturnOperator": { // RETURN
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement offset = resultStack.pop();
-					TaintElement length = resultStack.pop();
+						return resultStack;
+					}
 
-					return resultStack;
-				}
-				case "DelegatecallOperator":
-				case "StaticcallOperator": { // pops 6, push 1
-					if (hasBottomUntil(6))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement gas = resultStack.pop();
-					TaintElement to = resultStack.pop();
-					TaintElement inOffset = resultStack.pop();
-					TaintElement inLength = resultStack.pop();
-					TaintElement outOffset = resultStack.pop();
-					TaintElement outLength = resultStack.pop();
+					case "MstoreOperator":
+					case "Mstore8Operator": { // pops 2
+						if (hasBottomUntil(2))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement offset = resultStack.pop();
+						TaintElement value = resultStack.pop();
 
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.semantics(gas, to, inOffset, inLength, outOffset, outLength));
-					return resultStack;
-				}
-				case "RevertOperator": { // REVERT
-					if (hasBottomUntil(2))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(2);
+						if (value.isTaint())
+							return resultStack.copyWithMemory(TaintElement.TAINT);
 
-					return resultStack;
-				}
-				case "InvalidOperator": { // INVALID
-					return this;
-				}
-				case "SelfdestructOperator": { // SELFDESTRUCT
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement recipient = resultStack.pop();
+						else if (value.isClean())
+							return resultStack;
+					}
+					case "McopyOperator": { // pops 3
+						if (hasBottomUntil(3))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
 
-					return resultStack;
-				}
-				case "CodecopyOperator": { // CODECOPY
-					if (hasBottomUntil(3))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(3);
+						resultStack.popX(3);
+						return resultStack;
+					}
 
-					return resultStack;
-				}
-				case "ExtcodesizeOperator": { // EXTCODESIZE
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement address = resultStack.pop();
+					case "ByteOperator":
+					case "ShlOperator":
+					case "ShrOperator":
+					case "SarOperator":
+					case "Sha3Operator":
+					case "AndOperator":
+					case "OrOperator":
+					case "XorOperator":
+					case "ExpOperator":
+					case "SignextendOperator":
+					case "LtOperator":
+					case "SltOperator":
+					case "GtOperator":
+					case "SgtOperator":
+					case "EqOperator":
+					case "SmodOperator":
+					case "ModOperator":
+					case "SdivOperator":
+					case "DivOperator":
+					case "MulOperator":
+					case "SubOperator":
+					case "AddOperator": { // pops 2, push 1
+						if (hasBottomUntil(2))
+							return bottom();
 
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.semantics(address));
-					return resultStack;
-				}
-				case "ExtcodecopyOperator": { // EXTCODECOPY
-					if (hasBottomUntil(4))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(4);
+						TaintAbstractDomain resultStack = clone();
+						TaintElement opnd1 = resultStack.pop();
+						TaintElement opnd2 = resultStack.pop();
 
-					return resultStack;
-				}
-				case "ReturndatacopyOperator": { // RETURNDATACOPY
-					if (hasBottomUntil(3))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					resultStack.popX(3);
+						resultStack.push(TaintElement.semantics(opnd1, opnd2));
+						return resultStack;
+					}
 
-					return resultStack;
-				}
-				case "ExtcodehashOperator": { // EXTCODEHASH
-					if (hasBottomUntil(1))
-						return bottom();
-					TaintAbstractDomain resultStack = clone();
-					TaintElement address = resultStack.pop();
+					case "MulmodOperator":
+					case "AddmodOperator": { // pops 3, push 1
+						if (hasBottomUntil(3))
+							return bottom();
 
-					if (this.getTaintedOpcode().contains(op))
-						resultStack.push(TaintElement.TAINT);
-					else
-						resultStack.push(TaintElement.semantics(address));
-					return resultStack;
-				}
+						TaintAbstractDomain resultStack = clone();
+						TaintElement opnd1 = resultStack.pop();
+						TaintElement opnd2 = resultStack.pop();
+						TaintElement opnd3 = resultStack.pop();
+
+						resultStack.push(TaintElement.semantics(opnd1, opnd2, opnd3));
+						return resultStack;
+					}
+
+					case "PopOperator": { // POP
+						if (hasBottomUntil(1))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.pop();
+						return resultStack;
+					}
+
+					case "SstoreOperator": { // pops 2
+						if (hasBottomUntil(2))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(2);
+
+						return resultStack;
+					}
+
+					case "Dup1Operator": { // DUP1
+						return dupXoperator(1, this);
+					}
+					case "Dup2Operator": { // DUP2
+						return dupXoperator(2, this);
+					}
+					case "Dup3Operator": { // DUP3
+						return dupXoperator(3, this);
+					}
+					case "Dup4Operator": { // DUP4
+						return dupXoperator(4, this);
+					}
+					case "Dup5Operator": { // DUP5
+						return dupXoperator(5, this);
+					}
+					case "Dup6Operator": { // DUP6
+						return dupXoperator(6, this);
+					}
+					case "Dup7Operator": { // DUP7
+						return dupXoperator(7, this);
+					}
+					case "Dup8Operator": { // DUP8
+						return dupXoperator(8, this);
+					}
+					case "Dup9Operator": { // DUP9
+						return dupXoperator(9, this);
+					}
+					case "Dup10Operator": { // DUP10
+						return dupXoperator(10, this);
+					}
+					case "Dup11Operator": { // DUP11
+						return dupXoperator(11, this);
+					}
+					case "Dup12Operator": { // DUP12
+						return dupXoperator(12, this);
+					}
+					case "Dup13Operator": { // DUP13
+						return dupXoperator(13, this);
+					}
+					case "Dup14Operator": { // DUP14
+						return dupXoperator(14, this);
+					}
+					case "Dup15Operator": { // DUP15
+						return dupXoperator(15, this);
+					}
+					case "Dup16Operator": { // DUP16
+						return dupXoperator(16, this);
+					}
+					case "Swap1Operator": { // SWAP1
+						return swapXoperator(1, this);
+					}
+					case "Swap2Operator": { // SWAP2
+						return swapXoperator(2, this);
+					}
+					case "Swap3Operator": { // SWAP3
+						return swapXoperator(3, this);
+					}
+					case "Swap4Operator": { // SWAP4
+						return swapXoperator(4, this);
+					}
+					case "Swap5Operator": { // SWAP5
+						return swapXoperator(5, this);
+					}
+					case "Swap6Operator": { // SWAP6
+						return swapXoperator(6, this);
+					}
+					case "Swap7Operator": { // SWAP7
+						return swapXoperator(7, this);
+					}
+					case "Swap8Operator": { // SWAP8
+						return swapXoperator(8, this);
+					}
+					case "Swap9Operator": { // SWAP9
+						return swapXoperator(9, this);
+					}
+					case "Swap10Operator": { // SWAP10
+						return swapXoperator(10, this);
+					}
+					case "Swap11Operator": { // SWAP11
+						return swapXoperator(11, this);
+					}
+					case "Swap12Operator": { // SWAP12
+						return swapXoperator(12, this);
+					}
+					case "Swap13Operator": { // SWAP13
+						return swapXoperator(13, this);
+					}
+					case "Swap14Operator": { // SWAP14
+						return swapXoperator(14, this);
+					}
+					case "Swap15Operator": { // SWAP15
+						return swapXoperator(15, this);
+					}
+					case "Swap16Operator": { // SWAP16
+						return swapXoperator(16, this);
+					}
+					case "Log0Operator": { // LOG0
+						if (hasBottomUntil(2))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(2);
+
+						return resultStack;
+					}
+					case "Log1Operator": { // LOG1
+						if (hasBottomUntil(3))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(3);
+
+						return resultStack;
+					}
+					case "Log2Operator": { // LOG2
+						if (hasBottomUntil(4))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(4);
+
+						return resultStack;
+					}
+					case "Log3Operator": { // LOG3
+						if (hasBottomUntil(5))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(5);
+
+						return resultStack;
+					}
+					case "Log4Operator": { // LOG4
+						if (hasBottomUntil(6))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(6);
+
+						return resultStack;
+					}
+					case "CreateOperator": { // CREATE
+						if (hasBottomUntil(3))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement value = resultStack.pop();
+						TaintElement offset = resultStack.pop();
+						TaintElement length = resultStack.pop();
+
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.semantics(value, offset, length));
+						return resultStack;
+					}
+					case "Create2Operator": { // CREATE2
+						if (hasBottomUntil(4))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement value = resultStack.pop();
+						TaintElement offset = resultStack.pop();
+						TaintElement length = resultStack.pop();
+						TaintElement salt = resultStack.pop();
+
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.semantics(value, offset, length, salt));
+						return resultStack;
+					}
+					case "CallOperator":
+					case "CallcodeOperator": { // pops 7, push 1
+						if (hasBottomUntil(7))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement gas = resultStack.pop();
+						TaintElement to = resultStack.pop();
+						TaintElement value = resultStack.pop();
+						TaintElement inOffset = resultStack.pop();
+						TaintElement inLength = resultStack.pop();
+						TaintElement outOffset = resultStack.pop();
+						TaintElement outLength = resultStack.pop();
+
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack
+									.push(TaintElement.semantics(gas, to, value, inOffset, inLength, outOffset, outLength));
+						return resultStack;
+					}
+					case "ReturnOperator": { // RETURN
+						if (hasBottomUntil(2))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement offset = resultStack.pop();
+						TaintElement length = resultStack.pop();
+
+						return resultStack;
+					}
+					case "DelegatecallOperator":
+					case "StaticcallOperator": { // pops 6, push 1
+						if (hasBottomUntil(6))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement gas = resultStack.pop();
+						TaintElement to = resultStack.pop();
+						TaintElement inOffset = resultStack.pop();
+						TaintElement inLength = resultStack.pop();
+						TaintElement outOffset = resultStack.pop();
+						TaintElement outLength = resultStack.pop();
+
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.semantics(gas, to, inOffset, inLength, outOffset, outLength));
+						return resultStack;
+					}
+					case "RevertOperator": { // REVERT
+						if (hasBottomUntil(2))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(2);
+
+						return resultStack;
+					}
+					case "InvalidOperator": { // INVALID
+						return this;
+					}
+					case "SelfdestructOperator": { // SELFDESTRUCT
+						if (hasBottomUntil(1))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement recipient = resultStack.pop();
+
+						return resultStack;
+					}
+					case "CodecopyOperator": { // CODECOPY
+						if (hasBottomUntil(3))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(3);
+
+						return resultStack;
+					}
+					case "ExtcodesizeOperator": { // EXTCODESIZE
+						if (hasBottomUntil(1))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement address = resultStack.pop();
+
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.semantics(address));
+						return resultStack;
+					}
+					case "ExtcodecopyOperator": { // EXTCODECOPY
+						if (hasBottomUntil(4))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(4);
+
+						return resultStack;
+					}
+					case "ReturndatacopyOperator": { // RETURNDATACOPY
+						if (hasBottomUntil(3))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						resultStack.popX(3);
+
+						return resultStack;
+					}
+					case "ExtcodehashOperator": { // EXTCODEHASH
+						if (hasBottomUntil(1))
+							return bottom();
+						TaintAbstractDomain resultStack = clone();
+						TaintElement address = resultStack.pop();
+
+						if (this.getTaintedOpcode().contains(op))
+							resultStack.push(TaintElement.TAINT);
+						else
+							resultStack.push(TaintElement.semantics(address));
+						return resultStack;
+					}
 				}
 			}
 		}
@@ -644,7 +644,7 @@ public abstract class TaintAbstractDomain
 
 	@Override
 	public TaintAbstractDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
-			SemanticOracle oracle) throws SemanticException {
+									  SemanticOracle oracle) throws SemanticException {
 		// nothing to do here
 		return this;
 	}
@@ -718,7 +718,7 @@ public abstract class TaintAbstractDomain
 	 * another.
 	 *
 	 * @param other the other domain
-	 * 
+	 *
 	 * @return a new domain representing the greatest lower bound of the two
 	 *             domains
 	 */
@@ -736,7 +736,7 @@ public abstract class TaintAbstractDomain
 	 * another.
 	 *
 	 * @param other the other domain
-	 * 
+	 *
 	 * @return a new domain representing the least upper bound of the two
 	 *             domains
 	 */
@@ -927,4 +927,11 @@ public abstract class TaintAbstractDomain
 	 */
 	public abstract TaintAbstractDomain mk(TaintElement[] array, TaintElement memory);
 
+	private TaintAbstractDomain copyWithMemory(TaintElement newMemory) {
+		TaintElement[] arrCopy = this.circularArray.clone();
+		TaintAbstractDomain res = mk(arrCopy, newMemory);
+		res.head = this.head;
+		res.tail = this.tail;
+		return res;
+	}
 }
