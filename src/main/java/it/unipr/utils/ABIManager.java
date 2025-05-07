@@ -1,6 +1,5 @@
 package it.unipr.utils;
 
-import it.unipr.analysis.contract.EventKnowledge;
 import it.unipr.analysis.contract.Signature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -74,6 +73,7 @@ public class ABIManager {
 	}
 
 	private static Set<Signature> parseABI(Path abi, String type) {
+		Set<String> stateMutabilityForbidden = Set.of("view", "pure");
 		Set<Signature> signatures = new HashSet<>();
 		String abiJson;
 
@@ -89,6 +89,12 @@ public class ABIManager {
 		for (int i = 0; i < abiArray.length(); i++) {
 			JSONObject obj = abiArray.getJSONObject(i);
 			if (obj.has("type") && obj.getString("type").equals(type)) {
+
+				/* We do not need to collect global variables */
+				if (obj.has("stateMutability")
+						&& stateMutabilityForbidden.contains(obj.getString("stateMutability")))
+					continue;
+
 				String functionName = obj.getString("name");
 				JSONArray inputs = obj.getJSONArray("inputs");
 				JSONArray outputs = obj.optJSONArray("outputs");
@@ -118,8 +124,6 @@ public class ABIManager {
 				String selector = getFunctionSelector(fullSignature);
 
 				signatures.add(new Signature(functionName, type, paramTypes, outputTypes, fullSignature, selector));
-
-//                log.debug("[{}] {} -> {}", type, fullSignature, selector);
 			}
 		}
 		return signatures;
@@ -210,11 +214,6 @@ public class ABIManager {
 			log.info("Parsing events");
 			Set<Signature> events = parseEventsFromABI(abi);
 			verifyFunctionSelectors(events, bytecode);
-
-			log.info("Computing events knowledge");
-			for (Signature event : events) {
-				log.debug("{}: {}", event.getFullSignature(), EventKnowledge.getKnowledge(event.getName()));
-			}
 		} catch (Exception e) {
 			log.error("Error reading ABI or bytecode file", e);
 		}

@@ -2,9 +2,7 @@ package it.unipr.checker;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jumpi;
-import it.unipr.cfg.ProgramCounterLocation;
+import it.unipr.cfg.*;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -20,10 +18,10 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TxOriginChecker implements
+public class RandomnessDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
-	private static final Logger log = LogManager.getLogger(TxOriginChecker.class);
+	private static final Logger log = LogManager.getLogger(RandomnessDependencyChecker.class);
 
 	private static boolean isEnabled = false;
 
@@ -45,9 +43,10 @@ public class TxOriginChecker implements
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Jumpi) {
-			EVMCFG cfg = (EVMCFG) graph;
+		EVMCFG cfg = ((EVMCFG) graph);
 
+		if (node instanceof Jump || node instanceof Jumpi || node instanceof Sstore
+				|| node instanceof Sha3)
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -56,65 +55,87 @@ public class TxOriginChecker implements
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
 				} catch (SemanticException e1) {
-					log.error("(TxOriginChecker): {}", e1.getMessage());
+					log.error("(RandomnessDependencyChecker): {}", e1.getMessage());
 				}
 
 				// Retrieve the symbolic stack from the analysis result
 				TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
-				// If the stack is bottom, the node is definitely
+				// If the stack is bottom, the jump is definitely
 				// unreachable
 				if (taintedStack.isBottom())
 					// Nothing to do
 					continue;
 				else {
-					if (taintedStack.getElementAtPosition(1).isBottom()
-							|| taintedStack.getElementAtPosition(2).isBottom())
-						// Nothing to do
-						continue;
-					else {
+					if (node instanceof Sha3
+							|| node instanceof Sstore
+							|| node instanceof Jumpi) {
+
 						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
 							raiseWarning(node, tool, cfg);
 						else if (TaintElement.isAtLeastOneTop(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
 							raisePossibleWarning(node, tool, cfg);
+
+					} else if (node instanceof Jump) {
+
+						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1)))
+							raiseWarning(node, tool, cfg);
+						else if (TaintElement.isAtLeastOneTop(taintedStack.getElementAtPosition(1)))
+							raisePossibleWarning(node, tool, cfg);
+
 					}
 				}
 			}
-		}
 
 		return true;
 	}
 
-	private void raiseWarning(Statement node, CheckToolWithAnalysisResults<
+	/**
+	 * Raises a warning indicating a randomness dependency vulnerability in the
+	 * analyzed program.
+	 *
+	 * @param sink the statement causing the warning
+	 * @param tool the analysis tool and results used for the check
+	 * @param cfg  the control flow graph where the warning is identified
+	 */
+	private void raiseWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
+		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
+		log.warn("[DEFINITE] Randomness dependency vulnerability at pc {} (line {}).",
+				sinkLoc.getPc(),
+				sinkLoc.getSourceCodeLine());
 
-		log.warn("[DEFINITE] Tx.Origin attack at pc {} (line {}).",
-				nodeLocation.getPc(),
-				nodeLocation.getSourceCodeLine());
-
-		String warn = "[DEFINITE] TxOrigin attack at "
-				+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
+		String warn = "[DEFINITE] Randomness dependency vulnerability at pc "
+				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
-		MyCache.getInstance().addTxOriginWarning(cfg.hashCode(), warn);
+		MyCache.getInstance().addRandomnessDependencyWarning(cfg.hashCode(), warn);
 	}
 
-	private void raisePossibleWarning(Statement node, CheckToolWithAnalysisResults<
+	/**
+	 * Logs a possible randomness dependency vulnerability warning and updates
+	 * the tool and cache with the detected issue.
+	 *
+	 * @param sink the statement where the potential vulnerability is detected
+	 * @param tool the analysis tool containing the current state and analysis
+	 *                 results
+	 * @param cfg  the control flow graph associated with the statement
+	 */
+	private void raisePossibleWarning(Statement sink, CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
+		ProgramCounterLocation sinkLoc = (ProgramCounterLocation) sink.getLocation();
 
-		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
+		log.warn("[POSSIBLE] Randomness dependency vulnerability at pc {} (line {}).",
+				sinkLoc.getPc(),
+				sinkLoc.getSourceCodeLine());
 
-		log.warn("[POSSIBLE] Tx.Origin attack at pc {} (line {}).", nodeLocation.getPc(),
-				nodeLocation.getSourceCodeLine());
-
-		String warn = "[POSSIBLE] Tx.Origin attack at "
-				+ ((ProgramCounterLocation) node.getLocation()).getSourceCodeLine();
+		String warn = "[POSSIBLE] Randomness dependency vulnerability at pc "
+				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
 		tool.warn(warn);
-		MyCache.getInstance().addPossibleTxOriginWarning(cfg.hashCode(), warn);
+		MyCache.getInstance().addPossibleRandomnessDependencyWarning(cfg.hashCode(), warn);
 	}
 }

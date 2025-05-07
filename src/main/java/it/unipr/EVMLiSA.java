@@ -2,16 +2,18 @@ package it.unipr;
 
 import it.unipr.analysis.*;
 import it.unipr.analysis.contract.SmartContract;
-import it.unipr.analysis.taint.TimestampDependencyAbstractDomain;
+import it.unipr.analysis.taint.RandomnessDependencyAbstractDomain;
 import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.checker.JumpSolver;
+import it.unipr.checker.RandomnessDependencyChecker;
 import it.unipr.checker.ReentrancyChecker;
-import it.unipr.checker.TimestampDependencyChecker;
 import it.unipr.checker.TxOriginChecker;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.frontend.EVMLiSAFeatures;
+import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.*;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -45,7 +47,6 @@ public class EVMLiSA {
 	private static final Logger log = LogManager.getLogger(EVMLiSA.class);
 
 	// Configuration
-	private static int CORES = 1;
 	private static boolean TEST_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
@@ -86,15 +87,21 @@ public class EVMLiSA {
 		SmartContract.setWorkingDirectory(workingDirectoryPath);
 	}
 
+	public static Path getWorkingDirectory() {
+		return EVMLiSA.OUTPUT_DIRECTORY_PATH;
+	}
+
+	public static int getCores() {
+		return EVMLiSAExecutor.getCoresAvailable();
+	}
+
 	/**
 	 * Sets the number of processing cores.
 	 *
 	 * @param cores the number of cores
 	 */
 	public static void setCores(int cores) {
-		if (cores > Runtime.getRuntime().availableProcessors())
-			cores = Runtime.getRuntime().availableProcessors() - 1;
-		EVMLiSA.CORES = Math.max(cores, 1);
+		EVMLiSAExecutor.setCoresAvailable(cores);
 	}
 
 	/**
@@ -105,11 +112,12 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Enables all security checkers.
+	 * Enables all security checkers (i.e., reentrancy, randomness dependency,
+	 * tx.origin).
 	 */
 	public static void enableAllSecurityCheckers() {
 		EVMLiSA.enableReentrancyChecker();
-		EVMLiSA.enableTimestampDependencyCheckerChecker();
+		EVMLiSA.enableRandomnessDependencyChecker();
 		EVMLiSA.enableTxOriginChecker();
 	}
 
@@ -121,10 +129,10 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Enables the timestamp dependency checker.
+	 * Enables the randomness dependency checker.
 	 */
-	public static void enableTimestampDependencyCheckerChecker() {
-		TimestampDependencyChecker.enableChecker();
+	public static void enableRandomnessDependencyChecker() {
+		RandomnessDependencyChecker.enableChecker();
 	}
 
 	/**
@@ -139,6 +147,10 @@ public class EVMLiSA {
 	 */
 	public static void setTestMode() {
 		TEST_MODE = true;
+	}
+
+	public static boolean isInTestMode() {
+		return TEST_MODE;
 	}
 
 	/**
@@ -196,11 +208,13 @@ public class EVMLiSA {
 
 		else {
 			JSONManager.throwNewError("No valid option provided.");
+			new HelpFormatter().printHelp("help", getOptions());
 			System.exit(1);
 		}
 
 		EVMLiSA.analyzeContract(contract);
 		System.err.println(contract);
+		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -209,7 +223,7 @@ public class EVMLiSA {
 	 * @param filePath the path to the file containing contract addresses
 	 */
 	public static void analyzeSetOfContracts(Path filePath) {
-		log.info("Building contracts...");
+		log.info("Building contracts.");
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
 		analyzeSetOfContracts(contracts);
 	}
@@ -220,19 +234,18 @@ public class EVMLiSA {
 	 * @param contracts the list of {@link SmartContract} to be analyzed
 	 */
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
-		log.info("Analyzing {} contracts...", contracts.size());
+		log.info("Analyzing {} contracts.", contracts.size());
 
-		ExecutorService executor = Executors.newFixedThreadPool(CORES);
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : contracts)
-			futures.add(executor.submit(() -> analyzeContract(contract)));
+			futures.add(EVMLiSAExecutor.submit(() -> analyzeContract(contract)));
 
-		log.info("{} contracts submitted to Thread pool with {} workers.", contracts.size(), CORES);
+		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(),
+				EVMLiSAExecutor.getCoresAvailable());
 
-		waitForCompletion(futures);
+		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
-		executor.shutdown();
 		log.info("Finished analysis of {} contracts.", contracts.size());
 
 		Path outputDir = OUTPUT_DIRECTORY_PATH.resolve("set-of-contracts");
@@ -247,22 +260,29 @@ public class EVMLiSA {
 			System.err.println(JSONManager.throwNewError("Failed to save results in " + outputDir));
 			System.exit(1);
 		}
+		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
-	 * Analyzes a given smart contract.
+	 * Builds the Control Flow Graph (CFG) for the given smart contract. This
+	 * method generates the CFG from the contract's mnemonic bytecode,
+	 * configures and runs the LiSA analysis, and stores the computed CFG and
+	 * statistics in the contract object.
 	 *
-	 * @param contract the smart contract to analyze
+	 * @param contract the smart contract for which the CFG is to be built
 	 */
-	public static void analyzeContract(SmartContract contract) {
-		log.info("Analyzing contract {}...", contract.getAddress());
+	public static void buildCFG(SmartContract contract) {
+		if (contract == null)
+			return;
+
+		log.info("[IN] Building CFG of contract {}.", contract.getName());
 
 		Program program = null;
 		try {
 			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
 		} catch (IOException e) {
 			System.err.println(
-					JSONManager.throwNewError("Unable to generate partial CFG from file", contract.toJson()));
+					JSONManager.throwNewError("Unable to generate partial CFG from file.", contract.toJson()));
 			System.exit(1);
 		}
 
@@ -273,62 +293,156 @@ public class EVMLiSA {
 		conf.semanticChecks.add(checker);
 
 		LiSA lisa = new LiSA(conf);
+
+		long startTime = System.currentTimeMillis();
 		lisa.run(program);
+		contract.setExecutionTime(System.currentTimeMillis() - startTime);
 
-		log.info("Analysis ended {}", contract.getAddress());
-
+		log.info("[OUT] CFG of contract {} built.", contract.getName());
+		log.info("[IN] Computing statistics of contract {}.", contract.getName());
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
 		contract.setCFG(checker.getComputedCFG());
 
+		log.debug("[OUT] Contract {} statistics: {}", contract.getAddress(), contract.getStatistics());
+
 		if (TEST_MODE)
 			return;
 
+		log.info("[IN] Computing functions and events of contract {}.", contract.getName());
 		contract.computeFunctionsSignatureEntryPoints();
 		contract.computeFunctionsSignatureExitPoints();
 		contract.computeEventsSignatureEntryPoints();
 		contract.computeEventsExitPoints();
+		log.info("[OUT] Functions and events of contract {} computed.", contract.getName());
+	}
 
-		if (ReentrancyChecker.isEnabled()) {
-			log.info("Running reentrancy checker...");
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new ReentrancyChecker());
-			lisa.run(program);
-			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()));
-		}
-		if (TxOriginChecker.isEnabled()) {
-			log.info("Running tx. origin checker...");
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TxOriginChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
-					new TypeEnvironment<>(new InferredTypes()));
-			lisa.run(program);
-			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()));
-		}
-		if (TimestampDependencyChecker.isEnabled()) {
-			log.info("Running timestamp dependency checker...");
-			conf.semanticChecks.clear();
-			conf.semanticChecks.add(new TimestampDependencyChecker());
-			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-					new TimestampDependencyAbstractDomain(),
-					new TypeEnvironment<>(new InferredTypes()));
-			lisa.run(program);
-			log.info("{} vulnerabilities found",
-					MyCache.getInstance().getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()));
-		}
+	/**
+	 * Runs all enabled security checkers on the given smart contract. This
+	 * method executes various security checkers (e.g., Reentrancy, TxOrigin,
+	 * and Randomness Dependency checkers) on the computed CFG of the contract.
+	 * It then stores the detected vulnerabilities in the contract object.
+	 *
+	 * @param contract the smart contract on which security checkers are
+	 *                     executed
+	 */
+	public static void runCheckers(SmartContract contract) {
+		if (contract == null || contract.getCFG() == null)
+			return;
+
+		log.info("[IN] Running checkers on contract {}.", contract.getName());
+
+		if (ReentrancyChecker.isEnabled())
+			runReentrancyChecker(contract);
+		if (TxOriginChecker.isEnabled())
+			runTxOriginChecker(contract);
+		if (RandomnessDependencyChecker.isEnabled())
+			runRandomnessDependencyChecker(contract);
 
 		contract.setVulnerabilities(
-				VulnerabilitiesObject.newVulnerabilitiesObject()
-						.reentrancy(
-								MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode()))
-						.txOrigin(MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode()))
-						.timestamp(MyCache.getInstance()
-								.getTimestampDependencyWarnings(checker.getComputedCFG().hashCode()))
-						.build());
-		contract.generateCFGWithBasicBlocks();
-		contract.toFile();
+				VulnerabilitiesObject.buildFromCFG(
+						contract.getCFG()));
+
+		log.info("[OUT] Checkers run on contract {}.", contract.getName());
+	}
+
+	/**
+	 * Analyzes a given smart contract.
+	 *
+	 * @param contract the smart contract to analyze
+	 */
+	public static void analyzeContract(SmartContract contract) {
+		log.info("[IN] Analyzing contract {}.", contract.getName());
+
+		buildCFG(contract);
+
+		if (!TEST_MODE) {
+			runCheckers(contract);
+			contract.generateCFGWithBasicBlocks();
+			contract.toFile();
+		}
+
+		log.info("[OUT] Analysis ended of contract {}.", contract.getName());
+	}
+
+	/**
+	 * Runs the reentrancy checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runReentrancyChecker(SmartContract contract) {
+		log.info("[IN] Running reentrancy checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Reentrancy checker
+		ReentrancyChecker checker = new ReentrancyChecker();
+		conf.semanticChecks.add(checker);
+		lisa.run(program);
+
+		log.info("[OUT] Reentrancy checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getReentrancyWarnings(contract.getCFG().hashCode()));
+	}
+
+	/**
+	 * Runs the randomness dependency checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runRandomnessDependencyChecker(SmartContract contract) {
+		log.info("[IN] Running randomness dependency checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Randomness dependency checker
+		RandomnessDependencyChecker checker = new RandomnessDependencyChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new RandomnessDependencyAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+
+		log.info(
+				"[OUT] Randomness dependency checker ended on {}, with {} definite and {} possible vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getRandomnessDependencyWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleRandomnessDependencyWarnings(contract.getCFG().hashCode()));
+	}
+
+	/**
+	 * Runs the tx. origin checker on the given smart contract.
+	 *
+	 * @param contract The smart contract to analyze.
+	 */
+	public static void runTxOriginChecker(SmartContract contract) {
+		log.info("[IN] Running tx. origin checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		// Tx. Origin checker
+		TxOriginChecker checker = new TxOriginChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new TxOriginAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+
+		log.info("[OUT] Tx. origin checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getTxOriginWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -448,8 +562,6 @@ public class EVMLiSA {
 				.maybeUnsoundJumps(maybeUnsoundJumps)
 				.build();
 
-		log.info("### Calculating statistics ###\n{}", stats);
-
 		return stats;
 	}
 
@@ -529,18 +641,19 @@ public class EVMLiSA {
 
 	private void setupGlobalOptions(CommandLine cmd) {
 		try {
-			CORES = cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1;
+			EVMLiSAExecutor
+					.setCoresAvailable(cmd.hasOption("cores") ? Integer.parseInt(cmd.getOptionValue("cores")) : 1);
 		} catch (Exception e) {
 			log.warn("Cores set to 1: {}", e.getMessage());
-			CORES = 1;
+			EVMLiSAExecutor.setCoresAvailable(1);
 		}
 
 		if (cmd.hasOption("checker-reentrancy") || cmd.hasOption("checker-all"))
 			ReentrancyChecker.enableChecker();
 		if (cmd.hasOption("checker-txorigin") || cmd.hasOption("checker-all"))
 			TxOriginChecker.enableChecker();
-		if (cmd.hasOption("checker-timestampdependency") || cmd.hasOption("checker-all"))
-			TimestampDependencyChecker.enableChecker();
+		if (cmd.hasOption("checker-randomnessdependency") || cmd.hasOption("checker-all"))
+			RandomnessDependencyChecker.enableChecker();
 
 		if (cmd.hasOption("output-directory-path"))
 			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
@@ -565,6 +678,8 @@ public class EVMLiSA {
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
+		if (cmd.hasOption("test-mode"))
+			EVMLiSA.setTestMode();
 	}
 
 	private Options getOptions() {
@@ -605,6 +720,7 @@ public class EVMLiSA {
 				.required(false)
 				.hasArg(true)
 				.build();
+
 		Option abiOption = Option.builder()
 				.longOpt("abi")
 				.desc("ABI of the bytecode to be analyzed (JSON format).")
@@ -675,9 +791,9 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
-		Option enableTimestampDependencyCheckerOption = Option.builder()
-				.longOpt("checker-timestampdependency")
-				.desc("Enable timestamp-dependency checker.")
+		Option enableRandomnessDependencyCheckerOption = Option.builder()
+				.longOpt("checker-randomnessdependency")
+				.desc("Enable randomness-dependency checker.")
 				.required(false)
 				.hasArg(false)
 				.build();
@@ -687,6 +803,13 @@ public class EVMLiSA {
 				.desc("Insert your Etherscan API key.")
 				.required(false)
 				.hasArg(true)
+				.build();
+
+		Option useTestModeOption = Option.builder()
+				.longOpt("test-mode")
+				.desc("Use the test mode (i.e., do not compute functions and events).")
+				.required(false)
+				.hasArg(false)
 				.build();
 
 		options.addOption(addressOption);
@@ -702,10 +825,11 @@ public class EVMLiSA {
 		options.addOption(enableAllCheckerOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
-		options.addOption(enableTimestampDependencyCheckerOption);
+		options.addOption(enableRandomnessDependencyCheckerOption);
 		options.addOption(outputDirectoryPathOption);
 		options.addOption(etherscanAPIKeyOption);
 		options.addOption(abiOption);
+		options.addOption(useTestModeOption);
 
 		return options;
 	}
@@ -723,24 +847,5 @@ public class EVMLiSA {
 			System.exit(1);
 			return null;
 		}
-	}
-
-	/**
-	 * Waits for all submitted tasks in the given list of futures to complete.
-	 *
-	 * @param futures A list of {@link Future} objects representing running
-	 *                    tasks.
-	 */
-	static private void waitForCompletion(List<Future<?>> futures) {
-		for (Future<?> future : futures)
-			try {
-				future.get();
-			} catch (ExecutionException e) {
-				System.err.println(JSONManager.throwNewError("Error during task execution: " + e.getMessage()));
-				System.exit(1);
-			} catch (InterruptedException ie) {
-				System.err.println(JSONManager.throwNewError("Interrupted during task execution: " + ie.getMessage()));
-				System.exit(1);
-			}
 	}
 }
