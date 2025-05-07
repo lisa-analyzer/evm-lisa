@@ -184,7 +184,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(circularArray);
+		if (isBottom())
+			return 0;
+		if (isTop())
+			return 1;
+		return Arrays.hashCode(toLogicalArray());
 	}
 
 	@Override
@@ -197,7 +201,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return false;
 
 		AbstractStack other = (AbstractStack) obj;
-		return Arrays.equals(this.circularArray, other.circularArray);
+		if (isBottom() || other.isBottom())
+			return isBottom() == other.isBottom();
+		if (isTop() || other.isTop())
+			return isTop() == other.isTop();
+		return Arrays.equals(this.toLogicalArray(), other.toLogicalArray());
 	}
 
 	/**
@@ -400,6 +408,13 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		return clone;
 	}
 
+	private StackElement[] toLogicalArray() {
+		StackElement[] logical = new StackElement[STACK_LIMIT];
+		for (int i = 0; i < STACK_LIMIT; i++)
+			logical[i] = circularArray[(head + i) % STACK_LIMIT];
+		return logical;
+	}
+
 	/**
 	 * Swaps the 1st with the (x + 1)-th element from the top of the stack and
 	 * returns the modified stack.
@@ -423,5 +438,4 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		clone.circularArray[topIndex] = temp;
 		return clone;
 	}
-
 }
