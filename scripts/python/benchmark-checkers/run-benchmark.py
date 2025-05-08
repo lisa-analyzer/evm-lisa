@@ -46,19 +46,19 @@ def delete_files(directory):
 def clean_files(directory_path):
     """
     Removes lines containing "Picked up _JAVA_OPTIONS" from all files in the specified directory.
-    
+
     Args:
         directory_path (str): The path to the directory containing files to clean.
     """
     for filename in os.listdir(directory_path):
         file_path = os.path.join(directory_path, filename)
-        
+
         if os.path.isfile(file_path):
             with open(file_path, 'r') as file:
-                lines = file.readlines()    
-            
+                lines = file.readlines()
+
             cleaned_lines = [line for line in lines if "Picked up _JAVA_OPTIONS" not in line]
-            
+
             if len(cleaned_lines) != len(lines):
                 with open(file_path, 'w') as file:
                     file.writelines(cleaned_lines)
@@ -140,7 +140,7 @@ def plot_results_timestamp(data_evmlisa, data_solidifi, name="no-name"):
 
     plt.xlabel('Problem ID')
     plt.ylabel('Value')
-    plt.title(f'[{name}] Comparison of results (timestamp-dependency)')
+    plt.title(f'[{name}] Comparison of results (randomness-dependency)')
     plt.xticks(sorted(set(keys2).union(keys3)))  # Show all problem IDs on x-axis
     plt.legend()
     plt.grid()
@@ -153,18 +153,18 @@ def plot_results_timestamp(data_evmlisa, data_solidifi, name="no-name"):
 
 def subtract_dicts(dict1, dict2):
     result = {}
-    
+
     for key in dict1:
         if key in dict2:
             result[key] = dict1[key] - dict2[key]
         else:
             result[key] = dict1[key]
-    
+
     return result
 
 def calculate_average(data):
     if not data:
-        return 0 
+        return 0
 
     total = sum(data.values())
     count = len(data)
@@ -176,7 +176,7 @@ def map_file_names_to_ids(sorted_data, index_path):
     """
     Map the file names in sorted_data to their corresponding IDs from the index JSON.
     """
-    
+
     with open(index_path, 'r') as index_file:
         file_index = json.load(index_file)
 
@@ -210,20 +210,20 @@ def build_evmlisa():
 def run_evmlisa(bytecode_file, result_evmlisa_dir, type="reentrancy"):
     """
     Runs the EVMLiSA analysis for a given bytecode file.
-    
+
     Args:
         bytecode_file (str): The path to the bytecode file.
-        
+
     Returns:
         str: The name of the results file.
     """
     bytecode_filename = os.path.basename(bytecode_file)
     result_filename = f"{os.path.splitext(bytecode_filename)[0]}-result.json"
     result_filepath = os.path.join(result_evmlisa_dir, result_filename)
-    
+
     command = (
         f"java -jar jars/evm-lisa.jar "
-        f"--filepath-bytecode {bytecode_file} "
+        f"--bytecode-path {bytecode_file} "
         # f"--stack-size 40 "
         # f"--stack-set-size 15 "
         # f"--creation-code "
@@ -233,7 +233,7 @@ def run_evmlisa(bytecode_file, result_evmlisa_dir, type="reentrancy"):
         # f"--output {os.path.splitext(bytecode_filename)[0]}"
         f"> /dev/null 2> {result_filepath}"
     )
-    
+
     try:
         subprocess.run(command, shell=True, check=True)
         return result_filepath
@@ -247,7 +247,7 @@ def evmlisa(bytecode_dir, results_dir, result_evmlisa_dir, type="reentrancy"):
     """
     delete_files(result_evmlisa_dir)
     os.makedirs(result_evmlisa_dir, exist_ok=True)
-    
+
     # Find all bytecode files
     bytecode_files = [os.path.join(bytecode_dir, f) for f in os.listdir(bytecode_dir) if f.endswith(".bytecode")]
     num_files = len(bytecode_files)
@@ -258,14 +258,14 @@ def evmlisa(bytecode_dir, results_dir, result_evmlisa_dir, type="reentrancy"):
 
     # Run analyses in parallel
     future_to_file = {_executor.submit(run_evmlisa, file, result_evmlisa_dir, type): file for file in bytecode_files}
-    
+
     with tqdm(total=num_files, desc=f"[EVMLISA] Analyzing bytecode files in '{bytecode_dir}'") as pbar:
         for future in as_completed(future_to_file):
             result_file = future.result()
             if result_file:
                 analysis_ended += 1
             pbar.update(1)
-    
+
     print(f"[EVMLISA] Completed {analysis_ended}/{num_files} from {bytecode_dir}.")
     delete_tmp_files(results_dir)
     delete_tmp_files("./execution/results")
@@ -274,47 +274,63 @@ def evmlisa(bytecode_dir, results_dir, result_evmlisa_dir, type="reentrancy"):
 
 def check_sound_analysis_evmlisa(directory_path):
     sound = True
-    
+
     for filename in os.listdir(directory_path):
         if filename.endswith(".json"):
             file_path = os.path.join(directory_path, filename)
             try:
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-                    
-                    if "solved-jumps-percent" in data:
-                        if data["solved-jumps-percent"] != 1 and data["solved-jumps-percent"] != -1:
-                            print(f"[EVMLiSA] {filename} - solved-jumps-percent: {data['solved-jumps-percent']}")
-                            sound = False
+
+                    if "statistics" in data:
+                        statistics = data["statistics"]
+
+                        if "unsound_jumps" in statistics:
+                            if statistics["unsound_jumps"] != 0:
+                                print(f"[EVMLiSA] {filename} - unsound_jumps: {statistics['unsound_jumps']}")
+                                sound = False
+                        else:
+                            print(f"[EVMLiSA] Warning: 'unsound_jumps' not found in {filename}")
+
+                        if "maybe_unsound_jumps" in statistics:
+                            if statistics["maybe_unsound_jumps"] != 0:
+                                print(f"[EVMLiSA] {filename} - maybe_unsound_jumps: {statistics['maybe_unsound_jumps']}")
+                                sound = False
+                        else:
+                            print(f"[EVMLiSA] Warning: 'maybe_unsound_jumps' not found in {filename}")
                     else:
-                        print(f"[EVMLiSA] Warning: 'solved-jumps-percent' not found in {filename}")
+                        print(f"[EVMLiSA] Warning: 'statistics' not found in {filename}")
             except Exception as e:
                 print(f"[EVMLiSA] ERROR: {filename}: {e}")
-    
-    if sound:
-        print("[EVMLiSA] All analysis are SOUND")
 
-def get_results_evmlisa(directory_path, print_data):
+    if sound:
+        print("[EVMLiSA] All analysis are SOUND.")
+
+def get_results_evmlisa(directory_path, print_data, vulnerability_type):
     warnings_counts = {}
     failed = 0
-    
+
     for filename in os.listdir(directory_path):
         if filename.endswith(".json"):
             file_path = os.path.join(directory_path, filename)
             try:
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-                    if "re-entrancy-warning" in data:
-                        warnings_counts[filename] = data['re-entrancy-warning']
-                    elif "tx-origin-warning" in data:
-                        warnings_counts[filename] = data['tx-origin-warning']
-                    elif "timestamp-dependency-warning" in data:
-                        warnings_counts[filename] = data['timestamp-dependency-warning']
+                    if "vulnerabilities" in data:
+                        vulnerabilities = data["vulnerabilities"]
+                        if "reentrancy" in vulnerabilities and vulnerability_type == "reentrancy":
+                            warnings_counts[filename] = vulnerabilities['reentrancy']
+                        elif "tx_origin" in vulnerabilities and vulnerability_type == "tx-origin":
+                            warnings_counts[filename] = vulnerabilities['tx_origin']
+                        elif "randomness_dependency" in vulnerabilities and vulnerability_type == "randomness-dependency":
+                            warnings_counts[filename] = vulnerabilities['randomness_dependency']
+                        else:
+                            print(f"[EVMLiSA] Warning: 'reentrancy', 'tx_origin' and 'timestam_dependency' not found in {filename}")
                     else:
-                        print(f"[EVMLiSA] Warning: 're-entrancy-warning', 'tx-origin-warning' and 'timestamp-dependency-warning' not found in {filename}")
+                        print(f"[EVMLiSA] Warning: 'vulnerabilities' not found in {filename}")
             except Exception as e:
                 failed += 1
-                # print(f"[EVMLiSA] ERROR: {filename}: {e}")            
+                # print(f"[EVMLiSA] ERROR: {filename}: {e}")
 
     results = defaultdict(int)
     for file, result in warnings_counts.items():
@@ -323,12 +339,12 @@ def get_results_evmlisa(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
-        
+
         match = re.match(r'buggy_(\d+)_(\d+)-\w+\.json', file)
         if match:
             id = int(match.group(1))
             results[id] += result
-        
+
         # smartbug & slise case
         match = re.match(r'(\d+)-\w+\.json', file)
         if match:
@@ -341,7 +357,7 @@ def get_results_evmlisa(directory_path, print_data):
             results[id] += result
 
     sorted_data = dict(sorted(results.items()))
-    
+
     print(print_data)
     print(sorted_data)
 
@@ -352,10 +368,10 @@ def get_results_evmlisa(directory_path, print_data):
 def run_ethersolve(bytecode_file, result_ethersolve_dir):
     """
     Runs the EtherSolve analysis for a given bytecode file.
-    
+
     Args:
         bytecode_file (str): The path to the bytecode file.
-        
+
     Returns:
         str: The name of the results file.
     """
@@ -363,17 +379,17 @@ def run_ethersolve(bytecode_file, result_ethersolve_dir):
     filename = os.path.splitext(bytecode_filename)[0]
     result_filename = filename + "-result.json"
     result_filepath = os.path.join(result_ethersolve_dir, result_filename)
-    
+
     command = (
         f"sleep 0.9 && "
         f"java -jar jars/EtherSolve.jar "
         f"--re-entrancy "
-        f"-o {result_filepath} "        
+        f"-o {result_filepath} "
         f"--creation --json "
         f"{bytecode_file} 2> /dev/null && "
         f"mv *re-entrancy.csv {result_ethersolve_dir}/{filename}-reentrancy.csv"
     )
-    
+
     try:
         subprocess.run(command, shell=True, check=True)
         return result_filepath
@@ -387,7 +403,7 @@ def ethersolve(bytecode_dir, result_ethersolve_dir):
     """
     delete_files(result_ethersolve_dir)
     os.makedirs(result_ethersolve_dir, exist_ok=True)
-    
+
     # Find all bytecode files
     bytecode_files = [os.path.join(bytecode_dir, f) for f in os.listdir(bytecode_dir) if f.endswith(".bytecode")]
     num_files = len(bytecode_files)
@@ -399,7 +415,7 @@ def ethersolve(bytecode_dir, result_ethersolve_dir):
     # Run analyses in parallel
     with ThreadPoolExecutor(max_workers=1) as executor:
         future_to_file = {executor.submit(run_ethersolve, file, result_ethersolve_dir): file for file in bytecode_files}
-        
+
         with tqdm(total=num_files, desc="[ETHERSOLVE] Analyzing bytecode files") as pbar:
             for future in as_completed(future_to_file):
                 result_file = future.result()
@@ -412,7 +428,7 @@ def ethersolve(bytecode_dir, result_ethersolve_dir):
 
 def get_results_ethersolve(directory_path, print_data):
     """
-    Counts occurrences of the word "SSTORE" in files with "reentrancy" in their names 
+    Counts occurrences of the word "SSTORE" in files with "reentrancy" in their names
     within the specified directory.
 
     Args:
@@ -426,9 +442,9 @@ def get_results_ethersolve(directory_path, print_data):
             if os.path.isfile(file_path):
                 with open(file_path, 'r') as file:
                     content = file.read()
-                
+
                 sstore_count = content.count("SSTORE")
-                
+
                 # print(f"{filename}: {sstore_count}")
                 sstore_counts[filename] = sstore_count
 
@@ -439,12 +455,12 @@ def get_results_ethersolve(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
-        
+
         match = re.match(r'buggy_(\d+)_(\d+)-\w+\.csv', file)
         if match:
             id = int(match.group(1))
             results[id] += result
-        
+
         # smartbugs & slise case
         match = re.match(r'(\d+)-\w+\.csv', file)
         if match:
@@ -455,12 +471,12 @@ def get_results_ethersolve(directory_path, print_data):
         if match:
             id = int(match.group(1))
             results[id] += result
-        
+
     sorted_data = dict(sorted(results.items()))
-    
+
     print(print_data)
     print(sorted_data)
-    
+
     return sorted_data
 
 #################################### SolidiFI
@@ -477,7 +493,7 @@ def get_results_solidifi(folder_path, type, print_data):
         11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
-    timestampdependency_subtraction_values = {
+    randomnessdependency_subtraction_values = {
         11: 1, 12: 9, 18: 1, 20: 2, 21: 4, 22: 7, 29: 3, 33: 3, 36: 7, 37: 1, 42: 3, 48: 1
     }
 
@@ -489,22 +505,21 @@ def get_results_solidifi(folder_path, type, print_data):
             # Extract the problem number from the file name
             problem_id = int(match.group(1))
             file_path = os.path.join(folder_path, file_name)
-            
+
             # Count the number of lines in the file
             with open(file_path, 'r') as file:
                 num_lines = sum(1 for _ in file)
-                
+
             # Store the line count in the dictionary
             if type == 'reentrancy':
                 line_counts[problem_id] = num_lines - 1 - reentrancy_subtraction_values.get(problem_id, 0)
             elif type == 'tx-origin':
                 line_counts[problem_id] = num_lines - 1 - txorigin_subtraction_values.get(problem_id, 0)
-            elif type == 'timestamp-dependency':
-                line_counts[problem_id] = num_lines - 1 - timestampdependency_subtraction_values.get(problem_id, 0)
-            
+            elif type == 'randomness-dependency':
+                line_counts[problem_id] = num_lines - 1 - randomnessdependency_subtraction_values.get(problem_id, 0)
+
 
     sorted_data = dict(sorted(line_counts.items()))
-
     print(print_data)
     print(sorted_data)
 
@@ -522,12 +537,12 @@ def get_results_smartbugs(json_path, print_data):
     # Load JSON data
     with open(json_path, 'r') as file:
         data = json.load(file)
-    
+
     # Iterate over each entry in the JSON data
     for entry in data:
         # Extract the filename without the extension
         file_id = int(os.path.splitext(entry["name"])[0])
-        
+
         # Count the vulnerabilities for the file
         vulnerability_counts[file_id] = len(entry.get("vulnerabilities", []))
 
@@ -536,7 +551,7 @@ def get_results_smartbugs(json_path, print_data):
 
     print(print_data)
     print(sorted_data)
-    
+
     return sorted_data
 
 #################################### slise
@@ -551,35 +566,35 @@ def get_results_slise(json_path, print_data):
     # Load JSON data
     with open(json_path, 'r') as file:
         data = json.load(file)
-    
+
     # Iterate over each entry in the JSON data
     for entry in data:
         # Extract the filename without the extension
         file_id = str(os.path.splitext(entry["name"])[0])
-        
+
         # Count the vulnerabilities for the file
         vulnerability_counts[file_id] = len(entry.get("vulnerabilities", []))
 
     # Sort the data by file ID
     sorted_data = dict(sorted(vulnerability_counts.items()))
-    sorted_data = map_file_names_to_ids(sorted_data, './reentrancy-slise-db1/match-file-index.json')
+    sorted_data = map_file_names_to_ids(sorted_data, './slise/reentrancy-db1/match-file-index.json')
 
     print(print_data)
     print(sorted_data)
-    
+
     return sorted_data
 
 #################################### Statistics
 def calculate_precision(data, truth):
     results_with_precision = {}
-    
+
     for key, value in data.items():
         truth_value = truth.get(key) if truth.get(key) is not None else 0
         diff = value - truth_value
         tp = fp = fn = 0
 
         if diff == 0: # True positive
-            tp = value 
+            tp = value
         elif diff > 0: # False positive
             fp = diff
             tp = truth_value
@@ -593,7 +608,7 @@ def calculate_precision(data, truth):
 
 def calculate_recall(data, truth):
     results_with_recall = {}
-    
+
     for key, value in data.items():
         truth_value = truth.get(key) if truth.get(key) is not None else 0
         diff = value - truth_value
@@ -610,23 +625,23 @@ def calculate_recall(data, truth):
 
         recall = tp / (tp + fn) if (tp + fn) != 0 else 0
         results_with_recall[key] = recall
-    
+
     return results_with_recall
 
 def calculate_f_measure(precision, recall):
     results_with_f_measure = {}
-    
+
     for key, p in precision.items():
         r = recall.get(key)
         f_measure = 2 * ((p * r) / (p + r)) if (p + r) != 0 else 0
         results_with_f_measure[key] = f_measure
-    
+
     return results_with_f_measure
 
 #################################### Main
 
 if __name__ == "__main__":
-    
+
     parser = argparse.ArgumentParser(description="EVMLiSA and EtherSolve analysis.")
     parser.add_argument("--solidifi", action="store_true", help="Run analysis on SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Run analysis on SmartBugs dataset")
@@ -634,36 +649,36 @@ if __name__ == "__main__":
     parser.add_argument("--no-analysis", action="store_true", help="Do not run the analysis, compute only the results")
     parser.add_argument("--reentrancy", action="store_true", help="Run analysis on reentrancy contracts")
     parser.add_argument("--tx-origin", action="store_true", help="Run analysis on tx-origin contracts")
-    parser.add_argument("--timestamp-dependency", action="store_true", help="Run analysis on timestamp-dependency contracts")
+    parser.add_argument("--randomness-dependency", action="store_true", help="Run analysis on randomness-dependency contracts")
 
     args = parser.parse_args()
-    
+
     if not args.no_analysis:
         build_evmlisa()
 
     if args.tx_origin:
         if args.solidifi:
             if not args.no_analysis:
-                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/tx-origin/bytecode/evmlisa', 
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/tx-origin/bytecode/evmlisa',
                                                                           'results_dir':        './solidifi/tx-origin/results',
                                                                           'result_evmlisa_dir': './solidifi/tx-origin/results/evmlisa',
                                                                           'type':               'txorigin'})
-                evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/vanilla/bytecode/evmlisa', 
+                evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/vanilla/bytecode/evmlisa',
                                                                                   'results_dir':        './solidifi/vanilla/results',
                                                                                   'result_evmlisa_dir': './solidifi/vanilla/results/evmlisa',
                                                                                   'type':               'txorigin'})
-                
+
                 evmlisa_vanilla_thread.start()
                 evmlisa_thread.start()
                 evmlisa_thread.join()
                 evmlisa_vanilla_thread.join()
 
                 check_sound_analysis_evmlisa('./solidifi/tx-origin/results/evmlisa')
-                  
+
             results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/tx.origin', 'tx-origin', 'solidify')
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/tx-origin/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla'))
-            
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/tx-origin/results/evmlisa', 'evmlisa-buggy-solidifi', 'tx-origin'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'tx-origin'))
+
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
             print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
@@ -674,34 +689,34 @@ if __name__ == "__main__":
 
             # F-measure
             print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
-            
+
             # Plot results
-            plot_results_txorigin(data_evmlisa=results_evmlisa, 
+            plot_results_txorigin(data_evmlisa=results_evmlisa,
                         data_solidifi=results_solidifi,
                         name='solidifi_tx-origin')
 
-    if args.timestamp_dependency:
+    if args.randomness_dependency:
         if args.solidifi:
             if not args.no_analysis:
-                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/timestamp-dependency/bytecode/evmlisa',
-                                                                          'results_dir':        './solidifi/timestamp-dependency/results',
-                                                                          'result_evmlisa_dir': './solidifi/timestamp-dependency/results/evmlisa',
-                                                                          'type':               'timestampdependency'})
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/randomness-dependency/bytecode/evmlisa',
+                                                                          'results_dir':        './solidifi/randomness-dependency/results',
+                                                                          'result_evmlisa_dir': './solidifi/randomness-dependency/results/evmlisa',
+                                                                          'type':               'randomnessdependency'})
                 evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/vanilla/bytecode/evmlisa',
                                                                                   'results_dir':        './solidifi/vanilla/results',
                                                                                   'result_evmlisa_dir': './solidifi/vanilla/results/evmlisa',
-                                                                                  'type':               'timestampdependency'})
+                                                                                  'type':               'randomnessdependency'})
 
                 evmlisa_vanilla_thread.start()
                 evmlisa_thread.start()
                 evmlisa_thread.join()
                 evmlisa_vanilla_thread.join()
 
-                check_sound_analysis_evmlisa('./solidifi/timestamp-dependency/results/evmlisa')
+                check_sound_analysis_evmlisa('./solidifi/randomness-dependency/results/evmlisa')
 
-            results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Timestamp-Dependency', 'timestamp-dependency', 'solidify')
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla'))
+            results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Timestamp-Dependency', 'randomness-dependency', 'solidify')
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/randomness-dependency/results/evmlisa', 'evmlisa-buggy-solidifi', 'randomness-dependency'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'randomness-dependency'))
 
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
@@ -717,21 +732,21 @@ if __name__ == "__main__":
             # Plot results
             plot_results_timestamp(data_evmlisa=results_evmlisa,
                          data_solidifi=results_solidifi,
-                         name='solidifi_timestamp-dependency')
+                         name='solidifi_randomness-dependency')
         if args.smartbugs:
-            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './smartbugs/timestamp-dependency/bytecode/evmlisa', 
-                                                                      'results_dir':        './smartbugs/timestamp-dependency/results',
-                                                                      'result_evmlisa_dir': './smartbugs/timestamp-dependency/results/evmlisa',
-                                                                      'type':               'timestampdependency'})
-                
+            evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './smartbugs/randomness-dependency/bytecode/evmlisa',
+                                                                      'results_dir':        './smartbugs/randomness-dependency/results',
+                                                                      'result_evmlisa_dir': './smartbugs/randomness-dependency/results/evmlisa',
+                                                                      'type':               'randomnessdependency'})
+
             evmlisa_thread.start()
             evmlisa_thread.join()
 
-            check_sound_analysis_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa')
+            check_sound_analysis_evmlisa('./smartbugs/randomness-dependency/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./smartbugs/timestamp-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs')                        
-            results_smartbugs = get_results_smartbugs('./smartbugs/timestamp-dependency/source-code/vulnerabilities.json', 'smartbugs')
-            
+            results_evmlisa = get_results_evmlisa('./smartbugs/randomness-dependency/results/evmlisa', 'evmlisa-buggy-smartbugs', 'randomness-dependency')
+            results_smartbugs = get_results_smartbugs('./smartbugs/randomness-dependency/source-code/vulnerabilities.json', 'smartbugs')
+
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
             print(f"Precision evmlisa (avg.): {calculate_average(evmlisa_precision)}")
@@ -742,9 +757,9 @@ if __name__ == "__main__":
 
             # F-measure
             print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
-            
+
             # Plot results
-            plot_results_timestamp(data_evmlisa=results_evmlisa, 
+            plot_results_timestamp(data_evmlisa=results_evmlisa,
                         data_solidifi=results_smartbugs,
                         name='smartbugs')
 
@@ -752,22 +767,22 @@ if __name__ == "__main__":
         if args.solidifi:
             # SolidiFI dataset
             if not args.no_analysis:
-                evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/vanilla/bytecode/evmlisa', 
+                evmlisa_vanilla_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/vanilla/bytecode/evmlisa',
                                                                                   'results_dir':        './solidifi/vanilla/results',
                                                                                   'result_evmlisa_dir': './solidifi/vanilla/results/evmlisa'})
-                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/reentrancy/bytecode/evmlisa', 
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './solidifi/reentrancy/bytecode/evmlisa',
                                                                           'results_dir':        './solidifi/reentrancy/results',
                                                                           'result_evmlisa_dir': './solidifi/reentrancy/results/evmlisa'})
-                
+
                 ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './solidifi/reentrancy/bytecode/ethersolve',
                                                                                 'result_ethersolve_dir':    './solidifi/reentrancy/results/ethersolve'})
                 ethersolve_vanilla_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './solidifi/vanilla/bytecode/ethersolve',
                                                                                         'result_ethersolve_dir':    './solidifi/vanilla/results/ethersolve'})
-                
+
                 evmlisa_vanilla_thread.start()
                 evmlisa_thread.start()
                 ethersolve_thread.start()
-                
+
                 ethersolve_thread.join()
                 evmlisa_vanilla_thread.join()
                 evmlisa_thread.join()
@@ -777,13 +792,13 @@ if __name__ == "__main__":
 
                 check_sound_analysis_evmlisa('./solidifi/reentrancy/results/evmlisa')
                 check_sound_analysis_evmlisa('./solidifi/vanilla/results/evmlisa')
-            
-            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/reentrancy/results/evmlisa', 'evmlisa-buggy-solidifi'),
-                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla'))
+
+            results_evmlisa = subtract_dicts(get_results_evmlisa('./solidifi/reentrancy/results/evmlisa', 'evmlisa-buggy-solidifi', 'reentrancy'),
+                                             get_results_evmlisa('./solidifi/vanilla/results/evmlisa', 'evmlisa-solidifi/vanilla', 'reentrancy'))
             results_ethersolve = subtract_dicts(get_results_ethersolve('./solidifi/reentrancy/results/ethersolve', 'ethersolve-buggy-solidifi'),
                                                 get_results_ethersolve('./solidifi/vanilla/results/ethersolve', 'ethersolve-solidifi/vanilla'))
             results_solidifi = get_results_solidifi('./solidifi/SolidiFI-buggy-contracts/Re-entrancy', 'reentrancy', 'solidify')
-            
+
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_solidifi)
             ethersolve_precision = calculate_precision(results_ethersolve, results_solidifi)
@@ -799,34 +814,34 @@ if __name__ == "__main__":
             # F-measure
             print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
             print(f"F-measure ethersolve (avg.): {calculate_average(calculate_f_measure(ethersolve_precision, ethersolve_recall))}")
-            
+
             # Plot results
-            plot_results(data_evmlisa=results_evmlisa, 
+            plot_results(data_evmlisa=results_evmlisa,
                         data_ethersolve=results_ethersolve,
                         data_solidifi=results_solidifi,
                         name='solidifi')
-        
+
         if args.smartbugs:
             # SmartBugs dataset
             if not args.no_analysis:
-                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-smartbugs/bytecode/evmlisa', 
-                                                                          'results_dir':        './reentrancy-smartbugs/results',
-                                                                          'result_evmlisa_dir': './reentrancy-smartbugs/results/evmlisa'})
-                ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-smartbugs/bytecode/ethersolve',
-                                                                                'result_ethersolve_dir':    './reentrancy-smartbugs/results/ethersolve'})
-                
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './smartbugs/reentrancy/bytecode/evmlisa',
+                                                                          'results_dir':        './smartbugs/reentrancy/results',
+                                                                          'result_evmlisa_dir': './smartbugs/reentrancy/results/evmlisa'})
+                ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './smartbugs/reentrancy/bytecode/ethersolve',
+                                                                                'result_ethersolve_dir':    './smartbugs/reentrancy/results/ethersolve'})
+
                 evmlisa_thread.start()
                 ethersolve_thread.start()
-                
+
                 ethersolve_thread.join()
                 evmlisa_thread.join()
 
-                check_sound_analysis_evmlisa('./reentrancy-smartbugs/results/evmlisa')
+                check_sound_analysis_evmlisa('./smartbugs/reentrancy/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./reentrancy-smartbugs/results/evmlisa', 'evmlisa-buggy-smartbugs')                        
-            results_ethersolve = get_results_ethersolve('./reentrancy-smartbugs/results/ethersolve', 'ethersolve-buggy-smartbugs')
-            results_smartbugs = get_results_smartbugs('./reentrancy-smartbugs/source-code/vulnerabilities.json', 'smartbugs')
-            
+            results_evmlisa = get_results_evmlisa('./smartbugs/reentrancy/results/evmlisa', 'evmlisa-buggy-smartbugs', 'reentrancy')
+            results_ethersolve = get_results_ethersolve('./smartbugs/reentrancy/results/ethersolve', 'ethersolve-buggy-smartbugs')
+            results_smartbugs = get_results_smartbugs('./smartbugs/reentrancy/source-code/vulnerabilities.json', 'smartbugs')
+
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_smartbugs)
             ethersolve_precision = calculate_precision(results_ethersolve, results_smartbugs)
@@ -842,34 +857,34 @@ if __name__ == "__main__":
             # F-measure
             print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
             print(f"F-measure ethersolve (avg.): {calculate_average(calculate_f_measure(ethersolve_precision, ethersolve_recall))}")
-            
+
             # Plot results
-            plot_results(data_evmlisa=results_evmlisa, 
+            plot_results(data_evmlisa=results_evmlisa,
                         data_ethersolve=results_ethersolve,
                         data_solidifi=results_smartbugs,
                         name='smartbugs')
-            
+
         if args.slise:
             # SliSE dataset
             if not args.no_analysis:
-                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './reentrancy-slise-db1/bytecode/evmlisa', 
-                                                                          'results_dir':        './reentrancy-slise-db1/results',
-                                                                          'result_evmlisa_dir': './reentrancy-slise-db1/results/evmlisa'})
-                ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './reentrancy-slise-db1/bytecode/ethersolve',
-                                                                                'result_ethersolve_dir':    './reentrancy-slise-db1/results/ethersolve'})
-                
+                evmlisa_thread = threading.Thread(target=evmlisa, kwargs={'bytecode_dir':       './slise/reentrancy-db1/bytecode/evmlisa',
+                                                                          'results_dir':        './slise/reentrancy-db1/results',
+                                                                          'result_evmlisa_dir': './slise/reentrancy-db1/results/evmlisa'})
+                ethersolve_thread = threading.Thread(target=ethersolve, kwargs={'bytecode_dir':             './slise/reentrancy-db1/bytecode/ethersolve',
+                                                                                'result_ethersolve_dir':    './slise/reentrancy-db1/results/ethersolve'})
+
                 evmlisa_thread.start()
                 ethersolve_thread.start()
-                
+
                 ethersolve_thread.join()
                 evmlisa_thread.join()
 
-                check_sound_analysis_evmlisa('./reentrancy-slise-db1/results/evmlisa')
+                check_sound_analysis_evmlisa('./slise/reentrancy-db1/results/evmlisa')
 
-            results_evmlisa = get_results_evmlisa('./reentrancy-slise-db1/results/evmlisa', 'evmlisa-buggy-slise-db1')                        
-            results_ethersolve = get_results_ethersolve('./reentrancy-slise-db1/results/ethersolve', 'ethersolve-buggy-slise-db1')
-            results_slise = get_results_slise('./reentrancy-slise-db1/source-code/vulnerabilities.json', 'slise-db1')
-            
+            results_evmlisa = get_results_evmlisa('./slise/reentrancy-db1/results/evmlisa', 'evmlisa-buggy-slise-db1', 'reentrancy')
+            results_ethersolve = get_results_ethersolve('./slise/reentrancy-db1/results/ethersolve', 'ethersolve-buggy-slise-db1')
+            results_slise = get_results_slise('./slise/reentrancy-db1/source-code/vulnerabilities.json', 'slise-db1')
+
             # Precision
             evmlisa_precision = calculate_precision(results_evmlisa, results_slise)
             ethersolve_precision = calculate_precision(results_ethersolve, results_slise)
@@ -885,12 +900,12 @@ if __name__ == "__main__":
             # F-measure
             print(f"F-measure evmlisa (avg.): {calculate_average(calculate_f_measure(evmlisa_precision, evmlisa_recall))}")
             print(f"F-measure ethersolve (avg.): {calculate_average(calculate_f_measure(ethersolve_precision, ethersolve_recall))}")
-            
+
             # Plot results
-            plot_results(data_evmlisa=results_evmlisa, 
+            plot_results(data_evmlisa=results_evmlisa,
                         data_ethersolve=results_ethersolve,
                         data_solidifi=results_slise,
                         name='slise')
-        
+
     # Shut down the global executor after all analyses are complete
     shutdown_executor()

@@ -975,8 +975,13 @@ public class EVMAbstractState
 						} else if (memory.isTop()) {
 							resultStack.push(StackElement.TOP);
 						} else {
-							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
 
+							BigInteger os = Number.toBigInteger(offset.getNumber());
+							if (os.compareTo(BigInteger.ZERO) < 0
+									|| os.compareTo(Number.MAX_INT) > 0)
+								continue;
+
+							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
 							StackElement mload = StackElement.fromBytes(mloadValue);
 
 							if (mload.isBottom())
@@ -1009,6 +1014,12 @@ public class EVMAbstractState
 						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
 						} else {
+
+							BigInteger os = Number.toBigInteger(offset.getNumber());
+							if (os.compareTo(BigInteger.ZERO) < 0
+									|| os.compareTo(Number.MAX_INT) > 0)
+								continue;
+
 							byte[] valueBytes = convertStackElementToBytes(value);
 							memoryResult = memoryResult.lub(memory.mstore(offset.getNumber().intValue(), valueBytes));
 						}
@@ -1035,10 +1046,15 @@ public class EVMAbstractState
 							memoryResult = AbstractMemory.TOP;
 						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
-						} else
+						} else {
+							BigInteger os = Number.toBigInteger(offset.getNumber());
+							if (os.compareTo(BigInteger.ZERO) < 0
+									|| os.compareTo(Number.MAX_INT) > 0)
+								continue;
+
 							memoryResult = memoryResult.lub(
 									memory.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue()));
-
+						}
 						result.add(stackResult);
 					}
 

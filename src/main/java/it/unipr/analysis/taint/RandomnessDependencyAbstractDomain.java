@@ -1,16 +1,19 @@
 package it.unipr.analysis.taint;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unipr.analysis.operator.BalanceOperator;
 import it.unipr.analysis.operator.BlockhashOperator;
 import it.unipr.analysis.operator.DifficultyOperator;
 import it.unipr.analysis.operator.TimestampOperator;
 import it.unive.lisa.symbolic.value.Operator;
-import java.util.*;
 
-public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
-	private static final TimestampDependencyAbstractDomain TOP = new TimestampDependencyAbstractDomain(
+public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
+	private static final RandomnessDependencyAbstractDomain TOP = new RandomnessDependencyAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TimestampDependencyAbstractDomain BOTTOM = new TimestampDependencyAbstractDomain(null,
+	private static final RandomnessDependencyAbstractDomain BOTTOM = new RandomnessDependencyAbstractDomain(null,
 			TaintElement.BOTTOM);
 
 	private static TaintElement[] createFilledArray(int size, TaintElement element) {
@@ -18,11 +21,11 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 		Arrays.fill(array, element);
 		return array;
 	}
-
+	
 	/**
 	 * Builds an initial symbolic stack.
 	 */
-	public TimestampDependencyAbstractDomain() {
+	public RandomnessDependencyAbstractDomain() {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
@@ -30,10 +33,10 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected TimestampDependencyAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		super(circularArray, memory);
+	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -52,18 +55,18 @@ public class TimestampDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TimestampDependencyAbstractDomain top() {
+	public RandomnessDependencyAbstractDomain top() {
 		return TOP;
 	}
 
 	@Override
-	public TimestampDependencyAbstractDomain bottom() {
+	public RandomnessDependencyAbstractDomain bottom() {
 		return BOTTOM;
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return new TimestampDependencyAbstractDomain(array, memory);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+		return new RandomnessDependencyAbstractDomain(stack, memory);
 	}
 
 }

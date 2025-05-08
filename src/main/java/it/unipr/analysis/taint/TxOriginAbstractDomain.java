@@ -1,22 +1,17 @@
 package it.unipr.analysis.taint;
 
-import it.unipr.analysis.operator.OriginOperator;
-import it.unive.lisa.symbolic.value.Operator;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+
+import it.unipr.analysis.operator.OriginOperator;
+import it.unive.lisa.symbolic.value.Operator;
 
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
 			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
-
-	private static TaintElement[] createFilledArray(int size, TaintElement element) {
-		TaintElement[] array = new TaintElement[size];
-		Arrays.fill(array, element);
-		return array;
-	}
 
 	/**
 	 * Builds an initial symbolic stack.
@@ -25,14 +20,20 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
 	}
 
+	private static TaintElement[] createFilledArray(int size, TaintElement element) {
+		TaintElement[] array = new TaintElement[size];
+		Arrays.fill(array, element);
+		return array;
+	}
+	
 	/**
 	 * Builds a taint abstract stack starting from a given stack and a list of
 	 * elements that push taint.
 	 *
-	 * @param circularArray the stack of values
+	 * @param stack the stack of values
 	 */
-	protected TxOriginAbstractDomain(TaintElement[] circularArray, TaintElement memory) {
-		super(circularArray, memory);
+	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		super(stack, memory);
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] array, TaintElement memory) {
-		return new TxOriginAbstractDomain(array, memory);
+	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+		return new TxOriginAbstractDomain(stack, memory);
 	}
 }

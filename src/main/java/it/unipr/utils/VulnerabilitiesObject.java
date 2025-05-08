@@ -1,80 +1,56 @@
 package it.unipr.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import it.unipr.cfg.EVMCFG;
 import org.json.JSONObject;
 
 /**
- * Represents an object that stores information about potential smart contract
- * vulnerabilities, including reentrancy, timestamp dependency, and tx. origin
- * usage.
+ * The {@code VulnerabilitiesObject} class represents a data model to hold
+ * various security vulnerability scores within a system. It provides methods to
+ * manage and build these scores, including utilities for JSON representation.
  */
 public class VulnerabilitiesObject {
-	private static final Logger log = LogManager.getLogger(VulnerabilitiesObject.class);
-
 	private int reentrancy;
-	private int timestamp;
+
+	private int randomness;
+	private int possibleRandomness;
+
 	private int txOrigin;
+	private int possibleTxOrigin;
+
 	private JSONObject json;
 
-	/**
-	 * Creates a new {@code VulnerabilitiesObject} with default values (-1) for
-	 * all vulnerabilities.
-	 */
 	private VulnerabilitiesObject() {
-		this.reentrancy = -1;
-		this.timestamp = -1;
-		this.txOrigin = -1;
+		this.reentrancy = 0;
+
+		this.randomness = 0;
+		this.possibleRandomness = 0;
+
+		this.txOrigin = 0;
+		this.possibleTxOrigin = 0;
+
 		this.json = new JSONObject();
 	}
 
-	/**
-	 * Creates a new {@code VulnerabilitiesObject} with specified values.
-	 *
-	 * @param reentrancy the reentrancy vulnerability score
-	 * @param timestamp  the timestamp dependency vulnerability score
-	 * @param txOrigin   the tx.origin vulnerability score
-	 * @param json       the JSON representation of the object
-	 */
-	private VulnerabilitiesObject(int reentrancy, int timestamp, int txOrigin, JSONObject json) {
+	private VulnerabilitiesObject(int reentrancy,
+			int randomness, int possibleRandomness,
+			int txOrigin, int possibleTxOrigin,
+			JSONObject json) {
+
 		this.reentrancy = reentrancy;
-		this.timestamp = timestamp;
+
+		this.randomness = randomness;
+		this.possibleRandomness = possibleRandomness;
+
 		this.txOrigin = txOrigin;
+		this.possibleTxOrigin = possibleTxOrigin;
+
 		this.json = json;
 
-		if (reentrancy != -1)
-			this.json.put("reentrancy", this.reentrancy);
-		if (timestamp != -1)
-			this.json.put("timestamp_dependency", this.timestamp);
-		if (txOrigin != -1)
-			this.json.put("tx_origin", this.txOrigin);
-	}
-
-	/**
-	 * Returns the reentrancy vulnerability score.
-	 *
-	 * @return the reentrancy score
-	 */
-	public int getReentrancy() {
-		return reentrancy;
-	}
-
-	/**
-	 * Returns the timestamp dependency vulnerability score.
-	 *
-	 * @return the timestamp dependency score
-	 */
-	public int getTimestamp() {
-		return timestamp;
-	}
-
-	/**
-	 * Returns the tx .origin vulnerability score.
-	 *
-	 * @return the tx. origin score
-	 */
-	public int getTxOrigin() {
-		return txOrigin;
+		this.json.put("reentrancy", this.reentrancy);
+		this.json.put("randomness_dependency", this.randomness);
+		this.json.put("randomness_dependency_possible", this.possibleRandomness);
+		this.json.put("tx_origin", this.txOrigin);
+		this.json.put("tx_origin_possible", this.possibleTxOrigin);
 	}
 
 	/**
@@ -99,14 +75,26 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
-	 * Sets the timestamp dependency vulnerability score.
+	 * Sets the randomness dependency vulnerability score.
 	 *
-	 * @param timestamp the timestamp dependency score
+	 * @param randomness the randomness dependency score
 	 * 
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
-	public VulnerabilitiesObject timestamp(int timestamp) {
-		this.timestamp = timestamp;
+	public VulnerabilitiesObject randomness(int randomness) {
+		this.randomness = randomness;
+		return this;
+	}
+
+	/**
+	 * Sets the possible randomness dependency vulnerability score.
+	 *
+	 * @param possibleRandomness the possible randomness dependency score
+	 * 
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject possibleRandomness(int possibleRandomness) {
+		this.possibleRandomness = possibleRandomness;
 		return this;
 	}
 
@@ -123,12 +111,53 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
+	 * Sets the possible tx. origin vulnerability score.
+	 *
+	 * @param possibleTxOrigin the tx. origin score
+	 *
+	 * @return the updated {@code VulnerabilitiesObject} instance
+	 */
+	public VulnerabilitiesObject possibleTxOrigin(int possibleTxOrigin) {
+		this.possibleTxOrigin = possibleTxOrigin;
+		return this;
+	}
+
+	/**
+	 * Builds a {@link VulnerabilitiesObject} from the given EVM control-flow
+	 * graph (CFG). This method retrieves various vulnerability warnings from
+	 * the cache based on the CFG's hash code and compiles them into a
+	 * {@link VulnerabilitiesObject}.
+	 *
+	 * @param cfg the EVM control-flow graph from which to extract vulnerability
+	 *                data
+	 * 
+	 * @return a {@link VulnerabilitiesObject} containing detected
+	 *             vulnerabilities
+	 */
+	public static VulnerabilitiesObject buildFromCFG(EVMCFG cfg) {
+		return VulnerabilitiesObject.newVulnerabilitiesObject()
+				.reentrancy(
+						MyCache.getInstance().getReentrancyWarnings(cfg.hashCode()))
+				.txOrigin(MyCache.getInstance().getTxOriginWarnings(cfg.hashCode()))
+				.possibleTxOrigin(MyCache.getInstance()
+						.getPossibleTxOriginWarnings(cfg.hashCode()))
+				.randomness(MyCache.getInstance()
+						.getRandomnessDependencyWarnings(cfg.hashCode()))
+				.possibleRandomness(MyCache.getInstance()
+						.getPossibleRandomnessDependencyWarnings(cfg.hashCode()))
+				.build();
+	}
+
+	/**
 	 * Builds a new {@code VulnerabilitiesObject} with the specified values.
 	 *
 	 * @return a new {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject build() {
-		return new VulnerabilitiesObject(reentrancy, timestamp, txOrigin, json);
+		return new VulnerabilitiesObject(reentrancy,
+				randomness, possibleRandomness,
+				txOrigin, possibleTxOrigin,
+				json);
 	}
 
 	/**
@@ -150,14 +179,4 @@ public class VulnerabilitiesObject {
 		return toJson().toString(4);
 	}
 
-	/**
-	 * Logs the vulnerability scores of the given {@code VulnerabilitiesObject}.
-	 *
-	 * @param vulnerabilities the vulnerabilities object to log
-	 */
-	public static void printVulnerabilities(VulnerabilitiesObject vulnerabilities) {
-		log.info("Reentrancy: {}", vulnerabilities.getReentrancy());
-		log.info("Timestamp dependency: {}", vulnerabilities.getTimestamp());
-		log.info("Tx.Origin: {}", vulnerabilities.getTxOrigin());
-	}
 }

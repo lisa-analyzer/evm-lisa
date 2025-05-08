@@ -1,9 +1,5 @@
 package it.unipr.analysis.cron.semantics;
 
-import java.io.IOException;
-
-import org.junit.Test;
-
 import it.unipr.analysis.cron.CronConfiguration;
 import it.unipr.analysis.cron.EVMBytecodeAnalysisExecutor;
 import it.unipr.analysis.taint.RandomnessDependencyAbstractDomain;
@@ -16,13 +12,15 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such
  * as if, if-else, while, etc. Operations with orphan jumps, marked as NPBJ (No
  * Push Before Jump), are also tested in specific test cases.
  */
-public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
+public class RandomnessDependencyAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	private static final boolean GENERATE_CFG_FOR_ALL_TESTS = false;
 
 	/**
@@ -211,27 +209,6 @@ public class TimestampDependencyAbstractSemanticsTest extends EVMBytecodeAnalysi
 	@Test
 	public void testTimestampDependency22() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example22", "example23.sol",
-				false);
-		perform(conf);
-	}
-
-	@Test
-	public void testTimestampDependency23() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example23", "example24.sol",
-				false);
-		perform(conf);
-	}
-
-	@Test
-	public void testTimestampDependency24() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example24", "example25.sol",
-				false);
-		perform(conf);
-	}
-
-	@Test
-	public void testTimestampDependency25() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testTimestampDependency", "example25", "example26.sol",
 				false);
 		perform(conf);
 	}

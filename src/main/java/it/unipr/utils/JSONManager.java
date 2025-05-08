@@ -107,6 +107,15 @@ public class JSONManager {
 	 * @return a JSON array representing the basic blocks
 	 */
 	public static JSONArray basicBlocksToJson(SmartContract contract) {
+		if (contract.getFunctionsSignature() == null) {
+			log.warn("Unable to generate CFG with Basic Blocks (contract.getFunctionsSignature() is null)");
+			return new JSONArray();
+		}
+		if (contract.getEventsSignature() == null) {
+			log.warn("Unable to generate CFG with Basic Blocks (contract.getEventsSignature() is null)");
+			return new JSONArray();
+		}
+
 		JSONArray blocksArray = new JSONArray();
 
 		for (BasicBlock block : contract.getBasicBlocks()) {

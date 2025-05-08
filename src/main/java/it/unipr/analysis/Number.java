@@ -15,14 +15,14 @@ public class Number implements Comparable<Number> {
 	/**
 	 * Maximal representable integer value.
 	 */
-	private static final BigInteger MAX_INT = BigInteger.valueOf(2).pow(31);
+	public static final BigInteger MAX_INT = BigInteger.valueOf(2).pow(31);
 
 	/**
 	 * Maximal representable long value.
 	 */
-	private static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(63);
+	public static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(63);
 
-	private static enum Type {
+	public enum Type {
 		INT,
 		LONG,
 		BIGINTEGER
