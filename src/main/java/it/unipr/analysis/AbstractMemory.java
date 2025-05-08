@@ -12,6 +12,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -20,55 +21,65 @@ import org.apache.logging.log4j.Logger;
 
 public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
 	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
-
 	private static final int WORD_SIZE = 32;
-	private final byte[] memory;
+	private final AbstractByte[] memory;
 	private final boolean isTop;
 	public static final AbstractMemory BOTTOM = new AbstractMemory(null);
 	public static final AbstractMemory TOP = new AbstractMemory(null, true);
 
 	public AbstractMemory() {
-		this(new byte[0]);
+		this(new AbstractByte[0]);
 	}
 
-	public AbstractMemory(byte[] memory) {
+	public AbstractMemory(AbstractByte[] memory) {
 		this.memory = memory;
 		this.isTop = false;
 	}
 
-	public AbstractMemory(byte[] memory, boolean isTop) {
+	public AbstractMemory(AbstractByte[] memory, boolean isTop) {
 		this.memory = memory;
 		this.isTop = isTop;
 	}
 
-	public AbstractMemory mstore(int offset, byte[] value) {
-		if (value.length != WORD_SIZE) {
-			throw new IllegalArgumentException("The value must be 32 bytes");
+	public AbstractMemory mstore(int offset, StackElement e) {
+		if (e.isTop() || e.isTopNotJumpdest()) {
+			AbstractByte[] value = unknownBytes();
+			AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
+			System.arraycopy(value, 0, newMemory, offset, WORD_SIZE);
+			return new AbstractMemory(newMemory);
+		} else {
+			AbstractByte[] value = convertStackElementToBytes(e);
+			if (value.length != WORD_SIZE) {
+				throw new IllegalArgumentException("The value must be 32 bytes");
+			}
+			AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
+			System.arraycopy(value, 0, newMemory, offset, WORD_SIZE);
+			return new AbstractMemory(newMemory);
 		}
-		byte[] newMemory = ensureCapacity(offset + WORD_SIZE);
-		System.arraycopy(value, 0, newMemory, offset, WORD_SIZE);
-		return new AbstractMemory(newMemory);
 	}
 
-	public AbstractMemory mstore8(int offset, byte value) {
-		byte[] newMemory = ensureCapacity(offset + 1);
+	public AbstractMemory mstore8(int offset, AbstractByte value) {
+		AbstractByte[] newMemory = ensureCapacity(offset + 1);
 		newMemory[offset] = value;
 		return new AbstractMemory(newMemory);
 	}
 
-	public byte[] mload(int offset) {
-		byte[] newMemory = ensureCapacity(offset + WORD_SIZE);
-		byte[] result = new byte[WORD_SIZE];
+	public StackElement mload(int offset) {
+		AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
+		AbstractByte[] result = new AbstractByte[WORD_SIZE];
 		System.arraycopy(newMemory, offset, result, 0, WORD_SIZE);
-		return result;
+
+		if (isUnknown(result))
+			return StackElement.TOP;
+
+		return StackElement.fromBytes(result);
 	}
 
 	public AbstractMemory mcopy(int destOffset, int srcOffset, int length) {
 		if (length <= 0)
 			return this;
 
-		byte[] newMemory = ensureCapacity(Math.max(destOffset + length, srcOffset + length));
-
+		AbstractByte[] newMemory = ensureCapacity(Math.max(destOffset + length, srcOffset + length));
 		int availableSrc = Math.min(srcOffset + length, memory.length) - srcOffset;
 		int copyLength = Math.min(availableSrc, length);
 
@@ -78,14 +89,15 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return new AbstractMemory(newMemory);
 	}
 
-	private byte[] ensureCapacity(int size) {
+	private AbstractByte[] ensureCapacity(int size) {
 		int alignedSize = ((size + 31) / 32) * 32;
-		if (alignedSize <= memory.length) {
+		if (alignedSize <= memory.length)
 			return Arrays.copyOf(memory, memory.length);
-		}
-		byte[] newMemory = new byte[alignedSize];
-		Arrays.fill(newMemory, (byte) 0);
+
+		AbstractByte[] newMemory = new AbstractByte[alignedSize];
+		AbstractMemory.fill(newMemory, (byte) 0);
 		System.arraycopy(memory, 0, newMemory, 0, memory.length);
+
 		return newMemory;
 	}
 
@@ -116,8 +128,7 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return TOP;
 		else if (isBottom())
 			return BOTTOM;
-		AbstractMemory cloned = new AbstractMemory(Arrays.copyOf(this.memory, this.memory.length), false);
-		return cloned;
+		return new AbstractMemory(Arrays.copyOf(this.memory, this.memory.length), false);
 	}
 
 	@Override
@@ -126,24 +137,35 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return Lattice.TOP_STRING;
 		else if (memory == null)
 			return Lattice.BOTTOM_STRING;
-
-		StringBuilder hexString = new StringBuilder("");
-		for (byte b : memory)
-			hexString.append(String.format("%02X", b));
-
+		StringBuilder hexString = new StringBuilder();
+		for (AbstractByte b : memory)
+			hexString.append(b);
 		if (memory.length == 0 || hexString.toString().matches("^0+$"))
 			return "EMPTY";
-
 		return hexString.toString();
 	}
 
 	@Override
-	public AbstractMemory lubAux(AbstractMemory other) throws SemanticException {
-		return TOP;
+	public AbstractMemory lubAux(AbstractMemory other) {
+		int maxLength = Math.max(this.memory.length, other.memory.length);
+		AbstractByte[] result = new AbstractByte[maxLength];
+
+		for (int i = 0; i < maxLength; i++) {
+			if (i < this.memory.length && this.memory[i].isTop())
+				result[i] = new AbstractByte(); // top
+			else if (i < other.memory.length && other.memory[i].isTop())
+				result[i] = new AbstractByte(); // top
+			else {
+				AbstractByte b1 = i < this.memory.length ? this.memory[i] : new AbstractByte(0);
+				AbstractByte b2 = i < other.memory.length ? other.memory[i] : new AbstractByte(0);
+				result[i] = (b1 == b2) ? b1 : new AbstractByte();
+			}
+		}
+		return new AbstractMemory(result);
 	}
 
 	@Override
-	public boolean lessOrEqualAux(AbstractMemory other) throws SemanticException {
+	public boolean lessOrEqualAux(AbstractMemory other) {
 		return false;
 	}
 
@@ -230,26 +252,50 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return Lattice.topRepresentation();
 		else if (isBottom())
 			return Lattice.bottomRepresentation();
-
 		StringBuilder hexString = new StringBuilder("");
-		for (byte b : memory) {
-			hexString.append(String.format("%02X", b));
+		for (AbstractByte b : memory) {
+			hexString.append(b);
 		}
-
 		if (memory.length == 0 || hexString.toString().matches("^0+$"))
 			return new StringRepresentation("EMPTY");
-
 		return new StringRepresentation(hexString.toString());
 	}
 
-	static public String printBytes(byte[] bytes) {
-		StringBuilder hexString = new StringBuilder("");
-		for (byte b : bytes)
-			hexString.append(String.format("%02X", b));
-
+	static public String printBytes(AbstractByte[] bytes) {
+		StringBuilder hexString = new StringBuilder();
+		for (AbstractByte b : bytes)
+			hexString.append(b);
 		if (hexString.length() == 0)
 			hexString.append("0");
-
 		return hexString.toString();
+	}
+
+	private AbstractByte[] convertStackElementToBytes(StackElement element) {
+		AbstractByte[] bytes = new AbstractByte[32];
+		BigInteger bigIntValue = Number.toBigInteger(element.getNumber());
+		for (int i = 0; i < 32; i++) {
+			bytes[31 - i] = new AbstractByte(bigIntValue.shiftRight(i * 8).byteValue());
+		}
+		return bytes;
+	}
+
+	private AbstractByte[] unknownBytes() {
+		AbstractByte[] bytes = new AbstractByte[32];
+		for (int i = 0; i < 32; i++)
+			bytes[i] = new AbstractByte();
+		return bytes;
+	}
+
+	public static void fill(AbstractByte[] bytes, byte value) {
+		for (int i = 0; i < bytes.length; i++) {
+			bytes[i] = new AbstractByte(value);
+		}
+	}
+
+	private static boolean isUnknown(AbstractByte[] bytes) {
+		for (int i = 0; i < 32; i++)
+			if (bytes[i].isTop())
+				return true;
+		return false;
 	}
 }

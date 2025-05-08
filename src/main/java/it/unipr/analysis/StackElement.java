@@ -642,6 +642,18 @@ public class StackElement implements BaseLattice<StackElement> {
 		return byteArray;
 	}
 
+	/**
+	 * Creates a new StackElement by interpreting the given 32-byte array as an
+	 * unsigned big-endian integer.
+	 *
+	 * @param bytes a 32-byte array representing the stack element’s raw bytes
+	 * 
+	 * @return a StackElement whose numeric value corresponds to the provided
+	 *             byte array
+	 * 
+	 * @throws IllegalArgumentException if the input array is null or its length
+	 *                                      is not exactly 32 bytes
+	 */
 	public static StackElement fromBytes(byte[] bytes) {
 		if (bytes == null || bytes.length != 32)
 			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
@@ -652,10 +664,35 @@ public class StackElement implements BaseLattice<StackElement> {
 	}
 
 	/**
-	 * Checks whether this set it is definitely evaluated to {@code true}, i.e.,
-	 * if it does not contains zero.
+	 * Creates a new StackElement by extracting the byte values from the given
+	 * 32-element AbstractByte array and interpreting them as an unsigned
+	 * big-endian integer.
+	 *
+	 * @param bytes a 32-element array of AbstractByte instances
 	 * 
-	 * @return {@code true} if this set does not contains zero, {@code false}
+	 * @return a StackElement whose numeric value corresponds to the byte values
+	 *             of the provided AbstractByte array
+	 * 
+	 * @throws IllegalArgumentException if the input array is null or its length
+	 *                                      is not exactly 32 elements
+	 */
+	public static StackElement fromBytes(AbstractByte[] bytes) {
+		if (bytes == null || bytes.length != 32)
+			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
+
+		byte[] tmp = new byte[bytes.length];
+		for (int i = 0; i < bytes.length; i++)
+			tmp[i] = bytes[i].getValue();
+		BigInteger value = new BigInteger(1, tmp);
+
+		return new StackElement(new Number(value));
+	}
+
+	/**
+	 * Checks whether this set it is definitely evaluated to {@code true}, i.e.,
+	 * if it does not contain zero.
+	 * 
+	 * @return {@code true} if this set does not contain zero, {@code false}
 	 *             otherwise.
 	 */
 	public boolean isDefinitelyTrue() {

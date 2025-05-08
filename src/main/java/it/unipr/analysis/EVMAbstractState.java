@@ -2,6 +2,7 @@ package it.unipr.analysis;
 
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unipr.cfg.EVMCFG;
+import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.BaseLattice;
@@ -12,6 +13,9 @@ import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.edge.TrueEdge;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -72,7 +76,7 @@ public class EVMAbstractState
 
 	/**
 	 * Builds the abstract domain.
-	 * 
+	 *
 	 * @param isTop whether the abstract value is top.
 	 */
 	private EVMAbstractState(boolean isTop, String contractAddress) {
@@ -90,7 +94,7 @@ public class EVMAbstractState
 	/**
 	 * Builds a EVMAbsDomain with the given stack, memory and mu_i. The built
 	 * EVMAbsDomain is not TOP.
-	 * 
+	 *
 	 * @param stacks  the stack to be used.
 	 * @param memory  the memory to be used.
 	 * @param storage the storage to be used.
@@ -256,8 +260,18 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (jmpDest.isTop() || cfg.getAllJumpdestLocations().contains(jmpDest.getNumber()))
+						if (jmpDest.isTop())
 							result.add(resultStack);
+						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
+							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+									.filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc())
+											.equals(jmpDest.getNumber()))
+									.findFirst().get();
+
+							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
+								((EVMCFG) pp.getCFG()).addEdge(new SequentialEdge((Statement) pp, dest));
+							result.add(resultStack);
+						}
 
 					}
 
@@ -278,8 +292,17 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (jmpDest.isTop() || cfg.getAllJumpdestLocations().contains(jmpDest.getNumber()))
+						if (jmpDest.isTop())
 							result.add(resultStack);
+						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
+							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+									.filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest
+											.getNumber().intValue())
+									.findFirst().get();
+							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
+								((EVMCFG) pp.getCFG()).addEdge(new TrueEdge((Statement) pp, dest));
+							result.add(resultStack);
+						}
 					}
 
 					if (result.isEmpty())
@@ -975,14 +998,7 @@ public class EVMAbstractState
 						} else if (memory.isTop()) {
 							resultStack.push(StackElement.TOP);
 						} else {
-
-							BigInteger os = Number.toBigInteger(offset.getNumber());
-							if (os.compareTo(BigInteger.ZERO) < 0
-									|| os.compareTo(Number.MAX_INT) > 0)
-								continue;
-
-							byte[] mloadValue = memory.mload(offset.getNumber().intValue());
-							StackElement mload = StackElement.fromBytes(mloadValue);
+							StackElement mload = memory.mload(offset.getNumber().intValue());
 
 							if (mload.isBottom())
 								continue;
@@ -1009,19 +1025,15 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (offset.isTop() || value.isTop() || offset.isTopNotJumpdest() || value.isTopNotJumpdest()) {
+						if (offset.isTop() || offset.isTopNotJumpdest()) {
 							memoryResult = AbstractMemory.TOP;
 						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
 						} else {
-
-							BigInteger os = Number.toBigInteger(offset.getNumber());
-							if (os.compareTo(BigInteger.ZERO) < 0
-									|| os.compareTo(Number.MAX_INT) > 0)
-								continue;
-
-							byte[] valueBytes = convertStackElementToBytes(value);
-							memoryResult = memoryResult.lub(memory.mstore(offset.getNumber().intValue(), valueBytes));
+							memoryResult = memoryResult.lub(
+									memory.mstore(
+											offset.getNumber().intValue(),
+											value));
 						}
 						result.add(stackResult);
 					}
@@ -1042,19 +1054,22 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (offset.isTop() || value.isTop() || offset.isTopNotJumpdest() || value.isTopNotJumpdest()) {
+						if (offset.isTop() || offset.isTopNotJumpdest()) {
 							memoryResult = AbstractMemory.TOP;
 						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
-						} else {
-							BigInteger os = Number.toBigInteger(offset.getNumber());
-							if (os.compareTo(BigInteger.ZERO) < 0
-									|| os.compareTo(Number.MAX_INT) > 0)
-								continue;
-
+						} else if (value.isTop() || value.isTopNotJumpdest()) {
 							memoryResult = memoryResult.lub(
-									memory.mstore8(offset.getNumber().intValue(), (byte) value.getNumber().intValue()));
-						}
+									memory.mstore8(
+											offset.getNumber().intValue(),
+											new AbstractByte()));
+						} else
+							memoryResult = memoryResult.lub(
+									memory.mstore8(
+											offset.getNumber().intValue(),
+											new AbstractByte(
+													value.getNumber().intValue())));
+
 						result.add(stackResult);
 					}
 
@@ -1850,7 +1865,7 @@ public class EVMAbstractState
 	 * @param x     The position of the element to duplicate from the top of the
 	 *                  stack.
 	 * @param stack The original stack.
-	 * 
+	 *
 	 * @return A new stack with the specified element duplicated at the top.
 	 */
 	private AbstractStack dupX(int x, AbstractStack stack) {
@@ -1864,7 +1879,7 @@ public class EVMAbstractState
 	 * @param x     The position of the element to swap with the top of the
 	 *                  stack.
 	 * @param stack The original stack.
-	 * 
+	 *
 	 * @return A new stack with the specified elements swapped.
 	 */
 	private AbstractStack swapX(int x, AbstractStack stack) {
@@ -1984,9 +1999,9 @@ public class EVMAbstractState
 
 	/**
 	 * Helper method to convert a memory word to a BigInteger.
-	 * 
+	 *
 	 * @param expression the memory word to convert
-	 * 
+	 *
 	 * @return the BigInteger corresponding to the memory word
 	 */
 	private Number toBigInteger(SymbolicExpression expression) {
@@ -2021,7 +2036,7 @@ public class EVMAbstractState
 
 	/**
 	 * Getter for the interval value at the top of the stack.
-	 * 
+	 *
 	 * @return the interval value at the top of the stack.
 	 */
 	public Set<StackElement> getTop() {
@@ -2034,7 +2049,7 @@ public class EVMAbstractState
 
 	/**
 	 * Yields the second elements of all the stacks in the stack set.
-	 * 
+	 *
 	 * @return the second elements of all the stacks in the stack set
 	 */
 	public Set<StackElement> getSecondElement() {
@@ -2102,7 +2117,7 @@ public class EVMAbstractState
 	 * @param key     the storage key as a Number. This key will be converted to
 	 *                    a hexadecimal string.
 	 * @param address the Ethereum contract address as a String.
-	 * 
+	 *
 	 * @return a {@link StackElement} containing the storage value if the
 	 *             request is successful, or {@link StackElement#TOP} if an
 	 *             error occurs.
@@ -2134,17 +2149,6 @@ public class EVMAbstractState
 		}
 
 		return StackElement.TOP;
-	}
-
-	private byte[] convertStackElementToBytes(StackElement element) {
-		byte[] bytes = new byte[32];
-		BigInteger bigIntValue = Number.toBigInteger(element.getNumber());
-
-		for (int i = 0; i < 32; i++) {
-			bytes[31 - i] = bigIntValue.shiftRight(i * 8).byteValue();
-		}
-
-		return bytes;
 	}
 
 	@Override
