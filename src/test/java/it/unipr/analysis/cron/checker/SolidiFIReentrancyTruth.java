@@ -4,6 +4,7 @@ import it.unipr.analysis.EVMAbstractState;
 import it.unipr.checker.JumpSolver;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -20,11 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -39,8 +36,7 @@ public class SolidiFIReentrancyTruth {
 	@Test
 	public void testSolidiFIReentrancyTruth() throws Exception {
 		setSolidifiMap();
-		int cores = Runtime.getRuntime().availableProcessors() / 4 * 3;
-		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
+		List<Future<?>> futures = new ArrayList<>();
 
 		Path solidifiBuggyBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "solidifi", "reentrancy-truth", "bytecode");
@@ -49,7 +45,7 @@ public class SolidiFIReentrancyTruth {
 
 		// Run the benchmark on Buggy contracts
 		for (String bytecodeFileName : bytecodes) {
-			executor.submit(() -> {
+			futures.add(EVMLiSAExecutor.submit(() -> {
 				try {
 					String bytecodeFullPath = solidifiBuggyBytecodesDirPath.resolve(bytecodeFileName).toString();
 
@@ -86,7 +82,7 @@ public class SolidiFIReentrancyTruth {
 				} catch (Exception e) {
 					log.error("Error processing bytecode {}: {}", bytecodeFileName, e.getMessage(), e);
 				}
-			});
+			}));
 		}
 
 		Path solidifiVanillaBytecodesDirPath = Paths
@@ -96,7 +92,7 @@ public class SolidiFIReentrancyTruth {
 
 		// Run the benchmark on Vanilla contracts
 		for (String bytecodeFileName : bytecodes) {
-			executor.submit(() -> {
+			futures.add(EVMLiSAExecutor.submit(() -> {
 				try {
 					String bytecodeFullPath = solidifiVanillaBytecodesDirPath.resolve(bytecodeFileName).toString();
 
@@ -133,15 +129,15 @@ public class SolidiFIReentrancyTruth {
 				} catch (Exception e) {
 					log.error("Error processing bytecode {}: {}", bytecodeFileName, e.getMessage(), e);
 				}
-			});
+			}));
 		}
 
-		// Shutdown the executor and wait for completion
-		executor.shutdown();
-		if (!executor.awaitTermination(1, TimeUnit.HOURS)) {
-			log.error("Timeout reached while waiting for thread pool to terminate.");
-			executor.shutdownNow();
-		}
+		log.debug("{} contracts submitted to Thread pool with {} workers.", futures.size(),
+				EVMLiSAExecutor.getCoresAvailable());
+
+		// Wait for completion and shutdown the executor
+		EVMLiSAExecutor.awaitCompletionFutures(futures, 1, TimeUnit.HOURS);
+		EVMLiSAExecutor.shutdown();
 
 		log.info("Results buggy: {}", _resultsBuggy);
 		log.info("Results vanilla: {}", _resultsVanilla);
