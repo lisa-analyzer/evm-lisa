@@ -184,7 +184,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(circularArray);
+		if (isBottom())
+			return 0;
+		if (isTop())
+			return 1;
+		return Arrays.hashCode(toLogicalArray());
 	}
 
 	@Override
@@ -197,7 +201,12 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return false;
 
 		AbstractStack other = (AbstractStack) obj;
-		return Arrays.equals(this.circularArray, other.circularArray);
+		if (isBottom() || other.isBottom())
+			return isBottom() == other.isBottom();
+		if (isTop() || other.isTop())
+			return isTop() == other.isTop();
+		
+		return Arrays.equals(this.toLogicalArray(), other.toLogicalArray());
 	}
 
 	/**
@@ -413,8 +422,8 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return bottom();
 		x++;
 		int posX = (tail - x + STACK_LIMIT) % STACK_LIMIT; // Index of the
-															// element to swap
-															// with
+		// element to swap
+		// with
 		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
 
 		AbstractStack clone = clone();
@@ -422,6 +431,13 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		clone.circularArray[posX] = clone.circularArray[topIndex];
 		clone.circularArray[topIndex] = temp;
 		return clone;
+	}
+	
+	private StackElement[] toLogicalArray() {
+		StackElement[] logical = new StackElement[STACK_LIMIT];
+		for (int i = 0; i < STACK_LIMIT; i++)
+			logical[i] = circularArray[(head + i) % STACK_LIMIT];
+		return logical;
 	}
 
 }
