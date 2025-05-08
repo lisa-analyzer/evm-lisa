@@ -260,7 +260,7 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (jmpDest.isTop())
+						if (jmpDest.isTop() || ((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp))
 							result.add(resultStack);
 						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
 							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
@@ -292,7 +292,7 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (jmpDest.isTop())
+						if (jmpDest.isTop() || ((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp))
 							result.add(resultStack);
 						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
 							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
@@ -1062,7 +1062,7 @@ public class EVMAbstractState
 							memoryResult = memoryResult.lub(
 									memory.mstore8(
 											offset.getNumber().intValue(),
-											new AbstractByte()));
+											AbstractByte.UNKNOWN));
 						} else
 							memoryResult = memoryResult.lub(
 									memory.mstore8(

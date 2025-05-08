@@ -3,13 +3,15 @@ package it.unipr.analysis;
 import java.util.Objects;
 
 public class AbstractByte {
+	
+	public static final AbstractByte UNKNOWN = new AbstractByte();
 	private final byte value;
 	private final boolean isTop;
 
 	/**
 	 * Constructs an Abstract Byte representing the top element (unknown value).
 	 */
-	public AbstractByte() {
+	private AbstractByte() {
 		this((byte) 0, true);
 	}
 
@@ -48,6 +50,8 @@ public class AbstractByte {
 	 * @return the stored byte value
 	 */
 	public byte getValue() {
+		if (isTop())
+			throw new RuntimeException("Cannot retrieve the value of a top abstract byte");
 		return value;
 	}
 

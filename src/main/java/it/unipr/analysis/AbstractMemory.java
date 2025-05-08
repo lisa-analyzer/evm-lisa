@@ -1,5 +1,13 @@
 package it.unipr.analysis;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -12,12 +20,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.Predicate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
 	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
@@ -152,13 +154,13 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 
 		for (int i = 0; i < maxLength; i++) {
 			if (i < this.memory.length && this.memory[i].isTop())
-				result[i] = new AbstractByte(); // top
+				result[i] = AbstractByte.UNKNOWN;
 			else if (i < other.memory.length && other.memory[i].isTop())
-				result[i] = new AbstractByte(); // top
+				result[i] = AbstractByte.UNKNOWN;
 			else {
 				AbstractByte b1 = i < this.memory.length ? this.memory[i] : new AbstractByte(0);
 				AbstractByte b2 = i < other.memory.length ? other.memory[i] : new AbstractByte(0);
-				result[i] = (b1 == b2) ? b1 : new AbstractByte();
+				result[i] = (b1 == b2) ? b1 : AbstractByte.UNKNOWN;
 			}
 		}
 		return new AbstractMemory(result);
@@ -282,7 +284,7 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	private AbstractByte[] unknownBytes() {
 		AbstractByte[] bytes = new AbstractByte[32];
 		for (int i = 0; i < 32; i++)
-			bytes[i] = new AbstractByte();
+			bytes[i] = AbstractByte.UNKNOWN;
 		return bytes;
 	}
 
