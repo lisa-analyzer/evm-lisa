@@ -83,6 +83,6 @@ public class AbstractByte {
 
 	@Override
 	public String toString() {
-		return isTop ? "T" : String.format("%02X", value);
+		return this.isTop() ? "T" : String.format("%02X", value);
 	}
 }
