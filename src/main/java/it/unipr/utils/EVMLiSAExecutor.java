@@ -162,9 +162,6 @@ public class EVMLiSAExecutor {
 	 * submitted.
 	 */
 	public static void shutdown() {
-		log.debug("Tasks submitted: {}.", tasksExecuted);
-		log.debug("Tasks timed out: {}.", tasksTimedOut);
-		log.info("Shutting down executor.");
 		_executor.shutdown();
 	}
 
