@@ -53,6 +53,11 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return this;
 		}
 
+		if (offset < 0) {
+			log.warn("Offset is negative, ignoring mstore with offset {}.", offset);
+			return this;
+		}
+
 		if (e.isTop() || e.isTopNotJumpdest()) {
 			AbstractByte[] value = unknownBytes();
 			AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
@@ -75,6 +80,11 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return this;
 		}
 
+		if (offset < 0) {
+			log.warn("Offset is negative, ignoring mstore8 with offset {}.", offset);
+			return this;
+		}
+
 		AbstractByte[] newMemory = ensureCapacity(offset + 1);
 		newMemory[offset] = value;
 		return new AbstractMemory(newMemory);
@@ -83,6 +93,10 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	public StackElement mload(int offset) {
 		if (offset > MAX_MEMORY_SIZE) {
 			log.warn("Offset is greater than max memory size, ignoring mload with offset {}.", offset);
+			return StackElement.TOP;
+		}
+		if (offset < 0) {
+			log.warn("Offset is negative, ignoring mload with offset {}.", offset);
 			return StackElement.TOP;
 		}
 
@@ -108,6 +122,15 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			log.warn("Offset is greater than max memory size, ignoring mcopy with offset {}.", srcOffset);
 			return AbstractMemory.TOP;
 		}
+		if (destOffset < 0) {
+			log.warn("destOffset is negative, ignoring mcopy with offset {}.", destOffset);
+			return AbstractMemory.TOP;
+		}
+		if (srcOffset < 0) {
+			log.warn("srcOffset is negative, ignoring mcopy with offset {}.", srcOffset);
+			return AbstractMemory.TOP;
+		}
+
 
 		AbstractByte[] newMemory = ensureCapacity(Math.max(destOffset + length, srcOffset + length));
 		int availableSrc = Math.min(srcOffset + length, memory.length) - srcOffset;
