@@ -1,6 +1,16 @@
 package it.unipr.analysis;
 
-import it.unipr.analysis.operator.JumpiOperator;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
@@ -21,19 +31,9 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState
 		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
@@ -1889,51 +1889,7 @@ public class EVMAbstractState
 	@Override
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
 			SemanticOracle oracle) {
-		// Ensures BOTTOM and TOP propagation
-		if (this.isBottom() || this.isTop())
 			return this;
-
-		if (expression instanceof UnaryExpression) {
-			UnaryExpression un = (UnaryExpression) expression;
-			UnaryOperator op = un.getOperator();
-
-			if (op instanceof JumpiOperator) { // JUMPI
-
-				@SuppressWarnings("unchecked")
-				Pair<Set<AbstractStack>, Set<AbstractStack>> split = ((Pair<Set<AbstractStack>,
-						Set<AbstractStack>>) ((Constant) un.getExpression()).getValue());
-				if (split.getLeft().isEmpty() && split.getRight().isEmpty())
-					return top();
-				else if (split.getLeft().isEmpty())
-					return bottom();
-				return new EVMAbstractState(new AbstractStackSet(split.getLeft(), false), memory, storage);
-
-			} else if (op instanceof LogicalNegation) {
-				// Get the expression wrapped by LogicalNegation
-				SymbolicExpression wrappedExpr = un.getExpression();
-
-				if (wrappedExpr instanceof UnaryExpression) {
-					UnaryOperator wrappedOperator = ((UnaryExpression) wrappedExpr).getOperator();
-
-					// Check if LogicalNegation is wrapping a JUMPI
-					if (wrappedOperator instanceof JumpiOperator) { // !JUMPI
-
-						@SuppressWarnings("unchecked")
-						Pair<Set<AbstractStack>,
-								Set<AbstractStack>> split = ((Pair<Set<AbstractStack>, Set<
-										AbstractStack>>) ((Constant) ((UnaryExpression) wrappedExpr).getExpression())
-												.getValue());
-						if (split.getLeft().isEmpty() && split.getRight().isEmpty())
-							return top();
-						else if (split.getRight().isEmpty())
-							return bottom();
-						return new EVMAbstractState(new AbstractStackSet(split.getRight(), false), memory, storage);
-					}
-				}
-			}
-		}
-
-		return this;
 	}
 
 	@Override

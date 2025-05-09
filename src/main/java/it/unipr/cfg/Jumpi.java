@@ -1,8 +1,5 @@
 package it.unipr.cfg;
 
-import it.unipr.analysis.AbstractStack;
-import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.StackElement;
 import it.unipr.analysis.operator.JumpiOperator;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -13,12 +10,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.HashSet;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Jumpi opcode of the program to analyze.
@@ -49,39 +42,7 @@ public class Jumpi extends Statement {
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
-
-		EVMAbstractState valueState = entryState.getState().getDomainInstance(EVMAbstractState.class);
-
-		if (valueState == null) {
-			// if EVMLiSA is not using EVMAbstractState, we just return the
-			// small-step
-			// semantics of the JUMPI operator
-			Constant c = new Constant(Untyped.INSTANCE, this.getCFG().getOutgoingEdges(this).size(), getLocation());
-			return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
-					JumpiOperator.INSTANCE, getLocation()), this);
-		}
-
-		// Split here
-		Set<AbstractStack> trueStacks = new HashSet<>();
-		Set<AbstractStack> falseStacks = new HashSet<>();
-		if (!valueState.isBottom() && !valueState.isTop()) {
-			for (AbstractStack st : valueState.getStacks()) {
-				AbstractStack result = st.clone();
-				result.pop();
-				StackElement condition = result.pop();
-				if (condition.isDefinitelyTrue())
-					trueStacks.add(result);
-				else if (condition.isDefinitelyFalse())
-					falseStacks.add(result);
-				else if (condition.isUnknown()) {
-					trueStacks.add(result);
-					falseStacks.add(result);
-				}
-			}
-		}
-
-		Constant c = new Constant(Untyped.INSTANCE, Pair.of(trueStacks, falseStacks), getLocation());
-		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, c,
+		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 				JumpiOperator.INSTANCE, getLocation()), this);
 	}
 

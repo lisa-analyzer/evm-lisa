@@ -27,6 +27,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 
 	private static final AbstractStack TOP = new AbstractStack(createFilledArray(STACK_LIMIT, StackElement.TOP));
+	
 	/**
 	 * The bottom abstract element of this domain.
 	 */
