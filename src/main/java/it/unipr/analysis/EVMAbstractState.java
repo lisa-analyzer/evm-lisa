@@ -1,16 +1,5 @@
 package it.unipr.analysis;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMFrontend;
@@ -34,6 +23,15 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EVMAbstractState
 		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
@@ -991,11 +989,7 @@ public class EVMAbstractState
 						AbstractStack resultStack = stack.clone();
 						StackElement offset = resultStack.pop();
 
-						if (offset.isTop()) {
-							resultStack.push(StackElement.TOP);
-						} else if (offset.isTopNotJumpdest()) {
-							resultStack.push(StackElement.TOP);
-						} else if (memory.isTop()) {
+						if (offset.isTop() || memory.isTop() || memory.isTop()) {
 							resultStack.push(StackElement.TOP);
 						} else {
 							StackElement mload = memory.mload(offset.getNumber().intValue());
@@ -1025,14 +1019,9 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (offset.isTop() || offset.isTopNotJumpdest()) {
+						if (offset.isTop() || offset.isTopNotJumpdest() || memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
-						} else if (memory.isTop()) {
-							memoryResult = AbstractMemory.TOP;
-						} if (offset.getNumber().getType() != Number.Type.INT) {
-//							log.debug(offset.getNumber().getType());
-							continue;
-						}  else {
+						} else {
 							memoryResult = memoryResult.lub(
 									memory.mstore(
 											offset.getNumber().intValue(),
@@ -1057,9 +1046,7 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (offset.isTop() || offset.isTopNotJumpdest()) {
-							memoryResult = AbstractMemory.TOP;
-						} else if (memory.isTop()) {
+						if (offset.isTop() || offset.isTopNotJumpdest() || memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
 						} else if (value.isTop() || value.isTopNotJumpdest()) {
 							memoryResult = memoryResult.lub(
@@ -1892,7 +1879,7 @@ public class EVMAbstractState
 	@Override
 	public EVMAbstractState assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
 			SemanticOracle oracle) {
-			return this;
+		return this;
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 */
 
 	private static final AbstractStack TOP = new AbstractStack(createFilledArray(STACK_LIMIT, StackElement.TOP));
-	
+
 	/**
 	 * The bottom abstract element of this domain.
 	 */
@@ -206,7 +206,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return isBottom() == other.isBottom();
 		if (isTop() || other.isTop())
 			return isTop() == other.isTop();
-		
+
 		return Arrays.equals(this.toLogicalArray(), other.toLogicalArray());
 	}
 
@@ -433,12 +433,11 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		clone.circularArray[topIndex] = temp;
 		return clone;
 	}
-	
+
 	private StackElement[] toLogicalArray() {
 		StackElement[] logical = new StackElement[STACK_LIMIT];
 		for (int i = 0; i < STACK_LIMIT; i++)
 			logical[i] = circularArray[(head + i) % STACK_LIMIT];
 		return logical;
 	}
-
 }

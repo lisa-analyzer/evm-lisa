@@ -3,7 +3,7 @@ package it.unipr.analysis;
 import java.util.Objects;
 
 public class AbstractByte {
-	
+
 	public static final AbstractByte UNKNOWN = new AbstractByte();
 	private final byte value;
 	private final boolean isTop;

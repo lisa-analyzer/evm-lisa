@@ -1,13 +1,5 @@
 package it.unipr.analysis;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.Predicate;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -20,6 +12,12 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Predicate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
 	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
@@ -131,7 +129,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			return AbstractMemory.TOP;
 		}
 
-
 		AbstractByte[] newMemory = ensureCapacity(Math.max(destOffset + length, srcOffset + length));
 		int availableSrc = Math.min(srcOffset + length, memory.length) - srcOffset;
 		int copyLength = Math.min(availableSrc, length);
@@ -214,7 +211,7 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 				result[i] = (b1.equals(b2)) ? b1 : AbstractByte.UNKNOWN;
 			}
 		}
-	
+
 		return new AbstractMemory(result);
 	}
 
