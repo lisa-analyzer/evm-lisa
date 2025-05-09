@@ -23,9 +23,13 @@ import it.unive.lisa.util.representation.StructuredRepresentation;
 
 public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<AbstractMemory> {
 	private static final Logger log = LogManager.getLogger(AbstractMemory.class);
+
+	private static final int MAX_MEMORY_SIZE = 1024 * 1024 * 128; // 128 MB
 	private static final int WORD_SIZE = 32;
+
 	private final AbstractByte[] memory;
 	private final boolean isTop;
+
 	public static final AbstractMemory BOTTOM = new AbstractMemory(null);
 	public static final AbstractMemory TOP = new AbstractMemory(null, true);
 
@@ -44,10 +48,12 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	public AbstractMemory mstore(int offset, StackElement e) {
-		if (offset > 50000) {
-			log.debug("Too large volatile memory. Returning top");
-			return TOP;
-		} if (e.isTop() || e.isTopNotJumpdest()) {
+		if (offset > MAX_MEMORY_SIZE) {
+			log.warn("Offset is greater than max memory size, ignoring mstore with offset {}.", offset);
+			return this;
+		}
+
+		if (e.isTop() || e.isTopNotJumpdest()) {
 			AbstractByte[] value = unknownBytes();
 			AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
 			System.arraycopy(value, 0, newMemory, offset, WORD_SIZE);
@@ -64,12 +70,22 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	public AbstractMemory mstore8(int offset, AbstractByte value) {
+		if (offset > MAX_MEMORY_SIZE) {
+			log.warn("Offset is greater than max memory size, ignoring mstore8 with offset {}.", offset);
+			return this;
+		}
+
 		AbstractByte[] newMemory = ensureCapacity(offset + 1);
 		newMemory[offset] = value;
 		return new AbstractMemory(newMemory);
 	}
 
 	public StackElement mload(int offset) {
+		if (offset > MAX_MEMORY_SIZE) {
+			log.warn("Offset is greater than max memory size, ignoring mload with offset {}.", offset);
+			return StackElement.TOP;
+		}
+
 		AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
 		AbstractByte[] result = new AbstractByte[WORD_SIZE];
 		System.arraycopy(newMemory, offset, result, 0, WORD_SIZE);
@@ -83,6 +99,15 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	public AbstractMemory mcopy(int destOffset, int srcOffset, int length) {
 		if (length <= 0)
 			return this;
+
+		if (destOffset > MAX_MEMORY_SIZE) {
+			log.warn("Offset is greater than max memory size, ignoring mcopy with offset {}.", destOffset);
+			return AbstractMemory.TOP;
+		}
+		if (srcOffset > MAX_MEMORY_SIZE) {
+			log.warn("Offset is greater than max memory size, ignoring mcopy with offset {}.", srcOffset);
+			return AbstractMemory.TOP;
+		}
 
 		AbstractByte[] newMemory = ensureCapacity(Math.max(destOffset + length, srcOffset + length));
 		int availableSrc = Math.min(srcOffset + length, memory.length) - srcOffset;
