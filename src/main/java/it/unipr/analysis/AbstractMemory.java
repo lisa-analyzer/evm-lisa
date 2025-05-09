@@ -44,7 +44,10 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	public AbstractMemory mstore(int offset, StackElement e) {
-		if (e.isTop() || e.isTopNotJumpdest()) {
+		if (offset > 50000) {
+			log.debug("Too large volatile memory. Returning top");
+			return TOP;
+		} if (e.isTop() || e.isTopNotJumpdest()) {
 			AbstractByte[] value = unknownBytes();
 			AbstractByte[] newMemory = ensureCapacity(offset + WORD_SIZE);
 			System.arraycopy(value, 0, newMemory, offset, WORD_SIZE);
