@@ -50,12 +50,12 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	public AbstractMemory mstore(int offset, StackElement e) {
 		if (offset > MAX_MEMORY_SIZE) {
 			log.warn("Offset is greater than max memory size, ignoring mstore with offset {}.", offset);
-			return this;
+			return AbstractMemory.TOP;
 		}
 
 		if (offset < 0) {
 			log.warn("Offset is negative, ignoring mstore with offset {}.", offset);
-			return this;
+			return AbstractMemory.TOP;
 		}
 
 		if (e.isTop() || e.isTopNotJumpdest()) {
@@ -77,12 +77,12 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	public AbstractMemory mstore8(int offset, AbstractByte value) {
 		if (offset > MAX_MEMORY_SIZE) {
 			log.warn("Offset is greater than max memory size, ignoring mstore8 with offset {}.", offset);
-			return this;
+			return AbstractMemory.TOP;
 		}
 
 		if (offset < 0) {
 			log.warn("Offset is negative, ignoring mstore8 with offset {}.", offset);
-			return this;
+			return AbstractMemory.TOP;
 		}
 
 		AbstractByte[] newMemory = ensureCapacity(offset + 1);
