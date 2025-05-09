@@ -39,7 +39,7 @@ public class AbstractByte {
 	 * @param value the byte value to encapsulate
 	 * @param isTop if true, this instance represents an unknown (Top) value
 	 */
-	public AbstractByte(byte value, boolean isTop) {
+	private AbstractByte(byte value, boolean isTop) {
 		this.value = value;
 		this.isTop = isTop;
 	}
@@ -61,7 +61,7 @@ public class AbstractByte {
 	 * @return true if this is the Top element, false otherwise
 	 */
 	public boolean isTop() {
-		return isTop;
+		return this == UNKNOWN;
 	}
 
 	@Override

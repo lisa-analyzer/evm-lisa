@@ -160,9 +160,10 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			else {
 				AbstractByte b1 = i < this.memory.length ? this.memory[i] : new AbstractByte(0);
 				AbstractByte b2 = i < other.memory.length ? other.memory[i] : new AbstractByte(0);
-				result[i] = (b1 == b2) ? b1 : AbstractByte.UNKNOWN;
+				result[i] = (b1.equals(b2)) ? b1 : AbstractByte.UNKNOWN;
 			}
 		}
+	
 		return new AbstractMemory(result);
 	}
 
