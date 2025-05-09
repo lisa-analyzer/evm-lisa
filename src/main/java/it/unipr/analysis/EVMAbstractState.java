@@ -1029,7 +1029,10 @@ public class EVMAbstractState
 							memoryResult = AbstractMemory.TOP;
 						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
-						} else {
+						} if (offset.getNumber().getType() != Number.Type.INT) {
+//							log.debug(offset.getNumber().getType());
+							continue;
+						}  else {
 							memoryResult = memoryResult.lub(
 									memory.mstore(
 											offset.getNumber().intValue(),
