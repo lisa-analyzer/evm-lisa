@@ -258,16 +258,16 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (jmpDest.isTop() || ((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp))
+						if (jmpDest.isTop() || cfg.getAllPushedJumps().contains(pp))
 							result.add(resultStack);
-						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
-							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+						else if (cfg.getAllJumpdestLocations().contains(jmpDest.getNumber())) {
+							Statement dest = cfg.getAllJumpdest().stream()
 									.filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc())
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
 
 							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
-								((EVMCFG) pp.getCFG()).addEdge(new SequentialEdge((Statement) pp, dest));
+								cfg.addEdge(new SequentialEdge((Statement) pp, dest));
 							result.add(resultStack);
 						}
 
@@ -290,15 +290,15 @@ public class EVMAbstractState
 						if (jmpDest.isBottom() || cond.isBottom() || jmpDest.isTopNotJumpdest())
 							continue;
 
-						if (jmpDest.isTop() || ((EVMCFG) pp.getCFG()).getAllPushedJumps().contains(pp))
+						if (jmpDest.isTop() || cfg.getAllPushedJumps().contains(pp))
 							result.add(resultStack);
-						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
-							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
+						else if (cfg.getAllJumpdestLocations().contains(jmpDest.getNumber())) {
+							Statement dest = cfg.getAllJumpdest().stream()
 									.filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest
 											.getNumber().intValue())
 									.findFirst().get();
 							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
-								((EVMCFG) pp.getCFG()).addEdge(new TrueEdge((Statement) pp, dest));
+								cfg.addEdge(new TrueEdge((Statement) pp, dest));
 							result.add(resultStack);
 						}
 					}
