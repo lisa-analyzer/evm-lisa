@@ -267,24 +267,15 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	 * @return the element at the top of the stack before popping
 	 */
 	public StackElement pop() {
-
 		int topIndex = (tail - 1 + STACK_LIMIT) % STACK_LIMIT;
-		StackElement popped = circularArray[topIndex];
-
-		// Shift
+		StackElement poppedElement = circularArray[topIndex];
+		StackElement oldBottom = circularArray[head];
+		// rotate head back to shift everything up
 		head = (head - 1 + STACK_LIMIT) % STACK_LIMIT;
-		int bottomIndex = head;
-		int secondLogicalIndex = (head + 1) % STACK_LIMIT;
-
-		if (circularArray[secondLogicalIndex].isTop())
-			circularArray[bottomIndex] = StackElement.TOP;
-		else
-			circularArray[bottomIndex] = StackElement.BOTTOM;
-
-		tail = (head + STACK_LIMIT) % STACK_LIMIT;
-		circularArray[topIndex] = StackElement.BOTTOM;
-
-		return popped;
+		// tail follows head (stack remains “full” in structure)
+		tail = head;
+		circularArray[head] = oldBottom.isBottom() ? StackElement.BOTTOM : StackElement.TOP;
+		return poppedElement;
 	}
 
 	/**
@@ -430,32 +421,5 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		for (int i = 0; i < STACK_LIMIT; i++)
 			logical[i] = circularArray[(head + i) % STACK_LIMIT];
 		return logical;
-	}
-	
-	public static void main(String[] args) {
-	    AbstractStack.setStackLimit(3);
-
-	    // Stack2: [4, 5, 6], head=0, tail=0 → logico: [4, 5, 6]
-	    AbstractStack stack2 = new AbstractStack();
-	    stack2.push(new StackElement(4));
-	    stack2.push(new StackElement(5));
-	    stack2.push(new StackElement(6));
-	    stack2.head = 0;
-	    stack2.tail = 0;
-	    System.out.println("Stack2: " + stack2);
-
-	    /*Test2 - array fisicamente diversi ma logicamente uguali*/
-	    System.out.println("********** Test 2 ********** ");
-	    // Stack3: [1, 2, 3], head=1, tail=1 → logico: [2, 3, 1]
-	    AbstractStack stack3 = new AbstractStack();
-	    stack3.head = 1;
-	    stack3.tail = 1;
-	    System.out.println("Stack3: " + stack3);
-	    stack3.push(new StackElement(4));
-	    System.out.println("Stack3: " + stack3);
-	    stack3.push(new StackElement(5));
-	    System.out.println("Stack3: " + stack3);
-	    stack3.push(new StackElement(6));
-	    System.out.println("Stack3: " + stack3);
 	}
 }

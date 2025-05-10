@@ -7,8 +7,6 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.math.BigInteger;
 import java.util.Objects;
-import java.util.Stack;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

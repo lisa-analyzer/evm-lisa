@@ -247,6 +247,7 @@ public class Number implements Comparable<Number> {
 	 * Computes the modulo of this number by another number.
 	 *
 	 * @param other the number to divide by
+	 * 
 	 * @return the result as a {@code Number}
 	 */
 	public Number modulo(Number other) {

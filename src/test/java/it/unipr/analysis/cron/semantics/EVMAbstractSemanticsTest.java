@@ -97,13 +97,13 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("cfs", "mstore", "mstore_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testMstore2() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mstore2", "mstore_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testMstore3() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mstore3", "mstore_eth.sol", false);
@@ -119,6 +119,12 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testLT() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "lt", "lt_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testKeccak256() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "keccak256", "keccak.sol", false);
 		perform(conf);
 	}
 
