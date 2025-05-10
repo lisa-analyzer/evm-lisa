@@ -262,10 +262,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return NOT_JUMPDEST_TOP;
 
 		Number mul = this.n.multiply(other.n);
-		if (mul.compareTo(ZERO_INT) < 0)
-			mul = mul.add(MAX);
-		if (mul.compareTo(MAX) > 0)
-			mul = mul.subtract(MAX);
+		mul = mul.modulo(MAX);
 
 		return new StackElement(mul);
 	}

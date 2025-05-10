@@ -126,9 +126,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		AbstractByte[] result = new AbstractByte[WORD_SIZE];
 		System.arraycopy(newMemory, value, result, 0, WORD_SIZE);
 
-		log.debug("newMemory result: {}", printBytes(newMemory));
-		log.debug("mload result: {}", printBytes(result));
-
 		if (isUnknown(result))
 			return StackElement.TOP;
 
