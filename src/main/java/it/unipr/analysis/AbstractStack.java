@@ -146,16 +146,7 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 			return "BOTTOM";
 		if (isTop())
 			return "TOP";
-
-		StringBuilder sb = new StringBuilder("[");
-		for (int i = 0; i < STACK_LIMIT; i++) {
-			int pos = (head + i) % STACK_LIMIT;
-			sb.append(circularArray[pos]);
-			if (i < STACK_LIMIT - 1)
-				sb.append(", ");
-		}
-		sb.append("]");
-		return sb.toString();
+		return Arrays.toString(this.toLogicalArray());
 	}
 
 	@Override
@@ -439,5 +430,32 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		for (int i = 0; i < STACK_LIMIT; i++)
 			logical[i] = circularArray[(head + i) % STACK_LIMIT];
 		return logical;
+	}
+	
+	public static void main(String[] args) {
+	    AbstractStack.setStackLimit(3);
+
+	    // Stack2: [4, 5, 6], head=0, tail=0 → logico: [4, 5, 6]
+	    AbstractStack stack2 = new AbstractStack();
+	    stack2.push(new StackElement(4));
+	    stack2.push(new StackElement(5));
+	    stack2.push(new StackElement(6));
+	    stack2.head = 0;
+	    stack2.tail = 0;
+	    System.out.println("Stack2: " + stack2);
+
+	    /*Test2 - array fisicamente diversi ma logicamente uguali*/
+	    System.out.println("********** Test 2 ********** ");
+	    // Stack3: [1, 2, 3], head=1, tail=1 → logico: [2, 3, 1]
+	    AbstractStack stack3 = new AbstractStack();
+	    stack3.head = 1;
+	    stack3.tail = 1;
+	    System.out.println("Stack3: " + stack3);
+	    stack3.push(new StackElement(4));
+	    System.out.println("Stack3: " + stack3);
+	    stack3.push(new StackElement(5));
+	    System.out.println("Stack3: " + stack3);
+	    stack3.push(new StackElement(6));
+	    System.out.println("Stack3: " + stack3);
 	}
 }
