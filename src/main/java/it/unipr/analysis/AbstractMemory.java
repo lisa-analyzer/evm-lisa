@@ -55,20 +55,7 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 			log.warn("Offset is greater than max memory size, ignoring mstore with offset {}, value {}.", offset, e);
 			return AbstractMemory.BOTTOM;
 		}
-
-		if (offset.compareTo(StackElement.ZERO) < 0) {
-			log.warn("Offset is negative, ignoring mstore with offset {}, value {}.", offset, e);
-			return AbstractMemory.BOTTOM;
-		} else if (e.compareTo(StackElement.ZERO) < 0) {
-			log.warn("Value is negative, ignoring mstore with offset {}, value {}.", offset, e);
-			return AbstractMemory.BOTTOM;
-		}
-
-		if (offset.compareTo(new StackElement(Number.MAX_INT)) >= 0) {
-			log.warn("Offset is greater than max int representation, ignoring mstore with offset {}, value {}.", offset, e);
-			return AbstractMemory.BOTTOM; // fake path
-		} 
-
+		
 		int offsetInt = offset.getNumber().getInt();
 
 		if (e.isTop() || e.isTopNotJumpdest()) {
@@ -91,9 +78,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		if (offset.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn("Offset or value are greater than max memory size, ignoring mstore8 with offset {} and value {}.", offset, value);
 			return AbstractMemory.BOTTOM;
-		} else if (offset.compareTo(StackElement.ZERO) < 0) {
-			log.warn("Offset is negative, ignoring mstore8 with offset {}.", offset);
-			return AbstractMemory.BOTTOM;
 		}
 
 		int offsetInt = offset.getNumber().getInt();
@@ -112,9 +96,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		if (offset.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn("Offset is greater than max memory size, ignoring mload with offset {}.", offset);
 			return StackElement.BOTTOM;
-		} else if (offset.compareTo(StackElement.ZERO) < 0) {
-			log.warn("Offset is negative, ignoring mload with offset {}.", offset);
-			return StackElement.BOTTOM;
 		} else if (offset.compareTo(new StackElement(Number.MAX_INT)) >= 0) {
 			log.warn("Offset is greater than max int representation, ignoring mload with offset {}.", offset);
 			return StackElement.BOTTOM; // fake path
@@ -126,9 +107,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		AbstractByte[] result = new AbstractByte[WORD_SIZE];
 		System.arraycopy(newMemory, value, result, 0, WORD_SIZE);
 
-		log.debug("newMemory result: {}", printBytes(newMemory));
-		log.debug("mload result: {}", printBytes(result));
-
 		if (isUnknown(result))
 			return StackElement.TOP;
 
@@ -136,17 +114,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	public AbstractMemory mcopy(StackElement destOffset, StackElement srcOffset, StackElement length) {
-		if (length.compareTo(StackElement.ZERO) < 0) {
-			log.warn("Length is less than zero, ignoring mcopy with destOffset {}, srcOffset {}, length {}.", destOffset, srcOffset, length);
-			return this;
-		}  else if (destOffset.compareTo(StackElement.ZERO) < 0) {
-			log.warn("destOffset is negative, ignoring mcopy with destOffset {}, srcOffset {}, length {}.", destOffset, srcOffset, length);
-			return AbstractMemory.BOTTOM;
-		}  else if (srcOffset.compareTo(StackElement.ZERO) < 0) {
-			log.warn("srcOffset is negative, ignoring mcopy with destOffset {}, srcOffset {}, length {}.", destOffset, srcOffset, length);
-			return AbstractMemory.BOTTOM;
-		}
-
 		if (length.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn("length is greater than max memory size, ignoring mcopy with destOffset {}, srcOffset {}, length {}.", destOffset, srcOffset, length);
 			return AbstractMemory.TOP;
