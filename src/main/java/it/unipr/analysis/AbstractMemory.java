@@ -88,8 +88,7 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	public AbstractMemory mstore8(StackElement offset, StackElement value) {
-		if (offset.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0
-				|| value.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
+		if (offset.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn("Offset or value are greater than max memory size, ignoring mstore8 with offset {} and value {}.", offset, value);
 			return AbstractMemory.BOTTOM;
 		} else if (offset.compareTo(StackElement.ZERO) < 0) {
