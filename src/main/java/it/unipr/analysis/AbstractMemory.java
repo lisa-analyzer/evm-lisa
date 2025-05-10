@@ -67,10 +67,7 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		if (offset.compareTo(new StackElement(Number.MAX_INT)) >= 0) {
 			log.warn("Offset is greater than max int representation, ignoring mstore with offset {}, value {}.", offset, e);
 			return AbstractMemory.BOTTOM; // fake path
-		} else if (e.compareTo(new StackElement(Number.MAX_INT)) >= 0) {
-			log.warn("Value is greater than max int representation, ignoring mstore with offset {}, value {}.", offset, e);
-			return AbstractMemory.BOTTOM; // fake path
-		}
+		} 
 
 		int offsetInt = offset.getNumber().getInt();
 
