@@ -75,17 +75,21 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	}
 
 	public AbstractMemory mstore8(StackElement offset, StackElement value) {
+		if (offset.isTop() || offset.isTopNotJumpdest()) {
+			log.warn("Offset is TOP, ignoring mstore8 with offset {}, value {}.", offset, value);
+			return AbstractMemory.TOP;
+		}
+
 		if (offset.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn("Offset or value are greater than max memory size, ignoring mstore8 with offset {} and value {}.", offset, value);
 			return AbstractMemory.BOTTOM;
 		}
 
-		int offsetInt = offset.getNumber().getInt();
-		Number result = value.getNumber().modulo(new Number(256));
-
 		AbstractByte valueByte = (value.isTop() || value.isTopNotJumpdest())
 				? AbstractByte.UNKNOWN
-				: new AbstractByte(result.getInt());
+				: new AbstractByte(value.getNumber().modulo(new Number(256)).getInt());
+
+		int offsetInt = offset.getNumber().getInt();
 
 		AbstractByte[] newMemory = ensureCapacity(offsetInt + 1);
 		newMemory[offsetInt] = valueByte;
