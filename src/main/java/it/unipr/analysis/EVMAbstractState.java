@@ -214,7 +214,6 @@ public class EVMAbstractState
 				case "GaslimitOperator": // GASLIMIT
 				case "ChainidOperator": // CHAINID
 				case "SelfbalanceOperator": // SELFBALANCE
-				case "ReturndatasizeOperator": // RETURNDATASIZE
 				case "GaspriceOperator": // GASPRICE
 				case "CodesizeOperator": // CODESIZE
 				case "OriginOperator": // ORIGIN
@@ -230,6 +229,23 @@ public class EVMAbstractState
 					return new EVMAbstractState(result, memory, storage);
 				}
 
+				case "ReturndatasizeOperator": { // RETURNDATASIZE
+					for (AbstractStack stack : stacks) {
+						// stack corresponding to the case when
+						// last call failed
+						AbstractStack resultStackFailing = stack.clone();
+						resultStackFailing.push(StackElement.ZERO);
+						result.add(resultStackFailing);
+
+						// stack corresponding to the case when
+						// last call was successful
+						AbstractStack resultStackSuccess = stack.clone();
+						resultStackSuccess.push(stack.getOutSize());
+						result.add(resultStackSuccess);
+					}
+
+					return new EVMAbstractState(result, memory, storage);
+				}
 				case "PcOperator": { // PC
 					for (AbstractStack stack : stacks) {
 						AbstractStack resultStack = stack.clone();
@@ -1755,7 +1771,11 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(7))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(7);
+						resultStack.popX(6);
+
+						// Setting outsize
+						StackElement outSize = resultStack.pop();
+						resultStack.setOutSize(outSize);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1771,7 +1791,11 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(7))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(7);
+						resultStack.popX(6);
+
+						// Setting outsize
+						StackElement outSize = resultStack.pop();
+						resultStack.setOutSize(outSize);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1803,7 +1827,11 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(6);
+						resultStack.popX(5);
+
+						// Setting outsize
+						StackElement outSize = resultStack.pop();
+						resultStack.setOutSize(outSize);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1819,7 +1847,11 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(6);
+						resultStack.popX(5);
+
+						// Setting outsize
+						StackElement outSize = resultStack.pop();
+						resultStack.setOutSize(outSize);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
