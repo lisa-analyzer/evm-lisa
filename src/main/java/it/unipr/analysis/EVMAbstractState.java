@@ -692,8 +692,7 @@ public class EVMAbstractState
 						} else {
 							byte[] valueAsByteArray = target.getNumber().toByteArray();
 
-							if (indexOfByte.compareTo(StackElement.ZERO) < 0
-									|| indexOfByte.compareTo(new StackElement(valueAsByteArray.length)) >= 0)
+							if (indexOfByte.compareTo(new StackElement(valueAsByteArray.length)) >= 0)
 								resultStackElement.lub(StackElement.ZERO);
 							else if (indexOfByte.compareTo(new StackElement(Number.MAX_INT)) < 0) {
 								int selectedByteAsInt = valueAsByteArray[indexOfByte.getNumber().getInt()];
