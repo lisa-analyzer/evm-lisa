@@ -171,9 +171,6 @@ public class Number implements Comparable<Number> {
 	 * @return the product as a {@code Number}
 	 */
 	public Number multiply(Number other) {
-		if (this.getType() == other.getType() && other.getType() == Type.INT)
-			return new Number((long) i * other.getInt());
-
 		BigInteger me = toBigInteger(this);
 		BigInteger ot = toBigInteger(other);
 		return new Number(me.multiply(ot));
