@@ -294,9 +294,10 @@ public class EVMAbstractState
 							result.add(resultStack);
 						else if (cfg.getAllJumpdestLocations().contains(jmpDest.getNumber())) {
 							Statement dest = cfg.getAllJumpdest().stream()
-									.filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest
-											.getNumber().intValue())
+									.filter(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc())
+											.equals(jmpDest.getNumber()))
 									.findFirst().get();
+							
 							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
 								cfg.addEdge(new TrueEdge((Statement) pp, dest));
 							result.add(resultStack);
@@ -993,10 +994,6 @@ public class EVMAbstractState
 							resultStack.push(StackElement.TOP);
 						} else {
 							StackElement mload = memory.mload(offset.getNumber().intValue());
-
-							if (mload.isBottom())
-								continue;
-
 							resultStack.push(mload);
 						}
 
