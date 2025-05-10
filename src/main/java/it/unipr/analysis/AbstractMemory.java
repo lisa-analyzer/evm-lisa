@@ -258,7 +258,13 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 
 	@Override
 	public boolean lessOrEqualAux(AbstractMemory other) {
-		return false;
+		for (int i = 0; i < Math.max(this.memory.length, other.memory.length); i++) {
+			AbstractByte b1 = i < this.memory.length ? this.memory[i] : new AbstractByte(0);
+			AbstractByte b2 = i < other.memory.length ? other.memory[i] : new AbstractByte(0);
+			if (!b1.equals(b2) && !b2.isTop())
+				return false;
+		}
+		return true;
 	}
 
 	@Override
