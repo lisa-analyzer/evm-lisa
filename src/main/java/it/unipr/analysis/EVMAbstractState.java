@@ -32,6 +32,8 @@ import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jcajce.provider.digest.Keccak;
+import org.bouncycastle.jcajce.provider.digest.Keccak.Digest256;
 
 public class EVMAbstractState
 		implements ValueDomain<EVMAbstractState>, BaseLattice<EVMAbstractState> {
@@ -784,9 +786,31 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(2))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(2);
+						StackElement offset = resultStack.pop();
+						StackElement size = resultStack.pop();
 
-						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+						if (offset.isUnknown() || size.isUnknown() || memory.isTop())
+							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+						else {
+
+							// Read exactly `size` bytes from your abstract
+							// memory.
+							byte[] chunk = memory.readBytes(offset.getNumber().getInt(), size.getNumber().getInt());
+
+							if (chunk == null)
+								resultStack.push(StackElement.NOT_JUMPDEST_TOP);
+							else {
+								// Keccak-256 hash
+								Digest256 kecc = new Keccak.Digest256();
+								kecc.update(chunk, 0, chunk.length);
+								byte[] hash = kecc.digest();
+								BigInteger hashedValue = new BigInteger(1, hash);
+
+								// Push the concrete hash result
+								resultStack.push(new StackElement(hashedValue));
+							}
+						}
+
 						result.add(resultStack);
 					}
 
@@ -1018,6 +1042,9 @@ public class EVMAbstractState
 
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
+
+						if (((ProgramCounterLocation) pp.getLocation()).getSourceCodeLine() == 1575)
+							System.out.println("");
 
 						if (offset.isTop() || offset.isTopNotJumpdest() || memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
