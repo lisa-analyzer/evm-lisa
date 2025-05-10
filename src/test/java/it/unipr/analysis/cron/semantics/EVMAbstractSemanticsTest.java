@@ -97,6 +97,12 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("cfs", "mstore", "mstore_eth.sol", false);
 		perform(conf);
 	}
+	
+	@Test
+	public void testMstore2() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mstore2", "mstore_eth.sol", false);
+		perform(conf);
+	}
 
 	@Test
 	public void testMstore8() throws AnalysisSetupException, IOException {
