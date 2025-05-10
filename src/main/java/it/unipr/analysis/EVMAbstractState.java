@@ -266,11 +266,10 @@ public class EVMAbstractState
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
 
-							if (!pp.getCFG().getEdges().contains(new SequentialEdge((Statement) pp, dest)))
+							if (!cfg.getEdges().contains(new SequentialEdge((Statement) pp, dest)))
 								cfg.addEdge(new SequentialEdge((Statement) pp, dest));
 							result.add(resultStack);
 						}
-
 					}
 
 					if (result.isEmpty())
@@ -298,7 +297,7 @@ public class EVMAbstractState
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
 
-							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
+							if (!cfg.getEdges().contains(new TrueEdge((Statement) pp, dest)))
 								cfg.addEdge(new TrueEdge((Statement) pp, dest));
 							result.add(resultStack);
 						}
