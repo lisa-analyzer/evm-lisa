@@ -22,6 +22,9 @@ public class Number implements Comparable<Number> {
 	 */
 	public static final BigInteger MAX_LONG = BigInteger.valueOf(2).pow(63);
 
+	public static final Number ZERO = new Number(0);
+	public static final Number ONE = new Number(1);
+
 	public enum Type {
 		INT,
 		LONG,
@@ -235,12 +238,24 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Returns the bitwise NOT of this number.
-	 * 
+	 *
 	 * @return the bitwise complement as a {@code Number}
 	 */
 	public Number not() {
 		BigInteger me = toBigInteger(this);
 		return new Number(me.not());
+	}
+
+	/**
+	 * Computes the modulo of this number by another number.
+	 *
+	 * @param other the number to divide by
+	 * @return the result as a {@code Number}
+	 */
+	public Number modulo(Number other) {
+		BigInteger me = toBigInteger(this);
+		BigInteger ot = toBigInteger(other);
+		return new Number(me.mod(ot));
 	}
 
 	/**
@@ -275,20 +290,6 @@ public class Number implements Comparable<Number> {
 	public Number shiftLeft(int other) {
 		BigInteger me = toBigInteger(this);
 		return new Number(me.shiftLeft(other));
-	}
-
-	/**
-	 * Returns the integer value of this number.
-	 * 
-	 * @return the integer representation
-	 */
-	public int intValue() {
-		if (getType() == Type.INT)
-			return i;
-		else if (getType() == Type.LONG)
-			return Long.valueOf(l).intValue();
-		else
-			return toBigInteger(this).intValue();
 	}
 
 	@Override

@@ -7,10 +7,12 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.math.BigInteger;
 import java.util.Objects;
+import java.util.Stack;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StackElement implements BaseLattice<StackElement> {
+public class StackElement implements BaseLattice<StackElement>, Comparable<StackElement> {
 	private static final Logger log = LogManager.getLogger(StackElement.class);
 
 	private static final Number ZERO_INT = new Number(0);
@@ -79,8 +81,8 @@ public class StackElement implements BaseLattice<StackElement> {
 	 * 
 	 * @param i the integer value
 	 */
-	public StackElement(Integer i) {
-		this(new Number(i.intValue()));
+	public StackElement(int i) {
+		this(new Number(i));
 	}
 
 	/**
@@ -455,8 +457,15 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return TOP;
 
-		return new StackElement((new Number(new BigInteger(shiftLeft(other.n.toByteArray(), this.n.intValue())))));
+		return new StackElement(
+				new Number(
+						new BigInteger(
+								StackElement.shiftLeft(
+										other.n.toByteArray(),
+										this.n.getInt()))));
 	}
 
 	public StackElement shr(StackElement other) {
@@ -466,8 +475,10 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return TOP;
 
-		return new StackElement(other.n.shiftRight(this.n.intValue()));
+		return new StackElement(other.n.shiftRight(this.n.getInt()));
 	}
 
 	public StackElement sar(StackElement other) {
@@ -477,9 +488,15 @@ public class StackElement implements BaseLattice<StackElement> {
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return TOP;
 
 		return new StackElement(
-				new Number(new BigInteger(shiftArithmeticRight(other.n.toByteArray(), this.n.intValue()))));
+				new Number(
+						new BigInteger(
+								StackElement.shiftArithmeticRight(
+										other.n.toByteArray(),
+										this.n.getInt()))));
 	}
 
 	/**
@@ -755,6 +772,15 @@ public class StackElement implements BaseLattice<StackElement> {
 				&& !((StackElement) obj).isTopNotJumpdest())
 			return this.n.equals(((StackElement) obj).n);
 		return false;
+	}
+
+	@Override
+	public int compareTo(StackElement o) {
+		if (this.isBottom())
+			return o.isBottom() ? 0 : -1;
+		else if (this.isTop())
+			return o.isTop() ? 0 : 1;
+		return this.n.compareTo(o.n);
 	}
 
 	@Override

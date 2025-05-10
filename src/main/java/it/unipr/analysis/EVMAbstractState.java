@@ -295,7 +295,7 @@ public class EVMAbstractState
 						else if (((EVMCFG) pp.getCFG()).getAllJumpdestLocations().contains(jmpDest.getNumber())) {
 							Statement dest = ((EVMCFG) pp.getCFG()).getAllJumpdest().stream()
 									.filter(j -> ((ProgramCounterLocation) j.getLocation()).getPc() == jmpDest
-											.getNumber().intValue())
+											.getNumber().getInt())
 									.findFirst().get();
 							if (!pp.getCFG().getEdges().contains(new TrueEdge((Statement) pp, dest)))
 								((EVMCFG) pp.getCFG()).addEdge(new TrueEdge((Statement) pp, dest));
@@ -690,12 +690,12 @@ public class EVMAbstractState
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						} else {
 							byte[] valueAsByteArray = target.getNumber().toByteArray();
-							int intIndex = indexOfByte.getNumber().intValue();
 
-							if (intIndex <= 0 || intIndex >= valueAsByteArray.length) {
+							if (indexOfByte.compareTo(StackElement.ZERO) < 0
+									|| indexOfByte.compareTo(new StackElement(valueAsByteArray.length)) >= 0)
 								resultStackElement.lub(StackElement.ZERO);
-							} else {
-								int selectedByteAsInt = valueAsByteArray[intIndex];
+							else if (indexOfByte.compareTo(new StackElement(Number.MAX_INT)) < 0) {
+								int selectedByteAsInt = valueAsByteArray[indexOfByte.getNumber().getInt()];
 								resultStackElement.lub(new StackElement(selectedByteAsInt));
 							}
 
@@ -989,11 +989,10 @@ public class EVMAbstractState
 						AbstractStack resultStack = stack.clone();
 						StackElement offset = resultStack.pop();
 
-						if (offset.isTop() || memory.isTop() || memory.isTop()) {
+						if (offset.isTop() || memory.isTop()) {
 							resultStack.push(StackElement.TOP);
 						} else {
-							StackElement mload = memory.mload(offset.getNumber().intValue());
-
+							StackElement mload = memory.mload(offset);
 							if (mload.isBottom())
 								continue;
 
@@ -1022,10 +1021,11 @@ public class EVMAbstractState
 						if (offset.isTop() || offset.isTopNotJumpdest() || memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
 						} else {
-							memoryResult = memoryResult.lub(
-									memory.mstore(
-											offset.getNumber().intValue(),
-											value));
+							AbstractMemory memoryTmp = memory.mstore(offset, value);
+							if (memoryTmp.isBottom())
+								continue;
+
+							memoryResult = memoryResult.lub(memoryTmp);
 						}
 						result.add(stackResult);
 					}
@@ -1048,18 +1048,12 @@ public class EVMAbstractState
 
 						if (offset.isTop() || offset.isTopNotJumpdest() || memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
-						} else if (value.isTop() || value.isTopNotJumpdest()) {
-							memoryResult = memoryResult.lub(
-									memory.mstore8(
-											offset.getNumber().intValue(),
-											AbstractByte.UNKNOWN));
-						} else
-							memoryResult = memoryResult.lub(
-									memory.mstore8(
-											offset.getNumber().intValue(),
-											new AbstractByte(
-													value.getNumber().intValue())));
-
+						} else {
+							AbstractMemory memoryTmp = memory.mstore8(offset, value);
+							if (memoryTmp.isBottom())
+								continue;
+							memoryResult = memoryResult.lub(memoryTmp);
+						}
 						result.add(stackResult);
 					}
 
@@ -1086,12 +1080,12 @@ public class EVMAbstractState
 							memoryResult = AbstractMemory.TOP;
 						} else if (memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
-						} else
-							memoryResult = memory.mcopy(
-									destOffset.getNumber().intValue(),
-									offset.getNumber().intValue(),
-									size.getNumber().intValue());
-
+						} else {
+							AbstractMemory memoryTmp = memory.mcopy(destOffset, offset, size);
+							if (memoryTmp.isBottom())
+								continue;
+							memoryResult = memoryResult.lub(memoryTmp);
+						}
 						result.add(stackResult);
 					}
 
