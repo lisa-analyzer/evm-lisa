@@ -990,7 +990,9 @@ public class EVMAbstractState
 						AbstractStack resultStack = stack.clone();
 						StackElement offset = resultStack.pop();
 
-						if (offset.isTop() || memory.isTop()) {
+						if (offset.isTop()
+								|| offset.isTopNotJumpdest()
+								|| memory.isTop()) {
 							resultStack.push(StackElement.TOP);
 						} else {
 							StackElement mload = memory.mload(offset);
