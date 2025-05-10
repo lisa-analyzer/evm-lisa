@@ -809,20 +809,19 @@ public class EVMAbstractState
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						else {
 
-							// Read exactly `size` bytes from your abstract
+							// Read exactly size bytes from your abstract
 							// memory.
 							byte[] chunk = memory.readBytes(offset.getNumber().getInt(), size.getNumber().getInt());
 
 							if (chunk == null)
 								resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 							else {
-								// Keccak-256 hash
+								// Keccak256 hash
 								Digest256 kecc = new Keccak.Digest256();
 								kecc.update(chunk, 0, chunk.length);
 								byte[] hash = kecc.digest();
 								BigInteger hashedValue = new BigInteger(1, hash);
 
-								// Push the concrete hash result
 								resultStack.push(new StackElement(hashedValue));
 							}
 						}
