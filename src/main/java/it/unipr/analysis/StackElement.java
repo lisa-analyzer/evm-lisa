@@ -655,27 +655,6 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	}
 
 	/**
-	 * Creates a new StackElement by interpreting the given 32-byte array as an
-	 * unsigned big-endian integer.
-	 *
-	 * @param bytes a 32-byte array representing the stack element’s raw bytes
-	 * 
-	 * @return a StackElement whose numeric value corresponds to the provided
-	 *             byte array
-	 * 
-	 * @throws IllegalArgumentException if the input array is null or its length
-	 *                                      is not exactly 32 bytes
-	 */
-	public static StackElement fromBytes(byte[] bytes) {
-		if (bytes == null || bytes.length != 32)
-			throw new IllegalArgumentException("Invalid byte array: must be exactly 32 bytes");
-
-		BigInteger value = new BigInteger(1, bytes);
-
-		return new StackElement(new Number(value));
-	}
-
-	/**
 	 * Creates a new StackElement by extracting the byte values from the given
 	 * 32-element AbstractByte array and interpreting them as an unsigned
 	 * big-endian integer.
