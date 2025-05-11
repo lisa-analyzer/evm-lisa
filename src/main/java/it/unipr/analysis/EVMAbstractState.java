@@ -807,16 +807,18 @@ public class EVMAbstractState
 
 						if (offset.isUnknown() || size.isUnknown() || memory.isTop())
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
-						else {
+						else if (offset.compareTo(new StackElement(Number.MAX_INT)) <= 0
+								|| size.compareTo(new StackElement(Number.MAX_INT)) <= 0){
 
-							// Read exactly size bytes from your abstract
-							// memory.
-							byte[] chunk = memory.readBytes(offset.getNumber().getInt(), size.getNumber().getInt());
+							/* Read exactly size bytes from your abstract memory. */
+							byte[] chunk = memory.readBytes(
+									offset.getNumber().getInt(),
+									size.getNumber().getInt());
 
 							if (chunk == null)
 								resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 							else {
-								// Keccak256 hash
+								/* Keccak256 hash */
 								Digest256 kecc = new Keccak.Digest256();
 								kecc.update(chunk, 0, chunk.length);
 								byte[] hash = kecc.digest();
