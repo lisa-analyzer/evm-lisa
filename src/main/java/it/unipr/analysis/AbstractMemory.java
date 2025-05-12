@@ -409,7 +409,6 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		byte[] out = new byte[length];
 		for (int i = 0; i < length; i++) {
 			AbstractByte b = backing[offset + i];
-			// Treat TOP/unknown as 0x00
 			if (b.isTop())
 				return null;
 			out[i] = b.isTop() ? (byte) 0 : b.getValue();
