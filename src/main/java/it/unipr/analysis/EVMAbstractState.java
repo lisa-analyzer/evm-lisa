@@ -1063,9 +1063,6 @@ public class EVMAbstractState
 						StackElement offset = stackResult.pop();
 						StackElement value = stackResult.pop();
 
-						if (((ProgramCounterLocation) pp.getLocation()).getSourceCodeLine() == 1575)
-							System.out.println("");
-
 						if (offset.isTop() || offset.isTopNotJumpdest() || memory.isTop()) {
 							memoryResult = AbstractMemory.TOP;
 						} else {
