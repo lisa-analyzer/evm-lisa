@@ -681,17 +681,20 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return false;
 		else if (getClass() != obj.getClass())
 			return false;
-		else if (isBottom() && ((StackElement) obj).isBottom())
+		StackElement other = (StackElement) obj;
+		if (this.isBottom() && other.isBottom())
 			return true;
-		else if (isTop() && ((StackElement) obj).isTop())
+		if (this.isTop() && other.isTop())
 			return true;
-		else if (isTopNotJumpdest() && ((StackElement) obj).isTopNotJumpdest())
+		if (this.isTopNotJumpdest() && other.isTopNotJumpdest())
 			return true;
-		if (!isBottom() && !isTop() && !isTopNotJumpdest() &&
-				!((StackElement) obj).isBottom() && !((StackElement) obj).isTop()
-				&& !((StackElement) obj).isTopNotJumpdest())
-			return this.n.equals(((StackElement) obj).n);
-		return false;
+
+		if (this.isBottom() || other.isBottom() ||
+				this.isTop() || other.isTop() ||
+				this.isTopNotJumpdest() || other.isTopNotJumpdest())
+			return false;
+
+		return this.n.equals(other.n);
 	}
 
 	@Override

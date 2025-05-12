@@ -69,7 +69,6 @@ public class Number implements Comparable<Number> {
 		return i;
 	}
 
-
 	/**
 	 * Yields the big integer value.
 	 * 

@@ -805,7 +805,8 @@ public class EVMAbstractState
 						StackElement offset = resultStack.pop();
 						StackElement size = resultStack.pop();
 
-						if (offset.isUnknown() || size.isUnknown() || memory.isTop())
+						if (offset.isTop() || size.isTop() || offset.isTopNotJumpdest() || size.isTopNotJumpdest()
+								|| memory.isTop())
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						else if (offset.compareTo(new StackElement(Number.MAX_INT)) <= 0
 								|| size.compareTo(new StackElement(Number.MAX_INT)) <= 0) {
@@ -893,7 +894,7 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						resultStack.popX(3);
-						
+
 						result.add(resultStack);
 					}
 
@@ -1794,7 +1795,7 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						resultStack.popX(7);
-						
+
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
