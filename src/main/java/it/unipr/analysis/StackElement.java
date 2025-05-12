@@ -1,5 +1,6 @@
 package it.unipr.analysis;
 
+import it.unipr.utils.BitManager;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -451,11 +452,14 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(256)) >= 0)
-			return ZERO;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return bottom(); // fake path
 
-		return new StackElement(other.n.shiftLeft(this.n.getInt()));
+		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
+		int[] shiftedBits = BitManager.shiftLeft(bits, n.getInt());
+		BigInteger result = BitManager.fromBitArray(shiftedBits);
 
+		return new StackElement(new Number(result));
 	}
 
 	public StackElement shr(StackElement other) {
@@ -465,10 +469,14 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(256)) >= 0)
-			return ZERO;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return bottom(); // fake path
 
-		return new StackElement(other.n.shiftRight(this.n.getInt()));
+		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
+		int[] shiftedBits = BitManager.shiftRight(bits, n.getInt());
+		BigInteger result = BitManager.fromBitArray(shiftedBits);
+
+		return new StackElement(new Number(result));
 	}
 
 	public StackElement sar(StackElement other) {
@@ -478,126 +486,14 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(256)) > 0)
-			return ZERO;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return bottom(); // fake path
 
-		return new StackElement(
-				new Number(
-						new BigInteger(
-								StackElement.shiftArithmeticRight(
-										other.n.toByteArray(),
-										this.n.getInt()))));
-	}
+		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
+		int[] shiftedBits = BitManager.arithmeticShiftRight(bits, n.getInt());
+		BigInteger result = BitManager.fromBitArray(shiftedBits);
 
-	/**
-	 * Shifts the given byte array to the left by the specified number of bits.
-	 *
-	 * @param byteArray     The byte array to be left-shifted.
-	 * @param shiftBitCount The number of bits by which to shift the byte array
-	 *                          to the left.
-	 * 
-	 * @return The resulting byte array after left-shifting by the specified bit
-	 *             count.
-	 *             <p>
-	 *             This method performs a left shift on the provided byte array,
-	 *             where each byte is shifted to the left by the given number of
-	 *             bits. The shift operation is performed in a bitwise manner,
-	 *             and the bits shifted beyond the byte boundary are wrapped
-	 *             around to the opposite end. The shift is done in place, and
-	 *             the modified byte array is returned as the result.
-	 *             </p>
-	 *             <p>
-	 *             The {@code shiftBitCount} parameter determines the number of
-	 *             bits to shift.
-	 *             </p>
-	 * 
-	 * @throws IllegalArgumentException If the input {@code byteArray} is
-	 *                                      {@code null}.
-	 */
-	public static byte[] shiftLeft(byte[] byteArray, int shiftBitCount) {
-		final int shiftMod = shiftBitCount % 8;
-		final byte carryMask = (byte) ((1 << shiftMod) - 1);
-		final int offsetBytes = (shiftBitCount / 8);
-
-		int start;
-
-		if (byteArray.length > 32)
-			start = 1;
-		else
-			start = 0;
-
-		int sourceIndex;
-		for (int i = start; i < byteArray.length; i++) {
-			sourceIndex = i + offsetBytes;
-			if (sourceIndex >= byteArray.length) {
-				byteArray[i] = 0;
-			} else {
-				byte src = byteArray[sourceIndex];
-				byte dst = (byte) (src << shiftMod);
-				if (sourceIndex + 1 < byteArray.length) {
-					dst |= byteArray[sourceIndex + 1] >>> (8 - shiftMod) & carryMask;
-				}
-				byteArray[i] = dst;
-			}
-		}
-		return byteArray;
-	}
-
-	/**
-	 * Shifts the bits of the given byte array towards the least significant bit
-	 * (SAR - Shift Arithmetic Right). The bits moved before the first one are
-	 * discarded, and the new bits are set to 0 if the previous most significant
-	 * bit was 0; otherwise, the new bits are set to 1.
-	 *
-	 * @param byteArray     The byte array to be right-shifted.
-	 * @param shiftBitCount The number of bits by which to shift the byte array
-	 *                          to the right.
-	 * 
-	 * @return The resulting byte array after right-shifting by the specified
-	 *             bit count.
-	 *             <p>
-	 *             This method performs a right shift on the provided byte array
-	 *             (SAR operation), where each byte is shifted to the right by
-	 *             the given number of bits. The shift operation is performed in
-	 *             a bitwise manner, and the bits shifted beyond the byte
-	 *             boundary are discarded. The new bits introduced during the
-	 *             shift are set based on the value of the previous most
-	 *             significant bit (0 or 1).
-	 *             </p>
-	 *             <p>
-	 *             The {@code shiftBitCount} parameter determines the number of
-	 *             bits to shift.
-	 *             </p>
-	 *
-	 * @throws IllegalArgumentException If the input {@code byteArray} is
-	 *                                      {@code null}.
-	 */
-	public static byte[] shiftArithmeticRight(byte[] byteArray, int shiftBitCount) {
-		final int shiftMod = shiftBitCount % 8;
-		final byte carryMask = (byte) (0xFF << (8 - shiftMod));
-		final int offsetBytes = (shiftBitCount / 8);
-
-		int sourceIndex;
-		int start;
-
-		if (byteArray.length > 32)
-			start = 1;
-		else
-			start = 0;
-		for (int i = start; i < byteArray.length; i++) {
-			sourceIndex = i + offsetBytes;
-			if (sourceIndex >= byteArray.length) {
-				byteArray[i] = (byte) (byteArray[i] < 0 ? 0xFF : 0);
-			} else {
-				byte src = byteArray[sourceIndex];
-				byte dst = (byte) (src >>> shiftMod);
-				if (sourceIndex + 1 < byteArray.length) {
-					dst |= byteArray[sourceIndex + 1] << (8 - shiftMod) & carryMask;
-				}
-				byteArray[i] = dst;
-			}
-		}
-		return byteArray;
+		return new StackElement(new Number(result));
 	}
 
 	/**
