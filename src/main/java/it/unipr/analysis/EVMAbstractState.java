@@ -893,7 +893,7 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						resultStack.popX(3);
-						
+
 						result.add(resultStack);
 					}
 
@@ -1794,7 +1794,7 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						resultStack.popX(7);
-						
+
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
