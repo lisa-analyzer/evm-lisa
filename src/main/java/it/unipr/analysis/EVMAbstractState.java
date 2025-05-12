@@ -884,7 +884,8 @@ public class EVMAbstractState
 					if (result.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage);
+						// setting memory to top
+						return new EVMAbstractState(result, memory.top(), storage);
 				}
 				case "CodecopyOperator": { // CODECOPY
 					for (AbstractStack stack : stacks) {
@@ -892,13 +893,15 @@ public class EVMAbstractState
 							continue;
 						AbstractStack resultStack = stack.clone();
 						resultStack.popX(3);
+						
 						result.add(resultStack);
 					}
 
 					if (result.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage);
+						// setting memory to top
+						return new EVMAbstractState(result, memory.top(), storage);
 				}
 				case "ExtcodesizeOperator": { // EXTCODESIZE
 					for (AbstractStack stack : stacks) {
@@ -929,7 +932,8 @@ public class EVMAbstractState
 					if (result.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage);
+						// setting memory to top
+						return new EVMAbstractState(result, memory.top(), storage);
 				}
 				case "ReturndatacopyOperator": { // RETURNDATACOPY
 					for (AbstractStack stack : stacks) {
@@ -944,7 +948,8 @@ public class EVMAbstractState
 					if (result.isEmpty())
 						return BOTTOM;
 					else
-						return new EVMAbstractState(result, memory, storage);
+						// setting memory to top
+						return new EVMAbstractState(result, memory.top(), storage);
 				}
 				case "ExtcodehashOperator": { // EXTCODEHASH
 					for (AbstractStack stack : stacks) {
