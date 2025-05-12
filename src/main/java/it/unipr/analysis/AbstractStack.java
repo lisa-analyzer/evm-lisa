@@ -57,12 +57,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 	private int tail;
 
 	/**
-	 * Value of the output size of the last call (CALL, DELEGATECALL, CALLCODE,
-	 * STATICCALL).
-	 */
-	private StackElement outSize;
-
-	/**
 	 * Helper method to create and fill an array with a specific element.
 	 */
 	private static StackElement[] createFilledArray(int size, StackElement element) {
@@ -78,7 +72,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		this(createFilledArray(STACK_LIMIT, StackElement.BOTTOM));
 		this.head = 0;
 		this.tail = 0;
-		this.outSize = StackElement.BOTTOM;
 	}
 
 	/**
@@ -90,7 +83,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		this.circularArray = stack;
 		this.head = 0;
 		this.tail = 0;
-		this.outSize = StackElement.BOTTOM;
 	}
 
 	@Override
@@ -244,7 +236,6 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		AbstractStack clone = new AbstractStack(circularArray.clone());
 		clone.head = this.head;
 		clone.tail = this.tail;
-		clone.outSize = this.outSize;
 		return clone;
 	}
 
@@ -429,23 +420,5 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		for (int i = 0; i < STACK_LIMIT; i++)
 			logical[i] = circularArray[(head + i) % STACK_LIMIT];
 		return logical;
-	}
-
-	/**
-	 * Sets size of output data from the previous call.
-	 * 
-	 * @param outSize the size of output data from the previous call.
-	 */
-	public void setOutSize(StackElement outSize) {
-		this.outSize = outSize;
-	}
-
-	/**
-	 * Gets size of output data from the previous call.
-	 * 
-	 * @return the size of output data from the previous call
-	 */
-	public StackElement getOutSize() {
-		return outSize;
 	}
 }

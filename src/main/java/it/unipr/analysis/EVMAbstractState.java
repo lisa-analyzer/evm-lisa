@@ -240,7 +240,7 @@ public class EVMAbstractState
 						// stack corresponding to the case when
 						// last call was successful
 						AbstractStack resultStackSuccess = stack.clone();
-						resultStackSuccess.push(stack.getOutSize());
+						resultStackSuccess.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStackSuccess);
 					}
 
@@ -1772,11 +1772,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(7))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(6);
-
-						// Setting outsize
-						StackElement outSize = resultStack.pop();
-						resultStack.setOutSize(outSize);
+						resultStack.popX(7);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1792,12 +1788,8 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(7))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(6);
-
-						// Setting outsize
-						StackElement outSize = resultStack.pop();
-						resultStack.setOutSize(outSize);
-
+						resultStack.popX(7);
+						
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
 					}
@@ -1828,11 +1820,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(5);
-
-						// Setting outsize
-						StackElement outSize = resultStack.pop();
-						resultStack.setOutSize(outSize);
+						resultStack.popX(6);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
@@ -1848,11 +1836,7 @@ public class EVMAbstractState
 						if (stack.hasBottomUntil(6))
 							continue;
 						AbstractStack resultStack = stack.clone();
-						resultStack.popX(5);
-
-						// Setting outsize
-						StackElement outSize = resultStack.pop();
-						resultStack.setOutSize(outSize);
+						resultStack.popX(6);
 
 						resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						result.add(resultStack);
