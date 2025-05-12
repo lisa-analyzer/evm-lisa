@@ -1,5 +1,6 @@
 package it.unipr.analysis;
 
+import it.unipr.utils.BitManager;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -451,11 +452,14 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(256)) >= 0)
-			return ZERO;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return bottom(); // fake path
 
-		return new StackElement(other.n.shiftLeft(this.n.getInt()));
+		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
+		int[] shiftedBits = BitManager.shiftLeft(bits, n.getInt());
+		BigInteger result = BitManager.fromBitArray(shiftedBits);
 
+		return new StackElement(new Number(result));
 	}
 
 	public StackElement shr(StackElement other) {
@@ -465,10 +469,14 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(256)) >= 0)
-			return ZERO;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return bottom(); // fake path
 
-		return new StackElement(other.n.shiftRight(this.n.getInt()));
+		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
+		int[] shiftedBits = BitManager.shiftRight(bits, n.getInt());
+		BigInteger result = BitManager.fromBitArray(shiftedBits);
+
+		return new StackElement(new Number(result));
 	}
 
 	public StackElement sar(StackElement other) {
@@ -478,15 +486,21 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(256)) > 0)
-			return ZERO;
+		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
+			return bottom(); // fake path
 
-		return new StackElement(
-				new Number(
-						new BigInteger(
-								StackElement.shiftArithmeticRight(
-										other.n.toByteArray(),
-										this.n.getInt()))));
+		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
+		int[] shiftedBits = BitManager.arithmeticShiftRight(bits, n.getInt());
+		BigInteger result = BitManager.fromBitArray(shiftedBits);
+
+		return new StackElement(new Number(result));
+
+//		return new StackElement(
+//				new Number(
+//						new BigInteger(
+//								StackElement.shiftArithmeticRight(
+//										other.n.toByteArray(),
+//										this.n.getInt()))));
 	}
 
 	/**
@@ -706,5 +720,20 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	@Override
 	public StructuredRepresentation representation() {
 		return new StringRepresentation(toString());
+	}
+
+	// Esempio di utilizzo
+	public static void main(String[] args) {
+		BigInteger n = new BigInteger("57896044618658097711785492504343953926634992332820282019728792003956564819968");
+		int offset = 257;
+		int[] bits = BitManager.toBitArray(n);
+		BitManager.print("Original", bits);
+		BitManager.print("Arithmetic right", BitManager.arithmeticShiftRight(bits, offset));
+
+//		int[] bits = {1, 0, 0, 1, 1}; // esempio: 19 in 5 bit
+//		print("Original", bits);
+//		print("Shift left", shiftLeft(bits, 1));
+//		print("Shift right", shiftRight(bits, 1));
+//		print("Arithmetic right", arithmeticShiftRight(bits, 1));
 	}
 }
