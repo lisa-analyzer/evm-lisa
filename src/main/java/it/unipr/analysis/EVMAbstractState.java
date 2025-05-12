@@ -809,7 +809,7 @@ public class EVMAbstractState
 								|| memory.isTop())
 							resultStack.push(StackElement.NOT_JUMPDEST_TOP);
 						else if (offset.compareTo(new StackElement(Number.MAX_INT)) <= 0
-								|| size.compareTo(new StackElement(Number.MAX_INT)) <= 0) {
+								&& size.compareTo(new StackElement(Number.MAX_INT)) <= 0) {
 
 							/*
 							 * Read exactly size bytes from your abstract
