@@ -279,7 +279,6 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return new StackElement(ZERO_INT);
 		else
 			return new StackElement(this.n.divide(other.n));
-
 	}
 
 	public StackElement mod(StackElement other) {
@@ -452,15 +451,11 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
-			return TOP;
+		else if (n.compareTo(new Number(256)) >= 0)
+			return ZERO;
 
-		return new StackElement(
-				new Number(
-						new BigInteger(
-								StackElement.shiftLeft(
-										other.n.toByteArray(),
-										this.n.getInt()))));
+		return new StackElement(other.n.shiftLeft(this.n.getInt()));
+
 	}
 
 	public StackElement shr(StackElement other) {
@@ -470,8 +465,8 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
-			return TOP;
+		else if (n.compareTo(new Number(256)) >= 0)
+			return ZERO;
 
 		return new StackElement(other.n.shiftRight(this.n.getInt()));
 	}
@@ -483,8 +478,8 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
-			return TOP;
+		else if (n.compareTo(new Number(256)) > 0)
+			return ZERO;
 
 		return new StackElement(
 				new Number(
@@ -541,55 +536,6 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 				byte dst = (byte) (src << shiftMod);
 				if (sourceIndex + 1 < byteArray.length) {
 					dst |= byteArray[sourceIndex + 1] >>> (8 - shiftMod) & carryMask;
-				}
-				byteArray[i] = dst;
-			}
-		}
-		return byteArray;
-	}
-
-	/**
-	 * Shifts the elements of a byte array to the right by a specified number of
-	 * bits.
-	 *
-	 * @param byteArray     The byte array to be shifted.
-	 * @param shiftBitCount The number of bits by which the array elements
-	 *                          should be shifted to the right.
-	 * 
-	 * @return The byte array after the right shift operation.
-	 *             <p>
-	 *             This method performs a bitwise right shift on the input byte
-	 *             array, where each element is treated as a single byte. The
-	 *             shift operation is performed in-place, and the original array
-	 *             is modified.
-	 *             </p>
-	 *             <p>
-	 *             If the {@code shiftBitCount} is zero, the array remains
-	 *             unchanged.
-	 *             </p>
-	 *             <p>
-	 *             The method uses a circular shift approach, with consideration
-	 *             for byte boundaries and a carry mechanism.
-	 *             </p>
-	 *
-	 * @throws IllegalArgumentException If the {@code byteArray} is
-	 *                                      {@code null}.
-	 */
-	public static byte[] shiftRight(byte[] byteArray, int shiftBitCount) {
-		final int shiftMod = shiftBitCount % 8;
-		final byte carryMask = (byte) (0xFF << (8 - shiftMod));
-		final int offsetBytes = (shiftBitCount / 8);
-
-		int sourceIndex;
-		for (int i = byteArray.length - 1; i >= 0; i--) {
-			sourceIndex = i - offsetBytes;
-			if (sourceIndex < 0) {
-				byteArray[i] = 0;
-			} else {
-				byte src = byteArray[sourceIndex];
-				byte dst = (byte) ((0xff & src) >>> shiftMod);
-				if (sourceIndex - 1 >= 0) {
-					dst |= byteArray[(sourceIndex - 1)] << (8 - shiftMod) & carryMask;
 				}
 				byteArray[i] = dst;
 			}

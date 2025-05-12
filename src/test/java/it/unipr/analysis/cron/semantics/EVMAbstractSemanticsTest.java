@@ -249,6 +249,15 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	 * All the items in the final stack must be 1
 	 */
 	@Test
+	public void testShl2() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "shl2", "shl.sol", false);
+		perform(conf);
+	}
+	
+	/**
+	 * All the items in the final stack must be 1
+	 */
+	@Test
 	public void testAdd() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "add", "add_eth.sol", false);
 		perform(conf);

@@ -287,7 +287,11 @@ public class Number implements Comparable<Number> {
 	 */
 	public Number shiftLeft(int other) {
 		BigInteger me = toBigInteger(this);
-		return new Number(me.shiftLeft(other));
+		BigInteger shifted = me.shiftLeft(other);
+		BigInteger mask = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
+		BigInteger evmResult = shifted.and(mask);
+		return new Number(evmResult);
+		
 	}
 
 	@Override
