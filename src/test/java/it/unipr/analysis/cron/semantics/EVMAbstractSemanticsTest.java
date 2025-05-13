@@ -121,13 +121,13 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 		CronConfiguration conf = createConfiguration("cfs", "lt", "lt_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testSgt() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "sgt", "sgt_eth.sol", false);
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testSlt() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "slt", "slt_eth.sol", false);
