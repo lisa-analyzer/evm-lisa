@@ -455,7 +455,7 @@ public class EVMLiSA {
 	 * 
 	 * @return a {@link StatisticsObject} containing the computed statistics
 	 */
-	public static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
+	public static StatisticsObject<?> computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
 		return computeJumps(checker, soundlySolved);
 	}
@@ -469,7 +469,7 @@ public class EVMLiSA {
 	 * @return a {@link StatisticsObject} containing the computed jump
 	 *             statistics
 	 */
-	private static StatisticsObject computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+	private static StatisticsObject<?> computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 
@@ -552,9 +552,10 @@ public class EVMLiSA {
 			}
 		}
 
-		StatisticsObject stats = StatisticsObject.newStatisticsObject()
+		StandardStatisticsObject stats = StandardStatisticsObject.newStatisticsObject()
 				.totalOpcodes(cfg.getOpcodeCount())
 				.totalJumps(cfg.getAllJumps().size())
+				.totalEdges(cfg.getEdges().size())
 				.resolvedJumps(resolvedJumps)
 				.definitelyUnreachableJumps(definitelyUnreachable)
 				.maybeUnreachableJumps(maybeUnreachable)

@@ -61,7 +61,7 @@ public class SmartContract {
 	private Set<BasicBlock> _basicBlocks;
 
 	/** Statistical information about the contract analysis. */
-	private StatisticsObject _statistics;
+	private StatisticsObject<?> _statistics;
 
 	/** Detected vulnerabilities in the contract. */
 	private VulnerabilitiesObject _vulnerabilities;
@@ -382,7 +382,7 @@ public class SmartContract {
 	 *
 	 * @return Statistical object.
 	 */
-	public StatisticsObject getStatistics() {
+	public StatisticsObject<?> getStatistics() {
 		return _statistics;
 	}
 
@@ -534,7 +534,7 @@ public class SmartContract {
 	 * 
 	 * @return This SmartContract instance for method chaining.
 	 */
-	public SmartContract setStatistics(StatisticsObject statistics) {
+	public SmartContract setStatistics(StatisticsObject<?> statistics) {
 		this._statistics = statistics;
 		return this;
 	}

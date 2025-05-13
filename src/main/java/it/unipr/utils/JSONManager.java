@@ -48,8 +48,8 @@ public class JSONManager {
 	 * 
 	 * @return a set of StatisticsObject containing the extracted statistics
 	 */
-	public static Set<StatisticsObject> readStatsFromJSON(Path filePath) {
-		Set<StatisticsObject> groundTruthData = new HashSet<>();
+	public static Set<StandardStatisticsObject> readStatsFromJSON(Path filePath) {
+		Set<StandardStatisticsObject> groundTruthData = new HashSet<>();
 
 		JSONObject groundTruthDataJson = JSONManager.loadJsonFromFile(filePath);
 		JSONArray contracts = (JSONArray) groundTruthDataJson.get("smart_contracts");
@@ -66,10 +66,11 @@ public class JSONManager {
 				continue;
 			}
 
-			groundTruthData.add(StatisticsObject.newStatisticsObject()
+			groundTruthData.add(StandardStatisticsObject.newStatisticsObject()
 					.address(address)
 					.totalOpcodes(statistics.getInt("total_opcodes"))
 					.totalJumps(statistics.getInt("total_jumps"))
+					.totalEdges(statistics.getInt("total_edges"))
 					.resolvedJumps(statistics.getInt("resolved_jumps"))
 					.definitelyUnreachableJumps(statistics.getInt("definitely_unreachable_jumps"))
 					.maybeUnreachableJumps(statistics.getInt("maybe_unreachable_jumps"))

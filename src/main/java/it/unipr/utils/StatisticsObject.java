@@ -1,38 +1,27 @@
 package it.unipr.utils;
 
 import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 /**
  * Collects statistical data related to CFG analysis.
  */
-public class StatisticsObject {
-	private static final Logger log = LogManager.getLogger(StatisticsObject.class);
+public abstract class StatisticsObject<T extends StatisticsObject<T>> {
 
-	private String address;
-	private int totalOpcodes;
-	private int totalJumps;
-	private int resolvedJumps;
-	private int definitelyUnreachableJumps;
-	private int maybeUnreachableJumps;
-	private int unsoundJumps;
-	private int maybeUnsoundJumps;
-	private JSONObject json;
+	protected String address;
+	protected int totalOpcodes;
+	protected int totalJumps;
+	protected int totalEdges;
+	protected JSONObject json;
 
 	/**
 	 * Creates a new {@code StatisticsObject} with default values.
 	 */
-	private StatisticsObject() {
+	protected StatisticsObject() {
 		this.address = "";
 		this.totalOpcodes = 0;
 		this.totalJumps = 0;
-		this.resolvedJumps = 0;
-		this.definitelyUnreachableJumps = 0;
-		this.maybeUnreachableJumps = 0;
-		this.unsoundJumps = 0;
-		this.maybeUnsoundJumps = 0;
+		this.totalEdges = 0;
 		this.json = new JSONObject();
 	}
 
@@ -42,34 +31,19 @@ public class StatisticsObject {
 	 * @param address                    the contract address
 	 * @param totalOpcodes               the total number of opcodes
 	 * @param totalJumps                 the total number of jumps
-	 * @param resolvedJumps              the number of resolved jumps
-	 * @param definitelyUnreachableJumps the number of definitely unreachable
-	 *                                       jumps
-	 * @param maybeUnreachableJumps      the number of maybe unreachable jumps
-	 * @param unsoundJumps               the number of unsound jumps
-	 * @param maybeUnsoundJumps          the number of maybe unsound jumps
+	 * @param totalEdges                 the number of edges
 	 * @param json                       the JSON representation of the object
 	 */
-	private StatisticsObject(String address, int totalOpcodes, int totalJumps, int resolvedJumps,
-			int definitelyUnreachableJumps,
-			int maybeUnreachableJumps, int unsoundJumps, int maybeUnsoundJumps, JSONObject json) {
+	protected StatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges, JSONObject json) {
 		this.address = address;
 		this.totalOpcodes = totalOpcodes;
 		this.totalJumps = totalJumps;
-		this.resolvedJumps = resolvedJumps;
-		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
-		this.maybeUnreachableJumps = maybeUnreachableJumps;
-		this.unsoundJumps = unsoundJumps;
-		this.maybeUnsoundJumps = maybeUnsoundJumps;
+		this.totalEdges = totalEdges;
 		this.json = json;
 
 		this.json.put("total_opcodes", this.totalOpcodes);
 		this.json.put("total_jumps", this.totalJumps);
-		this.json.put("resolved_jumps", this.resolvedJumps);
-		this.json.put("definitely_unreachable_jumps", this.definitelyUnreachableJumps);
-		this.json.put("maybe_unreachable_jumps", this.maybeUnreachableJumps);
-		this.json.put("unsound_jumps", this.unsoundJumps);
-		this.json.put("maybe_unsound_jumps", this.maybeUnsoundJumps);
+		this.json.put("total_edges", this.totalEdges);
 	}
 
 	/**
@@ -100,57 +74,12 @@ public class StatisticsObject {
 	}
 
 	/**
-	 * Returns the number of resolved jumps.
+	 * Returns the total number of edges.
 	 *
-	 * @return the resolved jumps
+	 * @return the total edges
 	 */
-	public int getResolvedJumps() {
-		return resolvedJumps;
-	}
-
-	/**
-	 * Returns the number of definitely unreachable jumps.
-	 *
-	 * @return the definitely unreachable jumps
-	 */
-	public int getDefinitelyUnreachableJumps() {
-		return definitelyUnreachableJumps;
-	}
-
-	/**
-	 * Returns the number of maybe unreachable jumps.
-	 *
-	 * @return the maybe unreachable jumps
-	 */
-	public int getMaybeUnreachableJumps() {
-		return maybeUnreachableJumps;
-	}
-
-	/**
-	 * Returns the number of unsound jumps.
-	 *
-	 * @return the unsound jumps
-	 */
-	public int getUnsoundJumps() {
-		return unsoundJumps;
-	}
-
-	/**
-	 * Returns the number of maybe unsound jumps.
-	 *
-	 * @return the maybe unsound jumps
-	 */
-	public int getMaybeUnsoundJumps() {
-		return maybeUnsoundJumps;
-	}
-
-	/**
-	 * Creates a new {@code StatisticsObject} with default values.
-	 *
-	 * @return a new instance of {@code StatisticsObject}
-	 */
-	public static StatisticsObject newStatisticsObject() {
-		return new StatisticsObject();
+	public int getTotalEdges() {
+		return totalEdges;
 	}
 
 	/**
@@ -160,9 +89,10 @@ public class StatisticsObject {
 	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
-	public StatisticsObject address(String address) {
+	@SuppressWarnings("unchecked")
+	public T address(String address) {
 		this.address = address;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -172,9 +102,10 @@ public class StatisticsObject {
 	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
-	public StatisticsObject totalOpcodes(int totalOpcodes) {
+	@SuppressWarnings("unchecked")
+	public T totalOpcodes(int totalOpcodes) {
 		this.totalOpcodes = totalOpcodes;
-		return this;
+		return (T) this;
 	}
 
 	/**
@@ -184,69 +115,23 @@ public class StatisticsObject {
 	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
-	public StatisticsObject totalJumps(int totalJumps) {
+	@SuppressWarnings("unchecked")
+	public T totalJumps(int totalJumps) {
 		this.totalJumps = totalJumps;
-		return this;
+		return (T) this;
 	}
 
 	/**
-	 * Sets the number of resolved jumps.
+	 * Sets the total number of edges.
 	 *
-	 * @param resolvedJumps the resolved jumps
+	 * @param totalEdges the total edges
 	 * 
 	 * @return the updated {@code StatisticsObject} instance
 	 */
-	public StatisticsObject resolvedJumps(int resolvedJumps) {
-		this.resolvedJumps = resolvedJumps;
-		return this;
-	}
-
-	/**
-	 * Sets the number of definitely unreachable jumps.
-	 *
-	 * @param definitelyUnreachableJumps the definitely unreachable jumps
-	 * 
-	 * @return the updated {@code StatisticsObject} instance
-	 */
-	public StatisticsObject definitelyUnreachableJumps(int definitelyUnreachableJumps) {
-		this.definitelyUnreachableJumps = definitelyUnreachableJumps;
-		return this;
-	}
-
-	/**
-	 * Sets the number of maybe unreachable jumps.
-	 *
-	 * @param maybeUnreachableJumps the maybe unreachable jumps
-	 * 
-	 * @return the updated {@code StatisticsObject} instance
-	 */
-	public StatisticsObject maybeUnreachableJumps(int maybeUnreachableJumps) {
-		this.maybeUnreachableJumps = maybeUnreachableJumps;
-		return this;
-	}
-
-	/**
-	 * Sets the number of unsound jumps.
-	 *
-	 * @param unsoundJumps the unsound jumps
-	 * 
-	 * @return the updated {@code StatisticsObject} instance
-	 */
-	public StatisticsObject unsoundJumps(int unsoundJumps) {
-		this.unsoundJumps = unsoundJumps;
-		return this;
-	}
-
-	/**
-	 * Sets the number of maybe unsound jumps.
-	 *
-	 * @param maybeUnsoundJumps the maybe unsound jumps
-	 * 
-	 * @return the updated {@code StatisticsObject} instance
-	 */
-	public StatisticsObject maybeUnsoundJumps(int maybeUnsoundJumps) {
-		this.maybeUnsoundJumps = maybeUnsoundJumps;
-		return this;
+	@SuppressWarnings("unchecked")
+	public T totalEdges(int totalEdges) {
+		this.totalEdges = totalEdges;
+		return (T) this;
 	}
 
 	/**
@@ -254,10 +139,7 @@ public class StatisticsObject {
 	 *
 	 * @return a new {@code StatisticsObject} instance
 	 */
-	public StatisticsObject build() {
-		return new StatisticsObject(address, totalOpcodes, totalJumps, resolvedJumps, definitelyUnreachableJumps,
-				maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps, json);
-	}
+	public abstract T build();
 
 	/**
 	 * Returns the JSON representation of this object.
@@ -284,35 +166,20 @@ public class StatisticsObject {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		StatisticsObject that = (StatisticsObject) o;
+		StatisticsObject<?> that = (StatisticsObject<?>) o;
 		return totalOpcodes == that.totalOpcodes
 				&& totalJumps == that.totalJumps
-				&& resolvedJumps == that.resolvedJumps
-				&& definitelyUnreachableJumps == that.definitelyUnreachableJumps
-				&& maybeUnreachableJumps == that.maybeUnreachableJumps
-				&& unsoundJumps == that.unsoundJumps
-				&& maybeUnsoundJumps == that.maybeUnsoundJumps
+				&& totalEdges == that.totalEdges
 				&& Objects.equals(address, that.address);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(address, totalOpcodes, totalJumps, resolvedJumps, definitelyUnreachableJumps,
-				maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps);
+		return Objects.hash(address, totalOpcodes, totalJumps, totalEdges);
 	}
 
 	/**
-	 * Logs the statistics of the given {@code StatisticsObject}.
-	 *
-	 * @param statistics the statistics object to log
+	 * Logs this object's statistics.
 	 */
-	public static void printStatistics(StatisticsObject statistics) {
-		log.info("Total opcodes: {}", statistics.getTotalOpcodes());
-		log.info("Total jumps: {}", statistics.getTotalJumps());
-		log.info("Resolved jumps: {}", statistics.getResolvedJumps());
-		log.info("Definitely unreachable jumps: {}", statistics.getDefinitelyUnreachableJumps());
-		log.info("Maybe unreachable jumps: {}", statistics.getMaybeUnreachableJumps());
-		log.info("Unsound jumps: {}", statistics.getUnsoundJumps());
-		log.info("Maybe unsound jumps: {}", statistics.getMaybeUnsoundJumps());
-	}
+	public abstract void printStatistics();
 }
