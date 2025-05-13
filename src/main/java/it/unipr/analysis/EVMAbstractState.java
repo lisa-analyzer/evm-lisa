@@ -410,7 +410,7 @@ public class EVMAbstractState
 						StackElement opnd2 = resultStack.pop();
 
 						try {
-							resultStack.push(opnd1.div(opnd2));
+							resultStack.push(opnd1.sdiv(opnd2));
 						} catch (ArithmeticException e) {
 							resultStack.push(StackElement.ZERO);
 						}
