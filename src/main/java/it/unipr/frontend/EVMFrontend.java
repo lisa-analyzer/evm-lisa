@@ -4,12 +4,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 import it.unipr.evm.antlr.EVMBLexer;
 import it.unipr.evm.antlr.EVMBParser;
 import it.unipr.evm.antlr.EVMBParser.ProgramContext;
-import it.unive.lisa.AnalysisException;
+import it.unipr.utils.JSONManager;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,6 +20,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
@@ -30,11 +31,27 @@ import org.antlr.v4.runtime.CommonTokenStream;
  * ETHERSCAN_API_KEY.
  */
 public class EVMFrontend {
+	private static String ETHERSCAN_API_KEY = "";
 
-	private static boolean USE_CREATION_CODE = false;
+	/**
+	 * Sets the Etherscan API key for making requests to the Etherscan API.
+	 *
+	 * @param apiKey The API key to be used for Etherscan API calls.
+	 */
+	public static void setEtherscanAPIKey(String apiKey) {
+		ETHERSCAN_API_KEY = apiKey;
+	}
 
-	static public void setUseCreationCode() {
-		USE_CREATION_CODE = true;
+	/**
+	 * Retrieves the Etherscan API key. If no API key is currently set, attempts
+	 * to load it from environment variables.
+	 *
+	 * @return The Etherscan API key, or null if no key is available.
+	 */
+	private static String getEtherscanAPIKey() {
+		if (ETHERSCAN_API_KEY == null || ETHERSCAN_API_KEY.isEmpty())
+			return Dotenv.load().get("ETHERSCAN_API_KEY");
+		return ETHERSCAN_API_KEY;
 	}
 
 	/**
@@ -60,29 +77,42 @@ public class EVMFrontend {
 		}
 	}
 
-	/**
-	 * Yields the EVM bytecode of a smart contract stored at {@code address} and
-	 * stores the result in {@code output}.
-	 * 
-	 * @param address the address of the smart contract to be parsed.
-	 * 
-	 * @return {@code true} if the bytecode was successfully downloaded and
-	 *             stored, false otherwise.
-	 * 
-	 * @throws IOException
-	 */
-	public static String parseContractFromEtherscan(String address) throws IOException {
-		String bytecodeRequest = etherscanRequest("proxy", "eth_getCode", address);
+	public static String parseBytecodeFromEtherscan(String address) throws IOException {
+		String response = etherscanRequest("proxy", "eth_getCode", address);
 
-		if (bytecodeRequest == null || bytecodeRequest.isEmpty()) {
-			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
-			return null;
+		if (response == null || response.isEmpty()) {
+			System.err.println(JSONManager.throwNewError("Couldn't download contract's bytecode. (" + address + ")"));
+			System.exit(1);
 		}
 
-		String[] test = bytecodeRequest.split("\"");
-		String bytecode = test[9];
+		JSONObject jsonResponse = new JSONObject(response);
 
-		return bytecode;
+		if (!jsonResponse.has("result") || jsonResponse.getString("result").equals("0x")) {
+			System.err
+					.println(JSONManager.throwNewError("Contract bytecode not available or empty. (" + address + ")"));
+			System.exit(1);
+		}
+
+		return jsonResponse.getString("result");
+	}
+
+	public static JSONArray parseABIFromEtherscan(String address) throws IOException {
+		String response = etherscanRequest("contract", "getabi", address);
+
+		if (response == null || response.isEmpty()) {
+			System.err.println(JSONManager.throwNewError("Couldn't download contract's ABI. (" + address + ")"));
+			System.exit(1);
+		}
+
+		JSONObject jsonResponse = new JSONObject(response);
+
+		if (!jsonResponse.has("result") || jsonResponse.get("result").equals("Contract source code not verified")) {
+			System.err.println(
+					JSONManager.throwNewError("Contract ABI not available or not verified. (" + address + ")"));
+			System.exit(1);
+		}
+
+		return new JSONArray(jsonResponse.getString("result"));
 	}
 
 	/**
@@ -100,17 +130,15 @@ public class EVMFrontend {
 	 * @param output   the path to the output file where the extracted opcodes
 	 *                     will be written
 	 * 
-	 * @return {@code true} if the processing is successful and the output file
-	 *             is created, {@code false} if the bytecode is null or empty
-	 * 
 	 * @throws IOException if an I/O error occurs while writing to the output
 	 *                         file
 	 */
-	public static boolean opcodesFromBytecode(String bytecode, String output) throws IOException {
+	public static void opcodesFromBytecode(String bytecode, String output) throws IOException {
 
 		if (bytecode == null || bytecode.isEmpty()) {
-			System.err.println("ERROR: couldn't download contract's bytecode, output file won't be created.");
-			return false;
+			System.err.println(
+					JSONManager.throwNewError("Couldn't extract opcodes from bytecode. Bytecode is null or empty."));
+			System.exit(1);
 		}
 
 		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
@@ -138,36 +166,6 @@ public class EVMFrontend {
 		}
 
 		writer.close();
-
-		return true;
-	}
-
-	/**
-	 * Yelds the EVM bytecode of a smart contract stored at the address
-	 * {@code contractAddress} and generates its CFG as a {@code Program}.
-	 * 
-	 * @param contractAddress the address of the smart contract of interest
-	 * 
-	 * @return a LiSA {@code Program} representing the generated CFG
-	 * 
-	 * @throws IOException
-	 * @throws AnalysisException
-	 */
-	public static Program generateCfgFromContractAddress(String contractAddress)
-			throws IOException, AnalysisException {
-		final String BYTECODE_OUTFILE_PATH = "evm-outputs/tmp/" + contractAddress + "_bytecode.sol";
-
-		// Get bytecode from Etherscan
-		new File(BYTECODE_OUTFILE_PATH).getParentFile().mkdirs();
-
-		String bytecode = EVMFrontend.parseContractFromEtherscan(contractAddress);
-
-		if (!EVMFrontend.opcodesFromBytecode(bytecode, BYTECODE_OUTFILE_PATH)) {
-			return null;
-		}
-
-		// Parse bytecode to generate CFG
-		return EVMFrontend.generateCfgFromFile(BYTECODE_OUTFILE_PATH);
 	}
 
 	/**
@@ -180,10 +178,11 @@ public class EVMFrontend {
 	 * @return a LiSA {@code Program} representing the generated control flow
 	 *             graph
 	 * 
-	 * @throws IOException
+	 * @throws IOException if an I/O error occurs while writing to the input
+	 *                         file
 	 */
 	public static Program generateCfgFromFile(String filePath) throws IOException {
-		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath, program);
 		ProgramContext programContext = EVMFrontend.parseContract(filePath);
 
@@ -200,7 +199,8 @@ public class EVMFrontend {
 	 * @param opcode
 	 * @param writer
 	 * 
-	 * @throws IOException
+	 * @throws IOException if an I/O error occurs while writing to the input
+	 *                         file
 	 */
 	private static boolean addOpcode(String opcode, Writer writer) throws IOException {
 		switch (opcode) {
@@ -361,11 +361,22 @@ public class EVMFrontend {
 			writer.write("BASEFEE\n");
 			break;
 		case "49":
+			writer.write("BLOBHASH\n");
+			break;
+		case "4a":
+			writer.write("BLOBBASEFEE\n");
+			break;
 		case "4f":
 			writer.write("INVALID\n");
 			break;
 		case "50":
 			writer.write("POP\n");
+			break;
+		case "5c":
+			writer.write("TLOAD\n");
+			break;
+		case "5d":
+			writer.write("TSTORE\n");
 			break;
 		case "51":
 			writer.write("MLOAD\n");
@@ -399,6 +410,9 @@ public class EVMFrontend {
 			break;
 		case "5b":
 			writer.write("JUMPDEST\n");
+			break;
+		case "5e":
+			writer.write("MCOPY\n");
 			break;
 		case "5f":
 			writer.write("PUSH0\n");
@@ -540,10 +554,7 @@ public class EVMFrontend {
 			break;
 		case "fe":
 			writer.write("INVALID\n");
-			if (USE_CREATION_CODE)
-				break;
-			else
-				return false;
+			break;
 		case "ff":
 			writer.write("SELFDESTRUCT\n");
 			break;
@@ -655,14 +666,14 @@ public class EVMFrontend {
 	 */
 	public static String etherscanRequest(String module, String action, String address) throws IOException {
 		// Get the API key from the environment variable
-		Dotenv dotenv = Dotenv.load();
-		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
+		final String API_KEY = EVMFrontend.getEtherscanAPIKey();
 
 		// Check if API key was retrieved correctly from the environment
 		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
-			System.err.println("ERROR: couldn't retrieve ETHERSCAN_API_KEY environment variable from your system.");
-			return null;
+			System.err.println(JSONManager
+					.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
+			System.exit(1);
 		}
 
 		// Send request to Etherscan
@@ -718,14 +729,14 @@ public class EVMFrontend {
 	public static String etherscanRequest(String module, String action, String position, String address)
 			throws IOException {
 		// Get the API key from the environment variable
-		Dotenv dotenv = Dotenv.load();
-		final String API_KEY = dotenv.get("ETHERSCAN_API_KEY");
+		final String API_KEY = EVMFrontend.getEtherscanAPIKey();
 
 		// Check if API key was retrieved correctly from the environment
 		// variable
 		if (API_KEY == null || API_KEY.isEmpty()) {
-			System.err.println("ERROR: couldn't retrieve ETHERSCAN_API_KEY environment variable from your system.");
-			return null;
+			System.err.println(JSONManager
+					.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
+			System.exit(1);
 		}
 
 		// Send request to Etherscan
@@ -767,9 +778,11 @@ public class EVMFrontend {
 
 		if (content.contains(EtherscanGenericErrorMsg)) {
 			if (content.contains(EtherscanInvalidAPIKeyErrorMsg)) {
-				System.err.println("ERROR: invalid Etherscan API key.");
+				System.err.println(JSONManager.throwNewError("Invalid Etherscan API key."));
+				System.exit(1);
 			} else {
-				System.err.println("ERROR: generic Etherscan API error.");
+				System.err.println(JSONManager.throwNewError("Generic Etherscan API error."));
+				System.exit(1);
 			}
 
 			return true;

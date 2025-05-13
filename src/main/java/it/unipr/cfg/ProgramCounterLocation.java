@@ -5,20 +5,48 @@ import java.util.Objects;
 
 /**
  * Represent the code location of an opcode in the control flow graph.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class ProgramCounterLocation implements CodeLocation {
 
+	/**
+	 * The program counter.
+	 */
 	private final int pc;
+
+	/**
+	 * The source code line of the mnemonic bytecode.
+	 */
 	private final int sourceCodeLine;
 
 	/**
-	 * Default constructor.
+	 * Builds a program counter location.
 	 * 
-	 * @param pc integer representing the code location of the opcode
+	 * @param pc             the program counter
+	 * @param sourceCodeLine the source code line
 	 */
 	public ProgramCounterLocation(int pc, int sourceCodeLine) {
 		this.pc = pc;
 		this.sourceCodeLine = sourceCodeLine;
+	}
+
+	/**
+	 * Yields the program counter.
+	 * 
+	 * @return the program counter
+	 */
+	public int getPc() {
+		return pc;
+	}
+
+	/**
+	 * Yields the source code line.
+	 * 
+	 * @return the source code line
+	 */
+	public int getSourceCodeLine() {
+		return sourceCodeLine;
 	}
 
 	@Override
@@ -32,10 +60,6 @@ public class ProgramCounterLocation implements CodeLocation {
 			return 0;
 		} else
 			return -1;
-	}
-
-	public int getPc() {
-		return pc;
 	}
 
 	@Override
@@ -64,12 +88,4 @@ public class ProgramCounterLocation implements CodeLocation {
 		ProgramCounterLocation other = (ProgramCounterLocation) obj;
 		return pc == other.pc;
 	}
-
-	/**
-	 * @return the source code line
-	 */
-	public int getSourceCodeLine() {
-		return sourceCodeLine;
-	}
-
 }

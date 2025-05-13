@@ -15,6 +15,8 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * Byte opcode of the program to analyze.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Byte extends Statement {
 
@@ -51,7 +53,7 @@ public class Byte extends Statement {
 
 	@Override
 	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
+		// we cannot have more than one statement on the same code location
 		return 0;
 	}
 }

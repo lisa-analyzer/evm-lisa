@@ -4,13 +4,23 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.SetLattice;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
+	/**
+	 * The maximum size of an abstract stack set.
+	 */
 	private static int SIZE = 8;
+
+	/**
+	 * The bottom element of the abstract stack set domain.
+	 */
 	private static final AbstractStackSet BOTTOM = new AbstractStackSet(null, false);
+
+	/**
+	 * The top element of the abstract stack set domain.
+	 */
 	private static final AbstractStackSet TOP = new AbstractStackSet(Collections.emptySet(), true);
 
 	public AbstractStackSet() {
@@ -23,7 +33,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	}
 
 	/**
-	 * Add a new AbstractStack to the set if it is not bottom
+	 * Add a new abstract stack to the set if it is not bottom
 	 * 
 	 * @param other AbstractStack
 	 */
@@ -32,10 +42,12 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 			this.elements.add(other);
 	}
 
+	@Override
 	public AbstractStackSet top() {
 		return TOP;
 	}
 
+	@Override
 	public AbstractStackSet bottom() {
 		return BOTTOM;
 	}
@@ -68,23 +80,8 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 		return new AbstractStackSet(set, false);
 	}
 
-	public String toString2() {
-		String result = "{";
-		Iterator<AbstractStack> it = elements.iterator();
-
-		while (it.hasNext()) {
-			result += it.next().toString();
-			if (it.hasNext())
-				result += ", ";
-		}
-
-		result += "}";
-
-		return result;
-	}
-
 	/**
-	 * Set the stack set limit
+	 * Sets the stack set limit.
 	 * 
 	 * @param n the new stack set limit
 	 */
@@ -94,7 +91,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	}
 
 	/**
-	 * Yields the stack set limit
+	 * Yields the stack set limit.
 	 * 
 	 * @return the stack set limit
 	 */

@@ -12,122 +12,141 @@ EVMLiSA is a static analyzer based on abstract interpretation for [EVM bytecode]
 EVMLiSA is based on the peer-reviewed publication
 > Vincenzo Arceri, Saverio Mattia Merenda, Greta Dolcetti, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"Towards a Sound Construction of EVM Bytecode Control-Flow Graphs"**_. In Proceedings of the 26th ACM International Workshop on Formal Techniques for Java-like Programs (FTfJP 2024), co-located with ECOOP 2024.
 
-# 🛠 Building EVMLiSA
-Compiling EVMLiSA requires:
-- JDK >= 11
-- [Gradle](https://gradle.org/releases/) >= 6.6
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [Environment Setup](#environment-setup)
+- [Execution Methods](#execution-methods)
+  - [Using Docker](#using-docker)
+  - [Using CLI](#using-command-line)
+- [Options](#options)
+- [The Abstract Stack Set Domain](#the-abstract-stack-set-domain)
+- [Jump Classification](#jump-classification)
+- [Usage Example](#usage-example)
+  - [Example Output](#example-output)
+- [EVMLiSA as a Library](#EVMLiSA-as-a-library)
+
+---
+
+## Requirements
+
+To build and run EVMLiSA, you will need:
+
+- JDK 11 or higher (optional when using Docker)
+- [Gradle](https://gradle.org/releases/) 8.0 or higher (optional when using Docker)
 - [Etherscan API key](https://etherscan.io/myapikey)
 
-You need to:
-- Clone the repository:
-  ```bash
-  git clone https://github.com/lisa-analyzer/evm-lisa.git
-  cd evm-lisa
-  ```
-- Import the project into the Eclipse/IntelliJ workspace as a Gradle project (optional).
+## Installation
 
-# ⚙️ Running EVMLiSA
-Before running EVMLiSA, ensure you have set up an Environment Variable with your Etherscan API Key. Follow the steps below to set up the environment variable:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/lisa-analyzer/evm-lisa.git
+   cd evm-lisa
+   ```
 
-1. Begin by creating a file named `.env` in the EVMLiSA project.
-2. Inside the `.env` file, add the following line:
-```
-ETHERSCAN_API_KEY=<your_etherscan_api_key>
-```
-3. Replace `<your_etherscan_api_key>` with your Etherscan API key.
+2. (Optional) Import the project into Eclipse or IntelliJ as a Gradle project.
 
-> Here you can find how to generate an [Etherscan API key](https://etherscan.io/myapikey).
+### Environment Setup
 
-Once you have set up the environment variable, you can run EVMLiSA via Docker or via Bash.
+Before running EVMLiSA, you must configure your Etherscan API key:
 
-## Via Docker
-Build the container:
-```
-mkdir -p execution/docker &&
-docker build -t evm-lisa:latest .
-```
+1. Create a `.env` file in the project root directory.
+2. Add the following line to the file:
+   ```
+   ETHERSCAN_API_KEY=<your_etherscan_api_key>
+   ```
+3. Replace `<your_etherscan_api_key>` with your actual key from [Etherscan](https://etherscan.io/myapikey).
 
-Then you can run EVMLiSA with:
-```
-docker run --rm -it \
--v $(pwd)/.env:/app/.env \
--v $(pwd)/execution/docker:/app/execution/results \
-evm-lisa:latest \
--a <smart_contract_address> [options]
-```
+Alternatively, you can pass your API key directly using the `--etherscan-api-key <key>` option when executing the analyzer.
 
-- `-v $(pwd)/.env:/app/.env`: mount the `.env` file.
-- `-v $(pwd)/execution/docker:/app/execution/results`: share the results' folder.
+## Execution Methods
 
-> Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
+### Using Docker
 
-## Via Bash
-Build the Project:
-```bash
-./gradlew build
-```
+1. Build the Docker container:
+   ```bash
+   mkdir -p execution/docker &&
+   docker build -t evm-lisa:latest .
+   ```
 
-Create Distribution Zip:
-```bash
-./gradlew distZip
-```
+2. Run EVMLiSA with Docker:
+   ```bash
+   docker run --rm -it \
+   -v $(pwd)/.env:/app/.env \
+   -v $(pwd)/execution/docker:/app/execution/results \
+   evm-lisa:latest \
+   [options]
+   ```
 
-Unzip the Distribution:
-```bash
-unzip build/distributions/evm-lisa.zip -d execution
-```
+   - `-v $(pwd)/.env:/app/.env`: Mounts your environment file
+   - `-v $(pwd)/execution/docker:/app/execution/results`: Shares the results directory
 
-Then you can run EVMLiSA with:
-```bash
-./execution/evm-lisa/bin/evm-lisa \
--a <smart_contract_address> [options]
-```
-> Replace `<smart_contract_address>` with the address of the Ethereum smart contract you want to analyze.
+### Using Command Line
 
-This command will initiate the analysis process for the specified smart contract, providing insights and results based on the EVM bytecode of the contract.
+1. Build the project:
+   ```bash
+   ./gradlew assemble
+   ```
+
+2. Run EVMLiSA:
+   ```bash
+   java -jar build/libs/evm-lisa-all.jar [options]
+   ```
+
+## Options
 
 ```
 Options:
- -a,--address <arg>                        Address of an Ethereum smart contract.
- -b,--benchmark <arg>                      Filepath of the benchmark.
- -c,--cores <arg>                          Number of cores used in benchmark.
-    --checker-reentrancy                   Enable re-entrancy checker.
-    --checker-txorigin                     Enable tx-origin checker.
-    --creation-code                        Parse bytecode as creation code (instead of runtime code).
-    --dot                                  Export a dot-notation file.
-    --download-bytecode                    Download the bytecode.
-    --dump-report                          Dump analysis report.
-    --dump-stats                           Dump statistics.
- -f,--filepath-bytecode <arg>              Filepath of the bytecode file.
-    --filepath-mnemonic <arg>              Filepath of the mnemonic file.
-    --html                                 Export a graphic HTML report.
-    --link-unsound-jumps-to-all-jumpdest   Link all the unsound jumps to all jumpdest.
- -o,--output <arg>                         Output directory path.
-    --serialize-inputs                     Serialize inputs.
-    --stack-set-size <arg>                 Dimension of stack-set (default: 8).
-    --stack-size <arg>                     Dimension of stack (default: 32).
-    --use-live-storage                     Use the live storage in SLOAD.
+ -a,--address <arg>                        Address of an Ethereum smart contract
+    --abi <arg>                            ABI of the bytecode to be analyzed (JSON format).
+    --abi-path <arg>                       Filepath of the ABI file
+ -b,--bytecode <arg>                       Bytecode to be analyzed (e.g., 0x6080...)
+    --benchmark <arg>                      Filepath of the benchmark
+    --bytecode-path <arg>                  Filepath of the bytecode file
+ -c,--cores <arg>                          Number of cores used in benchmark
+    --checker-all                          Enable all security checkers
+    --checker-reentrancy                   Enable reentrancy checker
+    --checker-timestampdependency          Enable timestamp-dependency checker
+    --checker-txorigin                     Enable tx-origin checker
+    --etherscan-api-key <arg>              Insert your Etherscan API key
+    --link-unsound-jumps-to-all-jumpdest   Link all unsound jumps to all jumpdest
+    --output-directory-path <arg>          Filepath of the output directory
+    --stack-set-size <arg>                 Dimension of stack-set (default: 8)
+    --stack-size <arg>                     Dimension of stack (default: 32)
+    --use-live-storage                     Use the live storage in SLOAD
 ```
 
-# 🔍 Abstract Stack Set Domain
-In the analysis of EVM bytecode programs, EVMLiSA employs a domain of sets of abstract stacks to enhance precision, particularly when loops are encountered in the source code.
+## The Abstract Stack Set Domain
 
-EVMLiSA introduces the abstract stack powerset domain $\texttt{SetSt}_{k,h,l}$ which consists of sets of abstract stacks with at most $l$ elements and an height of at most $h$. This domain allows the analyzer to maintain collections of abstract stacks, avoiding the need to compute the lub and allowing each element of an abstract stack to be a $k$ integer set.
+In analyzing EVM bytecode programs, EVMLiSA employs a domain of sets of abstract stacks to enhance precision, particularly for code containing loops.
 
-# 📋 Running example
-Here is an example of how to run EVMLiSA. In this example, we will analyze a smart contract at the address `0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B` with specific options for stack size, stack-set size, live storage usage and the dump of the CFG:
+The analyzer introduces the abstract stack powerset domain $\texttt{SetSt}_{k,h,l}$ consisting of sets of abstract stacks with at most $l$ elements and a maximum height of $h$. This domain allows the analyzer to maintain collections of abstract stacks, avoiding the need to compute the least upper bound (lub) and allowing each element of an abstract stack to be a $k$ integer set.
 
-- Bash:
+## Jump Classification
+
+EVMLiSA classifies jump instructions in the following categories:
+
+- **Resolved**: All destinations of the jump node have been successfully resolved
+- **Definitely unreachable**: The jump node is unreachable (reached with the bottom abstract state)
+- **Maybe unreachable**: The jump node is not reachable from the entry point, but may be reachable via a potentially unsound jump node
+- **Unsound**: The jump node is reached with a stack containing an unknown numerical value that may correspond to a valid jump destination
+- **Maybe unsound**: The stack set exceeded the maximum configured stack size
+
+## Usage Example
+
+Analyze a smart contract with specific configuration parameters:
+
+**Using Command Line:**
 ```bash
-./execution/evm-lisa/bin/evm-lisa \
+java -jar build/libs/evm-lisa-all.jar \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---dump-stats \
---use-live-storage
+--link-unsound-jumps-to-all-jumpdest
 ```
 
-- Docker:
+**Using Docker:**
 ```bash
 docker run --rm -it \
 -v $(pwd)/.env:/app/.env \
@@ -136,14 +155,14 @@ evm-lisa:latest \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
 --stack-set-size 10 \
---dump-stats \
---use-live-storage
+--link-unsound-jumps-to-all-jumpdest
 ```
 
-> Use `docker run -a stderr` to dump only the json report as standard output.
+> **Tip**: Use `docker run -a stderr` to output only the JSON report to standard output.
 
-The expected output is as follows:
-```yaml
+### Example Output
+
+```
 ##############
 Total opcodes: 344
 Total jumps: 45
@@ -155,17 +174,26 @@ Maybe unsound jumps: 0
 ##############
 ```
 
-### Jump classification
-- _Resolved_: all the destinations of the jump node have been resolved;
-- _Definitely unreachable_: the jump node is unreachable (i.e., it is reached with the bottom abstract state);
-- _Maybe unreachable_: the jump node is not reachable in the CFG, starting from its entry point, but it may be reachable via a (maybe) unsound jump node (if any);
-- _Unsound_: the jump node is reached at least with a stack with an unknown numerical value that may correspond to a
-valid jump destination as the top element;
-- _Maybe unsound_: the stack set exceeded the maximal stack size.
+## EVMLiSA as a Library
 
----
+EVMLiSA can be integrated as a Java library to analyze EVM smart contracts programmatically:
+
+```java
+// Analyze by contract address
+EVMLiSA.analyzeContract(new SmartContract("0x123456..."));
+
+// Analyze from bytecode file path
+EVMLiSA.analyzeContract(new SmartContract(Path.of("bytecode", "code.bytecode")));
+
+// Analyze from bytecode string
+EVMLiSA.analyzeContract(new SmartContract().setBytecode("0x6080..."));
+
+// Analyze multiple contracts
+EVMLiSA.analyzeSetOfContracts(Path.of("list-of-contracts.txt"));
+```
 
 ## Contributors
+
 <a href="https://github.com/lisa-analyzer/evm-lisa/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=lisa-analyzer/evm-lisa" />
 </a>

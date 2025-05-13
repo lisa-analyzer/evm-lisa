@@ -8,8 +8,9 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Implementation of UnaryOperator to represent the Push operator of Ethereum
- * Bytecode.
+ * The generic PUSH symbolic operator.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class PushOperator implements UnaryOperator {
 

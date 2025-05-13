@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_taint_testTxOrigin_example12_example15.sol().json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "16ms",
+    "end" : "2025-02-26T11:49:50.151+01:00",
+    "expressions" : "4",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "1",
+    "programs" : "1",
+    "start" : "2025-02-26T11:49:50.135+01:00",
+    "statements" : "11",
+    "units" : "0",
+    "version" : "0.1",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "false",
+    "wideningThreshold" : "5",
+    "workdir" : "evm-outputs/taint/testTxOrigin/example12"
+  }
+}

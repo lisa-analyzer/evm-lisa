@@ -7,6 +7,11 @@ import it.unive.lisa.type.Untyped;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * The ISZERO symbolic operator.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class IszeroOperator implements UnaryOperator {
 
 	/**
@@ -26,5 +31,4 @@ public class IszeroOperator implements UnaryOperator {
 	public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 		return Collections.singleton(Untyped.INSTANCE);
 	}
-
 }

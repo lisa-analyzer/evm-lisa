@@ -1,0 +1,188 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "_name",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "name": "_symbol",
+                "internalType": "string",
+                "type": "string"
+            },
+            {
+                "name": "_addressRelay",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "name": "_implementation",
+                "internalType": "address",
+                "type": "address"
+            },
+            {
+                "components": [
+                    {
+                        "name": "publicSaleActive",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "usePublicSaleTimes",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "presaleActive",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "usePresaleTimes",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "soulbindingActive",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "randomHashActive",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "enforceRoyalties",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "heyMintFeeActive",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "publicMintsAllowedPerAddress",
+                        "internalType": "uint8",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "presaleMintsAllowedPerAddress",
+                        "internalType": "uint8",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "publicMintsAllowedPerTransaction",
+                        "internalType": "uint8",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "presaleMintsAllowedPerTransaction",
+                        "internalType": "uint8",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "maxSupply",
+                        "internalType": "uint16",
+                        "type": "uint16"
+                    },
+                    {
+                        "name": "presaleMaxSupply",
+                        "internalType": "uint16",
+                        "type": "uint16"
+                    },
+                    {
+                        "name": "royaltyBps",
+                        "internalType": "uint16",
+                        "type": "uint16"
+                    },
+                    {
+                        "name": "publicPrice",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "presalePrice",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "projectId",
+                        "internalType": "uint24",
+                        "type": "uint24"
+                    },
+                    {
+                        "name": "presaleAffiliateMintEnabled",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "publicSaleAffiliateMintEnabled",
+                        "internalType": "bool",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "affiliateBasisPoints",
+                        "internalType": "uint16",
+                        "type": "uint16"
+                    },
+                    {
+                        "name": "uriBase",
+                        "internalType": "string",
+                        "type": "string"
+                    },
+                    {
+                        "name": "presaleSignerAddress",
+                        "internalType": "address",
+                        "type": "address"
+                    },
+                    {
+                        "name": "publicSaleStartTime",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "publicSaleEndTime",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "presaleStartTime",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "presaleEndTime",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "fundingEndsAt",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    },
+                    {
+                        "name": "fundingTarget",
+                        "internalType": "uint32",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "_baseConfig",
+                "internalType": "struct BaseConfig",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "fallback"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]

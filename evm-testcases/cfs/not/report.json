@@ -3,17 +3,17 @@
   "files" : [ "report.json", "untyped_program.evm-testcases_cfs_not_not_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "10ms",
-    "end" : "2024-10-03T17:31:51.524+02:00",
+    "duration" : "33ms",
+    "end" : "2025-02-26T11:44:05.823+01:00",
     "expressions" : "16",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2024-10-03T17:31:51.514+02:00",
-    "statements" : "33",
+    "start" : "2025-02-26T11:44:05.790+01:00",
+    "statements" : "32",
     "units" : "0",
-    "version" : "0.1b8",
+    "version" : "0.1",
     "warnings" : "0"
   },
   "configuration" : {

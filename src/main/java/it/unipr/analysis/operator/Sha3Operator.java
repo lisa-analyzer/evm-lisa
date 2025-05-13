@@ -7,6 +7,11 @@ import it.unive.lisa.type.Untyped;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * The SHA3 symbolic operator.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Sha3Operator implements UnaryOperator {
 
 	/**

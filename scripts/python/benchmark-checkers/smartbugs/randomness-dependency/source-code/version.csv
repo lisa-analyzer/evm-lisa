@@ -1,0 +1,6 @@
+file,original pragma version,compiled version,notes
+1.sol,^0.4.15,0.4.15,
+2.sol,^0.4.0,0.4.0,
+3.sol,^0.4.0,0.4.0,
+4.sol,^0.4.25,0.4.25,
+5.sol,^0.4.25,0.4.25,

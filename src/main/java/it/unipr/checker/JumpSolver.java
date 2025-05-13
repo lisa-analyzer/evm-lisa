@@ -1,13 +1,16 @@
 package it.unipr.checker;
 
-import it.unipr.analysis.*;
+import it.unipr.analysis.AbstractStack;
+import it.unipr.analysis.AbstractStackSet;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.analysis.Number;
+import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.Jump;
 import it.unipr.cfg.Jumpi;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.frontend.EVMFeatures;
-import it.unipr.frontend.EVMTypeSystem;
+import it.unipr.frontend.EVMLiSAFeatures;
+import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.AnalysisState;
@@ -122,15 +125,8 @@ public class JumpSolver implements
 			this.maybeUnsoundJumps = new HashSet<>();
 			this.unsoundJumps = new HashSet<>();
 
-			Statement entryPoint = this.cfgToAnalyze.getEntrypoints().stream().findAny().get();
-
 			for (Statement node : this.cfgToAnalyze.getAllJumps()) {
-				int key = this.cfgToAnalyze.hashCode() + entryPoint.hashCode() + node.hashCode();
-				boolean isReachableFrom = this.cfgToAnalyze.reachableFrom(entryPoint, node);
-				MyCache.getInstance().addReachableFrom(key, isReachableFrom); // Caching
-
-				if (cfgToAnalyze.getAllPushedJumps().contains(node)
-						|| !isReachableFrom)
+				if (cfgToAnalyze.getAllPushedJumps().contains(node))
 					continue;
 
 				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
@@ -167,7 +163,7 @@ public class JumpSolver implements
 					for (AbstractStack stack : stacks) {
 						StackElement topStack = stack.getTop();
 						stacksTop.add(topStack);
-						if (topStack.isTopNumeric())
+						if (topStack.isTop())
 							unsoundJumps.add(node);
 					}
 
@@ -183,7 +179,7 @@ public class JumpSolver implements
 		LiSAConfiguration conf = tool.getConfiguration();
 		LiSA lisa = new LiSA(conf);
 
-		Program program = new Program(new EVMFeatures(), new EVMTypeSystem());
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(cfgToAnalyze);
 
 		try {

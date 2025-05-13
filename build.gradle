@@ -12,14 +12,14 @@ plugins {
     id 'application'
    	id 'antlr'
    	id 'eclipse'    
-   	id 'com.diffplug.spotless' version '6.18.0'
-    id 'checkstyle' 
+   	id 'com.diffplug.spotless' version '6.21.0'
+    id 'checkstyle'
+    id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
     mavenCentral()   
 }
 
@@ -42,6 +42,8 @@ dependencies {
  	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
  	
  	implementation 'org.json:json:20210307'
+
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 }
 
 
@@ -143,4 +145,13 @@ tasks.register('checkCodeStyle') {
     group = 'verification'
     description = 'Execute spotless and checkstyle to ensure code and javadoc formatting'
     dependsOn 'spotlessCheck', 'checkstyleMain', 'checkstyleTest'
+}
+
+tasks.named('shadowJar') {
+    archiveBaseName.set('evm-lisa')
+    manifest {
+        attributes(
+                'Main-Class': mainClassName
+        )
+    }
 }

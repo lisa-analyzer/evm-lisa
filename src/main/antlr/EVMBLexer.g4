@@ -124,6 +124,14 @@ ORIGIN
    : 'ORIGIN'
    ;
 
+TSTORE
+   : 'TSTORE'
+   ;
+
+TLOAD
+   : 'TLOAD'
+   ;
+
 CALLER
    : 'CALLER'
    ;
@@ -180,6 +188,14 @@ BLOCKHASH
    : 'BLOCKHASH'
    ;
 
+BLOBHASH
+   : 'BLOBHASH'
+   ;
+
+BLOBBASEFEE
+   : 'BLOBBASEFEE'
+   ;
+
 COINBASE
    : 'COINBASE'
    ;
@@ -226,6 +242,10 @@ MSTORE
 
 MSTORE8
    : 'MSTORE8'
+   ;
+
+MCOPY
+   : 'MCOPY'
    ;
 
 SLOAD

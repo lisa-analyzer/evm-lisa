@@ -8,13 +8,14 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * Dup4 opcode of the program to analyze.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * 
+ * @see <a href="https://www.evm.codes/">EVM bytecode opodes</a>
  */
 public class Dup4 extends Dup {
 
@@ -30,15 +31,11 @@ public class Dup4 extends Dup {
 	}
 
 	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		return visitor.visit(tool, getCFG(), this);
-	}
-
-	@Override
 	public String toString() {
 		return "DUP4";
 	}
 
+	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
@@ -46,11 +43,5 @@ public class Dup4 extends Dup {
 				new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, DummyConstant.INSTANCE,
 						Dup4Operator.INSTANCE, getLocation()),
 				this);
-	}
-
-	@Override
-	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

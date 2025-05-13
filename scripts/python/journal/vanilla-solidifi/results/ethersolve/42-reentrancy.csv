@@ -1,7 +1,0 @@
-offset,opcode,detection
-1671,1671: SSTORE,Store write after unsafe call
-1840,1840: SLOAD,Store read after unsafe call
-2949,2949: SLOAD,Store read after unsafe call
-3359,3359: SLOAD,Store read after unsafe call
-3524,3524: SLOAD,Store read after unsafe call
-3610,3610: SSTORE,Store write after unsafe call
