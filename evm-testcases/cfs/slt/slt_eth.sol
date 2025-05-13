@@ -1,0 +1,30 @@
+PUSH1 0x00 
+PUSH1 0x01 
+SLT
+PUSH1 0x00
+PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+SLT
+PUSH1 0x01
+PUSH1 0x7f
+SLT 
+PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+PUSH1 0x00
+SLT
+PUSH1 0x00
+PUSH32 0x8000000000000000000000000000000000000000000000000000000000000000
+SLT
+PUSH32 0x8000000000000000000000000000000000000000000000000000000000000000
+PUSH1 0x00
+SLT
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+SLT
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd
+SLT
+PUSH32 0x8000000000000000000000000000000000000000000000000000000000000000
+PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+SLT
+PUSH1 0xff
+PUSH1 0x01
+SLT

@@ -550,7 +550,7 @@ public class EVMAbstractState
 						StackElement opnd1 = resultStack.pop();
 						StackElement opnd2 = resultStack.pop();
 
-						resultStack.push(opnd1.lt(opnd2));
+						resultStack.push(opnd1.slt(opnd2));
 						result.add(resultStack);
 					}
 
@@ -584,7 +584,7 @@ public class EVMAbstractState
 						StackElement opnd1 = resultStack.pop();
 						StackElement opnd2 = resultStack.pop();
 
-						resultStack.push(opnd1.gt(opnd2));
+						resultStack.push(opnd1.sgt(opnd2));
 						result.add(resultStack);
 					}
 

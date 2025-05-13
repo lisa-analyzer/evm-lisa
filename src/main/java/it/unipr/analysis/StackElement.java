@@ -444,6 +444,44 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 		else
 			return new StackElement(this.n.not());
 	}
+	
+	public StackElement slt(StackElement other) {
+	    if (isBottom() || other.isBottom())
+	        return BOTTOM;
+	    if (isTop() || other.isTop())
+	        return NOT_JUMPDEST_TOP;
+	    if (isTopNotJumpdest() || other.isTopNotJumpdest())
+	        return NOT_JUMPDEST_TOP;
+
+	    BigInteger a = Number.toBigInteger(this.n);
+	    BigInteger b = Number.toBigInteger(other.n);
+
+	    BigInteger HALF = BigInteger.valueOf(2).pow(255);
+	    BigInteger MOD  = BigInteger.valueOf(2).pow(256);
+	    if (a.compareTo(HALF) >= 0) a = a.subtract(MOD);
+	    if (b.compareTo(HALF) >= 0) b = b.subtract(MOD);
+
+	    return (a.compareTo(b) < 0 ? ONE : ZERO);
+	}
+	
+	public StackElement sgt(StackElement other) {
+	    if (isBottom() || other.isBottom())
+	        return BOTTOM;
+	    if (isTop() || other.isTop())
+	        return NOT_JUMPDEST_TOP;
+	    if (isTopNotJumpdest() || other.isTopNotJumpdest())
+	        return NOT_JUMPDEST_TOP;
+
+	    BigInteger a = Number.toBigInteger(this.n);
+	    BigInteger b = Number.toBigInteger(other.n);
+
+	    BigInteger HALF = BigInteger.valueOf(2).pow(255);
+	    BigInteger MOD  = BigInteger.valueOf(2).pow(256);
+	    if (a.compareTo(HALF) >= 0) a = a.subtract(MOD);
+	    if (b.compareTo(HALF) >= 0) b = b.subtract(MOD);
+
+	    return (a.compareTo(b) > 0 ? ONE : ZERO);
+	}
 
 	public StackElement shl(StackElement other) {
 		if (isBottom() || other.isBottom())
