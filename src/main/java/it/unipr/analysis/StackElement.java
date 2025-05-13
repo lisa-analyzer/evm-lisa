@@ -767,8 +767,8 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
-			return bottom(); // fake path
+		else if (n.compareTo(new Number(256)) > 0)
+			return ZERO;
 
 		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
 		int[] shiftedBits = BitManager.shiftLeft(bits, n.getInt());
@@ -796,8 +796,8 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 			return top();
 		else if (isTopNotJumpdest() || other.isTopNotJumpdest())
 			return NOT_JUMPDEST_TOP;
-		else if (n.compareTo(new Number(Number.MAX_INT)) > 0)
-			return bottom(); // fake path
+		else if (n.compareTo(new Number(256)) > 0)
+			return ZERO;
 
 		int[] bits = BitManager.toBitArray(Number.toBigInteger(other.n));
 		int[] shiftedBits = BitManager.shiftRight(bits, n.getInt());
