@@ -608,15 +608,15 @@ public class EVMLiSA {
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps()) 
 			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) 
-				if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
+				if (cfg.getAllPushedJumps().contains(jumpNode))
+					// stacks of pushed jumps are not stored for optimization
+					resolved++;
+				else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
 					// getUnreachableJumps() contains jumps where the whole value state went to bottom
 					unreachable++;
 				else if (checker.getMaybeUnsoundJumps().contains(jumpNode))
 					// getMaybeUnsoundJumps() contains jumps where the whole value state went to top
 					unknown++;
-				else if (cfg.getAllPushedJumps().contains(jumpNode))
-					// stacks of pushed jumps are not stored for optimization
-					resolved++;
 				else {
 					Set<StackElement> topStacks = checker.getTopStackValuesPerJump(jumpNode);
 					if (topStacks.isEmpty())
