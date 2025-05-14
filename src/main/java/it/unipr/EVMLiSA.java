@@ -48,6 +48,7 @@ public class EVMLiSA {
 
 	// Configuration
 	private static boolean TEST_MODE = false;
+	private static boolean PAPER_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
@@ -148,11 +149,22 @@ public class EVMLiSA {
 	public static void setTestMode() {
 		TEST_MODE = true;
 	}
-
+	
 	public static boolean isInTestMode() {
 		return TEST_MODE;
 	}
+	
+	public static boolean isInPaperMode() {
+		return PAPER_MODE;
+	}
 
+	/**
+	 * Enables the paper mode (i.e., statistics contains jump classifications as in the reference paper).
+	 */
+	public static void setPaperMode() {
+		PAPER_MODE = true;
+	}
+	
 	/**
 	 * Executes the analysis workflow.
 	 *
@@ -457,6 +469,8 @@ public class EVMLiSA {
 	 */
 	public static StatisticsObject<?> computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
+		if (PAPER_MODE)
+			return computePaperJumps(checker, soundlySolved);
 		return computeJumps(checker, soundlySolved);
 	}
 
@@ -561,6 +575,68 @@ public class EVMLiSA {
 				.maybeUnreachableJumps(maybeUnreachable)
 				.unsoundJumps(unsoundJumps)
 				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.build();
+
+		return stats;
+	}
+
+	/**
+	 * Computes jump-related statistics based on the analysis results, with the same classification of the reference paper.
+	 *
+	 * @param checker       the jump solver used for analysis
+	 * @param soundlySolved the set of jumps that have been soundly solved
+	 * 
+	 * @return a {@link StatisticsObject} containing the computed jump
+	 *             statistics
+	 */
+	private static StatisticsObject<?> computePaperJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+		EVMCFG cfg = checker.getComputedCFG();
+
+		int resolved = 0;
+		int unreachable = 0;
+		int erroneous = 0; 
+		int unknown = 0; 
+
+
+		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
+			log.warn("There are no entrypoints.");
+			return null;
+		}
+
+		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
+
+		// we are safe supposing that we have a single entry point
+		for (Statement jumpNode : cfg.getAllJumps()) 
+			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) 
+				if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
+					// getUnreachableJumps() contains jumps where the whole value state went to bottom
+					unreachable++;
+				else if (checker.getMaybeUnsoundJumps().contains(jumpNode))
+					// getMaybeUnsoundJumps() contains jumps where the whole value state went to top
+					unknown++;
+				else if (cfg.getAllPushedJumps().contains(jumpNode))
+					// stacks of pushed jumps are not stored for optimization
+					resolved++;
+				else {
+					Set<StackElement> topStacks = checker.getTopStackValuesPerJump(jumpNode);
+					if (topStacks.isEmpty())
+						unreachable++;
+					else if (topStacks.stream().allMatch(StackElement::isBottom))
+						erroneous++;
+					else if (topStacks.stream().anyMatch(StackElement::isTop))
+						unknown++;
+					else
+						resolved++;
+				}
+
+		PaperStatisticsObject stats = PaperStatisticsObject.newStatisticsObject()
+				.totalOpcodes(cfg.getOpcodeCount())
+				.totalJumps(cfg.getAllJumps().size())
+				.totalEdges(cfg.getEdges().size())
+				.resolved(resolved)
+				.unknown(unknown)
+				.unreachable(unreachable)
+				.erroneous(erroneous)
 				.build();
 
 		return stats;
@@ -681,6 +757,8 @@ public class EVMLiSA {
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
 		if (cmd.hasOption("test-mode"))
 			EVMLiSA.setTestMode();
+		if (cmd.hasOption("paper-stats"))
+			EVMLiSA.setPaperMode();
 	}
 
 	private Options getOptions() {
@@ -813,6 +891,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option usePaperStats = Option.builder()
+				.longOpt("paper-stats")
+				.desc("In each contract statistics, classify jumps using the same categories of the reference paper.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -831,6 +916,7 @@ public class EVMLiSA {
 		options.addOption(etherscanAPIKeyOption);
 		options.addOption(abiOption);
 		options.addOption(useTestModeOption);
+		options.addOption(usePaperStats);
 
 		return options;
 	}
