@@ -1,6 +1,7 @@
 package it.unipr.analysis.cron;
 
 import it.unipr.EVMLiSA;
+import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.JSONManager;
 import it.unipr.utils.PaperStatisticsObject;
 import it.unipr.utils.StandardStatisticsObject;
@@ -15,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -30,6 +32,11 @@ public class EVMBytecodeGroundTruth {
 	private final Path RUN_RESULTS = WORKING_DIRECTORY_PATH.resolve("set-of-contracts").resolve("results.json");
 	private Path GROUND_TRUTH_FILE_PATH;
 
+	@AfterClass
+	public static void cleanUp() {
+		EVMLiSAExecutor.shutdown();
+	}
+
 	private void setupAndRun() {
 		if (EVMLiSA.isInPaperMode())
 			GROUND_TRUTH_FILE_PATH = WORKING_DIRECTORY_PATH.resolve("ground-truth-data-paper-mode.json");
@@ -38,12 +45,13 @@ public class EVMBytecodeGroundTruth {
 		EVMLiSA.setWorkingDirectory(WORKING_DIRECTORY_PATH);
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() / 4 * 3);
 		EVMLiSA.setTestMode();
-		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH);
+		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH, false);
 	}
 
 	@Test
 	@Ignore
 	public void regenerateGroundTruth() throws Exception {
+		EVMLiSA.disablePaperMode();
 		setupAndRun();
 
 		Files.copy(RUN_RESULTS, GROUND_TRUTH_FILE_PATH, StandardCopyOption.REPLACE_EXISTING);
@@ -51,6 +59,7 @@ public class EVMBytecodeGroundTruth {
 
 	@Test
 	public void testGroundTruth() throws Exception {
+		EVMLiSA.disablePaperMode();
 		setupAndRun();
 
 		boolean changed = false;

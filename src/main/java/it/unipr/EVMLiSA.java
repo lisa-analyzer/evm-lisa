@@ -164,6 +164,13 @@ public class EVMLiSA {
 	public static void setPaperMode() {
 		PAPER_MODE = true;
 	}
+
+	/**
+	 * Disables the paper mode (i.e., statistics contains jump classifications as in the reference paper).
+	 */
+	public static void disablePaperMode() {
+		PAPER_MODE = false;
+	}
 	
 	/**
 	 * Executes the analysis workflow.
@@ -235,9 +242,19 @@ public class EVMLiSA {
 	 * @param filePath the path to the file containing contract addresses
 	 */
 	public static void analyzeSetOfContracts(Path filePath) {
+		analyzeSetOfContracts(filePath, true);
+	}
+
+	/**
+	 * Analyzes a set of smart contracts from a given file.
+	 *
+	 * @param filePath the path to the file containing contract addresses
+	 * @param shutdown  whether to shut down the executor after the analysis
+	 */
+	public static void analyzeSetOfContracts(Path filePath, boolean shutdown) {
 		log.info("Building contracts.");
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
-		analyzeSetOfContracts(contracts);
+		analyzeSetOfContracts(contracts, shutdown);
 	}
 
 	/**
@@ -246,6 +263,16 @@ public class EVMLiSA {
 	 * @param contracts the list of {@link SmartContract} to be analyzed
 	 */
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
+		analyzeSetOfContracts(contracts, true);
+	}
+
+	/**
+	 * Analyzes a set of smart contracts from a list of {@link SmartContract}.
+	 *
+	 * @param contracts the list of {@link SmartContract} to be analyzed
+	 * @param shutdown  whether to shut down the executor after the analysis
+	 */
+	public static void analyzeSetOfContracts(List<SmartContract> contracts, boolean shutdown) {
 		log.info("Analyzing {} contracts.", contracts.size());
 
 		List<Future<?>> futures = new ArrayList<>();
@@ -272,7 +299,9 @@ public class EVMLiSA {
 			System.err.println(JSONManager.throwNewError("Failed to save results in " + outputDir));
 			System.exit(1);
 		}
-		EVMLiSAExecutor.shutdown();
+
+		if (shutdown)
+			EVMLiSAExecutor.shutdown();
 	}
 
 	/**
