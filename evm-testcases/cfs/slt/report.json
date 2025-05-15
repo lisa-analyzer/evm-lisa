@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_shl_shl_eth.sol().json" ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_slt_slt_eth.sol().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "120ms",
-    "end" : "2025-05-13T16:38:26.485+02:00",
-    "expressions" : "45",
+    "duration" : "263ms",
+    "end" : "2025-05-13T09:16:49.499+02:00",
+    "expressions" : "20",
     "files" : "1",
     "globals" : "0",
     "members" : "1",
     "programs" : "1",
-    "start" : "2025-05-13T16:38:26.365+02:00",
-    "statements" : "75",
+    "start" : "2025-05-13T09:16:49.236+02:00",
+    "statements" : "30",
     "units" : "0",
     "version" : "0.1",
     "warnings" : "0"
@@ -33,6 +33,6 @@
     "syntacticChecks" : "",
     "useWideningPoints" : "false",
     "wideningThreshold" : "5",
-    "workdir" : "evm-outputs/cfs/shl"
+    "workdir" : "evm-outputs/cfs/slt"
   }
 }

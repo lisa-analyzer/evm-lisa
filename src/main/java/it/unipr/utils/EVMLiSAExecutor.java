@@ -123,6 +123,7 @@ public class EVMLiSAExecutor {
 				future.get();
 			} catch (ExecutionException e) {
 				System.err.println(JSONManager.throwNewError("Error during task execution: " + e.getMessage()));
+				e.printStackTrace();
 				System.exit(1);
 			} catch (InterruptedException ie) {
 				System.err.println(JSONManager.throwNewError("Interrupted during task execution: " + ie.getMessage()));
@@ -161,9 +162,6 @@ public class EVMLiSAExecutor {
 	 * submitted.
 	 */
 	public static void shutdown() {
-		log.debug("Tasks submitted: {}.", tasksExecuted);
-		log.debug("Tasks timed out: {}.", tasksTimedOut);
-		log.info("Shutting down executor.");
 		_executor.shutdown();
 	}
 
