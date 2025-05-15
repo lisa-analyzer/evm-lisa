@@ -152,6 +152,8 @@ public class EVMAbstractState
 		// bottom state is propagated
 		if (this.isBottom())
 			return this;
+		else if (this.stacks.isTop())
+			return this;
 
 		if (expression instanceof Constant) {
 			return this;
