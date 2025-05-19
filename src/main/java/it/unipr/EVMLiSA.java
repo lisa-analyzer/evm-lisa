@@ -233,7 +233,7 @@ public class EVMLiSA {
 		}
 
 		EVMLiSA.analyzeContract(contract);
-		// System.err.println(contract);
+		System.err.println(contract);
 		EVMLiSAExecutor.shutdown();
 	}
 
