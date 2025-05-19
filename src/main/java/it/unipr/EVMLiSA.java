@@ -36,7 +36,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.commons.collections4.SetUtils.SetView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -234,7 +233,7 @@ public class EVMLiSA {
 		}
 
 		EVMLiSA.analyzeContract(contract);
-		System.err.println(contract);
+		// System.err.println(contract);
 		EVMLiSAExecutor.shutdown();
 	}
 
@@ -571,25 +570,25 @@ public class EVMLiSA {
 				}
 				if (topStackValuesPerJump == null) {
 					// If all stacks are bottom, then we have a
-					// maybeFakeMissedJump
+					// definitelyUnreachable
 					definitelyUnreachable++;
 					continue;
 				}
 				if (!topStackValuesPerJump.contains(StackElement.TOP)) {
 					// If the elements at the top of the stacks are all
-					// different from NUMERIC_TOP, then we are sure that it
-					// is definitelyFakeMissedJumps
+					// different from TOP, then we are sure that it
+					// is resolved
 					resolvedJumps++;
-					continue;
-				}
-				if (soundlySolved != null && !soundlySolved.contains(jumpNode)) {
-					unsoundJumps++;
-					log.error("{} not solved", jumpNode);
-					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
 					continue;
 				}
 				if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
 					maybeUnsoundJumps++;
+					continue;
+				}
+				if (!soundlySolved.contains(jumpNode)) {
+					unsoundJumps++;
+					log.error("{} not solved", jumpNode);
+					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
 					continue;
 				}
 
@@ -642,23 +641,28 @@ public class EVMLiSA {
 				if (cfg.getAllPushedJumps().contains(jumpNode))
 					// stacks of pushed jumps are not stored for optimization
 					resolved++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
-					// getUnreachableJumps() contains jumps where the whole value state went to bottom
-					unreachable++;
-				else if (checker.getMaybeUnsoundJumps().contains(jumpNode))
+				else if (soundlySolved.contains(jumpNode))
+					// soundlySolved contains getMaybeUnsoundJumps() (whole value state went to top)
+					// and getUnsoundJumps() (at least one stack has top on front)
+					unknown++;
+				else if (checker.getUnsoundJumps().contains(jumpNode) || checker.getMaybeUnsoundJumps().contains(jumpNode))
+					// getUnsoundJumps() contains jumps where at least one top stack is top
 					// getMaybeUnsoundJumps() contains jumps where the whole value state went to top
 					unknown++;
+				else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode)) 
+					// getUnreachableJumps() contains jumps where the whole value state went to bottom
+					unreachable++;
 				else {
 					Set<StackElement> topStacks = checker.getTopStackValuesPerJump(jumpNode);
-					if (topStacks.isEmpty())
+					if (topStacks.isEmpty()) 
 						unreachable++;
-					else if (topStacks.stream().allMatch(StackElement::isBottom))
+					else if (topStacks.stream().allMatch(StackElement::isBottom)) 
 						erroneous++;
-					else if (topStacks.stream().anyMatch(StackElement::isTop))
+					else if (topStacks.stream().anyMatch(StackElement::isTop)) 
 						unknown++;
-					else
+					else 
 						resolved++;
-				}
+			}
 
 		PaperStatisticsObject stats = PaperStatisticsObject.newStatisticsObject()
 				.totalOpcodes(cfg.getOpcodeCount())
