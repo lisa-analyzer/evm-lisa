@@ -36,6 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EVMCFG extends CFG {
+	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<BasicBlock> _basicBlocks;
@@ -554,6 +555,7 @@ public class EVMCFG extends CFG {
 	 * 
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
+	@SuppressWarnings("unused")
 	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
 		Queue<Statement> queue = new LinkedList<>();
 		queue.offer(start);

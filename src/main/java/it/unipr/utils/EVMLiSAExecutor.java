@@ -14,6 +14,7 @@ public class EVMLiSAExecutor {
 	private static ExecutorService _executor = Executors.newFixedThreadPool(CORES);
 
 	private static long tasksInQueue = 0;
+	@SuppressWarnings("unused")
 	private static long tasksExecuted = 0;
 	private static long tasksTimedOut = 0;
 

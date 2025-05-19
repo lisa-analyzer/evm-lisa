@@ -46,7 +46,6 @@ public class Jumpif extends Statement {
 
 	@Override
 	protected int compareSameClass(Statement o) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }

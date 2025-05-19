@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class StackElement implements BaseLattice<StackElement>, Comparable<StackElement> {
+	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(StackElement.class);
 
 	private static final Number ZERO_INT = new Number(0);
