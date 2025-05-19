@@ -35,6 +35,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.collections4.SetUtils.SetView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -696,18 +698,22 @@ public class EVMLiSA {
 				fixpoint = false;
 				EVMCFG cfg = checker.getComputedCFG();
 				Set<Statement> jumpdestNodes = cfg.getAllJumpdest();
-				for (Statement unsoundNode : checker.getUnsoundJumps())
+				Set<Statement> unsoundJumps = checker.getUnsoundJumps();
+				Set<Statement> maybeUnsoundJumps = checker.getMaybeUnsoundJumps();
+				Set<Statement> unsound = unsoundJumps == null ? Collections.emptySet() : unsoundJumps;
+				unsound = maybeUnsoundJumps == null ? unsound : SetUtils.union(unsound, maybeUnsoundJumps);
+				for (Statement unsoundNode : unsound)
 					if (!soundlySolved.contains(unsoundNode)) {
 						fixpoint = true;
 						for (Statement jumpdest : jumpdestNodes)
 							cfg.addEdge(new SequentialEdge(unsoundNode, jumpdest));
 					}
 
-				soundlySolved.addAll(checker.getUnsoundJumps());
+				soundlySolved.addAll(unsound);
 
 				program.addCodeMember(cfg);
 				lisa.run(program);
-			} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+			} while (fixpoint && ++currentIteration < MAX_ITER);
 		}
 		return soundlySolved;
 	}
