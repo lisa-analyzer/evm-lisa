@@ -2062,7 +2062,12 @@ public class EVMAbstractState
 
 	@Override
 	public EVMAbstractState lubAux(EVMAbstractState other) throws SemanticException {
-		return new EVMAbstractState(stacks.lubAux(other.stacks),
+		AbstractStackSet stacks = this.stacks.lubAux(other.stacks);
+		if (stacks.isBottom())
+			return BOTTOM;
+		if (stacks.isTop())
+			return TOP;
+		return new EVMAbstractState(stacks,
 				memory.lub(other.getMemory()),
 				storage.lub(other.storage));
 	}
