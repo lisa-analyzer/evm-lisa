@@ -16,6 +16,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	private int unreachable;
 	private int erroneous;
 	private int unknown;
+	private int topStackHead;
 
 	/**
 	 * Creates a new {@code PaperStatisticsObject} with default values.
@@ -26,6 +27,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 		this.unreachable = 0;
 		this.erroneous = 0;
 		this.unknown = 0;
+		this.topStackHead = 0;
 	}
 
 	/**
@@ -36,23 +38,26 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	 * @param totalJumps     the total number of jumps
 	 * @param totalEdges     the total number of edges
 	 * @param resolved       the number of resolved jumps
-	 * @param unreachable    the number of definitely unreachable jumps
-	 * @param erroneous      the number of maybe unreachable jumps
-	 * @param unknown        the number of unsound jumps
+	 * @param unreachable    the number of unreachable jumps
+	 * @param erroneous      the number of erroneous jumps
+	 * @param unknown        the number of unknown jumps
+	 * @param topStackHead   the number of unknown jumps that have a top stack head
 	 * @param json           the JSON representation of the object
 	 */
 	private PaperStatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges, 
-			int resolved, int unreachable, int erroneous, int unknown, JSONObject json) {
+			int resolved, int unreachable, int erroneous, int unknown, int topStackHead, JSONObject json) {
 		super(address, totalOpcodes, totalJumps, totalEdges, json);
 		this.resolved = resolved;
 		this.unreachable = unreachable;
 		this.erroneous = erroneous;
 		this.unknown = unknown;
+		this.topStackHead = topStackHead;
 
 		this.json.put("resolved_jumps", this.resolved);
 		this.json.put("unreachable_jumps", this.unreachable);
 		this.json.put("erroneous_jumps", this.erroneous);
 		this.json.put("unknown_jumps", this.unknown);
+		this.json.put("top_stack_head_jumps", this.topStackHead);
 	}
 
 	/**
@@ -89,6 +94,15 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	 */
 	public int getUnknown() {
 		return unknown;
+	}
+
+	/**
+	 * Returns the number of unknown jumps with a top stack head.
+	 *
+	 * @return the unknown jumps with a top stack head
+	 */
+	public int getTopStackHead() {
+		return topStackHead;
 	}
 
 	/**
@@ -148,6 +162,19 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 		return this;
 	}
 
+
+	/**
+	 * Sets the number of unknown jumps with a top stack head.
+	 *
+	 * @param topStackHead the unknown jumps with a top stack head
+	 * 
+	 * @return the updated {@code PaperStatisticsObject} instance
+	 */
+	public PaperStatisticsObject topStackHead(int topStackHead) {
+		this.topStackHead = topStackHead;
+		return this;
+	}
+
 	/**
 	 * Builds a new {@code PaperStatisticsObject} with the specified values.
 	 *
@@ -156,7 +183,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	@Override
 	public PaperStatisticsObject build() {
 		return new PaperStatisticsObject(address, totalOpcodes, totalJumps, totalEdges, resolved, unreachable,
-				erroneous, unknown, json);
+				erroneous, unknown, topStackHead, json);
 	}
 
 	@Override
@@ -170,12 +197,13 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 				&& resolved == that.resolved
 				&& unreachable == that.unreachable
 				&& erroneous == that.erroneous
-				&& unknown == that.unknown;
+				&& unknown == that.unknown
+				&& topStackHead == that.topStackHead;
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode() ^ Objects.hash(resolved, unreachable, erroneous, unknown);
+		return super.hashCode() ^ Objects.hash(resolved, unreachable, erroneous, unknown, topStackHead);
 	}
 
 	/**
@@ -192,5 +220,6 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 		log.info("Unreachable jumps: {}", getUnreachable());
 		log.info("Erroneous jumps: {}", getErroneous());
 		log.info("Unknown jumps: {}", getUnknown());
+		log.info("Unknown jumps with top stack head: {}", getTopStackHead());
 	}
 }

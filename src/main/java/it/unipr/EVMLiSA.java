@@ -626,6 +626,7 @@ public class EVMLiSA {
 		int unreachable = 0;
 		int erroneous = 0; 
 		int unknown = 0; 
+		int topStackHead = 0;
 
 
 		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
@@ -658,9 +659,10 @@ public class EVMLiSA {
 						unreachable++;
 					else if (topStacks.stream().allMatch(StackElement::isBottom)) 
 						erroneous++;
-					else if (topStacks.stream().anyMatch(StackElement::isTop)) 
+					else if (topStacks.stream().anyMatch(StackElement::isTop)) {
 						unknown++;
-					else 
+						topStackHead++;
+					} else 
 						resolved++;
 			}
 
@@ -672,6 +674,7 @@ public class EVMLiSA {
 				.unknown(unknown)
 				.unreachable(unreachable)
 				.erroneous(erroneous)
+				.topStackHead(topStackHead)
 				.build();
 
 		return stats;
