@@ -626,7 +626,7 @@ public class EVMLiSA {
 		int unreachable = 0;
 		int erroneous = 0; 
 		int unknown = 0; 
-		int topStackHead = 0;
+		int topState = 0;
 
 
 		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
@@ -646,11 +646,14 @@ public class EVMLiSA {
 					// soundlySolved contains getMaybeUnsoundJumps() (whole value state went to top)
 					// and getUnsoundJumps() (at least one stack has top on front)
 					unknown++;
-				else if (checker.getUnsoundJumps().contains(jumpNode) || checker.getMaybeUnsoundJumps().contains(jumpNode))
-					// getUnsoundJumps() contains jumps where at least one top stack is top
+				else if (checker.getUnsoundJumps().contains(jumpNode))
+				// getUnsoundJumps() contains jumps where at least one top stack is top
+					unknown++;
+				else if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
 					// getMaybeUnsoundJumps() contains jumps where the whole value state went to top
 					unknown++;
-				else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode)) 
+					topState++;
+				} else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode)) 
 					// getUnreachableJumps() contains jumps where the whole value state went to bottom
 					unreachable++;
 				else {
@@ -659,10 +662,9 @@ public class EVMLiSA {
 						unreachable++;
 					else if (topStacks.stream().allMatch(StackElement::isBottom)) 
 						erroneous++;
-					else if (topStacks.stream().anyMatch(StackElement::isTop)) {
+					else if (topStacks.stream().anyMatch(StackElement::isTop))
 						unknown++;
-						topStackHead++;
-					} else 
+					else 
 						resolved++;
 			}
 
@@ -674,7 +676,7 @@ public class EVMLiSA {
 				.unknown(unknown)
 				.unreachable(unreachable)
 				.erroneous(erroneous)
-				.topStackHead(topStackHead)
+				.topState(topState)
 				.build();
 
 		return stats;
