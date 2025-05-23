@@ -108,8 +108,7 @@ public abstract class EVMBytecodeAnalysisExecutor {
 		try {
 			program = readProgram(target);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Unable to read program: " + e.getMessage(), e);
 		}
 
 		setupWorkdir(conf, actualPath);

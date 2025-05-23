@@ -99,6 +99,18 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	}
 
 	@Test
+	public void testMstore2() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mstore2", "mstore_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testMstore3() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "mstore3", "mstore_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
 	public void testMstore8() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mstore8", "mstore8_eth.sol", false);
 		perform(conf);
@@ -107,6 +119,24 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testLT() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "lt", "lt_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testSgt() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "sgt", "sgt_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testSlt() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "slt", "slt_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testKeccak256() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "keccak256", "keccak.sol", false);
 		perform(conf);
 	}
 
@@ -161,6 +191,12 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testShr() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "shr", "shr_eth.sol", false);
+		perform(conf);
+	}
+
+	@Test
+	public void testShr2() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "shr2", "shr_eth.sol", false);
 		perform(conf);
 	}
 
@@ -224,6 +260,15 @@ public class EVMAbstractSemanticsTest extends EVMBytecodeAnalysisExecutor {
 	@Test
 	public void testMulmod() throws AnalysisSetupException, IOException {
 		CronConfiguration conf = createConfiguration("cfs", "mulmod", "mulmod_eth.sol", false);
+		perform(conf);
+	}
+
+	/**
+	 * All the items in the final stack must be 1
+	 */
+	@Test
+	public void testShl2() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("cfs", "shl2", "shl.sol", false);
 		perform(conf);
 	}
 
