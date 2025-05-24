@@ -1,9 +1,4 @@
 loc,length,bug type,approach
-151,1,Timestamp-Dependency,code snippet injection
-149,1,Timestamp-Dependency,code snippet injection
-17,1,Timestamp-Dependency,code snippet injection
-33,1,Timestamp-Dependency,code snippet injection
-253,1,Timestamp-Dependency,code snippet injection
 244,3,Timestamp-Dependency,code snippet injection
 235,5,Timestamp-Dependency,code snippet injection
 225,5,Timestamp-Dependency,code snippet injection
