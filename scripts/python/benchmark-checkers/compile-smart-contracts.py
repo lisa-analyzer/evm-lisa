@@ -349,8 +349,8 @@ if __name__ == "__main__":
                                  './solidifi/vanilla/json')
         compile_solidity_sources('./solidifi/tx-origin/source-code',
                                  './solidifi/tx-origin/json')
-        compile_solidity_sources('./solidifi/timestamp-dependency/source-code',
-                                 './solidifi/timestamp-dependency/json')
+        compile_solidity_sources('./solidifi/randomness-dependency/source-code',
+                                 './solidifi/randomness-dependency/json')
 
         if args.longest_bytecode:
             # EVMLiSA
@@ -360,13 +360,13 @@ if __name__ == "__main__":
             extract_and_save_longest_bytecode('./solidifi/reentrancy/bytecode/evmlisa',
                                               './solidifi/reentrancy/json',
                                               abi_dir='./solidifi/reentrancy/abi/evmlisa')
-                # TX-ORIGIN
+            # TX-ORIGIN
             extract_and_save_longest_bytecode('./solidifi/tx-origin/bytecode/evmlisa',
                                               './solidifi/tx-origin/json')
 
-                # Timestamp-dependency
-            extract_and_save_longest_bytecode('./solidifi/timestamp-dependency/bytecode/evmlisa',
-                                              './solidifi/timestamp-dependency/json')
+            # randomness-dependency
+            extract_and_save_longest_bytecode('./solidifi/randomness-dependency/bytecode/evmlisa',
+                                              './solidifi/randomness-dependency/json')
 
             # EtherSolve
             extract_and_save_longest_bytecode('./solidifi/vanilla/bytecode/ethersolve',
@@ -381,13 +381,13 @@ if __name__ == "__main__":
                                       './solidifi/vanilla/json')
             extract_and_save_bytecode('./solidifi/reentrancy/bytecode/evmlisa',
                                       './solidifi/reentrancy/json')
-                # TX-ORIGIN
+            # TX-ORIGIN
             extract_and_save_bytecode('./solidifi/tx-origin/bytecode/evmlisa',
                                       './solidifi/tx-origin/json')
 
-                # Timestamp-dependency
-            extract_and_save_bytecode('./solidifi/timestamp-dependency/bytecode/evmlisa',
-                                      './solidifi/timestamp-dependency/json')
+            # randomness-dependency
+            extract_and_save_bytecode('./solidifi/randomness-dependency/bytecode/evmlisa',
+                                      './solidifi/randomness-dependency/json')
 
             # EtherSolve
             extract_and_save_bytecode('./solidifi/vanilla/bytecode/ethersolve',
@@ -402,23 +402,23 @@ if __name__ == "__main__":
                                                         './smartbugs/reentrancy/json',
                                                         './smartbugs/reentrancy/source-code/version.csv')
 
-        compile_solidity_sources_with_different_version('./smartbugs/timestamp-dependency/source-code',
-                                                        './smartbugs/timestamp-dependency/json',
-                                                        './smartbugs/timestamp-dependency/source-code/version.csv')
+        compile_solidity_sources_with_different_version('./smartbugs/randomness-dependency/source-code',
+                                                        './smartbugs/randomness-dependency/json',
+                                                        './smartbugs/randomness-dependency/source-code/version.csv')
 
         if args.longest_bytecode:
             extract_and_save_longest_bytecode('./smartbugs/reentrancy/bytecode/evmlisa',
                                               './smartbugs/reentrancy/json')
-            extract_and_save_longest_bytecode('./smartbugs/timestamp-dependency/bytecode/evmlisa',
-                                              './smartbugs/timestamp-dependency/json')
+            extract_and_save_longest_bytecode('./smartbugs/randomness-dependency/bytecode/evmlisa',
+                                              './smartbugs/randomness-dependency/json')
             extract_and_save_longest_bytecode('./smartbugs/reentrancy/bytecode/ethersolve',
                                               './smartbugs/reentrancy/json',
                                               True)
         else:
             extract_and_save_bytecode('./smartbugs/reentrancy/bytecode/evmlisa',
                                       './smartbugs/reentrancy/json')
-            extract_and_save_bytecode('./smartbugs/timestamp-dependency/bytecode/evmlisa',
-                                      './smartbugs/timestamp-dependency/json')
+            extract_and_save_bytecode('./smartbugs/randomness-dependency/bytecode/evmlisa',
+                                      './smartbugs/randomness-dependency/json')
             extract_and_save_bytecode('./smartbugs/reentrancy/bytecode/ethersolve',
                                       './smartbugs/reentrancy/json',
                                       True)
