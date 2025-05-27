@@ -46,7 +46,7 @@ public class RandomnessDependencyChecker implements
 		EVMCFG cfg = ((EVMCFG) graph);
 
 		if (node instanceof Jump || node instanceof Jumpi || node instanceof Sstore
-				|| node instanceof Sha3)
+				|| node instanceof Sha3 || node instanceof Return)
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -69,7 +69,8 @@ public class RandomnessDependencyChecker implements
 				else {
 					if (node instanceof Sha3
 							|| node instanceof Sstore
-							|| node instanceof Jumpi) {
+							|| node instanceof Jumpi
+							|| node instanceof Return) {
 
 						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
 								taintedStack.getElementAtPosition(2)))
