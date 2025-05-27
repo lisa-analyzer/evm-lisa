@@ -1,10 +1,11 @@
 package it.unipr.analysis;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
+
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.SetLattice;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 
@@ -24,7 +25,7 @@ public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack
 	private static final AbstractStackSet TOP = new AbstractStackSet(Collections.emptySet(), true);
 
 	public AbstractStackSet() {
-		super(new HashSet<AbstractStack>(), false);
+		super(new TreeSet<AbstractStack>(), false);
 		this.elements.add(new AbstractStack());
 	}
 

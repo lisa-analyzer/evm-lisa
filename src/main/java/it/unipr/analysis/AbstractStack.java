@@ -15,7 +15,7 @@ import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack> {
+public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack>, Comparable<AbstractStack> {
 
 	/**
 	 * The stack height.
@@ -420,5 +420,10 @@ public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<Ab
 		for (int i = 0; i < STACK_LIMIT; i++)
 			logical[i] = circularArray[(head + i) % STACK_LIMIT];
 		return logical;
+	}
+
+	@Override
+	public int compareTo(AbstractStack o) {
+		return Integer.compare(hashCode(), o.hashCode());
 	}
 }
