@@ -78,6 +78,7 @@ public class JumpSolver implements
 	/**
 	 * Yields the jumps where the whole value state is bottom (i.e., the jump is
 	 * unreachable).
+	 * 
 	 * @return the set of unreachable jumps
 	 */
 	public Set<Statement> getUnreachableJumps() {
@@ -87,6 +88,7 @@ public class JumpSolver implements
 	/**
 	 * Yields the jumps where the whole value state is top (i.e., the jump is
 	 * maybe unsound).
+	 * 
 	 * @return the set of maybe unsound jumps
 	 */
 	public Set<Statement> getMaybeUnsoundJumps() {
@@ -94,8 +96,9 @@ public class JumpSolver implements
 	}
 
 	/**
-	 * Yields the jumps where at least one of the top stack values is top (i.e., the jump is
-	 * unsound).
+	 * Yields the jumps where at least one of the top stack values is top (i.e.,
+	 * the jump is unsound).
+	 * 
 	 * @return the set of unsound jumps
 	 */
 	public Set<Statement> getUnsoundJumps() {
@@ -104,7 +107,8 @@ public class JumpSolver implements
 
 	/**
 	 * The set of top stack values per jump. This only exists for jumps that are
-	 * not in {@link #getMaybeUnsoundJumps()} and {@link #getUnreachableJumps()}.
+	 * not in {@link #getMaybeUnsoundJumps()} and
+	 * {@link #getUnreachableJumps()}.
 	 */
 	public Set<StackElement> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);

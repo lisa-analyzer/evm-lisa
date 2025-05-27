@@ -28,11 +28,11 @@ public abstract class StatisticsObject<T extends StatisticsObject<T>> {
 	/**
 	 * Creates a new {@code StatisticsObject} with specified values.
 	 *
-	 * @param address                    the contract address
-	 * @param totalOpcodes               the total number of opcodes
-	 * @param totalJumps                 the total number of jumps
-	 * @param totalEdges                 the number of edges
-	 * @param json                       the JSON representation of the object
+	 * @param address      the contract address
+	 * @param totalOpcodes the total number of opcodes
+	 * @param totalJumps   the total number of jumps
+	 * @param totalEdges   the number of edges
+	 * @param json         the JSON representation of the object
 	 */
 	protected StatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges, JSONObject json) {
 		this.address = address;

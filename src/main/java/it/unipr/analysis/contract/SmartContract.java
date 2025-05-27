@@ -815,7 +815,7 @@ public class SmartContract {
 				BasicBlock.basicBlocksToLongArray(_basicBlocks)) : new JSONArray());
 
 		jsonObject.put("last_pc", this._cfg.getLastOpcodePc());
-		
+
 		jsonObject.put("execution_time", _executionTime);
 
 		return jsonObject;

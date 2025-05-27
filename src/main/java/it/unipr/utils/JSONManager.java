@@ -69,15 +69,15 @@ public class JSONManager {
 
 			if (EVMLiSA.isInPaperMode())
 				groundTruthData.add(PaperStatisticsObject.newStatisticsObject()
-					.address(address)
-					.totalOpcodes(statistics.getInt("total_opcodes"))
-					.totalJumps(statistics.getInt("total_jumps"))
-					.totalEdges(statistics.getInt("total_edges"))
-					.resolved(statistics.getInt("resolved_jumps"))
-					.unreachable(statistics.getInt("unreachable_jumps"))
-					.unknown(statistics.getInt("unknown_jumps"))
-					.erroneous(statistics.getInt("erroneous_jumps"))
-					.build());
+						.address(address)
+						.totalOpcodes(statistics.getInt("total_opcodes"))
+						.totalJumps(statistics.getInt("total_jumps"))
+						.totalEdges(statistics.getInt("total_edges"))
+						.resolved(statistics.getInt("resolved_jumps"))
+						.unreachable(statistics.getInt("unreachable_jumps"))
+						.unknown(statistics.getInt("unknown_jumps"))
+						.erroneous(statistics.getInt("erroneous_jumps"))
+						.build());
 
 			else
 				groundTruthData.add(StandardStatisticsObject.newStatisticsObject()

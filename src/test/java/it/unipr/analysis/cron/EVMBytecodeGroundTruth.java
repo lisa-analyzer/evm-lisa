@@ -1,14 +1,13 @@
 package it.unipr.analysis.cron;
 
+import static org.junit.Assert.assertFalse;
+
 import it.unipr.EVMLiSA;
 import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.JSONManager;
 import it.unipr.utils.PaperStatisticsObject;
 import it.unipr.utils.StandardStatisticsObject;
 import it.unipr.utils.StatisticsObject;
-
-import static org.junit.Assert.assertFalse;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

@@ -1,11 +1,10 @@
 package it.unipr.analysis;
 
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.SetLattice;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
-
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.SetLattice;
 
 public class AbstractStackSet extends SetLattice<AbstractStackSet, AbstractStack> {
 

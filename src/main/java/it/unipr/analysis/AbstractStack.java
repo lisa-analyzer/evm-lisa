@@ -15,7 +15,8 @@ import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-public class AbstractStack implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack>, Comparable<AbstractStack> {
+public class AbstractStack
+		implements ValueDomain<AbstractStack>, BaseLattice<AbstractStack>, Comparable<AbstractStack> {
 
 	/**
 	 * The stack height.

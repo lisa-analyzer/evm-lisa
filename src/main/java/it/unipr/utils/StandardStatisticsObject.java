@@ -38,13 +38,14 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	 * @param totalJumps                 the total number of jumps
 	 * @param totalEdges                 the total number of edges
 	 * @param resolvedJumps              the number of resolved jumps
-	 * @param definitelyUnreachableJumps the number of definitely unreachable jumps
+	 * @param definitelyUnreachableJumps the number of definitely unreachable
+	 *                                       jumps
 	 * @param maybeUnreachableJumps      the number of maybe unreachable jumps
 	 * @param unsoundJumps               the number of unsound jumps
 	 * @param maybeUnsoundJumps          the number of maybe unsound jumps
 	 * @param json                       the JSON representation of the object
 	 */
-	private StandardStatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges, 
+	private StandardStatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges,
 			int resolvedJumps, int definitelyUnreachableJumps,
 			int maybeUnreachableJumps, int unsoundJumps, int maybeUnsoundJumps, JSONObject json) {
 		super(address, totalOpcodes, totalJumps, totalEdges, json);
@@ -182,7 +183,8 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	 */
 	@Override
 	public StandardStatisticsObject build() {
-		return new StandardStatisticsObject(address, totalOpcodes, totalJumps, totalEdges, resolvedJumps, definitelyUnreachableJumps,
+		return new StandardStatisticsObject(address, totalOpcodes, totalJumps, totalEdges, resolvedJumps,
+				definitelyUnreachableJumps,
 				maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps, json);
 	}
 
@@ -203,7 +205,8 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 
 	@Override
 	public int hashCode() {
-		return super.hashCode() ^ Objects.hash(resolvedJumps, definitelyUnreachableJumps, maybeUnreachableJumps, unsoundJumps, maybeUnsoundJumps);
+		return super.hashCode() ^ Objects.hash(resolvedJumps, definitelyUnreachableJumps, maybeUnreachableJumps,
+				unsoundJumps, maybeUnsoundJumps);
 	}
 
 	/**

@@ -33,18 +33,19 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	/**
 	 * Creates a new {@code PaperStatisticsObject} with specified values.
 	 *
-	 * @param address        the contract address
-	 * @param totalOpcodes   the total number of opcodes
-	 * @param totalJumps     the total number of jumps
-	 * @param totalEdges     the total number of edges
-	 * @param resolved       the number of resolved jumps
-	 * @param unreachable    the number of unreachable jumps
-	 * @param erroneous      the number of erroneous jumps
-	 * @param unknown        the number of unknown jumps
-	 * @param topState       the number of unknown jumps where the whole state was top
-	 * @param json           the JSON representation of the object
+	 * @param address      the contract address
+	 * @param totalOpcodes the total number of opcodes
+	 * @param totalJumps   the total number of jumps
+	 * @param totalEdges   the total number of edges
+	 * @param resolved     the number of resolved jumps
+	 * @param unreachable  the number of unreachable jumps
+	 * @param erroneous    the number of erroneous jumps
+	 * @param unknown      the number of unknown jumps
+	 * @param topState     the number of unknown jumps where the whole state was
+	 *                         top
+	 * @param json         the JSON representation of the object
 	 */
-	private PaperStatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges, 
+	private PaperStatisticsObject(String address, int totalOpcodes, int totalJumps, int totalEdges,
 			int resolved, int unreachable, int erroneous, int unknown, int topState, JSONObject json) {
 		super(address, totalOpcodes, totalJumps, totalEdges, json);
 		this.resolved = resolved;
@@ -161,7 +162,6 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 		this.unknown = unknown;
 		return this;
 	}
-
 
 	/**
 	 * Sets the number of unknown jumps where the whole state was top.

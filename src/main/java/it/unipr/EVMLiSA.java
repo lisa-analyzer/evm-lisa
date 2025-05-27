@@ -150,29 +150,31 @@ public class EVMLiSA {
 	public static void setTestMode() {
 		TEST_MODE = true;
 	}
-	
+
 	public static boolean isInTestMode() {
 		return TEST_MODE;
 	}
-	
+
 	public static boolean isInPaperMode() {
 		return PAPER_MODE;
 	}
 
 	/**
-	 * Enables the paper mode (i.e., statistics contains jump classifications as in the reference paper).
+	 * Enables the paper mode (i.e., statistics contains jump classifications as
+	 * in the reference paper).
 	 */
 	public static void setPaperMode() {
 		PAPER_MODE = true;
 	}
 
 	/**
-	 * Disables the paper mode (i.e., statistics contains jump classifications as in the reference paper).
+	 * Disables the paper mode (i.e., statistics contains jump classifications
+	 * as in the reference paper).
 	 */
 	public static void disablePaperMode() {
 		PAPER_MODE = false;
 	}
-	
+
 	/**
 	 * Executes the analysis workflow.
 	 *
@@ -250,7 +252,7 @@ public class EVMLiSA {
 	 * Analyzes a set of smart contracts from a given file.
 	 *
 	 * @param filePath the path to the file containing contract addresses
-	 * @param shutdown  whether to shut down the executor after the analysis
+	 * @param shutdown whether to shut down the executor after the analysis
 	 */
 	public static void analyzeSetOfContracts(Path filePath, boolean shutdown) {
 		log.info("Building contracts.");
@@ -611,7 +613,8 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Computes jump-related statistics based on the analysis results, with the same classification of the reference paper.
+	 * Computes jump-related statistics based on the analysis results, with the
+	 * same classification of the reference paper.
 	 *
 	 * @param checker       the jump solver used for analysis
 	 * @param soundlySolved the set of jumps that have been soundly solved
@@ -624,10 +627,9 @@ public class EVMLiSA {
 
 		int resolved = 0;
 		int unreachable = 0;
-		int erroneous = 0; 
-		int unknown = 0; 
+		int erroneous = 0;
+		int unknown = 0;
 		int topState = 0;
-
 
 		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
 			log.warn("There are no entrypoints.");
@@ -637,36 +639,41 @@ public class EVMLiSA {
 		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 
 		// we are safe supposing that we have a single entry point
-		for (Statement jumpNode : cfg.getAllJumps()) 
-			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi)) 
+		for (Statement jumpNode : cfg.getAllJumps())
+			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi))
 				if (cfg.getAllPushedJumps().contains(jumpNode))
 					// stacks of pushed jumps are not stored for optimization
 					resolved++;
 				else if (soundlySolved.contains(jumpNode))
-					// soundlySolved contains getMaybeUnsoundJumps() (whole value state went to top)
-					// and getUnsoundJumps() (at least one stack has top on front)
+					// soundlySolved contains getMaybeUnsoundJumps() (whole
+					// value state went to top)
+					// and getUnsoundJumps() (at least one stack has top on
+					// front)
 					unknown++;
 				else if (checker.getUnsoundJumps().contains(jumpNode))
-				// getUnsoundJumps() contains jumps where at least one top stack is top
+					// getUnsoundJumps() contains jumps where at least one top
+					// stack is top
 					unknown++;
 				else if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
-					// getMaybeUnsoundJumps() contains jumps where the whole value state went to top
+					// getMaybeUnsoundJumps() contains jumps where the whole
+					// value state went to top
 					unknown++;
 					topState++;
-				} else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode)) 
-					// getUnreachableJumps() contains jumps where the whole value state went to bottom
+				} else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
+					// getUnreachableJumps() contains jumps where the whole
+					// value state went to bottom
 					unreachable++;
 				else {
 					Set<StackElement> topStacks = checker.getTopStackValuesPerJump(jumpNode);
-					if (topStacks.isEmpty()) 
+					if (topStacks.isEmpty())
 						unreachable++;
-					else if (topStacks.stream().allMatch(StackElement::isBottom)) 
+					else if (topStacks.stream().allMatch(StackElement::isBottom))
 						erroneous++;
 					else if (topStacks.stream().anyMatch(StackElement::isTop))
 						unknown++;
-					else 
+					else
 						resolved++;
-			}
+				}
 
 		PaperStatisticsObject stats = PaperStatisticsObject.newStatisticsObject()
 				.totalOpcodes(cfg.getOpcodeCount())
