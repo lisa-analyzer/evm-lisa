@@ -34,9 +34,10 @@ public class SolidiFIReentrancyTruth {
 	private ConcurrentMap<Integer, Integer> _solidifi = new ConcurrentHashMap<>();
 
 	@Test
-	public void testSolidiFIReentrancyTruth() throws Exception {
+	public void testSolidiFIReentrancyTruth() {
 		setSolidifiMap();
 		List<Future<?>> futures = new ArrayList<>();
+		EVMLiSAExecutor.setCoresAvailable(Runtime.getRuntime().availableProcessors() - 1);
 
 		Path solidifiBuggyBytecodesDirPath = Paths
 				.get("evm-testcases", "ground-truth", "solidifi", "reentrancy-truth", "bytecode");
