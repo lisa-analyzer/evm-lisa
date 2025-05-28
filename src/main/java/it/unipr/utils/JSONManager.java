@@ -1,5 +1,6 @@
 package it.unipr.utils;
 
+import it.unipr.EVMLiSA;
 import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
@@ -48,8 +49,8 @@ public class JSONManager {
 	 * 
 	 * @return a set of StatisticsObject containing the extracted statistics
 	 */
-	public static Set<StatisticsObject> readStatsFromJSON(Path filePath) {
-		Set<StatisticsObject> groundTruthData = new HashSet<>();
+	public static Set<StatisticsObject<?>> readStatsFromJSON(Path filePath) {
+		Set<StatisticsObject<?>> groundTruthData = new HashSet<>();
 
 		JSONObject groundTruthDataJson = JSONManager.loadJsonFromFile(filePath);
 		JSONArray contracts = (JSONArray) groundTruthDataJson.get("smart_contracts");
@@ -66,16 +67,30 @@ public class JSONManager {
 				continue;
 			}
 
-			groundTruthData.add(StatisticsObject.newStatisticsObject()
-					.address(address)
-					.totalOpcodes(statistics.getInt("total_opcodes"))
-					.totalJumps(statistics.getInt("total_jumps"))
-					.resolvedJumps(statistics.getInt("resolved_jumps"))
-					.definitelyUnreachableJumps(statistics.getInt("definitely_unreachable_jumps"))
-					.maybeUnreachableJumps(statistics.getInt("maybe_unreachable_jumps"))
-					.maybeUnsoundJumps(statistics.getInt("maybe_unsound_jumps"))
-					.unsoundJumps(statistics.getInt("unsound_jumps"))
-					.build());
+			if (EVMLiSA.isInPaperMode())
+				groundTruthData.add(PaperStatisticsObject.newStatisticsObject()
+						.address(address)
+						.totalOpcodes(statistics.getInt("total_opcodes"))
+						.totalJumps(statistics.getInt("total_jumps"))
+						.totalEdges(statistics.getInt("total_edges"))
+						.resolved(statistics.getInt("resolved_jumps"))
+						.unreachable(statistics.getInt("unreachable_jumps"))
+						.unknown(statistics.getInt("unknown_jumps"))
+						.erroneous(statistics.getInt("erroneous_jumps"))
+						.build());
+
+			else
+				groundTruthData.add(StandardStatisticsObject.newStatisticsObject()
+						.address(address)
+						.totalOpcodes(statistics.getInt("total_opcodes"))
+						.totalJumps(statistics.getInt("total_jumps"))
+						.totalEdges(statistics.getInt("total_edges"))
+						.resolvedJumps(statistics.getInt("resolved_jumps"))
+						.definitelyUnreachableJumps(statistics.getInt("definitely_unreachable_jumps"))
+						.maybeUnreachableJumps(statistics.getInt("maybe_unreachable_jumps"))
+						.maybeUnsoundJumps(statistics.getInt("maybe_unsound_jumps"))
+						.unsoundJumps(statistics.getInt("unsound_jumps"))
+						.build());
 		}
 		return groundTruthData;
 	}

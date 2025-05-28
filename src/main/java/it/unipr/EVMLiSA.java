@@ -35,6 +35,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,6 +49,7 @@ public class EVMLiSA {
 
 	// Configuration
 	private static boolean TEST_MODE = false;
+	private static boolean PAPER_MODE = false;
 	private static Path OUTPUT_DIRECTORY_PATH;
 
 	/**
@@ -153,6 +155,26 @@ public class EVMLiSA {
 		return TEST_MODE;
 	}
 
+	public static boolean isInPaperMode() {
+		return PAPER_MODE;
+	}
+
+	/**
+	 * Enables the paper mode (i.e., statistics contains jump classifications as
+	 * in the reference paper).
+	 */
+	public static void setPaperMode() {
+		PAPER_MODE = true;
+	}
+
+	/**
+	 * Disables the paper mode (i.e., statistics contains jump classifications
+	 * as in the reference paper).
+	 */
+	public static void disablePaperMode() {
+		PAPER_MODE = false;
+	}
+
 	/**
 	 * Executes the analysis workflow.
 	 *
@@ -223,9 +245,19 @@ public class EVMLiSA {
 	 * @param filePath the path to the file containing contract addresses
 	 */
 	public static void analyzeSetOfContracts(Path filePath) {
+		analyzeSetOfContracts(filePath, true);
+	}
+
+	/**
+	 * Analyzes a set of smart contracts from a given file.
+	 *
+	 * @param filePath the path to the file containing contract addresses
+	 * @param shutdown whether to shut down the executor after the analysis
+	 */
+	public static void analyzeSetOfContracts(Path filePath, boolean shutdown) {
 		log.info("Building contracts.");
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
-		analyzeSetOfContracts(contracts);
+		analyzeSetOfContracts(contracts, shutdown);
 	}
 
 	/**
@@ -234,6 +266,16 @@ public class EVMLiSA {
 	 * @param contracts the list of {@link SmartContract} to be analyzed
 	 */
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
+		analyzeSetOfContracts(contracts, true);
+	}
+
+	/**
+	 * Analyzes a set of smart contracts from a list of {@link SmartContract}.
+	 *
+	 * @param contracts the list of {@link SmartContract} to be analyzed
+	 * @param shutdown  whether to shut down the executor after the analysis
+	 */
+	public static void analyzeSetOfContracts(List<SmartContract> contracts, boolean shutdown) {
 		log.info("Analyzing {} contracts.", contracts.size());
 
 		List<Future<?>> futures = new ArrayList<>();
@@ -260,7 +302,9 @@ public class EVMLiSA {
 			System.err.println(JSONManager.throwNewError("Failed to save results in " + outputDir));
 			System.exit(1);
 		}
-		EVMLiSAExecutor.shutdown();
+
+		if (shutdown)
+			EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -455,8 +499,10 @@ public class EVMLiSA {
 	 * 
 	 * @return a {@link StatisticsObject} containing the computed statistics
 	 */
-	public static StatisticsObject computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
+	public static StatisticsObject<?> computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
+		if (PAPER_MODE)
+			return computePaperJumps(checker, soundlySolved);
 		return computeJumps(checker, soundlySolved);
 	}
 
@@ -469,7 +515,7 @@ public class EVMLiSA {
 	 * @return a {@link StatisticsObject} containing the computed jump
 	 *             statistics
 	 */
-	private static StatisticsObject computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+	private static StatisticsObject<?> computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 
@@ -526,25 +572,25 @@ public class EVMLiSA {
 				}
 				if (topStackValuesPerJump == null) {
 					// If all stacks are bottom, then we have a
-					// maybeFakeMissedJump
+					// definitelyUnreachable
 					definitelyUnreachable++;
 					continue;
 				}
 				if (!topStackValuesPerJump.contains(StackElement.TOP)) {
 					// If the elements at the top of the stacks are all
-					// different from NUMERIC_TOP, then we are sure that it
-					// is definitelyFakeMissedJumps
+					// different from TOP, then we are sure that it
+					// is resolved
 					resolvedJumps++;
-					continue;
-				}
-				if (soundlySolved != null && !soundlySolved.contains(jumpNode)) {
-					unsoundJumps++;
-					log.error("{} not solved", jumpNode);
-					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
 					continue;
 				}
 				if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
 					maybeUnsoundJumps++;
+					continue;
+				}
+				if (!soundlySolved.contains(jumpNode)) {
+					unsoundJumps++;
+					log.error("{} not solved", jumpNode);
+					log.error("getTopStackValuesPerJump: {}", topStackValuesPerJump);
 					continue;
 				}
 
@@ -552,14 +598,92 @@ public class EVMLiSA {
 			}
 		}
 
-		StatisticsObject stats = StatisticsObject.newStatisticsObject()
+		StandardStatisticsObject stats = StandardStatisticsObject.newStatisticsObject()
 				.totalOpcodes(cfg.getOpcodeCount())
 				.totalJumps(cfg.getAllJumps().size())
+				.totalEdges(cfg.getEdges().size())
 				.resolvedJumps(resolvedJumps)
 				.definitelyUnreachableJumps(definitelyUnreachable)
 				.maybeUnreachableJumps(maybeUnreachable)
 				.unsoundJumps(unsoundJumps)
 				.maybeUnsoundJumps(maybeUnsoundJumps)
+				.build();
+
+		return stats;
+	}
+
+	/**
+	 * Computes jump-related statistics based on the analysis results, with the
+	 * same classification of the reference paper.
+	 *
+	 * @param checker       the jump solver used for analysis
+	 * @param soundlySolved the set of jumps that have been soundly solved
+	 * 
+	 * @return a {@link StatisticsObject} containing the computed jump
+	 *             statistics
+	 */
+	private static StatisticsObject<?> computePaperJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+		EVMCFG cfg = checker.getComputedCFG();
+
+		int resolved = 0;
+		int unreachable = 0;
+		int erroneous = 0;
+		int unknown = 0;
+		int topState = 0;
+
+		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
+			log.warn("There are no entrypoints.");
+			return null;
+		}
+
+		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
+
+		// we are safe supposing that we have a single entry point
+		for (Statement jumpNode : cfg.getAllJumps())
+			if ((jumpNode instanceof Jump) || (jumpNode instanceof Jumpi))
+				if (cfg.getAllPushedJumps().contains(jumpNode))
+					// stacks of pushed jumps are not stored for optimization
+					resolved++;
+				else if (soundlySolved.contains(jumpNode))
+					// soundlySolved contains getMaybeUnsoundJumps() (whole
+					// value state went to top)
+					// and getUnsoundJumps() (at least one stack has top on
+					// front)
+					unknown++;
+				else if (checker.getUnsoundJumps().contains(jumpNode))
+					// getUnsoundJumps() contains jumps where at least one top
+					// stack is top
+					unknown++;
+				else if (checker.getMaybeUnsoundJumps().contains(jumpNode)) {
+					// getMaybeUnsoundJumps() contains jumps where the whole
+					// value state went to top
+					unknown++;
+					topState++;
+				} else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
+					// getUnreachableJumps() contains jumps where the whole
+					// value state went to bottom
+					unreachable++;
+				else {
+					Set<StackElement> topStacks = checker.getTopStackValuesPerJump(jumpNode);
+					if (topStacks.isEmpty())
+						unreachable++;
+					else if (topStacks.stream().allMatch(StackElement::isBottom))
+						erroneous++;
+					else if (topStacks.stream().anyMatch(StackElement::isTop))
+						unknown++;
+					else
+						resolved++;
+				}
+
+		PaperStatisticsObject stats = PaperStatisticsObject.newStatisticsObject()
+				.totalOpcodes(cfg.getOpcodeCount())
+				.totalJumps(cfg.getAllJumps().size())
+				.totalEdges(cfg.getEdges().size())
+				.resolved(resolved)
+				.unknown(unknown)
+				.unreachable(unreachable)
+				.erroneous(erroneous)
+				.topState(topState)
 				.build();
 
 		return stats;
@@ -590,18 +714,22 @@ public class EVMLiSA {
 				fixpoint = false;
 				EVMCFG cfg = checker.getComputedCFG();
 				Set<Statement> jumpdestNodes = cfg.getAllJumpdest();
-				for (Statement unsoundNode : checker.getUnsoundJumps())
+				Set<Statement> unsoundJumps = checker.getUnsoundJumps();
+				Set<Statement> maybeUnsoundJumps = checker.getMaybeUnsoundJumps();
+				Set<Statement> unsound = unsoundJumps == null ? Collections.emptySet() : unsoundJumps;
+				unsound = maybeUnsoundJumps == null ? unsound : SetUtils.union(unsound, maybeUnsoundJumps);
+				for (Statement unsoundNode : unsound)
 					if (!soundlySolved.contains(unsoundNode)) {
 						fixpoint = true;
 						for (Statement jumpdest : jumpdestNodes)
 							cfg.addEdge(new SequentialEdge(unsoundNode, jumpdest));
 					}
 
-				soundlySolved.addAll(checker.getUnsoundJumps());
+				soundlySolved.addAll(unsound);
 
 				program.addCodeMember(cfg);
 				lisa.run(program);
-			} while (fixpoint && checker.getUnsoundJumps() != null && ++currentIteration < MAX_ITER);
+			} while (fixpoint && ++currentIteration < MAX_ITER);
 		}
 		return soundlySolved;
 	}
@@ -680,6 +808,8 @@ public class EVMLiSA {
 			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
 		if (cmd.hasOption("test-mode"))
 			EVMLiSA.setTestMode();
+		if (cmd.hasOption("paper-stats"))
+			EVMLiSA.setPaperMode();
 	}
 
 	private Options getOptions() {
@@ -812,6 +942,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option usePaperStats = Option.builder()
+				.longOpt("paper-stats")
+				.desc("In each contract statistics, classify jumps using the same categories of the reference paper.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -830,6 +967,7 @@ public class EVMLiSA {
 		options.addOption(etherscanAPIKeyOption);
 		options.addOption(abiOption);
 		options.addOption(useTestModeOption);
+		options.addOption(usePaperStats);
 
 		return options;
 	}

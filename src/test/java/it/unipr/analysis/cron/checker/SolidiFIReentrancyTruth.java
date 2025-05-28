@@ -20,11 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -37,9 +33,9 @@ public class SolidiFIReentrancyTruth {
 	private ConcurrentMap<Integer, Integer> _solidifi = new ConcurrentHashMap<>();
 
 	@Test
-	public void testSolidiFIReentrancyTruth() throws Exception {
+	public void testSolidiFIReentrancyTruth() throws InterruptedException {
 		setSolidifiMap();
-		int cores = Runtime.getRuntime().availableProcessors() / 4 * 3;
+		int cores = Runtime.getRuntime().availableProcessors() - 1;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		Path solidifiBuggyBytecodesDirPath = Paths
@@ -217,7 +213,7 @@ public class SolidiFIReentrancyTruth {
 		_solidifi.put(30, 42);
 		_solidifi.put(31, 15);
 		_solidifi.put(32, 21);
-		_solidifi.put(33, 21);
+		_solidifi.put(33, 22);
 		_solidifi.put(34, 36);
 		_solidifi.put(35, 34);
 		_solidifi.put(36, 29);

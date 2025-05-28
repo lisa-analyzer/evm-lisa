@@ -3,12 +3,8 @@ package it.unipr.checker;
 import it.unipr.analysis.AbstractStack;
 import it.unipr.analysis.AbstractStackSet;
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
 import it.unipr.cfg.EVMCFG;
-import it.unipr.cfg.Jump;
-import it.unipr.cfg.Jumpi;
-import it.unipr.cfg.ProgramCounterLocation;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unive.lisa.AnalysisException;
@@ -25,15 +21,11 @@ import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.edge.SequentialEdge;
-import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,18 +75,41 @@ public class JumpSolver implements
 		return cfgToAnalyze;
 	}
 
+	/**
+	 * Yields the jumps where the whole value state is bottom (i.e., the jump is
+	 * unreachable).
+	 * 
+	 * @return the set of unreachable jumps
+	 */
 	public Set<Statement> getUnreachableJumps() {
 		return unreachableJumps;
 	}
 
+	/**
+	 * Yields the jumps where the whole value state is top (i.e., the jump is
+	 * maybe unsound).
+	 * 
+	 * @return the set of maybe unsound jumps
+	 */
 	public Set<Statement> getMaybeUnsoundJumps() {
 		return maybeUnsoundJumps;
 	}
 
+	/**
+	 * Yields the jumps where at least one of the top stack values is top (i.e.,
+	 * the jump is unsound).
+	 * 
+	 * @return the set of unsound jumps
+	 */
 	public Set<Statement> getUnsoundJumps() {
 		return unsoundJumps;
 	}
 
+	/**
+	 * The set of top stack values per jump. This only exists for jumps that are
+	 * not in {@link #getMaybeUnsoundJumps()} and
+	 * {@link #getUnreachableJumps()}.
+	 */
 	public Set<StackElement> getTopStackValuesPerJump(Statement node) {
 		return topStackValuesPerJump.get(node);
 	}
@@ -189,90 +204,12 @@ public class JumpSolver implements
 		}
 	}
 
-	/**
-	 * {@inheritDoc} Visits the CFG, focusing only on JUMP and JUMPI statements.
-	 * Tries to solve the jump destinations by inspecting the interval at the
-	 * top of the symbolic stack.
-	 * 
-	 * @param tool  the semantic check tool that is running this check.
-	 * @param graph the CFG to visit.
-	 * @param node  the current node of the CFG.
-	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Statement node) {
-
+			CFG graph) {
 		this.cfgToAnalyze = (EVMCFG) graph;
-
-		// The method focuses only on JUMP and JUMPI statements
-		if (!(node instanceof Jump) && !(node instanceof Jumpi))
-			return true;
-		else if (cfgToAnalyze.getAllPushedJumps().contains(node))
-			return true;
-
-		// Iterate over all the analysis results, in our case there will be only
-		// one result.
-		for (AnalyzedCFG<
-				SimpleAbstractState<MonolithicHeap, EVMAbstractState, TypeEnvironment<InferredTypes>>> result : tool
-						.getResultOf(this.cfgToAnalyze)) {
-			AnalysisState<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
-					TypeEnvironment<InferredTypes>>> analysisResult = null;
-
-			try {
-				analysisResult = result.getAnalysisStateBefore(node);
-			} catch (SemanticException e1) {
-				e1.printStackTrace();
-
-			}
-
-			// Retrieve the symbolic stack from the analysis result
-			EVMAbstractState valueState = analysisResult.getState().getValueState();
-
-			// If the abstract stack is top or bottom, or it is empty, we do not
-			// have enough information to solve the jump.
-			if (valueState.isBottom()) {
-				continue;
-			} else if (valueState.isTop()) {
-				log.warn("Not solved jump (state is top): {} [{}]", node,
-						((ProgramCounterLocation) node.getLocation()).getPc());
-				continue;
-			}
-
-			Set<Number> flattenedTopStack = valueState.getTop().stream()
-					.filter(t -> !t.isTop() && !t.isBottom())
-					.map(s -> s.getNumber())
-					.collect(Collectors.toSet());
-
-			Set<Statement> filteredDests = this.cfgToAnalyze.getAllJumpdest().stream()
-					.filter(pc -> {
-						ProgramCounterLocation pcLocation = (ProgramCounterLocation) pc.getLocation();
-						int pcValue = pcLocation.getPc();
-						// Check if the value is in the flattened set
-						return flattenedTopStack.contains(new Number(pcValue));
-					})
-					.collect(Collectors.toSet());
-
-			// For each JUMPDEST, add the missing edge from this node to
-			// the JUMPDEST.
-			if (node instanceof Jump)
-				addEdgesToCFG(node, filteredDests, SequentialEdge.class);
-			else
-				addEdgesToCFG(node, filteredDests, TrueEdge.class);
-		}
-
-		return true;
-	}
-
-	private <T extends Edge> void addEdgesToCFG(Statement node, Set<Statement> filteredDests, Class<T> edgeClass) {
-		for (Statement jmp : filteredDests) {
-			Edge edge = edgeClass.equals(SequentialEdge.class) ? new SequentialEdge(node, jmp)
-					: new TrueEdge(node, jmp);
-			if (!this.cfgToAnalyze.containsEdge(edge)) {
-				this.cfgToAnalyze.addEdge(edge);
-				this.fixpoint = false;
-			}
-		}
+		return false;
 	}
 }

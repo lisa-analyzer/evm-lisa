@@ -36,6 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EVMCFG extends CFG {
+	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<BasicBlock> _basicBlocks;
@@ -112,6 +113,29 @@ public class EVMCFG extends CFG {
 		}
 
 		return this.externalData;
+	}
+
+	/**
+	 * Yields the program counter of the last opcode in the CFG. This method
+	 * iterates over all basic blocks and their statements to find the highest
+	 * program counter value, which corresponds to the last instruction in the
+	 * bytecode.
+	 *
+	 * @return the maximum program counter found among all statements
+	 */
+	public int getLastOpcodePc() {
+		int maxPc = 0;
+		Set<BasicBlock> bbs = getAllBasicBlocks();
+		for (BasicBlock bb : bbs) {
+			int max = 0;
+			for (Statement st : bb.getStatements())
+				if (((ProgramCounterLocation) st.getLocation()).getPc() > max)
+					max = ((ProgramCounterLocation) st.getLocation()).getPc();
+			if (max > maxPc)
+				maxPc = max;
+		}
+
+		return maxPc;
 	}
 
 	/**
@@ -531,6 +555,7 @@ public class EVMCFG extends CFG {
 	 * 
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
+	@SuppressWarnings("unused")
 	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
 		Queue<Statement> queue = new LinkedList<>();
 		queue.offer(start);

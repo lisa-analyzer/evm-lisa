@@ -8,3 +8,13 @@ PUSH1 0x01
 DIV
 PUSH1 0x00
 EQ
+PUSH1 0x02
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffA
+DIV
+PUSH32 0x7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd
+EQ
+PUSH1 0x02
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffA
+SDIV
+PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd
+EQ

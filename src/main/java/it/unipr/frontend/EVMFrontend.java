@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
@@ -680,7 +682,12 @@ public class EVMFrontend {
 		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s", module,
 				action, address, API_KEY);
 
-		URL requestUrl = new URL(request);
+		URL requestUrl;
+		try {
+			requestUrl = new URI(request).toURL();
+		} catch (URISyntaxException e) {
+			return null;
+		}
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
@@ -744,7 +751,12 @@ public class EVMFrontend {
 				"https://api.etherscan.io/api?module=%s&action=%s&address=%s&position=%s&apikey=%s", module,
 				action, address, position, API_KEY);
 
-		URL requestUrl = new URL(request);
+		URL requestUrl;
+		try {
+			requestUrl = new URI(request).toURL();
+		} catch (URISyntaxException e) {
+			return null;
+		}
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0");

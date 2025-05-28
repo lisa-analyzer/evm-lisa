@@ -14,6 +14,7 @@ public class EVMLiSAExecutor {
 	private static ExecutorService _executor = Executors.newFixedThreadPool(CORES);
 
 	private static long tasksInQueue = 0;
+	@SuppressWarnings("unused")
 	private static long tasksExecuted = 0;
 	private static long tasksTimedOut = 0;
 
@@ -123,6 +124,7 @@ public class EVMLiSAExecutor {
 				future.get();
 			} catch (ExecutionException e) {
 				System.err.println(JSONManager.throwNewError("Error during task execution: " + e.getMessage()));
+				e.printStackTrace();
 				System.exit(1);
 			} catch (InterruptedException ie) {
 				System.err.println(JSONManager.throwNewError("Interrupted during task execution: " + ie.getMessage()));
@@ -161,9 +163,6 @@ public class EVMLiSAExecutor {
 	 * submitted.
 	 */
 	public static void shutdown() {
-		log.debug("Tasks submitted: {}.", tasksExecuted);
-		log.debug("Tasks timed out: {}.", tasksTimedOut);
-		log.info("Shutting down executor.");
 		_executor.shutdown();
 	}
 

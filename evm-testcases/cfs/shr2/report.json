@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json", "untyped_program.evm-testcases_cfs_shr2_shr_eth.sol().json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "304ms",
+    "end" : "2025-05-12T12:26:03.023+02:00",
+    "expressions" : "22",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "1",
+    "programs" : "1",
+    "start" : "2025-05-12T12:26:02.719+02:00",
+    "statements" : "33",
+    "units" : "0",
+    "version" : "0.1",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "JumpSolver",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "false",
+    "wideningThreshold" : "5",
+    "workdir" : "evm-outputs/cfs/shr2"
+  }
+}
