@@ -96,12 +96,8 @@ public class xEVMLiSA {
 
 		for (Signature event : bridge.getEvents()) {
 			for (Signature function : bridge.getFunctions()) {
-				/*
-				 * We may perform additional checks (e.g., parameter types,
-				 * parameter count, etc.) to link an event to a function, as
-				 * currently we are only linking them based on matching names.
-				 */
-				if (event.getName().equalsIgnoreCase(function.getName())) {
+
+				if (xEVMLiSA.defaultPolicy(event, function)) {
 					functionsUsed.add(function.getFullSignature());
 					eventUsed.add(event.getFullSignature());
 
@@ -132,6 +128,19 @@ public class xEVMLiSA {
 		log.info("Cross chain edges of {} computed.", bridge.getName());
 
 		return crossChainEdges;
+	}
+
+	/**
+	 * Checks if the default policy is to match events and functions by name.
+	 *
+	 * @param event    The event signature to compare with the function's name.
+	 * @param function The function signature whose name will be compared with
+	 *                     the event's name.
+	 * 
+	 * @return True if the names match, false otherwise.
+	 */
+	public static boolean defaultPolicy(Signature event, Signature function) {
+		return event.getName().equalsIgnoreCase(function.getName());
 	}
 
 	/**
