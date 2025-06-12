@@ -1,10 +1,18 @@
-# Run benchmark
+# Compile smart contract and run benchmark
+
+Create a virtual environment:
+```bash
+conda create --name evm-lisa-environment python=3.11
+```
+
+```bash
+conda activate evm-lisa-environment
+```
 
 Install dependencies:
-```
-brew install solc-select
-pip install tqdm
-pip install scipy
+```bash
+brew install solc-select # compiler
+pip install -r requirements.txt
 ```
 
 Compile smart contracts into bytecode:

@@ -1,0 +1,6 @@
+file,original pragma version,compiled version,notes
+WrapManager.sol,>=0.5.0 <0.7.0,0.5.0,
+ERC721TokenReceiver.sol,>=0.5.0 <0.7.0,0.5.0,
+WrapMultisig.sol,>=0.5.0 <0.7.0,0.5.0,
+SafeMath.sol,>=0.5.0 <0.7.0,0.5.0,
+Migrations.sol,>=0.5.0 <0.7.0,0.5.0,

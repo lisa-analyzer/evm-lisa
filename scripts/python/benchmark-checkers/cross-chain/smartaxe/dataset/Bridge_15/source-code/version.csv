@@ -1,0 +1,11 @@
+file,original pragma version,compiled version,notes
+MetaCoin.sol,^0.8.13,0.8.13,
+TokenEth.sol,^0.8.0,0.8.0,
+IToken.sol,^0.8.0,0.8.0,
+ConvertLib.sol,^0.8.13,0.8.13,
+BridgeBase.sol,^0.8.0,0.8.0,
+Migrations.sol,>=0.4.22 <0.9.0,0.4.22,
+BridgeBsc.sol,^0.8.0,0.8.0,
+BridgeEth.sol,^0.8.0,0.8.0,
+TokenBase.sol,^0.8.0,0.8.0,
+TokenBsc.sol,^0.8.0,0.8.0,

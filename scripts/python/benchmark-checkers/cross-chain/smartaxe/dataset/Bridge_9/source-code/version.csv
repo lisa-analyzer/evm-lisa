@@ -1,0 +1,9 @@
+file,original pragma version,compiled version,notes
+TokenEth.sol,^0.8.0,0.8.0,
+IToken.sol,^0.8.0,0.8.0,
+BridgeBase.sol,^0.8.0,0.8.0,
+Migrations.sol,>=0.4.22 <0.9.0,0.4.22,
+TokenFan.sol,^0.8.0,0.8.0,
+BridgeEth.sol,^0.8.0,0.8.0,
+TokenBase.sol,^0.8.0,0.8.0,
+BridgeFan.sol,^0.8.0,0.8.0,

@@ -3,6 +3,7 @@ package it.unipr.cfg;
 import it.unipr.analysis.Number;
 import it.unipr.analysis.contract.BasicBlock;
 import it.unipr.cfg.push.Push;
+import it.unipr.crosschain.edges.CrossChainEdge;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -36,7 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EVMCFG extends CFG {
-	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<BasicBlock> _basicBlocks;
@@ -299,7 +299,7 @@ public class EVMCFG extends CFG {
 	 * blocks have not been computed yet, they are generated first.
 	 *
 	 * @param stmt the statement to search for within the basic blocks
-	 * 
+	 *
 	 * @return the {@link BasicBlock} containing the given statement, or
 	 *             {@code null} if not found
 	 */
@@ -425,7 +425,7 @@ public class EVMCFG extends CFG {
 	 *
 	 * @param start  The starting statement.
 	 * @param target The target statement.
-	 * 
+	 *
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
 	public boolean reachableFrom(Statement start, Statement target) {
@@ -456,7 +456,7 @@ public class EVMCFG extends CFG {
 	 *
 	 * @param start       the node from which to begin the reverse search
 	 * @param entrypoints the set of candidate entrypoint statements to detect
-	 * 
+	 *
 	 * @return the first entrypoint encountered, or null if none are reachable
 	 */
 	public Statement reachableFromReverse(Statement start, Set<Statement> entrypoints) {
@@ -470,7 +470,7 @@ public class EVMCFG extends CFG {
 	 * @param start       the initial node of the search
 	 * @param entrypoints the set of target statements to find
 	 * @param visited     the set of already visited nodes (to prevent cycles)
-	 * 
+	 *
 	 * @return the first matching entrypoint found, or null if no entrypoint is
 	 *             reachable
 	 */
@@ -503,7 +503,7 @@ public class EVMCFG extends CFG {
 	 * @param start  the starting statement in the first control flow graph.
 	 * @param target the target statement which may belong to a different
 	 *                   control flow graph.
-	 * 
+	 *
 	 * @return true if the target statement is reachable from the start
 	 *             statement across a cross-chain edge; false otherwise.
 	 */
@@ -520,7 +520,7 @@ public class EVMCFG extends CFG {
 	 * @param start   The starting statement.
 	 * @param target  The target statement.
 	 * @param visited A set of visited statements to avoid cycles.
-	 * 
+	 *
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
 	private boolean dfs(Statement start, Statement target, Set<Statement> visited) {
@@ -552,10 +552,9 @@ public class EVMCFG extends CFG {
 	 * @param start   The starting statement.
 	 * @param target  The target statement.
 	 * @param visited A set of visited statements to avoid cycles.
-	 * 
+	 *
 	 * @return True if the target is reachable from the start, false otherwise.
 	 */
-	@SuppressWarnings("unused")
 	private boolean bfs(Statement start, Statement target, Set<Statement> visited) {
 		Queue<Statement> queue = new LinkedList<>();
 		queue.offer(start);
@@ -605,7 +604,7 @@ public class EVMCFG extends CFG {
 	 * statement using BFS.
 	 *
 	 * @param start The starting statement.
-	 * 
+	 *
 	 * @return A set of the furthest reachable SSTORE statements.
 	 */
 	public Set<Statement> getFurthestSstores(Statement start) {
@@ -638,7 +637,7 @@ public class EVMCFG extends CFG {
 	 *
 	 * @param start  The starting statement.
 	 * @param target The target statement.
-	 * 
+	 *
 	 * @return True if the target is sequentially reachable from the start,
 	 *             false otherwise.
 	 */
@@ -660,7 +659,7 @@ public class EVMCFG extends CFG {
 	 * @param start   The starting statement.
 	 * @param target  The target statement.
 	 * @param visited A set of visited statements to avoid cycles.
-	 * 
+	 *
 	 * @return True if the target is sequentially reachable from the start,
 	 *             false otherwise.
 	 */
@@ -737,7 +736,7 @@ public class EVMCFG extends CFG {
 	 *                       checked
 	 * @param target     the target statement to check for reachability
 	 * @param avoidTypes the types of statements to avoid during traversal
-	 * 
+	 *
 	 * @return true if the target statement is reachable from the start without
 	 *             triggering any of the specified statement types, false
 	 *             otherwise
@@ -764,7 +763,7 @@ public class EVMCFG extends CFG {
 	 * @param visited    a set of already visited statements to avoid cycles
 	 *                       during the traversal
 	 * @param avoidTypes the types of statements to avoid during traversal
-	 * 
+	 *
 	 * @return true if a path exists from the start statement to the target
 	 *             statement without traversing through edges originating from
 	 *             nodes of the specified types, false otherwise
@@ -815,7 +814,7 @@ public class EVMCFG extends CFG {
 	 * @param target   the termination point of the search
 	 * @param getTypes a set of statement classes to filter and collect along
 	 *                     the paths
-	 * 
+	 *
 	 * @return a set of all matching statements encountered before reaching
 	 *             {@code target}, or an empty set if none are found
 	 */
@@ -916,7 +915,7 @@ public class EVMCFG extends CFG {
 	 * @param start  The starting statement for the search, usually the function
 	 *                   entry point.
 	 * @param isVoid Whether the function has no return value.
-	 * 
+	 *
 	 * @return A set of statements that represent function exit points.
 	 */
 	public Set<Statement> getFunctionExitPoints(Statement start, boolean isVoid) {
@@ -962,7 +961,7 @@ public class EVMCFG extends CFG {
 	 * statement along a true edge.
 	 *
 	 * @param start The starting statement for the search.
-	 * 
+	 *
 	 * @return The closest Jumpdest statement along a true edge, or null if none
 	 *             is found.
 	 */
@@ -992,5 +991,21 @@ public class EVMCFG extends CFG {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Determines whether a given node has at least one outgoing edge that
+	 * represents a cross‑chain transition.
+	 *
+	 * @param node the CFG statement to inspect
+	 *
+	 * @return true if any outgoing edge is an instance of CrossChainEdge, false
+	 *             otherwise
+	 */
+	public boolean hasAtLeastOneCrossChainEdge(Statement node) {
+		for (Edge edge : getOutgoingEdges(node))
+			if (edge instanceof CrossChainEdge)
+				return true;
+		return false;
 	}
 }

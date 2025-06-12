@@ -1,0 +1,7 @@
+file,original pragma version,compiled version,notes
+EthVault.impl.sol,^0.5.0,0.5.0,
+MultiSigWallet.sol,^0.5.0,0.5.0,
+SafeMath.sol,^0.5.0,0.5.0,
+EthVault.sol,^0.5.0,0.5.0,
+EthVault.impl_1.sol,0.5.0,0.5.0,
+EthVaultImpl.sol,0.5.0,0.5.0,

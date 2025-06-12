@@ -1,0 +1,17 @@
+{
+    "Address": 1,
+    "Context": 2,
+    "ERC20": 3,
+    "ERC721Holder": 4,
+    "EnumerableSet": 5,
+    "GenToken": 6,
+    "IERC165": 7,
+    "IERC20": 8,
+    "IERC721": 9,
+    "IERC721Receiver": 10,
+    "MasterChef_label": 11,
+    "Ownable": 12,
+    "OwnableToken": 13,
+    "SafeERC20": 14,
+    "SafeMath": 15
+}

@@ -11,6 +11,7 @@ import it.unipr.checker.JumpSolver;
 import it.unipr.checker.RandomnessDependencyChecker;
 import it.unipr.checker.ReentrancyChecker;
 import it.unipr.checker.TxOriginChecker;
+import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
@@ -186,6 +187,16 @@ public class EVMLiSA {
 			return;
 
 		setupGlobalOptions(cmd);
+
+		// Cross chain analysis
+		if (cmd.hasOption("cross-chain-analysis")
+				&& cmd.hasOption("bytecode-directory-path")
+				&& cmd.hasOption("abi-directory-path")) {
+			xEVMLiSA.runAnalysis(
+					Path.of(cmd.getOptionValue("bytecode-directory-path")),
+					Path.of(cmd.getOptionValue("abi-directory-path")));
+			return;
+		}
 
 		// Benchmark case
 		if (cmd.hasOption("benchmark")) {
@@ -496,7 +507,7 @@ public class EVMLiSA {
 	 * @param checker the jump solver used for the analysis
 	 * @param lisa    the LiSA framework instance
 	 * @param program the program being analyzed
-	 * 
+	 *
 	 * @return a {@link StatisticsObject} containing the computed statistics
 	 */
 	public static StatisticsObject<?> computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
@@ -511,7 +522,7 @@ public class EVMLiSA {
 	 *
 	 * @param checker       the jump solver used for analysis
 	 * @param soundlySolved the set of jumps that have been soundly solved
-	 * 
+	 *
 	 * @return a {@link StatisticsObject} containing the computed jump
 	 *             statistics
 	 */
@@ -618,7 +629,7 @@ public class EVMLiSA {
 	 *
 	 * @param checker       the jump solver used for analysis
 	 * @param soundlySolved the set of jumps that have been soundly solved
-	 * 
+	 *
 	 * @return a {@link StatisticsObject} containing the computed jump
 	 *             statistics
 	 */
@@ -699,7 +710,7 @@ public class EVMLiSA {
 	 *                    jumps
 	 * @param lisa    the {@link LiSA} instance used to perform static analysis
 	 * @param program the {@link Program} containing the code being analyzed
-	 * 
+	 *
 	 * @return a {@link Set} of {@link Statement} objects representing the
 	 *             soundly solved jumps after applying the iterative resolution
 	 *             process
@@ -738,7 +749,7 @@ public class EVMLiSA {
 	 * Builds a list of smart contracts from a given file.
 	 *
 	 * @param filePath the path to the file containing contract addresses
-	 * 
+	 *
 	 * @return a list of {@link SmartContract} objects
 	 */
 	public static List<SmartContract> buildContractsFromFile(Path filePath) {
@@ -949,6 +960,27 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option enableCrossChainAnalysisOption = Option.builder()
+				.longOpt("cross-chain-analysis")
+				.desc("Run a cross-chain analysis..")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		Option crossChainBytecodeDirectoryPathOption = Option.builder()
+				.longOpt("bytecode-directory-path")
+				.desc("Directory path of bytecode files.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
+		Option crossChainAbiDirectoryPathOption = Option.builder()
+				.longOpt("abi-directory-path")
+				.desc("Directory path of abi files.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -968,6 +1000,9 @@ public class EVMLiSA {
 		options.addOption(abiOption);
 		options.addOption(useTestModeOption);
 		options.addOption(usePaperStats);
+		options.addOption(enableCrossChainAnalysisOption);
+		options.addOption(crossChainBytecodeDirectoryPathOption);
+		options.addOption(crossChainAbiDirectoryPathOption);
 
 		return options;
 	}

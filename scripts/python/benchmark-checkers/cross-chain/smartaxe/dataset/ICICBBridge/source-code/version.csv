@@ -1,0 +1,7 @@
+file,original pragma version,compiled version,notes
+Ownable.sol,^0.8.0,0.8.0,
+Bridge.sol,^0.8.0,0.8.0,
+IBridge.sol,^0.8.0,0.8.0,
+WICICB.sol,^0.8.0,0.8.0,
+DeployTokens.sol,^0.8.0,0.8.0,
+IRC20.sol,^0.8.0,0.8.0,

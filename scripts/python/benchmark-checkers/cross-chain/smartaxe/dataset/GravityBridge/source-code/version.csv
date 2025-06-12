@@ -1,0 +1,11 @@
+file,original pragma version,compiled version,notes
+Gravity.sol,0.8.10,0.8.10,
+IERC20.sol,^0.8.0,0.8.0,
+CosmosToken.sol,0.8.10,0.8.10,
+ReentrancyGuard.sol,^0.8.0,0.8.0,
+ERC20.sol,^0.8.0,0.8.0,
+SafeERC20.sol,^0.8.0,0.8.0,
+Address.sol,^0.8.0,0.8.0,
+ECDSA.sol,^0.8.0,0.8.0,
+IERC20Metadata.sol,^0.8.0,0.8.0,
+Context.sol,^0.8.0,0.8.0,

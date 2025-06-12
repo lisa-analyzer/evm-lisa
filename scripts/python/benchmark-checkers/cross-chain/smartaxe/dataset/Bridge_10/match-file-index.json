@@ -1,0 +1,5 @@
+{
+    "ChainBridge": 1,
+    "ERC20": 2,
+    "IExampleToken": 3
+}

@@ -1,0 +1,8 @@
+file,original pragma version,compiled version,notes
+WrappedTON.sol,^0.7.0,0.7.0,
+IERC20.sol,^0.7.0,0.7.0,
+BridgeInterface.sol,^0.7.0,0.7.0,
+TonUtils.sol,^0.7.0,0.7.0,
+ERC20.sol,^0.7.4,0.7.4,
+Bridge.sol,^0.7.0,0.7.0,
+SignatureChecker.sol,^0.7.0,0.7.0,

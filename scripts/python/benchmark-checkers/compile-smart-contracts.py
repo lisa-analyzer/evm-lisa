@@ -333,14 +333,54 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
             # Update the progress bar
             # pbar.update(1)
 
+def compile_bridges(base_path):
+    """
+    Compiles all bridges in the specified base path by iterating through its subdirectories.
+    """
+    if not os.path.exists(base_path):
+        print(f"Base path '{base_path}' does not exist.")
+        return
+
+    for subfolder in os.listdir(base_path):
+        subfolder_path = os.path.join(base_path, subfolder)
+        if os.path.isdir(subfolder_path):  # Check if it's a directory
+            print(f"Compiling bridge in: {subfolder_path}")
+            compile_bridge(subfolder_path)
+
+def compile_bridge(name):
+    # extract_solidity_versions(src_folder=f'./{name}/source-code',
+    #                           output_csv=f'./{name}/source-code/version.csv')
+
+    compile_solidity_sources_with_different_version(source_dir=f'./{name}/source-code',
+                                                    json_dir=f'./{name}/json',
+                                                    version_file=f'./{name}/source-code/version.csv')
+
+    generate_file_index(folder_path=f'./{name}/source-code',
+                        output_json=f'./{name}/match-file-index.json')
+
+    with open(f'./{name}/match-file-index.json', 'r') as index_file:
+        match_file_index = json.load(index_file)
+
+    extract_and_save_bytecode(bytecode_dir=f'./{name}/bytecode',
+                                json_dir=f'./{name}/json',
+                                abi_dir=f'./{name}/abi',
+                                file_index=match_file_index)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compile datasets.")
     parser.add_argument("--solidifi", action="store_true", help="Compile SolidiFI dataset")
     parser.add_argument("--smartbugs", action="store_true", help="Compile SmartBugs dataset")
     parser.add_argument("--slise", action="store_true", help="Compile SliSE dataset")
     parser.add_argument("--longest-bytecode", action="store_true", help="Save only the longest bytecode")
+    parser.add_argument("--cross-chain", action="store_true", help="Compile cross-chain dataset")
 
     args = parser.parse_args()
+
+    if args.cross_chain:
+        # compile_bridges('cross-chain/smartaxe/dataset')
+        compile_bridges('cross-chain/smartaxe/manually-labeled')
+        # compile_bridge('cross-chain/time-synchronization')
+        # compile_bridge('cross-chain/dummy-bridge')
 
     if args.solidifi:
         compile_solidity_sources('./solidifi/reentrancy/source-code',
