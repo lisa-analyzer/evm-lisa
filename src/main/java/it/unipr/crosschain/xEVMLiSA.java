@@ -94,27 +94,36 @@ public class xEVMLiSA {
 		log.debug("Events in bridge: {}.", bridge.getEvents().size());
 		log.debug("Log statement in bridge: {}.", bridge.getXCFG().getAllLogX().size());
 
-		for (Signature event : bridge.getEvents()) {
-			for (Signature function : bridge.getFunctions()) {
+		for (SmartContract contractSource : bridge.getSmartContracts()) {
+			for (SmartContract contractDestination : bridge.getSmartContracts()) {
+				if (contractSource.equals(contractDestination))
+					continue; // Avoid auto-link
 
-				if (xEVMLiSA.defaultPolicy(event, function)) {
-					functionsUsed.add(function.getFullSignature());
-					eventUsed.add(event.getFullSignature());
+				for (Signature event : contractSource.getEventsSignature()) {
+					for (Signature function : contractDestination.getFunctionsSignature()) {
 
-					crossChainEdges.addAll(
-							addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
+						if (xEVMLiSA.defaultPolicy(event, function)) {
+							functionsUsed.add(function.getFullSignature());
+							eventUsed.add(event.getFullSignature());
 
-					MyCache.getInstance().addMapEventsFunctions(event, function);
+							crossChainEdges.addAll(
+									addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
 
-					// Debug print
-					for (Statement e : event.getExitPoints()) {
-						for (Statement f : function.getEntryPoints()) {
-							log.debug(
-									"Cross-chain edge added: event {} (name: {}, selector: {}, line: {}) -> function {} (name: {}, selector: {}, line: {}).",
-									e, event.getFullSignature(), event.getSelector(),
-									((ProgramCounterLocation) e.getLocation()).getSourceCodeLine(),
-									f, function.getFullSignature(), function.getSelector(),
-									((ProgramCounterLocation) f.getLocation()).getSourceCodeLine());
+							MyCache.getInstance().addMapEventsFunctions(event, function);
+
+							// Debug print
+							for (Statement e : event.getExitPoints()) {
+								for (Statement f : function.getEntryPoints()) {
+									log.debug(
+											"Cross-chain edge added: from contract {} with event {} (name: {}, selector: {}, line: {}) to contract {} with function {} (name: {}, selector: {}, line: {}).",
+											contractSource.getName(),
+											e, event.getFullSignature(), event.getSelector(),
+											((ProgramCounterLocation) e.getLocation()).getSourceCodeLine(),
+											contractDestination.getName(),
+											f, function.getFullSignature(), function.getSelector(),
+											((ProgramCounterLocation) f.getLocation()).getSourceCodeLine());
+								}
+							}
 						}
 					}
 				}
@@ -131,7 +140,7 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Checks if the default policy is to match events and functions by name.
+	 * Matches events and functions by name.
 	 *
 	 * @param event    The event signature to compare with the function's name.
 	 * @param function The function signature whose name will be compared with

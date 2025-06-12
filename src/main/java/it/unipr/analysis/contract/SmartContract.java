@@ -846,6 +846,24 @@ public class SmartContract {
 		return true;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (!(o instanceof SmartContract))
+			return false;
+		if (this == o)
+			return true;
+		SmartContract contract = (SmartContract) o;
+		return _bytecode.equals(contract._bytecode)
+				&& _cfg.equals(contract._cfg);
+	}
+
+	@Override
+	public int hashCode() {
+		return 13 * _bytecode.hashCode() + 17 * _cfg.hashCode();
+	}
+
 	/**
 	 * Extracts the filename without extension from a given Path.
 	 *
