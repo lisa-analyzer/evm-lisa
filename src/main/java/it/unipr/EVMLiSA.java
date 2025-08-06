@@ -805,7 +805,7 @@ public class EVMLiSA {
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
-			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
+			EtherscanAPIManager.setAPIKey(cmd.getOptionValue("etherscan-api-key"));
 		if (cmd.hasOption("test-mode"))
 			EVMLiSA.setTestMode();
 		if (cmd.hasOption("paper-stats"))

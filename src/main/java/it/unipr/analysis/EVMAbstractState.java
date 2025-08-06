@@ -2,7 +2,7 @@ package it.unipr.analysis;
 
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.ProgramCounterLocation;
-import it.unipr.frontend.EVMFrontend;
+import it.unipr.utils.EtherscanAPIManager;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -2129,7 +2129,8 @@ public class EVMAbstractState
 			String getStorageAtRequest;
 			synchronized (MyCache.getInstance()) {
 				Thread.sleep(500);
-				getStorageAtRequest = EVMFrontend.etherscanRequest("proxy", "eth_getStorageAt", hexString, address);
+				getStorageAtRequest = EtherscanAPIManager.etherscanRequest("proxy", "eth_getStorageAt", hexString,
+						address);
 			}
 
 			if (getStorageAtRequest == null || getStorageAtRequest.isEmpty()) {
