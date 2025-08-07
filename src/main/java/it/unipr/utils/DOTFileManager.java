@@ -20,6 +20,23 @@ public class DOTFileManager {
 	public static String blueColor = "#6FA8DC";
 	public static String blackColor = "#000000";
 
+	public static boolean showAllInstructions = false;
+
+	/**
+	 * Sets a flag to show all instructions.
+	 */
+	public static void showAllInstructions() {
+		showAllInstructions = true;
+	}
+
+	/**
+	 * Generates a DOT graph from the provided basic blocks and writes it to the
+	 * specified output path. The graph includes nodes for each basic block,
+	 * edges for outgoing edges, and a legend for color interpretation.
+	 *
+	 * @param basicBlocks an array of JSON objects representing basic blocks
+	 * @param outputPath  the file path where the .dot file will be written
+	 */
 	public static void generateDotGraph(JSONArray basicBlocks, String outputPath) {
 		StringBuilder dotGraph = new StringBuilder();
 		dotGraph.append("digraph CFG {\n");
@@ -36,7 +53,7 @@ public class DOTFileManager {
 			if (block.has("label"))
 				label.append(block.getString("label")).append("\\n- - - - - - - - - - - -\\n");
 
-			if (instructions.length() > 5) {
+			if (!showAllInstructions && instructions.length() > 5) {
 				JSONObject firstInstr = instructions.getJSONObject(0);
 				JSONObject secondInstr = instructions.getJSONObject(1);
 				JSONObject secondLastInstr = instructions.getJSONObject(instructions.length() - 2);
