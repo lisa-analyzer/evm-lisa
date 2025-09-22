@@ -50,9 +50,9 @@ public class EVMFrontend {
 	 * contract's deployed bytecode.
 	 *
 	 * @param address the Ethereum contract address to retrieve bytecode for
-	 * 
+	 *
 	 * @return the contract bytecode as a hexadecimal string
-	 * 
+	 *
 	 * @throws IOException      if there's an issue with the HTTP request to
 	 *                              Etherscan
 	 * @throws RuntimeException if the bytecode cannot be retrieved or is empty
@@ -82,9 +82,9 @@ public class EVMFrontend {
 	 * parameters. Only works for verified contracts on Etherscan.
 	 *
 	 * @param address the Ethereum contract address to retrieve the ABI for
-	 * 
+	 *
 	 * @return a JSONArray containing the contract's ABI definition
-	 * 
+	 *
 	 * @throws IOException      if there's an issue with the HTTP request to
 	 *                              Etherscan
 	 * @throws RuntimeException if the ABI cannot be retrieved or the contract
@@ -565,7 +565,7 @@ public class EVMFrontend {
 	 * returns the number of bytes to push onto the stack.
 	 *
 	 * @param opcode the hexadecimal opcode string to test
-	 * 
+	 *
 	 * @return the number of bytes to push if it's a PUSH instruction, 0
 	 *             otherwise
 	 */
@@ -648,7 +648,7 @@ public class EVMFrontend {
 	 * @param push   the hexadecimal data to be pushed (without "0x" prefix)
 	 * @param n      the number of bytes being pushed (1-32)
 	 * @param writer the Writer object to write the formatted instruction to
-	 * 
+	 *
 	 * @throws IOException if an I/O error occurs while writing
 	 */
 	private static void addPush(String push, int n, Writer writer) throws IOException {
