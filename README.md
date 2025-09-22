@@ -98,23 +98,24 @@ Alternatively, you can pass your API key directly using the `--etherscan-api-key
 
 ```
 Options:
- -a,--address <arg>                        Address of an Ethereum smart contract
+ -a,--address <arg>                        Address of an Ethereum smart contract.
     --abi <arg>                            ABI of the bytecode to be analyzed (JSON format).
-    --abi-path <arg>                       Filepath of the ABI file
- -b,--bytecode <arg>                       Bytecode to be analyzed (e.g., 0x6080...)
-    --benchmark <arg>                      Filepath of the benchmark
-    --bytecode-path <arg>                  Filepath of the bytecode file
- -c,--cores <arg>                          Number of cores used in benchmark
-    --checker-all                          Enable all security checkers
-    --checker-reentrancy                   Enable reentrancy checker
-    --checker-timestampdependency          Enable timestamp-dependency checker
-    --checker-txorigin                     Enable tx-origin checker
-    --etherscan-api-key <arg>              Insert your Etherscan API key
-    --link-unsound-jumps-to-all-jumpdest   Link all unsound jumps to all jumpdest
-    --output-directory-path <arg>          Filepath of the output directory
-    --stack-set-size <arg>                 Dimension of stack-set (default: 8)
-    --stack-size <arg>                     Dimension of stack (default: 32)
-    --use-live-storage                     Use the live storage in SLOAD
+    --abi-path <arg>                       Filepath of the ABI file.
+ -b,--bytecode <arg>                       Bytecode to be analyzed (e.g., 0x6080...).
+    --benchmark <arg>                      Filepath of the benchmark.
+    --bytecode-path <arg>                  Filepath of the bytecode file.
+ -c,--cores <arg>                          Number of cores used in benchmark.
+    --checker-all                          Enable all security checkers.
+    --checker-reentrancy                   Enable reentrancy checker.
+    --checker-timestampdependency          Enable timestamp-dependency checker.
+    --checker-txorigin                     Enable tx-origin checker.
+    --etherscan-api-key <arg>              Insert your Etherscan API key.
+    --link-unsound-jumps-to-all-jumpdest   Link all unsound jumps to all jumpdest.
+    --output-directory-path <arg>          Filepath of the output directory.
+    --show-all-instructions-in-cfg         Show all instructions in the CFG representation.
+    --stack-set-size <arg>                 Dimension of stack-set (default: 8).
+    --stack-size <arg>                     Dimension of stack (default: 32).
+    --use-live-storage                     Use the live storage in SLOAD.
 ```
 
 ## The Abstract Stack Set Domain

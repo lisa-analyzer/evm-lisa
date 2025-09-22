@@ -816,11 +816,13 @@ public class EVMLiSA {
 		if (cmd.hasOption("use-live-storage") && (cmd.hasOption("address") || cmd.hasOption("benchmark")))
 			EVMAbstractState.setUseStorageLive();
 		if (cmd.hasOption("etherscan-api-key"))
-			EVMFrontend.setEtherscanAPIKey(cmd.getOptionValue("etherscan-api-key"));
+			EtherscanAPIManager.setAPIKey(cmd.getOptionValue("etherscan-api-key"));
 		if (cmd.hasOption("test-mode"))
 			EVMLiSA.setTestMode();
 		if (cmd.hasOption("paper-stats"))
 			EVMLiSA.setPaperMode();
+		if (cmd.hasOption("show-all-instructions-in-cfg"))
+			DOTFileManager.showAllInstructions();
 	}
 
 	private Options getOptions() {
@@ -981,6 +983,13 @@ public class EVMLiSA {
 				.hasArg(true)
 				.build();
 
+		Option showAllInstructionsInCFG = Option.builder()
+				.longOpt("show-all-instructions-in-cfg")
+				.desc("Show all instructions in the Control Flow Graph representation.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);
@@ -1000,6 +1009,7 @@ public class EVMLiSA {
 		options.addOption(abiOption);
 		options.addOption(useTestModeOption);
 		options.addOption(usePaperStats);
+		options.addOption(showAllInstructionsInCFG);
 		options.addOption(enableCrossChainAnalysisOption);
 		options.addOption(crossChainBytecodeDirectoryPathOption);
 		options.addOption(crossChainAbiDirectoryPathOption);

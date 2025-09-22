@@ -1,69 +1,34 @@
 package it.unipr.frontend;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import it.unipr.evm.antlr.EVMBLexer;
 import it.unipr.evm.antlr.EVMBParser;
 import it.unipr.evm.antlr.EVMBParser.ProgramContext;
+import it.unipr.utils.EtherscanAPIManager;
 import it.unipr.utils.JSONManager;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- * Frontend for EVMLiSA that handles both obtaining the bytecode of a contract
- * via Etherscan (@see <a href="https://etherscan.io/apis">Etherscan API</a>)
- * and the parsing of the bytecode to generate the control flow graph of the
- * contract. Ehterscan API key must be stored in the environment variable:
- * ETHERSCAN_API_KEY.
- */
 public class EVMFrontend {
-	private static String ETHERSCAN_API_KEY = "";
-
-	/**
-	 * Sets the Etherscan API key for making requests to the Etherscan API.
-	 *
-	 * @param apiKey The API key to be used for Etherscan API calls.
-	 */
-	public static void setEtherscanAPIKey(String apiKey) {
-		ETHERSCAN_API_KEY = apiKey;
-	}
-
-	/**
-	 * Retrieves the Etherscan API key. If no API key is currently set, attempts
-	 * to load it from environment variables.
-	 *
-	 * @return The Etherscan API key, or null if no key is available.
-	 */
-	private static String getEtherscanAPIKey() {
-		if (ETHERSCAN_API_KEY == null || ETHERSCAN_API_KEY.isEmpty())
-			return Dotenv.load().get("ETHERSCAN_API_KEY");
-		return ETHERSCAN_API_KEY;
-	}
 
 	/**
 	 * Verifies the syntactic correctness of the smart contract bytecode stored
 	 * in {@code filePath} and returns its {@code ProgramContext}.
-	 * 
+	 *
 	 * @param filePath the path where the smart contract bytecode is stored
-	 * 
+	 *
 	 * @return the {@code ProgramContext} of the smart contract bytecode
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public static ProgramContext parseContract(String filePath) throws IOException {
@@ -79,8 +44,21 @@ public class EVMFrontend {
 		}
 	}
 
+	/**
+	 * Retrieves the bytecode of a smart contract from Etherscan using the
+	 * contract address. Makes a request to the Etherscan API to get the
+	 * contract's deployed bytecode.
+	 *
+	 * @param address the Ethereum contract address to retrieve bytecode for
+	 * 
+	 * @return the contract bytecode as a hexadecimal string
+	 * 
+	 * @throws IOException      if there's an issue with the HTTP request to
+	 *                              Etherscan
+	 * @throws RuntimeException if the bytecode cannot be retrieved or is empty
+	 */
 	public static String parseBytecodeFromEtherscan(String address) throws IOException {
-		String response = etherscanRequest("proxy", "eth_getCode", address);
+		String response = EtherscanAPIManager.etherscanRequest("proxy", "eth_getCode", null, address);
 
 		if (response == null || response.isEmpty()) {
 			System.err.println(JSONManager.throwNewError("Couldn't download contract's bytecode. (" + address + ")"));
@@ -98,8 +76,22 @@ public class EVMFrontend {
 		return jsonResponse.getString("result");
 	}
 
+	/**
+	 * Retrieves the Application Binary Interface (ABI) of a smart contract from
+	 * Etherscan. The ABI describes the contract's functions and their
+	 * parameters. Only works for verified contracts on Etherscan.
+	 *
+	 * @param address the Ethereum contract address to retrieve the ABI for
+	 * 
+	 * @return a JSONArray containing the contract's ABI definition
+	 * 
+	 * @throws IOException      if there's an issue with the HTTP request to
+	 *                              Etherscan
+	 * @throws RuntimeException if the ABI cannot be retrieved or the contract
+	 *                              is not verified
+	 */
 	public static JSONArray parseABIFromEtherscan(String address) throws IOException {
-		String response = etherscanRequest("contract", "getabi", address);
+		String response = EtherscanAPIManager.etherscanRequest("contract", "getabi", null, address);
 
 		if (response == null || response.isEmpty()) {
 			System.err.println(JSONManager.throwNewError("Couldn't download contract's ABI. (" + address + ")"));
@@ -108,7 +100,8 @@ public class EVMFrontend {
 
 		JSONObject jsonResponse = new JSONObject(response);
 
-		if (!jsonResponse.has("result") || jsonResponse.get("result").equals("Contract source code not verified")) {
+		if (!jsonResponse.has("result")
+				|| jsonResponse.get("result").equals("Contract source code not verified")) {
 			System.err.println(
 					JSONManager.throwNewError("Contract ABI not available or not verified. (" + address + ")"));
 			System.exit(1);
@@ -131,12 +124,11 @@ public class EVMFrontend {
 	 *                     empty
 	 * @param output   the path to the output file where the extracted opcodes
 	 *                     will be written
-	 * 
+	 *
 	 * @throws IOException if an I/O error occurs while writing to the output
 	 *                         file
 	 */
 	public static void opcodesFromBytecode(String bytecode, String output) throws IOException {
-
 		if (bytecode == null || bytecode.isEmpty()) {
 			System.err.println(
 					JSONManager.throwNewError("Couldn't extract opcodes from bytecode. Bytecode is null or empty."));
@@ -174,21 +166,21 @@ public class EVMFrontend {
 	 * Takes the smart contract bytecode stored in {@code filePath} and
 	 * generates its control flow graph which is then returned as a LiSA
 	 * {@code Program}.
-	 * 
+	 *
 	 * @param filePath the path where the smart contract bytecode is stored
-	 * 
+	 *
 	 * @return a LiSA {@code Program} representing the generated control flow
 	 *             graph
-	 * 
+	 *
 	 * @throws IOException if an I/O error occurs while writing to the input
 	 *                         file
 	 */
 	public static Program generateCfgFromFile(String filePath) throws IOException {
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		EVMCFGGenerator cfggenerator = new EVMCFGGenerator(filePath, program);
+		EVMCFGGenerator cfgGenerator = new EVMCFGGenerator(filePath, program);
 		ProgramContext programContext = EVMFrontend.parseContract(filePath);
 
-		CFG cfg = cfggenerator.visitProgram(programContext);
+		CFG cfg = cfgGenerator.visitProgram(programContext);
 		program.addCodeMember(cfg);
 
 		return program;
@@ -197,10 +189,10 @@ public class EVMFrontend {
 	/**
 	 * Helper method that maps the EVM opcodes to their corresponding
 	 * instruction.
-	 * 
+	 *
 	 * @param opcode
 	 * @param writer
-	 * 
+	 *
 	 * @throws IOException if an I/O error occurs while writing to the input
 	 *                         file
 	 */
@@ -568,6 +560,15 @@ public class EVMFrontend {
 		return true;
 	}
 
+	/**
+	 * Helper method that determines if an opcode is a PUSH instruction and
+	 * returns the number of bytes to push onto the stack.
+	 *
+	 * @param opcode the hexadecimal opcode string to test
+	 * 
+	 * @return the number of bytes to push if it's a PUSH instruction, 0
+	 *             otherwise
+	 */
 	private static int pushTest(String opcode) {
 		switch (opcode) {
 		case "60":
@@ -639,6 +640,17 @@ public class EVMFrontend {
 		}
 	}
 
+	/**
+	 * Writes a PUSH instruction and its associated data to the output writer.
+	 * Formats the push data as a hexadecimal string with "0x" prefix and writes
+	 * it in the format "PUSH[n] 0x[data]" where n is the number of bytes.
+	 *
+	 * @param push   the hexadecimal data to be pushed (without "0x" prefix)
+	 * @param n      the number of bytes being pushed (1-32)
+	 * @param writer the Writer object to write the formatted instruction to
+	 * 
+	 * @throws IOException if an I/O error occurs while writing
+	 */
 	private static void addPush(String push, int n, Writer writer) throws IOException {
 		for (int i = 0; i < push.length(); i += 2) {
 			if (i == 0) {
@@ -648,158 +660,5 @@ public class EVMFrontend {
 			writer.write(code);
 		}
 		writer.write("\n");
-	}
-
-	/**
-	 * Makes a request to the Etherscan API to retrieve information based on the
-	 * provided module, action, and address. Requires an API key stored in the
-	 * environment variable 'ETHERSCAN_API_KEY'.
-	 *
-	 * @param module  The module name for the Etherscan API request (e.g.,
-	 *                    'contract', 'account', etc.).
-	 * @param action  The action to perform within the specified module (e.g.,
-	 *                    'getsourcecode', 'balance', etc.).
-	 * @param address The Ethereum address or identifier used for the request.
-	 * 
-	 * @return The JSON response received from the Etherscan API, or null if
-	 *             there was an error or no response.
-	 * 
-	 * @throws IOException If an I/O error occurs while making the HTTP request.
-	 */
-	public static String etherscanRequest(String module, String action, String address) throws IOException {
-		// Get the API key from the environment variable
-		final String API_KEY = EVMFrontend.getEtherscanAPIKey();
-
-		// Check if API key was retrieved correctly from the environment
-		// variable
-		if (API_KEY == null || API_KEY.isEmpty()) {
-			System.err.println(JSONManager
-					.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
-			System.exit(1);
-		}
-
-		// Send request to Etherscan
-		String request = String.format("https://api.etherscan.io/api?module=%s&action=%s&address=%s&apikey=%s", module,
-				action, address, API_KEY);
-
-		URL requestUrl;
-		try {
-			requestUrl = new URI(request).toURL();
-		} catch (URISyntaxException e) {
-			return null;
-		}
-		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-		if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-			String readLine = null;
-
-			while ((readLine = in.readLine()) != null) {
-				sb.append(readLine);
-			}
-
-			in.close();
-			String result = sb.toString();
-
-			// Check for error
-			if (errorInResponse(result)) {
-				return null;
-			} else {
-				return result;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Makes a request to the Etherscan API to retrieve information based on the
-	 * provided module, action, position, and address. Requires an API key
-	 * stored in the environment variable 'ETHERSCAN_API_KEY'.
-	 *
-	 * @param module   The module name for the Etherscan API request (e.g.,
-	 *                     'contract', 'account', etc.).
-	 * @param action   The action to perform within the specified module (e.g.,
-	 *                     'getsourcecode', 'balance', etc.).
-	 * @param position The position or specific identifier within the module
-	 *                     (optional depending on the API endpoint).
-	 * @param address  The Ethereum address or identifier used for the request.
-	 * 
-	 * @return The JSON response received from the Etherscan API, or null if
-	 *             there was an error or no response.
-	 * 
-	 * @throws IOException If an I/O error occurs while making the HTTP request.
-	 */
-	public static String etherscanRequest(String module, String action, String position, String address)
-			throws IOException {
-		// Get the API key from the environment variable
-		final String API_KEY = EVMFrontend.getEtherscanAPIKey();
-
-		// Check if API key was retrieved correctly from the environment
-		// variable
-		if (API_KEY == null || API_KEY.isEmpty()) {
-			System.err.println(JSONManager
-					.throwNewError("Couldn't retrieve ETHERSCAN_API_KEY environment variable from your system."));
-			System.exit(1);
-		}
-
-		// Send request to Etherscan
-		String request = String.format(
-				"https://api.etherscan.io/api?module=%s&action=%s&address=%s&position=%s&apikey=%s", module,
-				action, address, position, API_KEY);
-
-		URL requestUrl;
-		try {
-			requestUrl = new URI(request).toURL();
-		} catch (URISyntaxException e) {
-			return null;
-		}
-		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-		if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-			String readLine = null;
-
-			while ((readLine = in.readLine()) != null) {
-				sb.append(readLine);
-			}
-
-			in.close();
-			String result = sb.toString();
-
-			// Check for error
-			if (errorInResponse(result)) {
-				return null;
-			} else {
-				return result;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	private static boolean errorInResponse(String content) {
-		final String EtherscanGenericErrorMsg = "\"message\":\"NOTOK\"";
-		final String EtherscanInvalidAPIKeyErrorMsg = "\"result\":\"Invalid API Key\"";
-
-		if (content.contains(EtherscanGenericErrorMsg)) {
-			if (content.contains(EtherscanInvalidAPIKeyErrorMsg)) {
-				System.err.println(JSONManager.throwNewError("Invalid Etherscan API key."));
-				System.exit(1);
-			} else {
-				System.err.println(JSONManager.throwNewError("Generic Etherscan API error."));
-				System.exit(1);
-			}
-
-			return true;
-		} else {
-			return false;
-		}
 	}
 }
