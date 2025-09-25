@@ -969,7 +969,7 @@ public class EVMLiSA {
 
 		Option enableCrossChainAnalysisOption = Option.builder()
 				.longOpt("cross-chain-analysis")
-				.desc("Run a cross-chain analysis..")
+				.desc("Run a cross-chain analysis.")
 				.required(false)
 				.hasArg(false)
 				.build();

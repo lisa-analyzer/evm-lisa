@@ -109,6 +109,8 @@ Options:
     --checker-reentrancy                   Enable reentrancy checker.
     --checker-timestampdependency          Enable timestamp-dependency checker.
     --checker-txorigin                     Enable tx-origin checker.
+    --cross-chain-analysis                 Run a cross-chain analysis.
+    --cross-chain-policy <arg>             Import a cross-chain policy.
     --etherscan-api-key <arg>              Insert your Etherscan API key.
     --link-unsound-jumps-to-all-jumpdest   Link all unsound jumps to all jumpdest.
     --output-directory-path <arg>          Filepath of the output directory.
@@ -192,6 +194,68 @@ EVMLiSA.analyzeContract(new SmartContract().setBytecode("0x6080..."));
 // Analyze multiple contracts
 EVMLiSA.analyzeSetOfContracts(Path.of("list-of-contracts.txt"));
 ```
+
+## Cross-Chain Policy Configuration
+
+For cross-chain analysis, EVMLiSA supports policy files that define event-function mappings between smart contracts. The policy file should be a JSON file with the following structure:
+
+### Policy JSON format
+
+```json
+{
+  "policy": [
+    {
+      "event": "EventName1",
+      "function": "functionName1"
+    },
+    {
+      "event": "EventName2",
+      "function": "functionName2"
+    }
+  ]
+}
+```
+
+### Policy structure explanation
+
+- **policy**: An array of objects, each containing:
+  - **event**: The name of the event that triggers a cross-chain operation
+  - **function**: The name of the function that should be called in response to the event
+
+### Example
+
+```json
+{
+  "policy": [
+    {
+      "event": "Deposit",
+      "function": "deposit"
+    },
+    {
+      "event": "TransferOut",
+      "function": "transferOut"
+    },
+    {
+      "event": "VaultTransfer",
+      "function": "returnVaultAssets"
+    }
+  ]
+}
+```
+
+### Usage with Policy
+
+When running cross-chain analysis, specify the policy file using the `--cross-chain-policy` option:
+
+```bash
+java -jar build/libs/evm-lisa-all.jar \
+--cross-chain-analysis \
+--bytecode-directory-path /path/to/bytecode  \
+--abi-directory-path /path/to/abi \
+--cross-chain-policy /path/to/policy.json
+```
+
+> Note: if no policy file is provided, EVMLiSA will use a default policy that matches events and functions by name.
 
 ## Contributors
 
