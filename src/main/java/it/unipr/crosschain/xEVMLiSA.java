@@ -70,7 +70,7 @@ public class xEVMLiSA {
 	public static void analyzeBridge(Bridge bridge) {
 		log.info("Number of contracts to be analyzed: {}.", bridge.getSmartContracts().size());
 
-		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
+		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts(), false);
 		bridge.buildPartialXCFG();
 		bridge.addEdges(
 				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
