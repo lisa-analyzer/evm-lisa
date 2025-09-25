@@ -35,6 +35,16 @@ import org.json.JSONObject;
 public class xEVMLiSA {
 	private static final Logger log = LogManager.getLogger(xEVMLiSA.class);
 
+	/**
+	 * Main entry point for running cross-chain analysis on a bridge. This
+	 * method configures EVMLiSA, creates a bridge from the provided paths,
+	 * analyzes it, runs cross-chain checkers, and prints the results.
+	 *
+	 * @param bytecodeDirectoryPath path to the directory containing bytecode
+	 *                                  files
+	 * @param abiDirectoryPath      path to the directory containing ABI files
+	 * @param policyPath            path to the policy JSON file
+	 */
 	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath, Path policyPath) {
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() - 1);
@@ -130,6 +140,18 @@ public class xEVMLiSA {
 		return crossChainEdges;
 	}
 
+	/**
+	 * Applies the cross-chain policy to determine if an event should be linked
+	 * to a function. If no policy is provided, it defaults to matching events
+	 * and functions by name.
+	 *
+	 * @param policy   the list of event-function pairs from the policy
+	 * @param event    the event signature to match
+	 * @param function the function signature to match
+	 *
+	 * @return true if the event should be linked to the function according to
+	 *             the policy
+	 */
 	public static boolean applyPolicy(List<Pair<String, String>> policy, Signature event, Signature function) {
 		if (policy == null || policy.isEmpty())
 			return event.getName().equalsIgnoreCase(function.getName());

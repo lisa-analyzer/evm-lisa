@@ -35,18 +35,53 @@ public class Bridge implements Iterable<SmartContract> {
 	/** Detected vulnerabilities in the bridge. */
 	private VulnerabilitiesObject _vulnerabilities;
 
+	/**
+	 * Creates a new Bridge instance with only a name.
+	 *
+	 * @param name the name of the bridge
+	 */
 	public Bridge(String name) {
 		this(null, null, null, name);
 	}
 
+	/**
+	 * Creates a new Bridge instance with bytecode and ABI directories, and
+	 * policy path. The bridge name will be auto-generated with a timestamp.
+	 *
+	 * @param bytecodeDirectoryPath path to the directory containing bytecode
+	 *                                  files
+	 * @param abiDirectoryPath      path to the directory containing ABI files
+	 * @param policyPath            path to the policy JSON file
+	 */
 	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, Path policyPath) {
 		this(bytecodeDirectoryPath, abiDirectoryPath, policyPath, "unknown_bridge_" + System.currentTimeMillis());
 	}
 
+	/**
+	 * Creates a new Bridge instance with bytecode and ABI directories. No
+	 * policy will be loaded and the bridge name will be auto-generated.
+	 *
+	 * @param bytecodeDirectoryPath path to the directory containing bytecode
+	 *                                  files
+	 * @param abiDirectoryPath      path to the directory containing ABI files
+	 */
 	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
 		this(bytecodeDirectoryPath, abiDirectoryPath, null, "unknown_bridge_" + System.currentTimeMillis());
 	}
 
+	/**
+	 * Creates a new Bridge instance with all specified parameters. This is the
+	 * main constructor that initializes the bridge with smart contracts from
+	 * the provided bytecode and ABI directories, loads the policy if specified,
+	 * and assigns the given name.
+	 *
+	 * @param bytecodeDirectoryPath path to the directory containing bytecode
+	 *                                  files
+	 * @param abiDirectoryPath      path to the directory containing ABI files
+	 * @param policyPath            path to the policy JSON file, or null if no
+	 *                                  policy should be loaded
+	 * @param name                  the name to assign to this bridge
+	 */
 	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, Path policyPath, String name) {
 		this.name = name;
 		this.contracts = new ArrayList<>();
@@ -71,14 +106,29 @@ public class Bridge implements Iterable<SmartContract> {
 
 	}
 
+	/**
+	 * Gets the name of the bridge.
+	 *
+	 * @return the name of the bridge
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Gets the list of smart contracts in this bridge.
+	 *
+	 * @return a list of SmartContract objects
+	 */
 	public List<SmartContract> getSmartContracts() {
 		return contracts;
 	}
 
+	/**
+	 * Gets all function signatures from all contracts in this bridge.
+	 *
+	 * @return a list of function signatures
+	 */
 	public List<Signature> getFunctions() {
 		List<Signature> functions = new ArrayList<>();
 		for (SmartContract contract : contracts)
@@ -86,6 +136,11 @@ public class Bridge implements Iterable<SmartContract> {
 		return functions;
 	}
 
+	/**
+	 * Gets all event signatures from all contracts in this bridge.
+	 *
+	 * @return a list of event signatures
+	 */
 	public List<Signature> getEvents() {
 		List<Signature> events = new ArrayList<>();
 		for (SmartContract contract : contracts)
@@ -93,14 +148,31 @@ public class Bridge implements Iterable<SmartContract> {
 		return events;
 	}
 
+	/**
+	 * Gets the cross-chain control flow graph (xCFG) of this bridge.
+	 *
+	 * @return the EVMCFG representing the cross-chain control flow graph
+	 */
 	public EVMCFG getXCFG() {
 		return xCFG;
 	}
 
+	/**
+	 * Gets the cross-chain policy containing event-function pairs.
+	 *
+	 * @return a list of event-function pairs
+	 */
 	public List<Pair<String, String>> getPolicy() {
 		return policy;
 	}
 
+	/**
+	 * Checks if an event has an associated function in the policy.
+	 *
+	 * @param event the name of the event to check
+	 *
+	 * @return true if the event has an associated function, false otherwise
+	 */
 	public boolean hasEventFunctionMapping(String event) {
 		for (Pair<String, String> pair : policy)
 			if (pair.getLeft().equals(event))
@@ -108,6 +180,13 @@ public class Bridge implements Iterable<SmartContract> {
 		return false;
 	}
 
+	/**
+	 * Gets the function name associated with an event from the policy.
+	 *
+	 * @param event the name of the event
+	 *
+	 * @return the associated function name, or null if not found
+	 */
 	public String getFunctionForEvent(String event) {
 		for (Pair<String, String> pair : policy)
 			if (pair.getLeft().equals(event))
@@ -115,6 +194,11 @@ public class Bridge implements Iterable<SmartContract> {
 		return null;
 	}
 
+	/**
+	 * Adds multiple cross-chain edges to the xCFG.
+	 *
+	 * @param edges a set of edges to be added
+	 */
 	public void addEdges(Set<Edge> edges) {
 		for (Edge edge : edges)
 			addEdge(edge);
@@ -141,6 +225,11 @@ public class Bridge implements Iterable<SmartContract> {
 		return this;
 	}
 
+	/**
+	 * Adds a single cross-chain edge to the xCFG.
+	 *
+	 * @param edge the edge to be added
+	 */
 	public void addEdge(Edge edge) {
 		xCFG.addEdge(edge);
 	}
@@ -176,6 +265,13 @@ public class Bridge implements Iterable<SmartContract> {
 		return xCFG;
 	}
 
+	/**
+	 * Loads the cross-chain policy from a JSON file and populates the policy
+	 * list. The JSON file should contain an array named "policy" with
+	 * event-function pairs.
+	 *
+	 * @param policyPath the path to the policy JSON file
+	 */
 	private void loadPolicy(Path policyPath) {
 		try {
 			log.info("Loading policy from: {}", policyPath);
@@ -286,6 +382,11 @@ public class Bridge implements Iterable<SmartContract> {
 		return toJson().toString(4);
 	}
 
+	/**
+	 * Returns an iterator over the smart contracts in this bridge.
+	 *
+	 * @return an Iterator over SmartContract objects
+	 */
 	@Override
 	public Iterator<SmartContract> iterator() {
 		return contracts.iterator();
