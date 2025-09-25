@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -29,42 +30,28 @@ public class Bridge implements Iterable<SmartContract> {
 
 	private EVMCFG xCFG;
 
+	private final List<Pair<String, String>> policy;
+
 	/** Detected vulnerabilities in the bridge. */
 	private VulnerabilitiesObject _vulnerabilities;
 
 	public Bridge(String name) {
+		this(null, null, null, name);
+	}
+
+	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, Path policyPath) {
+		this(bytecodeDirectoryPath, abiDirectoryPath, policyPath, "unknown_bridge_" + System.currentTimeMillis());
+	}
+
+	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
+		this(bytecodeDirectoryPath, abiDirectoryPath, null, "unknown_bridge_" + System.currentTimeMillis());
+	}
+
+	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, Path policyPath, String name) {
 		this.name = name;
 		this.contracts = new ArrayList<>();
-	}
+		this.policy = new ArrayList<>();
 
-	/**
-	 * Initializes the bridge by mapping and matching smart contracts from the
-	 * ABI and bytecode directories. It creates `SmartContract` objects for each
-	 * contract that has both an ABI and a bytecode file.
-	 *
-	 * @param bytecodeDirectoryPath the path to the directory containing
-	 *                                  bytecode files
-	 * @param abiDirectoryPath      the path to the directory containing ABI
-	 *                                  files
-	 */
-	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
-		this(bytecodeDirectoryPath, abiDirectoryPath, "unknown_bridge_" + System.currentTimeMillis());
-	}
-
-	/**
-	 * Constructs a Bridge object, initializing its fields and mapping smart
-	 * contracts from the specified ABI and bytecode directories. It creates
-	 * `SmartContract` objects for any contracts that have matching ABI and
-	 * bytecode files.
-	 *
-	 * @param bytecodeDirectoryPath the path to the directory containing
-	 *                                  bytecode files
-	 * @param abiDirectoryPath      the path to the directory containing ABI
-	 *                                  files
-	 * @param name                  the name of the bridge
-	 */
-	public Bridge(Path bytecodeDirectoryPath, Path abiDirectoryPath, String name) {
-		this(name);
 		Map<String, Path> abiFiles = mapFilesByName(abiDirectoryPath, ".abi");
 		Map<String, Path> bytecodeFiles = mapFilesByName(bytecodeDirectoryPath, ".bytecode");
 
@@ -76,6 +63,12 @@ public class Bridge implements Iterable<SmartContract> {
 			}
 		}
 		log.info("Created bridge {} with {} contracts.", name, contracts.size());
+
+		if (policyPath != null)
+			loadPolicy(policyPath);
+		else
+			log.info("Created bridge without policy. Using default policy");
+
 	}
 
 	public String getName() {
@@ -102,6 +95,24 @@ public class Bridge implements Iterable<SmartContract> {
 
 	public EVMCFG getXCFG() {
 		return xCFG;
+	}
+
+	public List<Pair<String, String>> getPolicy() {
+		return policy;
+	}
+
+	public boolean hasEventFunctionMapping(String event) {
+		for (Pair<String, String> pair : policy)
+			if (pair.getLeft().equals(event))
+				return true;
+		return false;
+	}
+
+	public String getFunctionForEvent(String event) {
+		for (Pair<String, String> pair : policy)
+			if (pair.getLeft().equals(event))
+				return pair.getRight();
+		return null;
 	}
 
 	public void addEdges(Set<Edge> edges) {
@@ -165,6 +176,34 @@ public class Bridge implements Iterable<SmartContract> {
 		return xCFG;
 	}
 
+	private void loadPolicy(Path policyPath) {
+		try {
+			log.info("Loading policy from: {}", policyPath);
+			String content = Files.readString(policyPath);
+			JSONObject policyJson = new JSONObject(content);
+
+			if (policyJson.has("policy")) {
+				JSONArray eventFunctionPairs = policyJson.getJSONArray("policy");
+
+				for (int i = 0; i < eventFunctionPairs.length(); i++) {
+					JSONObject pair = eventFunctionPairs.getJSONObject(i);
+					String event = pair.getString("event");
+					String function = pair.getString("function");
+					policy.add(Pair.of(event, function));
+				}
+
+				log.info("Loaded {} event-function pairs from policy.", policy.size());
+				log.debug("Policy: {}", policy);
+			} else {
+				log.warn("Policy file does not contain 'policy' array.");
+			}
+		} catch (IOException e) {
+			log.error("Error reading policy file: {}", e.getMessage());
+		} catch (Exception e) {
+			log.error("Error parsing policy JSON: {}", e.getMessage());
+		}
+	}
+
 	/**
 	 * Scans a directory for files with a given extension and maps them by their
 	 * base name. The base name is derived from the file name without its
@@ -204,8 +243,14 @@ public class Bridge implements Iterable<SmartContract> {
 			contractsArray.put(contract.toJson());
 		}
 
+		JSONObject policyJson = new JSONObject();
+		for (Pair<String, String> pair : policy) {
+			policyJson.put(pair.getLeft(), pair.getRight());
+		}
+
 		json.put("name", name);
 		json.put("smart_contracts", contractsArray);
+		json.put("policy", policyJson);
 		json.put("bridge_vulnerabilities", _vulnerabilities != null ? _vulnerabilities.toJson() : new JSONArray());
 		return json;
 	}

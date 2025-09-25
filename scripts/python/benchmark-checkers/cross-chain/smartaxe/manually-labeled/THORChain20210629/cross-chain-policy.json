@@ -1,0 +1,76 @@
+{
+  "policy": [
+    {
+      "event": "Deposit",
+      "function": "deposit"
+    },
+    {
+      "event": "Deposit",
+      "function": "depositWithExpiry"
+    },
+    {
+      "event": "TransferOut",
+      "function": "transferOut"
+    },
+    {
+      "event": "TransferOut",
+      "function": "batchTransferOut"
+    },
+    {
+      "event": "TransferAllowance",
+      "function": "transferAllowance"
+    },
+    {
+      "event": "VaultTransfer",
+      "function": "returnVaultAssets"
+    },
+    {
+      "event": "TransferOutAndCall",
+      "function": "transferOutAndCall"
+    },
+    {
+      "event": "Outbound",
+      "function": "transferOut"
+    },
+    {
+      "event": "Deposited",
+      "function": "depositIncentives"
+    },
+    {
+      "event": "Deposited",
+      "function": "depositBatchIncentives"
+    },
+    {
+      "event": "Deposited",
+      "function": "_depositAndSync"
+    },
+    {
+      "event": "Transfer",
+      "function": "_transfer"
+    },
+    {
+      "event": "Transfer",
+      "function": "_mint"
+    },
+    {
+      "event": "Transfer",
+      "function": "_burn"
+    },
+    {
+      "event": "Approval",
+      "function": "_approve"
+    },
+    {
+      "event": "OwnershipTransferred",
+      "function": "constructor"
+    },
+    {
+      "event": "OwnershipTransferred",
+      "function": "renounceOwnership"
+    },
+    {
+      "event": "OwnershipTransferred",
+      "function": "transferOwnership"
+    }
+  ]
+}

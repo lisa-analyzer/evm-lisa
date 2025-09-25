@@ -192,9 +192,14 @@ public class EVMLiSA {
 		if (cmd.hasOption("cross-chain-analysis")
 				&& cmd.hasOption("bytecode-directory-path")
 				&& cmd.hasOption("abi-directory-path")) {
+			Path policyPath = null;
+			if (cmd.hasOption("cross-chain-policy"))
+				policyPath = Path.of(cmd.getOptionValue("cross-chain-policy"));
+
 			xEVMLiSA.runAnalysis(
 					Path.of(cmd.getOptionValue("bytecode-directory-path")),
-					Path.of(cmd.getOptionValue("abi-directory-path")));
+					Path.of(cmd.getOptionValue("abi-directory-path")),
+					policyPath);
 			return;
 		}
 
@@ -969,6 +974,13 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option crossChainPolicyOption = Option.builder()
+				.longOpt("cross-chain-policy")
+				.desc("Import a cross-chain policy.")
+				.required(false)
+				.hasArg(true)
+				.build();
+
 		Option crossChainBytecodeDirectoryPathOption = Option.builder()
 				.longOpt("bytecode-directory-path")
 				.desc("Directory path of bytecode files.")
@@ -1013,6 +1025,7 @@ public class EVMLiSA {
 		options.addOption(enableCrossChainAnalysisOption);
 		options.addOption(crossChainBytecodeDirectoryPathOption);
 		options.addOption(crossChainAbiDirectoryPathOption);
+		options.addOption(crossChainPolicyOption);
 
 		return options;
 	}

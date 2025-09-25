@@ -55,7 +55,7 @@ public class SmartaxeBenchmark {
 					String name = dir.getFileName().toString();
 
 					EVMLiSA.setWorkingDirectory(workingDirectory.resolve(name));
-					bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, name));
+					bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, null, name));
 				}
 			}
 		} catch (IOException e) {

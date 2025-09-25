@@ -26,6 +26,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Future;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -34,21 +35,11 @@ import org.json.JSONObject;
 public class xEVMLiSA {
 	private static final Logger log = LogManager.getLogger(xEVMLiSA.class);
 
-	/**
-	 * Runs analysis by initializing a bridge using the specified bytecode
-	 * directory path and ABI directory path, and then invoking the
-	 * analyzeBridge method on the bridge.
-	 *
-	 * @param bytecodeDirectoryPath The path to the directory containing the
-	 *                                  smart contract bytecode files.
-	 * @param abiDirectoryPath      The path to the directory containing the ABI
-	 *                                  (Application Binary Interface) files.
-	 */
-	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath) {
+	public static void runAnalysis(Path bytecodeDirectoryPath, Path abiDirectoryPath, Path policyPath) {
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() - 1);
 
-		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath);
+		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath, policyPath);
 
 		analyzeBridge(bridge);
 
@@ -102,7 +93,7 @@ public class xEVMLiSA {
 				for (Signature event : contractSource.getEventsSignature()) {
 					for (Signature function : contractDestination.getFunctionsSignature()) {
 
-						if (xEVMLiSA.defaultPolicy(event, function)) {
+						if (xEVMLiSA.applyPolicy(bridge.getPolicy(), event, function)) {
 							functionsUsed.add(function.getFullSignature());
 							eventUsed.add(event.getFullSignature());
 
@@ -139,17 +130,18 @@ public class xEVMLiSA {
 		return crossChainEdges;
 	}
 
-	/**
-	 * Matches events and functions by name.
-	 *
-	 * @param event    The event signature to compare with the function's name.
-	 * @param function The function signature whose name will be compared with
-	 *                     the event's name.
-	 * 
-	 * @return True if the names match, false otherwise.
-	 */
-	public static boolean defaultPolicy(Signature event, Signature function) {
-		return event.getName().equalsIgnoreCase(function.getName());
+	public static boolean applyPolicy(List<Pair<String, String>> policy, Signature event, Signature function) {
+		if (policy == null || policy.isEmpty())
+			return event.getName().equalsIgnoreCase(function.getName());
+
+		for (Pair<String, String> pair : policy) {
+			String eventPolicy = pair.getLeft();
+			String functionPolicy = pair.getRight();
+			if (eventPolicy.equalsIgnoreCase(event.getName())
+					&& functionPolicy.equalsIgnoreCase(function.getName()))
+				return true;
+		}
+		return false;
 	}
 
 	/**
