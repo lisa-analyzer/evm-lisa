@@ -203,16 +203,24 @@ public class AbstractStack
 	}
 
 	/**
-	 * Get a specific element of the stack.
+	 * Retrieves the element from the stack at the specified position. The
+	 * position is calculated from the top of the stack, where the top is at
+	 * position 1. If the stack state is {@code BOTTOM},
+	 * {@code StackElement.BOTTOM} is returned. If the stack state is
+	 * {@code TOP}, {@code StackElement.TOP} is returned.
 	 *
-	 * @param index the index of the element
-	 * 
-	 * @return the StackElement at the given index, or BOTTOM if out of bounds
+	 * @param position the position of the element to retrieve from the stack
+	 *
+	 * @return the element at the specified position in the stack
 	 */
-	public StackElement get(int index) {
-		if (index < 0 || index >= STACK_LIMIT) // not valid index
+	public StackElement getElementAtPosition(int position) {
+		if (position < 1 || position > STACK_LIMIT)
+			throw new IllegalArgumentException("Invalid position: " + position);
+		if (isBottom())
 			return StackElement.BOTTOM;
-		return circularArray[(head + index) % STACK_LIMIT];
+		else if (isTop())
+			return StackElement.TOP;
+		return circularArray[(tail - position + STACK_LIMIT) % STACK_LIMIT];
 	}
 
 	@Override

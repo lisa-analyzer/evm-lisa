@@ -46,7 +46,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 
 	/**
 	 * Builds a stack element, that can be either top or bottom.
-	 * 
+	 *
 	 * @param isTop    if it is the top abstract element
 	 * @param isBottom if it is the bottom abstract element
 	 */
@@ -56,7 +56,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 
 	/**
 	 * Builds a stack element.
-	 * 
+	 *
 	 * @param n        the number of this stack element
 	 * @param isTop    if it is the top abstract element
 	 * @param isBottom if it is the bottom abstract element
@@ -69,7 +69,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 
 	/**
 	 * Builds a stack element starting from a number.
-	 * 
+	 *
 	 * @param n the number
 	 */
 	public StackElement(Number n) {
@@ -78,7 +78,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 
 	/**
 	 * Builds a stack element starting from an integer.
-	 * 
+	 *
 	 * @param i the integer value
 	 */
 	public StackElement(int i) {
@@ -87,7 +87,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 
 	/**
 	 * Builds a stack element starting from a big integer.
-	 * 
+	 *
 	 * @param i the big integer value
 	 */
 	public StackElement(BigInteger i) {
@@ -150,6 +150,27 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 		return n.toString();
 	}
 
+	/**
+	 * Returns a hexadecimal string representation of this stack element. For
+	 * special elements, returns their corresponding string representations. For
+	 * numeric elements, converts the underlying number to a hexadecimal string.
+	 *
+	 * @return a string representing this stack element in hexadecimal format,
+	 *             or a special marker string for abstract elements
+	 */
+	public String toHexString() {
+		if (isTop())
+			return Lattice.TOP_STRING;
+
+		if (isTopNotJumpdest())
+			return "#TOPNJD#";
+
+		if (isBottom())
+			return Lattice.BOTTOM_STRING;
+
+		return n.toHexString();
+	}
+
 	@Override
 	public StackElement glbAux(StackElement other) throws SemanticException {
 		return bottom();
@@ -198,7 +219,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * elements being summed.
 	 *
 	 * @param other the other {@code StackElement} to be summed with this one
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the sum of this element
 	 *             and the given element, accounting for conditions such as
 	 *             "top" or "bottom" states
@@ -225,7 +246,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * subtraction.
 	 *
 	 * @param other the {@code StackElement} to subtract from this element
-	 * 
+	 *
 	 * @return the resulting {@code StackElement} after subtraction
 	 */
 	public StackElement sub(StackElement other) {
@@ -254,7 +275,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * modulo operation using the maximum allowed value.
 	 *
 	 * @param other the StackElement to multiply this StackElement by
-	 * 
+	 *
 	 * @return a new StackElement representing the product of this StackElement
 	 *             and the provided one
 	 */
@@ -285,7 +306,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * Otherwise, the element values are divided numerically.
 	 *
 	 * @param other the divisor stack element
-	 * 
+	 *
 	 * @return a new stack element resulting from the division, or a predefined
 	 *             element based on the conditions described above
 	 */
@@ -311,7 +332,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * whether either of the stack elements is top, bottom, or a specific value.
 	 *
 	 * @param other the stack element to divide this stack element by
-	 * 
+	 *
 	 * @return the result of the signed division as a new stack element
 	 */
 	public StackElement sdiv(StackElement other) {
@@ -343,7 +364,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * specific numerical values.
 	 *
 	 * @param other the {@code StackElement} to compute the modulus with
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the modulus
 	 *             operation. Returns {@code bottom()}, {@code top()},
 	 *             {@code NOT_JUMPDEST_TOP}, or other specific
@@ -375,7 +396,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * @param that  the first {@code StackElement} to be added
 	 * @param other the second {@code StackElement} used in the modulus
 	 *                  operation
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the modular addition
 	 *             result. Returns special stack elements, such as
 	 *             {@code bottom()}, {@code top()}, or {@code NOT_JUMPDEST_TOP},
@@ -408,7 +429,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 *
 	 * @param that  the {@code StackElement} to multiply this element with
 	 * @param other the {@code StackElement} to use as the modulus
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the modular
 	 *             multiplication result. Depending on the states of the
 	 *             provided elements, the result could be {@code bottom()},
@@ -438,7 +459,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * depends on the properties and states of the involved elements.
 	 *
 	 * @param other the {@code StackElement} representing the exponent
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the
 	 *             exponentiation. Specific cases are handled as follows: - If
 	 *             either the base or the exponent is the bottom element,
@@ -477,7 +498,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * "bottom" abstract elements or specific numeric values.
 	 *
 	 * @param other the {@code StackElement} to compare with this element
-	 * 
+	 *
 	 * @return a {@code StackElement} representing the result of the comparison:
 	 *             - {@code BOTTOM} if either operand is the bottom abstract
 	 *             element - {@code NOT_JUMPDEST_TOP} if either operand is the
@@ -506,7 +527,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * whether it is top, bottom, or a specific value.
 	 *
 	 * @param other the {@code StackElement} to compare against this one
-	 * 
+	 *
 	 * @return a {@code StackElement} representing the result of the comparison:
 	 *             - {@code BOTTOM} if either element is the bottom element -
 	 *             {@code NOT_JUMPDEST_TOP} if one of the elements is a top or
@@ -542,7 +563,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 *
 	 * @param other the {@code StackElement} to compare with this
 	 *                  {@code StackElement}
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the
 	 *             equality comparison: {@code BOTTOM},
 	 *             {@code NOT_JUMPDEST_TOP}, {@code ONE}, or {@code ZERO}
@@ -568,7 +589,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * specific values like zero).
 	 *
 	 * @param other the {@code StackElement} to perform the AND operation with
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the AND
 	 *             operation. The resulting element is determined by the
 	 *             following conditions: - Returns {@code bottom()} if either
@@ -604,7 +625,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * numeric values of the elements.
 	 *
 	 * @param other the {@code StackElement} to logically "or" with this one
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the logical
 	 *             "or" operation
 	 */
@@ -631,7 +652,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * performed on their numeric values.
 	 *
 	 * @param other the {@code StackElement} to be XORed with this element
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the XOR
 	 *             operation, or a specific predefined element based on the
 	 *             conditions described above
@@ -686,7 +707,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * performed as a signed comparison over 256-bit numbers.
 	 *
 	 * @param other the {@code StackElement} to compare this element against
-	 * 
+	 *
 	 * @return a {@code StackElement} which is {@code ONE} if this element is
 	 *             less than the given one, {@code ZERO} otherwise. Returns
 	 *             specific predefined results in case of top, bottom, or
@@ -721,7 +742,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 *
 	 * @param other the {@code StackElement} to compare this
 	 *                  {@code StackElement} with
-	 * 
+	 *
 	 * @return a new {@code StackElement} representing the result of the
 	 *             comparison: {@code ONE} if this element is greater than
 	 *             {@code other}, {@code ZERO} otherwise. Returns predefined
@@ -756,7 +777,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 *
 	 * @param other the {@code StackElement} whose value is used as the shift
 	 *                  amount
-	 * 
+	 *
 	 * @return a new {@code StackElement} resulting from the left-shift
 	 *             operation or a special {@code StackElement} (e.g., bottom,
 	 *             top) in certain cases
@@ -784,7 +805,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 *
 	 * @param other The stack element that specifies the number of positions to
 	 *                  shift to the right. It must not be null.
-	 * 
+	 *
 	 * @return The resulting StackElement after performing the shift operation.
 	 *             Returns a "bottom" StackElement if the operation is invalid
 	 *             or if either of the StackElements involved indicate a
@@ -816,7 +837,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 *
 	 * @param other the stack element with which this stack element is to be
 	 *                  processed using the arithmetic shift-right operation.
-	 * 
+	 *
 	 * @return a new stack element resulting from the arithmetic shift-right
 	 *             operation, or a special stack element (bottom, top,
 	 *             NOT_JUMPDEST_TOP) based on predefined conditions.
@@ -844,10 +865,10 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	 * big-endian integer.
 	 *
 	 * @param bytes a 32-element array of AbstractByte instances
-	 * 
+	 *
 	 * @return a StackElement whose numeric value corresponds to the byte values
 	 *             of the provided AbstractByte array
-	 * 
+	 *
 	 * @throws IllegalArgumentException if the input array is null or its length
 	 *                                      is not exactly 32 elements
 	 */
@@ -866,7 +887,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	/**
 	 * Checks whether this set it is definitely evaluated to {@code true}, i.e.,
 	 * if it does not contain zero.
-	 * 
+	 *
 	 * @return {@code true} if this set does not contain zero, {@code false}
 	 *             otherwise.
 	 */
@@ -879,7 +900,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 	/**
 	 * Checks whether this set it is definitely evaluated to {@code false},
 	 * i.e., if it is equal to zero.
-	 * 
+	 *
 	 * @return {@code true} if this set is zero, {@code false} otherwise.
 	 */
 	public boolean isDefinitelyFalse() {
@@ -890,7 +911,7 @@ public class StackElement implements BaseLattice<StackElement>, Comparable<Stack
 
 	/**
 	 * Checks whether the Boolean value of this set cannot be determined.
-	 * 
+	 *
 	 * @return {@code true} if the Boolean value of this set cannot be
 	 *             determined, {@code false} otherwise
 	 */

@@ -7,6 +7,7 @@ import it.unipr.cfg.*;
 import it.unipr.crosschain.checker.*;
 import it.unipr.crosschain.edges.ConservativeCrossChainEdge;
 import it.unipr.crosschain.edges.CrossChainEdge;
+import it.unipr.crosschain.events.EventKnowledge;
 import it.unipr.crosschain.taint.*;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;

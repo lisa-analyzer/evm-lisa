@@ -1,4 +1,4 @@
-package it.unipr.crosschain;
+package it.unipr.crosschain.events;
 
 import it.unipr.analysis.contract.Signature;
 import java.util.Arrays;

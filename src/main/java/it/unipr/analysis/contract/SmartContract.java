@@ -1,10 +1,21 @@
 package it.unipr.analysis.contract;
 
 import it.unipr.EVMLiSA;
+import it.unipr.analysis.EVMAbstractState;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
+import it.unipr.crosschain.events.EventExitpointComputer;
 import it.unipr.frontend.EVMFrontend;
+import it.unipr.frontend.EVMLiSAFeatures;
+import it.unipr.frontend.EVMLiSATypeSystem;
 import it.unipr.utils.*;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +112,7 @@ public class SmartContract {
 	 * and ABI from Etherscan if not available locally.
 	 *
 	 * @param address Ethereum address of the contract.
-	 * 
+	 *
 	 * @throws IllegalArgumentException If the address is invalid.
 	 */
 	public SmartContract(String address) {
@@ -189,7 +200,7 @@ public class SmartContract {
 	 * Constructs a SmartContract from a bytecode file.
 	 *
 	 * @param bytecodeFilePath Path to the bytecode file.
-	 * 
+	 *
 	 * @throws IllegalArgumentException If bytecodeFilePath is null.
 	 */
 	public SmartContract(Path bytecodeFilePath) {
@@ -232,7 +243,7 @@ public class SmartContract {
 	 *
 	 * @param bytecodeFilePath Path to the bytecode file.
 	 * @param abiFilePath      Path to the ABI file.
-	 * 
+	 *
 	 * @throws IllegalArgumentException If either path is null.
 	 */
 	public SmartContract(Path bytecodeFilePath, Path abiFilePath) {
@@ -411,7 +422,7 @@ public class SmartContract {
 	 * Sets the contract address.
 	 *
 	 * @param address The contract address.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setAddress(String address) {
@@ -423,9 +434,9 @@ public class SmartContract {
 	 * Sets the contract bytecode and generates the mnemonic representation.
 	 *
 	 * @param bytecode The raw bytecode.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
-	 * 
+	 *
 	 * @throws IllegalArgumentException If bytecode is null.
 	 */
 	public SmartContract setBytecode(String bytecode) {
@@ -459,7 +470,7 @@ public class SmartContract {
 	 * Sets the contract ABI.
 	 *
 	 * @param abi The ABI as a JSONArray.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setAbi(JSONArray abi) {
@@ -513,7 +524,7 @@ public class SmartContract {
 	 * Sets the control flow graph and extracts basic blocks.
 	 *
 	 * @param cfg The {@link EVMCFG} to set.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setCFG(EVMCFG cfg) {
@@ -531,7 +542,7 @@ public class SmartContract {
 	 * Sets the statistical information.
 	 *
 	 * @param statistics Statistical object.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setStatistics(StatisticsObject<?> statistics) {
@@ -543,7 +554,7 @@ public class SmartContract {
 	 * Sets the vulnerabilities object.
 	 *
 	 * @param vulnerabilities Vulnerabilities object.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setVulnerabilities(VulnerabilitiesObject vulnerabilities) {
@@ -555,7 +566,7 @@ public class SmartContract {
 	 * Sets the path to the ABI file.
 	 *
 	 * @param abiFilePath Path to the ABI file.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setAbiFilePath(Path abiFilePath) {
@@ -567,7 +578,7 @@ public class SmartContract {
 	 * Sets the path to the bytecode file.
 	 *
 	 * @param bytecodeFilePath Path to the bytecode file.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setBytecodeFilePath(Path bytecodeFilePath) {
@@ -579,7 +590,7 @@ public class SmartContract {
 	 * Sets the function signatures.
 	 *
 	 * @param functionsSignature Set of function signatures.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setFunctionsSignature(Set<Signature> functionsSignature) {
@@ -591,7 +602,7 @@ public class SmartContract {
 	 * Sets the event signatures.
 	 *
 	 * @param eventsSignature Set of event signatures.
-	 * 
+	 *
 	 * @return This SmartContract instance for method chaining.
 	 */
 	public SmartContract setEventsSignature(Set<Signature> eventsSignature) {
@@ -677,10 +688,12 @@ public class SmartContract {
 	}
 
 	/**
-	 * Computes and registers event exit points for this smart contract. This
-	 * method sets up a LiSA analysis environment and runs the
-	 * {@code EventsExitPointsComputer} to identify statements where events
-	 * exit.
+	 * Computes the exit points for each event signature in the contract. This
+	 * method performs a semantic analysis using LiSA to identify Log statements
+	 * (Log1, Log2, Log3, Log4) that emit events matching the known event
+	 * signatures. The analysis examines the stack state at each Log instruction
+	 * to match topic values against event selectors, then registers matching
+	 * statements as exit points.
 	 */
 	public void computeEventsExitPoints() {
 		if (_eventsSignature == null) {
@@ -688,15 +701,17 @@ public class SmartContract {
 			return;
 		}
 
-		Set<Statement> logStatements = _cfg.getAllLogX();
-		for (Signature signature : _eventsSignature) {
-			for (Statement eventEntryPoint : signature.getEntryPoints()) {
-				for (Statement logStatement : logStatements) {
-					if (_cfg.reachableFrom(eventEntryPoint, logStatement))
-						signature.addExitPoint(logStatement);
-				}
-			}
-		}
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(_cfg);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
+		LiSA lisa = new LiSA(conf);
+
+		EventExitpointComputer checker = new EventExitpointComputer(_eventsSignature);
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new EVMAbstractState(_address),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
 	}
 
 	/**

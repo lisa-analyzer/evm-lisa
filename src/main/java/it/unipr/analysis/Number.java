@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * Custom class representing a number that can be implemented as an {@code int},
  * {@code long}, or {@code BigInteger}.
- * 
+ *
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  * @author <a href="mailto:saveriomattia.merenda@studenti.unipr.it">Mattia
  *             Merenda</a>
@@ -30,7 +30,7 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Builds a number starting from an integer value.
-	 * 
+	 *
 	 * @param i the integer value
 	 */
 	public Number(int i) {
@@ -50,7 +50,7 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Yields the backing implementation of the number.
-	 * 
+	 *
 	 * @return the backing implementation of the number
 	 */
 	public Type getType() {
@@ -62,7 +62,7 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Yields the integer value.
-	 * 
+	 *
 	 * @return the integer value
 	 */
 	public int getInt() {
@@ -71,7 +71,7 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Yields the big integer value.
-	 * 
+	 *
 	 * @return the big integer value
 	 */
 	public BigInteger getBigInteger() {
@@ -90,9 +90,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Adds two numbers and returns the result as a {@code Number}.
-	 * 
+	 *
 	 * @param other the number to add
-	 * 
+	 *
 	 * @return the sum as a {@code Number}
 	 */
 	public Number add(Number other) {
@@ -107,9 +107,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Subtracts another number from this one and returns the result.
-	 * 
+	 *
 	 * @param other the number to subtract
-	 * 
+	 *
 	 * @return the result as a {@code Number}
 	 */
 	public Number subtract(Number other) {
@@ -124,9 +124,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Multiplies this number by another.
-	 * 
+	 *
 	 * @param other the number to multiply by
-	 * 
+	 *
 	 * @return the product as a {@code Number}
 	 */
 	public Number multiply(Number other) {
@@ -137,9 +137,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Multiplies this number by another.
-	 * 
+	 *
 	 * @param other the number to multiply by
-	 * 
+	 *
 	 * @return the product as a {@code Number}
 	 */
 	public Number divide(Number other) {
@@ -153,9 +153,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Performs bitwise AND between two numbers.
-	 * 
+	 *
 	 * @param other the number to AND with
-	 * 
+	 *
 	 * @return the result as a {@code Number}
 	 */
 	public Number and(Number other) {
@@ -166,9 +166,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Performs bitwise OR between two numbers.
-	 * 
+	 *
 	 * @param other the number to OR with
-	 * 
+	 *
 	 * @return the result as a {@code Number}
 	 */
 	public Number or(Number other) {
@@ -179,9 +179,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Performs bitwise XOR between two numbers.
-	 * 
+	 *
 	 * @param other the number to XOR with
-	 * 
+	 *
 	 * @return the result as a {@code Number}
 	 */
 	public Number xor(Number other) {
@@ -204,7 +204,7 @@ public class Number implements Comparable<Number> {
 	 * Computes the modulo of this number by another number.
 	 *
 	 * @param other the number to divide by
-	 * 
+	 *
 	 * @return the result as a {@code Number}
 	 */
 	public Number modulo(Number other) {
@@ -215,7 +215,7 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Converts this number into a byte array.
-	 * 
+	 *
 	 * @return the byte array representation
 	 */
 	public byte[] toByteArray() {
@@ -225,9 +225,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Shifts this number right by a specified number of bits.
-	 * 
+	 *
 	 * @param other the number of positions to shift
-	 * 
+	 *
 	 * @return the shifted number
 	 */
 	public Number shiftRight(int other) {
@@ -237,9 +237,9 @@ public class Number implements Comparable<Number> {
 
 	/**
 	 * Shifts this number left by a specified number of bits.
-	 * 
+	 *
 	 * @param other the number of positions to shift
-	 * 
+	 *
 	 * @return the shifted number
 	 */
 	public Number shiftLeft(int other) {
@@ -256,6 +256,15 @@ public class Number implements Comparable<Number> {
 		if (b != null)
 			return b.toString();
 		return i + "";
+	}
+
+	/**
+	 * Converts this number to a hexadecimal string representation.
+	 *
+	 * @return the hexadecimal string representation of this number
+	 */
+	public String toHexString() {
+		return toBigInteger(this).toString(16);
 	}
 
 	@Override
