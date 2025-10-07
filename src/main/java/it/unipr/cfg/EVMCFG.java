@@ -803,12 +803,11 @@ public class EVMCFG extends CFG {
 
 	/**
 	 * Retrieves all statements of the specified types that lie on any
-	 * control‑flow path between two given statements in the CFG.
-	 * <p>
-	 * This method performs a depth‑first traversal from the {@code start}
-	 * statement until reaching the {@code target}. Along every explored path,
-	 * it collects any intermediate statements whose runtime class matches one
-	 * of the provided types.
+	 * control‑flow path between two given statements in the CFG. This method
+	 * performs a depth‑first traversal from the {@code start} statement until
+	 * reaching the {@code target}. Along every explored path, it collects any
+	 * intermediate statements whose runtime class matches one of the provided
+	 * types.
 	 *
 	 * @param start    the entry point of the search
 	 * @param target   the termination point of the search

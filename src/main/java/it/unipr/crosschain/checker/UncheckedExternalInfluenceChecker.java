@@ -27,17 +27,13 @@ import org.apache.logging.log4j.Logger;
  * emission without proper verification. It operates by tracking tainted values
  * from external sources (e.g., CALLDATALOAD, CALLDATACOPY) and checking if
  * these values propagate to event parameters without encountering a validation
- * step (e.g., via a JUMPI). The checker performs the following:
- * <ul>
- * <li>Phase 1: Iterates through the CFG to record JUMPI nodes that exhibit
- * tainted values.</li>
- * <li>Phase 2: For each log event node, analyzes the tainted stack to determine
- * if a definite or possible violation exists based on the propagation of
- * unvalidated external inputs.</li>
- * </ul>
- * Definite violations are raised when tainted values are confirmed, while
- * possible violations are flagged when the values are indeterminate (marked as
- * TOP).
+ * step (e.g., via a JUMPI). The checker performs the following: Phase 1:
+ * Iterates through the CFG to record JUMPI nodes that exhibit tainted values.
+ * Phase 2: For each log event node, analyzes the tainted stack to determine if
+ * a definite or possible violation exists based on the propagation of
+ * unvalidated external inputs. Definite violations are raised when tainted
+ * values are confirmed, while possible violations are flagged when the values
+ * are indeterminate (marked as TOP).
  *
  * @see TaintAbstractDomain
  */
@@ -61,7 +57,7 @@ public class UncheckedExternalInfluenceChecker implements
 	 *
 	 * @param tool  the analysis tool providing semantic check results
 	 * @param graph the control-flow graph (CFG) of the smart contract
-	 * 
+	 *
 	 * @return always returns true after processing all nodes
 	 */
 	@Override
@@ -107,7 +103,7 @@ public class UncheckedExternalInfluenceChecker implements
 	 * @param tool  the analysis tool providing semantic check results
 	 * @param graph the control-flow graph (CFG) of the smart contract
 	 * @param node  the log node to analyze
-	 * 
+	 *
 	 * @return always returns true after processing the node
 	 */
 	@Override

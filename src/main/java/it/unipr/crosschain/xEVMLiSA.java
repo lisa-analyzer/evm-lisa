@@ -265,16 +265,11 @@ public class xEVMLiSA {
 
 	/**
 	 * Executes the Local Dependency analysis for all contracts in the given
-	 * bridge.
-	 * <p>
-	 * This method performs three phases in parallel across all contracts:
-	 * <ol>
-	 * <li>Identify vulnerable LOG statements for the Local Dependency
-	 * Checker.</li>
-	 * <li>Mark any CALLDATALOAD sites reachable from those LOGs as
-	 * tainted.</li>
-	 * <li>Run the core Local Dependency Checker logic on each contract.</li>
-	 * </ol>
+	 * bridge. This method performs three phases in parallel across all
+	 * contracts: (i) Identify vulnerable LOG statements for the Local
+	 * Dependency Checker. (ii) Mark any CALLDATALOAD sites reachable from those
+	 * LOGs as tainted. (iii) Run the core Local Dependency Checker logic on
+	 * each contract.
 	 *
 	 * @param bridge the Bridge instance whose contracts will be analyzed
 	 */
@@ -303,9 +298,8 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the Unchecked External Influence Checker on a single contract.
-	 * <p>
-	 * This sets up the LiSA analysis environment, registers the
+	 * Runs the Unchecked External Influence Checker on a single contract. This
+	 * sets up the LiSA analysis environment, registers the
 	 * UncheckedExternalInfluenceChecker, and executes the analysis to find
 	 * event emit influenced by unvalidated external inputs. Reports definite
 	 * and possible findings to the configured cache.
@@ -338,9 +332,8 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the Unchecked External Call Checker on a single contract.
-	 * <p>
-	 * This configures and invokes LiSA with the UncheckedExternalCallChecker to
+	 * Runs the Unchecked External Call Checker on a single contract. This
+	 * configures and invokes LiSA with the UncheckedExternalCallChecker to
 	 * detect any CALL, STATICCALL or DELEGATECALL instructions whose results
 	 * directly influence event emit without proper validation.
 	 *
@@ -369,18 +362,12 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Executes the Event Order Checker on a single contract.
-	 * <p>
-	 * For each public function:
-	 * <ul>
-	 * <li>Follow only successful return paths (STOP for void, RETURN
-	 * otherwise).</li>
-	 * <li>Collect any SSTORE and LOG instructions on that path.</li>
-	 * <li>If LOGs occur without a preceding SSTORE, flag an event-order
-	 * issue.</li>
-	 * <li>Classify as definite if across a cross‑chain edge, else
-	 * possible.</li>
-	 * </ul>
+	 * Executes the Event Order Checker on a single contract. For each public
+	 * function: (i) Follow only successful return paths (STOP for void, RETURN
+	 * otherwise). (ii) Collect any SSTORE and LOG instructions on that path.
+	 * (iii) If LOGs occur without a preceding SSTORE, flag an event-order
+	 * issue. (iv) Classify as definite if across a cross‑chain edge, else
+	 * possible.
 	 *
 	 * @param bridge   the Bridge providing the cross-chain CFG context
 	 * @param contract the specific SmartContract to analyze
@@ -479,17 +466,12 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Executes the Missing Event Notification Checker on a single contract.
-	 * <p>
-	 * For each public function:
-	 * <ul>
-	 * <li>Follow only successful return paths (STOP for void, RETURN
-	 * otherwise).</li>
-	 * <li>Identify any SSTORE instructions on that path.</li>
-	 * <li>Ensure that each such SSTORE is followed by at least one LOG before
-	 * termination.</li>
-	 * <li>Flag any missing notifications as vulnerabilities.</li>
-	 * </ul>
+	 * Executes the Missing Event Notification Checker on a single contract. For
+	 * each public function: (i) Follow only successful return paths (STOP for
+	 * void, RETURN otherwise). (ii) Identify any SSTORE instructions on that
+	 * path. (iii) Ensure that each such SSTORE is followed by at least one LOG
+	 * before termination. (iv) Flag any missing notifications as
+	 * vulnerabilities.
 	 *
 	 * @param contract the SmartContract to analyze for missing event logs
 	 */

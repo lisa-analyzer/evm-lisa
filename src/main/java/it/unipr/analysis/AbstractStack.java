@@ -41,17 +41,14 @@ public class AbstractStack
 
 	/**
 	 * The index representing the beginning of the logical stack in the circular
-	 * array.
-	 * <p>
-	 * This pointer indicates the position in the array that corresponds to the
-	 * bottom of the stack. Tracks the index of the oldest element in the
+	 * array. This pointer indicates the position in the array that corresponds
+	 * to the bottom of the stack. Tracks the index of the oldest element in the
 	 * circular array.
 	 */
 	private int head;
 
 	/**
 	 * The index representing the next insertion point in the circular array.
-	 * <p>
 	 * This pointer is used to identify the top of the stack, where the next
 	 * element will be pushed.
 	 */
@@ -249,12 +246,10 @@ public class AbstractStack
 	}
 
 	/**
-	 * Pushes the specified element onto the stack.
-	 * <p>
-	 * This method inserts the given {@link StackElement} at the tail of the
-	 * circular array, effectively updating the top of the stack. The head of
-	 * the stack is also updated to maintain the circular nature of the
-	 * structure.
+	 * Pushes the specified element onto the stack. This method inserts the
+	 * given {@link StackElement} at the tail of the circular array, effectively
+	 * updating the top of the stack. The head of the stack is also updated to
+	 * maintain the circular nature of the structure.
 	 *
 	 * @param element the element to be pushed onto the stack
 	 */
@@ -265,13 +260,12 @@ public class AbstractStack
 	}
 
 	/**
-	 * Pops the element from the stack.
-	 * <p>
-	 * This method removes and returns the topmost element of the stack. After
-	 * popping, the stack structure is adjusted by shifting the head, and the
-	 * previous bottommost element is updated based on the next element. If the
-	 * next element is {@link StackElement#TOP}, the bottom is set to TOP,
-	 * otherwise, it is set to {@link StackElement#BOTTOM}.
+	 * Pops the element from the stack. This method removes and returns the
+	 * topmost element of the stack. After popping, the stack structure is
+	 * adjusted by shifting the head, and the previous bottommost element is
+	 * updated based on the next element. If the next element is
+	 * {@link StackElement#TOP}, the bottom is set to TOP, otherwise, it is set
+	 * to {@link StackElement#BOTTOM}.
 	 *
 	 * @return the element at the top of the stack before popping
 	 */
