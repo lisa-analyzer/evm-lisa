@@ -211,8 +211,6 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 
 	/**
 	 * Logs the statistics of the given {@code StandardStatisticsObject}.
-	 *
-	 * @param statistics the statistics object to log
 	 */
 	@Override
 	public void printStatistics() {

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -190,32 +189,5 @@ public class ABIManager {
 			}
 		}
 		log.info("Total selectors found: {}/{}", counter, signatures.size());
-	}
-
-	// Test
-	public static void main(String[] args) {
-		Path abi = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_2.abi.json");
-		Path bytecode = Paths.get("test-cross-chain-analysis", "test-ABI-function-selector", "buggy_2.bytecode");
-
-		log.info(parseABI(abi, "function"));
-
-		String signature = "returnVaultAssets(address,address,(address,uint256)[],string)";
-		String functionSelector = getFunctionSelector(signature);
-		Set<Signature> signatures = new HashSet<>();
-		signatures.add(
-				new Signature("returnVaultAssets", "function", new ArrayList<>(4), null, signature, functionSelector));
-		verifyFunctionSelectors(signatures, bytecode);
-
-		try {
-			log.info("Parsing functions");
-			Set<Signature> functions = parseFunctionsFromABI(abi);
-			verifyFunctionSelectors(functions, bytecode);
-
-			log.info("Parsing events");
-			Set<Signature> events = parseEventsFromABI(abi);
-			verifyFunctionSelectors(events, bytecode);
-		} catch (Exception e) {
-			log.error("Error reading ABI or bytecode file", e);
-		}
 	}
 }

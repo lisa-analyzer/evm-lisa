@@ -208,8 +208,6 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 
 	/**
 	 * Logs the statistics of the given {@code PaperStatisticsObject}.
-	 *
-	 * @param statistics the statistics object to log
 	 */
 	@Override
 	public void printStatistics() {
