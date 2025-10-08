@@ -46,8 +46,6 @@ public class EventExitpointComputer {
 					assert event.getExitPoints().isEmpty();
 			}
 		}
-
-		EVMLiSAExecutor.shutdown();
 	}
 
 }
