@@ -9,7 +9,7 @@ public class EVMLiSAExecutor {
 	private static final Logger log = LogManager.getLogger(EVMLiSAExecutor.class);
 
 	private static int CORES = (Runtime.getRuntime().availableProcessors() > 1)
-			? Runtime.getRuntime().availableProcessors() - 1
+			? Runtime.getRuntime().availableProcessors() / 4 * 3
 			: 1;
 	private static final ConcurrentMap<Class<?>, ExecutorService> ownerExecutors = new ConcurrentHashMap<>();
 
