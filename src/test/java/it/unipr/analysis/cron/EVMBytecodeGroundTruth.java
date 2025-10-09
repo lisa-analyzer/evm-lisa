@@ -40,9 +40,7 @@ public class EVMBytecodeGroundTruth {
 		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH);
 	}
 
-	@Test
-	@Ignore
-	public void regenerateGroundTruth() throws Exception {
+	private void regenerateGroundTruth() throws Exception {
 		EVMLiSA.disablePaperMode();
 		setupAndRun();
 
@@ -110,9 +108,7 @@ public class EVMBytecodeGroundTruth {
 		assertFalse(changed);
 	}
 
-	@Test
-	@Ignore
-	public void regenerateGroundTruthPaperMode() throws Exception {
+	private void regenerateGroundTruthPaperMode() throws Exception {
 		EVMLiSA.setPaperMode();
 		setupAndRun();
 
