@@ -1,9 +1,8 @@
 package it.unipr.analysis.cron.checker;
 
 import it.unipr.analysis.EVMAbstractState;
-import it.unipr.analysis.taint.TxOriginAbstractDomain;
 import it.unipr.checker.JumpSolver;
-import it.unipr.checker.TxOriginChecker;
+import it.unipr.checker.ReentrancyChecker;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.LiSA;
@@ -21,30 +20,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-public class SolidiFITxOriginTruth {
-	private static final Logger log = LogManager.getLogger(SolidiFITxOriginTruth.class);
+public class SolidiFIReentrancyTruthTest {
+	private static final Logger log = LogManager.getLogger(SolidiFIReentrancyTruthTest.class);
 
 	private ConcurrentMap<Integer, Integer> _resultsBuggy = new ConcurrentHashMap<>();
 	private ConcurrentMap<Integer, Integer> _resultsVanilla = new ConcurrentHashMap<>();
 	private ConcurrentMap<Integer, Integer> _solidifi = new ConcurrentHashMap<>();
 
 	@Test
-	public void testSolidiFITxOriginTruth() throws Exception {
+	public void testSolidiFIReentrancyTruth() throws InterruptedException {
 		setSolidifiMap();
-		int cores = Runtime.getRuntime().availableProcessors() / 4 * 3;
+		int cores = Runtime.getRuntime().availableProcessors() - 1;
 		ExecutorService executor = Executors.newFixedThreadPool(cores > 0 ? cores : 1);
 
 		Path solidifiBuggyBytecodesDirPath = Paths
-				.get("evm-testcases", "ground-truth", "solidifi", "tx-origin-truth", "bytecode");
+				.get("evm-testcases", "ground-truth", "solidifi", "reentrancy-truth", "bytecode");
 		String SOLIDIFI_BUGGY_BYTECODES_DIR = solidifiBuggyBytecodesDirPath.toString();
 		List<String> bytecodes = getFileNamesInDirectory(SOLIDIFI_BUGGY_BYTECODES_DIR);
 
@@ -77,13 +72,11 @@ public class SolidiFITxOriginTruth {
 					lisa.run(program);
 
 					conf.semanticChecks.clear();
-					conf.semanticChecks.add(new TxOriginChecker());
-					conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
-							new TypeEnvironment<>(new InferredTypes()));
+					conf.semanticChecks.add(new ReentrancyChecker());
 					lisa.run(program);
 
 					Integer key = Integer.parseInt(bytecodeFileName.split("\\.")[0]);
-					int value = MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode());
+					int value = MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode());
 
 					_resultsBuggy.put(key, value);
 				} catch (Exception e) {
@@ -126,13 +119,11 @@ public class SolidiFITxOriginTruth {
 					lisa.run(program);
 
 					conf.semanticChecks.clear();
-					conf.semanticChecks.add(new TxOriginChecker());
-					conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new TxOriginAbstractDomain(),
-							new TypeEnvironment<>(new InferredTypes()));
+					conf.semanticChecks.add(new ReentrancyChecker());
 					lisa.run(program);
 
 					Integer key = Integer.parseInt(bytecodeFileName.split("\\.")[0]);
-					int value = MyCache.getInstance().getTxOriginWarnings(checker.getComputedCFG().hashCode());
+					int value = MyCache.getInstance().getReentrancyWarnings(checker.getComputedCFG().hashCode());
 
 					_resultsVanilla.put(key, value);
 				} catch (Exception e) {
@@ -175,10 +166,13 @@ public class SolidiFITxOriginTruth {
 		if (directory.isDirectory()) {
 			File[] files = directory.listFiles();
 
-			if (files != null)
-				for (File file : files)
-					if (file.isFile())
+			if (files != null) {
+				for (File file : files) {
+					if (file.isFile()) {
 						fileNames.add(file.getName());
+					}
+				}
+			}
 		} else {
 			log.warn("Path {} is not a directory.", directoryPath);
 		}
@@ -197,33 +191,33 @@ public class SolidiFITxOriginTruth {
 		_solidifi.put(8, 31);
 		_solidifi.put(9, 24);
 		_solidifi.put(10, 8);
-		_solidifi.put(11, 30);
+		_solidifi.put(11, 29);
 		_solidifi.put(12, 28);
 		_solidifi.put(13, 17);
 		_solidifi.put(14, 22);
 		_solidifi.put(15, 17);
-		_solidifi.put(16, 40);
+		_solidifi.put(16, 42);
 		_solidifi.put(17, 30);
-		_solidifi.put(18, 39);
+		_solidifi.put(18, 41);
 		_solidifi.put(19, 28);
 		_solidifi.put(20, 29);
 		_solidifi.put(21, 23);
 		_solidifi.put(22, 29);
 		_solidifi.put(23, 26);
-		_solidifi.put(24, 40);
+		_solidifi.put(24, 42);
 		_solidifi.put(25, 21);
 		_solidifi.put(26, 23);
-		_solidifi.put(27, 40);
+		_solidifi.put(27, 42);
 		_solidifi.put(28, 29);
 		_solidifi.put(29, 16);
-		_solidifi.put(30, 40);
+		_solidifi.put(30, 42);
 		_solidifi.put(31, 15);
 		_solidifi.put(32, 21);
 		_solidifi.put(33, 22);
 		_solidifi.put(34, 36);
 		_solidifi.put(35, 34);
 		_solidifi.put(36, 29);
-		_solidifi.put(37, 34);
+		_solidifi.put(37, 33);
 		_solidifi.put(38, 29);
 		_solidifi.put(39, 11);
 		_solidifi.put(40, 24);
@@ -234,7 +228,7 @@ public class SolidiFITxOriginTruth {
 		_solidifi.put(45, 28);
 		_solidifi.put(46, 7);
 		_solidifi.put(47, 40);
-		_solidifi.put(48, 31);
+		_solidifi.put(48, 30);
 		_solidifi.put(49, 11);
 		_solidifi.put(50, 25);
 	}

@@ -20,8 +20,8 @@ import org.junit.Test;
  * ground-truth-stats/ground-truth-data.csv FILE MUST BE UPDATED WHEN A NEW
  * VERSION OF THE TRUTH DATASET IS CHOSEN.
  */
-public class EVMBytecodeGroundTruth {
-	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruth.class);
+public class EVMBytecodeGroundTruthTest {
+	private static final Logger log = LogManager.getLogger(EVMBytecodeGroundTruthTest.class);
 
 	private final Path WORKING_DIRECTORY_PATH = Paths.get("evm-testcases", "ground-truth", "50-ground-truth");
 	private final Path SMARTCONTRACTS_FULLPATH = Paths.get("benchmark", "50-ground-truth.txt");

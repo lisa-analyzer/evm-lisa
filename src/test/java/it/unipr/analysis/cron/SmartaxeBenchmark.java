@@ -25,7 +25,6 @@ public class SmartaxeBenchmark {
 	public static void main(String[] args) {
 		EVMLiSA.setWorkingDirectory(workingDirectory);
 		EVMLiSA.setLinkUnsoundJumpsToAllJumpdest();
-		EVMLiSAExecutor.setCoresAvailable(Runtime.getRuntime().availableProcessors() - 1);
 
 		log.info("Cores available: {}", EVMLiSAExecutor.getCoresAvailable());
 
