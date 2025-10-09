@@ -36,7 +36,6 @@ public class SmartaxeBenchmark {
 		}
 
 		log.debug("Cache used {} times.", MyCache.getTimesUsed());
-		EVMLiSAExecutor.shutdown();
 		System.exit(0);
 	}
 
@@ -74,7 +73,7 @@ public class SmartaxeBenchmark {
 		/* Submit tasks: build the CFG for each contract */
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
-				futures.add(EVMLiSAExecutor.submit(() -> EVMLiSA.buildCFG(contract)));
+				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class, () -> EVMLiSA.buildCFG(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
 		/*
@@ -82,7 +81,7 @@ public class SmartaxeBenchmark {
 		 * LOGs for Local Dependency
 		 */
 		for (Bridge bridge : bridges) {
-			futures.add(EVMLiSAExecutor.submit(() -> {
+			futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class, () -> {
 				bridge.buildPartialXCFG();
 				bridge.addEdges(
 						xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
@@ -90,7 +89,8 @@ public class SmartaxeBenchmark {
 			for (SmartContract contract : bridge)
 				futures.add(
 						EVMLiSAExecutor
-								.submit(() -> xEVMLiSA.computeVulnerablesLOGsForLocalDependencyChecker(contract)));
+								.submit(SmartaxeBenchmark.class,
+										() -> xEVMLiSA.computeVulnerablesLOGsForLocalDependencyChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
@@ -98,24 +98,30 @@ public class SmartaxeBenchmark {
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge)
 				futures.add(EVMLiSAExecutor
-						.submit(() -> xEVMLiSA.computeTaintedCallDataForLocalDependencyChecker(contract)));
+						.submit(SmartaxeBenchmark.class,
+								() -> xEVMLiSA.computeTaintedCallDataForLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
 		/* Submit tasks: run cross chain checkers using xCFG */
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge) {
-				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
-				futures.add(
-						EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(bridge, contract)));
-				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
-				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runMissingEventNotificationChecker(contract)));
-				futures.add(EVMLiSAExecutor.submit(() -> xEVMLiSA.runLocalDependencyChecker(contract)));
+				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
+						() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
+				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
+						() -> xEVMLiSA.runUncheckedExternalInfluenceChecker(bridge, contract)));
+				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
+						() -> xEVMLiSA.runUncheckedExternalCallChecker(bridge, contract)));
+				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
+						() -> xEVMLiSA.runMissingEventNotificationChecker(contract)));
+				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
+						() -> xEVMLiSA.runLocalDependencyChecker(contract)));
 			}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 18, TimeUnit.HOURS); // barrier
 
 		/* Saving results */
 		saveVulnerabilities(bridges);
 		saveVulnerabilitiesPerFunction(bridges, datasetPath);
+		EVMLiSAExecutor.shutdown(SmartaxeBenchmark.class);
 	}
 
 	private void saveVulnerabilities(Set<Bridge> bridges) {

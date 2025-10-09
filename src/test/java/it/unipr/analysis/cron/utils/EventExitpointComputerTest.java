@@ -5,14 +5,17 @@ import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
 import it.unipr.crosschain.Bridge;
 import it.unipr.crosschain.xEVMLiSA;
-import it.unipr.utils.EVMLiSAExecutor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-public class EventExitpointComputer {
+public class EventExitpointComputerTest {
+	private static final Logger log = LogManager.getLogger(EventExitpointComputerTest.class);
+
 	private static final Path outputDirPath = Paths.get("evm-outputs", "event-exitpoint-computer");
 
 	@Test
@@ -40,10 +43,13 @@ public class EventExitpointComputer {
 			for (Signature event : contract.getEventsSignature()) {
 				String key = contract.getName() + "-" + event.getSelector();
 
-				if (gt.containsKey(key))
+				if (gt.containsKey(key)) {
+					log.debug("Expected {}, found {}", gt.get(key), event.getExitPoints().size());
 					assert gt.get(key) == event.getExitPoints().size();
-				else
+				} else {
+					log.debug("Expected 0, found {}", event.getExitPoints().size());
 					assert event.getExitPoints().isEmpty();
+				}
 			}
 		}
 	}

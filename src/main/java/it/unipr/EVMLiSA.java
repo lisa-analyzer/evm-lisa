@@ -252,7 +252,6 @@ public class EVMLiSA {
 
 		EVMLiSA.analyzeContract(contract);
 		System.err.println(contract);
-		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -261,19 +260,9 @@ public class EVMLiSA {
 	 * @param filePath the path to the file containing contract addresses
 	 */
 	public static void analyzeSetOfContracts(Path filePath) {
-		analyzeSetOfContracts(filePath, true);
-	}
-
-	/**
-	 * Analyzes a set of smart contracts from a given file.
-	 *
-	 * @param filePath the path to the file containing contract addresses
-	 * @param shutdown whether to shut down the executor after the analysis
-	 */
-	public static void analyzeSetOfContracts(Path filePath, boolean shutdown) {
 		log.info("Building contracts.");
 		List<SmartContract> contracts = buildContractsFromFile(filePath);
-		analyzeSetOfContracts(contracts, shutdown);
+		analyzeSetOfContracts(contracts);
 	}
 
 	/**
@@ -282,22 +271,12 @@ public class EVMLiSA {
 	 * @param contracts the list of {@link SmartContract} to be analyzed
 	 */
 	public static void analyzeSetOfContracts(List<SmartContract> contracts) {
-		analyzeSetOfContracts(contracts, true);
-	}
-
-	/**
-	 * Analyzes a set of smart contracts from a list of {@link SmartContract}.
-	 *
-	 * @param contracts the list of {@link SmartContract} to be analyzed
-	 * @param shutdown  whether to shut down the executor after the analysis
-	 */
-	public static void analyzeSetOfContracts(List<SmartContract> contracts, boolean shutdown) {
 		log.info("Analyzing {} contracts.", contracts.size());
 
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (SmartContract contract : contracts)
-			futures.add(EVMLiSAExecutor.submit(() -> analyzeContract(contract)));
+			futures.add(EVMLiSAExecutor.submit(EVMLiSA.class, () -> analyzeContract(contract)));
 
 		log.debug("{} contracts submitted to Thread pool with {} workers.", contracts.size(),
 				EVMLiSAExecutor.getCoresAvailable());
@@ -319,8 +298,7 @@ public class EVMLiSA {
 			System.exit(1);
 		}
 
-		if (shutdown)
-			EVMLiSAExecutor.shutdown();
+		EVMLiSAExecutor.shutdown(EVMLiSA.class);
 	}
 
 	/**

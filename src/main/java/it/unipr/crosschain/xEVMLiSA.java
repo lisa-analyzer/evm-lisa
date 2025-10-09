@@ -58,8 +58,6 @@ public class xEVMLiSA {
 
 		printVulnerabilities(bridge);
 		printVulnerabilitiesPerFunction(bridge);
-
-		EVMLiSAExecutor.shutdown();
 	}
 
 	/**
@@ -72,7 +70,7 @@ public class xEVMLiSA {
 	public static void analyzeBridge(Bridge bridge) {
 		log.info("Number of contracts to be analyzed: {}.", bridge.getSmartContracts().size());
 
-		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts(), false);
+		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
 		bridge.buildPartialXCFG();
 		bridge.addEdges(
 				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
@@ -245,21 +243,29 @@ public class xEVMLiSA {
 
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
-			futures.add(EVMLiSAExecutor.submit(() -> runEventOrderChecker(bridge, contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalCallChecker(bridge, contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runUncheckedExternalInfluenceChecker(bridge, contract)));
-			futures.add(EVMLiSAExecutor.submit(() -> runMissingEventNotificationChecker(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runUncheckedExternalCallChecker(bridge, contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> runUncheckedExternalInfluenceChecker(bridge, contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runMissingEventNotificationChecker(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(bridge, contract)));
 		}
-		futures.add(EVMLiSAExecutor.submit(() -> runLocalDependencyCheckers(bridge)));
+		futures.add(
+				EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runLocalDependencyCheckers(bridge)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving cross-chain checkers results.");
-		for (SmartContract contract : bridge) {
+		for (SmartContract contract : bridge)
 			contract.setVulnerabilities(
 					VulnerabilitiesObject.buildFromCFG(
 							contract.getCFG()));
-		}
 
+		EVMLiSAExecutor.shutdown(xEVMLiSA.class);
 		log.info("[OUT] Cross-chain checkers results saved.");
 	}
 
@@ -280,18 +286,24 @@ public class xEVMLiSA {
 
 		log.info("[LocalDependencyChecker] Computing vulnerable LOGs.");
 		for (SmartContract contract : bridge)
-			futures.add(EVMLiSAExecutor.submit(() -> computeVulnerablesLOGsForLocalDependencyChecker(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> computeVulnerablesLOGsForLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 		log.info("[LocalDependencyChecker] Vulnerable LOGs computed.");
 
 		log.info("[LocalDependencyChecker] Computing tainted Call Data.");
 		for (SmartContract contract : bridge)
-			futures.add(EVMLiSAExecutor.submit(() -> computeTaintedCallDataForLocalDependencyChecker(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> computeTaintedCallDataForLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 		log.info("[LocalDependencyChecker] Tainted Call Data computed.");
 
 		for (SmartContract contract : bridge)
-			futures.add(EVMLiSAExecutor.submit(() -> runLocalDependencyChecker(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> runLocalDependencyChecker(contract)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("[OUT] Local Dependency checker ended.");
@@ -329,6 +341,27 @@ public class xEVMLiSA {
 				contract.getName(),
 				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()),
 				MyCache.getInstance().getPossibleUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
+	}
+
+	public static void runAccessControlIncompleteness(Bridge bridge, SmartContract contract) {
+		log.info("[IN] Running Access Control Incompleteness checker on {}.", contract.getName());
+
+		// Setup configuration
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		AccessControlIncompletenessChecker checker = new AccessControlIncompletenessChecker();
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new AccessControlIncompletenessAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+
+		log.info("[OUT] Access Control Incompleteness checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getUncheckedExternalCallWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**

@@ -11,73 +11,11 @@ public class EVMLiSAExecutor {
 	private static int CORES = (Runtime.getRuntime().availableProcessors() > 1)
 			? Runtime.getRuntime().availableProcessors() - 1
 			: 1;
-	private static ExecutorService _executor = Executors.newFixedThreadPool(CORES);
+	private static final ConcurrentMap<Class<?>, ExecutorService> ownerExecutors = new ConcurrentHashMap<>();
 
 	private static long tasksInQueue = 0;
-	@SuppressWarnings("unused")
 	private static long tasksExecuted = 0;
 	private static long tasksTimedOut = 0;
-
-	/**
-	 * Submits a task for execution in the thread pool.
-	 *
-	 * @param task the task to be executed
-	 * 
-	 * @return a Future representing the pending result of the task
-	 */
-	public static Future<?> submit(Runnable task) {
-		return _executor.submit(new EVMLiSAExecutorTask(task));
-	}
-
-	/**
-	 * Submits a list of tasks for execution in the thread pool.
-	 *
-	 * @param tasks the list of tasks to be executed
-	 * 
-	 * @return a list of Future objects representing the pending results of the
-	 *             tasks
-	 */
-	public static List<Future<?>> submitAll(List<Runnable> tasks) {
-		List<Future<?>> futures = new ArrayList<>();
-
-		for (Runnable task : tasks)
-			futures.add(submit(new EVMLiSAExecutorTask(task)));
-
-		return futures;
-	}
-
-	/**
-	 * Executes a main task asynchronously and schedules additional tasks upon
-	 * its completion.
-	 *
-	 * @param mainTask       the main task to execute
-	 * @param secondaryTasks additional tasks to execute after the main task
-	 * 
-	 * @return a CompletableFuture that completes when all tasks are finished
-	 */
-	public static CompletableFuture<Void> runAsync(Runnable mainTask, Runnable... secondaryTasks) {
-		return runAsync(mainTask, Set.of(secondaryTasks));
-	}
-
-	/**
-	 * Executes a main task asynchronously and schedules additional tasks upon
-	 * its completion.
-	 *
-	 * @param mainTask       the main task to execute
-	 * @param secondaryTasks additional tasks to execute after the main task
-	 * 
-	 * @return a CompletableFuture that completes when all tasks are finished
-	 */
-	public static CompletableFuture<Void> runAsync(Runnable mainTask, Set<Runnable> secondaryTasks) {
-		return CompletableFuture.runAsync(new EVMLiSAExecutorTask(mainTask), _executor)
-				.thenCompose(ignored -> {
-					List<CompletableFuture<Void>> checkerFutures = new ArrayList<>();
-					for (Runnable secondaryTask : secondaryTasks)
-						checkerFutures
-								.add(CompletableFuture.runAsync(new EVMLiSAExecutorTask(secondaryTask), _executor));
-					return CompletableFuture.allOf(checkerFutures.toArray(new CompletableFuture[0]));
-				});
-	}
 
 	/**
 	 * Waits for the completion of all provided CompletableFutures.
@@ -124,7 +62,6 @@ public class EVMLiSAExecutor {
 				future.get();
 			} catch (ExecutionException e) {
 				System.err.println(JSONManager.throwNewError("Error during task execution: " + e.getMessage()));
-				e.printStackTrace();
 				System.exit(1);
 			} catch (InterruptedException ie) {
 				System.err.println(JSONManager.throwNewError("Interrupted during task execution: " + ie.getMessage()));
@@ -159,13 +96,92 @@ public class EVMLiSAExecutor {
 	}
 
 	/**
-	 * Shuts down the executor service, preventing new tasks from being
-	 * submitted.
+	 * Creates (if absent) and returns an ExecutorService associated with the
+	 * given owner class. The created executor will have {@code threads} worker
+	 * threads. If an executor is already present for the owner, it is returned
+	 * unchanged.
+	 *
+	 * @param owner   the class that will own the executor
+	 * @param threads number of threads for the executor (min 1)
+	 *
+	 * @return the ExecutorService associated with the owner
 	 */
-	public static void shutdown() {
-		_executor.shutdown();
+	public static ExecutorService createExecutorFor(Class<?> owner, int threads) {
+		int t = Math.max(1, threads);
+		return ownerExecutors.computeIfAbsent(owner, k -> Executors.newFixedThreadPool(t));
 	}
 
+	/**
+	 * Returns the ExecutorService associated with the owner class, creating a
+	 * default single-threaded executor if none exists.
+	 *
+	 * @param owner the class that will own the executor
+	 *
+	 * @return the ExecutorService associated with the owner
+	 */
+	public static ExecutorService getExecutorFor(Class<?> owner) {
+		return ownerExecutors.computeIfAbsent(owner, k -> Executors.newFixedThreadPool(CORES));
+	}
+
+	/**
+	 * Submits a task to the executor associated with the given owner class. If
+	 * no executor exists for the owner, a default one is created.
+	 *
+	 * @param owner the class owning the executor
+	 * @param task  the runnable task to submit
+	 *
+	 * @return a Future representing pending completion of the task
+	 */
+	public static Future<?> submit(Class<?> owner, Runnable task) {
+		ExecutorService ex = getExecutorFor(owner);
+		return ex.submit(new EVMLiSAExecutorTask(task));
+	}
+
+	/**
+	 * Shuts down the executor associated with the given owner class. This
+	 * removes the executor from the internal map and calls shutdown on it. If
+	 * no executor is present, this is a no-op.
+	 *
+	 * @param owner the class whose executor should be shutdown
+	 */
+	public static void shutdown(Class<?> owner) {
+		ExecutorService ex = ownerExecutors.remove(owner);
+		if (ex != null)
+			ex.shutdown();
+	}
+
+	/**
+	 * Shuts down all owner-bound executors.
+	 */
+	public static void shutdownAllOwners() {
+		for (Map.Entry<Class<?>, ExecutorService> e : ownerExecutors.entrySet()) {
+			executorShutdownQuiet(e.getValue());
+		}
+		ownerExecutors.clear();
+	}
+
+	/**
+	 * Attempts to shut down the provided executor quietly, ignoring any
+	 * exceptions. This is a private helper used when shutting down multiple
+	 * executors.
+	 *
+	 * @param ex the executor service to shut down
+	 */
+	private static void executorShutdownQuiet(ExecutorService ex) {
+		try {
+			ex.shutdown();
+		} catch (Exception ignored) {
+		}
+	}
+
+	/**
+	 * Updates the number of cores available for per-owner executors. If the
+	 * provided value differs from the current configuration, all owner-bound
+	 * executors are shutdown and the internal core count is updated.
+	 *
+	 * @param cores desired number of cores (will be clamped to a minimum of 1
+	 *                  and at most the number of available processors - 1)
+	 */
 	public static void setCoresAvailable(int cores) {
 		if (cores > Runtime.getRuntime().availableProcessors())
 			cores = Runtime.getRuntime().availableProcessors() - 1;
@@ -173,11 +189,15 @@ public class EVMLiSAExecutor {
 		if (CORES == cores)
 			return;
 
-		shutdown();
+		shutdownAllOwners();
 		CORES = Math.max(cores, 1);
-		_executor = Executors.newFixedThreadPool(CORES);
 	}
 
+	/**
+	 * Gets the current number of cores configured for owner executors.
+	 *
+	 * @return the configured core count
+	 */
 	public static int getCoresAvailable() {
 		return CORES;
 	}
