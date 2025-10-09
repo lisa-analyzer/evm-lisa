@@ -39,19 +39,21 @@ public class EventExitpointComputerTest {
 		Bridge bridge = new Bridge(bytecodePath, abiPath);
 		xEVMLiSA.analyzeBridge(bridge);
 
+		boolean changed = true;
 		for (SmartContract contract : bridge) {
 			for (Signature event : contract.getEventsSignature()) {
 				String key = contract.getName() + "-" + event.getSelector();
 
 				if (gt.containsKey(key)) {
-					log.debug("Expected {}, found {}", gt.get(key), event.getExitPoints().size());
-					assert gt.get(key) == event.getExitPoints().size();
+					log.debug("[{}] Expected {}, found {}", key, gt.get(key), event.getExitPoints().size());
+					changed &= gt.get(key) == event.getExitPoints().size();
 				} else {
-					log.debug("Expected 0, found {}", event.getExitPoints().size());
-					assert event.getExitPoints().isEmpty();
+					log.debug("[{}] Expected 0, found {}", key, event.getExitPoints().size());
+					changed &= event.getExitPoints().isEmpty();
 				}
 			}
 		}
+		assert changed;
 	}
 
 }
