@@ -97,7 +97,8 @@ public class Bridge implements Iterable<SmartContract> {
 				log.warn("Cannot find ABI file: {}.", contractName);
 			}
 		}
-		log.info("Created bridge {} with {} contracts.", name, contracts.size());
+		log.info("Created bridge {} with {} contracts using bytecodes at {} and ABIs at {}.",
+				name, contracts.size(), bytecodeDirectoryPath.toString(), abiDirectoryPath.toString());
 
 		if (policyPath != null)
 			loadPolicy(policyPath);
