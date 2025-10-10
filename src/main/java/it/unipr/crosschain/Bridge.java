@@ -103,7 +103,7 @@ public class Bridge implements Iterable<SmartContract> {
 		if (policyPath != null)
 			loadPolicy(policyPath);
 		else
-			log.info("Created bridge without policy. Using default policy");
+			log.info("Created bridge without custom policy. Using default policy");
 
 	}
 
@@ -295,9 +295,11 @@ public class Bridge implements Iterable<SmartContract> {
 				log.warn("Policy file does not contain 'policy' array.");
 			}
 		} catch (IOException e) {
-			log.error("Error reading policy file: {}", e.getMessage());
+			log.warn("Error reading policy file: {}. Creating bridge without custom policy. Using default policy",
+					e.getMessage());
 		} catch (Exception e) {
-			log.error("Error parsing policy JSON: {}", e.getMessage());
+			log.warn("Error parsing policy JSON: {}. Creating bridge without custom policy. Using default policy",
+					e.getMessage());
 		}
 	}
 
