@@ -244,15 +244,10 @@ public class xEVMLiSA {
 
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
-//			futures.add(
-//					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
-//			futures.add(
-//					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runUncheckedExternalCallChecker(bridge, contract)));
-//			futures.add(
-//					EVMLiSAExecutor.submit(xEVMLiSA.class,
-//							() -> runUncheckedExternalInfluenceChecker(bridge, contract)));
-//			futures.add(
-//					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runMissingEventNotificationChecker(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runMissingEventNotificationChecker(contract)));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(contract)));
 		}
@@ -311,40 +306,6 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the Unchecked External Influence Checker on a single contract. This
-	 * sets up the LiSA analysis environment, registers the
-	 * UncheckedExternalInfluenceChecker, and executes the analysis to find
-	 * event emit influenced by unvalidated external inputs. Reports definite
-	 * and possible findings to the configured cache.
-	 *
-	 * @param bridge   the Bridge providing the cross-chain CFG context
-	 * @param contract the specific SmartContract to analyze
-	 */
-	public static void runUncheckedExternalInfluenceChecker(Bridge bridge, SmartContract contract) {
-		log.info("[IN] Running unchecked external influence checker on {}.", contract.getName());
-
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Unchecked external influence checker
-		UncheckedExternalInfluenceChecker checker = new UncheckedExternalInfluenceChecker(contract, bridge.getXCFG());
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new UncheckedExternalInfluenceAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
-
-		log.info(
-				"[OUT] Unchecked external influence checker ended on {}, with {} definite and {} possible vulnerabilities found.",
-				contract.getName(),
-				MyCache.getInstance().getUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()),
-				MyCache.getInstance().getPossibleUncheckedExternalInfluenceWarnings(contract.getCFG().hashCode()));
-	}
-
-	/**
 	 * Runs the Access Control Incompleteness checker on a single contract using
 	 * a taint analysis configuration tailored for cross-chain interactions.
 	 *
@@ -368,37 +329,7 @@ public class xEVMLiSA {
 
 		log.info("[OUT] Access Control Incompleteness checker ended on {}, with {} vulnerabilities found.",
 				contract.getName(),
-				MyCache.getInstance().getUncheckedExternalCallWarnings(contract.getCFG().hashCode()));
-	}
-
-	/**
-	 * Runs the Unchecked External Call Checker on a single contract. This
-	 * configures and invokes LiSA with the UncheckedExternalCallChecker to
-	 * detect any CALL, STATICCALL or DELEGATECALL instructions whose results
-	 * directly influence event emit without proper validation.
-	 *
-	 * @param bridge   the Bridge providing the cross-chain CFG context
-	 * @param contract the specific SmartContract to analyze
-	 */
-	public static void runUncheckedExternalCallChecker(Bridge bridge, SmartContract contract) {
-		log.info("[IN] Running unchecked external call  checker on {}.", contract.getName());
-
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Unchecked external call checker
-		UncheckedExternalCallChecker checker = new UncheckedExternalCallChecker(contract, bridge.getXCFG());
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), new UncheckedExternalCallAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
-
-		log.info("[OUT] Unchecked external call  checker ended on {}, with {} vulnerabilities found.",
-				contract.getName(),
-				MyCache.getInstance().getUncheckedExternalCallWarnings(contract.getCFG().hashCode()));
+				MyCache.getInstance().getAccessControlIncompletenessWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**

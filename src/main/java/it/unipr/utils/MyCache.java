@@ -35,11 +35,8 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleEventOrderWarnings;
 
-	private final LRUMap<Integer, Set<Object>> _uncheckedExternalCallWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalCallWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _uncheckedExternalInfluenceWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleUncheckedExternalInfluenceWarnings;
+	private final LRUMap<Integer, Set<Object>> _accessControlIncompletenessWarnings;
+	private final LRUMap<Integer, Set<Object>> _possibleAccessControlIncompletenessWarnings;
 
 	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
@@ -49,8 +46,6 @@ public class MyCache {
 	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
 	private final LRUMap<Integer, Set<Object>> _possibleLocalDependencyWarnings;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
-
-	private final LRUMap<Statement, Set<String>> _eventsExitPoints;
 
 	private final Set<Statement> _taintedCallDataLoad;
 
@@ -100,11 +95,8 @@ public class MyCache {
 		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleEventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
-		this._uncheckedExternalCallWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleUncheckedExternalCallWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._uncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleUncheckedExternalInfluenceWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._accessControlIncompletenessWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._possibleAccessControlIncompletenessWarnings = new LRUMap<Integer, Set<Object>>(5000);
 
 		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
@@ -114,8 +106,6 @@ public class MyCache {
 		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._possibleLocalDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._vulnerableLogStatement = new LRUMap<>(5000);
-
-		this._eventsExitPoints = new LRUMap<Statement, Set<String>>(5000);
 
 		this._taintedCallDataLoad = new HashSet<>();
 
@@ -394,42 +384,7 @@ public class MyCache {
 	}
 
 	/**
-	 * Adds an unchecked external call warning for the specified key. If no
-	 * warnings are associated with the key, a new set is created and the
-	 * warning is added to it. This method is thread-safe.
-	 *
-	 * @param key     the key identifying the smart contract or entity for which
-	 *                    the warning applies
-	 * @param warning the warning object to be added
-	 */
-	public void addUncheckedExternalCallWarning(Integer key, Object warning) {
-		synchronized (_uncheckedExternalCallWarnings) {
-			_uncheckedExternalCallWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
-	}
-
-	/**
-	 * Retrieves the number of unchecked external call warnings associated with
-	 * the specified key. If no warnings are associated with the key, the method
-	 * returns 0. This method is thread-safe.
-	 *
-	 * @param key the key identifying the smart contract or entity whose
-	 *                warnings are to be retrieved
-	 *
-	 * @return the number of warnings associated with the key, or 0 if none
-	 *             exist
-	 */
-	public int getUncheckedExternalCallWarnings(Integer key) {
-		synchronized (_uncheckedExternalCallWarnings) {
-			return (_uncheckedExternalCallWarnings.get(key) != null) ? _uncheckedExternalCallWarnings.get(key).size()
-					: 0;
-		}
-	}
-
-	/**
-	 * Adds a possible unchecked external call warning for the specified key. If
+	 * Adds an access control incompleteness warning for the specified key. If
 	 * no warnings are associated with the key, a new set is created and the
 	 * warning is added to it. This method is thread-safe.
 	 *
@@ -437,52 +392,16 @@ public class MyCache {
 	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
-	public void addPossibleUncheckedExternalCallWarning(Integer key, Object warning) {
-		synchronized (_possibleUncheckedExternalCallWarnings) {
-			_possibleUncheckedExternalCallWarnings
+	public void addAccessControlIncompletenessWarning(Integer key, Object warning) {
+		synchronized (_accessControlIncompletenessWarnings) {
+			_accessControlIncompletenessWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
 	}
 
 	/**
-	 * Retrieves the number of possible unchecked external call warnings
-	 * associated with the specified key. If no warnings are associated with the
-	 * key, the method returns 0. This method is thread-safe.
-	 *
-	 * @param key the key identifying the smart contract or entity whose
-	 *                warnings are to be retrieved
-	 *
-	 * @return the number of warnings associated with the key, or 0 if none
-	 *             exist
-	 */
-	public int getPossibleUncheckedExternalCallWarnings(Integer key) {
-		synchronized (_possibleUncheckedExternalCallWarnings) {
-			return (_possibleUncheckedExternalCallWarnings.get(key) != null)
-					? _possibleUncheckedExternalCallWarnings.get(key).size()
-					: 0;
-		}
-	}
-
-	/**
-	 * Adds an unchecked external influence warning for the specified key. If no
-	 * warnings are associated with the key, a new set is created and the
-	 * warning is added to it. This method is thread-safe.
-	 *
-	 * @param key     the key identifying the smart contract or entity for which
-	 *                    the warning applies
-	 * @param warning the warning object to be added
-	 */
-	public void addUncheckedExternalInfluenceWarning(Integer key, Object warning) {
-		synchronized (_uncheckedExternalInfluenceWarnings) {
-			_uncheckedExternalInfluenceWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
-	}
-
-	/**
-	 * Retrieves the number of unchecked external influence warnings associated
+	 * Retrieves the number of access control incompleteness warnings associated
 	 * with the specified key. If no warnings are associated with the key, the
 	 * method returns 0. This method is thread-safe.
 	 *
@@ -492,16 +411,16 @@ public class MyCache {
 	 * @return the number of warnings associated with the key, or 0 if none
 	 *             exist
 	 */
-	public int getUncheckedExternalInfluenceWarnings(Integer key) {
-		synchronized (_uncheckedExternalInfluenceWarnings) {
-			return (_uncheckedExternalInfluenceWarnings.get(key) != null)
-					? _uncheckedExternalInfluenceWarnings.get(key).size()
+	public int getAccessControlIncompletenessWarnings(Integer key) {
+		synchronized (_accessControlIncompletenessWarnings) {
+			return (_accessControlIncompletenessWarnings.get(key) != null)
+					? _accessControlIncompletenessWarnings.get(key).size()
 					: 0;
 		}
 	}
 
 	/**
-	 * Adds a possible unchecked external influence warning for the specified
+	 * Adds a possible access control incompleteness warning for the specified
 	 * key. If no warnings are associated with the key, a new set is created and
 	 * the warning is added to it. This method is thread-safe.
 	 *
@@ -509,77 +428,30 @@ public class MyCache {
 	 *                    the warning applies
 	 * @param warning the warning object to be added
 	 */
-	public void addPossibleUncheckedExternalInfluenceWarning(Integer key, Object warning) {
-		synchronized (_possibleUncheckedExternalInfluenceWarnings) {
-			_possibleUncheckedExternalInfluenceWarnings
+	public void addPossibleAccessControlIncompletenessWarning(Integer key, Object warning) {
+		synchronized (_possibleAccessControlIncompletenessWarnings) {
+			_possibleAccessControlIncompletenessWarnings
 					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
 					.add(warning);
 		}
 	}
 
 	/**
-	 * Retrieves the number of possible unchecked external influence warnings
+	 * Retrieves the number of possible access control incompleteness warnings
 	 * associated with the specified key. If no warnings are associated with the
 	 * key, the method returns 0. This method is thread-safe.
 	 *
 	 * @param key the key identifying the smart contract or entity whose
 	 *                warnings are to be retrieved
 	 *
-	 * @return the number of possible warnings associated with the key, or 0 if
-	 *             none exist
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
 	 */
-	public int getPossibleUncheckedExternalInfluenceWarnings(Integer key) {
-		synchronized (_possibleUncheckedExternalInfluenceWarnings) {
-			return (_possibleUncheckedExternalInfluenceWarnings.get(key) != null)
-					? _possibleUncheckedExternalInfluenceWarnings.get(key).size()
+	public int getPossibleAccessControlIncompletenessWarnings(Integer key) {
+		synchronized (_possibleAccessControlIncompletenessWarnings) {
+			return (_possibleAccessControlIncompletenessWarnings.get(key) != null)
+					? _possibleAccessControlIncompletenessWarnings.get(key).size()
 					: 0;
-		}
-	}
-
-	/**
-	 * Adds an event exit point associated with a given statement. If the
-	 * statement does not already have an associated set of event exit points, a
-	 * new synchronized HashSet is created. This method is thread-safe.
-	 *
-	 * @param key       The statement representing the exit point.
-	 * @param signature The event signature to associate with the statement.
-	 */
-	public void addEventExitPoint(Statement key, String signature) {
-		synchronized (_eventsExitPoints) {
-			_eventsExitPoints
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(signature);
-		}
-	}
-
-	/**
-	 * Retrieves the set of event exit points associated with a given statement.
-	 * If the statement has no associated exit points, an empty set is returned.
-	 * This method is thread-safe.
-	 *
-	 * @param key The statement whose event exit points are being queried.
-	 *
-	 * @return A set of event signatures associated with the given statement, or
-	 *             an empty set if none exist.
-	 */
-	public Set<String> getEventExitPoints(Statement key) {
-		synchronized (_eventsExitPoints) {
-			return _eventsExitPoints.get(key) == null ? new HashSet<>() : _eventsExitPoints.get(key);
-		}
-	}
-
-	/**
-	 * Checks whether there are event exit points associated with a given
-	 * statement.
-	 *
-	 * @param key The statement to check.
-	 *
-	 * @return {@code true} if the statement has associated event exit points,
-	 *             {@code false} otherwise.
-	 */
-	public boolean containsEventExitPoints(Statement key) {
-		synchronized (_eventsExitPoints) {
-			return _eventsExitPoints.get(key) != null;
 		}
 	}
 
@@ -920,9 +792,7 @@ public class MyCache {
 
 	/**
 	 * Finds all LOG statements that are linked to a specific tainted
-	 * CALLDATALOAD warning.
-	 * <p>
-	 * This is the reverse lookup of
+	 * CALLDATALOAD warning. This is the reverse lookup of
 	 * {@link #getLinkFromLogToCallDataLoad(Statement)}.
 	 *
 	 * @param value the tainted CALLDATALOAD warning object

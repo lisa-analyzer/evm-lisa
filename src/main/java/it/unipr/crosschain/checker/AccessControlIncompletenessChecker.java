@@ -114,13 +114,19 @@ public class AccessControlIncompletenessChecker implements
 
 				int numArgs = getNumberOfArgs(node);
 				boolean isAtLeastOneTainted = false;
+				boolean isAtLeastOneTop = false;
 
-				for (int argIndex = 1; argIndex <= numArgs; argIndex++)
+				for (int argIndex = 1; argIndex <= numArgs; argIndex++) {
 					isAtLeastOneTainted |= TaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(argIndex));
+					isAtLeastOneTop |= TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(argIndex));
+				}
 
 				if (isAtLeastOneTainted)
-					checkForAccessControlIncompleteness(tool, cfg, node);
+					checkForAccessControlIncompleteness(tool, cfg, node, false);
+				else if (isAtLeastOneTop)
+					checkForAccessControlIncompleteness(tool, cfg, node, true);
 			}
 		}
 		return true;
@@ -157,7 +163,7 @@ public class AccessControlIncompletenessChecker implements
 	 */
 	private void checkForAccessControlIncompleteness(CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg,
-			Statement sink) {
+			Statement sink, boolean isTop) {
 
 		Set<Statement> sources = cfg.getAllStatementsByClass(
 				Calldataload.class,
@@ -176,23 +182,43 @@ public class AccessControlIncompletenessChecker implements
 
 				ProgramCounterLocation sinkLocation = (ProgramCounterLocation) sink.getLocation();
 
-				log.warn(
-						"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-						sinkLocation.getPc(),
-						sinkLocation.getSourceCodeLine(),
-						((ProgramCounterLocation) sink.getLocation()).getPc(),
-						((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
+				if (isTop) {
+					log.warn(
+							"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+							sinkLocation.getPc(),
+							sinkLocation.getSourceCodeLine(),
+							((ProgramCounterLocation) sink.getLocation()).getPc(),
+							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
 
-				String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
-						+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
-				tool.warn(warn);
-				MyCache.getInstance().addUncheckedExternalCallWarning(cfg.hashCode(), warn);
+					String warn = "[POSSIBLE] Access Control Incompleteness vulnerability at "
+							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
+					tool.warn(warn);
+					MyCache.getInstance().addPossibleAccessControlIncompletenessWarning(cfg.hashCode(), warn);
 
-				warn = "[DEFINITE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
-						+ functionSignatureByStatement
-						+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
-						+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
-				MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+//					warn = "[POSSIBLE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
+//							+ functionSignatureByStatement
+//							+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
+//							+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
+//					MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+				} else {
+					log.warn(
+							"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+							sinkLocation.getPc(),
+							sinkLocation.getSourceCodeLine(),
+							((ProgramCounterLocation) sink.getLocation()).getPc(),
+							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
+
+					String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
+							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
+					tool.warn(warn);
+					MyCache.getInstance().addAccessControlIncompletenessWarning(cfg.hashCode(), warn);
+
+					warn = "[DEFINITE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
+							+ functionSignatureByStatement
+							+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
+							+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
+					MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+				}
 			}
 		}
 	}
