@@ -152,6 +152,13 @@ public class EVMLiSA {
 		TEST_MODE = true;
 	}
 
+	/**
+	 * Disables the test mode (i.e., it computes functions, events).
+	 */
+	public static void disableTestMode() {
+		TEST_MODE = false;
+	}
+
 	public static boolean isInTestMode() {
 		return TEST_MODE;
 	}

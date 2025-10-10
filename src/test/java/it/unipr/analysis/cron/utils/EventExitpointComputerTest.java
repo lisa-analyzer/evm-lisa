@@ -31,7 +31,6 @@ public class EventExitpointComputerTest {
 		gt.put("5_1-643e927b", 1);
 		gt.put("5_1-89d500b0", 1);
 
-		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() - 1);
 		EVMLiSA.setWorkingDirectory(outputDirPath.resolve("Thorchain"));
 		EVMLiSA.setStackLimit(32);
 		EVMLiSA.setStackSetSize(8);

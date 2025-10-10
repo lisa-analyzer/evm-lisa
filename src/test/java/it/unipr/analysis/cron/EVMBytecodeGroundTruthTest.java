@@ -37,6 +37,7 @@ public class EVMBytecodeGroundTruthTest {
 		EVMLiSA.setCores(Runtime.getRuntime().availableProcessors() / 4 * 3);
 		EVMLiSA.setTestMode();
 		EVMLiSA.analyzeSetOfContracts(SMARTCONTRACTS_FULLPATH);
+		EVMLiSA.disableTestMode();
 	}
 
 	private void regenerateGroundTruth() throws Exception {
