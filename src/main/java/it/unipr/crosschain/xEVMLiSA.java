@@ -92,7 +92,8 @@ public class xEVMLiSA {
 		log.info("Computing cross chain edges of {}.", bridge.getName());
 		log.debug("Functions in bridge: {}.", bridge.getFunctions().size());
 		log.debug("Events in bridge: {}.", bridge.getEvents().size());
-		log.debug("Log statement in bridge: {}.", bridge.getXCFG().getAllLogX().size());
+		log.debug("Log statement in bridge: {}.",
+				bridge.getXCFG().getAllStatementsByClass(Log1.class, Log2.class, Log3.class, Log4.class).size());
 
 		for (SmartContract contractSource : bridge.getSmartContracts()) {
 			for (SmartContract contractDestination : bridge.getSmartContracts()) {
@@ -243,15 +244,15 @@ public class xEVMLiSA {
 
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
-			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
+//			futures.add(
+//					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
 //			futures.add(
 //					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runUncheckedExternalCallChecker(bridge, contract)));
 //			futures.add(
 //					EVMLiSAExecutor.submit(xEVMLiSA.class,
 //							() -> runUncheckedExternalInfluenceChecker(bridge, contract)));
-			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runMissingEventNotificationChecker(contract)));
+//			futures.add(
+//					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runMissingEventNotificationChecker(contract)));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(contract)));
 		}

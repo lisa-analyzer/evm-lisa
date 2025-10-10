@@ -159,13 +159,12 @@ public class AccessControlIncompletenessChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg,
 			Statement sink) {
 
-		Set<Statement> sources = new HashSet<>();
-		sources.addAll(cfg.getAllCalldataload());
-		sources.addAll(cfg.getAllCalldatacopy());
-		sources.addAll(cfg.getAllCalldatacopy());
-		sources.addAll(cfg.getAllCaller());
-		sources.addAll(cfg.getAllOrigin());
-		sources.addAll(cfg.getAllCallvalue());
+		Set<Statement> sources = cfg.getAllStatementsByClass(
+				Calldataload.class,
+				Calldatacopy.class,
+				Caller.class,
+				Origin.class,
+				Callvalue.class);
 
 		for (Statement source : sources) {
 			if (cfg.reachableFromWithoutStatements(source, sink, taintedJumpi)) {

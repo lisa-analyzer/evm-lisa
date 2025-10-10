@@ -40,22 +40,23 @@ public class EVMCFG extends CFG {
 	private static final Logger log = LogManager.getLogger(EVMCFG.class);
 
 	private Set<BasicBlock> _basicBlocks;
-	private Set<Statement> jumpDestsNodes;
-	private Set<Statement> jumpNodes;
+//	private Set<Statement> jumpDestsNodes;
+//	private Set<Statement> jumpNodes;
 	private Set<Statement> pushedJumps;
-	private Set<Statement> sstores;
+//	private Set<Statement> sstores;
 	private Set<Number> jumpDestsNodesLocations;
-	public Set<Statement> logxs;
-	public Set<Statement> calls;
-	public Set<Statement> externalData;
-	public Set<Statement> jumpI;
+//	public Set<Statement> logxs;
+//	public Set<Statement> calls;
+//	public Set<Statement> externalData;
+//	public Set<Statement> jumpI;
 	public Set<Statement> successfullyTerminationStatements;
-	private Set<Statement> calldataloads;
-	private Set<Statement> calldatacopies;
-	private Set<Statement> calldatasizes;
-	private Set<Statement> callers;
-	private Set<Statement> origins;
-	private Set<Statement> callvalues;
+//	private Set<Statement> calldataloads;
+//	private Set<Statement> calldatacopies;
+//	private Set<Statement> calldatasizes;
+//	private Set<Statement> callers;
+//	private Set<Statement> origins;
+//	private Set<Statement> callvalues;
+	private final Map<Class<? extends Statement>, Set<Statement>> statementsByClassCache = new HashMap<>();
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -73,29 +74,32 @@ public class EVMCFG extends CFG {
 	 * destinations (JUMPDEST), jump instructions (JUMP and JUMPI), and pushed
 	 * jumps.
 	 */
+	// TODO remove this function
 	public void computeHotspotNodes() {
-		this.jumpDestsNodes = new HashSet<Statement>();
-		this.jumpNodes = new HashSet<Statement>();
-		this.pushedJumps = new HashSet<Statement>();
-		this.sstores = new HashSet<Statement>();
-		this.calldataloads = new HashSet<Statement>();
-		this.calldatacopies = new HashSet<Statement>();
-		this.calldatasizes = new HashSet<Statement>();
-		this.callers = new HashSet<Statement>();
-		this.origins = new HashSet<Statement>();
+		this.statementsByClassCache.clear();
+//		this.jumpDestsNodes = new HashSet<Statement>();
+//		this.jumpNodes = new HashSet<Statement>();
+		this.pushedJumps = new HashSet<>();
+//		this.sstores = new HashSet<Statement>();
+//		this.calldataloads = new HashSet<Statement>();
+//		this.calldatacopies = new HashSet<Statement>();
+//		this.calldatasizes = new HashSet<Statement>();
+//		this.callers = new HashSet<Statement>();
+//		this.origins = new HashSet<Statement>();
 
 		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-
-		for (Statement statement : cfgNodeList.getNodes()) {
-			if (statement instanceof Sstore)
-				sstores.add(statement);
-			else if (statement instanceof Jumpdest)
-				jumpDestsNodes.add(statement);
-			else if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
-				jumpNodes.add(statement);
-			}
-
-		}
+//		// TODO remove
+//		for (Statement statement : cfgNodeList.getNodes()) {
+////			if (statement instanceof Sstore)
+////				sstores.add(statement);
+////			else
+//			if (statement instanceof Jumpdest)
+//				jumpDestsNodes.add(statement);
+//			else if ((statement instanceof Jump) || (statement instanceof Jumpi)) {
+//				jumpNodes.add(statement);
+//			}
+//
+//		}
 
 		for (Edge edge : cfgNodeList.getEdges())
 			if ((edge.getDestination() instanceof Jump || edge.getDestination() instanceof Jumpi)
@@ -104,27 +108,99 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Returns a set of all the CALLDATA and CALLDATACOPY statements in the CFG.
+	 * Returns all statements whose runtime type is compatible with the provided
+	 * class. Results are cached so that repeated queries for the same class do
+	 * not require a full scan of the CFG.
 	 *
-	 * @return a set of all the CALLDATA and CALLDATACOPY statements in the CFG
+	 * @param statementClass the class to look up
+	 *
+	 * @return the set of statements matching {@code statementClass}
 	 */
-	public Set<Statement> getExternalData() {
-		if (this.externalData == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> externalData = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Calldataload
-						|| statement instanceof Calldatacopy) {
-					externalData.add(statement);
-				}
-			}
-
-			return this.externalData = externalData;
-		}
-
-		return this.externalData;
+	public Set<Statement> getAllStatementsByClass(Class<? extends Statement> statementClass) {
+		Objects.requireNonNull(statementClass, "statementClass cannot be null");
+		return statementsByClassCache.computeIfAbsent(statementClass, this::computeStatementsByClass);
 	}
+
+	/**
+	 * Returns all statements whose runtime type is compatible with at least one
+	 * of the provided classes. Each individual class lookup benefits from the
+	 * per-class cache.
+	 *
+	 * @param statementClasses the set of classes to look up
+	 *
+	 * @return the set of statements matching any of {@code statementClasses}
+	 */
+	public Set<Statement> getAllStatementsByClass(Set<Class<? extends Statement>> statementClasses) {
+		if (statementClasses == null || statementClasses.isEmpty())
+			return Collections.emptySet();
+
+		LinkedHashSet<Statement> statements = new LinkedHashSet<>();
+		for (Class<? extends Statement> statementClass : statementClasses)
+			statements.addAll(getAllStatementsByClass(statementClass));
+
+		return Collections.unmodifiableSet(statements);
+	}
+
+	/**
+	 * Returns all statements whose runtime type matches any of the provided
+	 * classes. This is a convenience overload that accepts a varargs list of
+	 * classes and delegates to {@link #getAllStatementsByClass(Set)} to
+	 * leverage caching.
+	 *
+	 * @param statementClasses the classes to look up
+	 *
+	 * @return the set of statements matching any of {@code statementClasses}
+	 */
+	@SafeVarargs
+	public final Set<Statement> getAllStatementsByClass(Class<? extends Statement>... statementClasses) {
+		if (statementClasses == null || statementClasses.length == 0)
+			return Collections.emptySet();
+		return getAllStatementsByClass(new LinkedHashSet<>(Arrays.asList(statementClasses)));
+	}
+
+	/**
+	 * Computes and caches the set of statements matching the provided class by
+	 * scanning the whole CFG. Results are wrapped in an unmodifiable set before
+	 * being stored in the cache.
+	 *
+	 * @param statementClass the class to compute the statements for
+	 *
+	 * @return the computed, cached set of statements for {@code statementClass}
+	 */
+	private Set<Statement> computeStatementsByClass(Class<? extends Statement> statementClass) {
+		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+		LinkedHashSet<Statement> statements = new LinkedHashSet<>();
+
+		for (Statement statement : cfgNodeList.getNodes())
+			if (statementClass.isInstance(statement))
+				statements.add(statement);
+
+		return Collections.unmodifiableSet(statements);
+	}
+
+//	/**
+//	 * Returns a set of all the CALLDATA and CALLDATACOPY statements in the CFG.
+//	 *
+//	 * @return a set of all the CALLDATA and CALLDATACOPY statements in the CFG
+//	 */
+//	// TODO remove this function
+//	public Set<Statement> getExternalData() {
+//		if (this.externalData == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> externalData = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes()) {
+//				if (statement instanceof Calldataload
+//						|| statement instanceof Calldatacopy) {
+//					externalData.add(statement);
+//				}
+//			}
+//
+//			return this.externalData = externalData;
+//		}
+//
+//		return this.externalData;
+//	}
 
 	/**
 	 * Yields the program counter of the last opcode in the CFG. This method
@@ -149,145 +225,146 @@ public class EVMCFG extends CFG {
 		return maxPc;
 	}
 
-	/**
-	 * Returns a set of all the SSTORE statements in the CFG.
-	 *
-	 * @return a set of all the SSTORE statements in the CFG
-	 */
-	public Set<Statement> getAllSstore() {
-		if (this.sstores == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> sstores = new HashSet<>();
+//	/**
+//	 * Returns a set of all the SSTORE statements in the CFG.
+//	 *
+//	 * @return a set of all the SSTORE statements in the CFG
+//	 */
+//	// TODO remove this function
+//	public Set<Statement> getAllSstore() {
+//		if (this.sstores == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> sstores = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Sstore)
+//					sstores.add(statement);
+//
+//			return this.sstores = sstores;
+//		}
+//
+//		return this.sstores;
+//	}
 
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Sstore)
-					sstores.add(statement);
-
-			return this.sstores = sstores;
-		}
-
-		return this.sstores;
-	}
-
-	/**
-	 * Returns all CALLDATALOAD statements contained in the control-flow graph.
-	 *
-	 * @return a set with every CALLDATALOAD statement in this CFG
-	 */
-	public Set<Statement> getAllCalldataload() {
-		if (this.calldataloads == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> calldataloads = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Calldataload)
-					calldataloads.add(statement);
-
-			return this.calldataloads = calldataloads;
-		}
-
-		return this.calldataloads;
-	}
-
-	/**
-	 * Returns all CALLDATACOPY statements contained in the control-flow graph.
-	 *
-	 * @return a set with every CALLDATACOPY statement in this CFG
-	 */
-	public Set<Statement> getAllCalldatacopy() {
-		if (this.calldatacopies == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> calldatacopies = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Calldatacopy)
-					calldatacopies.add(statement);
-
-			return this.calldatacopies = calldatacopies;
-		}
-
-		return this.calldatacopies;
-	}
-
-	/**
-	 * Returns all CALLDATASIZE statements contained in the control-flow graph.
-	 *
-	 * @return a set with every CALLDATASIZE statement in this CFG
-	 */
-	public Set<Statement> getAllCalldatasize() {
-		if (this.calldatasizes == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> calldatasizes = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Calldatasize)
-					calldatasizes.add(statement);
-
-			return this.calldatasizes = calldatasizes;
-		}
-
-		return this.calldatasizes;
-	}
-
-	/**
-	 * Returns all CALLER statements contained in the control-flow graph.
-	 *
-	 * @return a set with every CALLER statement in this CFG
-	 */
-	public Set<Statement> getAllCaller() {
-		if (this.callers == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> callers = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Caller)
-					callers.add(statement);
-
-			return this.callers = callers;
-		}
-
-		return this.callers;
-	}
-
-	/**
-	 * Returns all ORIGIN statements contained in the control-flow graph.
-	 *
-	 * @return a set with every ORIGIN statement in this CFG
-	 */
-	public Set<Statement> getAllOrigin() {
-		if (this.origins == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> origins = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Origin)
-					origins.add(statement);
-
-			return this.origins = origins;
-		}
-
-		return this.origins;
-	}
-
-	/**
-	 * Returns all CALLVALUE statements contained in the control-flow graph.
-	 *
-	 * @return a set with every CALLVALUE statement in this CFG
-	 */
-	public Set<Statement> getAllCallvalue() {
-		if (this.callvalues == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> callvalues = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Callvalue)
-					callvalues.add(statement);
-
-			return this.callvalues = callvalues;
-		}
-
-		return this.callvalues;
-	}
+//	/**
+//	 * Returns all CALLDATALOAD statements contained in the control-flow graph.
+//	 *
+//	 * @return a set with every CALLDATALOAD statement in this CFG
+//	 */
+//	public Set<Statement> getAllCalldataload() {
+//		if (this.calldataloads == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> calldataloads = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Calldataload)
+//					calldataloads.add(statement);
+//
+//			return this.calldataloads = calldataloads;
+//		}
+//
+//		return this.calldataloads;
+//	}
+//
+//	/**
+//	 * Returns all CALLDATACOPY statements contained in the control-flow graph.
+//	 *
+//	 * @return a set with every CALLDATACOPY statement in this CFG
+//	 */
+//	public Set<Statement> getAllCalldatacopy() {
+//		if (this.calldatacopies == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> calldatacopies = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Calldatacopy)
+//					calldatacopies.add(statement);
+//
+//			return this.calldatacopies = calldatacopies;
+//		}
+//
+//		return this.calldatacopies;
+//	}
+//
+//	/**
+//	 * Returns all CALLDATASIZE statements contained in the control-flow graph.
+//	 *
+//	 * @return a set with every CALLDATASIZE statement in this CFG
+//	 */
+//	public Set<Statement> getAllCalldatasize() {
+//		if (this.calldatasizes == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> calldatasizes = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Calldatasize)
+//					calldatasizes.add(statement);
+//
+//			return this.calldatasizes = calldatasizes;
+//		}
+//
+//		return this.calldatasizes;
+//	}
+//
+//	/**
+//	 * Returns all CALLER statements contained in the control-flow graph.
+//	 *
+//	 * @return a set with every CALLER statement in this CFG
+//	 */
+//	public Set<Statement> getAllCaller() {
+//		if (this.callers == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> callers = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Caller)
+//					callers.add(statement);
+//
+//			return this.callers = callers;
+//		}
+//
+//		return this.callers;
+//	}
+//
+//	/**
+//	 * Returns all ORIGIN statements contained in the control-flow graph.
+//	 *
+//	 * @return a set with every ORIGIN statement in this CFG
+//	 */
+//	public Set<Statement> getAllOrigin() {
+//		if (this.origins == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> origins = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Origin)
+//					origins.add(statement);
+//
+//			return this.origins = origins;
+//		}
+//
+//		return this.origins;
+//	}
+//
+//	/**
+//	 * Returns all CALLVALUE statements contained in the control-flow graph.
+//	 *
+//	 * @return a set with every CALLVALUE statement in this CFG
+//	 */
+//	public Set<Statement> getAllCallvalue() {
+//		if (this.callvalues == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> callvalues = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes())
+//				if (statement instanceof Callvalue)
+//					callvalues.add(statement);
+//
+//			return this.callvalues = callvalues;
+//		}
+//
+//		return this.callvalues;
+//	}
 
 	/**
 	 * Returns a set of all the STOP and RETURN statements in the CFG.
@@ -295,90 +372,81 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the STOP and RETURN statements in the CFG
 	 */
 	public Set<Statement> getAllSuccessfullyTerminationStatements() {
-		if (this.successfullyTerminationStatements == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> successfullyTerminationStatements = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes())
-				if (statement instanceof Stop
-						|| statement instanceof Return)
-					successfullyTerminationStatements.add(statement);
-
-			return this.successfullyTerminationStatements = successfullyTerminationStatements;
-		}
-
-		return this.successfullyTerminationStatements;
+		return getAllStatementsByClass(Stop.class, Return.class);
 	}
 
-	/**
-	 * Returns a set of all the CALL, STATICCALL and DELEGATECALL statements in
-	 * the CFG.
-	 *
-	 * @return a set of all the CALL, STATICCALL and DELEGATECALL statements in
-	 *             the CFG
-	 */
-	public Set<Statement> getAllCall() {
-		if (this.calls == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> calls = new HashSet<>();
+//	/**
+//	 * Returns a set of all the CALL, STATICCALL and DELEGATECALL statements in
+//	 * the CFG.
+//	 *
+//	 * @return a set of all the CALL, STATICCALL and DELEGATECALL statements in
+//	 *             the CFG
+//	 */
+//	// TODO remove this function
+//	public Set<Statement> getAllCall() {
+//		if (this.calls == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> calls = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes()) {
+//				if (statement instanceof Call) {
+//					calls.add(statement);
+//				} else if (statement instanceof Staticcall) {
+//					calls.add(statement);
+//				} else if (statement instanceof Delegatecall) {
+//					calls.add(statement);
+//				}
+//			}
+//
+//			return this.calls = calls;
+//		}
+//
+//		return this.calls;
+//	}
 
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Call) {
-					calls.add(statement);
-				} else if (statement instanceof Staticcall) {
-					calls.add(statement);
-				} else if (statement instanceof Delegatecall) {
-					calls.add(statement);
-				}
-			}
+//	// TODO remove this function
+//	public Set<Statement> getAllJumpI() {
+//		if (this.jumpI == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> jumpI = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes()) {
+//				if (statement instanceof Jumpi) {
+//					jumpI.add(statement);
+//				}
+//			}
+//
+//			return this.jumpI = jumpI;
+//		}
+//
+//		return this.jumpI;
+//	}
 
-			return this.calls = calls;
-		}
-
-		return this.calls;
-	}
-
-	public Set<Statement> getAllJumpI() {
-		if (this.jumpI == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> jumpI = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Jumpi) {
-					jumpI.add(statement);
-				}
-			}
-
-			return this.jumpI = jumpI;
-		}
-
-		return this.jumpI;
-	}
-
-	/**
-	 * Returns a set of all the LOGx statements in the CFG.
-	 *
-	 * @return a set of all the LOGx statements in the CFG
-	 */
-	public Set<Statement> getAllLogX() {
-		if (logxs == null) {
-			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
-			Set<Statement> logxs = new HashSet<>();
-
-			for (Statement statement : cfgNodeList.getNodes()) {
-				if (statement instanceof Log1
-						|| statement instanceof Log2
-						|| statement instanceof Log3
-						|| statement instanceof Log4) {
-					logxs.add(statement);
-				}
-			}
-
-			return this.logxs = logxs;
-		}
-
-		return logxs;
-	}
+//	/**
+//	 * Returns a set of all the LOGx statements in the CFG.
+//	 *
+//	 * @return a set of all the LOGx statements in the CFG
+//	 */
+//	// TODO remove this function
+//	public Set<Statement> getAllLogX() {
+//		if (logxs == null) {
+//			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+//			Set<Statement> logxs = new HashSet<>();
+//
+//			for (Statement statement : cfgNodeList.getNodes()) {
+//				if (statement instanceof Log1
+//						|| statement instanceof Log2
+//						|| statement instanceof Log3
+//						|| statement instanceof Log4) {
+//					logxs.add(statement);
+//				}
+//			}
+//
+//			return this.logxs = logxs;
+//		}
+//
+//		return logxs;
+//	}
 
 	/**
 	 * Returns a set of all the JUMPDEST statements in the CFG.
@@ -386,7 +454,7 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMPDEST statements in the CFG
 	 */
 	public Set<Statement> getAllJumpdest() {
-		return jumpDestsNodes;
+		return getAllStatementsByClass(Jumpdest.class);
 	}
 
 	/**
@@ -396,12 +464,11 @@ public class EVMCFG extends CFG {
 	 */
 	public Set<Number> getAllJumpdestLocations() {
 		if (jumpDestsNodesLocations == null)
-			return jumpDestsNodesLocations = this.jumpDestsNodes.stream()
+			return jumpDestsNodesLocations = this.getAllJumpdest().stream()
 					.map(j -> new Number(((ProgramCounterLocation) j.getLocation()).getPc()))
 					.collect(Collectors.toSet());
 		else
 			return jumpDestsNodesLocations;
-
 	}
 
 	/**
@@ -410,7 +477,7 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMP and JUMPI statements in the CFG
 	 */
 	public Set<Statement> getAllJumps() {
-		return jumpNodes;
+		return getAllStatementsByClass(Jump.class, Jumpi.class);
 	}
 
 	/**
@@ -459,6 +526,7 @@ public class EVMCFG extends CFG {
 	 * @return a set of all the JUMP statements preceded by a PUSH statement in
 	 *             the CFG
 	 */
+	// TODO remove this function
 	public Set<Statement> getAllPushedJumps() {
 		return pushedJumps;
 	}

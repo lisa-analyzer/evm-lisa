@@ -211,7 +211,7 @@ public class UncheckedExternalCallChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-		Set<Statement> calls = cfg.getAllCall();
+		Set<Statement> calls = cfg.getAllStatementsByClass(Call.class, Staticcall.class, Delegatecall.class);
 
 		for (Statement call : calls) {
 			if (cfg.reachableFromWithoutStatements(call, logx, taintedJumpi)) {
@@ -253,7 +253,7 @@ public class UncheckedExternalCallChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-		Set<Statement> calls = cfg.getAllCall();
+		Set<Statement> calls = cfg.getAllStatementsByClass(Call.class, Staticcall.class, Delegatecall.class);
 
 		for (Statement call : calls) {
 			if (cfg.reachableFromWithoutStatements(call, logx, taintedJumpi)) {

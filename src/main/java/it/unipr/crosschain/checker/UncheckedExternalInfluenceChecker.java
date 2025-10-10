@@ -213,7 +213,7 @@ public class UncheckedExternalInfluenceChecker implements
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
-		Set<Statement> externalDatas = cfg.getExternalData();
+		Set<Statement> externalDatas = cfg.getAllStatementsByClass(Calldataload.class, Calldatacopy.class);
 
 		for (Statement data : externalDatas) {
 			if (cfg.reachableFromWithoutStatements(data, logx, taintedJumpi)) {
@@ -254,7 +254,7 @@ public class UncheckedExternalInfluenceChecker implements
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
-		Set<Statement> externalDatas = cfg.getExternalData();
+		Set<Statement> externalDatas = cfg.getAllStatementsByClass(Calldataload.class, Calldatacopy.class);
 
 		for (Statement data : externalDatas) {
 			if (cfg.reachableFromWithoutStatements(data, logx, taintedJumpi)) {

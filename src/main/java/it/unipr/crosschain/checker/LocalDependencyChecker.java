@@ -16,6 +16,7 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,7 +95,7 @@ public class LocalDependencyChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-		for (Statement externalData : cfg.getExternalData()) {
+		for (Statement externalData : cfg.getAllStatementsByClass(Calldataload.class, Calldatacopy.class)) {
 			if (cfg.reachableFrom(externalData, jumpi)) {
 				for (Statement logVulnerable : MyCache.getInstance()
 						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
@@ -147,7 +148,7 @@ public class LocalDependencyChecker implements
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg) {
 
-		for (Statement externalData : cfg.getExternalData()) {
+		for (Statement externalData : cfg.getAllStatementsByClass(Calldataload.class, Calldatacopy.class)) {
 			if (cfg.reachableFrom(externalData, jumpi)) {
 				for (Statement logVulnerable : MyCache.getInstance()
 						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
