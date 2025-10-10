@@ -51,6 +51,18 @@ public final class CustomPolicy {
 	private final Set<String> knownEvents;
 
 	/**
+	 * Creates an empty policy with no entries. All lookups return empty
+	 * collections and {@link #toJson()} yields an empty {@code policy} array.
+	 */
+	public CustomPolicy() {
+		this.entries = Collections.emptyList();
+		this.entriesBySourceName = Collections.emptyMap();
+		this.entriesByDestinationName = Collections.emptyMap();
+		this.entriesByEvent = Collections.emptyMap();
+		this.knownEvents = Collections.emptySet();
+	}
+
+	/**
 	 * Creates a policy view by eagerly loading and caching the data contained
 	 * in the provided JSON file.
 	 *
@@ -237,8 +249,26 @@ public final class CustomPolicy {
 	}
 
 	/**
-	 * Serializes the in-memory representation of this policy into a JSON string
-	 * that mirrors the original input format.
+	 * Checks whether the policy contains no entries.
+	 *
+	 * @return {@code true} if the policy is empty, {@code false} otherwise
+	 */
+	public boolean isEmpty() {
+		return entries.isEmpty();
+	}
+
+	/**
+	 * Returns the number of policy entries loaded in memory.
+	 *
+	 * @return the amount of entries contained in this policy
+	 */
+	public int size() {
+		return entries.size();
+	}
+
+	/**
+	 * Serializes the in-memory representation of this policy into a
+	 * {@link JSONObject} that mirrors the original input format.
 	 *
 	 * @return the JSON serialization of the policy
 	 */

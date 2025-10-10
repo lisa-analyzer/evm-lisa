@@ -11,10 +11,7 @@ import it.unipr.crosschain.events.EventKnowledge;
 import it.unipr.crosschain.taint.*;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
-import it.unipr.utils.EVMLiSAExecutor;
-import it.unipr.utils.LiSAConfigurationManager;
-import it.unipr.utils.MyCache;
-import it.unipr.utils.VulnerabilitiesObject;
+import it.unipr.utils.*;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
@@ -27,7 +24,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Future;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -152,17 +148,39 @@ public class xEVMLiSA {
 	 * @return true if the event should be linked to the function according to
 	 *             the policy
 	 */
-	public static boolean applyPolicy(List<Pair<String, String>> policy, Signature event, Signature function) {
+	public static boolean applyPolicy(CustomPolicy policy, Signature event, Signature function) {
 		if (policy == null || policy.isEmpty())
 			return event.getName().equalsIgnoreCase(function.getName());
 
-		for (Pair<String, String> pair : policy) {
-			String eventPolicy = pair.getLeft();
-			String functionPolicy = pair.getRight();
-			if (eventPolicy.equalsIgnoreCase(event.getName())
-					&& functionPolicy.equalsIgnoreCase(function.getName()))
+		String eventName = event.getName();
+		String functionName = function.getName();
+
+		List<CustomPolicy.PolicyEntry> candidates = policy.getEntriesByEvent(eventName);
+		if (candidates.isEmpty())
+			candidates = policy.getEntries();
+
+		for (CustomPolicy.PolicyEntry entry : candidates)
+			if (eventMatches(entry.getSourceFunction(), eventName)
+					&& entry.getDestinationFunction().getName().equalsIgnoreCase(functionName))
 				return true;
-		}
+
+		return false;
+	}
+
+	/**
+	 * Verifies whether the provided event name matches any of the events
+	 * associated with the given source function specification.
+	 *
+	 * @param sourceSpec the source function descriptor declared in the policy
+	 * @param eventName  the name of the runtime event being considered
+	 *
+	 * @return {@code true} if {@code eventName} matches one of the policy event
+	 *             names, {@code false} otherwise
+	 */
+	private static boolean eventMatches(CustomPolicy.FunctionSpec sourceSpec, String eventName) {
+		for (String policyEvent : sourceSpec.getEvents())
+			if (policyEvent.equalsIgnoreCase(eventName))
+				return true;
 		return false;
 	}
 
