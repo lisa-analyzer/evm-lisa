@@ -50,6 +50,12 @@ public class EVMCFG extends CFG {
 	public Set<Statement> externalData;
 	public Set<Statement> jumpI;
 	public Set<Statement> successfullyTerminationStatements;
+	private Set<Statement> calldataloads;
+	private Set<Statement> calldatacopies;
+	private Set<Statement> calldatasizes;
+	private Set<Statement> callers;
+	private Set<Statement> origins;
+	private Set<Statement> callvalues;
 
 	/**
 	 * Builds a EVMCFG starting from its description.
@@ -72,6 +78,11 @@ public class EVMCFG extends CFG {
 		this.jumpNodes = new HashSet<Statement>();
 		this.pushedJumps = new HashSet<Statement>();
 		this.sstores = new HashSet<Statement>();
+		this.calldataloads = new HashSet<Statement>();
+		this.calldatacopies = new HashSet<Statement>();
+		this.calldatasizes = new HashSet<Statement>();
+		this.callers = new HashSet<Statement>();
+		this.origins = new HashSet<Statement>();
 
 		NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
 
@@ -156,6 +167,126 @@ public class EVMCFG extends CFG {
 		}
 
 		return this.sstores;
+	}
+
+	/**
+	 * Returns all CALLDATALOAD statements contained in the control-flow graph.
+	 *
+	 * @return a set with every CALLDATALOAD statement in this CFG
+	 */
+	public Set<Statement> getAllCalldataload() {
+		if (this.calldataloads == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> calldataloads = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Calldataload)
+					calldataloads.add(statement);
+
+			return this.calldataloads = calldataloads;
+		}
+
+		return this.calldataloads;
+	}
+
+	/**
+	 * Returns all CALLDATACOPY statements contained in the control-flow graph.
+	 *
+	 * @return a set with every CALLDATACOPY statement in this CFG
+	 */
+	public Set<Statement> getAllCalldatacopy() {
+		if (this.calldatacopies == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> calldatacopies = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Calldatacopy)
+					calldatacopies.add(statement);
+
+			return this.calldatacopies = calldatacopies;
+		}
+
+		return this.calldatacopies;
+	}
+
+	/**
+	 * Returns all CALLDATASIZE statements contained in the control-flow graph.
+	 *
+	 * @return a set with every CALLDATASIZE statement in this CFG
+	 */
+	public Set<Statement> getAllCalldatasize() {
+		if (this.calldatasizes == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> calldatasizes = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Calldatasize)
+					calldatasizes.add(statement);
+
+			return this.calldatasizes = calldatasizes;
+		}
+
+		return this.calldatasizes;
+	}
+
+	/**
+	 * Returns all CALLER statements contained in the control-flow graph.
+	 *
+	 * @return a set with every CALLER statement in this CFG
+	 */
+	public Set<Statement> getAllCaller() {
+		if (this.callers == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> callers = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Caller)
+					callers.add(statement);
+
+			return this.callers = callers;
+		}
+
+		return this.callers;
+	}
+
+	/**
+	 * Returns all ORIGIN statements contained in the control-flow graph.
+	 *
+	 * @return a set with every ORIGIN statement in this CFG
+	 */
+	public Set<Statement> getAllOrigin() {
+		if (this.origins == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> origins = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Origin)
+					origins.add(statement);
+
+			return this.origins = origins;
+		}
+
+		return this.origins;
+	}
+
+	/**
+	 * Returns all CALLVALUE statements contained in the control-flow graph.
+	 *
+	 * @return a set with every CALLVALUE statement in this CFG
+	 */
+	public Set<Statement> getAllCallvalue() {
+		if (this.callvalues == null) {
+			NodeList<CFG, Statement, Edge> cfgNodeList = this.getNodeList();
+			Set<Statement> callvalues = new HashSet<>();
+
+			for (Statement statement : cfgNodeList.getNodes())
+				if (statement instanceof Callvalue)
+					callvalues.add(statement);
+
+			return this.callvalues = callvalues;
+		}
+
+		return this.callvalues;
 	}
 
 	/**
