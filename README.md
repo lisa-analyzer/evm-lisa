@@ -9,8 +9,9 @@
 
 EVMLiSA is a static analyzer based on abstract interpretation for [EVM bytecode](https://www.ethervm.io/) of smart contracts deployed on Ethereum blockchain and built upon [LiSA](https://unive-ssv.github.io/lisa/). Given a EVM bytecode smart contract, EVMLiSA builds a sound and precise control-flow graph of the smart contract.
 
-EVMLiSA is based on the peer-reviewed publication
-> Vincenzo Arceri, Saverio Mattia Merenda, Greta Dolcetti, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"Towards a Sound Construction of EVM Bytecode Control-Flow Graphs"**_. In Proceedings of the 26th ACM International Workshop on Formal Techniques for Java-like Programs (FTfJP 2024), co-located with ECOOP 2024.
+EVMLiSA is based on peer-reviewed publications:
+1. Vincenzo Arceri, Saverio Mattia Merenda, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"EVMLiSA: Sound Static Control-Flow Graph Construction for EVM Bytecode"**_. Blockchain: Research and Applications, 2025 (doi: [10.1016/j.bcra.2025.100384](https://doi.org/10.1016/j.bcra.2025.100384)).
+2. Vincenzo Arceri, Saverio Mattia Merenda, Greta Dolcetti, Luca Negrini, Luca Olivieri, Enea Zaffanella. _**"Towards a Sound Construction of EVM Bytecode Control-Flow Graphs"**_. In Proceedings of the 26th ACM International Workshop on Formal Techniques for Java-like Programs (FTfJP 2024), co-located with ECOOP 2024 (doi: [10.1145/3678721.3686227](https://dl.acm.org/doi/10.1145/3678721.3686227)).
 
 ## Table of Contents
 
