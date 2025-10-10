@@ -170,7 +170,7 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
 		unit.addCodeMember(cfg);
 
-		cfg.computeHotspotNodes();
+		cfg.computePushedJumps();
 		return cfg;
 	}
 
