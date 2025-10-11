@@ -728,6 +728,29 @@ public class EVMCFG extends CFG {
 	public Set<Statement> getStatementsInAPathWithTypes(
 			Statement start,
 			Statement target,
+			Class<?>... getTypes) {
+		return getStatementsInAPathWithTypes(start, target, Set.of(getTypes));
+	}
+
+	/**
+	 * Retrieves all statements of the specified types that lie on any
+	 * control‑flow path between two given statements in the CFG. This method
+	 * performs a depth‑first traversal from the {@code start} statement until
+	 * reaching the {@code target}. Along every explored path, it collects any
+	 * intermediate statements whose runtime class matches one of the provided
+	 * types.
+	 *
+	 * @param start    the entry point of the search
+	 * @param target   the termination point of the search
+	 * @param getTypes a set of statement classes to filter and collect along
+	 *                     the paths
+	 *
+	 * @return a set of all matching statements encountered before reaching
+	 *             {@code target}, or an empty set if none are found
+	 */
+	public Set<Statement> getStatementsInAPathWithTypes(
+			Statement start,
+			Statement target,
 			Set<Class<?>> getTypes) {
 
 		Set<Statement> visited = new HashSet<>();
