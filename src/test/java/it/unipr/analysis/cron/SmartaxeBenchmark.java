@@ -109,7 +109,7 @@ public class SmartaxeBenchmark {
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
 						() -> xEVMLiSA.runAccessControlIncompleteness(contract)));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
-						() -> xEVMLiSA.runMissingEventNotificationChecker(contract)));
+						() -> xEVMLiSA.runMissingEventNotificationChecker(contract, bridge.getPolicy())));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
 						() -> xEVMLiSA.runLocalDependencyChecker(contract)));
 			}

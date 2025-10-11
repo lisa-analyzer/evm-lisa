@@ -265,7 +265,8 @@ public class xEVMLiSA {
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
 			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runMissingEventNotificationChecker(contract)));
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> runMissingEventNotificationChecker(contract, bridge.getPolicy())));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(contract)));
 		}
@@ -456,20 +457,27 @@ public class xEVMLiSA {
 
 	/**
 	 * Executes the Missing Event Notification Checker on a single contract. For
-	 * each public function: (i) Follow only successful return paths (STOP for
-	 * void, RETURN otherwise). (ii) Identify any SSTORE instructions on that
-	 * path. (iii) Ensure that each such SSTORE is followed by at least one LOG
-	 * before termination. (iv) Flag any missing notifications as
-	 * vulnerabilities.
+	 * each public function with a cross-chain connection: (i) Follow only
+	 * successful return paths (STOP for void, RETURN otherwise). (ii) Identify
+	 * any SSTORE instructions on that path. (iii) Ensure that each such SSTORE
+	 * is followed by at least one Event emit before termination. (iv) Flag any
+	 * missing notifications as vulnerabilities.
 	 *
 	 * @param contract the SmartContract to analyze for missing event logs
 	 */
-	public static void runMissingEventNotificationChecker(SmartContract contract) {
+	public static void runMissingEventNotificationChecker(SmartContract contract, CustomPolicy policy) {
 		log.info("[IN] Running missing event notification checker on {}.", contract.getName());
 
 		EVMCFG cfg = contract.getCFG();
 
 		for (Signature function : contract.getFunctionsSignature()) {
+			/*
+			 * We need to check only functions that have a cross chain
+			 * connection with another smart contract
+			 */
+			if (policy.getEntriesBySourceFunction(function.getName()).isEmpty())
+				continue;
+
 			for (Statement entrypoint : function.getEntryPoints()) {
 				/*
 				 * It means that this vulnerability is inside a private
@@ -498,14 +506,28 @@ public class xEVMLiSA {
 							&& exitpoint instanceof Return)
 						continue;
 
-					/* We take only the state update inside the function */
-					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
-							Set.of(Sstore.class));
+					Set<String> eventsPolicy = policy.getEventsForFunction(function.getName());
+					Set<Signature> eventsContract = contract.getEventsSignature();
+					Set<Statement> eventsExitpoints = new HashSet<>();
+
+					for (String eventPolicy : eventsPolicy) {
+						for (Signature eventContract : eventsContract) {
+							if (!eventPolicy.equalsIgnoreCase(eventContract.getName()))
+								continue;
+							eventsExitpoints.addAll(eventContract.getExitPoints());
+						}
+					}
+
+					/* Skip if we have no event exitpoints */
+					if (eventsExitpoints.isEmpty())
+						continue;
+
+					/* We take only state updates inside the function */
+					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint, Sstore.class);
 
 					for (Statement sstore : sstores) {
-						if (cfg.reachableFromWithoutTypes(entrypoint, sstore, Set.of(Log.class))
-								&& cfg.reachableFromWithoutTypes(sstore, exitpoint, Set.of(Log.class))) {
-
+						if (cfg.reachableFromWithoutStatements(entrypoint, sstore, eventsExitpoints)
+								&& cfg.reachableFromWithoutStatements(sstore, exitpoint, eventsExitpoints)) {
 							ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
 									.getLocation();
 							ProgramCounterLocation exitpointLocation = (ProgramCounterLocation) exitpoint
