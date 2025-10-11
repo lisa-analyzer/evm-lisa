@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -43,6 +45,7 @@ import org.json.JSONTokener;
  * efficient.
  */
 public final class CustomPolicy {
+	private static final Logger log = LogManager.getLogger(CustomPolicy.class);
 
 	private final List<PolicyEntry> entries;
 	private final Map<String, List<PolicyEntry>> entriesBySourceName;
@@ -104,6 +107,8 @@ public final class CustomPolicy {
 		this.entriesByDestinationName = toUnmodifiableMultiMap(tmpByDestination);
 		this.entriesByEvent = toUnmodifiableMultiMap(tmpByEvent);
 		this.knownEvents = Collections.unmodifiableSet(new LinkedHashSet<>(tmpByEvent.keySet()));
+
+		log.info("Loaded {} policy entries from {}.", tmpEntries.size(), policyPath.toString());
 	}
 
 	/**
@@ -246,6 +251,28 @@ public final class CustomPolicy {
 	 */
 	public Set<String> getKnownEvents() {
 		return knownEvents;
+	}
+
+	/**
+	 * Retrieves the set of event names associated with the specified
+	 * destination function according to this policy.
+	 *
+	 * @param functionName the destination function name as declared in the
+	 *                         policy
+	 *
+	 * @return an unmodifiable set containing all matching event names, or an
+	 *             empty set if none are associated with {@code functionName}
+	 */
+	public Set<String> getEventsForFunction(String functionName) {
+		if (functionName == null || functionName.isEmpty())
+			return Collections.emptySet();
+
+		LinkedHashSet<String> events = new LinkedHashSet<>();
+		for (PolicyEntry entry : entries)
+			if (entry.getDestinationFunction().getName().equalsIgnoreCase(functionName))
+				events.addAll(entry.getSourceFunction().getEvents());
+
+		return Collections.unmodifiableSet(events);
 	}
 
 	/**

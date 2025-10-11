@@ -38,6 +38,11 @@ public class CustomPolicyTest {
 		List<PolicyEntry> depositedEntries = policy.getEntriesByEvent("Deposited");
 		assert depositedEntries.size() == 3;
 
+		Set<String> functionEvents = policy.getEventsForFunction("transferOut");
+		assert functionEvents.contains("TransferOut");
+		assert functionEvents.contains("Outbound");
+		assert policy.getEventsForFunction("missing").isEmpty();
+
 		Set<String> knownEvents = policy.getKnownEvents();
 		assert knownEvents.contains("Deposit");
 		assert knownEvents.contains("TransferOutAndCall");
@@ -66,6 +71,7 @@ public class CustomPolicyTest {
 		assert emptyPolicy.getEntries().isEmpty();
 		assert emptyPolicy.getEntriesByEvent("any").isEmpty();
 		assert emptyPolicy.getEntriesBySourceFunction("any").isEmpty();
+		assert emptyPolicy.getEventsForFunction("any").isEmpty();
 		assert emptyPolicy.getKnownEvents().isEmpty();
 		JSONObject json = emptyPolicy.toJson();
 		assert json.has("policy");
