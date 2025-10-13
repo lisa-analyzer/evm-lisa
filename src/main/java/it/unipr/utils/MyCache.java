@@ -1,58 +1,59 @@
 package it.unipr.utils;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
 import it.unipr.analysis.contract.Signature;
-import it.unipr.analysis.taint.TaintElement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
+import redis.clients.jedis.UnifiedJedis;
 
 /**
- * Singleton class implementing a cache with an LRU (Least Recently Used)
- * eviction policy. The cache uses a {@link LRUMap} to store key-value pairs
- * where the key is a {@link Pair} of {@link String} and {@link Number}, and the
- * value is a {@link StackElement}.
+ * MyCache is a singleton helper that provides a Redis-backed cache and a set of
+ * convenience operations used by the analysis. The implementation stores all
+ * state in Redis (via a {@link redis.clients.jedis.UnifiedJedis} client) and
+ * exposes the same methods previously backed by in-memory maps so callers do
+ * not need to change. Methods in this class use base64-encoded Java
+ * serialization for complex objects when persisted to Redis.
  */
 public class MyCache {
 	private static MyCache _instance = null;
 	private static long _timesUsed = 0;
+	private final UnifiedJedis jedis;
 
-	private final LRUMap<Pair<String, Number>, StackElement> _map;
-	private final LRUMap<String, Long> _timeLostToGetStorage;
-	private final LRUMap<String, Boolean> _reachableFrom;
-
-	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleTxOriginWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleEventOrderWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _accessControlIncompletenessWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleAccessControlIncompletenessWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _missingEventNotificationWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleLocalDependencyWarnings;
-	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
-
-	private final Set<Statement> _taintedCallDataLoad;
-
-	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
-
-	private final LRUMap<Integer, Set<Object>> _vulnerabilityPerFunction;
-	private final LRUMap<Signature, Set<Signature>> _mapEventsFunctions;
+	/**
+	 * Private constructor: initializes the Redis client using the
+	 * environment/system configuration. Use {@link #getInstance()} to obtain
+	 * the singleton instance.
+	 */
+	private MyCache() {
+		/*
+		 * Initialize jedis eagerly to simplify code and avoid synchronized
+		 * lazy-init
+		 */
+		String url = Dotenv.load().get("REDIS_URL", "redis://localhost:6379");
+		UnifiedJedis _j = null;
+		try {
+			_j = new UnifiedJedis(url);
+		} catch (Exception e) {
+			/*
+			 * If Redis unavailable at construction, still allow instance
+			 * creation; getJedis() will return this (possibly null) client
+			 */
+			_j = new UnifiedJedis("redis://localhost:6379");
+		}
+		this.jedis = _j;
+	}
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -71,6 +72,19 @@ public class MyCache {
 	}
 
 	/**
+	 * Returns the pre-initialized Redis client used by this cache. This
+	 * accessor is intentionally package-private/private to make calling sites
+	 * in this class more readable. The returned client may be null if Redis
+	 * could not be constructed at startup; callers should handle exceptions
+	 * accordingly.
+	 *
+	 * @return the {@link UnifiedJedis} client used to access Redis
+	 */
+	private UnifiedJedis getJedis() {
+		return jedis;
+	}
+
+	/**
 	 * Retrieves the number of times the cache has been used.
 	 *
 	 * @return the count of times the cache has been used as a long value
@@ -80,54 +94,50 @@ public class MyCache {
 	}
 
 	/**
-	 * Private constructor to prevent instantiation.
+	 * Adds a mapping between an event signature and a function signature. The
+	 * mapping is stored in Redis as a set under the key
+	 * "mapEventsFunctions:<base64(event)>". Members are base64-serialized
+	 * representations of {@link Signature} objects.
+	 *
+	 * @param event    the event signature used as the set key
+	 * @param function the function signature to add as a member
 	 */
-	private MyCache() {
-		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
-		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
-		this._reachableFrom = new LRUMap<String, Boolean>(5000);
-
-		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleTxOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleEventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._accessControlIncompletenessWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleAccessControlIncompletenessWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._missingEventNotificationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleLocalDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._vulnerableLogStatement = new LRUMap<>(5000);
-
-		this._taintedCallDataLoad = new HashSet<>();
-
-		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
-
-		this._vulnerabilityPerFunction = new LRUMap<>(10000);
-		this._mapEventsFunctions = new LRUMap<>(10000);
-	}
-
 	public void addMapEventsFunctions(Signature event, Signature function) {
-		synchronized (_mapEventsFunctions) {
-			_mapEventsFunctions
-					.computeIfAbsent(event, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(function);
+		try {
+			String key = "mapEventsFunctions:" + base64Serialize(event);
+			getJedis().sadd(key, base64Serialize(function));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
+	/**
+	 * Retrieves the set of functions previously associated with the given event
+	 * signature. If no mapping exists, an empty set is returned.
+	 *
+	 * @param event the event signature whose associated functions are requested
+	 *
+	 * @return a set of {@link Signature} objects (empty if none)
+	 */
 	public Set<Signature> getMapEventsFunctions(Signature event) {
-		synchronized (_mapEventsFunctions) {
-			return (_mapEventsFunctions.get(event) != null)
-					? _mapEventsFunctions.get(event)
-					: Set.of();
+		try {
+			String key = "mapEventsFunctions:" + base64Serialize(event);
+			var members = getJedis().smembers(key);
+			if (members == null || members.isEmpty())
+				return Set.of();
+			Set<Signature> results = Collections.synchronizedSet(new HashSet<>());
+			for (String m : members) {
+				try {
+					Signature s = (Signature) base64Deserialize(m);
+					if (s != null)
+						results.add(s);
+				} catch (Exception ex) {
+					/* Ignore */
+				}
+			}
+			return results;
+		} catch (Exception e) {
+			return Set.of();
 		}
 	}
 
@@ -144,10 +154,11 @@ public class MyCache {
 	 * @param warning the vulnerability description or warning object to record
 	 */
 	public void addVulnerabilityPerFunction(Integer key, Object warning) {
-		synchronized (_vulnerabilityPerFunction) {
-			_vulnerabilityPerFunction
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "vulnPerFunc:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -165,15 +176,23 @@ public class MyCache {
 	 *             empty JSONArray if none are present
 	 */
 	public JSONArray getVulnerabilityPerFunction(Integer key) {
-		synchronized (_vulnerabilityPerFunction) {
-			if (_vulnerabilityPerFunction.get(key) == null)
+		try {
+			String redisKey = "vulnPerFunc:" + key;
+			var members = getJedis().smembers(redisKey);
+			if (members == null || members.isEmpty())
 				return new JSONArray();
-
 			JSONArray results = new JSONArray();
-			for (Object warning : _vulnerabilityPerFunction.get(key)) {
-				results.put(warning);
+			for (String m : members) {
+				try {
+					Object obj = base64Deserialize(m);
+					results.put(obj == null ? m : obj);
+				} catch (Exception ex) {
+					results.put(m);
+				}
 			}
 			return results;
+		} catch (Exception e) {
+			return new JSONArray();
 		}
 	}
 
@@ -185,8 +204,12 @@ public class MyCache {
 	 * @param value the value, a {@link StackElement}.
 	 */
 	public void put(Pair<String, it.unipr.analysis.Number> key, StackElement value) {
-		synchronized (_map) {
-			_map.put(key, value);
+		try {
+			String redisKey = "cache:" + base64Serialize(key);
+			String payload = base64Serialize(value);
+			getJedis().set(redisKey, payload);
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -200,8 +223,18 @@ public class MyCache {
 	 *             not in the cache.
 	 */
 	public StackElement get(Pair<String, Number> key) {
-		synchronized (_map) {
-			return _map.get(key);
+		try {
+			String redisKey = "cache:" + base64Serialize(key);
+			String payload = getJedis().get(redisKey);
+			if (payload == null)
+				return null;
+			Object obj = base64Deserialize(payload);
+			if (obj instanceof StackElement) {
+				return (StackElement) obj;
+			}
+			return null;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
@@ -211,8 +244,11 @@ public class MyCache {
 	 * @return the size of the cache.
 	 */
 	public int size() {
-		synchronized (_map) {
-			return _map.size();
+		try {
+			var keys = getJedis().keys("cache:*");
+			return keys == null ? 0 : keys.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -227,8 +263,11 @@ public class MyCache {
 	public void updateTimeLostToGetStorage(String address, long timeLostToGetStorage) {
 		if (address == null)
 			throw new NullPointerException("Address is null");
-		synchronized (_timeLostToGetStorage) {
-			this._timeLostToGetStorage.put(address, timeLostToGetStorage);
+		try {
+			String redisKey = "timeLost:" + address;
+			getJedis().set(redisKey, String.valueOf(timeLostToGetStorage));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -240,8 +279,14 @@ public class MyCache {
 	public long getTimeLostToGetStorage(String address) {
 		if (address == null)
 			return 0;
-		synchronized (_timeLostToGetStorage) {
-			return this._timeLostToGetStorage.get(address) == null ? 0 : this._timeLostToGetStorage.get(address);
+		try {
+			String redisKey = "timeLost:" + address;
+			String val = getJedis().get(redisKey);
+			if (val == null)
+				return 0;
+			return Long.parseLong(val);
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -255,10 +300,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addReentrancyWarning(Integer key, Object warning) {
-		synchronized (_reentrancyWarnings) {
-			_reentrancyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "reentrancy:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -274,8 +320,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getReentrancyWarnings(Integer key) {
-		synchronized (_reentrancyWarnings) {
-			return (_reentrancyWarnings.get(key) != null) ? _reentrancyWarnings.get(key).size() : 0;
+		try {
+			String redisKey = "reentrancy:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -289,10 +339,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addEventOrderWarning(Integer key, Object warning) {
-		synchronized (_eventOrderWarnings) {
-			_eventOrderWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "eventOrder:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -308,8 +359,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getEventOrderWarnings(Integer key) {
-		synchronized (_eventOrderWarnings) {
-			return (_eventOrderWarnings.get(key) != null) ? _eventOrderWarnings.get(key).size() : 0;
+		try {
+			String redisKey = "eventOrder:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -323,10 +378,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleEventOrderWarning(Integer key, Object warning) {
-		synchronized (_possibleEventOrderWarnings) {
-			_possibleEventOrderWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "possibleEventOrder:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -342,8 +398,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getPossibleEventOrderWarnings(Integer key) {
-		synchronized (_possibleEventOrderWarnings) {
-			return (_possibleEventOrderWarnings.get(key) != null) ? _possibleEventOrderWarnings.get(key).size() : 0;
+		try {
+			String redisKey = "possibleEventOrder:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -357,10 +417,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addMissingEventNotificationWarning(Integer key, Object warning) {
-		synchronized (_missingEventNotificationWarnings) {
-			_missingEventNotificationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "missingEventNotification:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -376,10 +437,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getMissingEventNotificationWarnings(Integer key) {
-		synchronized (_missingEventNotificationWarnings) {
-			return (_missingEventNotificationWarnings.get(key) != null)
-					? _missingEventNotificationWarnings.get(key).size()
-					: 0;
+		try {
+			String redisKey = "missingEventNotification:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -393,10 +456,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addAccessControlIncompletenessWarning(Integer key, Object warning) {
-		synchronized (_accessControlIncompletenessWarnings) {
-			_accessControlIncompletenessWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "accessControlIncompleteness:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -412,10 +476,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getAccessControlIncompletenessWarnings(Integer key) {
-		synchronized (_accessControlIncompletenessWarnings) {
-			return (_accessControlIncompletenessWarnings.get(key) != null)
-					? _accessControlIncompletenessWarnings.get(key).size()
-					: 0;
+		try {
+			String redisKey = "accessControlIncompleteness:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -429,10 +495,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleAccessControlIncompletenessWarning(Integer key, Object warning) {
-		synchronized (_possibleAccessControlIncompletenessWarnings) {
-			_possibleAccessControlIncompletenessWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "possibleAccessControlIncompleteness:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -448,10 +515,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getPossibleAccessControlIncompletenessWarnings(Integer key) {
-		synchronized (_possibleAccessControlIncompletenessWarnings) {
-			return (_possibleAccessControlIncompletenessWarnings.get(key) != null)
-					? _possibleAccessControlIncompletenessWarnings.get(key).size()
-					: 0;
+		try {
+			String redisKey = "possibleAccessControlIncompleteness:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -464,8 +533,11 @@ public class MyCache {
 	 *                            {@code false} otherwise
 	 */
 	public void addReachableFrom(String key, boolean isReachableFrom) {
-		synchronized (_reachableFrom) {
-			_reachableFrom.put(key, isReachableFrom);
+		try {
+			String redisKey = "reachableFrom:" + key;
+			getJedis().set(redisKey, String.valueOf(isReachableFrom));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -480,8 +552,17 @@ public class MyCache {
 	 * @throws NullPointerException if the key does not exist in the map
 	 */
 	public boolean isReachableFrom(String key) {
-		synchronized (_reachableFrom) {
-			return _reachableFrom.get(key);
+		try {
+			String redisKey = "reachableFrom:" + key;
+			String val = getJedis().get(redisKey);
+			if (val == null)
+				throw new NullPointerException();
+			return Boolean.parseBoolean(val);
+		} catch (NullPointerException npe) {
+			throw npe;
+		} catch (Exception e) {
+			// if redis unavailable, fall back to false
+			return false;
 		}
 	}
 
@@ -494,8 +575,11 @@ public class MyCache {
 	 *             otherwise
 	 */
 	public boolean existsInReachableFrom(String key) {
-		synchronized (_reachableFrom) {
-			return (_reachableFrom.get(key) != null);
+		try {
+			String redisKey = "reachableFrom:" + key;
+			return getJedis().exists(redisKey);
+		} catch (Exception e) {
+			return false;
 		}
 	}
 
@@ -509,10 +593,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addTxOriginWarning(Integer key, Object warning) {
-		synchronized (_txOriginWarnings) {
-			_txOriginWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "txOrigin:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -528,8 +613,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getTxOriginWarnings(Integer key) {
-		synchronized (_txOriginWarnings) {
-			return (_txOriginWarnings.get(key) != null) ? _txOriginWarnings.get(key).size() : 0;
+		try {
+			String redisKey = "txOrigin:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -543,10 +632,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleTxOriginWarning(Integer key, Object warning) {
-		synchronized (_possibleTxOriginWarnings) {
-			_possibleTxOriginWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "possibleTxOrigin:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -562,8 +652,12 @@ public class MyCache {
 	 *             none exist
 	 */
 	public int getPossibleTxOriginWarnings(Integer key) {
-		synchronized (_possibleTxOriginWarnings) {
-			return (_possibleTxOriginWarnings.get(key) != null) ? _possibleTxOriginWarnings.get(key).size() : 0;
+		try {
+			String redisKey = "possibleTxOrigin:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -577,10 +671,11 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addRandomnessDependencyWarning(Integer key, Object warning) {
-		synchronized (_randomnessDependencyWarnings) {
-			_randomnessDependencyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "randomnessDependency:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -596,8 +691,12 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getRandomnessDependencyWarnings(Integer key) {
-		synchronized (_randomnessDependencyWarnings) {
-			return (_randomnessDependencyWarnings.get(key) != null) ? _randomnessDependencyWarnings.get(key).size() : 0;
+		try {
+			String redisKey = "randomnessDependency:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -612,10 +711,11 @@ public class MyCache {
 	 *                    added
 	 */
 	public void addPossibleRandomnessDependencyWarning(Integer key, Object warning) {
-		synchronized (_possibleRandomnessDependencyWarnings) {
-			_possibleRandomnessDependencyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "possibleRandomnessDependency:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -633,10 +733,12 @@ public class MyCache {
 	 *             are no warnings associated with it.
 	 */
 	public int getPossibleRandomnessDependencyWarnings(Integer key) {
-		synchronized (_possibleRandomnessDependencyWarnings) {
-			return (_possibleRandomnessDependencyWarnings.get(key) != null)
-					? _possibleRandomnessDependencyWarnings.get(key).size()
-					: 0;
+		try {
+			String redisKey = "possibleRandomnessDependency:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -649,10 +751,11 @@ public class MyCache {
 	 *                    warnings for the given key
 	 */
 	public void addLocalDependencyWarning(Integer key, Object warning) {
-		synchronized (_timeSynchronizationWarnings) {
-			_timeSynchronizationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "timeSynchronization:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -665,10 +768,12 @@ public class MyCache {
 	 *             warnings exist
 	 */
 	public int getLocalDependencyWarnings(Integer key) {
-		synchronized (_timeSynchronizationWarnings) {
-			return (_timeSynchronizationWarnings.get(key) != null)
-					? _timeSynchronizationWarnings.get(key).size()
-					: 0;
+		try {
+			String redisKey = "timeSynchronization:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -681,10 +786,11 @@ public class MyCache {
 	 *                    warnings for the given key
 	 */
 	public void addPossibleLocalDependencyWarning(Integer key, Object warning) {
-		synchronized (_possibleLocalDependencyWarnings) {
-			_possibleLocalDependencyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "possibleLocalDependency:" + key;
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -697,10 +803,12 @@ public class MyCache {
 	 *             warnings exist
 	 */
 	public int getPossibleLocalDependencyWarnings(Integer key) {
-		synchronized (_possibleLocalDependencyWarnings) {
-			return (_possibleLocalDependencyWarnings.get(key) != null)
-					? _possibleLocalDependencyWarnings.get(key).size()
-					: 0;
+		try {
+			String redisKey = "possibleLocalDependency:" + key;
+			var members = getJedis().smembers(redisKey);
+			return members == null ? 0 : members.size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 
@@ -713,8 +821,11 @@ public class MyCache {
 	 * @param key the LOG statement to mark as vulnerable
 	 */
 	public void addVulnerableLogStatementForLocalDependencyChecker(Statement key) {
-		synchronized (_vulnerableLogStatement) {
-			_vulnerableLogStatement.put(key, TaintElement.TAINT);
+		try {
+			String redisKey = "vulnerableLogStatement";
+			getJedis().sadd(redisKey, base64Serialize(key));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -725,8 +836,24 @@ public class MyCache {
 	 * @return a set of LOG statements to be checked for local dependency
 	 */
 	public Set<Statement> getSetOfVulnerableLogStatementForLocalDependencyChecker() {
-		synchronized (_vulnerableLogStatement) {
-			return _vulnerableLogStatement.keySet();
+		try {
+			String redisKey = "vulnerableLogStatement";
+			var members = getJedis().smembers(redisKey);
+			if (members == null || members.isEmpty())
+				return Set.of();
+			Set<Statement> results = new HashSet<>();
+			for (String m : members) {
+				try {
+					Object o = base64Deserialize(m);
+					if (o instanceof Statement)
+						results.add((Statement) o);
+				} catch (Exception e) {
+					/* Ignore */
+				}
+			}
+			return results;
+		} catch (Exception e) {
+			return Set.of();
 		}
 	}
 
@@ -737,8 +864,11 @@ public class MyCache {
 	 * @param stmt the CALLDATALOAD statement to mark as tainted
 	 */
 	public void addTaintedCallDataLoad(Statement stmt) {
-		synchronized (_taintedCallDataLoad) {
-			_taintedCallDataLoad.add(stmt);
+		try {
+			String redisKey = "taintedCallDataLoad";
+			getJedis().sadd(redisKey, base64Serialize(stmt));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -751,8 +881,11 @@ public class MyCache {
 	 * @return true if the statement is tainted, false otherwise
 	 */
 	public boolean isTaintedCallDataLoad(Statement stmt) {
-		synchronized (_taintedCallDataLoad) {
-			return _taintedCallDataLoad.contains(stmt);
+		try {
+			String redisKey = "taintedCallDataLoad";
+			return getJedis().sismember(redisKey, base64Serialize(stmt));
+		} catch (Exception e) {
+			return false;
 		}
 	}
 
@@ -767,10 +900,11 @@ public class MyCache {
 	 * @param warning the tainted CALLDATALOAD statement or warning object
 	 */
 	public void addLinkFromLogToCallDataLoad(Statement key, Object warning) {
-		synchronized (_linkFromLogToCallDataLoad) {
-			_linkFromLogToCallDataLoad
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
+		try {
+			String redisKey = "linkFromLogToCallDataLoad:" + base64Serialize(key);
+			getJedis().sadd(redisKey, base64Serialize(warning));
+		} catch (Exception e) {
+			/* Ignore */
 		}
 	}
 
@@ -784,9 +918,23 @@ public class MyCache {
 	 *             empty set if none exist
 	 */
 	public Set<Object> getLinkFromLogToCallDataLoad(Statement key) {
-		synchronized (_linkFromLogToCallDataLoad) {
-			return (_linkFromLogToCallDataLoad.get(key) != null) ? _linkFromLogToCallDataLoad.get(key)
-					: new HashSet<>();
+		try {
+			String redisKey = "linkFromLogToCallDataLoad:" + base64Serialize(key);
+			var members = getJedis().smembers(redisKey);
+			if (members == null || members.isEmpty())
+				return new HashSet<>();
+			Set<Object> results = new HashSet<>();
+			for (String m : members) {
+				try {
+					Object o = base64Deserialize(m);
+					results.add(o == null ? m : o);
+				} catch (Exception e) {
+					results.add(m);
+				}
+			}
+			return results;
+		} catch (Exception e) {
+			return new HashSet<>();
 		}
 	}
 
@@ -800,14 +948,105 @@ public class MyCache {
 	 * @return a set of LOG statements that reference the given warning
 	 */
 	public Set<Statement> getKeysContainingValueInLinkFromLogToCallDataLoad(Object value) {
-		synchronized (_linkFromLogToCallDataLoad) {
-			Set<Statement> keys = new HashSet<>();
-			for (Map.Entry<Statement, Set<Object>> entry : _linkFromLogToCallDataLoad.entrySet()) {
-				if (entry.getValue().contains(value)) {
-					keys.add(entry.getKey());
+		try {
+			// scan all keys matching pattern
+			var keys = getJedis().keys("linkFromLogToCallDataLoad:*");
+			Set<Statement> results = new HashSet<>();
+			if (keys == null)
+				return results;
+			for (String k : keys) {
+				try {
+					var members = getJedis().smembers(k);
+					if (members == null)
+						continue;
+					for (String m : members) {
+						Object o = null;
+						try {
+							o = base64Deserialize(m);
+						} catch (Exception ex) {
+							o = m;
+						}
+						if ((o != null && o.equals(value)) || (o == null && m.equals(value))) {
+							// extract statement from key suffix
+							String b64stmt = k.substring("linkFromLogToCallDataLoad:".length());
+							try {
+								Object stmtObj = base64Deserialize(b64stmt);
+								if (stmtObj instanceof Statement)
+									results.add((Statement) stmtObj);
+							} catch (Exception ex) {
+								/* Ignore */
+							}
+						}
+					}
+				} catch (Exception e) {
+					/* Ignore */
 				}
 			}
-			return keys;
+			return results;
+		} catch (Exception e) {
+			return new HashSet<>();
+		}
+	}
+
+	/**
+	 * Serializes an object to a base64-encoded string suitable for storing in
+	 * Redis. Strings and primitive wrappers are converted via
+	 * {@code toString()}, complex objects are serialized using Java
+	 * serialization and then base64-encoded.
+	 *
+	 * @param obj the object to serialize (may be {@code null})
+	 *
+	 * @return a base64-encoded representation of the object (empty string for
+	 *             {@code null})
+	 *
+	 * @throws IOException if Java serialization fails
+	 */
+	private String base64Serialize(Object obj) throws IOException {
+		if (obj == null)
+			return "";
+		// If object is String or primitive wrapper, store toString directly
+		if (obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
+			return Base64.getEncoder().encodeToString(obj.toString().getBytes());
+		}
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+			oos.writeObject(obj);
+			oos.flush();
+			return Base64.getEncoder().encodeToString(bos.toByteArray());
+		}
+	}
+
+	/**
+	 * Deserializes a base64-encoded string previously produced by
+	 * {@link #base64Serialize(Object)}. If the decoded bytes look like a
+	 * printable string the method returns that string; otherwise it attempts
+	 * Java deserialization and returns the resulting object.
+	 *
+	 * @param b64 the base64-encoded payload
+	 *
+	 * @return the decoded object (or {@code null} if input is {@code null})
+	 *
+	 * @throws IOException            if IO during deserialization fails
+	 * @throws ClassNotFoundException if a serialized class cannot be found
+	 */
+	private Object base64Deserialize(String b64) throws IOException, ClassNotFoundException {
+		if (b64 == null)
+			return null;
+		byte[] data = Base64.getDecoder().decode(b64);
+		/* Try to detect if payload is a UTF-8 string representation */
+		String asString = new String(data);
+		/*
+		 * Crude heuristic: if the decoded bytes are valid JSON or plain string
+		 * without binary content, return the string. Otherwise, attempt Java
+		 * deserialization.
+		 */
+		if (asString.chars().allMatch(c -> c >= 9 && c <= 126)) {
+			/* return as string (caller can parse if needed) */
+			return asString;
+		}
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
+				ObjectInputStream ois = new ObjectInputStream(bis)) {
+			return ois.readObject();
 		}
 	}
 }

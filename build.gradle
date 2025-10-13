@@ -44,6 +44,8 @@ dependencies {
  	implementation 'org.json:json:20210307'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
+    implementation 'redis.clients:jedis:6.1.0'
 }
 
 
