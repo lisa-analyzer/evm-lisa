@@ -180,15 +180,13 @@ public class AccessControlIncompletenessChecker implements
 				if (functionSignatureByStatement.equals("no-function-found"))
 					continue;
 
-				ProgramCounterLocation sinkLocation = (ProgramCounterLocation) sink.getLocation();
-
 				if (isTop) {
 					log.warn(
 							"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-							sinkLocation.getPc(),
-							sinkLocation.getSourceCodeLine(),
 							((ProgramCounterLocation) sink.getLocation()).getPc(),
-							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
+							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
+							((ProgramCounterLocation) source.getLocation()).getPc(),
+							((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
 
 					String warn = "[POSSIBLE] Access Control Incompleteness vulnerability at "
 							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
@@ -203,10 +201,10 @@ public class AccessControlIncompletenessChecker implements
 				} else {
 					log.warn(
 							"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-							sinkLocation.getPc(),
-							sinkLocation.getSourceCodeLine(),
 							((ProgramCounterLocation) sink.getLocation()).getPc(),
-							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
+							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
+							((ProgramCounterLocation) source.getLocation()).getPc(),
+							((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
 
 					String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
 							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
