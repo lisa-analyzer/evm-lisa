@@ -48,7 +48,7 @@
       "sourceFunction": {
         "name": "transferOutAndCall",
         "events": [
-          "TransferOut"
+          "TransferOutAndCall"
         ]
       },
       "destinationFunction": {

@@ -13,6 +13,17 @@
     },
     {
       "sourceFunction": {
+        "name": "depositWithExpiry",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositWithExpiry"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "transferAllowance",
         "events": [
           "TransferAllowance"
