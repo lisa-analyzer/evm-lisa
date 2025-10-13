@@ -31,20 +31,44 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 	public static final AbstractMemory BOTTOM = new AbstractMemory(null);
 	public static final AbstractMemory TOP = new AbstractMemory(null, true);
 
+	/**
+	 * Constructs an empty Abstract Memory.
+	 */
 	public AbstractMemory() {
 		this(new AbstractByte[0]);
 	}
 
+	/**
+	 * Constructs an Abstract Memory with the given memory array.
+	 *
+	 * @param memory the array of abstract bytes representing the memory
+	 */
 	public AbstractMemory(AbstractByte[] memory) {
 		this.memory = memory;
 		this.isTop = false;
 	}
 
+	/**
+	 * Constructs an Abstract Memory with the given memory array and Top flag.
+	 *
+	 * @param memory the array of abstract bytes representing the memory
+	 * @param isTop  if true, this instance represents the Top element
+	 */
 	public AbstractMemory(AbstractByte[] memory, boolean isTop) {
 		this.memory = memory;
 		this.isTop = isTop;
 	}
 
+	/**
+	 * Stores a 32-byte word in memory at the specified offset (MSTORE
+	 * operation).
+	 *
+	 * @param offset the memory offset where the value should be stored
+	 * @param e      the stack element to store
+	 *
+	 * @return a new Abstract Memory with the stored value, or TOP/BOTTOM if the
+	 *             operation cannot be performed
+	 */
 	public AbstractMemory mstore(StackElement offset, StackElement e) {
 		if (offset.isTop() || offset.isTopNotJumpdest()) {
 			log.warn("Offset is TOP, ignoring mstore with offset {}, value {}.", offset, e);
@@ -80,6 +104,16 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		}
 	}
 
+	/**
+	 * Stores a single byte in memory at the specified offset (MSTORE8
+	 * operation).
+	 *
+	 * @param offset the memory offset where the byte should be stored
+	 * @param value  the stack element containing the byte value to store
+	 *
+	 * @return a new Abstract Memory with the stored byte, or TOP/BOTTOM if the
+	 *             operation cannot be performed
+	 */
 	public AbstractMemory mstore8(StackElement offset, StackElement value) {
 		if (offset.isTop() || offset.isTopNotJumpdest()) {
 			log.warn("Offset is TOP, ignoring mstore8 with offset {}, value {}.", offset, value);
@@ -109,6 +143,15 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return new AbstractMemory(newMemory);
 	}
 
+	/**
+	 * Loads a 32-byte word from memory at the specified offset (MLOAD
+	 * operation).
+	 *
+	 * @param offset the memory offset from which to load the value
+	 *
+	 * @return a stack element containing the loaded value, or TOP/BOTTOM if the
+	 *             operation cannot be performed
+	 */
 	public StackElement mload(StackElement offset) {
 		if (offset.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn("Offset is greater than max memory size, ignoring mload with offset {}.", offset);
@@ -131,6 +174,16 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return StackElement.fromBytes(result);
 	}
 
+	/**
+	 * Copies memory from one location to another (MCOPY operation).
+	 *
+	 * @param destOffset the destination offset in memory
+	 * @param srcOffset  the source offset in memory
+	 * @param length     the number of bytes to copy
+	 *
+	 * @return a new Abstract Memory with the copied data, or TOP/BOTTOM if the
+	 *             operation cannot be performed
+	 */
 	public AbstractMemory mcopy(StackElement destOffset, StackElement srcOffset, StackElement length) {
 		if (length.compareTo(new StackElement(MAX_MEMORY_SIZE)) >= 0) {
 			log.warn(
@@ -180,6 +233,14 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return new AbstractMemory(newMemory);
 	}
 
+	/**
+	 * Ensures that the memory array has at least the specified capacity,
+	 * aligned to 32-byte boundaries.
+	 *
+	 * @param size the minimum required size
+	 *
+	 * @return an array of abstract bytes with at least the specified capacity
+	 */
 	private AbstractByte[] ensureCapacity(int size) {
 		int alignedSize = ((size + 31) / 32) * 32;
 		if (alignedSize <= memory.length)
@@ -359,6 +420,14 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return new StringRepresentation(hexString.toString());
 	}
 
+	/**
+	 * Converts an array of abstract bytes to its hexadecimal string
+	 * representation.
+	 *
+	 * @param bytes the array of abstract bytes to print
+	 *
+	 * @return the hexadecimal string representation of the bytes
+	 */
 	static public String printBytes(AbstractByte[] bytes) {
 		StringBuilder hexString = new StringBuilder();
 		for (AbstractByte b : bytes)
@@ -368,6 +437,13 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return hexString.toString();
 	}
 
+	/**
+	 * Converts a stack element to a 32-byte array representation.
+	 *
+	 * @param element the stack element to convert
+	 *
+	 * @return an array of 32 abstract bytes representing the element
+	 */
 	private AbstractByte[] convertStackElementToBytes(StackElement element) {
 		AbstractByte[] bytes = new AbstractByte[32];
 		BigInteger bigIntValue = Number.toBigInteger(element.getNumber());
@@ -377,6 +453,11 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return bytes;
 	}
 
+	/**
+	 * Creates a 32-byte array filled with unknown (TOP) bytes.
+	 *
+	 * @return an array of 32 abstract bytes all set to UNKNOWN
+	 */
 	private AbstractByte[] unknownBytes() {
 		AbstractByte[] bytes = new AbstractByte[32];
 		for (int i = 0; i < 32; i++)
@@ -384,12 +465,25 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return bytes;
 	}
 
+	/**
+	 * Fills an array of abstract bytes with a specific byte value.
+	 *
+	 * @param bytes the array to fill
+	 * @param value the byte value to fill the array with
+	 */
 	public static void fill(AbstractByte[] bytes, byte value) {
 		for (int i = 0; i < bytes.length; i++) {
 			bytes[i] = new AbstractByte(value);
 		}
 	}
 
+	/**
+	 * Checks if any byte in the array is unknown (TOP).
+	 *
+	 * @param bytes the array of abstract bytes to check
+	 *
+	 * @return true if any byte is TOP, false otherwise
+	 */
 	public static boolean isUnknown(AbstractByte[] bytes) {
 		for (int i = 0; i < 32; i++)
 			if (bytes[i].isTop())
@@ -397,6 +491,18 @@ public class AbstractMemory implements ValueDomain<AbstractMemory>, BaseLattice<
 		return false;
 	}
 
+	/**
+	 * Reads a sequence of bytes from memory at the specified offset.
+	 *
+	 * @param offset the starting offset in memory
+	 * @param length the number of bytes to read
+	 *
+	 * @return an array of bytes read from memory, or null if any byte is
+	 *             unknown (TOP)
+	 *
+	 * @throws IllegalArgumentException if offset or length is negative, or if
+	 *                                      the read exceeds maximum memory size
+	 */
 	public byte[] readBytes(int offset, int length) {
 		if (offset < 0 || length < 0)
 			throw new IllegalArgumentException("Negative offset or length");

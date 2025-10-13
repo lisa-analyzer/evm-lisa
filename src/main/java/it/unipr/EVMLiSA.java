@@ -90,10 +90,20 @@ public class EVMLiSA {
 		SmartContract.setWorkingDirectory(workingDirectoryPath);
 	}
 
+	/**
+	 * Gets the working directory path.
+	 *
+	 * @return the path to the working directory
+	 */
 	public static Path getWorkingDirectory() {
 		return EVMLiSA.OUTPUT_DIRECTORY_PATH;
 	}
 
+	/**
+	 * Gets the number of available cores.
+	 *
+	 * @return the number of cores available
+	 */
 	public static int getCores() {
 		return EVMLiSAExecutor.getCoresAvailable();
 	}
@@ -159,10 +169,20 @@ public class EVMLiSA {
 		TEST_MODE = false;
 	}
 
+	/**
+	 * Checks if EVMLiSA is running in test mode.
+	 *
+	 * @return true if test mode is enabled, false otherwise
+	 */
 	public static boolean isInTestMode() {
 		return TEST_MODE;
 	}
 
+	/**
+	 * Checks if EVMLiSA is running in paper mode.
+	 *
+	 * @return true if paper mode is enabled, false otherwise
+	 */
 	public static boolean isInPaperMode() {
 		return PAPER_MODE;
 	}
@@ -768,6 +788,11 @@ public class EVMLiSA {
 		return contracts;
 	}
 
+	/**
+	 * Sets up global options based on command-line arguments.
+	 *
+	 * @param cmd the parsed command line arguments
+	 */
 	private void setupGlobalOptions(CommandLine cmd) {
 		try {
 			EVMLiSAExecutor
@@ -815,6 +840,12 @@ public class EVMLiSA {
 			DOTFileManager.showAllInstructions();
 	}
 
+	/**
+	 * Builds and returns the command-line options for EVMLiSA.
+	 *
+	 * @return the configured Options object containing all available
+	 *             command-line parameters
+	 */
 	private Options getOptions() {
 		Options options = new Options();
 
@@ -1015,6 +1046,13 @@ public class EVMLiSA {
 		return options;
 	}
 
+	/**
+	 * Parses the command-line arguments into a CommandLine object.
+	 *
+	 * @param args the command-line arguments to parse
+	 *
+	 * @return the parsed CommandLine object, or null if parsing fails
+	 */
 	private CommandLine parseCommandLine(String[] args) {
 		Options options = getOptions();
 		CommandLineParser parser = new DefaultParser();

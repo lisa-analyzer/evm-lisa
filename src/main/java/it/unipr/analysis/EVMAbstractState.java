@@ -136,6 +136,9 @@ public class EVMAbstractState
 		return storage.clone();
 	}
 
+	/**
+	 * Enables the use of live storage data from the blockchain for analysis.
+	 */
 	public static void setUseStorageLive() {
 		USE_STORAGE_LIVE = true;
 	}
