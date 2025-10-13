@@ -49,8 +49,8 @@ contract Router {
     constructor() {}
 
     // Deposit an asset with a memo. ETH is forwarded, ERC-20 stays in ROUTER
-    //1.lack of check on argument
-     //2.access inconsistency between paths
+    // CCV lack of check on argument
+    // CCV access inconsistency between paths
     function deposit(address payable vault, address asset, uint amount, string memory memo) public payable {
         uint safeAmount;
         if(asset == address(0)){
@@ -104,14 +104,14 @@ contract Router {
 
     //############################## VAULT MANAGEMENT ##############################
 
-    // A vault can call to "return" all assets to an asgard, including ETH. 
-    //2.access inconsistency between paths
+    // A vault can call to "return" all assets to an asgard, including ETH.
+    // CCV access inconsistency between paths
     function returnVaultAssets(address router, address payable asgard, Coin[] memory coins, string memory memo) public payable {
         if (router == address(this)){
             for(uint i = 0; i < coins.length; i++){
                 _adjustAllowances(asgard, coins[i].asset, coins[i].amount);
             }
-            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.           
+            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.
         } else {
             for(uint i = 0; i < coins.length; i++){
                 _routerDeposit(router, asgard, coins[i].asset, coins[i].amount, memo);
@@ -137,7 +137,7 @@ contract Router {
     }
 
     // Adjust allowance and forwards funds to new router, credits allowance to desired vault
-     //2.access inconsistency between paths
+    // CCV access inconsistency between paths
     function _routerDeposit(address _router, address _vault, address _asset, uint _amount, string memory _memo) internal {
         vaultAllowance[msg.sender][_asset] -= _amount;
         iERC20(_asset).approve(_router, _amount); // Approve to transfer

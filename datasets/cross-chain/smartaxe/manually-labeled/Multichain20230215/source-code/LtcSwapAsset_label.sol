@@ -600,13 +600,13 @@ contract LtcSwapAsset is ERC20, ERC20Detailed {
         emit LogChangeDCRMOwner(_oldOwner, _newOwner, _newOwnerEffectiveHeight);
         return true;
     }
-    //1.lack of check on supportness 
+    // CCV lack of check on supportness
     function Swapin(bytes32 txhash, address account, uint256 amount) public onlyOwner returns (bool) {
         _mint(account, amount);
         emit LogSwapin(txhash, account, amount);
         return true;
     }
-    //1.lack of check on repetiviness 
+    // CCV lack of check on repetitiveness
     function Swapout(uint256 amount, string memory bindaddr) public returns (bool) {
         verifyBindAddr(bindaddr);
         _burn(_msgSender(), amount);

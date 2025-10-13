@@ -333,13 +333,13 @@ contract AnyswapV4ERC20 is IAnyswapV3ERC20 {
     function totalSupply() external view override returns (uint256) {
         return _totalSupply;
     }
-    //1. semantic inconsistency
+    // CCV semantic inconsistency
     function depositWithPermit(address target, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s, address to) external returns (uint) {
         IERC20(underlying).permit(target, address(this), value, deadline, v, r, s);
         IERC20(underlying).safeTransferFrom(target, address(this), value);
         return _deposit(value, to);
     }
-    
+
     function depositWithTransferPermit(address target, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s, address to) external returns (uint) {
         IERC20(underlying).transferWithPermit(target, address(this), value, deadline, v, r, s);
         return _deposit(value, to);

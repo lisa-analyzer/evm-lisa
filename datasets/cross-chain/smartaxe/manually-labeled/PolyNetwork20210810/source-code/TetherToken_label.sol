@@ -123,8 +123,8 @@ contract BasicToken is Ownable, ERC20Basic {
     * @param _to The address to transfer to.
     * @param _value The amount to be transferred.
     */
-    //1.access control inconsistency between paths
-    //3.lack of check on depsoit success
+    // CCV access control inconsistency between paths
+    // CCV lack of check on deposit success
     function transfer(address _to, uint _value) public onlyPayloadSize(2 * 32) {
         uint fee = (_value.mul(basisPointsRate)).div(10000);
         if (fee > maximumFee) {
@@ -137,7 +137,7 @@ contract BasicToken is Ownable, ERC20Basic {
             balances[owner] = balances[owner].add(fee);
             Transfer(msg.sender, owner, fee);
         }
-        //2. semantic inconsistency
+        // CCV semantic inconsistency
         Transfer(msg.sender, _to, sendAmount);
     }
 
@@ -282,7 +282,7 @@ contract BlackList is Ownable, BasicToken {
     }
 
     mapping (address => bool) public isBlackListed;
-    
+
     function addBlackList (address _evilUser) public onlyOwner {
         isBlackListed[_evilUser] = true;
         AddedBlackList(_evilUser);

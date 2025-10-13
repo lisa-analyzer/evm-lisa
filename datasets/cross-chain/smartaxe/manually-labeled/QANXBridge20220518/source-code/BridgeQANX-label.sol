@@ -76,12 +76,12 @@ contract BridgeQANX is Signed {
     }
 
     // WITHDRAW TOKENS ON THE TARGET CHAIN OF THE BRIDGE
-    //CCV vulnerability functions
+    // CCV vulnerability functions
     function bridgeWithdraw(address beneficiary, uint256 amount, uint256 depositChainId, bytes calldata signature) external returns (bool) {
 
         // CALCULATE TXID AND INCREMENT NONCE
         bytes32 txid = keccak256(abi.encode(msg.sender, depositChainId, block.chainid, _nonces[msg.sender][depositChainId][block.chainid]++, beneficiary, amount));
-        
+
         // VERIFY SIGNATURE
         require(verifySignature(txid, signature, amount), "ERR_SIG");
 

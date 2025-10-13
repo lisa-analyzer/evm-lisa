@@ -29,7 +29,7 @@ contract QANX is ERC20 {
 
     /// @notice This maps lock params to certain addresses which received locked tokens
     /// @dev Lookup table for locks assigned to specific addresses
-    mapping (address => Lock) private _locks;    
+    mapping (address => Lock) private _locks;
 
     /// @notice Emitted when a lock is applied on an account
     /// @dev The first param is indexed which makes it easy to listen to locks applied to a specific account
@@ -102,7 +102,7 @@ contract QANX is ERC20 {
 
         // Mark cheque as encashed
         chequesEncashed[cid] = true;
-        
+
         // If any lock related params were defined as non-zero
         if (hardLockUntil > 0) {
 
@@ -161,7 +161,7 @@ contract QANX is ERC20 {
     /// @dev Calculates the unlockable amount based on the private _locks mapping
     /// @param account The address whose tokens should be unlocked
     /// @return Success
-    //lack of check on repetiviness
+    // CCV lack of check on repetitiveness
     function unlock(address account) external returns (bool) {
 
         // Lookup lock
@@ -292,8 +292,8 @@ contract QANX is ERC20 {
 
         // Otherwise require that the chosen lock params are same / stricter (allowedhops) than the sender's
         require(
-            hardLockUntil >= sLock.hardLockUntil && 
-            softLockUntil >= sLock.softLockUntil && 
+            hardLockUntil >= sLock.hardLockUntil &&
+            softLockUntil >= sLock.softLockUntil &&
             allowedHops < sLock.allowedHops
             , "Only same / stricter lock params allowed!"
         );

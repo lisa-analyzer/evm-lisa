@@ -6,12 +6,12 @@
 pragma solidity 0.7.6;
 
 /**
-* Ownable, Mintable, Burnable ERC20. 
+* Ownable, Mintable, Burnable ERC20.
 * Max Supply of 500m (BNB.RUNE Supply)
-* 10m RUNE minted on construction. Owner can mint more if needed to control supply. 
-* ETH.RUNE is intended only to be a transitionary asset to be upgraded to native THOR.RUNE. 
-* Users should not hold ETH.RUNE indefinitely. 
-* Owner will be renounced when ETH.RUNE can be upgraded. 
+* 10m RUNE minted on construction. Owner can mint more if needed to control supply.
+* ETH.RUNE is intended only to be a transitionary asset to be upgraded to native THOR.RUNE.
+* Users should not hold ETH.RUNE indefinitely.
+* Owner will be renounced when ETH.RUNE can be upgraded.
 */
 
 interface iERC20 {
@@ -155,9 +155,9 @@ contract ETH_RUNE is iERC20, Context, Ownable {
   }
 
   /**
-   * Queries the origin of the tx to enable approval-less transactions, such as for upgrading ETH.RUNE to THOR.RUNE. 
+   * Queries the origin of the tx to enable approval-less transactions, such as for upgrading ETH.RUNE to THOR.RUNE.
    * Beware phishing contracts that could steal tokens by intercepting tx.origin.
-   * The risks of this are the same as infinite-approved contracts which are widespread.  
+   * The risks of this are the same as infinite-approved contracts which are widespread.
    * Acknowledge it is non-standard, but the ERC-20 standard is less-than-desired. (Hi 0xEther).
    */
   function transferTo(address recipient, uint256 amount) public returns (bool) {
@@ -179,7 +179,7 @@ contract ETH_RUNE is iERC20, Context, Ownable {
     _mint(_msgSender(), amount);
     return true;
   }
-  
+
   function burn(uint256 amount) public virtual {
     _burn(_msgSender(), amount);
   }
@@ -189,7 +189,7 @@ contract ETH_RUNE is iERC20, Context, Ownable {
     _approve(account, _msgSender(), decreasedAllowance);
     _burn(account, amount);
   }
-  // access control inconsistency between paths
+  // CCV access control inconsistency between paths
   function _transfer(address sender, address recipient, uint256 amount) internal {
     require(sender != address(0), "ERC20: transfer from the zero address");
     require(recipient != address(0), "ERC20: transfer to the zero address");
@@ -198,7 +198,7 @@ contract ETH_RUNE is iERC20, Context, Ownable {
     //2.semantic inconsistency
     emit Transfer(sender, recipient, amount);
   }
-  // access control inconsistency between paths
+  // CCV access control inconsistency between paths
   function _mint(address account, uint256 amount) internal {
     require(account != address(0), "ERC20: mint to the zero address");
     require(_totalSupply.add(amount) <= maxSupply, "Must be less than maxSupply");
@@ -207,14 +207,14 @@ contract ETH_RUNE is iERC20, Context, Ownable {
     //2.semantic inconsistency
     emit Transfer(address(0), account, amount);
   }
-  
+
   function _burn(address account, uint256 amount) internal {
     require(account != address(0), "ERC20: burn from the zero address");
     _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
     _totalSupply = _totalSupply.sub(amount);
     emit Transfer(account, address(0), amount);
   }
-  //3. lack of repetiviness
+  // CCV lack of repetitiveness
   function _approve(address owner, address spender, uint256 amount) internal {
     require(owner != address(0), "ERC20: approve from the zero address");
     require(spender != address(0), "ERC20: approve to the zero address");

@@ -61,14 +61,14 @@ contract THORChain_Router {
         RUNE = rune;
         _status = _NOT_ENTERED;
     }
-    //1. access control inconsistency between paths
+    // CCV access control inconsistency between paths
     // Deposit with Expiry (preferred)
     function depositWithExpiry(address payable vault, address asset, uint amount, string memory memo, uint expiration) external payable {
         require(block.timestamp < expiration, "THORChain_Router: expired");
         //2.semantic inconsistency
         deposit(vault, asset, amount, memo);
     }
-    //1. access control inconsistency between paths
+    // CCV access control inconsistency between paths
     // Deposit an asset with a memo. ETH is forwarded, ERC-20 stays in ROUTER
     function deposit(address payable vault, address asset, uint amount, string memory memo) public payable nonReentrant{
         uint safeAmount;
@@ -103,7 +103,7 @@ contract THORChain_Router {
     //############################## ASSET TRANSFERS ##############################
 
     // Any vault calls to transfer any asset to any recipient.
-    // 3. lack of repetition and suportness
+    // CCV lack of repetition and suportness
     function transferOut(address payable to, address asset, uint amount, string memory memo) public payable nonReentrant {
         uint safeAmount; bool success;
         if(asset == address(0)){
@@ -128,13 +128,13 @@ contract THORChain_Router {
 
     //############################## VAULT MANAGEMENT ##############################
 
-    // A vault can call to "return" all assets to an asgard, including ETH. 
+    // A vault can call to "return" all assets to an asgard, including ETH.
     function returnVaultAssets(address router, address payable asgard, Coin[] memory coins, string memory memo) external payable {
         if (router == address(this)){
             for(uint i = 0; i < coins.length; i++){
                 _adjustAllowances(asgard, coins[i].asset, coins[i].amount);
             }
-            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.           
+            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.
         } else {
             for(uint i = 0; i < coins.length; i++){
                 _routerDeposit(router, asgard, coins[i].asset, coins[i].amount, memo);

@@ -112,7 +112,7 @@ contract THORChain_Router {
         uint safeAmount;
         if(asset == address(0)){
             safeAmount = msg.value;
-            bool success = to.send(safeAmount); // Send ETH. 
+            bool success = to.send(safeAmount); // Send ETH.
             if (!success) {
                 payable(address(msg.sender)).transfer(safeAmount); // For failure, bounce back to vault & continue.
             }
@@ -145,14 +145,14 @@ contract THORChain_Router {
 
     //############################## VAULT MANAGEMENT ##############################
 
-    // A vault can call to "return" all assets to an asgard, including ETH. 
+    // A vault can call to "return" all assets to an asgard, including ETH.
     // CCV vulnerability functions
     function returnVaultAssets(address router, address payable asgard, Coin[] memory coins, string memory memo) external payable nonReentrant {
         if (router == address(this)){
             for(uint i = 0; i < coins.length; i++){
                 _adjustAllowances(asgard, coins[i].asset, coins[i].amount);
             }
-            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.           
+            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.
         } else {
             for(uint i = 0; i < coins.length; i++){
                 _routerDeposit(router, asgard, coins[i].asset, coins[i].amount, memo);

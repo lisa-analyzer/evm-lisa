@@ -333,20 +333,20 @@ contract AnyswapV5ERC20 is IAnyswapV3ERC20 {
     function totalSupply() external view override returns (uint256) {
         return _totalSupply;
     }
-    //1.lack of check on underlying permit
-    //2.access control inconsistency between paths
+    // CCV lack of check on underlying permit
+    // CCV access control inconsistency between paths
     function depositWithPermit(address target, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s, address to) external returns (uint) {
         IERC20(underlying).permit(target, address(this), value, deadline, v, r, s);
         IERC20(underlying).safeTransferFrom(target, address(this), value);
         return _deposit(value, to);
     }
-    //1.lack of check on underlying permit
-    //2.access control inconsistency between paths
+    // CCV lack of check on underlying permit
+    // CCV access control inconsistency between paths
     function depositWithTransferPermit(address target, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s, address to) external returns (uint) {
         IERC20(underlying).transferWithPermit(target, address(this), value, deadline, v, r, s);
         return _deposit(value, to);
     }
-    //2.access control inconsistency between paths
+    // CCV access control inconsistency between paths
     function deposit() external returns (uint) {
         uint _amount = IERC20(underlying).balanceOf(msg.sender);
         IERC20(underlying).safeTransferFrom(msg.sender, address(this), _amount);

@@ -48,7 +48,7 @@ contract THORChain_Router {
     constructor() {}
 
     // Deposit an asset with a memo. ETH is forwarded, ERC-20 stays in ROUTER
-    // lack of check on deposit success
+    // CCV lack of check on deposit success
     function deposit(address payable vault, address asset, uint amount, string memory memo) public payable {
         uint safeAmount;
         if(asset == address(0)){
@@ -103,14 +103,14 @@ contract THORChain_Router {
 
     //############################## VAULT MANAGEMENT ##############################
 
-    // A vault can call to "return" all assets to an asgard, including ETH. 
+    // A vault can call to "return" all assets to an asgard, including ETH.
     //2.semantic in consistency
     function returnVaultAssets(address router, address payable asgard, Coin[] memory coins, string memory memo) public payable {
         if (router == address(this)){
             for(uint i = 0; i < coins.length; i++){
                 _adjustAllowances(asgard, coins[i].asset, coins[i].amount);
             }
-            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.           
+            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.
         } else {
             for(uint i = 0; i < coins.length; i++){
                 _routerDeposit(router, asgard, coins[i].asset, coins[i].amount, memo);

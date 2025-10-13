@@ -396,7 +396,7 @@ library MetaSwapUtils {
      * @param baseVirtualPrice the virtual price of the base LP token
      * @return dy the number of tokens the user will get and dyFee the associated fee
      */
-    //CCV vulnerability functions
+    // CCV vulnerability functions
     function _calculateSwap(
         SwapUtils.Swap storage self,
         uint8 tokenIndexFrom,

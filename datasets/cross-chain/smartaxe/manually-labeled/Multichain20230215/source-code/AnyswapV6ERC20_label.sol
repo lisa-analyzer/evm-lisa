@@ -182,7 +182,7 @@ contract AnyswapV6ERC20 is IERC20 {
         _mint(to, amount);
         return true;
     }
-    //1.Access control inconcsistency between paths
+    // CCV Access control inconsistency between paths
     function burn(address from, uint256 amount) external onlyAuth returns (bool) {
         //2.semantic inconsistency
         _burn(from, amount);
@@ -246,7 +246,7 @@ contract AnyswapV6ERC20 is IERC20 {
         IERC20(underlying).safeTransferFrom(msg.sender, address(this), _amount);
         return _deposit(_amount, msg.sender);
     }
-    //3.
+
     function deposit(uint amount) external returns (uint) {
         IERC20(underlying).safeTransferFrom(msg.sender, address(this), amount);
         return _deposit(amount, msg.sender);
@@ -283,12 +283,12 @@ contract AnyswapV6ERC20 is IERC20 {
     function withdrawVault(address from, uint amount, address to) external onlyVault returns (uint) {
         return _withdraw(from, amount, to);
     }
-    //1.Access control inconcsistency between paths
-    //3.lack of chcek on repetiveness
+    // CCV Access control inconsistency between paths
+    // CCV Lack of check on repetitiveness
     function _withdraw(address from, uint amount, address to) internal returns (uint) {
         require(!underlyingIsMinted);
         require(underlying != address(0) && underlying != address(this));
-        //2.semantic inconsistency
+        // CCV Semantic inconsistency
         _burn(from, amount);
         IERC20(underlying).safeTransfer(to, amount);
         return amount;

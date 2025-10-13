@@ -72,7 +72,7 @@ contract AmarokFacet is ILiFi, ReentrancyGuard, SwapperV2, Validatable {
     /// @param _bridgeData The core information needed for bridging
     /// @param _swapData An array of swap related data for performing swaps before bridging
     /// @param _amarokData Data specific to Amarok
-    //1. lack of check on argument by msg
+    // CCV lack of check on argument by msg
     function swapAndStartBridgeTokensViaAmarok(
         BridgeData memory _bridgeData,
         LibSwap.SwapData[] calldata _swapData,

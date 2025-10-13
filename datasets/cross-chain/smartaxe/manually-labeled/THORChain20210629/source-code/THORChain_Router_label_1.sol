@@ -50,7 +50,7 @@ contract THORChain_Router {
     constructor() {}
 
     // Deposit an asset with a memo. ETH is forwarded, ERC-20 stays in ROUTER
-    
+
     function deposit(address payable vault, address asset, uint amount, string memory memo) external payable {
         uint safeAmount;
         if(asset == address(0)){
@@ -65,7 +65,7 @@ contract THORChain_Router {
             safeAmount = safeTransferFrom(asset, amount); // Transfer asset
             vaultAllowance[vault][asset] += safeAmount; // Credit to chosen vault
         }
-        
+
         emit Deposit(vault, asset, safeAmount, memo);
     }
 
@@ -84,7 +84,7 @@ contract THORChain_Router {
     //############################## ASSET TRANSFERS ##############################
 
     // Any vault calls to transfer any asset to any recipient.
-    //2.lack of check on repetiviness
+    // CCV lack of check on repetitiveness
     function transferOut(address payable to, address asset, uint amount, string memory memo) public payable {
         uint safeAmount; bool success; bytes memory data;
         if(asset == address(0)){
@@ -108,13 +108,13 @@ contract THORChain_Router {
 
     //############################## VAULT MANAGEMENT ##############################
 
-    // A vault can call to "return" all assets to an asgard, including ETH. 
+    // A vault can call to "return" all assets to an asgard, including ETH.
     function returnVaultAssets(address router, address payable asgard, Coin[] memory coins, string memory memo) external payable {
         if (router == address(this)){
             for(uint i = 0; i < coins.length; i++){
                 _adjustAllowances(asgard, coins[i].asset, coins[i].amount);
             }
-            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.           
+            emit VaultTransfer(msg.sender, asgard, coins, memo); // Does not include ETH.
         } else {
             for(uint i = 0; i < coins.length; i++){
                 _routerDeposit(router, asgard, coins[i].asset, coins[i].amount, memo);

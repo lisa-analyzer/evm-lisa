@@ -43,12 +43,12 @@ abstract contract ERC20BurnableUpgradeable is Initializable, ContextUpgradeable,
      * - the caller must have allowance for ``accounts``'s tokens of at least
      * `amount`.
      */
-     // 1. access control inconcsistency between paths
+     // CCV access control inconcsistency between paths
     function burnFrom(address account, uint256 amount) public virtual {
         uint256 decreasedAllowance = allowance(account, _msgSender()).sub(amount, "ERC20: burn amount exceeds allowance");
 
         _approve(account, _msgSender(), decreasedAllowance);
-        //2.semantic inconcsistency
+        // CCV semantic inconcsistency
         _burn(account, amount);
     }
     uint256[50] private __gap;
