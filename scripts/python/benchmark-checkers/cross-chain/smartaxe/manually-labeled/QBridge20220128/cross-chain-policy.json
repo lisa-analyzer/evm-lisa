@@ -1,0 +1,94 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "setRelayerThreshold",
+        "events": [
+          "RelayerThresholdChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "setRelayerThreshold"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "addRelayer",
+        "events": [
+          "RelayerAdded"
+        ]
+      },
+      "destinationFunction": {
+        "name": "addRelayer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "removeRelayer",
+        "events": [
+          "RelayerRemoved"
+        ]
+      },
+      "destinationFunction": {
+        "name": "removeRelayer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositETH",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositETH"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "voteProposal",
+        "events": [
+          "ProposalEvent",
+          "ProposalVote"
+        ]
+      },
+      "destinationFunction": {
+        "name": "voteProposal"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "executeProposal",
+        "events": [
+          "ProposalEvent",
+          "FailedHandlerExecution"
+        ]
+      },
+      "destinationFunction": {
+        "name": "executeProposal"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "cancelProposal",
+        "events": [
+          "ProposalEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "cancelProposal"
+      }
+    }
+  ]
+}

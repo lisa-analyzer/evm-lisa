@@ -1,0 +1,26 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensViaAmarok",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "startBridgeTokensViaAmarok"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaAmarok",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "swapAndStartBridgeTokensViaAmarok"
+      }
+    }
+  ]
+}

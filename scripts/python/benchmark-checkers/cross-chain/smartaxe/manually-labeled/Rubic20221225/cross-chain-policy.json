@@ -1,0 +1,86 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "routerCall",
+        "events": [
+          "FixedCryptoFee",
+          "TokenFee",
+          "RequestSent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "routerCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "routerCallNative",
+        "events": [
+          "FixedCryptoFee",
+          "TokenFee",
+          "RequestSent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "routerCallNative"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "collectIntegratorFee",
+        "events": [
+          "FixedCryptoFeeCollected",
+          "IntegratorTokenFeeCollected"
+        ]
+      },
+      "destinationFunction": {
+        "name": "collectIntegratorFee"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "collectRubicFee",
+        "events": [
+          "RubicTokenFeeCollected"
+        ]
+      },
+      "destinationFunction": {
+        "name": "collectRubicFee"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "collectRubicCryptoFee",
+        "events": [
+          "FixedCryptoFeeCollected"
+        ]
+      },
+      "destinationFunction": {
+        "name": "collectRubicCryptoFee"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "pauseExecution",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "pauseExecution"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unpauseExecution",
+        "events": [
+          "Unpaused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unpauseExecution"
+      }
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "pause",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "pause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unpause",
+        "events": [
+          "Unpaused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unpause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "TokenDeposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "redeem",
+        "events": [
+          "TokenRedeem"
+        ]
+      },
+      "destinationFunction": {
+        "name": "redeem"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "withdraw",
+        "events": [
+          "TokenWithdraw"
+        ]
+      },
+      "destinationFunction": {
+        "name": "withdraw"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "mint",
+        "events": [
+          "TokenMint"
+        ]
+      },
+      "destinationFunction": {
+        "name": "mint"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositAndSwap",
+        "events": [
+          "TokenDepositAndSwap"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositAndSwap"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "redeemAndSwap",
+        "events": [
+          "TokenRedeemAndSwap"
+        ]
+      },
+      "destinationFunction": {
+        "name": "redeemAndSwap"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "redeemAndRemove",
+        "events": [
+          "TokenRedeemAndRemove"
+        ]
+      },
+      "destinationFunction": {
+        "name": "redeemAndRemove"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "mintAndSwap",
+        "events": [
+          "TokenMintAndSwap"
+        ]
+      },
+      "destinationFunction": {
+        "name": "mintAndSwap"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "withdrawAndRemove",
+        "events": [
+          "TokenWithdrawAndRemove"
+        ]
+      },
+      "destinationFunction": {
+        "name": "withdrawAndRemove"
+      }
+    }
+  ]
+}

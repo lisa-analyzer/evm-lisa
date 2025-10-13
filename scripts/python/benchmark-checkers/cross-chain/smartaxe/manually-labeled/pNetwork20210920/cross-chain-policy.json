@@ -1,0 +1,136 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "stake",
+        "events": [
+          "Staked"
+        ]
+      },
+      "destinationFunction": {
+        "name": "stake"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unstake",
+        "events": [
+          "Unstaked"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unstake"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "increaseLockDuration",
+        "events": [
+          "LockDurationIncreased"
+        ]
+      },
+      "destinationFunction": {
+        "name": "increaseLockDuration"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeMinLockTime",
+        "events": [
+          "LockTimeChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeMinLockTime"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeMaxAllowedStakeLocks",
+        "events": [
+          "MaxLocksChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeMaxAllowedStakeLocks"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeVaultContractAddress",
+        "events": [
+          "VaultChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeVaultContractAddress"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updateRegistration",
+        "events": [
+          "RegistrationUpdated"
+        ]
+      },
+      "destinationFunction": {
+        "name": "updateRegistration"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeMinStakedTokens",
+        "events": [
+          "MinStakedTokensChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeMinStakedTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeMinLockTime",
+        "events": [
+          "MinLockTimeChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeMinLockTime"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeMaxNodesPerAddress",
+        "events": [
+          "MaxNodePerAddressChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeMaxNodesPerAddress"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "VaultDeposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transfer",
+        "events": [
+          "VaultTransfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transfer"
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "initGenesisBlock",
+        "events": [
+          "InitGenesisBlockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "initGenesisBlock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeBookKeeper",
+        "events": [
+          "ChangeBookKeeperEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeBookKeeper"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "crossChain",
+        "events": [
+          "CrossChainEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "crossChain"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "verifyHeaderAndExecuteTx",
+        "events": [
+          "VerifyHeaderAndExecuteTxEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "verifyHeaderAndExecuteTx"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "pause",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "pause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unpause",
+        "events": [
+          "Unpaused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unpause"
+      }
+    }
+  ]
+}

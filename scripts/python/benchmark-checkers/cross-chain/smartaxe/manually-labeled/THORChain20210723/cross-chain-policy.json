@@ -1,0 +1,81 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositWithExpiry",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositWithExpiry"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferAllowance",
+        "events": [
+          "TransferAllowance"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferAllowance"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferOut",
+        "events": [
+          "TransferOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferOut"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferOutAndCall",
+        "events": [
+          "TransferOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferOutAndCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "batchTransferOut",
+        "events": [
+          "TransferOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "batchTransferOut"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "returnVaultAssets",
+        "events": [
+          "VaultTransfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "returnVaultAssets"
+      }
+    }
+  ]
+}

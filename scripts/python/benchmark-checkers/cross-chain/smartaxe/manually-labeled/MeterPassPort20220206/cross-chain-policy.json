@@ -1,0 +1,115 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositETH",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositETH"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "voteProposal",
+        "events": [
+          "ProposalEvent",
+          "ProposalVote"
+        ]
+      },
+      "destinationFunction": {
+        "name": "voteProposal"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "cancelProposal",
+        "events": [
+          "ProposalEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "cancelProposal"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "executeProposal",
+        "events": [
+          "ProposalEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "executeProposal"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminPauseTransfers",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminPauseTransfers"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminUnpauseTransfers",
+        "events": [
+          "Unpaused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminUnpauseTransfers"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminChangeRelayerThreshold",
+        "events": [
+          "RelayerThresholdChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminChangeRelayerThreshold"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminAddRelayer",
+        "events": [
+          "RelayerAdded"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminAddRelayer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminRemoveRelayer",
+        "events": [
+          "RelayerRemoved"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminRemoveRelayer"
+      }
+    }
+  ]
+}

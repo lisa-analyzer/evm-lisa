@@ -1,0 +1,48 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "withdraw",
+        "events": [
+          "Withdraw"
+        ]
+      },
+      "destinationFunction": {
+        "name": "withdraw"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "powerUpWithNFTs",
+        "events": [
+          "Deposit"
+        ]
+      },
+      "destinationFunction": {
+        "name": "powerUpWithNFTs"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "emergencyWithdraw",
+        "events": [
+          "EmergencyWithdraw"
+        ]
+      },
+      "destinationFunction": {
+        "name": "emergencyWithdraw"
+      }
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "changeMPC",
+        "events": [
+          "LogChangeMPC"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeMPC"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOut",
+        "events": [
+          "LogAnySwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOut"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutUnderlying",
+        "events": [
+          "LogAnySwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutUnderlying"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutNative",
+        "events": [
+          "LogAnySwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutNative"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapIn",
+        "events": [
+          "LogAnySwapIn"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapIn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInUnderlying",
+        "events": [
+          "LogAnySwapIn"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInUnderlying"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInAuto",
+        "events": [
+          "LogAnySwapIn"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInAuto"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForTokens",
+        "events": [
+          "LogAnySwapTradeTokensForTokens"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutExactTokensForTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForTokensUnderlying",
+        "events": [
+          "LogAnySwapTradeTokensForTokens"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutExactTokensForTokensUnderlying"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInExactTokensForTokens",
+        "events": [
+          "LogAnySwapIn"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForNative",
+        "events": [
+          "LogAnySwapTradeTokensForNative"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutExactTokensForNative"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForNativeUnderlying",
+        "events": [
+          "LogAnySwapTradeTokensForNative"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutExactTokensForNativeUnderlying"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInExactTokensForNative",
+        "events": [
+          "LogAnySwapIn"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForNative"
+      }
+    }
+  ]
+}

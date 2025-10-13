@@ -1,0 +1,70 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "swap",
+        "events": [
+          "TokenSwap"
+        ]
+      },
+      "destinationFunction": {
+        "name": "swap"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapUnderlying",
+        "events": [
+          "TokenSwapUnderlying"
+        ]
+      },
+      "destinationFunction": {
+        "name": "swapUnderlying"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "addLiquidity",
+        "events": [
+          "AddLiquidity"
+        ]
+      },
+      "destinationFunction": {
+        "name": "addLiquidity"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "removeLiquidity",
+        "events": [
+          "RemoveLiquidity"
+        ]
+      },
+      "destinationFunction": {
+        "name": "removeLiquidity"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "removeLiquidityOneToken",
+        "events": [
+          "RemoveLiquidityOne"
+        ]
+      },
+      "destinationFunction": {
+        "name": "removeLiquidityOneToken"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "removeLiquidityImbalance",
+        "events": [
+          "RemoveLiquidityImbalance"
+        ]
+      },
+      "destinationFunction": {
+        "name": "removeLiquidityImbalance"
+      }
+    }
+  ]
+}
