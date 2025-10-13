@@ -19,14 +19,13 @@ evm-testcases/ground-truth/50-ground-truth/**/*.json
 evm-testcases/ground-truth/50-ground-truth/**/*.dot
 evm-testcases/ground-truth/50-ground-truth/**/*.js
 
-
 # Ignore benchmark file
-scripts/python/benchmark-checkers/**/bytecode/**
-scripts/python/benchmark-checkers/**/abi/**
-scripts/python/benchmark-checkers/**/json/**
-scripts/python/benchmark-checkers/**/results/**
-scripts/python/benchmark-checkers/images/**
-scripts/python/benchmark-checkers/jars/evm-lisa.jar
+datasets/**/bytecode/**
+datasets/**/abi/**
+datasets/**/json/**
+datasets/**/results/**
+scripts/**/images/**
+scripts/**/jars/evm-lisa.jar
 
 # Ignore downloaded bytecode
 evm-testcases/benchmark/

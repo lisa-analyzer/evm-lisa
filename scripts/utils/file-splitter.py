@@ -29,7 +29,7 @@ def split_file(input_file, output_dir, num_files):
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python script.py <input_file> <output_dir> <num_files>")
+        print("Usage: python file-splitter.py <input_file> <output_dir> <num_files>")
         sys.exit(1)
 
     input_file = sys.argv[1]

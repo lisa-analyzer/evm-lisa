@@ -1,8 +1,7 @@
 """
-Questo script esplora ricorsivamente una directory specificata dall'utente e 
-analizza ogni file al suo interno. Per ogni file che soddisfa determinate condizioni 
-(meno di 3000 righe), salva il nome del file 
-(senza estensione) in un file di output specificato.
+Questo script esplora ricorsivamente una directory specificata dall'utente e
+analizza ogni file al suo interno. Per ogni file che soddisfa determinate condizioni
+(meno di 3000 righe), salva il nome del file (senza estensione) in un file di output specificato.
 """
 import os
 
