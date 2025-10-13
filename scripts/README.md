@@ -15,14 +15,32 @@ brew install solc-select # compiler
 pip install -r requirements.txt
 ```
 
-Compile smart contracts into bytecode:
+## Compile smart contracts into bytecode
 ```
-python3.11 compile-smart-contracts.py [-h] [--solidifi] [--smartbugs] [--slise] [--longest-bytecode]
+compile-smart-contracts.py [-h] [--solidifi] [--smartbugs] [--slise] [--longest-bytecode] [--cross-chain]
+```
+```
+options:
+  --solidifi          Compile SolidiFI dataset
+  --smartbugs         Compile SmartBugs dataset
+  --slise             Compile SliSE dataset
+  --longest-bytecode  Save only the longest bytecode
+  --cross-chain       Compile cross-chain dataset
 ```
 
-Run the benchmark:
+## Run the benchmark
 ```
-python3.11 run-benchmark.py [-h] [--solidifi] [--smartbugs] [--slise] [--no-analysis] [--reentrancy] [--tx-origin] [--timestamp-dependency]
+run-benchmark.py [-h] [--solidifi] [--smartbugs] [--slise] [--no-analysis] [--reentrancy] [--tx-origin] [--randomness-dependency]
+```
+```
+options:
+  --solidifi                Run analysis on SolidiFI dataset
+  --smartbugs               Run analysis on SmartBugs dataset
+  --slise                   Run analysis on SliSE dataset
+  --no-analysis             Do not run the analysis, compute only the results
+  --reentrancy              Run analysis on reentrancy contracts
+  --tx-origin               Run analysis on tx-origin contracts
+  --randomness-dependency   Run analysis on randomness-dependency contracts
 ```
 
 ## Dataset used
