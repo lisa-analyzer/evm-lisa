@@ -116,7 +116,7 @@ public class SmartaxeBenchmark {
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge) {
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
-						() -> xEVMLiSA.runEventOrderChecker(bridge, contract)));
+						() -> xEVMLiSA.runEventOrderChecker(contract, bridge.getPolicy())));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
 						() -> xEVMLiSA.runAccessControlIncompleteness(contract)));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,

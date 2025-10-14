@@ -263,7 +263,7 @@ public class xEVMLiSA {
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
 			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(bridge, contract)));
+					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(contract, bridge.getPolicy())));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class,
 							() -> runMissingEventNotificationChecker(contract, bridge.getPolicy())));
@@ -354,15 +354,14 @@ public class xEVMLiSA {
 	/**
 	 * Executes the Event Order Checker on a single contract. For each public
 	 * function: (i) Follow only successful return paths (STOP for void, RETURN
-	 * otherwise). (ii) Collect any SSTORE and LOG instructions on that path.
-	 * (iii) If LOGs occur without a preceding SSTORE, flag an event-order
-	 * issue. (iv) Classify as definite if across a cross‑chain edge, else
-	 * possible.
+	 * otherwise). (ii) Collect any SSTORE and events emission instructions on
+	 * that path. (iii) If events occur without a preceding SSTORE, flag an
+	 * event-order warning.
 	 *
-	 * @param bridge   the Bridge providing the cross-chain CFG context
 	 * @param contract the specific SmartContract to analyze
+	 * @param policy   the CustomPolicy used for cross-chain links
 	 */
-	public static void runEventOrderChecker(Bridge bridge, SmartContract contract) {
+	public static void runEventOrderChecker(SmartContract contract, CustomPolicy policy) {
 		log.info("[IN] Running event order checker on {}.", contract.getName());
 
 		EVMCFG cfg = contract.getCFG();
@@ -396,55 +395,51 @@ public class xEVMLiSA {
 							&& exitpoint instanceof Return)
 						continue;
 
-					/* We take only the state updates inside the function */
-					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
-							Set.of(Sstore.class));
-					/* We take only the log instructions inside the function */
-					Set<Statement> logs = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint,
-							Set.of(Log1.class, Log2.class, Log3.class, Log4.class));
+					Set<String> eventsPolicy = policy.getEventsForFunction(function.getName());
+					Set<Signature> eventsContract = contract.getEventsSignature();
+					Set<Statement> eventsExitpoints = new HashSet<>();
 
-					/*
-					 * If there is no state update but at least a LOG
-					 * instruction, a (possible) warning is raised
-					 */
-					if (sstores.isEmpty() && !logs.isEmpty()) {
-						for (Statement emitEvent : logs) {
+					for (String eventPolicy : eventsPolicy) {
+						for (Signature eventContract : eventsContract) {
+							if (!eventPolicy.equalsIgnoreCase(eventContract.getName()))
+								continue;
+							eventsExitpoints.addAll(eventContract.getExitPoints());
+						}
+					}
+
+					/* Skip if we have no event exitpoints */
+					if (eventsExitpoints.isEmpty())
+						continue;
+
+					/* We take only state updates inside the function */
+					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint, Sstore.class);
+
+					for (Statement emitEvent : eventsExitpoints) {
+						if (cfg.reachableFromWithoutStatements(entrypoint, emitEvent, sstores)) {
+
 							ProgramCounterLocation entrypointLocation = (ProgramCounterLocation) entrypoint
 									.getLocation();
 							ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
 
-							if (bridge.getXCFG().hasAtLeastOneCrossChainEdge(emitEvent)) {
-								String warn = "[DEFINITE] Event Order vulnerability at " + emitEventLocation.getPc();
+							String warn = "Event Order warning at " + emitEventLocation.getPc();
 
-								log.warn(
-										"[DEFINITE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-										emitEventLocation.getPc(),
-										emitEventLocation.getSourceCodeLine(),
-										entrypointLocation.getPc(),
-										entrypointLocation.getSourceCodeLine());
+							log.warn(
+									"Event Order warning at pc {} (line {}) coming from pc {} (line {}).",
+									emitEventLocation.getPc(),
+									emitEventLocation.getSourceCodeLine(),
+									entrypointLocation.getPc(),
+									entrypointLocation.getSourceCodeLine());
 
-								MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
+							MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
 
-								warn = "[DEFINITE] Event Order vulnerability in " + contract.getName() + " at "
-										+ function.getFullSignature()
-										+ " (pc: " + emitEventLocation.getPc() + ", "
-										+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
-								MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
-
-							} else {
-								String warn = "[POSSIBLE] Event Order vulnerability at " + emitEventLocation.getPc();
-
-								log.warn(
-										"[POSSIBLE] Event Order vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-										emitEventLocation.getPc(),
-										emitEventLocation.getSourceCodeLine(),
-										entrypointLocation.getPc(),
-										entrypointLocation.getSourceCodeLine());
-
-								MyCache.getInstance().addPossibleEventOrderWarning(cfg.hashCode(), warn);
-							}
+							warn = "Event Order warning in " + contract.getName() + " at "
+									+ function.getFullSignature()
+									+ " (pc: " + emitEventLocation.getPc() + ", "
+									+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
+							MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
 						}
 					}
+
 				}
 			}
 		}
@@ -464,6 +459,7 @@ public class xEVMLiSA {
 	 * missing notifications as vulnerabilities.
 	 *
 	 * @param contract the SmartContract to analyze for missing event logs
+	 * @param policy   the CustomPolicy used for cross-chain links
 	 */
 	public static void runMissingEventNotificationChecker(SmartContract contract, CustomPolicy policy) {
 		log.info("[IN] Running missing event notification checker on {}.", contract.getName());
