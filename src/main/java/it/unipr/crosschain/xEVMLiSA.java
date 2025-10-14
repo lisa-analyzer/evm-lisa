@@ -444,10 +444,9 @@ public class xEVMLiSA {
 			}
 		}
 
-		log.info("[OUT] Event order checker ended on {}, with {} definite and {} possible vulnerabilities found.",
+		log.info("[OUT] Event order checker ended on {}, with {} warnings found.",
 				contract.getName(),
-				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()),
-				MyCache.getInstance().getPossibleEventOrderWarnings(contract.getCFG().hashCode()));
+				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
