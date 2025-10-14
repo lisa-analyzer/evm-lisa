@@ -1,5 +1,6 @@
 package it.unipr.crosschain.checker;
 
+import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
@@ -15,6 +16,8 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +25,13 @@ public class VulnerableLOGsComputer implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(VulnerableLOGsComputer.class);
+	private Set<Statement> eventsExitpoints;
+
+	public VulnerableLOGsComputer(Set<Signature> events) {
+		this.eventsExitpoints = new HashSet<>();
+		for (Signature event : events)
+			eventsExitpoints.addAll(event.getExitPoints());
+	}
 
 	@Override
 	public boolean visit(
@@ -29,8 +39,7 @@ public class VulnerableLOGsComputer implements
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Log) {
-
+		if (eventsExitpoints.contains(node)) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -47,41 +56,43 @@ public class VulnerableLOGsComputer implements
 				// Retrieve the symbolic stack from the analysis result
 				TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
-				if (taintedStack.isBottom())
+				if (taintedStack.isBottom() || taintedStack.isTop())
 					// Nothing to do
 					continue;
-				else {
-					if (node instanceof Log1)
-						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
-								taintedStack.getElementAtPosition(2),
-								taintedStack.getElementAtPosition(3)))
-							addVulnerableLOG(node);
-					if (node instanceof Log2)
-						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
-								taintedStack.getElementAtPosition(2),
-								taintedStack.getElementAtPosition(3),
-								taintedStack.getElementAtPosition(4)))
-							addVulnerableLOG(node);
-					if (node instanceof Log3)
-						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
-								taintedStack.getElementAtPosition(2),
-								taintedStack.getElementAtPosition(3),
-								taintedStack.getElementAtPosition(4),
-								taintedStack.getElementAtPosition(5)))
-							addVulnerableLOG(node);
-					if (node instanceof Log4)
-						if (TaintElement.isAtLeastOneTainted(taintedStack.getElementAtPosition(1),
-								taintedStack.getElementAtPosition(2),
-								taintedStack.getElementAtPosition(3),
-								taintedStack.getElementAtPosition(4),
-								taintedStack.getElementAtPosition(5),
-								taintedStack.getElementAtPosition(6)))
-							addVulnerableLOG(node);
-				}
+
+				int numArgs = getNumberOfArgs(node);
+				boolean isAtLeastOneTainted = false;
+
+				for (int argIndex = 1; argIndex <= numArgs; argIndex++)
+					isAtLeastOneTainted |= TaintElement.isAtLeastOneTainted(
+							taintedStack.getElementAtPosition(argIndex));
+
+				if (isAtLeastOneTainted)
+					addVulnerableLOG(node);
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Computes the number of arguments consumed from the stack by the provided
+	 * EVM instruction.
+	 *
+	 * @param node the statement to inspect
+	 *
+	 * @return the amount of stack elements consumed by {@code node}
+	 */
+	private int getNumberOfArgs(Statement node) {
+		if (node instanceof Log1)
+			return 3;
+		if (node instanceof Log2)
+			return 4;
+		if (node instanceof Log3)
+			return 5;
+		if (node instanceof Log4)
+			return 6;
+		return 0;
 	}
 
 	/**
@@ -95,7 +106,7 @@ public class VulnerableLOGsComputer implements
 		MyCache.getInstance().addVulnerableLogStatementForLocalDependencyChecker(node);
 
 		ProgramCounterLocation nodeLocation = (ProgramCounterLocation) node.getLocation();
-		log.warn("(Time Synchronization vulnerability) LOG possibly vulnerable at pc {} (line {}) (cfg={}).",
+		log.warn("(Local Dependency Checker) Event possibly vulnerable at pc {} (line {}) (cfg={}).",
 				nodeLocation.getPc(),
 				nodeLocation.getSourceCodeLine(),
 				node.getCFG().hashCode());

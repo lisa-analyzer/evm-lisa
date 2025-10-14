@@ -287,10 +287,10 @@ public class xEVMLiSA {
 	/**
 	 * Executes the Local Dependency analysis for all contracts in the given
 	 * bridge. This method performs three phases in parallel across all
-	 * contracts: (i) Identify vulnerable LOG statements for the Local
-	 * Dependency Checker. (ii) Mark any CALLDATALOAD sites reachable from those
-	 * LOGs as tainted. (iii) Run the core Local Dependency Checker logic on
-	 * each contract.
+	 * contracts: (i) Identify vulnerable Event statements for the Local
+	 * Dependency Checker. (ii) Mark any CALLDATALOAD or CALLDATACOPY sites
+	 * reachable from those LOGs as tainted. (iii) Run the core Local Dependency
+	 * Checker logic on each contract.
 	 *
 	 * @param bridge the Bridge instance whose contracts will be analyzed
 	 */
@@ -569,7 +569,7 @@ public class xEVMLiSA {
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		VulnerableLOGsComputer checker = new VulnerableLOGsComputer();
+		VulnerableLOGsComputer checker = new VulnerableLOGsComputer(contract.getEventsSignature());
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new VulnerableLOGsAbstractDomain(),
@@ -597,12 +597,17 @@ public class xEVMLiSA {
 			for (Signature event : contract.getEventsSignature()) {
 				for (Statement emit : event.getExitPoints()) {
 					if (logsVulnerable.contains(emit)) {
+
 						/* Functions linked to this event */
 						Set<Signature> functionsLinked = MyCache.getInstance().getMapEventsFunctions(event);
-						log.warn("No linked function found for event {} in contract {}.", event.getFullSignature(),
-								contract.getName());
-						for (Signature functionLinked : functionsLinked) {
 
+						if (functionsLinked.isEmpty()) {
+							log.warn("No linked function found for event {} in contract {}.", event.getFullSignature(),
+									contract.getName());
+							continue;
+						}
+
+						for (Signature functionLinked : functionsLinked) {
 							for (Statement entrypoint : functionLinked.getEntryPoints()) {
 								for (Statement exitpoint : functionLinked.getExitPoints()) {
 									/*
