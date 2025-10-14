@@ -3,7 +3,6 @@ package it.unipr.utils;
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
 import it.unipr.analysis.contract.Signature;
-import it.unipr.analysis.taint.TaintElement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,13 +28,12 @@ public class MyCache {
 
 	private final LRUMap<String, Set<Object>> _warningsCache;
 
-	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
+	private final Set<Statement> _vulnerableLogStatement;
 
 	private final Set<Statement> _taintedCallDataLoad;
 
 	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
 
-	private final LRUMap<Integer, Set<Object>> _vulnerabilityPerFunction;
 	private final LRUMap<Signature, Set<Signature>> _mapEventsFunctions;
 
 	/**
@@ -71,15 +69,14 @@ public class MyCache {
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reachableFrom = new LRUMap<String, Boolean>(5000);
 
-		this._warningsCache = new LRUMap<String, Set<Object>>(15000);
+		this._warningsCache = new LRUMap<String, Set<Object>>(20000);
 
-		this._vulnerableLogStatement = new LRUMap<>(5000);
+		this._vulnerableLogStatement = Collections.synchronizedSet(new HashSet<>());
 
-		this._taintedCallDataLoad = new HashSet<>();
+		this._taintedCallDataLoad = Collections.synchronizedSet(new HashSet<>());
 
 		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
 
-		this._vulnerabilityPerFunction = new LRUMap<>(10000);
 		this._mapEventsFunctions = new LRUMap<>(10000);
 	}
 
@@ -162,11 +159,8 @@ public class MyCache {
 	 * @param warning the vulnerability description or warning object to record
 	 */
 	public void addVulnerabilityPerFunction(Integer key, Object warning) {
-		synchronized (_vulnerabilityPerFunction) {
-			_vulnerabilityPerFunction
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "vulnerabilityPerFunction:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -183,12 +177,14 @@ public class MyCache {
 	 *             empty JSONArray if none are present
 	 */
 	public JSONArray getVulnerabilityPerFunction(Integer key) {
-		synchronized (_vulnerabilityPerFunction) {
-			if (_vulnerabilityPerFunction.get(key) == null)
+		String cacheKey = "vulnerabilityPerFunction:" + key.toString();
+		synchronized (_warningsCache) {
+			Set<Object> warnings = _warningsCache.get(cacheKey);
+			if (warnings == null)
 				return new JSONArray();
 
 			JSONArray results = new JSONArray();
-			for (Object warning : _vulnerabilityPerFunction.get(key)) {
+			for (Object warning : warnings) {
 				results.put(warning);
 			}
 			return results;
@@ -641,9 +637,7 @@ public class MyCache {
 	 * @param key the LOG statement to mark as vulnerable
 	 */
 	public void addVulnerableLogStatementForLocalDependencyChecker(Statement key) {
-		synchronized (_vulnerableLogStatement) {
-			_vulnerableLogStatement.put(key, TaintElement.TAINT);
-		}
+		_vulnerableLogStatement.add(key);
 	}
 
 	/**
@@ -653,9 +647,7 @@ public class MyCache {
 	 * @return a set of LOG statements to be checked for local dependency
 	 */
 	public Set<Statement> getSetOfVulnerableLogStatementForLocalDependencyChecker() {
-		synchronized (_vulnerableLogStatement) {
-			return _vulnerableLogStatement.keySet();
-		}
+		return new HashSet<>(_vulnerableLogStatement);
 	}
 
 	/**
@@ -665,9 +657,7 @@ public class MyCache {
 	 * @param stmt the CALLDATALOAD statement to mark as tainted
 	 */
 	public void addTaintedCallDataLoad(Statement stmt) {
-		synchronized (_taintedCallDataLoad) {
-			_taintedCallDataLoad.add(stmt);
-		}
+		_taintedCallDataLoad.add(stmt);
 	}
 
 	/**
@@ -679,9 +669,7 @@ public class MyCache {
 	 * @return true if the statement is tainted, false otherwise
 	 */
 	public boolean isTaintedCallDataLoad(Statement stmt) {
-		synchronized (_taintedCallDataLoad) {
-			return _taintedCallDataLoad.contains(stmt);
-		}
+		return _taintedCallDataLoad.contains(stmt);
 	}
 
 	/**
