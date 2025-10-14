@@ -27,24 +27,8 @@ public class MyCache {
 	private final LRUMap<String, Long> _timeLostToGetStorage;
 	private final LRUMap<String, Boolean> _reachableFrom;
 
-	private final LRUMap<Integer, Set<Object>> _reentrancyWarnings;
+	private final LRUMap<String, Set<Object>> _warningsCache;
 
-	private final LRUMap<Integer, Set<Object>> _txOriginWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleTxOriginWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _eventOrderWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleEventOrderWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _accessControlIncompletenessWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleAccessControlIncompletenessWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _randomnessDependencyWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleRandomnessDependencyWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _missingEventNotificationWarnings;
-
-	private final LRUMap<Integer, Set<Object>> _timeSynchronizationWarnings;
-	private final LRUMap<Integer, Set<Object>> _possibleLocalDependencyWarnings;
 	private final LRUMap<Statement, TaintElement> _vulnerableLogStatement;
 
 	private final Set<Statement> _taintedCallDataLoad;
@@ -87,24 +71,8 @@ public class MyCache {
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reachableFrom = new LRUMap<String, Boolean>(5000);
 
-		this._reentrancyWarnings = new LRUMap<Integer, Set<Object>>(5000);
+		this._warningsCache = new LRUMap<String, Set<Object>>(15000);
 
-		this._txOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleTxOriginWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._eventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleEventOrderWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._accessControlIncompletenessWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleAccessControlIncompletenessWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._randomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleRandomnessDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._missingEventNotificationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-
-		this._timeSynchronizationWarnings = new LRUMap<Integer, Set<Object>>(5000);
-		this._possibleLocalDependencyWarnings = new LRUMap<Integer, Set<Object>>(5000);
 		this._vulnerableLogStatement = new LRUMap<>(5000);
 
 		this._taintedCallDataLoad = new HashSet<>();
@@ -115,6 +83,48 @@ public class MyCache {
 		this._mapEventsFunctions = new LRUMap<>(10000);
 	}
 
+	/**
+	 * Adds a warning to the internal warnings cache. If no warnings are
+	 * associated with the key, a new synchronized set is created and the
+	 * warning is added to it. This method is thread-safe.
+	 *
+	 * @param key   the key identifying the category or entity for which the
+	 *                  warning applies
+	 * @param value the warning object to be added
+	 */
+	private void putWarning(String key, Object value) {
+		synchronized (_warningsCache) {
+			_warningsCache
+					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
+					.add(value);
+		}
+	}
+
+	/**
+	 * Retrieves the number of warnings associated with the specified key. If no
+	 * warnings are associated with the key, the method returns 0. This method
+	 * is thread-safe.
+	 *
+	 * @param key the key identifying the category or entity whose warnings are
+	 *                to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	private int getWarnings(String key) {
+		synchronized (_warningsCache) {
+			return (_warningsCache.get(key) != null) ? _warningsCache.get(key).size() : 0;
+		}
+	}
+
+	/**
+	 * Associates an event signature with a function signature in the internal
+	 * mapping. If no functions are associated with the given event, a new
+	 * synchronized set is created. This method is thread-safe.
+	 *
+	 * @param event    the event signature to use as the key
+	 * @param function the function signature to associate with the event
+	 */
 	public void addMapEventsFunctions(Signature event, Signature function) {
 		synchronized (_mapEventsFunctions) {
 			_mapEventsFunctions
@@ -123,6 +133,16 @@ public class MyCache {
 		}
 	}
 
+	/**
+	 * Retrieves all function signatures associated with a given event
+	 * signature. If no functions are mapped to the event, returns an empty set.
+	 * This method is thread-safe.
+	 *
+	 * @param event the event signature to query
+	 *
+	 * @return a set of function signatures associated with the event, or an
+	 *             empty set if none exist
+	 */
 	public Set<Signature> getMapEventsFunctions(Signature event) {
 		synchronized (_mapEventsFunctions) {
 			return (_mapEventsFunctions.get(event) != null)
@@ -133,11 +153,9 @@ public class MyCache {
 
 	/**
 	 * Records a vulnerability warning for a specific function identified by its
-	 * key.
-	 * <p>
-	 * This method ensures thread-safe access to the internal map, creating a
-	 * new synchronized Set if none exists for the given key, and then adds the
-	 * warning object to that set.
+	 * key. This method ensures thread-safe access to the internal map, creating
+	 * a new synchronized Set if none exists for the given key, and then adds
+	 * the warning object to that set.
 	 *
 	 * @param key     the identifier of the function (e.g., CFG hashcode or
 	 *                    program counter)
@@ -255,11 +273,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addReentrancyWarning(Integer key, Object warning) {
-		synchronized (_reentrancyWarnings) {
-			_reentrancyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "reentrancyWarning:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -274,9 +289,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getReentrancyWarnings(Integer key) {
-		synchronized (_reentrancyWarnings) {
-			return (_reentrancyWarnings.get(key) != null) ? _reentrancyWarnings.get(key).size() : 0;
-		}
+		String cacheKey = "reentrancyWarning:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -289,11 +303,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addEventOrderWarning(Integer key, Object warning) {
-		synchronized (_eventOrderWarnings) {
-			_eventOrderWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "eventOrderWarning:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -308,43 +319,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getEventOrderWarnings(Integer key) {
-		synchronized (_eventOrderWarnings) {
-			return (_eventOrderWarnings.get(key) != null) ? _eventOrderWarnings.get(key).size() : 0;
-		}
-	}
-
-	/**
-	 * Adds a possible event order warning for the specified key. If no warnings
-	 * are associated with the key, a new set is created and the warning is
-	 * added to it. This method is thread-safe.
-	 *
-	 * @param key     the key identifying the smart contract or entity for which
-	 *                    the warning applies
-	 * @param warning the warning object to be added
-	 */
-	public void addPossibleEventOrderWarning(Integer key, Object warning) {
-		synchronized (_possibleEventOrderWarnings) {
-			_possibleEventOrderWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
-	}
-
-	/**
-	 * Retrieves the number of possible event order warnings associated with the
-	 * specified key. If no warnings are associated with the key, the method
-	 * returns 0. This method is thread-safe.
-	 *
-	 * @param key the key identifying the smart contract or entity whose
-	 *                warnings are to be retrieved
-	 *
-	 * @return the number of warnings associated with the key, or 0 if none
-	 *             exist
-	 */
-	public int getPossibleEventOrderWarnings(Integer key) {
-		synchronized (_possibleEventOrderWarnings) {
-			return (_possibleEventOrderWarnings.get(key) != null) ? _possibleEventOrderWarnings.get(key).size() : 0;
-		}
+		String cacheKey = "eventOrderWarning:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -357,11 +333,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addMissingEventNotificationWarning(Integer key, Object warning) {
-		synchronized (_missingEventNotificationWarnings) {
-			_missingEventNotificationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "missingEventNotificationWarning:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -376,11 +349,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getMissingEventNotificationWarnings(Integer key) {
-		synchronized (_missingEventNotificationWarnings) {
-			return (_missingEventNotificationWarnings.get(key) != null)
-					? _missingEventNotificationWarnings.get(key).size()
-					: 0;
-		}
+		String cacheKey = "missingEventNotificationWarning:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -393,11 +363,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addAccessControlIncompletenessWarning(Integer key, Object warning) {
-		synchronized (_accessControlIncompletenessWarnings) {
-			_accessControlIncompletenessWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "accessControlIncompletenessWarningDefinite:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -412,11 +379,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getAccessControlIncompletenessWarnings(Integer key) {
-		synchronized (_accessControlIncompletenessWarnings) {
-			return (_accessControlIncompletenessWarnings.get(key) != null)
-					? _accessControlIncompletenessWarnings.get(key).size()
-					: 0;
-		}
+		String cacheKey = "accessControlIncompletenessWarningDefinite:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -429,11 +393,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleAccessControlIncompletenessWarning(Integer key, Object warning) {
-		synchronized (_possibleAccessControlIncompletenessWarnings) {
-			_possibleAccessControlIncompletenessWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "accessControlIncompletenessWarningPossible:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -448,11 +409,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getPossibleAccessControlIncompletenessWarnings(Integer key) {
-		synchronized (_possibleAccessControlIncompletenessWarnings) {
-			return (_possibleAccessControlIncompletenessWarnings.get(key) != null)
-					? _possibleAccessControlIncompletenessWarnings.get(key).size()
-					: 0;
-		}
+		String cacheKey = "accessControlIncompletenessWarningPossible:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -509,11 +467,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addTxOriginWarning(Integer key, Object warning) {
-		synchronized (_txOriginWarnings) {
-			_txOriginWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "txOriginWarningDefinite:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -528,9 +483,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getTxOriginWarnings(Integer key) {
-		synchronized (_txOriginWarnings) {
-			return (_txOriginWarnings.get(key) != null) ? _txOriginWarnings.get(key).size() : 0;
-		}
+		String cacheKey = "txOriginWarningDefinite:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -543,11 +497,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addPossibleTxOriginWarning(Integer key, Object warning) {
-		synchronized (_possibleTxOriginWarnings) {
-			_possibleTxOriginWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "txOriginWarningPossible:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -562,9 +513,8 @@ public class MyCache {
 	 *             none exist
 	 */
 	public int getPossibleTxOriginWarnings(Integer key) {
-		synchronized (_possibleTxOriginWarnings) {
-			return (_possibleTxOriginWarnings.get(key) != null) ? _possibleTxOriginWarnings.get(key).size() : 0;
-		}
+		String cacheKey = "txOriginWarningPossible:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -577,11 +527,8 @@ public class MyCache {
 	 * @param warning the warning object to be added
 	 */
 	public void addRandomnessDependencyWarning(Integer key, Object warning) {
-		synchronized (_randomnessDependencyWarnings) {
-			_randomnessDependencyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "randomnessDependencyWarningDefinite:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -596,9 +543,8 @@ public class MyCache {
 	 *             exist
 	 */
 	public int getRandomnessDependencyWarnings(Integer key) {
-		synchronized (_randomnessDependencyWarnings) {
-			return (_randomnessDependencyWarnings.get(key) != null) ? _randomnessDependencyWarnings.get(key).size() : 0;
-		}
+		String cacheKey = "randomnessDependencyWarningDefinite:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -612,11 +558,8 @@ public class MyCache {
 	 *                    added
 	 */
 	public void addPossibleRandomnessDependencyWarning(Integer key, Object warning) {
-		synchronized (_possibleRandomnessDependencyWarnings) {
-			_possibleRandomnessDependencyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "randomnessDependencyWarningPossible:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -633,11 +576,8 @@ public class MyCache {
 	 *             are no warnings associated with it.
 	 */
 	public int getPossibleRandomnessDependencyWarnings(Integer key) {
-		synchronized (_possibleRandomnessDependencyWarnings) {
-			return (_possibleRandomnessDependencyWarnings.get(key) != null)
-					? _possibleRandomnessDependencyWarnings.get(key).size()
-					: 0;
-		}
+		String cacheKey = "randomnessDependencyWarningPossible:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -649,11 +589,8 @@ public class MyCache {
 	 *                    warnings for the given key
 	 */
 	public void addLocalDependencyWarning(Integer key, Object warning) {
-		synchronized (_timeSynchronizationWarnings) {
-			_timeSynchronizationWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "localDependencyWarningDefinite:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -665,11 +602,8 @@ public class MyCache {
 	 *             warnings exist
 	 */
 	public int getLocalDependencyWarnings(Integer key) {
-		synchronized (_timeSynchronizationWarnings) {
-			return (_timeSynchronizationWarnings.get(key) != null)
-					? _timeSynchronizationWarnings.get(key).size()
-					: 0;
-		}
+		String cacheKey = "localDependencyWarningDefinite:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -681,11 +615,8 @@ public class MyCache {
 	 *                    warnings for the given key
 	 */
 	public void addPossibleLocalDependencyWarning(Integer key, Object warning) {
-		synchronized (_possibleLocalDependencyWarnings) {
-			_possibleLocalDependencyWarnings
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
+		String cacheKey = "localDependencyWarningPossible:" + key.toString();
+		putWarning(cacheKey, warning);
 	}
 
 	/**
@@ -697,11 +628,8 @@ public class MyCache {
 	 *             warnings exist
 	 */
 	public int getPossibleLocalDependencyWarnings(Integer key) {
-		synchronized (_possibleLocalDependencyWarnings) {
-			return (_possibleLocalDependencyWarnings.get(key) != null)
-					? _possibleLocalDependencyWarnings.get(key).size()
-					: 0;
-		}
+		String cacheKey = "localDependencyWarningPossible:" + key.toString();
+		return getWarnings(cacheKey);
 	}
 
 	/**
@@ -758,10 +686,9 @@ public class MyCache {
 
 	/**
 	 * Links a vulnerable LOG statement to its corresponding tainted
-	 * CALLDATALOAD statement(s).
-	 * <p>
-	 * Stores a mapping from the LOG statement to one or more tainted
-	 * CALLDATALOAD warnings for cross-reference during analysis.
+	 * CALLDATALOAD statement(s). Stores a mapping from the LOG statement to one
+	 * or more tainted CALLDATALOAD warnings for cross-reference during
+	 * analysis.
 	 *
 	 * @param key     the LOG statement
 	 * @param warning the tainted CALLDATALOAD statement or warning object
