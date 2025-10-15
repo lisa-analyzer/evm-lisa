@@ -812,7 +812,7 @@ public class EVMLiSA {
 		if (cmd.hasOption("output-directory-path"))
 			OUTPUT_DIRECTORY_PATH = Path.of(cmd.getOptionValue("output-directory-path"));
 		else
-			OUTPUT_DIRECTORY_PATH = Path.of("execution", "results");
+			OUTPUT_DIRECTORY_PATH = Path.of("outputs", MyTimestampUtil.getCurrentTimestamp());
 		SmartContract.setWorkingDirectory(OUTPUT_DIRECTORY_PATH);
 
 		try {
