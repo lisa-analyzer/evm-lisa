@@ -46,7 +46,7 @@ local.properties
 .loadpath
 .recommenders
 .DS_Store
-execution/
+outputs/
 .env
 
 # External tool builders

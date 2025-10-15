@@ -54,7 +54,7 @@ public class SmartContract {
 	private JSONArray _abi;
 
 	/** Base directory for storing contract analysis results. */
-	private static Path _workingDirectory = Path.of("execution", "results");
+	private static Path _workingDirectory = Path.of("outputs", MyTimestampUtil.getCurrentTimestamp());
 
 	/** Path to the contract's ABI file. */
 	private Path _abiFilePath;

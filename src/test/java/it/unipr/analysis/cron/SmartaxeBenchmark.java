@@ -6,6 +6,7 @@ import it.unipr.crosschain.Bridge;
 import it.unipr.crosschain.xEVMLiSA;
 import it.unipr.utils.EVMLiSAExecutor;
 import it.unipr.utils.MyCache;
+import it.unipr.utils.MyTimestampUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +21,8 @@ import org.json.JSONObject;
 
 public class SmartaxeBenchmark {
 	private static final Logger log = LogManager.getLogger(SmartaxeBenchmark.class);
-	private static Path workingDirectory = Paths.get("execution", "smartaxe-benchmark");
+	private static Path workingDirectory = Path.of("outputs", MyTimestampUtil.getCurrentTimestamp(),
+			"smartaxe-benchmark");
 
 	public static void main(String[] args) {
 		EVMLiSA.setWorkingDirectory(workingDirectory);
