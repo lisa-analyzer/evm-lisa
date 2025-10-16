@@ -66,7 +66,7 @@ Alternatively, you can pass your API key directly using the `--etherscan-api-key
 
 1. Build the Docker container:
    ```bash
-   mkdir -p execution/docker &&
+   mkdir -p outputs/docker &&
    docker build -t evm-lisa:latest .
    ```
 
@@ -74,13 +74,13 @@ Alternatively, you can pass your API key directly using the `--etherscan-api-key
    ```bash
    docker run --rm -it \
    -v $(pwd)/.env:/app/.env \
-   -v $(pwd)/execution/docker:/app/execution/results \
+   -v $(pwd)/outputs/docker:/app/outputs \
    evm-lisa:latest \
    [options]
    ```
 
    - `-v $(pwd)/.env:/app/.env`: Mounts your environment file
-   - `-v $(pwd)/execution/docker:/app/execution/results`: Shares the results directory
+   - `-v $(pwd)/outputs/docker:/app/outputs`: Shares the results directory
 
 ### Using Command Line
 
@@ -153,7 +153,7 @@ java -jar build/libs/evm-lisa-all.jar \
 ```bash
 docker run --rm -it \
 -v $(pwd)/.env:/app/.env \
--v $(pwd)/execution/docker:/app/execution/results \
+-v $(pwd)/outputs/docker:/app/outputs \
 evm-lisa:latest \
 -a 0x7c21C4Bbd63D05Fa9F788e38d14e18FC52E9557B \
 --stack-size 64 \
@@ -205,12 +205,13 @@ For cross-chain analysis, EVMLiSA supports policy files that define event-functi
 {
   "policy": [
     {
-      "event": "EventName1",
-      "function": "functionName1"
-    },
-    {
-      "event": "EventName2",
-      "function": "functionName2"
+      "sourceFunction": {
+        "name": "deposit",
+        "events": ["Deposit"]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
     }
   ]
 }
@@ -218,9 +219,12 @@ For cross-chain analysis, EVMLiSA supports policy files that define event-functi
 
 ### Policy structure explanation
 
-- **policy**: An array of objects, each containing:
-  - **event**: The name of the event that triggers a cross-chain operation
-  - **function**: The name of the function that should be called in response to the event
+- `policy`: An array of objects, each containing:
+  - `sourceFunction`: An object describing the source function and its events:
+    - `name`: The name of the function that emits the event
+    - `events`: An array of event names that trigger cross-chain operations
+  - `destinationFunction`: An object describing the destination function:
+    - `name`: The name of the function that should be called in response to the event
 
 ### Example
 
@@ -228,16 +232,26 @@ For cross-chain analysis, EVMLiSA supports policy files that define event-functi
 {
   "policy": [
     {
-      "event": "Deposit",
-      "function": "deposit"
+      "sourceFunction": {
+        "name": "initGenesisBlock",
+        "events": [
+          "InitGenesisBlockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "initGenesisBlock"
+      }
     },
     {
-      "event": "TransferOut",
-      "function": "transferOut"
-    },
-    {
-      "event": "VaultTransfer",
-      "function": "returnVaultAssets"
+      "sourceFunction": {
+        "name": "pause",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "pause"
+      }
     }
   ]
 }

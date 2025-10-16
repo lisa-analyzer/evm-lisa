@@ -25,8 +25,8 @@ COPY . .
 # Build the project with Gradle
 RUN gradle assemble
 
-# Create results directory
-RUN mkdir -p /app/execution/results
+# Create outputs directory
+RUN mkdir -p /app/outputs
 
 # Set the entry point of the container
 ENTRYPOINT ["java", "-jar", "/app/build/libs/evm-lisa-all.jar"]
