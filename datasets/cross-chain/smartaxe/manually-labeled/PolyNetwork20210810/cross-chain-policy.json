@@ -2,6 +2,39 @@
   "policy": [
     {
       "sourceFunction": {
+        "name": "lock",
+        "events": [
+          "PolyWrapperLock"
+        ]
+      },
+      "destinationFunction": {
+        "name": "lock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "onERC721Received",
+        "events": [
+          "LockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unlock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unlock",
+        "events": [
+          "UnlockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unlock"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "initGenesisBlock",
         "events": [
           "InitGenesisBlockEvent"
@@ -46,17 +79,6 @@
     },
     {
       "sourceFunction": {
-        "name": "_executeCrossChainTx",
-        "events": [
-          "VerifyHeaderAndExecuteTxEvent"
-        ]
-      },
-      "destinationFunction": {
-        "name": "verifyHeaderAndExecuteTx"
-      }
-    },
-    {
-      "sourceFunction": {
         "name": "pause",
         "events": [
           "Paused"
@@ -75,6 +97,17 @@
       },
       "destinationFunction": {
         "name": "unpause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_executeCrossChainTx",
+        "events": [
+          "VerifyHeaderAndExecuteTxEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "verifyHeaderAndExecuteTx"
       }
     }
   ]
