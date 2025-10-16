@@ -46,6 +46,17 @@
     },
     {
       "sourceFunction": {
+        "name": "_executeCrossChainTx",
+        "events": [
+          "VerifyHeaderAndExecuteTxEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "verifyHeaderAndExecuteTx"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "pause",
         "events": [
           "Paused"

@@ -1,22 +1,3 @@
 {
-  "policy": [
-    {
-      "sourceFunction": {
-        "name": "bridgeSend",
-        "events": []
-      },
-      "destinationFunction": {
-        "name": "bridgeSend"
-      }
-    },
-    {
-      "sourceFunction": {
-        "name": "bridgeWithdraw",
-        "events": []
-      },
-      "destinationFunction": {
-        "name": "bridgeWithdraw"
-      }
-    }
-  ]
+  "policy": []
 }

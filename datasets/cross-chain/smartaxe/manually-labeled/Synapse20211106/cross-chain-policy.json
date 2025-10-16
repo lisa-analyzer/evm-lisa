@@ -79,6 +79,17 @@
     },
     {
       "sourceFunction": {
+        "name": "_calculateSwap",
+        "events": [
+          "TokenDepositAndSwap"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositAndSwap"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "redeemAndSwap",
         "events": [
           "TokenRedeemAndSwap"

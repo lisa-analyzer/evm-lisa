@@ -35,6 +35,17 @@
     },
     {
       "sourceFunction": {
+        "name": "anySwapOutUnderlyingWithPermit",
+        "events": [
+          "LogAnySwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapOutUnderlyingWithPermit"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "anySwapOutNative",
         "events": [
           "LogAnySwapOut"
@@ -141,6 +152,29 @@
       },
       "destinationFunction": {
         "name": "anySwapInExactTokensForNative"
+      }
+    }
+    ,
+    {
+      "sourceFunction": {
+        "name": "depositWithPermit",
+        "events": [
+          "LogAnySwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositWithPermit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositWithTransferPermit",
+        "events": [
+          "LogAnySwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositWithTransferPermit"
       }
     }
   ]
