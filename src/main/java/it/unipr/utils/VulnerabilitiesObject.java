@@ -63,10 +63,30 @@ public class VulnerabilitiesObject {
 	}
 
 	/**
+	 * Constructs a VulnerabilitiesObject from a JSON representation. Missing
+	 * fields are treated as zero/defaults.
+	 *
+	 * @param json the JSONObject containing vulnerabilities
+	 *
+	 * @return a built VulnerabilitiesObject
+	 */
+	public static VulnerabilitiesObject fromJson(org.json.JSONObject json) {
+		if (json == null)
+			return null;
+		return VulnerabilitiesObject.newVulnerabilitiesObject()
+				.reentrancy(json.optInt("reentrancy", 0))
+				.randomness(json.optInt("randomness_dependency", 0))
+				.possibleRandomness(json.optInt("randomness_dependency_possible", 0))
+				.txOrigin(json.optInt("tx_origin", 0))
+				.possibleTxOrigin(json.optInt("tx_origin_possible", 0))
+				.build();
+	}
+
+	/**
 	 * Sets the reentrancy vulnerability score.
 	 *
 	 * @param reentrancy the reentrancy score
-	 * 
+	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject reentrancy(int reentrancy) {
@@ -78,7 +98,7 @@ public class VulnerabilitiesObject {
 	 * Sets the randomness dependency vulnerability score.
 	 *
 	 * @param randomness the randomness dependency score
-	 * 
+	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject randomness(int randomness) {
@@ -90,7 +110,7 @@ public class VulnerabilitiesObject {
 	 * Sets the possible randomness dependency vulnerability score.
 	 *
 	 * @param possibleRandomness the possible randomness dependency score
-	 * 
+	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject possibleRandomness(int possibleRandomness) {
@@ -102,7 +122,7 @@ public class VulnerabilitiesObject {
 	 * Sets the tx. origin vulnerability score.
 	 *
 	 * @param txOrigin the tx. origin score
-	 * 
+	 *
 	 * @return the updated {@code VulnerabilitiesObject} instance
 	 */
 	public VulnerabilitiesObject txOrigin(int txOrigin) {
@@ -130,7 +150,7 @@ public class VulnerabilitiesObject {
 	 *
 	 * @param cfg the EVM control-flow graph from which to extract vulnerability
 	 *                data
-	 * 
+	 *
 	 * @return a {@link VulnerabilitiesObject} containing detected
 	 *             vulnerabilities
 	 */

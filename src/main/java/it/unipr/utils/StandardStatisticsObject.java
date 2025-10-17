@@ -117,10 +117,34 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	}
 
 	/**
+	 * Constructs a StandardStatisticsObject from a JSON representation. Missing
+	 * fields are treated as zero/defaults.
+	 *
+	 * @param json the JSONObject containing statistics
+	 *
+	 * @return a built StandardStatisticsObject
+	 */
+	public static StandardStatisticsObject fromJson(org.json.JSONObject json) {
+		if (json == null)
+			return null;
+		return StandardStatisticsObject.newStatisticsObject()
+				.address(json.optString("address", ""))
+				.totalOpcodes(json.optInt("total_opcodes", 0))
+				.totalJumps(json.optInt("total_jumps", 0))
+				.totalEdges(json.optInt("total_edges", 0))
+				.resolvedJumps(json.optInt("resolved_jumps", 0))
+				.definitelyUnreachableJumps(json.optInt("definitely_unreachable_jumps", 0))
+				.maybeUnreachableJumps(json.optInt("maybe_unreachable_jumps", 0))
+				.maybeUnsoundJumps(json.optInt("maybe_unsound_jumps", 0))
+				.unsoundJumps(json.optInt("unsound_jumps", 0))
+				.build();
+	}
+
+	/**
 	 * Sets the number of resolved jumps.
 	 *
 	 * @param resolvedJumps the resolved jumps
-	 * 
+	 *
 	 * @return the updated {@code StandardStatisticsObject} instance
 	 */
 	public StandardStatisticsObject resolvedJumps(int resolvedJumps) {
@@ -132,7 +156,7 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	 * Sets the number of definitely unreachable jumps.
 	 *
 	 * @param definitelyUnreachableJumps the definitely unreachable jumps
-	 * 
+	 *
 	 * @return the updated {@code StandardStatisticsObject} instance
 	 */
 	public StandardStatisticsObject definitelyUnreachableJumps(int definitelyUnreachableJumps) {
@@ -144,7 +168,7 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	 * Sets the number of maybe unreachable jumps.
 	 *
 	 * @param maybeUnreachableJumps the maybe unreachable jumps
-	 * 
+	 *
 	 * @return the updated {@code StandardStatisticsObject} instance
 	 */
 	public StandardStatisticsObject maybeUnreachableJumps(int maybeUnreachableJumps) {
@@ -156,7 +180,7 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	 * Sets the number of unsound jumps.
 	 *
 	 * @param unsoundJumps the unsound jumps
-	 * 
+	 *
 	 * @return the updated {@code StandardStatisticsObject} instance
 	 */
 	public StandardStatisticsObject unsoundJumps(int unsoundJumps) {
@@ -168,7 +192,7 @@ public class StandardStatisticsObject extends StatisticsObject<StandardStatistic
 	 * Sets the number of maybe unsound jumps.
 	 *
 	 * @param maybeUnsoundJumps the maybe unsound jumps
-	 * 
+	 *
 	 * @return the updated {@code StandardStatisticsObject} instance
 	 */
 	public StandardStatisticsObject maybeUnsoundJumps(int maybeUnsoundJumps) {

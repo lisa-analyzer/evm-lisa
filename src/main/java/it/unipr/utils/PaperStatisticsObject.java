@@ -116,10 +116,34 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	}
 
 	/**
+	 * Constructs a PaperStatisticsObject from a JSON representation. Missing
+	 * fields are treated as zero/defaults.
+	 *
+	 * @param json the JSONObject containing statistics
+	 *
+	 * @return a built PaperStatisticsObject
+	 */
+	public static PaperStatisticsObject fromJson(org.json.JSONObject json) {
+		if (json == null)
+			return null;
+		return PaperStatisticsObject.newStatisticsObject()
+				.address(json.optString("address", ""))
+				.totalOpcodes(json.optInt("total_opcodes", 0))
+				.totalJumps(json.optInt("total_jumps", 0))
+				.totalEdges(json.optInt("total_edges", 0))
+				.resolved(json.optInt("resolved_jumps", 0))
+				.unreachable(json.optInt("unreachable_jumps", 0))
+				.erroneous(json.optInt("erroneous_jumps", 0))
+				.unknown(json.optInt("unknown_jumps", 0))
+				.topState(json.optInt("top_stack_head_jumps", 0))
+				.build();
+	}
+
+	/**
 	 * Sets the number of resolved jumps.
 	 *
 	 * @param resolved the resolved jumps
-	 * 
+	 *
 	 * @return the updated {@code PaperStatisticsObject} instance
 	 */
 	public PaperStatisticsObject resolved(int resolved) {
@@ -131,7 +155,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	 * Sets the number of unreachable jumps.
 	 *
 	 * @param unreachable the unreachable jumps
-	 * 
+	 *
 	 * @return the updated {@code PaperStatisticsObject} instance
 	 */
 	public PaperStatisticsObject unreachable(int unreachable) {
@@ -143,7 +167,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	 * Sets the number of erroneous jumps.
 	 *
 	 * @param erroneous the erroneous jumps
-	 * 
+	 *
 	 * @return the updated {@code PaperStatisticsObject} instance
 	 */
 	public PaperStatisticsObject erroneous(int erroneous) {
@@ -155,7 +179,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	 * Sets the number of unknown jumps.
 	 *
 	 * @param unknown the unknown jumps
-	 * 
+	 *
 	 * @return the updated {@code PaperStatisticsObject} instance
 	 */
 	public PaperStatisticsObject unknown(int unknown) {
@@ -167,7 +191,7 @@ public class PaperStatisticsObject extends StatisticsObject<PaperStatisticsObjec
 	 * Sets the number of unknown jumps where the whole state was top.
 	 *
 	 * @param topState the unknown jumps where the whole state was top
-	 * 
+	 *
 	 * @return the updated {@code PaperStatisticsObject} instance
 	 */
 	public PaperStatisticsObject topState(int topState) {
