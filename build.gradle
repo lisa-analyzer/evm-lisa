@@ -11,7 +11,7 @@ plugins {
 	id 'java'
     id 'application'
    	id 'antlr'
-   	id 'eclipse'    
+   	id 'eclipse'
    	id 'com.diffplug.spotless' version '6.21.0'
     id 'checkstyle'
     id("com.github.johnrengelman.shadow") version "8.0.0"
@@ -20,39 +20,37 @@ plugins {
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    mavenCentral()   
+    mavenCentral()
 }
 
 dependencies {
  	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
  	implementation 'com.google.guava:guava:29.0-jre'
- 	
+
  	// Use JUnit test framework
  	testImplementation 'junit:junit:4.13'
  	antlr 'org.antlr:antlr4:4.11.1'
-  
+
  	// Apache Commons CLI
  	implementation 'commons-cli:commons-cli:1.4'
-  
+
  	implementation 'io.github.lisa-analyzer:lisa-program:0.1'
  	implementation 'io.github.lisa-analyzer:lisa-analyses:0.1'
  	implementation 'io.github.lisa-analyzer:lisa-sdk:0.1'
  	implementation 'io.github.lisa-analyzer:lisa-imp:0.1'
  	implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
  	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
- 	
+
  	implementation 'org.json:json:20210307'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
-
-    implementation 'redis.clients:jedis:6.1.0'
 }
 
 
 generateGrammarSource {
     maxHeapSize = "64m"
     arguments += ["-visitor", "-no-listener"]
-    
+
         doLast {
     	copy {
       		from 'build/generated-src/antlr/main/'
@@ -67,7 +65,7 @@ checkstyle {
     configFile = file(new File(rootProject.projectDir, 'checkstyle-config.xml'))
     sourceSets = []
     showViolations = true
-    toolVersion '8.38' 
+    toolVersion '8.38'
 }
 
 checkstyleTest.enabled = false
@@ -97,15 +95,15 @@ spotless {
     java {
         // tabs, no spaces
         indentWithTabs()
-    
-        // keep imports clean 
-        importOrder() 
+
+        // keep imports clean
+        importOrder()
         removeUnusedImports()
-    
+
         // use the eclipse formatting with the one provided with the project
         eclipse().configFile(new File(rootProject.projectDir, 'spotless-formatting.xml'))
-    
-        target 'src/**/*.java'    
+
+        target 'src/**/*.java'
         // ignore generated code
         targetExclude '**/build/generated/**/*.java'
         targetExclude '**/build/generated-src/**/*.java'
@@ -113,7 +111,7 @@ spotless {
     }
     antlr4 {
         target 'src/*/antlr/**/*.g4'
-        antlr4Formatter() 
+        antlr4Formatter()
     }
 }
 
@@ -122,11 +120,11 @@ spotlessJava {
 	dependsOn 'compileJava', 'compileTestJava', 'processTestResources', 'spotlessAntlr4'
 }
 
-spotlessJavaCheck { 
+spotlessJavaCheck {
     finalizedBy 'spotlessErrorMessage'
 }
 
-spotlessAntlr4Check { 
+spotlessAntlr4Check {
     finalizedBy 'spotlessErrorMessage'
 }
 
