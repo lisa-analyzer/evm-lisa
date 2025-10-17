@@ -143,6 +143,15 @@ public class EVMAbstractState
 		USE_STORAGE_LIVE = true;
 	}
 
+	/**
+	 * Returns whether live storage usage has been enabled.
+	 *
+	 * @return true if live storage is used, false otherwise
+	 */
+	public static boolean isUseStorageLive() {
+		return USE_STORAGE_LIVE;
+	}
+
 	@Override
 	public EVMAbstractState assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) {
 		// nothing to do here
