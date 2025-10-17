@@ -299,6 +299,15 @@ public class SmartContract {
 	}
 
 	/**
+	 * Returns the contract mnemonic bytecode.
+	 *
+	 * @return The raw mnemonic bytecode.
+	 */
+	public String getMnemonicBytecode() {
+		return _mnemonicBytecode;
+	}
+
+	/**
 	 * Returns the contract ABI.
 	 *
 	 * @return The ABI as a JSONArray.
