@@ -9,17 +9,19 @@ set -euo pipefail
 # -----------------------------
 # Configuration (edit these variables directly)
 BRIDGES_ROOT="/Users/mere/git/evm-lisa/datasets/cross-chain/smartaxe/manually-labeled"
-REPO_TAG="v1.1.1"
+REPO_TAG="v1.2.1"
 REPO_URL="https://github.com/merendamattia/crosschain-policy-agent.git"
 CLONE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/.external/crosschain-policy-agent-${REPO_TAG}"
 IMAGE_TAG="crosschain-agent:${REPO_TAG}"
 OUTPUT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/outputs/generated-policies-${REPO_TAG}"
 ENV_FILE=".env"
+CLIENT="google"  # "openai" or "google"
+# -----------------------------
 
 # Set DRY_RUN=1 to only print commands instead of executing them
 DRY_RUN=0
 # Delay (seconds) between operations to avoid API rate limits / too many operations per minute
-DELAY_SECONDS=20
+DELAY_SECONDS=150
 # -----------------------------
 
 log() { printf "[%s] %s\n" "$(date --iso-8601=seconds 2>/dev/null || date)" "$*"; }
@@ -95,7 +97,7 @@ for entry in "$BRIDGES_ROOT"/*; do
 		docker_cmd+=(-v "$out_dir:/app/output")
 		docker_cmd+=("$IMAGE_TAG")
 		docker_cmd+=(--target-path /data/sol --output-file /app/output/"${bridge_name}.policy.json")
-		docker_cmd+=(--client google)
+		docker_cmd+=(--client "$CLIENT")
 
 		log "Processing bridge: $bridge_name"
 		log " Source: $entry"
