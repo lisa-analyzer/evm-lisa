@@ -2,18 +2,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# - Clones https://github.com/merendamattia/crosschain-policy-agent
-# - Builds a Docker image and runs it for each bridge folder found under BRIDGES_ROOT
-# - Outputs per-bridge policy files into OUTPUT_ROOT
-
 # -----------------------------
-# Configuration (edit these variables directly)
 BRIDGES_ROOT="/Users/mere/git/evm-lisa/datasets/cross-chain/smartaxe/manually-labeled"
-REPO_TAG="v1.2.1"
-REPO_URL="https://github.com/merendamattia/crosschain-policy-agent.git"
-CLONE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/.external/crosschain-policy-agent-${REPO_TAG}"
-IMAGE_TAG="crosschain-agent:${REPO_TAG}"
-OUTPUT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/outputs/generated-policies-${REPO_TAG}"
+DOCKER_IMAGE_TAG="v1.2.1"
+DOCKER_IMAGE_NAME="merendamattia/crosschain-policy-agent:${DOCKER_IMAGE_TAG}"
+OUTPUT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/outputs/generated-policies-${DOCKER_IMAGE_TAG}"
 ENV_FILE=".env"
 CLIENT="google"  # "openai" or "google"
 # -----------------------------
@@ -31,28 +24,12 @@ if [[ -z "$BRIDGES_ROOT" || ! -d "$BRIDGES_ROOT" ]]; then
 	exit 2
 fi
 
-mkdir -p "$(dirname "$CLONE_DIR")"
 mkdir -p "$OUTPUT_ROOT"
 
-command -v git >/dev/null 2>&1 || { echo "ERROR: git not found. Install git." >&2; exit 3; }
 command -v docker >/dev/null 2>&1 || { echo "ERROR: docker not found. Install Docker." >&2; exit 4; }
 
 log "Bridges root: $BRIDGES_ROOT"
-log "Clone dir:   $CLONE_DIR"
 log "Output root: $OUTPUT_ROOT"
-
-# Clone or update the repository at the specific tag
-if [[ -d "$CLONE_DIR/.git" ]]; then
-	log "Repository already cloned. Fetching tags and checking out $REPO_TAG"
-	set +e
-	git -C "$CLONE_DIR" fetch --tags --prune
-	git -C "$CLONE_DIR" checkout "$REPO_TAG"
-	git -C "$CLONE_DIR" reset --hard
-	set -e
-else
-	log "Cloning $REPO_URL $REPO_TAG into $CLONE_DIR"
-	git clone --depth 1 --branch "$REPO_TAG" "$REPO_URL" "$CLONE_DIR"
-fi
 
 # Decide env-file usage (ENV_FILE can be left empty to skip)
 if [[ -n "$ENV_FILE" && ! -f "$ENV_FILE" ]]; then
@@ -60,12 +37,12 @@ if [[ -n "$ENV_FILE" && ! -f "$ENV_FILE" ]]; then
 	exit 5
 fi
 
-# Build docker image
-log "Building Docker image: $IMAGE_TAG (context: $CLONE_DIR)"
+# Pull docker image from Docker Hub
+log "Pulling Docker image: $DOCKER_IMAGE_NAME"
 if [[ $DRY_RUN -eq 1 ]]; then
-	echo "DRY-RUN: docker build -t $IMAGE_TAG $CLONE_DIR"
+	echo "DRY-RUN: docker pull $DOCKER_IMAGE_NAME"
 else
-	docker build -t "$IMAGE_TAG" "$CLONE_DIR"
+	docker pull "$DOCKER_IMAGE_NAME"
 fi
 
 shopt -s nullglob
@@ -95,7 +72,7 @@ for entry in "$BRIDGES_ROOT"/*; do
 		fi
 	docker_cmd+=(-v "$src_dir:/data/sol:ro")
 		docker_cmd+=(-v "$out_dir:/app/output")
-		docker_cmd+=("$IMAGE_TAG")
+		docker_cmd+=("$DOCKER_IMAGE_NAME")
 		docker_cmd+=(--target-path /data/sol --output-file /app/output/"${bridge_name}.policy.json")
 		docker_cmd+=(--client "$CLIENT")
 
