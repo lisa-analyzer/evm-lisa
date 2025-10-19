@@ -2,13 +2,24 @@
   "policy": [
     {
       "sourceFunction": {
-        "name": "changeMPC",
+        "name": "Swapout_no_fallback",
         "events": [
-          "LogChangeMPC"
+          "LogAnySwapOut"
         ]
       },
       "destinationFunction": {
-        "name": "changeMPC"
+        "name": "_anyExecute"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeVault",
+        "events": [
+          "LogChangeVault"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeVault"
       }
     },
     {
@@ -19,7 +30,7 @@
         ]
       },
       "destinationFunction": {
-        "name": "anySwapOut"
+        "name": "_anySwapIn"
       }
     },
     {
@@ -30,18 +41,7 @@
         ]
       },
       "destinationFunction": {
-        "name": "anySwapOutUnderlying"
-      }
-    },
-    {
-      "sourceFunction": {
-        "name": "anySwapOutUnderlyingWithPermit",
-        "events": [
-          "LogAnySwapOut"
-        ]
-      },
-      "destinationFunction": {
-        "name": "anySwapOutUnderlyingWithPermit"
+        "name": "_anySwapIn"
       }
     },
     {
@@ -52,7 +52,7 @@
         ]
       },
       "destinationFunction": {
-        "name": "anySwapOutNative"
+        "name": "_anySwapIn"
       }
     },
     {
@@ -96,18 +96,84 @@
         ]
       },
       "destinationFunction": {
-        "name": "anySwapOutExactTokensForTokens"
+        "name": "anySwapInExactTokensForTokens"
       }
     },
     {
       "sourceFunction": {
-        "name": "anySwapOutExactTokensForTokensUnderlying",
+        "name": "anySwapOutExactTokensForNative",
+        "events": [
+          "LogAnySwapTradeTokensForNative"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForNative"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutUnderlyingWithPermit",
         "events": [
           "LogAnySwapTradeTokensForTokens"
         ]
       },
       "destinationFunction": {
-        "name": "anySwapOutExactTokensForTokensUnderlying"
+        "name": "anySwapInExactTokensForTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForTokensUnderlyingWithPermit",
+        "events": [
+          "LogAnySwapTradeTokensForTokens"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutUnderlyingWithTransferPermit",
+        "events": [
+          "LogAnySwapTradeTokensForTokens"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForNativeUnderlying",
+        "events": [
+          "LogAnySwapTradeTokensForNative"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForNative"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForNativeUnderlyingWithPermit",
+        "events": [
+          "LogAnySwapTradeTokensForNative"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForNative"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapOutExactTokensForNativeUnderlyingWithTransferPermit",
+        "events": [
+          "LogAnySwapTradeTokensForNative"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInExactTokensForNative"
       }
     },
     {
@@ -123,58 +189,212 @@
     },
     {
       "sourceFunction": {
-        "name": "anySwapOutExactTokensForNative",
+        "name": "anySwapOutExactTokensForTokensUnderlyingWithTransferPermit",
         "events": [
-          "LogAnySwapTradeTokensForNative"
+          "LogAnySwapTradeTokensForTokens"
         ]
       },
       "destinationFunction": {
-        "name": "anySwapOutExactTokensForNative"
+        "name": "anySwapInExactTokensForTokens"
       }
     },
     {
       "sourceFunction": {
-        "name": "anySwapOutExactTokensForNativeUnderlying",
-        "events": [
-          "LogAnySwapTradeTokensForNative"
-        ]
-      },
-      "destinationFunction": {
-        "name": "anySwapOutExactTokensForNativeUnderlying"
-      }
-    },
-    {
-      "sourceFunction": {
-        "name": "anySwapInExactTokensForNative",
+        "name": "anySwapIn",
         "events": [
           "LogAnySwapIn"
         ]
       },
       "destinationFunction": {
-        "name": "anySwapInExactTokensForNative"
-      }
-    }
-    ,
-    {
-      "sourceFunction": {
-        "name": "depositWithPermit",
-        "events": [
-          "LogAnySwapOut"
-        ]
-      },
-      "destinationFunction": {
-        "name": "depositWithPermit"
+        "name": "_anySwapIn"
       }
     },
     {
       "sourceFunction": {
-        "name": "depositWithTransferPermit",
+        "name": "deposit",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "withdraw",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_withdraw"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "SwapOut_and_call",
         "events": [
           "LogAnySwapOut"
         ]
       },
       "destinationFunction": {
-        "name": "depositWithTransferPermit"
+        "name": "_anyExecute"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInWithProof",
+        "events": [
+          "LogAnySwapInWithProof"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInWithProof"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInUnderlyingWithProof",
+        "events": [
+          "LogAnySwapInWithProof"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInUnderlyingWithProof"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "anySwapInAutoWithProof",
+        "events": [
+          "LogAnySwapInWithProof"
+        ]
+      },
+      "destinationFunction": {
+        "name": "anySwapInAutoWithProof"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "mint",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "mint"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "burn",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "burn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "Swapout",
+        "events": [
+          "LogSwapout"
+        ]
+      },
+      "destinationFunction": {
+        "name": "Swapout"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transfer",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferFrom",
+        "events": [
+          "Approval",
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferFrom"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "deposit",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "deposit"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "withdraw",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "withdraw"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "nft721SwapOut",
+        "events": [
+          "LogNFT721SwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "nft721SwapIn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "nft1155SwapOut",
+        "events": [
+          "LogNFT1155SwapOut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "nft1155SwapIn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "nft1155BatchSwapOut",
+        "events": [
+          "LogNFT1155SwapOutBatch"
+        ]
+      },
+      "destinationFunction": {
+        "name": "nft1155BatchSwapIn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "Swapout",
+        "events": [
+          "LogSwapout"
+        ]
+      },
+      "destinationFunction": {
+        "name": "Swapin"
       }
     }
   ]

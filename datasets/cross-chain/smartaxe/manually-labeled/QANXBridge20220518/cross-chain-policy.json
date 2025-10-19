@@ -1,3 +1,75 @@
 {
-  "policy": []
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "transfer",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferFrom",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferFrom"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferLocked",
+        "events": [
+          "LockApplied",
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferLocked"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unlock",
+        "events": [
+          "LockDecreased",
+          "Transfer",
+          "LockRemoved"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unlock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferFromLocked",
+        "events": [
+          "LockApplied",
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferFromLocked"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "encashCheque",
+        "events": [
+          "Transfer",
+          "LockApplied"
+        ]
+      },
+      "destinationFunction": {
+        "name": "encashCheque"
+      }
+    }
+  ]
 }

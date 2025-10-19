@@ -2,6 +2,83 @@
   "policy": [
     {
       "sourceFunction": {
+        "name": "transfer",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferFrom",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferFrom"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "approve",
+        "events": [
+          "Approval"
+        ]
+      },
+      "destinationFunction": {
+        "name": "approve"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "claimTokens",
+        "events": [
+          "ClaimedTokens"
+        ]
+      },
+      "destinationFunction": {
+        "name": "claimTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "generateTokens",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "generateTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "destroyTokens",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "destroyTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "createCloneToken",
+        "events": [
+          "NewCloneToken"
+        ]
+      },
+      "destinationFunction": {
+        "name": "createCloneToken"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "stake",
         "events": [
           "Staked"
@@ -24,112 +101,101 @@
     },
     {
       "sourceFunction": {
-        "name": "increaseLockDuration",
+        "name": "distributeRewardsTo",
         "events": [
-          "LockDurationIncreased"
+          "RewardDistributed"
         ]
       },
       "destinationFunction": {
-        "name": "increaseLockDuration"
+        "name": "distributeRewardsTo"
       }
     },
     {
       "sourceFunction": {
-        "name": "changeMinLockTime",
+        "name": "distributeRewardsToMany",
         "events": [
-          "LockTimeChanged"
+          "RewardDistributed"
         ]
       },
       "destinationFunction": {
-        "name": "changeMinLockTime"
+        "name": "distributeRewardsToMany"
       }
     },
     {
       "sourceFunction": {
-        "name": "changeMaxAllowedStakeLocks",
+        "name": "forceDistributeRewardsTo",
         "events": [
-          "MaxLocksChanged"
+          "RewardDistributed"
         ]
       },
       "destinationFunction": {
-        "name": "changeMaxAllowedStakeLocks"
+        "name": "forceDistributeRewardsTo"
       }
     },
     {
       "sourceFunction": {
-        "name": "changeVaultContractAddress",
+        "name": "forceDistributeRewardsToMany",
         "events": [
-          "VaultChanged"
+          "RewardDistributed"
         ]
       },
       "destinationFunction": {
-        "name": "changeVaultContractAddress"
+        "name": "forceDistributeRewardsToMany"
       }
     },
     {
       "sourceFunction": {
-        "name": "updateRegistration",
+        "name": "collectRewards",
         "events": [
-          "RegistrationUpdated"
+          "RewardCollected"
         ]
       },
       "destinationFunction": {
-        "name": "updateRegistration"
+        "name": "collectRewards"
       }
     },
     {
       "sourceFunction": {
-        "name": "changeMinStakedTokens",
+        "name": "collectRewardsFor",
         "events": [
-          "MinStakedTokensChanged"
+          "RewardCollected"
         ]
       },
       "destinationFunction": {
-        "name": "changeMinStakedTokens"
+        "name": "collectRewardsFor"
       }
     },
     {
       "sourceFunction": {
-        "name": "changeMinLockTime",
+        "name": "collectRewardsForMany",
         "events": [
-          "MinLockTimeChanged"
+          "RewardCollected"
         ]
       },
       "destinationFunction": {
-        "name": "changeMinLockTime"
+        "name": "collectRewardsForMany"
       }
     },
     {
       "sourceFunction": {
-        "name": "changeMaxNodesPerAddress",
+        "name": "forceCollectRewardsFor",
         "events": [
-          "MaxNodePerAddressChanged"
+          "RewardCollected"
         ]
       },
       "destinationFunction": {
-        "name": "changeMaxNodesPerAddress"
+        "name": "forceCollectRewardsFor"
       }
     },
     {
       "sourceFunction": {
-        "name": "deposit",
+        "name": "forceCollectRewardsForMany",
         "events": [
-          "VaultDeposit"
+          "RewardCollected"
         ]
       },
       "destinationFunction": {
-        "name": "deposit"
-      }
-    },
-    {
-      "sourceFunction": {
-        "name": "transfer",
-        "events": [
-          "VaultTransfer"
-        ]
-      },
-      "destinationFunction": {
-        "name": "transfer"
+        "name": "forceCollectRewardsForMany"
       }
     }
   ]

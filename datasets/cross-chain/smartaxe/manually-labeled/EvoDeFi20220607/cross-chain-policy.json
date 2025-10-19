@@ -2,6 +2,106 @@
   "policy": [
     {
       "sourceFunction": {
+        "name": "transfer",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "approve",
+        "events": [
+          "Approval"
+        ]
+      },
+      "destinationFunction": {
+        "name": "approve"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferFrom",
+        "events": [
+          "Transfer",
+          "Approval"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferFrom"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "increaseAllowance",
+        "events": [
+          "Approval"
+        ]
+      },
+      "destinationFunction": {
+        "name": "increaseAllowance"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "decreaseAllowance",
+        "events": [
+          "Approval"
+        ]
+      },
+      "destinationFunction": {
+        "name": "decreaseAllowance"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "mint",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "mint"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "burn",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "burn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferOwnership",
+        "events": [
+          "OwnershipTransferred"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferOwnership"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "renounceOwnership",
+        "events": [
+          "OwnershipTransferred"
+        ]
+      },
+      "destinationFunction": {
+        "name": "renounceOwnership"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "deposit",
         "events": [
           "Deposit"

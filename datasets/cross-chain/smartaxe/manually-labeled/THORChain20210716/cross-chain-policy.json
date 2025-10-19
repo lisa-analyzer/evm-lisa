@@ -24,20 +24,10 @@
     },
     {
       "sourceFunction": {
-        "name": "transferAllowance",
-        "events": [
-          "TransferAllowance"
-        ]
-      },
-      "destinationFunction": {
-        "name": "transferAllowance"
-      }
-    },
-    {
-      "sourceFunction": {
         "name": "transferOut",
         "events": [
-          "TransferOut"
+          "TransferOut",
+          "Outbound"
         ]
       },
       "destinationFunction": {
@@ -57,6 +47,17 @@
     },
     {
       "sourceFunction": {
+        "name": "transferAllowance",
+        "events": [
+          "TransferAllowance"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferAllowance"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "returnVaultAssets",
         "events": [
           "VaultTransfer"
@@ -64,6 +65,127 @@
       },
       "destinationFunction": {
         "name": "returnVaultAssets"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferOutAndCall",
+        "events": [
+          "TransferOutAndCall"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferOutAndCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositIncentives",
+        "events": [
+          "Deposited"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositIncentives"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "depositBatchIncentives",
+        "events": [
+          "Deposited"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositBatchIncentives"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_depositAndSync",
+        "events": [
+          "Deposited"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_depositAndSync"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_transfer",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_transfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_mint",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_mint"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_burn",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_burn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_approve",
+        "events": [
+          "Approval"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_approve"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "constructor",
+        "events": [
+          "OwnershipTransferred"
+        ]
+      },
+      "destinationFunction": {
+        "name": "constructor"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "renounceOwnership",
+        "events": [
+          "OwnershipTransferred"
+        ]
+      },
+      "destinationFunction": {
+        "name": "renounceOwnership"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferOwnership",
+        "events": [
+          "OwnershipTransferred"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferOwnership"
       }
     }
   ]

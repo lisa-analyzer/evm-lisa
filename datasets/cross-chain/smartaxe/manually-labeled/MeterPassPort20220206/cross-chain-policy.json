@@ -19,7 +19,7 @@
         ]
       },
       "destinationFunction": {
-        "name": "depositETH"
+        "name": "deposit"
       }
     },
     {
@@ -31,25 +31,15 @@
         ]
       },
       "destinationFunction": {
-        "name": "voteProposal"
+        "name": "executeProposal"
       }
     },
     {
       "sourceFunction": {
-        "name": "cancelProposal",
+        "name": "voteProposals",
         "events": [
-          "ProposalEvent"
-        ]
-      },
-      "destinationFunction": {
-        "name": "cancelProposal"
-      }
-    },
-    {
-      "sourceFunction": {
-        "name": "executeProposal",
-        "events": [
-          "ProposalEvent"
+          "ProposalEvent",
+          "FailedHandlerExecution"
         ]
       },
       "destinationFunction": {
@@ -58,24 +48,25 @@
     },
     {
       "sourceFunction": {
-        "name": "adminPauseTransfers",
+        "name": "executeProposal",
         "events": [
-          "Paused"
+          "ProposalEvent",
+          "FailedHandlerExecution"
         ]
       },
       "destinationFunction": {
-        "name": "adminPauseTransfers"
+        "name": "executeProposal"
       }
     },
     {
       "sourceFunction": {
-        "name": "adminUnpauseTransfers",
+        "name": "adminSetFee",
         "events": [
-          "Unpaused"
+          "FeeChanged"
         ]
       },
       "destinationFunction": {
-        "name": "adminUnpauseTransfers"
+        "name": "adminSetFee"
       }
     },
     {
@@ -109,6 +100,249 @@
       },
       "destinationFunction": {
         "name": "adminRemoveRelayer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminPauseTransfers",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminPauseTransfers"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminUnpauseTransfers",
+        "events": [
+          "Unpaused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminUnpauseTransfers"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferFee",
+        "events": [
+          "FeeDistributed"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferFee"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "renounceAdmin",
+        "events": [
+          "RoleGranted",
+          "RoleRevoked"
+        ]
+      },
+      "destinationFunction": {
+        "name": "renounceAdmin"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "cancelProposal",
+        "events": [
+          "ProposalEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "cancelProposal"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminAddOperator",
+        "events": [
+          "OperatorAdded"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminAddOperator"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "adminRemoveOperator",
+        "events": [
+          "OperatorRemoved"
+        ]
+      },
+      "destinationFunction": {
+        "name": "adminRemoveOperator"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "withdraw",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "withdraw"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeAdmin",
+        "events": [
+          "AdminChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeAdmin"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "upgradeTo",
+        "events": [
+          "Upgraded"
+        ]
+      },
+      "destinationFunction": {
+        "name": "upgradeTo"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "upgradeToAndCall",
+        "events": [
+          "Upgraded"
+        ]
+      },
+      "destinationFunction": {
+        "name": "upgradeToAndCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "pause",
+        "events": [
+          "Pause"
+        ]
+      },
+      "destinationFunction": {
+        "name": "pause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unpause",
+        "events": [
+          "Unpause"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unpause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updatePauser",
+        "events": [
+          "PauserChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "updatePauser"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "rescueERC20",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "rescueERC20"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updateRescuer",
+        "events": [
+          "RescuerChanged"
+        ]
+      },
+      "destinationFunction": {
+        "name": "updateRescuer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "multiDistributeToken",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "multiDistributeToken"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "distributeToken",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "distributeToken"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "burn",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "burn"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "burnFrom",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "burnFrom"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "mint",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "mint"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "mintTo",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "mintTo"
       }
     }
   ]

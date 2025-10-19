@@ -2,13 +2,46 @@
   "policy": [
     {
       "sourceFunction": {
+        "name": "diamondCut",
+        "events": [
+          "DiamondCut"
+        ]
+      },
+      "destinationFunction": {
+        "name": "diamondCut"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensViaWormhole",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaWormhole",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transferTokens"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "startBridgeTokensViaAmarok",
         "events": [
           "LiFiTransferStarted"
         ]
       },
       "destinationFunction": {
-        "name": "startBridgeTokensViaAmarok"
+        "name": "xcall"
       }
     },
     {
@@ -19,7 +52,207 @@
         ]
       },
       "destinationFunction": {
-        "name": "swapAndStartBridgeTokensViaAmarok"
+        "name": "xcall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensViaBiconomy",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaBiconomy",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "depositTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensViaCBridge",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "sendTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaCBridge",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "sendTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensViaNXTP",
+        "events": [
+          "LiFiTransferStarted",
+          "NXTPBridgeStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "prepare"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaNXTP",
+        "events": [
+          "LiFiTransferStarted",
+          "NXTPBridgeStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "prepare"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "completeBridgeTokensViaNXTP",
+        "events": [
+          "LiFiTransferCompleted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "completeBridgeTokensViaNXTP"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndCompleteBridgeTokensViaNXTP",
+        "events": [
+          "LiFiTransferCompleted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "swapAndCompleteBridgeTokensViaNXTP"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensViaHop",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "sendHopTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaHop",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "sendHopTokens"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "startBridgeTokensGeneric",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "dynamicExternalCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensGeneric",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "dynamicExternalCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "remoteCall",
+        "events": [
+          "RemoteCall"
+        ]
+      },
+      "destinationFunction": {
+        "name": "handle"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "handle",
+        "events": [
+          "LocalCall"
+        ]
+      },
+      "destinationFunction": {
+        "name": "handle"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "attestToken",
+        "events": [
+          "LogMessagePublished"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_createWrapped"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "wrapAndTransferETH",
+        "events": [
+          "LogMessagePublished"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_completeTransfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "transferTokens",
+        "events": [
+          "LogMessagePublished"
+        ]
+      },
+      "destinationFunction": {
+        "name": "_completeTransfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "upgrade",
+        "events": [
+          "ContractUpgraded"
+        ]
+      },
+      "destinationFunction": {
+        "name": "upgrade"
       }
     }
   ]
