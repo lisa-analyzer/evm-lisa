@@ -55,17 +55,13 @@ public class SmartaxeBenchmark {
 					Path policyPath = dir.resolve("cross-chain-policy.json");
 					String name = dir.getFileName().toString();
 
-					if (name.equalsIgnoreCase("MeterPassPort20220206")
-							|| name.equalsIgnoreCase("pNetwork20210920"))
-						/*
-						 * Skip because there are no vulnerabilities in these
-						 * bridges
-						 */
-						continue;
-
-					if (name.equalsIgnoreCase("QANXBridge20220518"))
-						/* Skip because there are no events in this bridge */
-						continue;
+//					if (name.equalsIgnoreCase("MeterPassPort20220206")
+//							|| name.equalsIgnoreCase("pNetwork20210920"))
+//						/*
+//						 * Skip because there are no vulnerabilities in these
+//						 * bridges
+//						 */
+//						continue;
 
 					EVMLiSA.setWorkingDirectory(workingDirectory.resolve(name));
 					bridges.add(new Bridge(bytecodeDirectoryPath, abiDirectoryPath, policyPath, name));
