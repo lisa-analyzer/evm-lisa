@@ -90,8 +90,7 @@ public class AccessControlIncompletenessChecker implements
 				|| node instanceof Staticcall
 				|| node instanceof Delegatecall
 				|| node instanceof Sstore
-				|| node instanceof Balance
-				|| node instanceof Address) {
+				|| node instanceof Balance) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -170,7 +169,8 @@ public class AccessControlIncompletenessChecker implements
 				Calldatacopy.class,
 				Caller.class,
 				Origin.class,
-				Callvalue.class);
+				Callvalue.class,
+				Calldatasize.class);
 
 		for (Statement source : sources) {
 			if (cfg.reachableFromWithoutStatements(source, sink, taintedJumpi)) {
