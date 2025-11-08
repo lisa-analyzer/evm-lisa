@@ -1,3 +1,0 @@
-file,original pragma version,compiled version,notes
-SEFI.sol,>=0.6.0 <0.8.0,0.6.0,
-WrappedSCRT.sol,>=0.6.0 <0.8.0,0.6.0,

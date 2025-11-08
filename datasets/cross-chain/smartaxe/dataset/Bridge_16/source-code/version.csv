@@ -1,9 +1,0 @@
-file,original pragma version,compiled version,notes
-BridgeBase.sol,^0.8.10,0.8.10,
-Migrations.sol,>=0.4.22 <0.9.0,0.4.22,
-WETHToken.sol,^0.8.10,0.8.10,
-BridgeBSC.sol,^0.8.0,0.8.0,
-WBSCToken.sol,^0.8.10,0.8.10,
-BridgeETH.sol,^0.8.0,0.8.0,
-TokenBase.sol,^0.8.10,0.8.10,
-XToken.sol,^0.8.0,0.8.0,

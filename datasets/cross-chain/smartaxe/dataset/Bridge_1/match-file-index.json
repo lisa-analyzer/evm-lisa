@@ -1,8 +1,0 @@
-{
-    "ERC20": 1,
-    "IERC20": 2,
-    "TokenA_flat": 3,
-    "TokenB_flat": 4,
-    "mainBridge": 5,
-    "sideBridge": 6
-}

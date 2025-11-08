@@ -1,7 +1,0 @@
-file,original pragma version,compiled version,notes
-Bridge.sol,^0.8.0,0.8.0,
-Migrations.sol,>=0.6.0 <0.9.0,0.6.0,
-IBridge.sol,^0.8.0,0.8.0,
-BridgeTokenFactory.sol,^0.8.0,0.8.0,
-BridgeToken.sol,^0.8.0,0.8.0,
-Utils.sol,^0.8.0,0.8.0,

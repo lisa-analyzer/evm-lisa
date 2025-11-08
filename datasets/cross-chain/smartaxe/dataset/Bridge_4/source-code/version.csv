@@ -1,6 +1,0 @@
-file,original pragma version,compiled version,notes
-IERC20.sol,^0.8.0,0.8.0,
-OldBridge.sol,^0.8.11,0.8.11,
-NewBridge.sol,^0.8.11,0.8.11,
-BridgeWithTime.sol,^0.8.11,0.8.11,
-TestToken.sol,^0.8.4,0.8.4,

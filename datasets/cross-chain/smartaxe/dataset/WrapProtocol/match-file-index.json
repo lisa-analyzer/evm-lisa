@@ -1,7 +1,0 @@
-{
-    "ERC721TokenReceiver": 1,
-    "Migrations": 2,
-    "SafeMath": 3,
-    "WrapManager": 4,
-    "WrapMultisig": 5
-}

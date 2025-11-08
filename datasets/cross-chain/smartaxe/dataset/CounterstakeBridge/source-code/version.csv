@@ -1,7 +1,0 @@
-file,original pragma version,compiled version,notes
-Import.sol,^0.8.3,0.8.3,
-ExportAssistant.sol,^0.8.3,0.8.3,
-Export.sol,^0.8.3,0.8.3,
-Export_2.sol,^0.8.3,0.8.3,
-ImportAssistant.sol,^0.8.3,0.8.3,
-AssistantFactory.sol,^0.8.3,0.8.3,

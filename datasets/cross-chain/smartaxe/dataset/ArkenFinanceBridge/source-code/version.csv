@@ -1,7 +1,0 @@
-file,original pragma version,compiled version,notes
-ProxyAdmin.sol,^0.8.0,0.8.0,
-TransparentUpgradeableProxy.sol,^0.8.0,0.8.0,
-ArkenDexV3.sol,^0.8.0,0.8.0,
-GnosisSafeProxy.sol,>=0.7.0 <0.9.0,0.7.0,
-ArkenApprove.sol,^0.8.0,0.8.0,
-TimelockController.sol,^0.8.0,0.8.0,

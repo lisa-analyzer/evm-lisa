@@ -1,9 +1,0 @@
-file,original pragma version,compiled version,notes
-BridgeContract.sol,^0.8.0,0.8.0,
-ETHBridge.sol,0.8.9,0.8.9,
-MaticBridge.sol,0.8.9,0.8.9,
-Migrations.sol,>=0.4.22 <0.9.0,0.4.22,
-CronosBridge.sol,0.8.9,0.8.9,
-AVAXBridge.sol,0.8.9,0.8.9,
-BridgeToken.sol,^0.8.0,0.8.0,
-BSCBridge.sol,0.8.9,0.8.9,

@@ -1,8 +1,0 @@
-{
-    "BridgeMsgValue": 1,
-    "BridgeWrapper": 2,
-    "ChainlinkKeepersMockBridgeMsgValue": 3,
-    "ChainlinkKeepersMockBridgeWrapped": 4,
-    "MockBridgeMsgValue": 5,
-    "MockBridgeWrapped": 6
-}

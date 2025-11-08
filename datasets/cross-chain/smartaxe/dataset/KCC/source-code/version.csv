@@ -1,4 +1,0 @@
-file,original pragma version,compiled version,notes
-BridgeLogic.sol,>=0.6.0 <0.8.0,0.6.0,
-Bridge.sol,>=0.6.0 <0.8.0,0.6.0,
-BridgeStorage.sol,>=0.6.0 <0.8.0,0.6.0,

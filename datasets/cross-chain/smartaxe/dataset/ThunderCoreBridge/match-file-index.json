@@ -1,9 +1,0 @@
-{
-    "BridgeValidators": 1,
-    "ERC677InitializableBridgeToken": 2,
-    "ERC677InitializableToken": 3,
-    "ForeignBridgeERC677ToNativeV2": 4,
-    "ForeignBridgeErcToErc": 5,
-    "ForeignBridgeErcToErcV2": 6,
-    "ForeignBridgeErcToErcV2_1": 7
-}
