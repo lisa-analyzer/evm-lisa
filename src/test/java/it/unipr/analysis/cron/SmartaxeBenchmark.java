@@ -106,11 +106,9 @@ public class SmartaxeBenchmark {
 		for (Bridge bridge : bridges)
 			for (SmartContract contract : bridge) {
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
-						() -> xEVMLiSA.runEventOrderChecker(contract, bridge.getPolicy())));
+						() -> xEVMLiSA.runEventOrderIssuesChecker(contract, bridge.getPolicy())));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
 						() -> xEVMLiSA.runAccessControlIncompleteness(contract)));
-				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
-						() -> xEVMLiSA.runMissingEventNotificationChecker(contract, bridge.getPolicy())));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
 						() -> xEVMLiSA.runLocalDependencyChecker(contract)));
 			}
