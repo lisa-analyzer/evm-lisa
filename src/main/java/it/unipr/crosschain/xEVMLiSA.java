@@ -296,9 +296,12 @@ public class xEVMLiSA {
 							() -> runEventOrderIssuesChecker(contract, bridge.getPolicy())));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(contract)));
+			futures.add(
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> runLocalDependencyCheckerNewVersion(contract, bridge.getPolicy())));
 		}
-		futures.add(
-				EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runLocalDependencyCheckers(bridge)));
+//		futures.add(
+//				EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runLocalDependencyCheckers(bridge)));
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving cross-chain checkers results.");
@@ -577,6 +580,20 @@ public class xEVMLiSA {
 		log.info("[OUT] Missing State Update checker ended on {}, with {} vulnerabilities found.",
 				contract.getName(),
 				MyCache.getInstance().getMissingStateUpdateWarnings(contract.getCFG().hashCode()));
+	}
+
+	public static void runLocalDependencyCheckerNewVersion(SmartContract contract, CustomPolicy policy) {
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(contract.getCFG());
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+		LiSA lisa = new LiSA(conf);
+
+		LocalDependencyCheckerNewVersion checker = new LocalDependencyCheckerNewVersion(contract, policy);
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new VulnerableLOGsAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
 	}
 
 	/**

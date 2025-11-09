@@ -88,19 +88,19 @@ public class SmartaxeBenchmark {
 				bridge.addEdges(
 						xEVMLiSA.getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
 			}));
-			for (SmartContract contract : bridge)
-				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
-						() -> xEVMLiSA.computeVulnerablesLOGsForLocalDependencyChecker(contract)));
+//			for (SmartContract contract : bridge)
+//				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
+//						() -> xEVMLiSA.computeVulnerablesLOGsForLocalDependencyChecker(contract)));
 		}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
 		/* Submit tasks: compute tainted call data for Local Dependency */
-		for (Bridge bridge : bridges)
-			for (SmartContract contract : bridge)
-				futures.add(EVMLiSAExecutor
-						.submit(SmartaxeBenchmark.class,
-								() -> xEVMLiSA.computeTaintedCallDataForLocalDependencyChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
+//		for (Bridge bridge : bridges)
+//			for (SmartContract contract : bridge)
+//				futures.add(EVMLiSAExecutor
+//						.submit(SmartaxeBenchmark.class,
+//								() -> xEVMLiSA.computeTaintedCallDataForLocalDependencyChecker(contract)));
+//		EVMLiSAExecutor.awaitCompletionFutures(futures, 12, TimeUnit.HOURS); // barrier
 
 		/* Submit tasks: run cross chain checkers using xCFG */
 		for (Bridge bridge : bridges)
@@ -110,7 +110,7 @@ public class SmartaxeBenchmark {
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
 						() -> xEVMLiSA.runAccessControlIncompleteness(contract)));
 				futures.add(EVMLiSAExecutor.submit(SmartaxeBenchmark.class,
-						() -> xEVMLiSA.runLocalDependencyChecker(contract)));
+						() -> xEVMLiSA.runLocalDependencyCheckerNewVersion(contract, bridge.getPolicy())));
 			}
 		EVMLiSAExecutor.awaitCompletionFutures(futures, 18, TimeUnit.HOURS); // barrier
 
