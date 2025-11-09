@@ -350,6 +350,36 @@ public class MyCache {
 	}
 
 	/**
+	 * Adds a missing state update warning for the specified key. If no warnings
+	 * are associated with the key, a new set is created and the warning is
+	 * added to it. This method is thread-safe.
+	 *
+	 * @param key     the key identifying the smart contract or entity for which
+	 *                    the warning applies
+	 * @param warning the warning object to be added
+	 */
+	public void addMissingStateUpdateWarning(Integer key, Object warning) {
+		String cacheKey = "missingStateUpdateWarning:" + key.toString();
+		putWarning(cacheKey, warning);
+	}
+
+	/**
+	 * Retrieves the number of missing state update warnings associated with the
+	 * specified key. If no warnings are associated with the key, the method
+	 * returns 0. This method is thread-safe.
+	 *
+	 * @param key the key identifying the smart contract or entity whose
+	 *                warnings are to be retrieved
+	 *
+	 * @return the number of warnings associated with the key, or 0 if none
+	 *             exist
+	 */
+	public int getMissingStateUpdateWarnings(Integer key) {
+		String cacheKey = "missingStateUpdateWarning:" + key.toString();
+		return getWarnings(cacheKey);
+	}
+
+	/**
 	 * Adds an access control incompleteness warning for the specified key. If
 	 * no warnings are associated with the key, a new set is created and the
 	 * warning is added to it. This method is thread-safe.
