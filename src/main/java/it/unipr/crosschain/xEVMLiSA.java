@@ -76,9 +76,13 @@ public class xEVMLiSA {
 
 	/**
 	 * Gets cross-chain edges by linking events exit points to function entry
-	 * points in different contracts.
+	 * points in different contracts. This method builds the cross-chain control
+	 * flow graph by connecting event emissions in source contracts to function
+	 * invocations in destination contracts based on the bridge policy.
 	 *
-	 * @return A list of added cross-chain edges.
+	 * @param bridge The bridge object containing smart contracts and the policy
+	 * 
+	 * @return A set of cross-chain edges connecting events to functions
 	 */
 	public static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
 		Set<Edge> crossChainEdges = new HashSet<>();
@@ -146,7 +150,7 @@ public class xEVMLiSA {
 	 * @param function the function signature to match
 	 *
 	 * @return true if the event should be linked to the function according to
-	 *             the policy
+	 *             the policy, false otherwise
 	 */
 	public static boolean applyPolicy(CustomPolicy policy, Signature event, Signature function) {
 		if (policy == null || policy.isEmpty())
@@ -169,7 +173,9 @@ public class xEVMLiSA {
 
 	/**
 	 * Verifies whether the provided event name matches any of the events
-	 * associated with the given source function specification.
+	 * associated with the given source function specification. This is a helper
+	 * method used during policy application to verify event-function
+	 * relationships.
 	 *
 	 * @param sourceSpec the source function descriptor declared in the policy
 	 * @param eventName  the name of the runtime event being considered
@@ -186,9 +192,13 @@ public class xEVMLiSA {
 
 	/**
 	 * Gets cross-chain edges by linking emitting blocks to information blocks
-	 * in different contracts (SmartAxe solution).
+	 * in different contracts using the SmartAxe solution. This approach
+	 * identifies event emission sites and information processing sites to
+	 * establish cross-chain dependencies for vulnerability detection.
 	 *
-	 * @return A list of added cross-chain edges.
+	 * @param bridge The bridge containing the contracts to analyze
+	 * 
+	 * @return A set of cross-chain edges using event entry points
 	 */
 	public static Set<Edge> getCrossChainEdgesUsingEventsEntrypoint(Bridge bridge) {
 		Set<Statement> emittingBlocks = new HashSet<>();
@@ -210,13 +220,14 @@ public class xEVMLiSA {
 
 	/**
 	 * Creates cross-chain edges between a set of source statements and a set of
-	 * target statements.
+	 * target statements. Each source statement is connected to all target
+	 * statements.
 	 *
-	 * @param sources The set of source statements.
-	 * @param targets The set of target statements.
+	 * @param sources The set of source statements (e.g., event exit points)
+	 * @param targets The set of target statements (e.g., function entry points)
 	 *
 	 * @return A set of cross-chain edges connecting the given sources to the
-	 *             targets.
+	 *             targets
 	 */
 	public static Set<Edge> addCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();
@@ -230,13 +241,15 @@ public class xEVMLiSA {
 
 	/**
 	 * Creates conservative cross-chain edges between a set of source statements
-	 * and a set of target statements.
+	 * and a set of target statements. Conservative edges are used for more
+	 * cautious analysis, assuming potential connections even when the
+	 * relationship is uncertain.
 	 *
-	 * @param sources The set of source statements.
-	 * @param targets The set of target statements.
+	 * @param sources The set of source statements
+	 * @param targets The set of target statements
 	 *
 	 * @return A set of conservative cross-chain edges connecting the given
-	 *             sources to the targets.
+	 *             sources to the targets
 	 */
 	public static Set<Edge> addConservativeCrossChainEdges(Set<Statement> sources, Set<Statement> targets) {
 		Set<Edge> edges = new HashSet<>();
@@ -253,6 +266,22 @@ public class xEVMLiSA {
 	 * analyze associated smart contracts for various vulnerabilities. The
 	 * results of the checkers are saved and stored in the bridge and its smart
 	 * contracts.
+	 * <p>
+	 * This method runs the following checkers in parallel:
+	 * <ul>
+	 * <li><b>Event Order Issues Checker:</b> Detects missing event
+	 * notifications and missing state updates. Identifies cases where state
+	 * modifications occur without corresponding event emissions, or events are
+	 * emitted without prior state changes, violating the event order
+	 * invariant.</li>
+	 * <li><b>Access Control Incompleteness Checker:</b> Verifies that critical
+	 * functions have proper access control mechanisms. Detects cases where
+	 * public or external functions lack sufficient authorization checks.</li>
+	 * <li><b>Local Dependency Checker:</b> Analyzes taint propagation from
+	 * external input (calldata) through cross-chain invocations. Detects when
+	 * untrusted external data is used without proper validation in
+	 * state-modifying operations.</li>
+	 * </ul>
 	 *
 	 * @param bridge The bridge containing the set of smart contracts to be
 	 *                   analyzed.
@@ -263,10 +292,8 @@ public class xEVMLiSA {
 		List<Future<?>> futures = new ArrayList<>();
 		for (SmartContract contract : bridge) {
 			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runEventOrderChecker(contract, bridge.getPolicy())));
-			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class,
-							() -> runMissingEventNotificationChecker(contract, bridge.getPolicy())));
+							() -> runEventOrderIssuesChecker(contract, bridge.getPolicy())));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(contract)));
 		}
@@ -327,8 +354,14 @@ public class xEVMLiSA {
 	/**
 	 * Runs the Access Control Incompleteness checker on a single contract using
 	 * a taint analysis configuration tailored for cross-chain interactions.
+	 * <p>
+	 * <b>Checker Purpose:</b> This checker identifies functions that perform
+	 * critical operations (state modifications, fund transfers) without
+	 * adequate access control mechanisms. It uses semantic analysis to detect
+	 * authorization vulnerabilities in cross-chain contexts.
+	 * </p>
 	 *
-	 * @param contract the smart contract to analyse
+	 * @param contract the smart contract to analyze
 	 */
 	public static void runAccessControlIncompleteness(SmartContract contract) {
 		log.info("[IN] Running Access Control Incompleteness checker on {}.", contract.getName());
@@ -351,119 +384,8 @@ public class xEVMLiSA {
 				MyCache.getInstance().getAccessControlIncompletenessWarnings(contract.getCFG().hashCode()));
 	}
 
-	/**
-	 * Executes the Event Order Checker on a single contract. For each public
-	 * function: (i) Follow only successful return paths (STOP for void, RETURN
-	 * otherwise). (ii) Collect any SSTORE and events emission instructions on
-	 * that path. (iii) If events occur without a preceding SSTORE, flag an
-	 * event-order warning.
-	 *
-	 * @param contract the specific SmartContract to analyze
-	 * @param policy   the CustomPolicy used for cross-chain links
-	 */
-	public static void runEventOrderChecker(SmartContract contract, CustomPolicy policy) {
-		log.info("[IN] Running event order checker on {}.", contract.getName());
-
-		EVMCFG cfg = contract.getCFG();
-
-		for (Signature function : contract.getFunctionsSignature()) {
-			for (Statement entrypoint : function.getEntryPoints()) {
-				/*
-				 * It means that this vulnerability is inside a private
-				 * function: we need to check only the public functions
-				 */
-				if (contract.getFunctionSignatureFromEntryPoint(entrypoint).equals("no-function-found"))
-					continue;
-
-				for (Statement exitpoint : function.getExitPoints()) {
-					/* We need to check only the successful termination paths */
-					if (!(exitpoint instanceof Stop
-							|| exitpoint instanceof Return))
-						continue;
-
-					/*
-					 * Only paths congruent with the function's return type need
-					 * to be checked, i.e., if a function has return type void,
-					 * then the function's exitpoint will be indicated by the
-					 * Stop statement; if it returns something else, the
-					 * exitpoint will be indicated by the Return statement
-					 */
-					if (function.getOutputParamCount() > 0
-							&& exitpoint instanceof Stop)
-						continue;
-					if (function.getOutputParamCount() == 0
-							&& exitpoint instanceof Return)
-						continue;
-
-					Set<String> eventsPolicy = policy.getEventsForFunction(function.getName());
-					Set<Signature> eventsContract = contract.getEventsSignature();
-					Set<Statement> eventsExitpoints = new HashSet<>();
-
-					for (String eventPolicy : eventsPolicy) {
-						for (Signature eventContract : eventsContract) {
-							if (!eventPolicy.equalsIgnoreCase(eventContract.getName()))
-								continue;
-							eventsExitpoints.addAll(eventContract.getExitPoints());
-						}
-					}
-
-					/* Skip if we have no event exitpoints */
-					if (eventsExitpoints.isEmpty())
-						continue;
-
-					/* We take only state updates inside the function */
-					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint, Sstore.class);
-
-					for (Statement emitEvent : eventsExitpoints) {
-						if (cfg.reachableFromWithoutStatements(entrypoint, emitEvent, sstores)) {
-
-							ProgramCounterLocation entrypointLocation = (ProgramCounterLocation) entrypoint
-									.getLocation();
-							ProgramCounterLocation emitEventLocation = (ProgramCounterLocation) emitEvent.getLocation();
-
-							String warn = "Event Order warning at " + emitEventLocation.getPc();
-
-							log.warn(
-									"Event Order warning at pc {} (line {}) coming from pc {} (line {}).",
-									emitEventLocation.getPc(),
-									emitEventLocation.getSourceCodeLine(),
-									entrypointLocation.getPc(),
-									entrypointLocation.getSourceCodeLine());
-
-							MyCache.getInstance().addEventOrderWarning(cfg.hashCode(), warn);
-
-							warn = "Event Order warning in " + contract.getName() + " at "
-									+ function.getFullSignature()
-									+ " (pc: " + emitEventLocation.getPc() + ", "
-									+ "line: " + emitEventLocation.getSourceCodeLine() + ")";
-							MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
-						}
-					}
-
-				}
-			}
-		}
-
-		log.info("[OUT] Event order checker ended on {}, with {} warnings found.",
-				contract.getName(),
-				MyCache.getInstance().getEventOrderWarnings(contract.getCFG().hashCode()));
-	}
-
-	/**
-	 * Executes the Missing Event Notification Checker on a single contract. For
-	 * each public function with a cross-chain connection: (i) Follow only
-	 * successful return paths (STOP for void, RETURN otherwise). (ii) Identify
-	 * any SSTORE instructions on that path. (iii) Ensure that each such SSTORE
-	 * is followed by at least one Event emit before termination. (iv) Flag any
-	 * missing notifications as vulnerabilities.
-	 *
-	 * @param contract the SmartContract to analyze for missing event logs
-	 * @param policy   the CustomPolicy used for cross-chain links
-	 */
-	public static void runMissingEventNotificationChecker(SmartContract contract, CustomPolicy policy) {
-		log.info("[IN] Running missing event notification checker on {}.", contract.getName());
-
-		EVMCFG cfg = contract.getCFG();
+	public static void runEventOrderIssuesChecker(SmartContract contract, CustomPolicy policy) {
+		log.info("[IN] Running Event Order Issues checker on {}.", contract.getName());
 
 		for (Signature function : contract.getFunctionsSignature()) {
 			/*
@@ -517,50 +439,98 @@ public class xEVMLiSA {
 					if (eventsExitpoints.isEmpty())
 						continue;
 
-					/* We take only state updates inside the function */
-					Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint, Sstore.class);
-
-					for (Statement sstore : sstores) {
-						if (cfg.reachableFromWithoutStatements(entrypoint, sstore, eventsExitpoints)
-								&& cfg.reachableFromWithoutStatements(sstore, exitpoint, eventsExitpoints)) {
-							ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
-									.getLocation();
-							ProgramCounterLocation exitpointLocation = (ProgramCounterLocation) exitpoint
-									.getLocation();
-
-							String warn = "Missing Event Notification vulnerability at " + sstoreLocation.getPc();
-							log.warn(
-									"Missing Event Notification vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-									exitpointLocation.getPc(),
-									exitpointLocation.getSourceCodeLine(),
-									sstoreLocation.getPc(),
-									sstoreLocation.getSourceCodeLine());
-
-							MyCache.getInstance().addMissingEventNotificationWarning(cfg.hashCode(), warn);
-
-							warn = "Missing Event Notification vulnerability in " + contract.getName() + " at "
-									+ contract.getFunctionSignatureFromEntryPoint(entrypoint)
-									+ " (pc: " + sstoreLocation.getPc() + ", "
-									+ "line: " + sstoreLocation.getSourceCodeLine() + ")";
-							MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
-						}
-					}
-
+					checkForMissingEventNotificationChecker(contract, entrypoint, exitpoint, eventsExitpoints);
+					checkForMissingStateUpdateChecker(contract, entrypoint, exitpoint, eventsExitpoints);
 				}
 			}
 		}
+		log.info("[OUT] Event Order Issues checker ended on {}.", contract.getName());
+	}
 
-		log.info("[OUT] Missing event notification checker ended on {}, with {} vulnerabilities found.",
+	private static void checkForMissingEventNotificationChecker(SmartContract contract, Statement entrypoint,
+			Statement exitpoint, Set<Statement> eventsExitpoints) {
+		log.info("[IN] Running Missing Event Notification checker on {}.", contract.getName());
+
+		EVMCFG cfg = contract.getCFG();
+		/* We take only state updates inside the function */
+		Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint, Sstore.class);
+
+		for (Statement sstore : sstores) {
+			if (cfg.reachableFromWithoutStatements(entrypoint, sstore, eventsExitpoints)
+					&& cfg.reachableFromWithoutStatements(sstore, exitpoint, eventsExitpoints)) {
+				ProgramCounterLocation sstoreLocation = (ProgramCounterLocation) sstore
+						.getLocation();
+				ProgramCounterLocation exitpointLocation = (ProgramCounterLocation) exitpoint
+						.getLocation();
+
+				String warn = "Missing Event Notification vulnerability at " + sstoreLocation.getPc();
+				log.warn(
+						"Missing Event Notification vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+						exitpointLocation.getPc(),
+						exitpointLocation.getSourceCodeLine(),
+						sstoreLocation.getPc(),
+						sstoreLocation.getSourceCodeLine());
+
+				MyCache.getInstance().addMissingEventNotificationWarning(cfg.hashCode(), warn);
+
+				warn = "Missing Event Notification vulnerability in " + contract.getName() + " at "
+						+ contract.getFunctionSignatureFromEntryPoint(entrypoint)
+						+ " (pc: " + sstoreLocation.getPc() + ", "
+						+ "line: " + sstoreLocation.getSourceCodeLine() + ")";
+				MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+			}
+		}
+
+		log.info("[OUT] Missing Event Notification checker ended on {}, with {} vulnerabilities found.",
 				contract.getName(),
 				MyCache.getInstance().getMissingEventNotificationWarnings(contract.getCFG().hashCode()));
+	}
+
+	private static void checkForMissingStateUpdateChecker(SmartContract contract, Statement entrypoint,
+			Statement exitpoint, Set<Statement> eventsExitpoints) {
+		log.info("[IN] Running Missing State Update checker on {}.", contract.getName());
+
+		EVMCFG cfg = contract.getCFG();
+		/* We take only state updates inside the function */
+		Set<Statement> sstores = cfg.getStatementsInAPathWithTypes(entrypoint, exitpoint, Sstore.class);
+
+		for (Statement eventExitpoint : eventsExitpoints) {
+			if (cfg.reachableFromWithoutStatements(entrypoint, eventExitpoint, sstores)
+					&& cfg.reachableFromWithoutStatements(eventExitpoint, exitpoint, sstores)) {
+				ProgramCounterLocation eventExitpointLocation = (ProgramCounterLocation) eventExitpoint
+						.getLocation();
+				ProgramCounterLocation exitpointLocation = (ProgramCounterLocation) exitpoint
+						.getLocation();
+
+				String warn = "Missing State Update vulnerability at " + eventExitpointLocation.getPc();
+				log.warn(
+						"Missing State Update vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+						exitpointLocation.getPc(),
+						exitpointLocation.getSourceCodeLine(),
+						eventExitpointLocation.getPc(),
+						eventExitpointLocation.getSourceCodeLine());
+
+				MyCache.getInstance().addMissingStateUpdateWarning(cfg.hashCode(), warn);
+
+				warn = "Missing State Update vulnerability in " + contract.getName() + " at "
+						+ contract.getFunctionSignatureFromEntryPoint(entrypoint)
+						+ " (pc: " + eventExitpointLocation.getPc() + ", "
+						+ "line: " + eventExitpointLocation.getSourceCodeLine() + ")";
+				MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+			}
+		}
+
+		log.info("[OUT] Missing State Update checker ended on {}, with {} vulnerabilities found.",
+				contract.getName(),
+				MyCache.getInstance().getMissingStateUpdateWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
 	 * Executes the vulnerable logs checker for detecting issues related to time
 	 * synchronization in a given smart contract.
 	 *
-	 * @param contract The smart contract to be analyzed for vulnerabilities
-	 *                     related to time synchronization.
+	 * @param contract The smart contract to be analyzed for vulnerable event
+	 *                     emissions
 	 */
 	public static void computeVulnerablesLOGsForLocalDependencyChecker(SmartContract contract) {
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
@@ -582,7 +552,7 @@ public class xEVMLiSA {
 	 * are reachable from vulnerable log statements via cross-chain edges,
 	 * marking them as tainted.
 	 *
-	 * @param contract The smart contract to be analyzed.
+	 * @param contract The smart contract to be analyzed
 	 */
 	public static void computeTaintedCallDataForLocalDependencyChecker(SmartContract contract) {
 		if (contract == null)
@@ -674,10 +644,21 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Runs the Local Dependency checker on the given smart contract.
+	 * Runs the Local Dependency checker on the given smart contract. This is
+	 * the third and final phase of the Local Dependency Checker pipeline.
+	 * <p>
+	 * <b>Checker Purpose:</b> Detects Local Dependency vulnerabilities where
+	 * tainted external data (received via cross-chain communication) is used in
+	 * state-modifying operations without proper validation. The checker tracks
+	 * how untrusted data propagates through the contract and identifies risky
+	 * usage patterns.
+	 * </p>
+	 * <p>
+	 * <b>Vulnerability Type:</b> Local Dependency / Untrusted Cross-Chain Data
+	 * Usage
+	 * </p>
 	 *
-	 * @param contract The smart contract to analyze for Local Dependency
-	 *                     issues.
+	 * @param contract The smart contract to analyze for Local Dependency issues
 	 */
 	public static void runLocalDependencyChecker(SmartContract contract) {
 		// Setup configuration
@@ -699,7 +680,7 @@ public class xEVMLiSA {
 	 * Prints the vulnerabilities of each smart contract in the given bridge.
 	 *
 	 * @param bridge The bridge containing the smart contracts to analyze for
-	 *                   vulnerabilities.
+	 *                   vulnerabilities
 	 */
 	public static void printVulnerabilities(Bridge bridge) {
 		for (SmartContract contract : bridge) {
@@ -710,11 +691,13 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Prints the functions vulnerable of each smart contract in the given
-	 * bridge.
+	 * Prints the vulnerabilities grouped by function for each smart contract in
+	 * the bridge. Generates a JSON representation showing which functions
+	 * contain which vulnerabilities, providing a function-level breakdown of
+	 * the detected issues across the bridge.
 	 *
 	 * @param bridge The bridge containing the smart contracts to analyze for
-	 *                   vulnerabilities.
+	 *                   vulnerabilities
 	 */
 	public static void printVulnerabilitiesPerFunction(Bridge bridge) {
 		JSONObject json = new JSONObject();
