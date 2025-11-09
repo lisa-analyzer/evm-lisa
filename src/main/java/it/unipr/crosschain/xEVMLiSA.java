@@ -81,7 +81,7 @@ public class xEVMLiSA {
 	 * invocations in destination contracts based on the bridge policy.
 	 *
 	 * @param bridge The bridge object containing smart contracts and the policy
-	 * 
+	 *
 	 * @return A set of cross-chain edges connecting events to functions
 	 */
 	public static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
@@ -197,7 +197,7 @@ public class xEVMLiSA {
 	 * establish cross-chain dependencies for vulnerability detection.
 	 *
 	 * @param bridge The bridge containing the contracts to analyze
-	 * 
+	 *
 	 * @return A set of cross-chain edges using event entry points
 	 */
 	public static Set<Edge> getCrossChainEdgesUsingEventsEntrypoint(Bridge bridge) {
@@ -384,6 +384,28 @@ public class xEVMLiSA {
 				MyCache.getInstance().getAccessControlIncompletenessWarnings(contract.getCFG().hashCode()));
 	}
 
+	/**
+	 * Runs the Event Order Issues checker on a single contract using the
+	 * provided policy.
+	 * <p>
+	 * <b>Checker Purpose:</b> This checker identifies two types of
+	 * vulnerabilities:
+	 * <ul>
+	 * <li><b>Missing Event Notification:</b> State modifications without
+	 * corresponding event emissions</li>
+	 * <li><b>Missing State Update:</b> Event emissions without corresponding
+	 * state modifications</li>
+	 * </ul>
+	 * <p>
+	 * The checker analyzes all functions that have cross-chain connections
+	 * (defined in the policy) and verifies that state changes and event
+	 * emissions are properly coordinated along all execution paths.
+	 * </p>
+	 *
+	 * @param contract the smart contract to analyze
+	 * @param policy   the cross-chain policy defining event-function
+	 *                     relationships
+	 */
 	public static void runEventOrderIssuesChecker(SmartContract contract, CustomPolicy policy) {
 		log.info("[IN] Running Event Order Issues checker on {}.", contract.getName());
 
@@ -447,6 +469,23 @@ public class xEVMLiSA {
 		log.info("[OUT] Event Order Issues checker ended on {}.", contract.getName());
 	}
 
+	/**
+	 * Detects missing event notification vulnerabilities in a smart contract.
+	 * This checker identifies state modifications (SSTORE instructions) that
+	 * are not followed by the emission of required events. For each state
+	 * update in the execution path from function entry to exit, the checker
+	 * verifies that there exists a path from entry to the sstore and another
+	 * from the sstore to exit, both avoiding the expected event exit points.
+	 * This indicates state was modified without the corresponding event being
+	 * emitted.
+	 *
+	 * @param contract         the smart contract being analyzed
+	 * @param entrypoint       the function entry statement
+	 * @param exitpoint        the function exit statement (successful
+	 *                             termination)
+	 * @param eventsExitpoints the set of event emission points expected for
+	 *                             this function
+	 */
 	private static void checkForMissingEventNotificationChecker(SmartContract contract, Statement entrypoint,
 			Statement exitpoint, Set<Statement> eventsExitpoints) {
 		log.info("[IN] Running Missing Event Notification checker on {}.", contract.getName());
@@ -486,6 +525,21 @@ public class xEVMLiSA {
 				MyCache.getInstance().getMissingEventNotificationWarnings(contract.getCFG().hashCode()));
 	}
 
+	/**
+	 * Detects missing state update vulnerabilities in a smart contract. This
+	 * checker identifies cases where events are emitted without corresponding
+	 * state modifications. For each event exit point in the execution path from
+	 * function entry to exit, the checker verifies that there exists a path
+	 * from entry to the event and another from the event to exit, both avoiding
+	 * all state modifications (sstores). This indicates that an event was
+	 * emitted without any preceding state changes.
+	 *
+	 * @param contract         the smart contract being analyzed
+	 * @param entrypoint       the function entry statement
+	 * @param exitpoint        the function exit statement (successful
+	 *                             termination)
+	 * @param eventsExitpoints the exit points of events being tracked
+	 */
 	private static void checkForMissingStateUpdateChecker(SmartContract contract, Statement entrypoint,
 			Statement exitpoint, Set<Statement> eventsExitpoints) {
 		log.info("[IN] Running Missing State Update checker on {}.", contract.getName());
