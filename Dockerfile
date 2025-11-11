@@ -1,5 +1,5 @@
 # Use a base image with JDK 11
-FROM openjdk:11-jdk-slim
+FROM eclipse-temurin:11-jdk-jammy
 
 # Specify the version of Gradle to install
 ARG GRADLE_VERSION=8.0
