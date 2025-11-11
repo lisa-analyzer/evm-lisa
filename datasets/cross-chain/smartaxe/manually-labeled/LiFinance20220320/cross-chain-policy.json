@@ -169,6 +169,28 @@
     },
     {
       "sourceFunction": {
+        "name": "startBridgeTokensViaAnyswap",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "dynamicExternalCall"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "swapAndStartBridgeTokensViaAnyswap",
+        "events": [
+          "LiFiTransferStarted"
+        ]
+      },
+      "destinationFunction": {
+        "name": "dynamicExternalCall"
+      }
+    },
+    {
+      "sourceFunction": {
         "name": "startBridgeTokensGeneric",
         "events": [
           "LiFiTransferStarted"
