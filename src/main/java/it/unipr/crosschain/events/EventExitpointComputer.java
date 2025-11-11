@@ -40,6 +40,8 @@ public class EventExitpointComputer implements
 
 		if (!(node instanceof Log))
 			return true;
+		if (node instanceof Log0)
+			return true; // Log0 has no topics, not used with events
 
 		for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, EVMAbstractState,
 				TypeEnvironment<InferredTypes>>> result : tool.getResultOf(graph)) {
@@ -60,9 +62,6 @@ public class EventExitpointComputer implements
 
 			AbstractStackSet stacks = valueState.getStacks();
 			for (AbstractStack stack : stacks) {
-				if (node instanceof Log0)
-					continue; // Log0 has no topics
-
 				int numTopics = getNumberOfTopics(node);
 
 				for (int topicIndex = 0; topicIndex < numTopics; topicIndex++) {
