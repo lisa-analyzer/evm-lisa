@@ -1,0 +1,92 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "initiateTransfer",
+        "events": [
+          "Transfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "transfer"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updateTokenPrice",
+        "events": [
+          "PriceUpdated"
+        ]
+      },
+      "destinationFunction": {
+        "name": "applyPriceUpdate"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "setUserBalance",
+        "events": [
+          "StateUpdate"
+        ]
+      },
+      "destinationFunction": {
+        "name": "syncUserBalance"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "processFeeBasedOnGasPrice",
+        "events": [
+          "ProcessFeeFromChain"
+        ]
+      },
+      "destinationFunction": {
+        "name": "processFeeFromChain"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updateStateWithBlockData",
+        "events": [
+          "SyncBlockData"
+        ]
+      },
+      "destinationFunction": {
+        "name": "syncBlockData"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updateMinerReward",
+        "events": [
+          "ProcessMinerReward"
+        ]
+      },
+      "destinationFunction": {
+        "name": "processMinerReward"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "processRandomizedTransfer",
+        "events": [
+          "ProcessRandomEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "processRandomEvent"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "updateStateBasedOnBaseFee",
+        "events": [
+          "SyncBaseFeeState"
+        ]
+      },
+      "destinationFunction": {
+        "name": "syncBaseFeeState"
+      }
+    }
+  ]
+}
