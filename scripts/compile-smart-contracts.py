@@ -379,10 +379,8 @@ if __name__ == "__main__":
     datasets_path = './../datasets'
 
     if args.cross_chain:
-        # compile_bridges(f'{datasets_path}/cross-chain/smartaxe/dataset')
         compile_bridges(f'{datasets_path}/cross-chain/smartaxe/manually-labeled')
-        # compile_bridge(f'{datasets_path}/cross-chain/time-synchronization')
-        # compile_bridge(f'{datasets_path}/cross-chain/dummy-bridge')
+        compile_bridge(f'{datasets_path}/cross-chain/local-dependency')
 
     if args.solidifi:
         compile_solidity_sources(f'{datasets_path}/solidifi/reentrancy/source-code',
