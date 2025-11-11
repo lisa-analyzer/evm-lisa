@@ -1,4 +1,4 @@
-name: 'Docker build image test'
+name: 'Docker build image'
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  docker-test:
+  docker-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Docker image
-        run: docker build -t evmlisa:test .
-      
+        run: docker build -t evm-lisa:ci .
+
       - name: Remove Docker image
-        run: docker rmi evmlisa:test
+        run: docker rmi evm-lisa:ci
