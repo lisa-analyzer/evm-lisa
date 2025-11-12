@@ -2,11 +2,8 @@ package it.unipr.utils;
 
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
-import it.unipr.analysis.contract.Signature;
-import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,14 +24,6 @@ public class MyCache {
 	private final LRUMap<String, Boolean> _reachableFrom;
 
 	private final LRUMap<String, Set<Object>> _warningsCache;
-
-	private final Set<Statement> _vulnerableLogStatement;
-
-	private final Set<Statement> _taintedCallDataLoad;
-
-	private final LRUMap<Statement, Set<Object>> _linkFromLogToCallDataLoad;
-
-	private final LRUMap<Signature, Set<Signature>> _mapEventsFunctions;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -68,16 +57,7 @@ public class MyCache {
 		this._map = new LRUMap<Pair<String, it.unipr.analysis.Number>, StackElement>(500);
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reachableFrom = new LRUMap<String, Boolean>(5000);
-
 		this._warningsCache = new LRUMap<String, Set<Object>>(20000);
-
-		this._vulnerableLogStatement = Collections.synchronizedSet(new HashSet<>());
-
-		this._taintedCallDataLoad = Collections.synchronizedSet(new HashSet<>());
-
-		this._linkFromLogToCallDataLoad = new LRUMap<>(5000);
-
-		this._mapEventsFunctions = new LRUMap<>(10000);
 	}
 
 	/**
@@ -111,40 +91,6 @@ public class MyCache {
 	private int getWarnings(String key) {
 		synchronized (_warningsCache) {
 			return (_warningsCache.get(key) != null) ? _warningsCache.get(key).size() : 0;
-		}
-	}
-
-	/**
-	 * Associates an event signature with a function signature in the internal
-	 * mapping. If no functions are associated with the given event, a new
-	 * synchronized set is created. This method is thread-safe.
-	 *
-	 * @param event    the event signature to use as the key
-	 * @param function the function signature to associate with the event
-	 */
-	public void addMapEventsFunctions(Signature event, Signature function) {
-		synchronized (_mapEventsFunctions) {
-			_mapEventsFunctions
-					.computeIfAbsent(event, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(function);
-		}
-	}
-
-	/**
-	 * Retrieves all function signatures associated with a given event
-	 * signature. If no functions are mapped to the event, returns an empty set.
-	 * This method is thread-safe.
-	 *
-	 * @param event the event signature to query
-	 *
-	 * @return a set of function signatures associated with the event, or an
-	 *             empty set if none exist
-	 */
-	public Set<Signature> getMapEventsFunctions(Signature event) {
-		synchronized (_mapEventsFunctions) {
-			return (_mapEventsFunctions.get(event) != null)
-					? _mapEventsFunctions.get(event)
-					: Set.of();
 		}
 	}
 
@@ -656,103 +602,5 @@ public class MyCache {
 	public int getPossibleLocalDependencyWarnings(Integer key) {
 		String cacheKey = "localDependencyWarningPossible:" + key.toString();
 		return getWarnings(cacheKey);
-	}
-
-	/**
-	 * Marks a LOG statement as vulnerable for the Local Dependency Checker.
-	 * <p>
-	 * Associates the given LOG statement with a taint marker to indicate it
-	 * should be analyzed for local dependency issues.
-	 *
-	 * @param key the LOG statement to mark as vulnerable
-	 */
-	public void addVulnerableLogStatementForLocalDependencyChecker(Statement key) {
-		_vulnerableLogStatement.add(key);
-	}
-
-	/**
-	 * Retrieves all LOG statements previously marked as vulnerable for the
-	 * Local Dependency Checker.
-	 *
-	 * @return a set of LOG statements to be checked for local dependency
-	 */
-	public Set<Statement> getSetOfVulnerableLogStatementForLocalDependencyChecker() {
-		return new HashSet<>(_vulnerableLogStatement);
-	}
-
-	/**
-	 * Records that a CALLDATALOAD statement has been tainted by a vulnerable
-	 * LOG statement in the Local Dependency analysis.
-	 *
-	 * @param stmt the CALLDATALOAD statement to mark as tainted
-	 */
-	public void addTaintedCallDataLoad(Statement stmt) {
-		_taintedCallDataLoad.add(stmt);
-	}
-
-	/**
-	 * Checks whether a given CALLDATALOAD statement is marked as tainted by the
-	 * Local Dependency Checker.
-	 *
-	 * @param stmt the CALLDATALOAD statement to query
-	 *
-	 * @return true if the statement is tainted, false otherwise
-	 */
-	public boolean isTaintedCallDataLoad(Statement stmt) {
-		return _taintedCallDataLoad.contains(stmt);
-	}
-
-	/**
-	 * Links a vulnerable LOG statement to its corresponding tainted
-	 * CALLDATALOAD statement(s). Stores a mapping from the LOG statement to one
-	 * or more tainted CALLDATALOAD warnings for cross-reference during
-	 * analysis.
-	 *
-	 * @param key     the LOG statement
-	 * @param warning the tainted CALLDATALOAD statement or warning object
-	 */
-	public void addLinkFromLogToCallDataLoad(Statement key, Object warning) {
-		synchronized (_linkFromLogToCallDataLoad) {
-			_linkFromLogToCallDataLoad
-					.computeIfAbsent(key, k -> Collections.synchronizedSet(new HashSet<>()))
-					.add(warning);
-		}
-	}
-
-	/**
-	 * Retrieves the set of tainted CALLDATALOAD warnings associated with a
-	 * given LOG statement.
-	 *
-	 * @param key the LOG statement whose links are requested
-	 *
-	 * @return a set of warning objects linked to that LOG statement, or an
-	 *             empty set if none exist
-	 */
-	public Set<Object> getLinkFromLogToCallDataLoad(Statement key) {
-		synchronized (_linkFromLogToCallDataLoad) {
-			return (_linkFromLogToCallDataLoad.get(key) != null) ? _linkFromLogToCallDataLoad.get(key)
-					: new HashSet<>();
-		}
-	}
-
-	/**
-	 * Finds all LOG statements that are linked to a specific tainted
-	 * CALLDATALOAD warning. This is the reverse lookup of
-	 * {@link #getLinkFromLogToCallDataLoad(Statement)}.
-	 *
-	 * @param value the tainted CALLDATALOAD warning object
-	 *
-	 * @return a set of LOG statements that reference the given warning
-	 */
-	public Set<Statement> getKeysContainingValueInLinkFromLogToCallDataLoad(Object value) {
-		synchronized (_linkFromLogToCallDataLoad) {
-			Set<Statement> keys = new HashSet<>();
-			for (Map.Entry<Statement, Set<Object>> entry : _linkFromLogToCallDataLoad.entrySet()) {
-				if (entry.getValue().contains(value)) {
-					keys.add(entry.getKey());
-				}
-			}
-			return keys;
-		}
 	}
 }
