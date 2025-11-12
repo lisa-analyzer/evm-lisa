@@ -181,12 +181,12 @@ public class AccessControlIncompletenessChecker implements
 					continue;
 
 				if (isTop) {
-					log.warn(
-							"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-							((ProgramCounterLocation) sink.getLocation()).getPc(),
-							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
-							((ProgramCounterLocation) source.getLocation()).getPc(),
-							((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
+//					log.warn(
+//							"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+//							((ProgramCounterLocation) sink.getLocation()).getPc(),
+//							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
+//							((ProgramCounterLocation) source.getLocation()).getPc(),
+//							((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
 
 					String warn = "[POSSIBLE] Access Control Incompleteness vulnerability at "
 							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
