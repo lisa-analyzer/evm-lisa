@@ -110,8 +110,6 @@ public class xEVMLiSA {
 							crossChainEdges.addAll(
 									addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
 
-							MyCache.getInstance().addMapEventsFunctions(event, function);
-
 							// Debug print
 							for (Statement e : event.getExitPoints()) {
 								for (Statement f : function.getEntryPoints()) {
@@ -342,9 +340,11 @@ public class xEVMLiSA {
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 
-		log.info("[OUT] Access Control Incompleteness checker ended on {}, with {} vulnerabilities found.",
+		log.info(
+				"[OUT] Access Control Incompleteness checker ended on {}, with {} definite vulnerabilities found ({} possible).",
 				contract.getName(),
-				MyCache.getInstance().getAccessControlIncompletenessWarnings(contract.getCFG().hashCode()));
+				MyCache.getInstance().getAccessControlIncompletenessWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleAccessControlIncompletenessWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
@@ -542,8 +542,24 @@ public class xEVMLiSA {
 				MyCache.getInstance().getMissingStateUpdateWarnings(contract.getCFG().hashCode()));
 	}
 
+	/**
+	 * Runs the Local Dependency checker on a single contract using the provided
+	 * policy through a taint analysis approach.
+	 * <p>
+	 * <b>Checker Purpose:</b> This checker detects when blockchain-dependent
+	 * data (such as block.timestamp, block.difficulty, tx.gasprice, etc.) is
+	 * passed as arguments to event emissions (LOG instructions). Since events
+	 * represent cross-chain communications in bridge contracts, including
+	 * untrusted blockchain data in event parameters compromises the integrity
+	 * of cross-chain interactions.
+	 * </p>
+	 *
+	 * @param contract the smart contract to analyze
+	 * @param policy   the cross-chain policy defining event-function
+	 *                     relationships
+	 */
 	public static void runLocalDependencyChecker(SmartContract contract, CustomPolicy policy) {
-		log.info("[IN] Running Local Dependency checker.");
+		log.info("[IN] Running Local Dependency checker on {}.", contract.getName());
 
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
@@ -557,7 +573,11 @@ public class xEVMLiSA {
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
 
-		log.info("[OUT] Local Dependency checker ended.");
+		log.info(
+				"[OUT] Local Dependency checker ended on {}, with {} definite vulnerabilities found ({} possible).",
+				contract.getName(),
+				MyCache.getInstance().getLocalDependencyWarnings(contract.getCFG().hashCode()),
+				MyCache.getInstance().getPossibleLocalDependencyWarnings(contract.getCFG().hashCode()));
 	}
 
 	/**
