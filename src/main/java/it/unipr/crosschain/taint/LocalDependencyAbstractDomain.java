@@ -2,7 +2,8 @@ package it.unipr.crosschain.taint;
 
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
-import it.unipr.utils.MyCache;
+import it.unipr.cfg.*;
+import it.unipr.cfg.Number;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
@@ -32,7 +33,14 @@ public class LocalDependencyAbstractDomain extends TaintAbstractDomain {
 
 	@Override
 	public boolean isTainted(Statement stmt) {
-		return MyCache.getInstance().isTaintedCallDataLoad(stmt);
+		return stmt instanceof Timestamp
+				|| stmt instanceof Number
+				|| stmt instanceof Difficulty
+				|| stmt instanceof Gaslimit
+				|| stmt instanceof Gasprice
+				|| stmt instanceof Basefee
+				|| stmt instanceof Coinbase
+				|| stmt instanceof Blockhash;
 	}
 
 	@Override

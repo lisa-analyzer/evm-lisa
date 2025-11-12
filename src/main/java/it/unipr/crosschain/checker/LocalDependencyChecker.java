@@ -1,9 +1,11 @@
 package it.unipr.crosschain.checker;
 
+import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
+import it.unipr.utils.CustomPolicy;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -23,10 +25,18 @@ public class LocalDependencyChecker implements
 		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(LocalDependencyChecker.class);
-	private final SmartContract contract;
 
-	public LocalDependencyChecker(SmartContract contract) {
+	private final SmartContract contract;
+	private final CustomPolicy policy;
+
+	/**
+	 * Builds the checker for the given contract.
+	 *
+	 * @param contract the contract under analysis
+	 */
+	public LocalDependencyChecker(SmartContract contract, CustomPolicy policy) {
 		this.contract = contract;
+		this.policy = policy;
 	}
 
 	@Override
@@ -35,8 +45,7 @@ public class LocalDependencyChecker implements
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Jumpi) {
-
+		if (node instanceof Log) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
@@ -53,20 +62,25 @@ public class LocalDependencyChecker implements
 				// Retrieve the symbolic stack from the analysis result
 				TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
-				if (taintedStack.isBottom())
+				if (taintedStack.isBottom() || taintedStack.isTop())
 					// Nothing to do
 					continue;
-				else {
-					if (TaintElement.isAtLeastOneTainted(
-							taintedStack.getElementAtPosition(1),
-							taintedStack.getElementAtPosition(2))) {
-						throwVulnerability(node, tool, cfg);
-					} else if (TaintElement.isAtLeastOneTop(
-							taintedStack.getElementAtPosition(1),
-							taintedStack.getElementAtPosition(2))) {
-						throwPossibleVulnerability(node, tool, cfg);
-					}
+
+				int numArgs = getNumberOfArgs(node);
+				boolean isAtLeastOneTainted = false;
+				boolean isAtLeastOneTop = false;
+
+				for (int argIndex = 1; argIndex <= numArgs; argIndex++) {
+					isAtLeastOneTainted |= TaintElement.isAtLeastOneTainted(
+							taintedStack.getElementAtPosition(argIndex));
+					isAtLeastOneTop |= TaintElement.isAtLeastOneTop(
+							taintedStack.getElementAtPosition(argIndex));
 				}
+
+				if (isAtLeastOneTainted)
+					checkForLocalDependency(tool, node, false);
+				else if (isAtLeastOneTop)
+					checkForLocalDependency(tool, node, true);
 			}
 		}
 
@@ -74,110 +88,62 @@ public class LocalDependencyChecker implements
 	}
 
 	/**
-	 * Identifies and reports a Local Dependency vulnerability within a control
-	 * flow graph (CFG). This method analyzes the reachability of certain
-	 * statements and logs warnings if potential vulnerabilities are detected.
-	 * The warnings are logged, stored in a cache, and reported to the provided
-	 * analysis tool.
+	 * Computes the number of arguments consumed from the stack by the provided
+	 * EVM instruction.
 	 *
-	 * @param jumpi The statement being analyzed for reachability and
-	 *                  vulnerability. It represents a conditional jump in the
-	 *                  control flow.
-	 * @param tool  The analysis tool containing results of the analysis and
-	 *                  methods for reporting warnings about identified
-	 *                  vulnerabilities.
-	 * @param cfg   The control flow graph representing the structure of the
-	 *                  program being analyzed. Used to derive external data and
-	 *                  verify reachability between statements.
+	 * @param node the statement to inspect
+	 *
+	 * @return the amount of stack elements consumed by {@code node}
 	 */
-	private void throwVulnerability(Statement jumpi, CheckToolWithAnalysisResults<
+	private int getNumberOfArgs(Statement node) {
+		if (node instanceof Log1)
+			return 3;
+		if (node instanceof Log2)
+			return 4;
+		if (node instanceof Log3)
+			return 5;
+		if (node instanceof Log4)
+			return 6;
+		return 0;
+	}
+
+	private void checkForLocalDependency(CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
-			EVMCFG cfg) {
+			Statement sink, boolean isTop) {
+		for (Signature events : contract.getEventsSignature()) {
+			for (String eventsName : policy.getKnownEvents()) {
 
-		for (Statement externalData : cfg.getAllStatementsByClass(Calldataload.class, Calldatacopy.class)) {
-			if (cfg.reachableFrom(externalData, jumpi)) {
-				for (Statement logVulnerable : MyCache.getInstance()
-						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
+				if (!eventsName.equalsIgnoreCase(events.getName()))
+					continue;
 
-					String functionSignatureByStatement = contract.getFunctionSignatureByStatement(jumpi);
-					/*
-					 * It means that this vulnerability is inside a private
-					 * function
-					 */
-					if (functionSignatureByStatement.equals("no-function-found"))
-						continue;
+				for (Statement eventExitpoint : events.getExitPoints()) {
+					if (sink.equals(eventExitpoint)) {
+						ProgramCounterLocation sinkLocation = (ProgramCounterLocation) sink.getLocation();
+						if (!isTop) {
+							log.warn(
+									"[DEFINITE] Local Dependency warning at pc {} (line {})",
+									sinkLocation.getPc(),
+									sinkLocation.getSourceCodeLine());
 
-					/*
-					 * To avoid double printing, we raise the warning only in
-					 * the contract where is present the vulnerable log, i.e.,
-					 * the event emit
-					 */
-					if (cfg.hashCode() != logVulnerable.getCFG().hashCode())
-						continue;
+							String warn = "[DEFINITE] Local Dependency warning at pc "
+									+ sinkLocation.getPc();
+							tool.warn(warn);
+							MyCache.getInstance().addLocalDependencyWarning(contract.getCFG().hashCode(), warn);
+						} else {
+							log.warn(
+									"[POSSIBLE] Local Dependency warning at pc {} (line {})",
+									sinkLocation.getPc(),
+									sinkLocation.getSourceCodeLine());
 
-					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
-
-					log.warn(
-							"[DEFINITE] Local Dependency vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
-							nodeLocation.getPc(),
-							nodeLocation.getSourceCodeLine(),
-							cfg.hashCode(),
-							((ProgramCounterLocation) logVulnerable.getLocation()).getPc(),
-							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
-							logVulnerable.getCFG().hashCode());
-
-					String warn = "[DEFINITE] Local Dependency vulnerability at pc "
-							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
-							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
-					MyCache.getInstance().addLocalDependencyWarning(contract.getCFG().hashCode(), warn);
-					tool.warn(warn);
-
-					warn = "[DEFINITE] Local Dependency vulnerability in " + contract.getName() + " at "
-							+ functionSignatureByStatement
-							+ " (pc: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getPc() + ", "
-							+ "line: " + ((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine()
-							+ ")";
-					MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+							String warn = "[POSSIBLE] Local Dependency warning at pc "
+									+ sinkLocation.getPc();
+							tool.warn(warn);
+							MyCache.getInstance().addLocalDependencyWarning(contract.getCFG().hashCode(), warn);
+						}
+					}
 				}
 			}
 		}
 	}
 
-	private void throwPossibleVulnerability(Statement jumpi, CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
-			EVMCFG cfg) {
-
-		for (Statement externalData : cfg.getAllStatementsByClass(Calldataload.class, Calldatacopy.class)) {
-			if (cfg.reachableFrom(externalData, jumpi)) {
-				for (Statement logVulnerable : MyCache.getInstance()
-						.getKeysContainingValueInLinkFromLogToCallDataLoad(externalData)) {
-
-					/*
-					 * To avoid double printing, we raise the warning only in
-					 * the contract where is present the vulnerable log, i.e.,
-					 * the event emit
-					 */
-					if (cfg.hashCode() != logVulnerable.getCFG().hashCode())
-						continue;
-
-					ProgramCounterLocation nodeLocation = (ProgramCounterLocation) jumpi.getLocation();
-
-					log.warn(
-							"[POSSIBLE] Local Dependency vulnerability at pc {} (line {}) (cfg={}), coming from pc {} (line {}) (cfg={})",
-							nodeLocation.getPc(),
-							nodeLocation.getSourceCodeLine(),
-							cfg.hashCode(),
-							((ProgramCounterLocation) logVulnerable.getLocation()).getPc(),
-							((ProgramCounterLocation) logVulnerable.getLocation()).getSourceCodeLine(),
-							logVulnerable.getCFG().hashCode());
-
-					String warn = "[POSSIBLE] Local Dependency vulnerability at pc "
-							+ ((ProgramCounterLocation) logVulnerable.getLocation()).getPc()
-							+ " (cfg=" + logVulnerable.getCFG().hashCode() + ")";
-					MyCache.getInstance().addPossibleLocalDependencyWarning(contract.getCFG().hashCode(), warn);
-					tool.warn(warn);
-				}
-			}
-		}
-	}
 }
