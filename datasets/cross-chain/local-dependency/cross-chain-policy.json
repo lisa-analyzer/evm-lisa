@@ -87,6 +87,17 @@
       "destinationFunction": {
         "name": "syncBaseFeeState"
       }
+    },
+    {
+      "sourceFunction": {
+        "name": "transfer",
+        "events": [
+          "SimpleTransfer"
+        ]
+      },
+      "destinationFunction": {
+        "name": "updateTokenPrice"
+      }
     }
   ]
 }
