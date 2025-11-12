@@ -69,7 +69,7 @@ public class xEVMLiSA {
 		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
 		bridge.buildPartialXCFG();
 		bridge.addEdges(
-				getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(bridge));
+				getCrossChainEdgesUsingPolicy(bridge));
 
 		log.info("Bridge {} analyzed.", bridge.getName());
 	}
@@ -84,7 +84,7 @@ public class xEVMLiSA {
 	 *
 	 * @return A set of cross-chain edges connecting events to functions
 	 */
-	public static Set<Edge> getCrossChainEdgesUsingEventsAndFunctionsEntrypoint(Bridge bridge) {
+	public static Set<Edge> getCrossChainEdgesUsingPolicy(Bridge bridge) {
 		Set<Edge> crossChainEdges = new HashSet<>();
 		Set<String> functionsUsed = new HashSet<>();
 		Set<String> eventUsed = new HashSet<>();
@@ -295,13 +295,13 @@ public class xEVMLiSA {
 					EVMLiSAExecutor.submit(xEVMLiSA.class,
 							() -> runEventOrderIssuesChecker(contract, bridge.getPolicy())));
 			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runAccessControlIncompleteness(contract)));
+					EVMLiSAExecutor.submit(xEVMLiSA.class,
+							() -> runAccessControlIncompleteness(contract)));
 			futures.add(
 					EVMLiSAExecutor.submit(xEVMLiSA.class,
-							() -> runLocalDependencyCheckerNewVersion(contract, bridge.getPolicy())));
+							() -> runLocalDependencyChecker(contract, bridge.getPolicy())));
 		}
-//		futures.add(
-//				EVMLiSAExecutor.submit(xEVMLiSA.class, () -> runLocalDependencyCheckers(bridge)));
+
 		EVMLiSAExecutor.awaitCompletionFutures(futures);
 
 		log.info("Saving cross-chain checkers results.");
@@ -312,46 +312,6 @@ public class xEVMLiSA {
 
 		EVMLiSAExecutor.shutdown(xEVMLiSA.class);
 		log.info("[OUT] Cross-chain checkers results saved.");
-	}
-
-	/**
-	 * Executes the Local Dependency analysis for all contracts in the given
-	 * bridge. This method performs three phases in parallel across all
-	 * contracts: (i) Identify vulnerable Event statements for the Local
-	 * Dependency Checker. (ii) Mark any CALLDATALOAD or CALLDATACOPY sites
-	 * reachable from those LOGs as tainted. (iii) Run the core Local Dependency
-	 * Checker logic on each contract.
-	 *
-	 * @param bridge the Bridge instance whose contracts will be analyzed
-	 */
-	public static void runLocalDependencyCheckers(Bridge bridge) {
-		log.info("[IN] Running Local Dependency checker.");
-
-		List<Future<?>> futures = new ArrayList<>();
-
-		log.info("[LocalDependencyChecker] Computing vulnerable LOGs.");
-		for (SmartContract contract : bridge)
-			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class,
-							() -> computeVulnerablesLOGsForLocalDependencyChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures);
-		log.info("[LocalDependencyChecker] Vulnerable LOGs computed.");
-
-		log.info("[LocalDependencyChecker] Computing tainted Call Data.");
-		for (SmartContract contract : bridge)
-			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class,
-							() -> computeTaintedCallDataForLocalDependencyChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures);
-		log.info("[LocalDependencyChecker] Tainted Call Data computed.");
-
-		for (SmartContract contract : bridge)
-			futures.add(
-					EVMLiSAExecutor.submit(xEVMLiSA.class,
-							() -> runLocalDependencyChecker(contract)));
-		EVMLiSAExecutor.awaitCompletionFutures(futures);
-
-		log.info("[OUT] Local Dependency checker ended.");
 	}
 
 	/**
@@ -582,169 +542,22 @@ public class xEVMLiSA {
 				MyCache.getInstance().getMissingStateUpdateWarnings(contract.getCFG().hashCode()));
 	}
 
-	public static void runLocalDependencyCheckerNewVersion(SmartContract contract, CustomPolicy policy) {
+	public static void runLocalDependencyChecker(SmartContract contract, CustomPolicy policy) {
+		log.info("[IN] Running Local Dependency checker.");
+
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(contract.getCFG());
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
 		LiSA lisa = new LiSA(conf);
 
-		LocalDependencyCheckerNewVersion checker = new LocalDependencyCheckerNewVersion(contract, policy);
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new VulnerableLOGsAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
-	}
-
-	/**
-	 * Executes the vulnerable logs checker for detecting issues related to time
-	 * synchronization in a given smart contract.
-	 *
-	 * @param contract The smart contract to be analyzed for vulnerable event
-	 *                     emissions
-	 */
-	public static void computeVulnerablesLOGsForLocalDependencyChecker(SmartContract contract) {
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		VulnerableLOGsComputer checker = new VulnerableLOGsComputer(contract.getEventsSignature());
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new VulnerableLOGsAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
-	}
-
-	/**
-	 * Computes and traces tainted call data in the context of the Local
-	 * Dependency Checker. This method identifies and links call data loads that
-	 * are reachable from vulnerable log statements via cross-chain edges,
-	 * marking them as tainted.
-	 *
-	 * @param contract The smart contract to be analyzed
-	 */
-	public static void computeTaintedCallDataForLocalDependencyChecker(SmartContract contract) {
-		if (contract == null)
-			return;
-
-		try {
-			Set<Statement> logsVulnerable = MyCache.getInstance()
-					.getSetOfVulnerableLogStatementForLocalDependencyChecker();
-
-			/* For each event of this event */
-			for (Signature event : contract.getEventsSignature()) {
-				for (Statement emit : event.getExitPoints()) {
-					if (logsVulnerable.contains(emit)) {
-
-						/* Functions linked to this event */
-						Set<Signature> functionsLinked = MyCache.getInstance().getMapEventsFunctions(event);
-
-						if (functionsLinked.isEmpty()) {
-							log.warn("No linked function found for event {} in contract {}.", event.getFullSignature(),
-									contract.getName());
-							continue;
-						}
-
-						for (Signature functionLinked : functionsLinked) {
-							for (Statement entrypoint : functionLinked.getEntryPoints()) {
-								for (Statement exitpoint : functionLinked.getExitPoints()) {
-									/*
-									 * We need to check only the successful
-									 * termination paths
-									 */
-									if (!(exitpoint instanceof Stop
-											|| exitpoint instanceof Return))
-										continue;
-
-									/*
-									 * Only paths congruent with the function's
-									 * return type need to be checked, i.e., if
-									 * a function has return type void, then the
-									 * function's exitpoint will be indicated by
-									 * the Stop statement; if it returns
-									 * something else, the exitpoint will be
-									 * indicated by the Return statement
-									 */
-									if (functionLinked.getOutputParamCount() > 0
-											&& exitpoint instanceof Stop)
-										continue;
-									if (functionLinked.getOutputParamCount() == 0
-											&& exitpoint instanceof Return)
-										continue;
-
-									/*
-									 * We take only the call data inside the
-									 * function
-									 */
-									EVMCFG newCFG = (EVMCFG) entrypoint.getCFG();
-									Set<Statement> externalData = newCFG
-											.getStatementsInAPathWithTypes(
-													entrypoint,
-													exitpoint,
-													Set.of(Calldataload.class, Calldatacopy.class));
-
-									for (Statement data : externalData) {
-										MyCache.getInstance().addLinkFromLogToCallDataLoad(emit, data);
-										MyCache.getInstance().addTaintedCallDataLoad(data);
-
-										log.debug(
-												"[computeTaintedCallData] Reachable with cross-chain edge: {} (line: {}, cfg: {}) -> {} (line: {}, cfg: {}). Event {} (contract {}) to function {}.",
-												emit,
-												((ProgramCounterLocation) emit.getLocation()).getSourceCodeLine(),
-												emit.getCFG().hashCode(),
-												data,
-												((ProgramCounterLocation) data.getLocation()).getSourceCodeLine(),
-												data.getCFG().hashCode(),
-												event.getFullSignature(),
-												contract.getName(),
-												functionLinked.getFullSignature());
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			System.err.println(contract);
-		}
-	}
-
-	/**
-	 * Runs the Local Dependency checker on the given smart contract. This is
-	 * the third and final phase of the Local Dependency Checker pipeline.
-	 * <p>
-	 * <b>Checker Purpose:</b> Detects Local Dependency vulnerabilities where
-	 * tainted external data (received via cross-chain communication) is used in
-	 * state-modifying operations without proper validation. The checker tracks
-	 * how untrusted data propagates through the contract and identifies risky
-	 * usage patterns.
-	 * </p>
-	 * <p>
-	 * <b>Vulnerability Type:</b> Local Dependency / Untrusted Cross-Chain Data
-	 * Usage
-	 * </p>
-	 *
-	 * @param contract The smart contract to analyze for Local Dependency issues
-	 */
-	public static void runLocalDependencyChecker(SmartContract contract) {
-		// Setup configuration
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
-
-		// Local dependency checker
-		LocalDependencyChecker checker = new LocalDependencyChecker(contract);
+		LocalDependencyChecker checker = new LocalDependencyChecker(contract, policy);
 		conf.semanticChecks.add(checker);
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new LocalDependencyAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
+
+		log.info("[OUT] Local Dependency checker ended.");
 	}
 
 	/**
