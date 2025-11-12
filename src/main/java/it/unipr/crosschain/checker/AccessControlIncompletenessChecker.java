@@ -44,6 +44,22 @@ public class AccessControlIncompletenessChecker implements
 		this.contract = contract;
 	}
 
+	/**
+	 * Determines whether the given statement is sink.
+	 *
+	 * @param stmt the statement to check
+	 *
+	 * @return {@code true} if the statement is sink, {@code false} otherwise.
+	 */
+	public boolean isSink(Statement stmt) {
+		return stmt instanceof Call
+				|| stmt instanceof Callcode
+				|| stmt instanceof Staticcall
+				|| stmt instanceof Delegatecall
+				|| stmt instanceof Sstore
+				|| stmt instanceof Balance;
+	}
+
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
@@ -85,12 +101,7 @@ public class AccessControlIncompletenessChecker implements
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Call
-				|| node instanceof Callcode
-				|| node instanceof Staticcall
-				|| node instanceof Delegatecall
-				|| node instanceof Sstore
-				|| node instanceof Balance) {
+		if (isSink(node)) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,

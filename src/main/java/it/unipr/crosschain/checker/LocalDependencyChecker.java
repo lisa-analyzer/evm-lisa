@@ -39,13 +39,27 @@ public class LocalDependencyChecker implements
 		this.policy = policy;
 	}
 
+	/**
+	 * Determines whether the given statement is sink.
+	 *
+	 * @param stmt the statement to check
+	 *
+	 * @return {@code true} if the statement is sink, {@code false} otherwise.
+	 */
+	public boolean isSink(Statement stmt) {
+		return stmt instanceof Log1
+				|| stmt instanceof Log2
+				|| stmt instanceof Log3
+				|| stmt instanceof Log4;
+	}
+
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
-		if (node instanceof Log) {
+		if (isSink(node)) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
