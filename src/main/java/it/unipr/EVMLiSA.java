@@ -342,9 +342,23 @@ public class EVMLiSA {
 
 		log.info("[IN] Building CFG of contract {}.", contract.getName());
 
-		Program program = null;
+		String key = MyCache.getInstance().computeKey(
+				contract.getBytecode(),
+				AbstractStack.getStackLimit(),
+				AbstractStackSet.getStackSetLimit(),
+				JumpSolver.getLinkUnsoundJumpsToAllJumpdest(),
+				EVMAbstractState.isUseStorageLive(),
+				PAPER_MODE,
+				TEST_MODE);
+
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		try {
-			program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+			if (MyCache.getInstance().hasCFG(key)) {
+				log.debug("HIT! CFG of {} already exists in cache.", contract.getName());
+				program.addCodeMember(MyCache.getInstance().getCFG(key));
+			} else
+				program = EVMFrontend.generateCfgFromFile(contract.getMnemonicBytecodePath().toString());
+
 		} catch (IOException e) {
 			System.err.println(
 					JSONManager.throwNewError("Unable to generate partial CFG from file.", contract.toJson()));
@@ -368,6 +382,7 @@ public class EVMLiSA {
 		contract.setStatistics(
 				computeStatistics(checker, lisa, program));
 		contract.setCFG(checker.getComputedCFG());
+		MyCache.getInstance().addCFG(key, checker.getComputedCFG());
 
 		log.debug("[OUT] Contract {} statistics: {}", contract.getAddress(), contract.getStatistics());
 

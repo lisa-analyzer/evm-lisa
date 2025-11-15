@@ -2,6 +2,7 @@ package it.unipr.utils;
 
 import it.unipr.analysis.Number;
 import it.unipr.analysis.StackElement;
+import it.unipr.cfg.EVMCFG;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,7 @@ public class MyCache {
 	private final LRUMap<String, Boolean> _reachableFrom;
 
 	private final LRUMap<String, Set<Object>> _warningsCache;
+	private final LRUMap<String, EVMCFG> _cfgCache;
 
 	/**
 	 * Retrieves the singleton instance of the cache.
@@ -58,6 +60,7 @@ public class MyCache {
 		this._timeLostToGetStorage = new LRUMap<String, Long>(500);
 		this._reachableFrom = new LRUMap<String, Boolean>(5000);
 		this._warningsCache = new LRUMap<String, Set<Object>>(20000);
+		this._cfgCache = new LRUMap<String, EVMCFG>(1000);
 	}
 
 	/**
@@ -602,5 +605,67 @@ public class MyCache {
 	public int getPossibleLocalDependencyWarnings(Integer key) {
 		String cacheKey = "localDependencyWarningPossible:" + key.toString();
 		return getWarnings(cacheKey);
+	}
+
+	/**
+	 * Computes a cache key by concatenating the hash codes of the provided
+	 * objects. This method is useful for generating composite keys from
+	 * multiple objects.
+	 *
+	 * @param objects the objects to include in the key computation
+	 *
+	 * @return a string representation of the concatenated hash codes
+	 */
+	public String computeKey(Object... objects) {
+		StringBuilder key = new StringBuilder();
+		key.append("key:");
+		for (Object object : objects)
+			key.append(object.hashCode());
+
+		return key.toString();
+	}
+
+	/**
+	 * Stores a Control Flow Graph (CFG) in the cache with the specified key.
+	 * This method is thread-safe and uses synchronization to ensure safe
+	 * concurrent access.
+	 *
+	 * @param key the cache key under which the CFG will be stored
+	 * @param cfg the EVMCFG instance to be cached
+	 */
+	public void addCFG(String key, EVMCFG cfg) {
+		synchronized (_cfgCache) {
+			_cfgCache.put(key, cfg);
+		}
+	}
+
+	/**
+	 * Checks whether a Control Flow Graph (CFG) exists in the cache for the
+	 * specified key. This method is thread-safe.
+	 *
+	 * @param key the cache key to check
+	 *
+	 * @return {@code true} if a CFG exists for the given key, {@code false}
+	 *             otherwise
+	 */
+	public boolean hasCFG(String key) {
+		synchronized (_cfgCache) {
+			return (_cfgCache.get(key) != null);
+		}
+	}
+
+	/**
+	 * Retrieves a Control Flow Graph (CFG) from the cache by its key. This
+	 * method is thread-safe.
+	 *
+	 * @param key the cache key identifying the CFG to retrieve
+	 *
+	 * @return the EVMCFG instance associated with the key, or {@code null} if
+	 *             no CFG exists for the given key
+	 */
+	public EVMCFG getCFG(String key) {
+		synchronized (_cfgCache) {
+			return (_cfgCache.get(key));
+		}
 	}
 }
