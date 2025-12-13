@@ -29,10 +29,10 @@ public class RelationalTaintElement implements BaseLattice<RelationalTaintElemen
 	/**
 	 * Creates a new tainted relational taint element with the specified program
 	 * points.
-	 * 
+	 *
 	 * @param programPoints the program points to associate with the tainted
 	 *                          element
-	 * 
+	 *
 	 * @return a new RelationalTaintElement with type TAINT containing all the
 	 *             provided program points
 	 */
@@ -44,7 +44,7 @@ public class RelationalTaintElement implements BaseLattice<RelationalTaintElemen
 
 	/**
 	 * Returns the number of program points associated with this taint element.
-	 * 
+	 *
 	 * @return the size of the program points set
 	 */
 	public int size() {
