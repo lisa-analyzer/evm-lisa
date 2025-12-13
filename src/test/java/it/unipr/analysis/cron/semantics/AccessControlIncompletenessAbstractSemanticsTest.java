@@ -80,4 +80,11 @@ public class AccessControlIncompletenessAbstractSemanticsTest extends EVMBytecod
 				"example03.sol", false);
 		perform(conf);
 	}
+
+	@Test
+	public void testAccessControlIncompletenessAbstractDomain04() throws AnalysisSetupException, IOException {
+		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example04",
+				"example04.sol", false);
+		perform(conf);
+	}
 }
