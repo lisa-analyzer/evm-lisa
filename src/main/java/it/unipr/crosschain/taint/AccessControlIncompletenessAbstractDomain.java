@@ -7,17 +7,17 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
 
-public class AccessControlIncompletenessAbstractDomain extends TaintAbstractDomain {
+public class AccessControlIncompletenessAbstractDomain extends RelationalTaintAbstractDomain {
 	private static final AccessControlIncompletenessAbstractDomain TOP = new AccessControlIncompletenessAbstractDomain(
-			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+			createFilledArray(RelationalTaintAbstractDomain.STACK_LIMIT, RelationalTaintElement.BOTTOM), RelationalTaintElement.CLEAN);
 	private static final AccessControlIncompletenessAbstractDomain BOTTOM = new AccessControlIncompletenessAbstractDomain(
-			null, TaintElement.BOTTOM);
+			null, RelationalTaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public AccessControlIncompletenessAbstractDomain() {
-		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+		this(createFilledArray(STACK_LIMIT, RelationalTaintElement.BOTTOM), RelationalTaintElement.CLEAN);
 	}
 
 	/**
@@ -27,7 +27,7 @@ public class AccessControlIncompletenessAbstractDomain extends TaintAbstractDoma
 	 * @param stack  the stack of values
 	 * @param memory the taint associated with linear memory
 	 */
-	protected AccessControlIncompletenessAbstractDomain(TaintElement[] stack, TaintElement memory) {
+	protected AccessControlIncompletenessAbstractDomain(RelationalTaintElement[] stack, RelationalTaintElement memory) {
 		super(stack, memory);
 	}
 
@@ -57,7 +57,7 @@ public class AccessControlIncompletenessAbstractDomain extends TaintAbstractDoma
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
+	public RelationalTaintAbstractDomain mk(RelationalTaintElement[] stack, RelationalTaintElement memory) {
 		return new AccessControlIncompletenessAbstractDomain(stack, memory);
 	}
 }

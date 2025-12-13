@@ -4,6 +4,8 @@ import it.unipr.analysis.contract.SmartContract;
 import it.unipr.analysis.taint.TaintAbstractDomain;
 import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
+import it.unipr.crosschain.taint.RelationalTaintAbstractDomain;
+import it.unipr.crosschain.taint.RelationalTaintElement;
 import it.unipr.utils.MyCache;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -28,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  * without passing through any guarded conditional jumps.
  */
 public class AccessControlIncompletenessChecker implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(AccessControlIncompletenessChecker.class);
 
@@ -63,17 +65,17 @@ public class AccessControlIncompletenessChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 
 		EVMCFG cfg = ((EVMCFG) graph);
 
 		for (Statement node : cfg.getNodes())
 			if (node instanceof Jumpi)
-				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+				for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
 						TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
 
-					AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+					AnalysisState<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
 							TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 					try {
@@ -82,12 +84,12 @@ public class AccessControlIncompletenessChecker implements
 						log.error("(AccessControlIncompletenessChecker): {}", e1.getMessage());
 					}
 
-					TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
+					RelationalTaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
 					if (taintedStack.isBottom() || taintedStack.isTop())
 						continue;
 
-					if (TaintElement.isAtLeastOneTainted(
+					if (RelationalTaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(1),
 							taintedStack.getElementAtPosition(2)))
 						taintedJumpi.add(node);
@@ -98,15 +100,15 @@ public class AccessControlIncompletenessChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		if (isSink(node)) {
 			EVMCFG cfg = ((EVMCFG) graph);
 
-			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
-				AnalysisState<SimpleAbstractState<MonolithicHeap, TaintAbstractDomain,
+				AnalysisState<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
 						TypeEnvironment<InferredTypes>>> analysisResult = null;
 
 				try {
@@ -116,7 +118,7 @@ public class AccessControlIncompletenessChecker implements
 				}
 
 				// Retrieve the symbolic stack from the analysis result
-				TaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
+				RelationalTaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
 
 				if (taintedStack.isBottom() || taintedStack.isTop())
 					// Nothing to do
@@ -127,9 +129,9 @@ public class AccessControlIncompletenessChecker implements
 				boolean isAtLeastOneTop = false;
 
 				for (int argIndex = 1; argIndex <= numArgs; argIndex++) {
-					isAtLeastOneTainted |= TaintElement.isAtLeastOneTainted(
+					isAtLeastOneTainted |= RelationalTaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(argIndex));
-					isAtLeastOneTop |= TaintElement.isAtLeastOneTop(
+					isAtLeastOneTop |= RelationalTaintElement.isAtLeastOneTop(
 							taintedStack.getElementAtPosition(argIndex));
 				}
 
@@ -172,7 +174,7 @@ public class AccessControlIncompletenessChecker implements
 	 * @param sink the sink statement that manipulates sensitive state
 	 */
 	private void checkForAccessControlIncompleteness(CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, TaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg,
+			SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg,
 			Statement sink, boolean isTop) {
 
 		Set<Statement> sources = cfg.getAllStatementsByClass(
