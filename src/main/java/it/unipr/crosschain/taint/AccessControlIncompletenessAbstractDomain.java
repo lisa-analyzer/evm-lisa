@@ -7,16 +7,16 @@ import java.util.Set;
 
 public class AccessControlIncompletenessAbstractDomain extends RelationalTaintAbstractDomain {
 	private static final AccessControlIncompletenessAbstractDomain TOP = new AccessControlIncompletenessAbstractDomain(
-			createFilledArray(RelationalTaintAbstractDomain.STACK_LIMIT, RelationalTaintElement.BOTTOM),
+			createFilledArray(RelationalTaintAbstractDomain.STACK_LIMIT, RelationalTaintElement.BOTTOM), 0, 0,
 			RelationalTaintElement.CLEAN);
 	private static final AccessControlIncompletenessAbstractDomain BOTTOM = new AccessControlIncompletenessAbstractDomain(
-			null, RelationalTaintElement.BOTTOM);
+			null, 0, 0, RelationalTaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public AccessControlIncompletenessAbstractDomain() {
-		this(createFilledArray(STACK_LIMIT, RelationalTaintElement.BOTTOM), RelationalTaintElement.CLEAN);
+		this(createFilledArray(STACK_LIMIT, RelationalTaintElement.BOTTOM), 0, 0, RelationalTaintElement.CLEAN);
 	}
 
 	/**
@@ -26,8 +26,9 @@ public class AccessControlIncompletenessAbstractDomain extends RelationalTaintAb
 	 * @param stack  the stack of values
 	 * @param memory the taint associated with linear memory
 	 */
-	protected AccessControlIncompletenessAbstractDomain(RelationalTaintElement[] stack, RelationalTaintElement memory) {
-		super(stack, memory);
+	protected AccessControlIncompletenessAbstractDomain(RelationalTaintElement[] stack, int head, int tail,
+			RelationalTaintElement memory) {
+		super(stack, head, tail, memory);
 	}
 
 	@Override
@@ -56,7 +57,8 @@ public class AccessControlIncompletenessAbstractDomain extends RelationalTaintAb
 	}
 
 	@Override
-	public RelationalTaintAbstractDomain mk(RelationalTaintElement[] stack, RelationalTaintElement memory) {
-		return new AccessControlIncompletenessAbstractDomain(stack, memory);
+	public RelationalTaintAbstractDomain mk(RelationalTaintElement[] stack, int head, int tail,
+			RelationalTaintElement memory) {
+		return new AccessControlIncompletenessAbstractDomain(stack, head, tail, memory);
 	}
 }

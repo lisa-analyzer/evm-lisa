@@ -75,10 +75,26 @@ public abstract class RelationalTaintAbstractDomain
 	 * @param memory the memory element
 	 */
 	protected RelationalTaintAbstractDomain(RelationalTaintElement[] stack, RelationalTaintElement memory) {
+		this(stack, 0, 0, memory);
+	}
+
+	/**
+	 * Builds a taint abstract stack starting from a given stack, a list of
+	 * elements that push taint, the head and the tail of the given stack.
+	 * Builds a taint abstract stack starting from a given stack and a memory
+	 * element.
+	 *
+	 * @param stack  the stack of values
+	 * @param memory the memory element
+	 * @param head   the head index of the circular stack
+	 * @param tail   the tail index of the circular stack
+	 */
+	protected RelationalTaintAbstractDomain(RelationalTaintElement[] stack, int head, int tail,
+			RelationalTaintElement memory) {
 		this.stack = stack;
 		this.memory = memory;
-		this.head = 0;
-		this.tail = 0;
+		this.head = head;
+		this.tail = tail;
 	}
 
 	@Override
@@ -185,7 +201,7 @@ public abstract class RelationalTaintAbstractDomain
 
 					Statement stmt = (Statement) pp;
 					if (this.isTainted(stmt))
-						return mk(resultStack.stack, RelationalTaintElement
+						return mk(resultStack.stack, resultStack.head, resultStack.tail, RelationalTaintElement
 								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 
 					return resultStack;
@@ -235,7 +251,7 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.stack,
+						return mk(resultStack.stack, resultStack.head, resultStack.tail,
 								RelationalTaintElement.newRelationalTaintedElement(value.getProgramPoints()));
 					else if (value.isClean())
 						return resultStack;
@@ -766,7 +782,7 @@ public abstract class RelationalTaintAbstractDomain
 		for (int i = 0; i < STACK_LIMIT; i++) {
 			result[i] = this.get(i).glb(other.get(i));
 		}
-		return mk(result, this.memory.glb(other.memory));
+		return mk(result, head, tail, this.memory.glb(other.memory));
 	}
 
 	/**
@@ -784,7 +800,7 @@ public abstract class RelationalTaintAbstractDomain
 		for (int i = 0; i < STACK_LIMIT; i++) {
 			result[i] = this.get(i).lub(other.get(i));
 		}
-		return mk(result, this.memory.lub(other.memory));
+		return mk(result, head, tail, this.memory.lub(other.memory));
 	}
 
 	/**
@@ -876,7 +892,7 @@ public abstract class RelationalTaintAbstractDomain
 	@Override
 	public RelationalTaintAbstractDomain clone() {
 		RelationalTaintElement[] newArray = stack.clone();
-		RelationalTaintAbstractDomain copy = mk(newArray, memory);
+		RelationalTaintAbstractDomain copy = mk(newArray, head, tail, memory);
 		copy.head = this.head;
 		copy.tail = this.tail;
 		return copy;
@@ -979,5 +995,6 @@ public abstract class RelationalTaintAbstractDomain
 	 *
 	 * @return a new concrete instance of {@link RelationalTaintAbstractDomain}
 	 */
-	public abstract RelationalTaintAbstractDomain mk(RelationalTaintElement[] stack, RelationalTaintElement memory);
+	public abstract RelationalTaintAbstractDomain mk(RelationalTaintElement[] stack, int head, int tail,
+			RelationalTaintElement memory);
 }
