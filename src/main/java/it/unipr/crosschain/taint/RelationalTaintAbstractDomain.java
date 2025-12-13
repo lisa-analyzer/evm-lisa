@@ -129,8 +129,10 @@ public abstract class RelationalTaintAbstractDomain
 				case "PushOperator":
 				case "Push0Operator": {
 					RelationalTaintAbstractDomain resultStack = clone();
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack.push(RelationalTaintElement.CLEAN);
 					return resultStack;
@@ -181,8 +183,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintAbstractDomain resultStack = clone();
 					resultStack.popX(3);
 
-					if (this.isTainted((Statement) pp))
-						return mk(resultStack.stack, RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						return mk(resultStack.stack, RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 
 					return resultStack;
 				}
@@ -192,19 +196,7 @@ public abstract class RelationalTaintAbstractDomain
 				case "BlockhashOperator":
 				case "NotOperator":
 				case "SloadOperator":
-				case "IszeroOperator": { // pop 1, push 1
-					if (hasBottomUntil(1))
-						return bottom();
-
-					RelationalTaintAbstractDomain resultStack = clone();
-					RelationalTaintElement opnd1 = resultStack.pop();
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
-					else
-						resultStack.push(RelationalTaintElement.semantics(opnd1));
-					return resultStack;
-				}
-
+				case "IszeroOperator":
 				case "CalldataloadOperator": { // pop 1, push 1
 					if (hasBottomUntil(1))
 						return bottom();
@@ -227,7 +219,7 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintAbstractDomain resultStack = clone();
 					resultStack.pop();
 					if (memory.isTaint())
-						resultStack.push(RelationalTaintElement.TAINT);
+						resultStack.push(RelationalTaintElement.newRelationalTaintedElement(memory.getProgramPoints()));
 					else if (memory.isClean())
 						resultStack.push(RelationalTaintElement.CLEAN);
 
@@ -243,7 +235,8 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.stack, RelationalTaintElement.TAINT);
+						return mk(resultStack.stack,
+								RelationalTaintElement.newRelationalTaintedElement(value.getProgramPoints()));
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -464,8 +457,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement offset = resultStack.pop();
 					RelationalTaintElement length = resultStack.pop();
 
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack.push(RelationalTaintElement.semantics(value, offset, length));
 					return resultStack;
@@ -479,8 +474,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement length = resultStack.pop();
 					RelationalTaintElement salt = resultStack.pop();
 
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack.push(RelationalTaintElement.semantics(value, offset, length, salt));
 					return resultStack;
@@ -498,8 +495,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement outOffset = resultStack.pop();
 					RelationalTaintElement outLength = resultStack.pop();
 
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack
 								.push(RelationalTaintElement.semantics(gas, to, value, inOffset, inLength, outOffset,
@@ -527,8 +526,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement outOffset = resultStack.pop();
 					RelationalTaintElement outLength = resultStack.pop();
 
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack.push(
 								RelationalTaintElement.semantics(gas, to, inOffset, inLength, outOffset, outLength));
@@ -567,8 +568,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintAbstractDomain resultStack = clone();
 					RelationalTaintElement address = resultStack.pop();
 
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack.push(RelationalTaintElement.semantics(address));
 					return resultStack;
@@ -595,8 +598,10 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintAbstractDomain resultStack = clone();
 					RelationalTaintElement address = resultStack.pop();
 
-					if (this.isTainted((Statement) pp))
-						resultStack.push(RelationalTaintElement.TAINT);
+					Statement stmt = (Statement) pp;
+					if (this.isTainted(stmt))
+						resultStack.push(RelationalTaintElement
+								.newRelationalTaintedElement(((ProgramCounterLocation) stmt.getLocation()).getPc()));
 					else
 						resultStack.push(RelationalTaintElement.semantics(address));
 					return resultStack;

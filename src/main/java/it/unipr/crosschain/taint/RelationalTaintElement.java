@@ -37,8 +37,22 @@ public class RelationalTaintElement implements BaseLattice<RelationalTaintElemen
 	 *             provided program points
 	 */
 	public static RelationalTaintElement newRelationalTaintedElement(Integer... programPoints) {
+		return newRelationalTaintedElement(Set.of(programPoints));
+	}
+
+	/**
+	 * Creates a new tainted relational taint element with the specified program
+	 * points.
+	 *
+	 * @param programPoints the program points to associate with the tainted
+	 *                          element
+	 *
+	 * @return a new RelationalTaintElement with type TAINT containing all the
+	 *             provided program points
+	 */
+	public static RelationalTaintElement newRelationalTaintedElement(Set<Integer> programPoints) {
 		RelationalTaintElement t = new RelationalTaintElement((byte) 2);
-		t.programPoints.addAll(List.of(programPoints));
+		t.programPoints.addAll(programPoints);
 		return t;
 	}
 
@@ -234,5 +248,9 @@ public class RelationalTaintElement implements BaseLattice<RelationalTaintElemen
 			return false;
 		RelationalTaintElement other = (RelationalTaintElement) obj;
 		return v == other.v && programPoints.equals(other.programPoints);
+	}
+
+	public Set<Integer> getProgramPoints() {
+		return programPoints;
 	}
 }
