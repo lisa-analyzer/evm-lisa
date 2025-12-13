@@ -250,11 +250,11 @@ public abstract class RelationalTaintAbstractDomain
 					RelationalTaintElement offset = resultStack.pop();
 					RelationalTaintElement value = resultStack.pop();
 
-					if (value.isTaint())
-						return mk(resultStack.stack, resultStack.head, resultStack.tail,
-								RelationalTaintElement.newRelationalTaintedElement(value.getProgramPoints()));
-					else if (value.isClean())
+					if (offset.isClean() && value.isClean())
 						return resultStack;
+
+					return mk(resultStack.stack, resultStack.head, resultStack.tail,
+							RelationalTaintElement.semantics(offset, value, memory));
 				}
 				case "McopyOperator": { // pops 3
 					if (hasBottomUntil(3))
@@ -729,7 +729,7 @@ public abstract class RelationalTaintAbstractDomain
 		else if (isTop())
 			return Lattice.topRepresentation();
 
-		return new StringRepresentation(this.toString());
+		return new StringRepresentation(toString());
 	}
 
 	@Override
@@ -738,7 +738,8 @@ public abstract class RelationalTaintAbstractDomain
 			return Lattice.BOTTOM_STRING;
 		if (isTop())
 			return Lattice.TOP_STRING;
-		StringBuilder sb = new StringBuilder("[");
+
+		StringBuilder sb = new StringBuilder("stack: [");
 		for (int i = 0; i < STACK_LIMIT; i++) {
 			int pos = (head + i) % STACK_LIMIT;
 			sb.append(stack[pos]);
@@ -746,6 +747,7 @@ public abstract class RelationalTaintAbstractDomain
 				sb.append(", ");
 		}
 		sb.append("]");
+		sb.append(", memory: ").append(memory).append(" }");
 		return sb.toString();
 	}
 
