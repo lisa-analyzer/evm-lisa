@@ -12,9 +12,8 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
-
 import java.io.IOException;
+import org.junit.Test;
 
 /**
  * JUnit tests for the various control flow structures of the EVM bytecode, such
@@ -63,19 +62,22 @@ public class AccessControlIncompletenessAbstractSemanticsTest extends EVMBytecod
 
 	@Test
 	public void testAccessControlIncompletenessAbstractDomain01() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example01", "example01.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example01",
+				"example01.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testAccessControlIncompletenessAbstractDomain02() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example02", "example02.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example02",
+				"example02.sol", false);
 		perform(conf);
 	}
 
 	@Test
 	public void testAccessControlIncompletenessAbstractDomain03() throws AnalysisSetupException, IOException {
-		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example03", "example03.sol", false);
+		CronConfiguration conf = createConfiguration("taint/testAccessControlIncompletenessAbstractDomain", "example03",
+				"example03.sol", false);
 		perform(conf);
 	}
 }

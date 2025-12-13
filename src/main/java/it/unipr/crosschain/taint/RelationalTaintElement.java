@@ -5,7 +5,6 @@ import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-
 import java.util.*;
 
 public class RelationalTaintElement implements BaseLattice<RelationalTaintElement> {
@@ -27,20 +26,27 @@ public class RelationalTaintElement implements BaseLattice<RelationalTaintElemen
 			this.programPoints.add(programPoint);
 	}
 
-	private void addProgramPoint(int programPoint) {
-		programPoints.add(programPoint);
-	}
-
-	public Set<Integer> getProgramPoints() {
-		return programPoints;
-	}
-
+	/**
+	 * Creates a new tainted relational taint element with the specified program
+	 * points.
+	 * 
+	 * @param programPoints the program points to associate with the tainted
+	 *                          element
+	 * 
+	 * @return a new RelationalTaintElement with type TAINT containing all the
+	 *             provided program points
+	 */
 	public static RelationalTaintElement newRelationalTaintedElement(Integer... programPoints) {
 		RelationalTaintElement t = new RelationalTaintElement((byte) 2);
 		t.programPoints.addAll(List.of(programPoints));
 		return t;
 	}
 
+	/**
+	 * Returns the number of program points associated with this taint element.
+	 * 
+	 * @return the size of the program points set
+	 */
 	public int size() {
 		return programPoints.size();
 	}
@@ -166,10 +172,11 @@ public class RelationalTaintElement implements BaseLattice<RelationalTaintElemen
 	}
 
 	/**
-	 * Checks if any of the provided {@link RelationalTaintElement} objects is tainted or
-	 * has the top value.
+	 * Checks if any of the provided {@link RelationalTaintElement} objects is
+	 * tainted or has the top value.
 	 *
-	 * @param elements the array of {@link RelationalTaintElement} objects to check
+	 * @param elements the array of {@link RelationalTaintElement} objects to
+	 *                     check
 	 *
 	 * @return {@code true} if at least one of the elements is tainted or has
 	 *             the top value, {@code false} otherwise

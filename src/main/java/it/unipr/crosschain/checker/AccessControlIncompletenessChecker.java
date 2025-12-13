@@ -1,8 +1,6 @@
 package it.unipr.crosschain.checker;
 
 import it.unipr.analysis.contract.SmartContract;
-import it.unipr.analysis.taint.TaintAbstractDomain;
-import it.unipr.analysis.taint.TaintElement;
 import it.unipr.cfg.*;
 import it.unipr.crosschain.taint.RelationalTaintAbstractDomain;
 import it.unipr.crosschain.taint.RelationalTaintElement;
@@ -30,7 +28,8 @@ import org.apache.logging.log4j.Logger;
  * without passing through any guarded conditional jumps.
  */
 public class AccessControlIncompletenessChecker implements
-		SemanticCheck<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<
+				SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> {
 
 	private static final Logger log = LogManager.getLogger(AccessControlIncompletenessChecker.class);
 
@@ -65,7 +64,8 @@ public class AccessControlIncompletenessChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
+							TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 
 		EVMCFG cfg = ((EVMCFG) graph);
@@ -100,7 +100,8 @@ public class AccessControlIncompletenessChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
+							TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		if (isSink(node)) {
@@ -174,7 +175,8 @@ public class AccessControlIncompletenessChecker implements
 	 * @param sink the sink statement that manipulates sensitive state
 	 */
 	private void checkForAccessControlIncompleteness(CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool, EVMCFG cfg,
+			SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg,
 			Statement sink, boolean isTop) {
 
 		Set<Statement> sources = cfg.getAllStatementsByClass(
