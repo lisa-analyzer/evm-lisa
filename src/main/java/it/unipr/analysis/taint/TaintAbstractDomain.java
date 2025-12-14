@@ -74,18 +74,30 @@ public abstract class TaintAbstractDomain
 	private final TaintElement memory;
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack and a list of
-	 * elements that push taint. Builds a taint abstract stack starting from a
-	 * given stack and a memory element.
+	 * Builds a taint abstract stack starting from a given stack and a taint
+	 * memory. Builds a taint abstract stack starting from a given stack and a
+	 * memory element.
 	 *
 	 * @param stack  the stack of values
 	 * @param memory the memory element
 	 */
 	protected TaintAbstractDomain(TaintElement[] stack, TaintElement memory) {
+		this(stack, 0, 0, memory);
+	}
+
+	/**
+	 * Builds a taint abstract stack starting from a given stack, its head
+	 * index, its tail index and a taint memory. Builds a taint abstract stack
+	 * starting from a given stack and a memory element.
+	 *
+	 * @param stack  the stack of values
+	 * @param memory the memory element
+	 */
+	protected TaintAbstractDomain(TaintElement[] stack, int head, int tail, TaintElement memory) {
 		this.stack = stack;
 		this.memory = memory;
-		this.head = 0;
-		this.tail = 0;
+		this.head = head;
+		this.tail = tail;
 	}
 
 	@Override
@@ -187,7 +199,7 @@ public abstract class TaintAbstractDomain
 					resultStack.popX(3);
 
 					if (this.isTainted((Statement) pp))
-						return mk(resultStack.stack, TaintElement.TAINT);
+						return mk(resultStack.stack, resultStack.head, resultStack.tail, TaintElement.TAINT);
 
 					return resultStack;
 				}
@@ -233,7 +245,7 @@ public abstract class TaintAbstractDomain
 					TaintElement value = resultStack.pop();
 
 					if (value.isTaint())
-						return mk(resultStack.stack, TaintElement.TAINT);
+						return mk(resultStack.stack, resultStack.head, resultStack.tail, TaintElement.TAINT);
 					else if (value.isClean())
 						return resultStack;
 				}
@@ -749,7 +761,7 @@ public abstract class TaintAbstractDomain
 		for (int i = 0; i < STACK_LIMIT; i++) {
 			result[i] = this.get(i).glb(other.get(i));
 		}
-		return mk(result, this.memory.glb(other.memory));
+		return mk(result, this.head, this.tail, this.memory.glb(other.memory));
 	}
 
 	/**
@@ -767,7 +779,7 @@ public abstract class TaintAbstractDomain
 		for (int i = 0; i < STACK_LIMIT; i++) {
 			result[i] = this.get(i).lub(other.get(i));
 		}
-		return mk(result, this.memory.lub(other.memory));
+		return mk(result, this.head, this.tail, this.memory.lub(other.memory));
 	}
 
 	/**
@@ -859,7 +871,7 @@ public abstract class TaintAbstractDomain
 	@Override
 	public TaintAbstractDomain clone() {
 		TaintElement[] newArray = stack.clone();
-		TaintAbstractDomain copy = mk(newArray, memory);
+		TaintAbstractDomain copy = mk(newArray, head, tail, memory);
 		copy.head = this.head;
 		copy.tail = this.tail;
 		return copy;
@@ -955,12 +967,14 @@ public abstract class TaintAbstractDomain
 
 	/**
 	 * Utility for creating a concrete instance of {@link TaintAbstractDomain}
-	 * given the stack and the memory.
+	 * given the stack, its head index, its tail index and the memory.
 	 *
 	 * @param stack  the stack
+	 * @param head   the head index
+	 * @param tail   the tail index
 	 * @param memory the memory
 	 *
 	 * @return a new concrete instance of {@link TaintAbstractDomain}
 	 */
-	public abstract TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory);
+	public abstract TaintAbstractDomain mk(TaintElement[] stack, int head, int tail, TaintElement memory);
 }

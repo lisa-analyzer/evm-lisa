@@ -8,24 +8,29 @@ import java.util.Set;
 public class TxOriginAbstractDomain extends TaintAbstractDomain {
 
 	private static final TxOriginAbstractDomain TOP = new TxOriginAbstractDomain(
-			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, TaintElement.BOTTOM);
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), 0, 0, TaintElement.CLEAN);
+	private static final TxOriginAbstractDomain BOTTOM = new TxOriginAbstractDomain(null, 0, 0, TaintElement.BOTTOM);
 
 	/**
-	 * Builds an initial symbolic stack.
+	 * Constructs a new {@code TxOriginAbstractDomain} with an empty (BOTTOM)
+	 * stack, zero head/tail, and CLEAN memory state.
 	 */
 	public TxOriginAbstractDomain() {
-		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), 0, 0, TaintElement.CLEAN);
 	}
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack and a list of
-	 * elements that push taint.
+	 * Constructs a new {@code TxOriginAbstractDomain} with the given stack
+	 * state, stack pointers, and memory state.
 	 *
-	 * @param stack the stack of values
+	 * @param stack  the stack array containing taint information for each
+	 *                   element
+	 * @param head   the current head pointer of the stack
+	 * @param tail   the current tail pointer of the stack
+	 * @param memory the taint state of the memory
 	 */
-	protected TxOriginAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		super(stack, memory);
+	protected TxOriginAbstractDomain(TaintElement[] stack, int head, int tail, TaintElement memory) {
+		super(stack, head, tail, memory);
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class TxOriginAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return new TxOriginAbstractDomain(stack, memory);
+	public TaintAbstractDomain mk(TaintElement[] stack, int head, int tail, TaintElement memory) {
+		return new TxOriginAbstractDomain(stack, head, tail, memory);
 	}
 }

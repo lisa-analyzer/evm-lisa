@@ -6,26 +6,32 @@ import it.unive.lisa.symbolic.value.Operator;
 import java.util.Set;
 
 public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
+
 	private static final RandomnessDependencyAbstractDomain TOP = new RandomnessDependencyAbstractDomain(
-			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
-	private static final RandomnessDependencyAbstractDomain BOTTOM = new RandomnessDependencyAbstractDomain(null,
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), 0, 0, TaintElement.CLEAN);
+	private static final RandomnessDependencyAbstractDomain BOTTOM = new RandomnessDependencyAbstractDomain(null, 0, 0,
 			TaintElement.BOTTOM);
 
 	/**
-	 * Builds an initial symbolic stack.
+	 * Constructs a new {@code RandomnessDependencyAbstractDomain} with an empty
+	 * (BOTTOM) stack, zero head/tail, and CLEAN memory state.
 	 */
 	public RandomnessDependencyAbstractDomain() {
-		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), 0, 0, TaintElement.CLEAN);
 	}
 
 	/**
-	 * Builds a taint abstract stack starting from a given stack and a list of
-	 * elements that push taint.
+	 * Constructs a new {@code RandomnessDependencyAbstractDomain} with the
+	 * given stack state, stack pointers, and memory state.
 	 *
-	 * @param stack the stack of values
+	 * @param stack  the stack array containing taint information for each
+	 *                   element
+	 * @param head   the current head pointer of the stack
+	 * @param tail   the current tail pointer of the stack
+	 * @param memory the taint state of the memory
 	 */
-	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		super(stack, memory);
+	protected RandomnessDependencyAbstractDomain(TaintElement[] stack, int head, int tail, TaintElement memory) {
+		super(stack, head, tail, memory);
 	}
 
 	@Override
@@ -52,8 +58,7 @@ public class RandomnessDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return new RandomnessDependencyAbstractDomain(stack, memory);
+	public TaintAbstractDomain mk(TaintElement[] stack, int head, int tail, TaintElement memory) {
+		return new RandomnessDependencyAbstractDomain(stack, head, tail, memory);
 	}
-
 }
