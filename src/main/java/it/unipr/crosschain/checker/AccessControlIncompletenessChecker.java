@@ -16,7 +16,9 @@ import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +36,7 @@ public class AccessControlIncompletenessChecker implements
 	private static final Logger log = LogManager.getLogger(AccessControlIncompletenessChecker.class);
 
 	private Set<Statement> taintedJumpi = new HashSet<>();
+	private Map<Statement, Set<Integer>> jumpiProgramPoints = new HashMap<>();
 	private SmartContract contract;
 
 	/**
@@ -82,6 +85,7 @@ public class AccessControlIncompletenessChecker implements
 						analysisResult = result.getAnalysisStateBefore(node);
 					} catch (SemanticException e1) {
 						log.error("(AccessControlIncompletenessChecker): {}", e1.getMessage());
+						continue;
 					}
 
 					RelationalTaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
@@ -89,10 +93,27 @@ public class AccessControlIncompletenessChecker implements
 					if (taintedStack.isBottom() || taintedStack.isTop())
 						continue;
 
-					if (RelationalTaintElement.isAtLeastOneTainted(
-							taintedStack.getElementAtPosition(1),
-							taintedStack.getElementAtPosition(2)))
+					RelationalTaintElement elem1 = taintedStack.getElementAtPosition(1);
+					RelationalTaintElement elem2 = taintedStack.getElementAtPosition(2);
+
+					if (RelationalTaintElement.isAtLeastOneTainted(elem1, elem2)) {
 						taintedJumpi.add(node);
+						// Track program points sanitized by this specific Jumpi
+						Set<Integer> jumpiPps = new HashSet<>();
+						if (elem1.isTaint()) {
+							log.debug("[SANITIZER] Tainted Jumpi at pc {} - elem1 sanitizes program points: {}",
+									((ProgramCounterLocation) node.getLocation()).getPc(),
+									elem1.getProgramPoints());
+							jumpiPps.addAll(elem1.getProgramPoints());
+						}
+						if (elem2.isTaint()) {
+							log.debug("[SANITIZER] Tainted Jumpi at pc {} - elem2 sanitizes program points: {}",
+									((ProgramCounterLocation) node.getLocation()).getPc(),
+									elem2.getProgramPoints());
+							jumpiPps.addAll(elem2.getProgramPoints());
+						}
+						jumpiProgramPoints.put(node, jumpiPps);
+					}
 				}
 		return true;
 	}
@@ -127,19 +148,14 @@ public class AccessControlIncompletenessChecker implements
 
 				int numArgs = getNumberOfArgs(node);
 				boolean isAtLeastOneTainted = false;
-				boolean isAtLeastOneTop = false;
 
 				for (int argIndex = 1; argIndex <= numArgs; argIndex++) {
 					isAtLeastOneTainted |= RelationalTaintElement.isAtLeastOneTainted(
 							taintedStack.getElementAtPosition(argIndex));
-					isAtLeastOneTop |= RelationalTaintElement.isAtLeastOneTop(
-							taintedStack.getElementAtPosition(argIndex));
 				}
 
 				if (isAtLeastOneTainted)
-					checkForAccessControlIncompleteness(tool, cfg, node, false);
-				else if (isAtLeastOneTop)
-					checkForAccessControlIncompleteness(tool, cfg, node, true);
+					checkForAccessControlIncompleteness(tool, cfg, node);
 			}
 		}
 		return true;
@@ -177,7 +193,7 @@ public class AccessControlIncompletenessChecker implements
 	private void checkForAccessControlIncompleteness(CheckToolWithAnalysisResults<
 			SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
 			EVMCFG cfg,
-			Statement sink, boolean isTop) {
+			Statement sink) {
 
 		Set<Statement> sources = cfg.getAllStatementsByClass(
 				Calldataload.class,
@@ -188,52 +204,72 @@ public class AccessControlIncompletenessChecker implements
 				Calldatasize.class);
 
 		for (Statement source : sources) {
-			if (cfg.reachableFromWithoutStatements(source, sink, taintedJumpi)) {
-				String functionSignatureByStatement = contract.getFunctionSignatureByStatement(source);
+			// Check if source can reach sink
+			if (cfg.reachableFromWithoutStatements(source, sink, new HashSet<>())) {
+				int sourcePC = ((ProgramCounterLocation) source.getLocation()).getPc();
 
-				// It means that this vulnerability is inside a private function
-				if (functionSignatureByStatement.equals("no-function-found"))
-					continue;
+				// Get all tainted jumpi on the path from source to sink
+				Set<Statement> jumpiBetweenSourceAndSink = cfg.getStatementsInAPathWithTypes(source, sink, Jumpi.class);
 
-				if (isTop) {
-//					log.warn(
-//							"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-//							((ProgramCounterLocation) sink.getLocation()).getPc(),
-//							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
-//							((ProgramCounterLocation) source.getLocation()).getPc(),
-//							((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
+				// Check if at least one jumpi sanitizes this source's program
+				// point
+				boolean isSanitized = false;
+				for (Statement jumpi : jumpiBetweenSourceAndSink) {
+					Set<Integer> sanitizedPps = jumpiProgramPoints.get(jumpi);
+					if (sanitizedPps == null)
+						continue;
+					if (sanitizedPps.contains(sourcePC)) {
+						isSanitized = true;
+						break;
+					}
+				}
 
-					String warn = "[POSSIBLE] Access Control Incompleteness vulnerability at "
-							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
-					tool.warn(warn);
-					MyCache.getInstance().addPossibleAccessControlIncompletenessWarning(cfg.hashCode(), warn);
-
-//					warn = "[POSSIBLE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
-//							+ functionSignatureByStatement
-//							+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
-//							+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
-//					MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
-				} else {
-					log.warn(
-							"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-							((ProgramCounterLocation) sink.getLocation()).getPc(),
-							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
-							((ProgramCounterLocation) source.getLocation()).getPc(),
-							((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
-
-					String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
-							+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
-					tool.warn(warn);
-					MyCache.getInstance().addAccessControlIncompletenessWarning(cfg.hashCode(), warn);
-
-					warn = "[DEFINITE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
-							+ functionSignatureByStatement
-							+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
-							+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
-					MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+				// If not sanitized by any jumpi on the path, it's a
+				// vulnerability
+				if (!isSanitized) {
+					reportVulnerability(tool, cfg, source, sink);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Reports a vulnerability found by the checker.
+	 *
+	 * @param tool   the analysis tool to report warnings on
+	 * @param cfg    the CFG under inspection
+	 * @param source the untrusted source statement
+	 * @param sink   the sensitive sink statement
+	 */
+	private void reportVulnerability(CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain, TypeEnvironment<InferredTypes>>> tool,
+			EVMCFG cfg,
+			Statement source,
+			Statement sink) {
+		String functionSignatureByStatement = contract.getFunctionSignatureByStatement(source);
+
+		// It means that this vulnerability is inside a private function
+		if (functionSignatureByStatement.equals("no-function-found"))
+			return;
+
+		log.warn(
+				"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+				((ProgramCounterLocation) sink.getLocation()).getPc(),
+				((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
+				((ProgramCounterLocation) source.getLocation()).getPc(),
+				((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
+
+		String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
+				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
+		tool.warn(warn);
+		MyCache.getInstance().addAccessControlIncompletenessWarning(cfg.hashCode(), warn);
+
+		warn = "[DEFINITE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
+				+ functionSignatureByStatement
+				+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
+				+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
+		MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+
 	}
 
 }
