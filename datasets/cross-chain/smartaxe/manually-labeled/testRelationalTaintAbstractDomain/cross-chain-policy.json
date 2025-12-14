@@ -1,0 +1,114 @@
+{
+  "policy": [
+    {
+      "sourceFunction": {
+        "name": "lock",
+        "events": [
+          "PolyWrapperLock"
+        ]
+      },
+      "destinationFunction": {
+        "name": "lock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "onERC721Received",
+        "events": [
+          "LockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unlock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unlock",
+        "events": [
+          "UnlockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unlock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "initGenesisBlock",
+        "events": [
+          "InitGenesisBlockEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "initGenesisBlock"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "changeBookKeeper",
+        "events": [
+          "ChangeBookKeeperEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "changeBookKeeper"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "crossChain",
+        "events": [
+          "CrossChainEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "crossChain"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "verifyHeaderAndExecuteTx",
+        "events": [
+          "VerifyHeaderAndExecuteTxEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "verifyHeaderAndExecuteTx"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "pause",
+        "events": [
+          "Paused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "pause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "unpause",
+        "events": [
+          "Unpaused"
+        ]
+      },
+      "destinationFunction": {
+        "name": "unpause"
+      }
+    },
+    {
+      "sourceFunction": {
+        "name": "_executeCrossChainTx",
+        "events": [
+          "VerifyHeaderAndExecuteTxEvent"
+        ]
+      },
+      "destinationFunction": {
+        "name": "verifyHeaderAndExecuteTx"
+      }
+    }
+  ]
+}
