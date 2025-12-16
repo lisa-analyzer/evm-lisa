@@ -347,6 +347,73 @@ public class EVMCFG extends CFG {
 		return result;
 	}
 
+	/**
+	 * Checks if the target statement is reachable from the start statement
+	 * within a specified depth limit using breadth-first search (BFS). This
+	 * method limits the traversal to a maximum number of statements to avoid
+	 * exploring distant paths. Caches results to avoid redundant computations.
+	 *
+	 * @param start    The starting statement.
+	 * @param target   The target statement.
+	 * @param maxDepth The maximum number of statements to traverse. If the
+	 *                     target is reached within this depth, returns true.
+	 *
+	 * @return True if the target is reachable from the start within maxDepth
+	 *             statements, false otherwise.
+	 */
+	public boolean reachableFromWithDepthLimit(Statement start, Statement target, int maxDepth) {
+		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "depth" + maxDepth;
+
+		if (MyCache.getInstance().existsInReachableFrom(key))
+			return MyCache.getInstance().isReachableFrom(key);
+
+		boolean result = bfsWithDepthLimit(start, target, maxDepth);
+		MyCache.getInstance().addReachableFrom(key, result);
+		return result;
+	}
+
+	/**
+	 * Performs a breadth-first search (BFS) to determine if the target
+	 * statement is reachable from the start statement within a specified depth
+	 * limit.
+	 *
+	 * @param start    The starting statement.
+	 * @param target   The target statement.
+	 * @param maxDepth The maximum depth (number of statements) to traverse.
+	 *
+	 * @return True if the target is reachable within maxDepth statements, false
+	 *             otherwise.
+	 */
+	private boolean bfsWithDepthLimit(Statement start, Statement target, int maxDepth) {
+		Queue<Statement> queue = new LinkedList<>();
+		Set<Statement> visited = new HashSet<>();
+		Map<Statement, Integer> depth = new HashMap<>();
+
+		queue.offer(start);
+		visited.add(start);
+		depth.put(start, 0);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+			int currentDepth = depth.get(current);
+
+			if (current.equals(target))
+				return true;
+
+			if (currentDepth < maxDepth) {
+				for (Edge edge : list.getOutgoingEdges(current)) {
+					Statement next = edge.getDestination();
+					if (visited.add(next)) {
+						depth.put(next, currentDepth + 1);
+						queue.offer(next);
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public boolean reachableFromReverse(Statement start, Statement target) {
 		String key = this.hashCode() + "" + start.hashCode() + "" + target.hashCode() + "reverse";
 
@@ -508,14 +575,36 @@ public class EVMCFG extends CFG {
 	}
 
 	/**
-	 * Finds the furthest reachable SSTORE statements from a given start
-	 * statement using BFS.
+	 * Finds the furthest reachable statements of specified types from a given
+	 * start statement using BFS. This is a convenience overload that accepts a
+	 * varargs list of statement classes and delegates to
+	 * {@link #getFurthestStatementsOfType(Statement, Set)} to process multiple
+	 * types.
 	 *
-	 * @param start The starting statement.
+	 * @param start          The starting statement.
+	 * @param statementTypes The types of statements to search for.
 	 *
-	 * @return A set of the furthest reachable SSTORE statements.
+	 * @return A set of the furthest reachable statements of the specified
+	 *             types.
 	 */
-	public Set<Statement> getFurthestSstores(Statement start) {
+	public final Set<Statement> getFurthestStatementsOfType(Statement start,
+			Class<? extends Statement>... statementTypes) {
+		if (statementTypes == null || statementTypes.length == 0)
+			return Collections.emptySet();
+		return getFurthestStatementsOfType(start, new LinkedHashSet<>(Arrays.asList(statementTypes)));
+	}
+
+	/**
+	 * Finds the furthest reachable statements of specified types from a given
+	 * start statement using BFS.
+	 *
+	 * @param start          The starting statement.
+	 * @param statementTypes The set of statement types to search for.
+	 *
+	 * @return A set of the furthest reachable statements of the specified
+	 *             types.
+	 */
+	public Set<Statement> getFurthestStatementsOfType(Statement start, Set<Class<? extends Statement>> statementTypes) {
 		Deque<Statement> queue = new ArrayDeque<>();
 		Set<Statement> visited = new HashSet<>();
 		Set<Statement> last = new HashSet<>();
@@ -525,8 +614,11 @@ public class EVMCFG extends CFG {
 
 		while (!queue.isEmpty()) {
 			Statement current = queue.poll();
-			if (current instanceof Sstore) {
-				last.add(current);
+			for (Class<? extends Statement> type : statementTypes) {
+				if (type.isInstance(current)) {
+					last.add(current);
+					break;
+				}
 			}
 
 			for (Edge edge : list.getOutgoingEdges(current)) {
@@ -537,6 +629,112 @@ public class EVMCFG extends CFG {
 			}
 		}
 		return last;
+	}
+
+	/**
+	 * Finds the furthest reachable statements of a specified type from a given
+	 * start statement using BFS.
+	 *
+	 * @param start         The starting statement.
+	 * @param statementType The type of statement to search for.
+	 *
+	 * @return A set of the furthest reachable statements of the specified type.
+	 */
+	public Set<Statement> getFurthestStatementsOfType(Statement start, Class<? extends Statement> statementType) {
+		return getFurthestStatementsOfType(start, Set.of(statementType));
+	}
+
+	/**
+	 * Finds the furthest reachable SSTORE statements from a given start
+	 * statement using BFS.
+	 *
+	 * @param start The starting statement.
+	 *
+	 * @return A set of the furthest reachable SSTORE statements.
+	 */
+	public Set<Statement> getFurthestSstores(Statement start) {
+		return getFurthestStatementsOfType(start, Sstore.class);
+	}
+
+	/**
+	 * Finds the closest reachable statement of specified types from a given
+	 * start statement using BFS. This is a convenience overload that accepts a
+	 * varargs list of statement classes and delegates to
+	 * {@link #getClosestStatementOfType(Statement, Set)} to process multiple
+	 * types.
+	 *
+	 * @param start          The starting statement.
+	 * @param statementTypes The types of statements to search for.
+	 *
+	 * @return The closest reachable statement of one of the specified types, or
+	 *             null if none are found.
+	 */
+	@SafeVarargs
+	public final Statement getClosestStatementOfType(Statement start, Class<? extends Statement>... statementTypes) {
+		if (statementTypes == null || statementTypes.length == 0)
+			return null;
+		return getClosestStatementOfType(start, new LinkedHashSet<>(Arrays.asList(statementTypes)));
+	}
+
+	/**
+	 * Finds the closest reachable statement of specified types from a given
+	 * start statement using BFS.
+	 *
+	 * @param start          The starting statement.
+	 * @param statementTypes The set of statement types to search for.
+	 *
+	 * @return The closest reachable statement of one of the specified types, or
+	 *             null if none are found.
+	 */
+	public Statement getClosestStatementOfType(Statement start, Set<Class<? extends Statement>> statementTypes) {
+		Deque<Statement> queue = new ArrayDeque<>();
+		Set<Statement> visited = new HashSet<>();
+
+		queue.add(start);
+		visited.add(start);
+
+		while (!queue.isEmpty()) {
+			Statement current = queue.poll();
+			for (Class<? extends Statement> type : statementTypes) {
+				if (type.isInstance(current)) {
+					return current;
+				}
+			}
+
+			for (Edge edge : list.getOutgoingEdges(current)) {
+				Statement next = edge.getDestination();
+				if (visited.add(next)) {
+					queue.add(next);
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Finds the closest reachable statement of a specified type from a given
+	 * start statement using BFS.
+	 *
+	 * @param start         The starting statement.
+	 * @param statementType The type of statement to search for.
+	 *
+	 * @return The closest reachable statement of the specified type, or null if
+	 *             none is found.
+	 */
+	public Statement getClosestStatementOfType(Statement start, Class<? extends Statement> statementType) {
+		return getClosestStatementOfType(start, Set.of(statementType));
+	}
+
+	/**
+	 * Finds the closest reachable SSTORE statement from a given start statement
+	 * using BFS.
+	 *
+	 * @param start The starting statement.
+	 *
+	 * @return The closest reachable SSTORE statement, or null if none is found.
+	 */
+	public Statement getClosestSstore(Statement start) {
+		return getClosestStatementOfType(start, Sstore.class);
 	}
 
 	/**
