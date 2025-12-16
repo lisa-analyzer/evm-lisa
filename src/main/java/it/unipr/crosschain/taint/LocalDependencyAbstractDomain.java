@@ -11,15 +11,21 @@ import java.util.Set;
 public class LocalDependencyAbstractDomain extends TaintAbstractDomain {
 
 	private static final LocalDependencyAbstractDomain TOP = new LocalDependencyAbstractDomain(
-			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+			createFilledArray(TaintAbstractDomain.STACK_LIMIT, TaintElement.BOTTOM),
+			0,
+			0,
+			TaintElement.CLEAN);
 	private static final LocalDependencyAbstractDomain BOTTOM = new LocalDependencyAbstractDomain(
-			null, TaintElement.BOTTOM);
+			null,
+			0,
+			0,
+			TaintElement.BOTTOM);
 
 	/**
 	 * Builds an initial symbolic stack.
 	 */
 	public LocalDependencyAbstractDomain() {
-		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), TaintElement.CLEAN);
+		this(createFilledArray(STACK_LIMIT, TaintElement.BOTTOM), 0, 0, TaintElement.CLEAN);
 	}
 
 	/**
@@ -27,8 +33,8 @@ public class LocalDependencyAbstractDomain extends TaintAbstractDomain {
 	 *
 	 * @param stack the stack of values
 	 */
-	protected LocalDependencyAbstractDomain(TaintElement[] stack, TaintElement memory) {
-		super(stack, memory);
+	protected LocalDependencyAbstractDomain(TaintElement[] stack, int head, int tail, TaintElement memory) {
+		super(stack, head, tail, memory);
 	}
 
 	@Override
@@ -49,8 +55,8 @@ public class LocalDependencyAbstractDomain extends TaintAbstractDomain {
 	}
 
 	@Override
-	public TaintAbstractDomain mk(TaintElement[] stack, TaintElement memory) {
-		return new LocalDependencyAbstractDomain(stack, memory);
+	public TaintAbstractDomain mk(TaintElement[] stack, int head, int tail, TaintElement memory) {
+		return new LocalDependencyAbstractDomain(stack, head, tail, memory);
 	}
 
 	@Override
