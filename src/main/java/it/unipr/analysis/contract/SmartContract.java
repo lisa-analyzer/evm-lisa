@@ -5,6 +5,8 @@ import it.unipr.analysis.EVMAbstractState;
 import it.unipr.cfg.EVMCFG;
 import it.unipr.cfg.push.Push;
 import it.unipr.crosschain.events.EventExitpointComputer;
+import it.unipr.crosschain.functions.ProtectedFunctionFinder;
+import it.unipr.crosschain.functions.ProtectedFunctionFinderAbstractDomain;
 import it.unipr.frontend.EVMFrontend;
 import it.unipr.frontend.EVMLiSAFeatures;
 import it.unipr.frontend.EVMLiSATypeSystem;
@@ -724,6 +726,32 @@ public class SmartContract {
 	}
 
 	/**
+	 * Identifies and marks protected functions (i.e., functions that have a
+	 * "onlyOwner" modifier) in the contract using semantic analysis. This
+	 * method performs a LiSA-based analysis to detect functions that have
+	 * protection mechanisms (e.g., access controls). Each detected protected
+	 * function is marked in its corresponding signature object.
+	 */
+	public void findProtectedFunctions() {
+		if (_functionsSignature == null) {
+			log.warn("Unable to find protected functions (_functionsSignature is null)");
+			return;
+		}
+
+		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+		program.addCodeMember(_cfg);
+		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
+		LiSA lisa = new LiSA(conf);
+
+		ProtectedFunctionFinder checker = new ProtectedFunctionFinder(this);
+		conf.semanticChecks.add(checker);
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new ProtectedFunctionFinderAbstractDomain(),
+				new TypeEnvironment<>(new InferredTypes()));
+		lisa.run(program);
+	}
+
+	/**
 	 * Generates a DOT graph visualization of the CFG with basic blocks. Saves
 	 * the graph to a file in the contract's working directory.
 	 */
@@ -792,6 +820,13 @@ public class SmartContract {
 		if (getFunctionSignatureFromEntryPoint(ep) != null)
 			return getFunctionSignatureFromEntryPoint(ep);
 		return "";
+	}
+
+	public Signature getFunctionSignatureByString(String name) {
+		for (Signature signature : _functionsSignature)
+			if (signature.getFullSignature().equals(name))
+				return signature;
+		return null;
 	}
 
 	/**
