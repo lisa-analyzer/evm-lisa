@@ -252,24 +252,32 @@ public class AccessControlIncompletenessChecker implements
 		if (functionSignatureByStatement.equals("no-function-found"))
 			return;
 
-		log.warn(
-				"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
-				((ProgramCounterLocation) sink.getLocation()).getPc(),
-				((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
-				((ProgramCounterLocation) source.getLocation()).getPc(),
-				((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
+		if (contract.getFunctionSignatureByString(functionSignatureByStatement).isProtected()) {
+			log.warn(
+					"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+					((ProgramCounterLocation) sink.getLocation()).getPc(),
+					((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
+					((ProgramCounterLocation) source.getLocation()).getPc(),
+					((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
+		} else {
+			log.warn(
+					"[DEFINITE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
+					((ProgramCounterLocation) sink.getLocation()).getPc(),
+					((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine(),
+					((ProgramCounterLocation) source.getLocation()).getPc(),
+					((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
 
-		String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
-				+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
-		tool.warn(warn);
-		MyCache.getInstance().addAccessControlIncompletenessWarning(cfg.hashCode(), warn);
+			String warn = "[DEFINITE] Access Control Incompleteness vulnerability at "
+					+ ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine();
+			tool.warn(warn);
+			MyCache.getInstance().addAccessControlIncompletenessWarning(cfg.hashCode(), warn);
 
-		warn = "[DEFINITE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
-				+ functionSignatureByStatement
-				+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
-				+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
-		MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
-
+			warn = "[DEFINITE] Access Control Incompleteness vulnerability in " + contract.getName() + " at "
+					+ functionSignatureByStatement
+					+ " (pc: " + ((ProgramCounterLocation) sink.getLocation()).getPc() + ", "
+					+ "line: " + ((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine() + ")";
+			MyCache.getInstance().addVulnerabilityPerFunction(cfg.hashCode(), warn);
+		}
 	}
 
 }
