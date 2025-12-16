@@ -19,6 +19,7 @@ public class Signature {
 	private final String _selector;
 	private Set<Statement> _entryPoints;
 	private Set<Statement> _exitPoints;
+	private boolean _isProtected;
 
 	/**
 	 * Constructs a Signature with the specified properties.
@@ -41,6 +42,7 @@ public class Signature {
 		this._selector = selector;
 		this._entryPoints = new HashSet<>();
 		this._exitPoints = new HashSet<>();
+		this._isProtected = false;
 	}
 
 	/**
@@ -162,6 +164,27 @@ public class Signature {
 			this._exitPoints.add(exitPoints);
 	}
 
+	/**
+	 * Gets whether this signature is protected (i.e., has a "onlyOwner"
+	 * modifier).
+	 *
+	 * @return true if the signature is protected, false otherwise
+	 */
+	public boolean isProtected() {
+		return _isProtected;
+	}
+
+	/**
+	 * Sets whether this signature is protected (i.e., has a "onlyOwner"
+	 * modifier).
+	 *
+	 * @param isProtected true to mark this signature as protected, false
+	 *                        otherwise
+	 */
+	public void setProtected(boolean isProtected) {
+		this._isProtected = isProtected;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -172,12 +195,13 @@ public class Signature {
 		return Objects.equals(_name, other._name) &&
 				Objects.equals(_type, other._type) &&
 				Objects.equals(_fullSignature, other._fullSignature) &&
-				Objects.equals(_selector, other._selector);
+				Objects.equals(_selector, other._selector) &&
+				_isProtected == other._isProtected;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(_name, _type, _fullSignature, _selector);
+		return Objects.hash(_name, _type, _fullSignature, _selector, _isProtected);
 	}
 
 	/**
@@ -217,6 +241,8 @@ public class Signature {
 			exitPointsArray.put(stmt.toString());
 
 		json.put("exit_points", exitPointsArray);
+
+		json.put("is_protected", _isProtected);
 
 		return json;
 	}
