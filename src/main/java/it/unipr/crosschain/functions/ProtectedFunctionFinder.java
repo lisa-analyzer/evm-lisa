@@ -86,6 +86,8 @@ public class ProtectedFunctionFinder implements
 
 			for (Statement functionEntryPoint : functionSignature.getEntryPoints()) {
 				Statement source = cfg.getClosestStatementOfType(functionEntryPoint, Caller.class);
+				if (source == null)
+					continue;
 
 				log.debug("Source {} at pc {} line {}",
 						source,
@@ -101,7 +103,6 @@ public class ProtectedFunctionFinder implements
 
 					functionSignature.setProtected(true);
 					log.info("Function {} is protected", functionSignature.getFullSignature());
-
 				}
 			}
 		}

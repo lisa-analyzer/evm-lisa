@@ -1,5 +1,6 @@
 package it.unipr.crosschain.checker;
 
+import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
 import it.unipr.cfg.*;
 import it.unipr.crosschain.taint.RelationalTaintAbstractDomain;
@@ -252,7 +253,11 @@ public class AccessControlIncompletenessChecker implements
 		if (functionSignatureByStatement.equals("no-function-found"))
 			return;
 
-		if (contract.getFunctionSignatureByString(functionSignatureByStatement).isProtected()) {
+		Signature signature = contract.getFunctionSignatureByString(functionSignatureByStatement);
+		if (signature == null)
+			return;
+
+		if (signature.isProtected()) {
 			log.warn(
 					"[POSSIBLE] Access Control Incompleteness vulnerability at pc {} (line {}) coming from pc {} (line {}).",
 					((ProgramCounterLocation) sink.getLocation()).getPc(),
