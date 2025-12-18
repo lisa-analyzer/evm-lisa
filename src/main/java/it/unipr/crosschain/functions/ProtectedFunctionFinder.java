@@ -37,51 +37,55 @@ public class ProtectedFunctionFinder implements
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
 							TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Statement node) {
+			CFG graph,
+			Statement node) {
 
 		EVMCFG cfg = ((EVMCFG) graph);
 
-		if (node instanceof Jumpi)
+		if (node instanceof Jumpi) {
 			for (AnalyzedCFG<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
 					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(cfg)) {
+
 				AnalysisState<SimpleAbstractState<MonolithicHeap, RelationalTaintAbstractDomain,
-						TypeEnvironment<InferredTypes>>> analysisResult = null;
+						TypeEnvironment<InferredTypes>>> analysisResult;
+				RelationalTaintAbstractDomain taintedStack;
 
 				try {
 					analysisResult = result.getAnalysisStateBefore(node);
+					taintedStack = analysisResult.getState().getValueState();
 				} catch (SemanticException e1) {
 					log.error("(ProtectedFunctionFinder): {}", e1.getMessage());
+					continue;
 				}
 
-				RelationalTaintAbstractDomain taintedStack = analysisResult.getState().getValueState();
-
-				if (taintedStack.isBottom() || taintedStack.isTop())
+				if (taintedStack == null || taintedStack.isBottom() || taintedStack.isTop())
 					continue;
 
 				RelationalTaintElement elem1 = taintedStack.getElementAtPosition(1);
 				RelationalTaintElement elem2 = taintedStack.getElementAtPosition(2);
 
 				if (RelationalTaintElement.isAtLeastOneTainted(elem1, elem2)) {
-					// Track program points sanitized by this specific Jumpi
 					Set<Integer> jumpiPps = new HashSet<>();
-					if (elem1.isTaint()) {
+
+					if (elem1.isTaint())
 						jumpiPps.addAll(elem1.getProgramPoints());
-					}
-					if (elem2.isTaint()) {
+					if (elem2.isTaint())
 						jumpiPps.addAll(elem2.getProgramPoints());
-					}
+
 					checkForProtection(node, cfg, jumpiPps);
 				}
 			}
-
+		}
 		return true;
 	}
 
 	private void checkForProtection(Statement sink, EVMCFG cfg, Set<Integer> jumpiPps) {
 		Set<Signature> functionsSignature = contract.getFunctionsSignature();
+		if (functionsSignature == null)
+			return;
 
 		for (Signature functionSignature : functionsSignature) {
-			log.debug("Checking: {} that has {} entrypoints", functionSignature.getFullSignature(),
+			log.debug("Checking: {} that has {} entry points", functionSignature.getFullSignature(),
 					functionSignature.getEntryPoints().size());
 
 			for (Statement functionEntryPoint : functionSignature.getEntryPoints()) {
@@ -106,6 +110,5 @@ public class ProtectedFunctionFinder implements
 				}
 			}
 		}
-
 	}
 }
