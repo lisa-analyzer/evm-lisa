@@ -27,6 +27,7 @@ public class ProtectedFunctionFinder implements
 
 	private static final Logger log = LogManager.getLogger(ProtectedFunctionFinder.class);
 	private final SmartContract contract;
+	private static final int MAX_DEPTH = 20;
 
 	public ProtectedFunctionFinder(SmartContract contract) {
 		this.contract = contract;
@@ -98,7 +99,7 @@ public class ProtectedFunctionFinder implements
 						((ProgramCounterLocation) source.getLocation()).getPc(),
 						((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
 
-				if (cfg.reachableFromWithDepthLimit(source, sink, 10)
+				if (cfg.reachableFromWithDepthLimit(source, sink, MAX_DEPTH)
 						&& jumpiPps.contains(((ProgramCounterLocation) source.getLocation()).getPc())) {
 					log.debug("Sink {} at pc {} line {}",
 							sink,
