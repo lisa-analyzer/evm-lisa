@@ -18,6 +18,7 @@ public class Signature {
 	private final String _fullSignature;
 	private final String _selector;
 	private final String _stateMutability;
+	private final List<String> _modifiers;
 	private Set<Statement> _entryPoints;
 	private Set<Statement> _exitPoints;
 	private boolean _isProtected;
@@ -33,9 +34,10 @@ public class Signature {
 	 * @param selector         the selector (first 4 bytes of the Keccak-256
 	 *                             hash)
 	 * @param stateMutability  the state mutability of the signature
+	 * @param modifiers        the list of modifiers applied to the function
 	 */
 	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
-			String fullSignature, String selector, String stateMutability) {
+			String fullSignature, String selector, String stateMutability, List<String> modifiers) {
 		this._name = name;
 		this._type = type;
 		this._inputParamTypes = inputParamTypes;
@@ -46,6 +48,7 @@ public class Signature {
 		this._exitPoints = new HashSet<>();
 		this._isProtected = false;
 		this._stateMutability = stateMutability;
+		this._modifiers = modifiers != null ? modifiers : new ArrayList<>();
 	}
 
 	/**
@@ -61,7 +64,25 @@ public class Signature {
 	 */
 	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
 			String fullSignature, String selector) {
-		this(name, type, inputParamTypes, outputParamTypes, fullSignature, selector, "view");
+		this(name, type, inputParamTypes, outputParamTypes, fullSignature, selector, "view", new ArrayList<>());
+	}
+
+	/**
+	 * Constructs a Signature with the specified properties.
+	 *
+	 * @param name             the name of the function or event
+	 * @param type             the type (e.g., "function", "event")
+	 * @param inputParamTypes  the list of input parameter types
+	 * @param outputParamTypes the list of output parameter types
+	 * @param fullSignature    the full signature string
+	 * @param selector         the selector (first 4 bytes of the Keccak-256
+	 *                             hash)
+	 * @param stateMutability  the state mutability of the signature
+	 */
+	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
+			String fullSignature, String selector, String stateMutability) {
+		this(name, type, inputParamTypes, outputParamTypes, fullSignature, selector, stateMutability,
+				new ArrayList<>());
 	}
 
 	/**
@@ -125,6 +146,15 @@ public class Signature {
 	 */
 	public String getSelector() {
 		return _selector;
+	}
+
+	/**
+	 * Gets the list of modifiers for this signature.
+	 *
+	 * @return the list of modifiers
+	 */
+	public List<String> getModifiers() {
+		return _modifiers;
 	}
 
 	/**
@@ -224,13 +254,14 @@ public class Signature {
 				Objects.equals(_type, other._type) &&
 				Objects.equals(_fullSignature, other._fullSignature) &&
 				Objects.equals(_selector, other._selector) &&
+				Objects.equals(_modifiers, other._modifiers) &&
 				_isProtected == other._isProtected &&
 				Objects.equals(_stateMutability, other._stateMutability);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(_name, _type, _fullSignature, _selector, _isProtected, _stateMutability);
+		return Objects.hash(_name, _type, _fullSignature, _selector, _modifiers, _isProtected, _stateMutability);
 	}
 
 	/**
@@ -274,6 +305,11 @@ public class Signature {
 		json.put("is_protected", _isProtected);
 
 		json.put("state_mutability", _stateMutability);
+
+		JSONArray modifiersArray = new JSONArray();
+		for (String m : _modifiers)
+			modifiersArray.put(m);
+		json.put("modifiers", modifiersArray);
 
 		return json;
 	}

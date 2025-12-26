@@ -96,6 +96,7 @@ public class ABIManager {
 
 				List<String> paramTypes = new ArrayList<>();
 				List<String> outputTypes = new ArrayList<>();
+				List<String> modifiers = new ArrayList<>();
 				StringBuilder signatureBuilder = new StringBuilder(functionName).append("(");
 
 				for (int j = 0; j < inputs.length(); j++) {
@@ -115,11 +116,19 @@ public class ABIManager {
 					}
 				}
 
+				// modifiers (array of strings) is optional in ABI
+				JSONArray modsArray = obj.optJSONArray("modifiers");
+				if (modsArray != null) {
+					for (int j = 0; j < modsArray.length(); j++) {
+						modifiers.add(modsArray.optString(j));
+					}
+				}
+
 				String fullSignature = signatureBuilder.toString();
 				String selector = getFunctionSelector(fullSignature);
 
 				signatures.add(new Signature(functionName, type, paramTypes, outputTypes, fullSignature, selector,
-						functionStateMutability));
+						functionStateMutability, modifiers));
 			}
 		}
 		return signatures;

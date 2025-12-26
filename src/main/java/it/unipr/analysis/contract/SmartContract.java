@@ -26,6 +26,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -727,10 +729,11 @@ public class SmartContract {
 
 	/**
 	 * Identifies and marks protected functions (i.e., functions that have a
-	 * "onlyOwner" modifier) in the contract using semantic analysis. This
-	 * method performs a LiSA-based analysis to detect functions that have
-	 * protection mechanisms (e.g., access controls). Each detected protected
-	 * function is marked in its corresponding signature object.
+	 * "onlyOwner", "onlyAdmin", "onlyMPC" modifier) in the contract using
+	 * semantic analysis. This method performs a LiSA-based analysis to detect
+	 * functions that have protection mechanisms (e.g., access controls). Each
+	 * detected protected function is marked in its corresponding signature
+	 * object.
 	 */
 	public void findProtectedFunctions() {
 		if (_functionsSignature == null) {
@@ -738,6 +741,7 @@ public class SmartContract {
 			return;
 		}
 
+		// Solc version <8.0.0
 		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
 		program.addCodeMember(_cfg);
 		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(this);
@@ -749,6 +753,19 @@ public class SmartContract {
 				new ProtectedFunctionFinderAbstractDomain(),
 				new TypeEnvironment<>(new InferredTypes()));
 		lisa.run(program);
+
+		// Solc version >=8.0.0
+		for (Signature signature : _functionsSignature) {
+			List<String> modifiers = signature.getModifiers();
+			boolean hasOnly = modifiers.stream()
+					.filter(Objects::nonNull)
+					.anyMatch(m -> m.toLowerCase().contains("only"));
+
+			if (hasOnly) {
+				signature.setProtected(true);
+				log.info("Function {} in {} is protected", signature.getFullSignature(), this.getName());
+			}
+		}
 	}
 
 	/**
