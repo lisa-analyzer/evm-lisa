@@ -86,25 +86,25 @@ public class ProtectedFunctionFinder implements
 			return;
 
 		for (Signature functionSignature : functionsSignature) {
-			log.debug("Checking: {} that has {} entry points", functionSignature.getFullSignature(),
-					functionSignature.getEntryPoints().size());
+//			log.debug("Checking: {} that has {} entry points", functionSignature.getFullSignature(),
+//					functionSignature.getEntryPoints().size());
 
 			for (Statement functionEntryPoint : functionSignature.getEntryPoints()) {
 				Statement source = cfg.getClosestStatementOfType(functionEntryPoint, Caller.class);
 				if (source == null)
 					continue;
 
-				log.debug("Source {} at pc {} line {}",
-						source,
-						((ProgramCounterLocation) source.getLocation()).getPc(),
-						((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
+//				log.debug("Source {} at pc {} line {}",
+//						source,
+//						((ProgramCounterLocation) source.getLocation()).getPc(),
+//						((ProgramCounterLocation) source.getLocation()).getSourceCodeLine());
 
 				if (cfg.reachableFromWithDepthLimit(source, sink, MAX_DEPTH)
 						&& jumpiPps.contains(((ProgramCounterLocation) source.getLocation()).getPc())) {
-					log.debug("Sink {} at pc {} line {}",
-							sink,
-							((ProgramCounterLocation) sink.getLocation()).getPc(),
-							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
+//					log.debug("Sink {} at pc {} line {}",
+//							sink,
+//							((ProgramCounterLocation) sink.getLocation()).getPc(),
+//							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
 
 					functionSignature.setProtected(true);
 					log.info("Function {} is protected", functionSignature.getFullSignature());
