@@ -107,7 +107,8 @@ public class ProtectedFunctionFinder implements
 //							((ProgramCounterLocation) sink.getLocation()).getSourceCodeLine());
 
 					functionSignature.setProtected(true);
-					log.info("Function {} is protected", functionSignature.getFullSignature());
+					log.info("Function {} in {} is protected", functionSignature.getFullSignature(),
+							contract.getName());
 				}
 			}
 		}
