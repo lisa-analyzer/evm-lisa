@@ -18,8 +18,7 @@
     "QBridgeHandler": 17,
     "QBridgeToken": 18,
     "QBridgeToken_1": 19,
-    "QBridge_label": 20,
-    "SafeMath": 21,
-    "SafeToken": 22,
-    "_ContextUpgradeable": 23
+    "SafeMath": 20,
+    "SafeToken": 21,
+    "_ContextUpgradeable": 22
 }
