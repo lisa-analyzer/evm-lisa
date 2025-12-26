@@ -39,6 +39,7 @@ public class AccessControlIncompletenessChecker implements
 	private Set<Statement> taintedJumpi = new HashSet<>();
 	private Map<Statement, Set<Integer>> jumpiProgramPoints = new HashMap<>();
 	private SmartContract contract;
+	private final Set<String> stateMutabilityForbidden = Set.of("view", "pure");
 
 	/**
 	 * Builds the checker for the given contract.
@@ -255,6 +256,8 @@ public class AccessControlIncompletenessChecker implements
 
 		Signature signature = contract.getFunctionSignatureByString(functionSignatureByStatement);
 		if (signature == null)
+			return;
+		if (stateMutabilityForbidden.contains(signature.getStateMutability()))
 			return;
 
 		if (signature.isProtected()) {
