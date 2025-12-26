@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 ## Compile smart contracts into bytecode
 ```
-compile-smart-contracts.py [-h] [--solidifi] [--smartbugs] [--slise] [--longest-bytecode] [--cross-chain]
+python3 compile-smart-contracts.py [-h] [--solidifi] [--smartbugs] [--slise] [--longest-bytecode] [--cross-chain]
 ```
 ```
 options:
@@ -30,7 +30,7 @@ options:
 
 ## Run the benchmark
 ```
-run-benchmark.py [-h] [--solidifi] [--smartbugs] [--slise] [--no-analysis] [--reentrancy] [--tx-origin] [--randomness-dependency]
+python3 run-benchmark.py [-h] [--solidifi] [--smartbugs] [--slise] [--no-analysis] [--reentrancy] [--tx-origin] [--randomness-dependency]
 ```
 ```
 options:

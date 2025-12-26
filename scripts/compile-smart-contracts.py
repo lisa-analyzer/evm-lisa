@@ -7,6 +7,82 @@ import argparse
 
 import re
 
+
+def collect_modifiers_from_ast(data):
+    """
+    Build a map: contract -> function name -> list of modifier names extracted from AST.
+    """
+    modifiers = {}
+
+    def walk(node, current_contract=None):
+        if isinstance(node, dict):
+            if node.get("nodeType") == "ContractDefinition":
+                current_contract = node.get("name")
+                modifiers.setdefault(current_contract, {})
+
+            if node.get("nodeType") == "FunctionDefinition" and node.get("kind") == "function":
+                fn_name = node.get("name")
+                contract_entry = modifiers.setdefault(current_contract, {})
+                contract_entry.setdefault(fn_name, [])
+
+                for mod in node.get("modifiers", []):
+                    if not isinstance(mod, dict):
+                        continue
+                    mod_name = None
+                    mod_id = mod.get("modifierName")
+                    if isinstance(mod_id, dict):
+                        mod_name = mod_id.get("name")
+                    elif isinstance(mod_id, str):
+                        mod_name = mod_id
+                    if mod_name:
+                        contract_entry[fn_name].append(mod_name)
+
+            for value in node.values():
+                walk(value, current_contract)
+
+        elif isinstance(node, list):
+            for item in node:
+                walk(item, current_contract)
+
+    roots = []
+    for src_data in data.get("sources", {}).values():
+        if isinstance(src_data, dict):
+            ast_node = src_data.get("ast") or src_data.get("AST")
+            if ast_node:
+                roots.append(ast_node)
+
+    if data.get("ast"):
+        roots.append(data.get("ast"))
+
+    for root in roots:
+        walk(root, None)
+
+    return modifiers
+
+
+def attach_modifiers_to_abi(contract_name, abi, modifiers_map):
+    contract_key = contract_name.split(":")[-1]
+    functions_mods = modifiers_map.get(contract_key, {})
+
+    if isinstance(abi, str):
+        try:
+            abi = json.loads(abi)
+        except json.JSONDecodeError:
+            return abi
+
+    if not isinstance(abi, list):
+        return abi
+
+    for entry in abi:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("type") != "function":
+            continue
+        fn_name = entry.get("name")
+        entry["modifiers"] = functions_mods.get(fn_name, [])
+
+    return abi
+
 def clear_directory(directory):
     """
     Clears all files in the specified directory.
@@ -123,9 +199,10 @@ def compile_solidity_sources_with_different_version(source_dir, json_dir, versio
                     continue
 
             # Command to compile and save the bytecode in JSON format
+            # Include AST so we can recover modifiers for ABI decoration.
             command = (
                 f"solc-select use {compiled_version} > /dev/null && "
-                f"solc --combined-json bin,bin-runtime,abi {input_file} > {output_file} 2> /dev/null"
+                f"solc --combined-json bin,bin-runtime,abi,ast {input_file} > {output_file} 2> /dev/null"
             )
 
             # Execute the compilation command
@@ -175,7 +252,7 @@ def compile_solidity_sources(source_dir, json_dir):
                 output_file = os.path.join(json_dir, f"{os.path.splitext(filename)[0]}.json")
 
                 # Command to compile and save the bytecode in JSON format
-                command = f"solc --combined-json bin,bin-runtime,abi --pretty-json {input_file} > {output_file} 2> /dev/null "
+                command = f"solc --combined-json bin,bin-runtime,abi,ast --pretty-json {input_file} > {output_file} 2> /dev/null "
 
                 # Execute the compilation command
                 try:
@@ -218,6 +295,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                 with open(json_filepath, 'r') as json_file:
                     data = json.load(json_file)
                     contracts = data.get("contracts", {})
+                    modifiers_map = collect_modifiers_from_ast(data)
 
                     longest_bytecode = None
                     longest_contract_name = None
@@ -237,7 +315,7 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                                 max_bytecode_length = bytecode_length
                                 longest_bytecode = bytecode
                                 longest_contract_name = contract_name
-                                abi = contract_data.get("abi")
+                                abi = attach_modifiers_to_abi(contract_name, contract_data.get("abi"), modifiers_map)
 
                     # Save the longest bytecode, if it exists
                     if longest_bytecode:
@@ -255,9 +333,6 @@ def extract_and_save_longest_bytecode(bytecode_dir, json_dir, is_ethersolve=Fals
                         # Save ABI if available
                         if abi and abi_dir is not None:
                             abi_filename = os.path.join(abi_dir, f"{base_filename}.abi")
-
-                            if isinstance(abi, str):
-                                abi = json.loads(abi)
 
                             with open(abi_filename, 'w') as abi_file:
                                 json.dump(abi, abi_file, indent=4)
@@ -293,6 +368,7 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
 
                 data = json.load(json_file)
                 contracts = data.get("contracts", {})
+                modifiers_map = collect_modifiers_from_ast(data)
                 count = 1  # Sequential counter for each bytecode in the same JSON
                 abi = None
 
@@ -301,7 +377,7 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
                         bytecode = contract_data.get("bin")
                     else:
                         bytecode = contract_data.get("bin-runtime")
-                    abi = contract_data.get("abi")
+                    abi = attach_modifiers_to_abi(contract_name, contract_data.get("abi"), modifiers_map)
 
                     if bytecode:
                         bytecode_filename = os.path.join(
@@ -321,9 +397,6 @@ def extract_and_save_bytecode(bytecode_dir, json_dir, is_ethersolve=False, file_
                         # Save ABI if available
                         if abi and abi_dir is not None:
                             abi_filename = os.path.join(abi_dir, f"{file_id}_{count}.abi")
-
-                            if isinstance(abi, str):
-                                abi = json.loads(abi)
 
                             with open(abi_filename, 'w') as abi_file:
                                 json.dump(abi, abi_file, indent=4)
