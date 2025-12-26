@@ -72,7 +72,6 @@ public class ABIManager {
 	}
 
 	private static Set<Signature> parseABI(Path abi, String type) {
-		Set<String> stateMutabilityForbidden = Set.of("view", "pure");
 		Set<Signature> signatures = new HashSet<>();
 		String abiJson;
 
@@ -88,13 +87,10 @@ public class ABIManager {
 		for (int i = 0; i < abiArray.length(); i++) {
 			JSONObject obj = abiArray.getJSONObject(i);
 			if (obj.has("type") && obj.getString("type").equals(type)) {
-
-				/* We do not need to collect global variables */
-				if (obj.has("stateMutability")
-						&& stateMutabilityForbidden.contains(obj.getString("stateMutability")))
-					continue;
-
 				String functionName = obj.getString("name");
+				String functionStateMutability = "view"; // default
+				if (obj.has("stateMutability"))
+					functionStateMutability = obj.getString("stateMutability");
 				JSONArray inputs = obj.getJSONArray("inputs");
 				JSONArray outputs = obj.optJSONArray("outputs");
 
@@ -122,7 +118,8 @@ public class ABIManager {
 				String fullSignature = signatureBuilder.toString();
 				String selector = getFunctionSelector(fullSignature);
 
-				signatures.add(new Signature(functionName, type, paramTypes, outputTypes, fullSignature, selector));
+				signatures.add(new Signature(functionName, type, paramTypes, outputTypes, fullSignature, selector,
+						functionStateMutability));
 			}
 		}
 		return signatures;

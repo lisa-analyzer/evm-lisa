@@ -17,6 +17,7 @@ public class Signature {
 	private final List<String> _outputParamTypes;
 	private final String _fullSignature;
 	private final String _selector;
+	private final String _stateMutability;
 	private Set<Statement> _entryPoints;
 	private Set<Statement> _exitPoints;
 	private boolean _isProtected;
@@ -31,9 +32,10 @@ public class Signature {
 	 * @param fullSignature    the full signature string
 	 * @param selector         the selector (first 4 bytes of the Keccak-256
 	 *                             hash)
+	 * @param stateMutability  the state mutability of the signature
 	 */
 	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
-			String fullSignature, String selector) {
+			String fullSignature, String selector, String stateMutability) {
 		this._name = name;
 		this._type = type;
 		this._inputParamTypes = inputParamTypes;
@@ -43,6 +45,23 @@ public class Signature {
 		this._entryPoints = new HashSet<>();
 		this._exitPoints = new HashSet<>();
 		this._isProtected = false;
+		this._stateMutability = stateMutability;
+	}
+
+	/**
+	 * Constructs a Signature with the specified properties.
+	 *
+	 * @param name             the name of the function or event
+	 * @param type             the type (e.g., "function", "event")
+	 * @param inputParamTypes  the list of input parameter types
+	 * @param outputParamTypes the list of output parameter types
+	 * @param fullSignature    the full signature string
+	 * @param selector         the selector (first 4 bytes of the Keccak-256
+	 *                             hash)
+	 */
+	public Signature(String name, String type, List<String> inputParamTypes, List<String> outputParamTypes,
+			String fullSignature, String selector) {
+		this(name, type, inputParamTypes, outputParamTypes, fullSignature, selector, "view");
 	}
 
 	/**
@@ -115,6 +134,15 @@ public class Signature {
 	 */
 	public Set<Statement> getEntryPoints() {
 		return _entryPoints;
+	}
+
+	/**
+	 * Gets the state mutability for this signature.
+	 *
+	 * @return the state mutability
+	 */
+	public String getStateMutability() {
+		return _stateMutability;
 	}
 
 	/**
@@ -196,12 +224,13 @@ public class Signature {
 				Objects.equals(_type, other._type) &&
 				Objects.equals(_fullSignature, other._fullSignature) &&
 				Objects.equals(_selector, other._selector) &&
-				_isProtected == other._isProtected;
+				_isProtected == other._isProtected &&
+				Objects.equals(_stateMutability, other._stateMutability);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(_name, _type, _fullSignature, _selector, _isProtected);
+		return Objects.hash(_name, _type, _fullSignature, _selector, _isProtected, _stateMutability);
 	}
 
 	/**
@@ -243,6 +272,8 @@ public class Signature {
 		json.put("exit_points", exitPointsArray);
 
 		json.put("is_protected", _isProtected);
+
+		json.put("state_mutability", _stateMutability);
 
 		return json;
 	}
