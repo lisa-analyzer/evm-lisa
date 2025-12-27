@@ -171,7 +171,7 @@ contract StandardToken is BasicToken, ERC20 {
     * @param _to address The address which you want to transfer to
     * @param _value uint the amount of tokens to be transferred
     */
-     //1.access control inconsistency between paths
+    // CCV: access control inconsistency between paths
     function transferFrom(address _from, address _to, uint _value) public onlyPayloadSize(3 * 32) {
         var _allowance = allowed[_from][msg.sender];
 
