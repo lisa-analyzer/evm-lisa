@@ -258,7 +258,9 @@ public class AccessControlIncompletenessChecker implements
 		if (signature == null)
 			return;
 		if (!stateMutabilityPermitted.contains(signature.getStateMutability()))
-			return;
+			return; /* only external / payable functions */
+		if (signature.getParamCount() == 0)
+			return; /* only functions with input parameters */
 
 		if (signature.isProtected()) {
 			log.warn(
