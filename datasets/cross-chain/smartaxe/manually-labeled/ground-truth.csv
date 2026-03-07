@@ -1,0 +1,302 @@
+bridge,file,function,notes
+LiFinance20220320,DiamondCutFacet.sol,"diamondCut((address,uint8,bytes4[])[],address,bytes)",unchecked function arguments
+MeterPassPort20220206,EMTRGV1.sol,"approve(address,uint256)",unchecked `amount`
+MeterPassPort20220206,EMTRGV1.sol,"transfer(address,uint256)",unchecked `amount`
+MeterPassPort20220206,EMTRGV1.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+MeterPassPort20220206,EMTRGV1.sol,burn(uint256),unchecked `amount`
+MeterPassPort20220206,EMTRGV1.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+MeterPassPort20220206,EMTRGV1.sol,"initialize(uint256,address)",unchecked `initAmount`
+MeterPassPort20220206,EMTRGV1.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+MeterPassPort20220206,EMTRG.sol,"initialize(uint256,address)",unchecked `initAmount`
+Multichain20220118,AnyswapV4CallProxy.sol,"anyCall(address,bytes,address,uint256)",unchecked function arguments
+Multichain20220118,AnyswapV4CallProxy.sol,deposit(address),unchecked function arguments
+Multichain20220118,AnyswapV4CallProxy.sol,withdraw(uint256),unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,"addWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,"anyCall(address,bytes,address,uint256,uint256)",unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,deposit(address),unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,"removeWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,"retryExec(bytes32,address,uint256,uint256)",unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,tidyHistoryWhitelist(string),unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy-AllowCallback.sol,"updateAppConfig(address,address,uint256,address[])",unchecked `_flags`
+Multichain20220118,AnyswapV6CallProxy.sol,"addWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20220118,AnyswapV6CallProxy.sol,"anyCall(address,bytes,address,uint256,uint256)","unchecked `_to`, `_toChainID`, `_data`"
+Multichain20220118,AnyswapV6CallProxy.sol,deposit(address),unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy.sol,"removeWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20220118,AnyswapV6CallProxy.sol,"retryExec(bytes32,address,uint256,uint256)",unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy.sol,tidyHistoryWhitelist(string),unchecked function arguments
+Multichain20220118,AnyswapV6CallProxy.sol,"updateAppConfig(address,address,uint256,address[])",unchecked `_flags`
+Multichain20220118,AnyswapV6CallProxy.sol,withdraw(uint256),unchecked function arguments
+Multichain20220118,AnyswapV6ERC20_2.sol,"approve(address,uint256)",unchecked function arguments
+Multichain20220118,AnyswapV6ERC20_2.sol,"approveAndCall(address,uint256,bytes)",unchecked function arguments
+Multichain20220118,AnyswapV6ERC20_2.sol,"deposit(uint256,address)",unchecked function arguments
+Multichain20220118,AnyswapV6ERC20_2.sol,deposit(uint256),unchecked function arguments
+Multichain20220118,AnyswapV6ERC20_2.sol,"Swapout(uint256,address)","it calls `_burn()`, unchecked function arguments"
+Multichain20220118,AnyswapV6ERC20_2.sol,"transferWithPermit(address,address,uint256,uint256,uint8,bytes32,bytes32)","it calls `verifyEIP712()` and `verifyPersonalSign()`, unchecked function arguments"
+Multichain20220118,AnyswapV6ERC20_2.sol,withdraw(uint256),"it calls `_burn()`, unchecked function arguments"
+Multichain20230215,AnyswapV4CallProxy.sol,"anyCall(address,bytes,address,uint256)",unchecked function arguments
+Multichain20230215,AnyswapV4CallProxy.sol,deposit(address),unchecked function arguments
+Multichain20230215,AnyswapV4CallProxy.sol,withdraw(uint256),unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,"addWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,"anyCall(address,bytes,address,uint256,uint256)",unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,deposit(address),unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,"removeWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,"retryExec(bytes32,address,uint256,uint256)",unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,tidyHistoryWhitelist(string),unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy-AllowCallback.sol,"updateAppConfig(address,address,uint256,address[])",unchecked `_flags`
+Multichain20230215,AnyswapV6CallProxy.sol,"addWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20230215,AnyswapV6CallProxy.sol,"anyCall(address,bytes,address,uint256,uint256)","unchecked `_to`, `_toChainID`, `_data`"
+Multichain20230215,AnyswapV6CallProxy.sol,deposit(address),unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy.sol,"removeWhitelist(address,address[])",unchecked `_whitelist`
+Multichain20230215,AnyswapV6CallProxy.sol,"retryExec(bytes32,address,uint256,uint256)",unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy.sol,tidyHistoryWhitelist(string),unchecked function arguments
+Multichain20230215,AnyswapV6CallProxy.sol,"updateAppConfig(address,address,uint256,address[])",unchecked `_flags`
+Multichain20230215,AnyswapV6CallProxy.sol,withdraw(uint256),unchecked function arguments
+Nerve20211115,SwapUtils_1.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"approve(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils_1.sol,burn(uint256),unchecked `amount`
+Nerve20211115,LPToken_2.sol,burn(uint256),unchecked `amount`
+Nerve20211115,MetaSwap.sol,burn(uint256),unchecked `amount`
+Nerve20211115,LPToken_1.sol,burn(uint256),unchecked `amount`
+Nerve20211115,SwapUtils.sol,burn(uint256),unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,burn(uint256),unchecked `amount`
+Nerve20211115,LPToken.sol,burn(uint256),unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,burn(uint256),unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,burn(uint256),unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,burn(uint256),unchecked `amount`
+Nerve20211115,Swap.sol,burn(uint256),unchecked `amount`
+Nerve20211115,SwapUtils_1.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"burnFrom(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils_1.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"decreaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils_1.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"increaseAllowance(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"initializeMetaSwap(address[],uint8[],string,string,uint256,uint256,uint256,uint256,uint256,address,address)",unchecked function arguments
+Nerve20211115,SwapUtils_1.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"mint(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils_1.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"transfer(address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils_1.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_2.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwap.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,LPToken_1.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,LPToken.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,AmplificationUtils.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,SwapUtils-label.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,MetaSwapUtils-label.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+Nerve20211115,Swap.sol,"transferFrom(address,address,uint256)",unchecked `amount`
+pNetwork20210920,Steroids.sol,adjustBalanceOf(address),unchecked function arguments
+pNetwork20210920,Steroids.sol,adjustBalanceOfMany(address[]),unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,changeBufferBlocks(uint64),unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,changeBufferBlocks(uint64),unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,changeExecutionDelayBlocks(uint64),unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,changeExecutionDelayBlocks(uint64),unchecked function arguments
+pNetwork20210920,Steroids.sol,changeMinLockTime(uint64),unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,changeMinOpenVoteAmount(uint256),unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,changeMinOpenVoteAmount(uint256),unchecked function arguments
+pNetwork20210920,EVMScriptRegistryFactory.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,DAOFactory.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,Imports.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,APMRegistryFactory_1.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,APMRegistry.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,ACL.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,APMRegistry_1.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,APMRegistryFactory.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,TestImports.sol,"createBurnedPermission(address,bytes32)",unchecked function arguments
+pNetwork20210920,TokenManager.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,VotingRewards.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,DandelionVoting.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,MiniMeToken_2.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,MiniMeToken.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,StakingManager.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,Steroids.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,VotingMock.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,MiniMeToken_1.sol,"createCloneToken(address,uint256,string,uint8,string,bool)",unchecked function arguments
+pNetwork20210920,TokenManager.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,VotingRewards.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,DandelionVoting.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,MiniMeToken_2.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,MiniMeToken.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,StakingManager.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,Steroids.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,VotingMock.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,MiniMeToken_1.sol,"createCloneToken(string,uint8,string,uint256,bool)",unchecked function arguments
+pNetwork20210920,EVMScriptRegistryFactory.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,DAOFactory.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,Imports.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,APMRegistryFactory_1.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,APMRegistry.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,ACL.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,APMRegistry_1.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,APMRegistryFactory.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,TestImports.sol,"createPermission(address,address,bytes32,address)",unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,forward(bytes),"it calls `_newVote`, unchecked function arguments"
+pNetwork20210920,VotingMock_2.sol,forward(bytes),"it calls `_newVote`, unchecked function arguments"
+pNetwork20210920,VotingMock.sol,mockDecreaseTime(uint256),unchecked function arguments
+pNetwork20210920,TimeHelpersMock.sol,mockDecreaseTime(uint256),unchecked function arguments
+pNetwork20210920,VotingMock.sol,mockSetTimestamp(uint256),unchecked function arguments
+pNetwork20210920,TimeHelpersMock.sol,mockSetTimestamp(uint256),unchecked function arguments
+pNetwork20210920,APMRegistryFactory_1.sol,"newAPM(bytes32,bytes32,address)",unchecked `_root`
+pNetwork20210920,APMRegistryFactory.sol,"newAPM(bytes32,bytes32,address)",unchecked `_root`
+pNetwork20210920,APMRegistryFactory_1.sol,newDAO(address),unchecked `_root`
+pNetwork20210920,Imports.sol,newDAO(address),unchecked `_root`
+pNetwork20210920,APMRegistryFactory.sol,newDAO(address),unchecked `_root`
+pNetwork20210920,DAOFactory.sol,newDAO(address),unchecked `_root`
+pNetwork20210920,TestImports.sol,newDAO(address),unchecked `_root`
+pNetwork20210920,APMRegistryFactory_1.sol,newENS(address),unchecked `_owner`
+pNetwork20210920,APMRegistryFactory.sol,newENS(address),unchecked `_owner`
+pNetwork20210920,ENSFactory.sol,newENS(address),unchecked `_owner`
+pNetwork20210920,EVMScriptRegistryFactory.sol,newEVMScriptRegistry(address),unchecked `_dao`
+pNetwork20210920,APMRegistryFactory_1.sol,newEVMScriptRegistry(address),unchecked `_dao`
+pNetwork20210920,Imports.sol,newEVMScriptRegistry(address),unchecked `_dao`
+pNetwork20210920,APMRegistryFactory.sol,newEVMScriptRegistry(address),unchecked `_dao`
+pNetwork20210920,DAOFactory.sol,newEVMScriptRegistry(address),unchecked `_dao`
+pNetwork20210920,TestImports.sol,newEVMScriptRegistry(address),unchecked `_dao`
+pNetwork20210920,VotingMock_1.sol,"newVote(bytes,string,bool)",unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,"newVote(bytes,string,bool)",unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,"onRegisterAsHook(uint256,address)",unchecked function arguments
+pNetwork20210920,VotingMock_2.sol,"onRegisterAsHook(uint256,address)",unchecked function arguments
+pNetwork20210920,TokenMock.sol,setAllowTransfer(bool),unchecked function arguments
+pNetwork20210920,Imports.sol,setAllowTransfer(bool),unchecked function arguments
+pNetwork20210920,ExecutionTarget.sol,setCounter(uint256),unchecked function arguments
+pNetwork20210920,VotingMock_1.sol,"vote(uint256,bool)",unchecked `_voter`
+pNetwork20210920,VotingMock_2.sol,"vote(uint256,bool)",unchecked `_voter`
+pNetwork20210920,VotingMock_1.sol,"voteFor(uint256,bool,bytes)",unchecked `_supports`
+pNetwork20210920,VotingMock_2.sol,"voteFor(uint256,bool,bytes)",unchecked `_supports`
+PolyNetwork20210810,FiatTokenV2.sol,"approve(address,uint256)",unchecked `value`
+PolyNetwork20210810,FiatTokenV2.sol,"decreaseAllowance(address,uint256)",unchecked `value`
+PolyNetwork20210810,FiatTokenV2.sol,"increaseAllowance(address,uint256)",unchecked `value`
+PolyNetwork20210810,FiatTokenV2.sol,"initialize(string,string,string,uint8,address,address,address,address)",unchecked function arguments
+PolyNetwork20210810,FiatTokenV2.sol,initializeV2_1(address),unchecked function arguments
+PolyNetwork20210810,FiatTokenV2.sol,initializeV2(string),unchecked function arguments
+PolyNetwork20210810,PolyNFTLockProxy.sol,"onERC721Received(address,address,uint256,bytes)",unchecked function arguments
+PolyNetwork20210810,PolyNFTWrapper.sol,"lock(address,uint64,address,uint256,address,uint256,uint256)",unchecked function arguments
+PolyNetwork20210810,PolyNFTWrapper.sol,"speedUp(address,bytes,uint256)",unchecked `fee`
+PolyNetwork20210810,TetherToken_label.sol,"approve(address,uint256)",unchecked `value`
+PolyNetwork20210810,TetherToken_label.sol,"transfer(address,uint256)",unchecked function arguments
+PolyNetwork20210810,TetherToken_label.sol,"transferFrom(address,address,uint256)",unchecked function arguments
+QANXBridge20220518,BridgeQANX-label.sol,"setSigner(address,uint256)",unchecked `limit`
+Rubic20221225,RubicProxy-label.sol,"renounceRole(bytes32,address)","it calls `hasRole()`, unchecked function arguments"
+Rubic20221225,RubicProxy-label.sol,collectIntegratorFee(address),unchecked `_integrator`
+Rubic20221225,RubicProxy-label.sol,"grantRole(bytes32,address)","it calls `hasRole()`, unchecked function arguments"
+Rubic20221225,RubicProxy-label.sol,"routerCallNative((address,uint256,uint256,address,uint256,address,address,address),bytes)",unchecked `data`
+Synapse20211106,SynapseBridge.sol,"deposit(address,uint256,address,uint256)",unchecked function arguments
+Synapse20211106,SynapseBridge.sol,"withdrawAndRemove(address,address,uint256,uint256,address,uint8,uint256,uint256,bytes32)",unchecked function arguments
+Synapse20211106,SynapseBridge.sol,setWethAddress(address),unchecked function arguments
+Synapse20211106,SynapseBridge.sol,setChainGasAmount(uint256),unchecked function arguments
+Synapse20211106,SynapseBridge.sol,"mintAndSwap(address,address,uint256,uint256,address,uint8,uint8,uint256,uint256,bytes32)",unchecked function arguments
+Synapse20211106,SynapseBridge.sol,"renounceRole(bytes32,address)",unchecked `role`
+Synapse20211106,SynapseBridge.sol,"redeemV2(bytes32,uint256,address,uint256)",unchecked function arguments
+Synapse20211106,SynapseBridge.sol,"mint(address,address,uint256,uint256,bytes32)",unchecked `amount`
+Synapse20211106,SynapseBridge.sol,"depositAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256)",external call with unchecked arguments
+Synapse20211106,SynapseBridge.sol,"redeemAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256)",unchecked function arguments
+Synapse20211106,SynapseBridge.sol,"grantRole(bytes32,address)",unchecked `role`
+Synapse20211106,SynapseBridge.sol,"revokeRole(bytes32,address)",unchecked `role`
+Synapse20211106,SynapseBridge.sol,"withdraw(address,address,uint256,uint256,bytes32)",unchecked `to`
+Synapse20211106,SynapseBridge.sol,"redeem(address,uint256,address,uint256)",unchecked function arguments
+Synapse20211106,SynapseBridge.sol,addKappas(bytes32[]),unchecked function arguments
+Synapse20211106,SynapseBridge.sol,"redeemAndRemove(address,uint256,address,uint256,uint8,uint256,uint256)",unchecked function arguments
+THORChain20210629,THORChain_Router_1.sol,"deposit(address,address,uint256,string)","unchecked `vault`, `amount`, `memo`"
+THORChain20210629,THORChain_Router_5.sol,"deposit(address,address,uint256,string)","unchecked `vault`, `amount`, `memo`"
+THORChain20210629,RUNE_Bridge.sol,"deposit(uint256,string)","unchecked `msg.sender`, `memo`"
+THORChain20210629,Incentives_1.sol,"depositIncentives(address,uint256)",unchecked function arguments
+THORChain20210629,Incentives_2.sol,"depositIncentives(address,uint256)",unchecked function arguments
+THORChain20210629,THORChain_Router_1.sol,"depositWithExpiry(address,address,uint256,string,uint256)","unchecked `vault`, `amount`, `memo`"
+THORChain20210629,THORChain_Router_5.sol,"depositWithExpiry(address,address,uint256,string,uint256)","unchecked `vault`, `amount`, `memo`"
+THORChain20210629,THORChain_Router_1.sol,"returnVaultAssets(address,address,(address,uint256)[],string)","unchecked `asgard`, `coins`, `memo`"
+THORChain20210629,THORChain_Router_5.sol,"returnVaultAssets(address,address,(address,uint256)[],string)","unchecked `asgard`, `coins`, `memo`"
+THORChain20210629,THORChain_Router_1.sol,"transferAllowance(address,address,address,uint256,string)","unchecked `newVault`, `asset`, `amount`, `memo`"
+THORChain20210629,THORChain_Router_5.sol,"transferAllowance(address,address,address,uint256,string)","unchecked `newVault`, `asset`, `amount`, `memo`"
+THORChain20210629,THORChain_Router_1.sol,"transferOut(address,address,uint256,string)","unchecked `amount`, `memo`"
+THORChain20210629,THORChain_Router_5.sol,"transferOut(address,address,uint256,string)","unchecked `amount`, `memo`"
+THORChain20210629,THORChain_Router_1.sol,"transferOutAndCall(address,address,address,uint256,string)",external call with unchecked arguments
+THORChain20210629,THORChain_Router_5.sol,"transferOutAndCall(address,address,address,uint256,string)",external call with unchecked arguments
+THORChain20210716,THORChain_Router_1.sol,"deposit(address,address,uint256,string)","unchecked `vault`, `amount`, `memo`"
+THORChain20210716,THORChain_Router-label.sol,"deposit(address,address,uint256,string)","unchecked `vault`, `amount`, `memo`"
+THORChain20210716,RUNE_Bridge.sol,"deposit(uint256,string)","unchecked `msg.sender`, `memo`"
+THORChain20210716,Incentives_1.sol,"depositIncentives(address,uint256)",unchecked function arguments
+THORChain20210716,Incentives_2.sol,"depositIncentives(address,uint256)",unchecked function arguments
+THORChain20210716,THORChain_Router_1.sol,"depositWithExpiry(address,address,uint256,string,uint256)","unchecked `vault`, `amount`, `memo`"
+THORChain20210716,THORChain_Router-label.sol,"depositWithExpiry(address,address,uint256,string,uint256)","unchecked `vault`, `amount`, `memo`"
+THORChain20210716,THORChain_Router_1.sol,"returnVaultAssets(address,address,(address,uint256)[],string)","unchecked `asgard`, `coins`, `memo`"
+THORChain20210716,THORChain_Router-label.sol,"returnVaultAssets(address,address,(address,uint256)[],string)","unchecked `asgard`, `coins`, `memo`"
+THORChain20210716,THORChain_Router_1.sol,"transferAllowance(address,address,address,uint256,string)","unchecked `newVault`, `asset`, `amount`, `memo`"
+THORChain20210716,THORChain_Router-label.sol,"transferAllowance(address,address,address,uint256,string)","unchecked `newVault`, `asset`, `amount`, `memo`"
+THORChain20210716,THORChain_Router_1.sol,"transferOut(address,address,uint256,string)","unchecked `amount`, `memo`"
+THORChain20210716,THORChain_Router-label.sol,"transferOut(address,address,uint256,string)","unchecked `amount`, `memo`"
+THORChain20210716,THORChain_Router_1.sol,"transferOutAndCall(address,address,address,uint256,string)",external call with unchecked arguments
+THORChain20210716,THORChain_Router-label.sol,"transferOutAndCall(address,address,address,uint256,string)",external call with unchecked arguments
+THORChain20210723,THORChain_Router_1.sol,"deposit(address,address,uint256,string)","unchecked `vault`, `amount`, `memo`"
+THORChain20210723,THORChain_Router-label.sol,"deposit(address,address,uint256,string)","unchecked `vault`, `amount`, `memo`"
+THORChain20210723,RUNE_Bridge.sol,"deposit(uint256,string)","unchecked `msg.sender`, `memo`"
+THORChain20210723,Incentives_1.sol,"depositIncentives(address,uint256)",unchecked function arguments
+THORChain20210723,Incentives_2.sol,"depositIncentives(address,uint256)",unchecked function arguments
+THORChain20210723,THORChain_Router_1.sol,"depositWithExpiry(address,address,uint256,string,uint256)","unchecked `vault`, `amount`, `memo`"
+THORChain20210723,THORChain_Router-label.sol,"depositWithExpiry(address,address,uint256,string,uint256)","unchecked `vault`, `amount`, `memo`"
+THORChain20210723,THORChain_Router_1.sol,"returnVaultAssets(address,address,(address,uint256)[],string)","unchecked `asgard`, `coins`, `memo`"
+THORChain20210723,THORChain_Router-label.sol,"returnVaultAssets(address,address,(address,uint256)[],string)","unchecked `asgard`, `coins`, `memo`"
+THORChain20210723,THORChain_Router_1.sol,"transferAllowance(address,address,address,uint256,string)","unchecked `newVault`, `asset`, `amount`, `memo`"
+THORChain20210723,THORChain_Router-label.sol,"transferAllowance(address,address,address,uint256,string)","unchecked `newVault`, `asset`, `amount`, `memo`"
+THORChain20210723,THORChain_Router_1.sol,"transferOut(address,address,uint256,string)","unchecked `amount`, `memo`"
+THORChain20210723,THORChain_Router-label.sol,"transferOut(address,address,uint256,string)","unchecked `amount`, `memo`"
+THORChain20210723,THORChain_Router_1.sol,"transferOutAndCall(address,address,address,uint256,string)",external call with unchecked arguments
+THORChain20210723,THORChain_Router-label.sol,"transferOutAndCall(address,address,address,uint256,string)",external call with unchecked arguments
