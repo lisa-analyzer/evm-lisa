@@ -1,0 +1,21 @@
+[
+    {
+        "bridge": "parity-multisig",
+        "contracts": [
+            {
+                "vulnerabilities": [
+                    "[DEFINITE] Access Control Incompleteness vulnerability in 1_1 at initWallet(address[],uint256) (pc: 256, line: 25)"
+                ],
+                "bytecode-name": "1_1",
+                "source-code-name": "Exploit"
+            },
+            {
+                "vulnerabilities": [
+                    "[DEFINITE] Access Control Incompleteness vulnerability in 1_2 at initWallet(address[],uint256) (pc: 261, line: 25)"
+                ],
+                "bytecode-name": "1_2",
+                "source-code-name": "Exploit"
+            }
+        ]
+    }
+]

@@ -1,3 +1,2 @@
 file,original pragma version,compiled version,notes
 Exploit.sol,^0.8.17,0.8.17,
-ParityMultisig.sol,^0.4.6,0.4.6,

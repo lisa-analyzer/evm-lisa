@@ -1,0 +1,40 @@
+[
+    {
+        "bridge": "nomad",
+        "contracts": [
+            {
+                "vulnerabilities": [],
+                "bytecode-name": "2_1",
+                "source-code-name": "ECDSA"
+            },
+            {
+                "vulnerabilities": [],
+                "bytecode-name": "4_1",
+                "source-code-name": "Merkle"
+            },
+            {
+                "vulnerabilities": [],
+                "bytecode-name": "5_1",
+                "source-code-name": "MerkleLib"
+            },
+            {
+                "vulnerabilities": [
+                    "[DEFINITE] Access Control Incompleteness vulnerability in 9_1 at initialize(uint32,address,bytes32,uint256) (pc: 412, line: 111)",
+                    "[DEFINITE] Access Control Incompleteness vulnerability in 9_1 at acceptMessage(bytes) (pc: 1024, line: 187)"
+                ],
+                "bytecode-name": "9_1",
+                "source-code-name": "Replica"
+            },
+            {
+                "vulnerabilities": [],
+                "bytecode-name": "10_1",
+                "source-code-name": "SafeMath"
+            },
+            {
+                "vulnerabilities": [],
+                "bytecode-name": "13_1",
+                "source-code-name": "Version0"
+            }
+        ]
+    }
+]
