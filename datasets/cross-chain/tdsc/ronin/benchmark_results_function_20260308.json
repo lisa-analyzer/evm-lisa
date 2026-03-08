@@ -1,0 +1,13 @@
+[
+  {
+    "bridge": "ronin",
+    "contracts": [
+      {
+        "contract": "1_1",
+        "vulnerabilities": [
+          "[DEFINITE] Access Control Incompleteness vulnerability in 1_1 at withdraw(bytes,bytes[]) (pc: 741, line: 447)"
+        ]
+      }
+    ]
+  }
+]
