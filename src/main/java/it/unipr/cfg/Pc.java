@@ -44,11 +44,7 @@ public class Pc extends Statement {
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
 			InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
 
-		// we can safely suppose that there exists just one node incoming to
-		// this node
-		Statement incomingNode = getCFG().getIngoingEdges(this).stream().map(t -> t.getSource()).findAny().get();
-
-		Constant pc = new Constant(Untyped.INSTANCE, ((ProgramCounterLocation) incomingNode.getLocation()).getPc(),
+		Constant pc = new Constant(Untyped.INSTANCE, ((ProgramCounterLocation) getLocation()).getPc(),
 				getLocation());
 		return entryState.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, pc,
 				PcOperator.INSTANCE, getLocation()), this);
