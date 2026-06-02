@@ -202,7 +202,7 @@ def compile_solidity_sources_with_different_version(source_dir, json_dir, versio
             # Include AST so we can recover modifiers for ABI decoration.
             command = (
                 f"solc-select use {compiled_version} > /dev/null && "
-                f"solc --combined-json bin,bin-runtime,abi,ast {input_file} > {output_file} 2> /dev/null"
+                f"solc --combined-json bin,bin-runtime,abi,ast {input_file} > {output_file} "
             )
 
             # Execute the compilation command
@@ -421,8 +421,8 @@ def compile_bridges(base_path):
             compile_bridge(subfolder_path)
 
 def compile_bridge(name):
-    # extract_solidity_versions(src_folder=f'{name}/source-code',
-    #                           output_csv=f'{name}/source-code/version.csv')
+    extract_solidity_versions(src_folder=f'{name}/source-code',
+                              output_csv=f'{name}/source-code/version.csv')
 
     compile_solidity_sources_with_different_version(source_dir=f'{name}/source-code',
                                                     json_dir=f'{name}/json',
@@ -452,8 +452,9 @@ if __name__ == "__main__":
     datasets_path = './../datasets'
 
     if args.cross_chain:
-        compile_bridges(f'{datasets_path}/cross-chain/smartaxe/manually-labeled')
-        compile_bridge(f'{datasets_path}/cross-chain/local-dependency')
+        compile_bridges(f'{datasets_path}/cross-chain/tdsc')
+        # compile_bridges(f'{datasets_path}/cross-chain/smartaxe/manually-labeled')
+        # compile_bridge(f'{datasets_path}/cross-chain/local-dependency')
 
     if args.solidifi:
         compile_solidity_sources(f'{datasets_path}/solidifi/reentrancy/source-code',

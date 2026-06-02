@@ -1,0 +1,119 @@
+address,smartaxe_contract_id,smartaxe_present,smartaxe_reported,evmlisa_present,evmlisa_reported,note
+0x0682642d18ebb4bb5e759af07a7de4eadae8e8c5,real/0x0682642d18ebb4bb5e759AF07A7DE4eADAE8E8c5_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Bridge (ChainBridge) | functions: revokeRole(bytes32,address); deposit(uint8,bytes32,bytes); renounceRole(bytes32,address); grantRole(bytes32,address); depositETH(uint8,bytes32,bytes)"
+0x0abcfbfa8e3fda8b7fba18721caf7d5cf55cf5f5,real/0x0aBCFbfA8e3Fda8B7FBA18721Caf7d5cf55cF5f5_DB,yes,yes,yes,no,
+0x0cd79409ed80d8a153a3c729aa1f8b5d44a29282,real/0x0cD79409eD80d8a153A3c729aa1f8b5D44A29282_DB,yes,no,yes,no,
+0x0e18c19b05afc0dfc86947e7e7bed9c1e7f15552,real/0x0E18C19B05AfC0DFc86947e7e7beD9c1E7F15552_DB,yes,no,yes,no,
+0x11199a9ee50127f335b84a1eeb961d8a85147f5f,real/0x11199A9eE50127F335B84A1eEb961D8A85147f5F_DB,yes,no,yes,no,
+0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae,real/0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE_DB,yes,no,yes,no,
+0x14413419452aaf089762a0c5e95ed2a13bbc488c,real/0x14413419452Aaf089762A0c5e95eD2A13bBC488C_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=EthCrossChainManager | functions: transferOwnership(address); initGenesisBlock(bytes,bytes); upgradeToNew(address); setChainId(uint64)"
+0x16081d48ae091ebe7e5985c171af815ad4efd325,real/0x16081d48aE091Ebe7e5985c171af815aD4efD325_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Ownable | functions: transferOwnership(address)""
+0x1633d66ca91ce4d81f63ea047b7b19beb92df7f3,real/0x1633D66Ca91cE4D81F63Ea047B7B19Beb92dF7f3_DB,yes,no,yes,no,
+0x17bfda688b43245a399200a284f81ca0a0b25bf4,real/0x17bFDa688b43245A399200a284F81CA0A0b25Bf4_DB,yes,no,yes,no,
+0x19cbd7ee4e77ac8cff336ed5a424360bc052e7b9,real/0x19cbd7eE4E77AC8CFF336eD5a424360bc052e7B9_DB,yes,no,yes,no,
+0x1e3bee7628844b914ff7184c604fe2badd01ca81,real/0x1e3bEE7628844b914Ff7184c604fE2badd01CA81_DB,yes,no,yes,no,
+0x22648c12acd87912ea1710357b1302c6a4154ebc,real/0x22648C12acD87912EA1710357B1302c6a4154Ebc_DB,yes,no,yes,no,
+0x244268b9082e05a8bcf18b3b0e83999ea4fc9fcf,real/0x244268b9082E05a8BcF18b3b0e83999EA4Fc9fCf_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Swap | functions: removeLiquidity(uint256,uint256[],uint256); initialize(address[],uint8[],string,string,uint256,uint256,uint256,address)"
+0x250e76987d838a75310c34bf422ea9f1ac4cc906,real/0x250e76987d838a75310c34bf422ea9f1AC4Cc906_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=LockProxy | functions: lock(address,uint64,bytes,uint256); transferOwnership(address)"
+0x2796317b0ff8538f253012862c06787adfb8ceb6,real/0x2796317b0fF8538F253012862c06787Adfb8cEb6_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=SynapseBridge | functions: withdraw(address,address,uint256,uint256,bytes32); redeemV2(bytes32,uint256,address,uint256); withdrawFees(address,address); deposit(address,uint256,address,uint256); setLegacySendDisabled(bool); grantRole(bytes32,address); redeem(address,uint256,address,uint256); mint(address,address,uint256,uint256,bytes32); redeemAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256); addKappas(bytes32[]); revokeRole(bytes32,address); mintAndSwap(address,address,uint256,uint256,address,uint8,uint8,uint256,uint256,bytes32); setWethAddress(address); redeemAndRemove(address,uint256,address,uint256,uint8,uint256,uint256); renounceRole(bytes32,address); depositAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256); withdrawAndRemove(address,address,uint256,uint256,address,uint8,uint256,uint256,bytes32)"
+0x2a705327d093322bfad691dd992be1332a9fd47b,real/0x2a705327d093322bfAD691dD992bE1332A9fd47b_DB,yes,no,yes,no,
+0x2ac03bf434db503f6f5f85c3954773731fc3f056,real/0x2AC03BF434db503f6f5F85C3954773731Fc3F056_DB,yes,no,yes,no,
+0x2cdfc90250ef967036838da601099656e74bcfc5,real/0x2cdfc90250EF967036838DA601099656e74bCfc5_DB,yes,no,yes,no,
+0x30b7026e9e5b35c844f6b115ab4558c3f7e7e3b1,real/0x30b7026e9E5b35C844F6B115Ab4558c3F7e7e3B1_DB,yes,no,yes,no,
+0x3155ba85d5f96b2d030a4966af206230e46849cb,real/0x3155BA85D5F96b2d030a4966AF206230e46849cb_DB,yes,yes,yes,no,
+0x31fe393815822edacbd81c2262467402199efd0d,real/0x31fe393815822edacBd81C2262467402199EFD0D_DB,yes,no,yes,no,
+0x3267701115c58384e70897739f5bb1c258d620e7,real/0x3267701115c58384e70897739f5bb1C258D620e7_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Bridge (ChainBridge) | functions: grantRole(bytes32,address); renounceRole(bytes32,address); depositETH(uint8,bytes32,bytes); revokeRole(bytes32,address); deposit(uint8,bytes32,bytes)"
+0x332730a4f6e03d9c55829435f10360e13cfa41ff,real/0x332730a4F6E03D9C55829435f10360E13cfA41Ff_DB,yes,no,yes,no,
+0x3335a88bb18fd3b6824b59af62b50ce494143333,real/0x3335A88bb18fD3b6824b59Af62b50CE494143333_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=RubicProxy / BridgeBase | functions: setIntegratorInfo(address,(bool,uint32,uint32,uint32,uint128)); routerCall((address,uint256,uint256,address,uint256,address,address,address),address,bytes); setMaxTokenAmount(address,uint256); addAvailableRouter(address); collectIntegratorFee(address,address); setMinTokenAmount(address,uint256); routerCallNative((address,uint256,uint256,address,uint256,address,address,address),bytes); collectRubicFee(address); collectIntegratorFee(address); grantRole(bytes32,address); revokeRole(bytes32,address); transferAdmin(address); removeAvailableRouter(address); renounceRole(bytes32,address); setRubicPlatformFee(uint256); setFixedCryptoFee(uint256)"
+0x3624525075b88b24ecc29ce226b0cec1ffcb6976,real/0x3624525075b88B24ecc29CE226b0CEc1fFcB6976_DB,yes,no,yes,no,
+0x3d7f0933ac403773d219cf0519de8082946dc10f,real/0x3d7f0933aC403773d219cf0519DE8082946Dc10F_DB,yes,no,yes,no,
+0x3de3826f4d28cf8bbc854c34a16753e9150422a8,real/0x3De3826f4D28cF8bbC854C34a16753E9150422A8_DB,yes,no,yes,no,
+0x3ee02f08b801b1990ac844d8cd2f119ba6fb9bcf,real/0x3ee02f08B801B1990AC844d8CD2F119BA6Fb9bcF_DB,yes,no,yes,no,
+0x4004face380b24802b6dfc8060830c1010369193,real/0x4004face380B24802b6Dfc8060830c1010369193_DB,yes,no,yes,no,
+0x42a5ed456650a09dc10ebc6361a7480fdd61f27b,real/0x42A5Ed456650a09Dc10EBc6361A7480fDd61f27B_DB,yes,no,yes,no,
+0x472822517a019e1eed4533de2d800719057716f1,real/0x472822517a019e1eEd4533De2d800719057716F1_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=SynapseBridge | functions: redeem(address,uint256,address,uint256); withdraw(address,address,uint256,uint256,bytes32); mint(address,address,uint256,uint256,bytes32); deposit(address,uint256,address,uint256); renounceRole(bytes32,address); revokeRole(bytes32,address); depositAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256); grantRole(bytes32,address); mintAndSwap(address,address,uint256,uint256,address,uint8,uint8,uint256,uint256,bytes32); redeemAndRemove(address,uint256,address,uint256,uint8,uint256,uint256); redeemAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256); withdrawAndRemove(address,address,uint256,uint256,address,uint8,uint256,uint256,bytes32); withdrawFees(address,address)"
+0x47b35974cdc9bb460e71aff6c7b4fc758f3bd932,real/0x47B35974cDC9Bb460e71aFf6C7B4FC758f3Bd932_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Swap | functions: removeLiquidity(uint256,uint256[],uint256)"
+0x4cf1471b56d18c7d5a16d48ff5b761bdaebd2f0b,real/0x4cF1471B56D18c7D5a16D48ff5B761BdAEBd2f0b_DB,yes,no,yes,no,
+0x51600b0cff6bbf79e7767158c41fd15e968ec404,real/0x51600B0CfF6Bbf79E7767158C41FD15e968Ec404_DB,yes,no,yes,no,
+0x517828d2549cec09386f89a67e92825e26740240,real/0x517828d2549cEC09386f89a67E92825E26740240_DB,yes,no,yes,no,
+0x5217c83ca75559b1f8a8803824e5b7ac233a12a1,real/0x5217c83ca75559B1f8a8803824E5b7ac233A12a1_DB,yes,no,yes,no,
+0x544450ffdfa5ea20528f21918e8aac7b2c733381,real/0x544450Ffdfa5EA20528F21918E8aAC7B2C733381_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Swap | functions: removeLiquidityOneToken(uint256,uint8,uint256,uint256); removeLiquidityImbalance(uint256[],uint256,uint256); removeLiquidity(uint256,uint256[],uint256); addLiquidity(uint256[],uint256,uint256); initialize(address,address,address); swap(uint8,uint8,uint256,uint256,uint256)"
+0x5614594970355eb26eb906e56761845ecef8fdf9,real/0x5614594970355eb26eb906e56761845eCeF8fdF9_DB,yes,no,yes,no,
+0x5a51e2ebf8d136926b9ca7b59b60464e7c44d2eb,real/0x5a51E2ebF8D136926b9cA7b59B60464E7C44d2Eb_DB,yes,no,yes,no,
+0x5a5fff6f753d7c11a56a52fe47a177a87e431655,real/0x5A5fFf6F753d7C11A56A52FE47a177a87e431655_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=SwapFlashLoan | functions: flashLoan(address,address,uint256,bytes); initialize(address[],uint8[],string,string,uint256,uint256,uint256,address); removeLiquidity(uint256,uint256[],uint256)"
+0x5c08b51ddbe8ba76e07be79975906c39aef2893a,real/0x5C08b51Ddbe8ba76e07Be79975906c39AeF2893a_DB,yes,no,yes,no,
+0x62838b815290b5718af87ebd8ef9822d095a4b07,real/0x62838b815290B5718AF87EbD8ef9822D095a4b07_DB,yes,no,yes,no,
+0x647489df0673e17db3163c47d5233ebb6f5cac70,real/0x647489df0673E17dB3163c47d5233EBB6F5cAc70_DB,yes,no,yes,no,
+0x64f80a3b1ac0d394d652df0becfbea9db2320782,real/0x64f80a3B1ac0d394d652DF0beCfBeA9DB2320782_DB,yes,no,yes,no,
+0x6571d6be3d8460cf5f7d6711cd9961860029d85f,real/0x6571d6be3d8460CF5F7d6711Cd9961860029D85F_DB,yes,no,yes,no,
+0x65d6720d46275e4381784b032ab8a0ccd4f33b3b,real/0x65D6720d46275E4381784B032ab8A0ccd4f33b3B_DB,yes,no,yes,no,
+0x6b7a87899490ece95443e979ca9485cbe7e71522,real/0x6b7a87899490EcE95443e979cA9485CBE7E71522_DB,yes,no,yes,no,
+0x6c8c6e68604e78b549c96907bfe9ebdaac04e3b3,real/0x6C8c6E68604e78B549C96907bfe9EBdaaC04e3B3_DB,yes,yes,yes,no,
+0x739ca6d71365a08f584c8fc4e1029045fa8abc4b,real/0x739ca6D71365a08f584c8FC4e1029045Fa8ABC4B_DB,yes,no,yes,no,
+0x73a499e043b03fc047189ab1ba72eb595ff1fc8e,real/0x73a499e043B03FC047189Ab1bA72EB595FF1fC8E_DB,yes,no,yes,no,
+0x765277eebeca2e31912c9946eae1021199b39c61,real/0x765277EebeCA2e31912C9946eAe1021199B39C61_DB,yes,no,yes,no,
+0x78e1ad66e64f5ce1e6c38667cca78d42dff4e71b,real/0x78e1ad66e64f5cE1E6C38667ccA78D42dfF4e71B_DB,yes,no,yes,no,
+0x7d971ffc482d70831075fcf07c50eded782aa9fd,real/0x7D971Ffc482d70831075fCf07c50EDED782aA9Fd_DB,yes,no,yes,no,
+0x7ea2be2df7ba6e54b1a9c70676f668455e329d29,real/0x7EA2be2df7BA6E54B1A9C70676f668455E329d29_DB,yes,no,yes,no,
+0x7efc09181cfeb60e59c4b5f17aab3219521b8ac4,real/0x7eFc09181CFeB60E59C4B5f17aaB3219521b8AC4_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=RUNE_Bridge | functions: deposit(uint256,string)"
+0x7fd806049608b7d04076b8187dd773343e0589e6,real/0x7FD806049608B7d04076B8187dd773343e0589e6_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=BridgeConfig | functions: grantRole(bytes32,address); renounceRole(bytes32,address); revokeRole(bytes32,address); setTokenConfig(string,uint256,address,uint8,uint256,uint256,uint256,uint256,uint256,bool,bool)"
+0x80d1486ef600cc56d4df9ed33baf53c60d5a629b,real/0x80D1486eF600cc56d4df9ed33bAF53C60D5A629b_DB,yes,no,yes,no,
+0x8474a898677c3bc97f35a86c387ae34bf272c860,real/0x8474a898677C3bc97f35A86c387aE34Bf272C860_DB,yes,no,yes,no,
+0x878df90f8dec5ce346e963642b54b0ed7d23d168,real/0x878dF90f8Dec5ce346E963642B54B0ED7d23d168_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Incentives | functions: depositIncentives(address,uint256)"
+0x88e7af57270f70bcf32cd61fff0ff635775c8f7c,real/0x88E7af57270F70BCF32CD61fff0Ff635775C8f7c_DB,yes,no,yes,no,
+0x89ab32156e46f46d02ade3fecbe5fc4243b9aaed,real/0x89Ab32156e46F46D02ade3FEcbe5Fc4243B9AAeD_DB,yes,no,yes,no,
+0x9007a80247d23cc5c213a6dacb385c632c4e19f2,real/0x9007A80247D23Cc5C213A6DAcB385c632c4e19F2_DB,yes,no,yes,no,
+0x90f8d8b30475b6df833b69d9b5403491416e9927,real/0x90f8d8b30475b6df833b69D9b5403491416E9927_DB,yes,no,yes,no,
+0x93124c923da389bc0f13840fb822ce715ca67ed6,real/0x93124c923dA389Bc0f13840fB822Ce715ca67ED6_DB,yes,no,yes,yes,VULNERABLE (Access Control Incompleteness) | contract=Ownable | functions: transferOwnership(address)
+0x93251f98acb0c83904320737aec091bce287f8f5,real/0x93251F98AcB0c83904320737aec091Bce287F8f5_DB,yes,no,yes,no,
+0x9413b54f04c90ed8eb59a08323d767b72dcd278e,real/0x9413b54f04c90ed8EB59a08323D767b72Dcd278e_DB,yes,no,yes,no,
+0x9695fa23b27022c7dd752b7d64bb5900677ecc21,real/0x9695FA23b27022c7DD752B7d64bB5900677ECC21_DB,yes,no,yes,no,
+0x979aca85ba37c675e78322ed5d97fa980b9bdf00,real/0x979aCA85bA37c675e78322ed5d97fa980B9Bdf00_DB,yes,yes,yes,no,
+0x99309d2e7265528dc7c3067004cc4a90d37b7cc3,real/0x99309d2e7265528dC7C3067004cC4A90d37b7CC3_DB,yes,no,yes,no,
+0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,real/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=FiatTokenV2_2 (USDC) | functions: transferWithAuthorization(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32); initialize(string,string,string,uint8,address,address,address,address); transferFrom(address,address,uint256); receiveWithAuthorization(address,address,uint256,uint256,uint256,bytes32,bytes); initializeV2_1(address); cancelAuthorization(address,bytes32,uint8,bytes32,bytes32); rescueERC20(address,address,uint256); transferWithAuthorization(address,address,uint256,uint256,uint256,bytes32,bytes); increaseAllowance(address,uint256); approve(address,uint256); burn(uint256); mint(address,uint256); initializeV2(string); cancelAuthorization(address,bytes32,bytes); initializeV2_2(address[],string); receiveWithAuthorization(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32); decreaseAllowance(address,uint256); permit(address,address,uint256,uint256,bytes); permit(address,address,uint256,uint256,uint8,bytes32,bytes32); transfer(address,uint256); unBlacklist(address); blacklist(address)"
+0xa2327a938febf5fec13bacfb16ae10ecbc4cbdcf,real/0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF_DB,yes,yes,yes,no,
+0xa2569370a9d4841c9a62fc51269110f2eb7e0171,real/0xa2569370A9D4841c9a62Fc51269110F2eB7E0171_DB,yes,no,yes,no,
+0xa2a22b46b8df38cd7c55e6bf32ea5a32637cf2b1,real/0xa2A22B46B8df38cd7C55E6bf32Ea5a32637Cf2b1_DB,yes,no,yes,no,
+0xa6fc7d136f6a95ce89081c37bb2c3e5b9ee14317,real/0xa6Fc7d136f6a95CE89081C37BB2C3E5b9Ee14317_DB,yes,no,yes,no,
+0xa7e2ce557980618253d9dafdedb27ecce2f82167,real/0xa7E2cE557980618253D9dafdEDb27ecCe2F82167_DB,yes,no,yes,no,
+0xaa749190f7259cdd2a18cb0ac42957da4d8909e0,real/0xAa749190f7259cdd2a18cb0Ac42957dA4d8909e0_DB,yes,no,yes,no,
+0xaaa4940aa878d932d3482bf1de332e1d50c15aaa,real/0xAAA4940aA878D932D3482Bf1DE332E1D50c15AaA_DB,yes,no,yes,no,
+0xaaa7a10a8ee237ea61e8ac46c50a8db8bcc1baaa,real/0xAAA7A10a8ee237ea61E8AC46C50A8Db8bCC1baaa_DB,yes,no,yes,no,
+0xaaa9214f675316182eaa21c85f0ca99160cc3aaa,real/0xAAA9214F675316182Eaa21C85f0Ca99160CC3AAA_DB,yes,no,yes,no,
+0xac01093399c4c411cfbe9ff89cf126f1c46a7d46,real/0xAc01093399c4C411cFbE9FF89Cf126f1C46A7d46_DB,yes,no,yes,no,
+0xad5bac300e311169f8223484f242d43c627eca30,real/0xad5bAC300E311169F8223484f242d43C627eCa30_DB,yes,no,yes,no,
+0xae908bb4905bca9bde0656cc869d0f23e77875e7,real/0xAE908bb4905bcA9BdE0656CC869d0F23e77875E7_DB,yes,no,yes,no,
+0xaf23becfb080026bea74c521a213ae631829d75f,real/0xAF23BEcfb080026bea74c521A213aE631829d75f_DB,yes,no,yes,no,
+0xafaace7138ab3c2bcb2db4264f8312e1bbb80653,real/0xAFAace7138ab3c2BCb2DB4264F8312e1Bbb80653_DB,yes,no,yes,no,
+0xafc58bac1cb6d98a65692b5da17949929436cde6,real/0xAfC58Bac1cb6D98A65692B5da17949929436cdE6_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Incentives | functions: depositIncentives(address,uint256)"
+0xb0ae108669ceb86e9e98e8fe9e40d98b867855fd,real/0xB0ae108669CEB86E9E98e8fE9e40d98b867855fD_DB,yes,no,yes,no,
+0xb11a1735c2e3bcc5fc8c1d147fb64629d3d0cac5,real/0xB11a1735C2e3BCC5FC8c1d147fb64629d3d0caC5_DB,yes,no,yes,no,
+0xb153fb3d196a8eb25522705560ac152eeec57901,real/0xB153FB3d196A8eB25522705560ac152eeEc57901_DB,yes,no,yes,no,
+0xb61b5aca15193ecb719433d0e5c066f9980e1e83,real/0xb61B5aca15193ECB719433d0E5c066f9980E1e83_DB,yes,no,yes,no,
+0xba8da9dcf11b50b03fd5284f164ef5cdef910705,real/0xBa8Da9dcF11B50B03fd5284f164Ef5cdEF910705_DB,yes,no,yes,no,
+0xbcefb397a13528f693d929931248c94c4263b763,real/0xbCefB397a13528F693D929931248C94c4263B763_DB,yes,no,yes,no,
+0xbd515e41df155112cc883f8981cb763a286261be,real/0xbD515E41DF155112Cc883f8981CB763a286261be_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=Bridge (ChainBridge) | functions: renounceRole(bytes32,address); deposit(uint8,bytes32,bytes); depositETH(uint8,bytes32,bytes); revokeRole(bytes32,address); grantRole(bytes32,address)"
+0xbd6bcac46246a7cc2308e0ae87f7794f96e33aaf,real/0xBd6bCac46246a7CC2308E0aE87F7794F96e33aaf_DB,yes,no,yes,no,
+0xbd8d369470169f9976c5bcc60318955836843a71,real/0xbd8D369470169f9976c5bCc60318955836843a71_DB,yes,no,yes,no,
+0xc145990e84155416144c532e31f89b840ca8c2ce,real/0xC145990E84155416144C532E31f89B840Ca8c2cE_DB,yes,no,yes,no,
+0xc284c7dd4dc9a981f4c0cd2c10da5e91217c3126,real/0xc284C7dd4dc9A981F4C0cd2C10DA5E91217C3126_DB,yes,no,yes,no,
+0xc58226a68a97765fd31dd462fc8789648e0ccea1,real/0xC58226A68a97765fD31Dd462fC8789648E0cCeA1_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=EMTR (Meter) | functions: mint(uint256); burnFrom(address,uint256); increaseAllowance(address,uint256); updatePauser(address); transferOwnership(address); distributeToken(address,uint256); decreaseAllowance(address,uint256); approve(address,uint256); burn(uint256); mintTo(address,uint256); updateRescuer(address); rescueERC20(address,address,uint256); transferFrom(address,address,uint256); transfer(address,uint256); initialize(uint256,address)"
+0xcb46c550539ac3db72dc7af7c89b11c306c727c2,real/0xcb46C550539ac3DB72dc7aF7c89B11c306C727c2_DB,yes,yes,yes,no,
+0xcf2afe102057ba5c16f899271045a0a37fcb10f2,real/0xcF2afe102057bA5c16f899271045a0A37fCb10f2_DB,yes,no,yes,no,
+0xd10ef2a513cee0db54e959ef16cac711470b62cf,real/0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF_DB,yes,no,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=MiniChefV2 | functions: emergencyWithdraw(uint256,address); deposit(uint256,uint256,address); batch(bytes[],bool); permitToken(address,address,address,uint256,uint256,uint8,bytes32,bytes32); withdraw(uint256,uint256,address); transferOwnership(address,bool,bool)"
+0xd37bbe5744d730a1d98d8dc97c42f0ca46ad7146,real/0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146_DB,yes,no,yes,no,
+0xdac17f958d2ee523a2206206994597c13d831ec7,real/0xdAC17F958D2ee523a2206206994597C13D831ec7_DB,yes,yes,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=TetherToken | functions: approve(address,uint256); transferFrom(address,address,uint256); transfer(address,uint256)"
+0xdb0f18081b505a7de20b18ac41856bcb4ba86a1a,real/0xDb0f18081b505A7DE20B18ac41856BCB4Ba86A1a_DB,yes,yes,yes,no,
+0xdc05d6941bd15dea7072435eaa5b64da379343d3,real/0xdC05D6941BD15DEA7072435eAa5B64Da379343D3_DB,yes,no,yes,no,
+0xdcf3ca046171effdc7b3dc64345f5f4258c24565,real/0xdcF3CA046171efFDC7b3dC64345F5F4258c24565_DB,yes,no,yes,no,
+0xde4fc7c3c5e7be3f16506fcc790a8d93f8ca0b40,real/0xde4fC7C3C5E7bE3F16506FcC790a8D93f8Ca0b40_DB,yes,no,yes,no,
+0xe020877e67cfaaffc33a6e7eb9e85741bbb3ea79,real/0xe020877e67CfAAFFC33a6E7eB9e85741bbb3eA79_DB,yes,no,yes,no,
+0xe5204d62361a353c665668c858ea213070ca159c,real/0xe5204d62361A353C665668C858Ea213070CA159c_DB,yes,no,yes,no,
+0xe5fb4748aec17b4140cf7b9e17dd935c66dad24a,real/0xE5fb4748AeC17B4140cf7b9e17dd935C66dad24A_DB,yes,no,yes,no,
+0xe824f81cd136bb7a28480baf8d7e5f0e8e4b693e,real/0xe824F81cD136BB7a28480baF8d7E5f0E8E4B693E_DB,yes,yes,yes,yes,"VULNERABLE (Access Control Incompleteness) | contract=MiniMeToken | functions: approve(address,uint256); transfer(address,uint256); approveAndCall(address,uint256,bytes)"
+0xe95fd76cf16008c12ff3b3a937cb16cd9cc20284,real/0xe95fD76CF16008c12FF3b3a937CB16Cd9Cc20284_DB,yes,no,yes,no,
+0xefd2f730c9d92e53d0b402aca05fe597f1a47001,real/0xEfD2F730c9D92E53d0B402ACA05FE597F1A47001_DB,yes,no,yes,no,
+0xf99d58e463a2e07e5692127302c20a191861b4d6,real/0xf99d58e463A2E07e5692127302C20A191861b4D6_DB,yes,yes,yes,no,
+0xfb4a5f07427c4de0051c5fce5b6f9e8cbf8a544c,real/0xFb4a5F07427C4de0051c5FCe5b6f9E8cBf8A544C_DB,yes,no,yes,no,
+0xfbdd194376de19a88118e84e279b977f165d01b8,real/0xFbdd194376de19a88118e84E279b977f165d01b8_DB,yes,no,yes,no,
+0xfe986b20d34df3aa9fa2e4d18b8ebe5ac6c753b0,real/0xFE986b20d34df3Aa9fA2e4d18b8EBe5AC6c753b0_DB,yes,no,yes,no,
+0xfedad08ba2219489f3090ff118ac9e8b040c8ad7,real/0xFEDAD08Ba2219489F3090ff118AC9E8b040C8Ad7_DB,yes,no,yes,no,

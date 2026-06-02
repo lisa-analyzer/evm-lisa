@@ -215,6 +215,11 @@ public class EVMLiSA {
 
 		setupGlobalOptions(cmd);
 
+		if (cmd.hasOption("smartaxe-benchmark")) {
+			SmartaxeBenchmark.main(args);
+			return;
+		}
+
 		// Cross chain analysis
 		if (cmd.hasOption("cross-chain-analysis")
 				&& cmd.hasOption("bytecode-directory-path")
@@ -394,6 +399,7 @@ public class EVMLiSA {
 		contract.computeFunctionsSignatureExitPoints();
 		contract.computeEventsSignatureEntryPoints();
 		contract.computeEventsExitPoints();
+		contract.findProtectedFunctions();
 		log.info("[OUT] Functions and events of contract {} computed.", contract.getName());
 	}
 
@@ -1033,6 +1039,14 @@ public class EVMLiSA {
 				.hasArg(false)
 				.build();
 
+		Option smartaxeOption = Option.builder()
+				.longOpt("smartaxe-benchmark")
+				.desc("Smartaxe benchmark.")
+				.required(false)
+				.hasArg(false)
+				.build();
+
+		options.addOption(smartaxeOption);
 		options.addOption(addressOption);
 		options.addOption(bytecodeOption);
 		options.addOption(bytecodePathOption);

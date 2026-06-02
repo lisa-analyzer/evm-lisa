@@ -1,0 +1,330 @@
+tool,bridge,vulnerability_type,file,contract,function,type,notes
+xEVMLiSA,LiFinance20220320,access_control_incompleteness,DiamondCutFacet.sol,,"diamondCut((address,uint8,bytes4[])[],address,bytes)",TP,unchecked function arguments
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,"initialize(uint256,address)",TP,unchecked `initAmount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRGV1.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,MeterPassPort20220206,access_control_incompleteness,EMTRG.sol,,"initialize(uint256,address)",TP,unchecked `initAmount`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV4CallProxy.sol,,"anyCall(address,bytes,address,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV4CallProxy.sol,,deposit(address),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV4CallProxy.sol,,withdraw(uint256),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"addWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"anyCall(address,bytes,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,deposit(address),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"removeWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"retryExec(bytes32,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,tidyHistoryWhitelist(string),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"updateAppConfig(address,address,uint256,address[])",TP,unchecked `_flags`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"upgradeApp(address,address)",FP,
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,"addWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,"anyCall(address,bytes,address,uint256,uint256)",TP,"unchecked `_to`, `_toChainID`, `_data`"
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,deposit(address),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,"removeWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,"retryExec(bytes32,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,tidyHistoryWhitelist(string),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,"updateAppConfig(address,address,uint256,address[])",TP,unchecked `_flags`
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,"upgradeApp(address,address)",FP,
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6CallProxy.sol,,withdraw(uint256),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,"approve(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,"approveAndCall(address,uint256,bytes)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,"deposit(uint256,address)",TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,deposit(uint256),TP,unchecked function arguments
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,"Swapout(uint256,address)",TP,"it calls `_burn()`, unchecked function arguments"
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,"transfer(address,uint256)",FP,
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,"transferWithPermit(address,address,uint256,uint256,uint8,bytes32,bytes32)",TP,"it calls `verifyEIP712()` and `verifyPersonalSign()`, unchecked function arguments"
+xEVMLiSA,Multichain20220118,access_control_incompleteness,AnyswapV6ERC20_2.sol,,withdraw(uint256),TP,"it calls `_burn()`, unchecked function arguments"
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV4CallProxy.sol,,"anyCall(address,bytes,address,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV4CallProxy.sol,,deposit(address),TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV4CallProxy.sol,,withdraw(uint256),TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"addWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"anyCall(address,bytes,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,deposit(address),TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"removeWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"retryExec(bytes32,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,tidyHistoryWhitelist(string),TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"updateAppConfig(address,address,uint256,address[])",TP,unchecked `_flags`
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy-AllowCallback.sol,,"upgradeApp(address,address)",FP,
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,"addWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,"anyCall(address,bytes,address,uint256,uint256)",TP,"unchecked `_to`, `_toChainID`, `_data`"
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,deposit(address),TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,"removeWhitelist(address,address[])",TP,unchecked `_whitelist`
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,"retryExec(bytes32,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,tidyHistoryWhitelist(string),TP,unchecked function arguments
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,"updateAppConfig(address,address,uint256,address[])",TP,unchecked `_flags`
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,"upgradeApp(address,address)",FP,
+xEVMLiSA,Multichain20230215,access_control_incompleteness,AnyswapV6CallProxy.sol,,withdraw(uint256),TP,unchecked function arguments
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"approve(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,burn(uint256),TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"burnFrom(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"increaseAllowance(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"initializeMetaSwap(address[],uint8[],string,string,uint256,uint256,uint256,uint256,uint256,address,address)",TP,unchecked function arguments
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"mint(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"transfer(address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils_1.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_2.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwap.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken_1.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,LPToken.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,AmplificationUtils.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,SwapUtils-label.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,MetaSwapUtils-label.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,Nerve20211115,access_control_incompleteness,Swap.sol,,"transferFrom(address,address,uint256)",TP,unchecked `amount`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,adjustBalanceOf(address),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,adjustBalanceOfMany(address[]),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,changeBufferBlocks(uint64),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,changeBufferBlocks(uint64),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,changeExecutionDelayBlocks(uint64),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,changeExecutionDelayBlocks(uint64),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,changeMaxAllowedStakeLocks(uint64),FP,
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,changeMinAcceptQuorumPct(uint64),FP,
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,changeMinAcceptQuorumPct(uint64),FP,
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,changeMinLockTime(uint64),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,changeMinOpenVoteAmount(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,changeMinOpenVoteAmount(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,changeSupportRequiredPct(uint64),FP,
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,changeSupportRequiredPct(uint64),FP,
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,changeVaultContractAddress(address),FP,
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,EVMScriptRegistryFactory.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,DAOFactory.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Imports.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory_1.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistry.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,ACL.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistry_1.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TestImports.sol,,"createBurnedPermission(address,bytes32)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TokenManager.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingRewards.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,DandelionVoting.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,MiniMeToken_2.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,MiniMeToken.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,StakingManager.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,MiniMeToken_1.sol,,"createCloneToken(address,uint256,string,uint8,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TokenManager.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingRewards.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,DandelionVoting.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,MiniMeToken_2.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,MiniMeToken.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,StakingManager.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Steroids.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,MiniMeToken_1.sol,,"createCloneToken(string,uint8,string,uint256,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,EVMScriptRegistryFactory.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,DAOFactory.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Imports.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory_1.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistry.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,ACL.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistry_1.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TestImports.sol,,"createPermission(address,address,bytes32,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,forward(bytes),TP,"it calls `_newVote`, unchecked function arguments"
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,forward(bytes),TP,"it calls `_newVote`, unchecked function arguments"
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock.sol,,mockDecreaseTime(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TimeHelpersMock.sol,,mockDecreaseTime(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock.sol,,mockSetTimestamp(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TimeHelpersMock.sol,,mockSetTimestamp(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory_1.sol,,"newAPM(bytes32,bytes32,address)",TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory.sol,,"newAPM(bytes32,bytes32,address)",TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory_1.sol,,newDAO(address),TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Imports.sol,,newDAO(address),TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory.sol,,newDAO(address),TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,DAOFactory.sol,,newDAO(address),TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TestImports.sol,,newDAO(address),TP,unchecked `_root`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory_1.sol,,newENS(address),TP,unchecked `_owner`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory.sol,,newENS(address),TP,unchecked `_owner`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,ENSFactory.sol,,newENS(address),TP,unchecked `_owner`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,EVMScriptRegistryFactory.sol,,newEVMScriptRegistry(address),TP,unchecked `_dao`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory_1.sol,,newEVMScriptRegistry(address),TP,unchecked `_dao`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Imports.sol,,newEVMScriptRegistry(address),TP,unchecked `_dao`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,APMRegistryFactory.sol,,newEVMScriptRegistry(address),TP,unchecked `_dao`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,DAOFactory.sol,,newEVMScriptRegistry(address),TP,unchecked `_dao`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TestImports.sol,,newEVMScriptRegistry(address),TP,unchecked `_dao`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,"newVote(bytes,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,"newVote(bytes,string,bool)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,"onRegisterAsHook(uint256,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,"onRegisterAsHook(uint256,address)",TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,TokenMock.sol,,setAllowTransfer(bool),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,Imports.sol,,setAllowTransfer(bool),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,ExecutionTarget.sol,,setCounter(uint256),TP,unchecked function arguments
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,"vote(uint256,bool)",TP,unchecked `_voter`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,"vote(uint256,bool)",TP,unchecked `_voter`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_1.sol,,"voteFor(uint256,bool,bytes)",TP,unchecked `_supports`
+xEVMLiSA,pNetwork20210920,access_control_incompleteness,VotingMock_2.sol,,"voteFor(uint256,bool,bytes)",TP,unchecked `_supports`
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"approve(address,uint256)",TP,unchecked `value`
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"cancelAuthorization(address,bytes32,uint8,bytes32,bytes32)",FP,
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"decreaseAllowance(address,uint256)",TP,unchecked `value`
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"increaseAllowance(address,uint256)",TP,unchecked `value`
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"initialize(string,string,string,uint8,address,address,address,address)",TP,unchecked function arguments
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,initializeV2_1(address),TP,unchecked function arguments
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,initializeV2(string),TP,unchecked function arguments
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"permit(address,address,uint256,uint256,uint8,bytes32,bytes32)",FP,
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"receiveWithAuthorization(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32)",FP,
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"transfer(address,uint256)",FP,
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"transferFrom(address,address,uint256)",FP,
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,FiatTokenV2.sol,,"transferWithAuthorization(address,address,uint256,uint256,uint256,bytes32,uint8,bytes32,bytes32)",FP,
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,PolyNFTLockProxy.sol,,"onERC721Received(address,address,uint256,bytes)",TP,unchecked function arguments
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,PolyNFTWrapper.sol,,"lock(address,uint64,address,uint256,address,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,PolyNFTWrapper.sol,,"speedUp(address,bytes,uint256)",TP,unchecked `fee`
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,TetherToken_label.sol,,"approve(address,uint256)",TP,unchecked `value`
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,TetherToken_label.sol,,"transfer(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,PolyNetwork20210810,access_control_incompleteness,TetherToken_label.sol,,"transferFrom(address,address,uint256)",TP,unchecked function arguments
+xEVMLiSA,QANXBridge20220518,access_control_incompleteness,BridgeQANX-label.sol,,"setSigner(address,uint256)",TP,unchecked `limit`
+xEVMLiSA,Rubic20221225,access_control_incompleteness,RubicProxy-label.sol,,"renounceRole(bytes32,address)",TP,"it calls `hasRole()`, unchecked function arguments"
+xEVMLiSA,Rubic20221225,access_control_incompleteness,RubicProxy-label.sol,,collectIntegratorFee(address),TP,unchecked `_integrator`
+xEVMLiSA,Rubic20221225,access_control_incompleteness,RubicProxy-label.sol,,"grantRole(bytes32,address)",TP,"it calls `hasRole()`, unchecked function arguments"
+xEVMLiSA,Rubic20221225,access_control_incompleteness,RubicProxy-label.sol,,"routerCallNative((address,uint256,uint256,address,uint256,address,address,address),bytes)",TP,unchecked `data`
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"deposit(address,uint256,address,uint256)",TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"withdrawFees(address,address)",FP,
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"withdrawAndRemove(address,address,uint256,uint256,address,uint8,uint256,uint256,bytes32)",TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,setWethAddress(address),TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,setChainGasAmount(uint256),TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"mintAndSwap(address,address,uint256,uint256,address,uint8,uint8,uint256,uint256,bytes32)",TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"renounceRole(bytes32,address)",TP,unchecked `role`
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"redeemV2(bytes32,uint256,address,uint256)",TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"mint(address,address,uint256,uint256,bytes32)",TP,unchecked `amount`
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"depositAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256)",TP,external call with unchecked arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"redeemAndSwap(address,uint256,address,uint256,uint8,uint8,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"grantRole(bytes32,address)",TP,unchecked `role`
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"revokeRole(bytes32,address)",TP,unchecked `role`
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"withdraw(address,address,uint256,uint256,bytes32)",TP,unchecked `to`
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"redeem(address,uint256,address,uint256)",TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,addKappas(bytes32[]),TP,unchecked function arguments
+xEVMLiSA,Synapse20211106,access_control_incompleteness,SynapseBridge.sol,,"redeemAndRemove(address,uint256,address,uint256,uint8,uint256,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_1.sol,,"deposit(address,address,uint256,string)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_5.sol,,"deposit(address,address,uint256,string)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,RUNE_Bridge.sol,,"deposit(uint256,string)",TP,"unchecked `msg.sender`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,Incentives_1.sol,,"depositIncentives(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210629,access_control_incompleteness,Incentives_2.sol,,"depositIncentives(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_1.sol,,"depositWithExpiry(address,address,uint256,string,uint256)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_5.sol,,"depositWithExpiry(address,address,uint256,string,uint256)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_1.sol,,"returnVaultAssets(address,address,(address,uint256)[],string)",TP,"unchecked `asgard`, `coins`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_5.sol,,"returnVaultAssets(address,address,(address,uint256)[],string)",TP,"unchecked `asgard`, `coins`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_1.sol,,"transferAllowance(address,address,address,uint256,string)",TP,"unchecked `newVault`, `asset`, `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_5.sol,,"transferAllowance(address,address,address,uint256,string)",TP,"unchecked `newVault`, `asset`, `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_1.sol,,"transferOut(address,address,uint256,string)",TP,"unchecked `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_5.sol,,"transferOut(address,address,uint256,string)",TP,"unchecked `amount`, `memo`"
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_1.sol,,"transferOutAndCall(address,address,address,uint256,string)",TP,external call with unchecked arguments
+xEVMLiSA,THORChain20210629,access_control_incompleteness,THORChain_Router_5.sol,,"transferOutAndCall(address,address,address,uint256,string)",TP,external call with unchecked arguments
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router_1.sol,,"deposit(address,address,uint256,string)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router-label.sol,,"deposit(address,address,uint256,string)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,RUNE_Bridge.sol,,"deposit(uint256,string)",TP,"unchecked `msg.sender`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,Incentives_1.sol,,"depositIncentives(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210716,access_control_incompleteness,Incentives_2.sol,,"depositIncentives(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router_1.sol,,"depositWithExpiry(address,address,uint256,string,uint256)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router-label.sol,,"depositWithExpiry(address,address,uint256,string,uint256)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router_1.sol,,"returnVaultAssets(address,address,(address,uint256)[],string)",TP,"unchecked `asgard`, `coins`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router-label.sol,,"returnVaultAssets(address,address,(address,uint256)[],string)",TP,"unchecked `asgard`, `coins`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router_1.sol,,"transferAllowance(address,address,address,uint256,string)",TP,"unchecked `newVault`, `asset`, `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router-label.sol,,"transferAllowance(address,address,address,uint256,string)",TP,"unchecked `newVault`, `asset`, `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router_1.sol,,"transferOut(address,address,uint256,string)",TP,"unchecked `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router-label.sol,,"transferOut(address,address,uint256,string)",TP,"unchecked `amount`, `memo`"
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router_1.sol,,"transferOutAndCall(address,address,address,uint256,string)",TP,external call with unchecked arguments
+xEVMLiSA,THORChain20210716,access_control_incompleteness,THORChain_Router-label.sol,,"transferOutAndCall(address,address,address,uint256,string)",TP,external call with unchecked arguments
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router_1.sol,,"deposit(address,address,uint256,string)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router-label.sol,,"deposit(address,address,uint256,string)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,RUNE_Bridge.sol,,"deposit(uint256,string)",TP,"unchecked `msg.sender`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,Incentives_1.sol,,"depositIncentives(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210723,access_control_incompleteness,Incentives_2.sol,,"depositIncentives(address,uint256)",TP,unchecked function arguments
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router_1.sol,,"depositWithExpiry(address,address,uint256,string,uint256)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router-label.sol,,"depositWithExpiry(address,address,uint256,string,uint256)",TP,"unchecked `vault`, `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router_1.sol,,"returnVaultAssets(address,address,(address,uint256)[],string)",TP,"unchecked `asgard`, `coins`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router-label.sol,,"returnVaultAssets(address,address,(address,uint256)[],string)",TP,"unchecked `asgard`, `coins`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router_1.sol,,"transferAllowance(address,address,address,uint256,string)",TP,"unchecked `newVault`, `asset`, `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router-label.sol,,"transferAllowance(address,address,address,uint256,string)",TP,"unchecked `newVault`, `asset`, `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router_1.sol,,"transferOut(address,address,uint256,string)",TP,"unchecked `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router-label.sol,,"transferOut(address,address,uint256,string)",TP,"unchecked `amount`, `memo`"
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router_1.sol,,"transferOutAndCall(address,address,address,uint256,string)",TP,external call with unchecked arguments
+xEVMLiSA,THORChain20210723,access_control_incompleteness,THORChain_Router-label.sol,,"transferOutAndCall(address,address,address,uint256,string)",TP,external call with unchecked arguments
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,tot warning,319,
+,,,,,TP,301,
+,,,,,FP,18,
+,,,,,,,
+,,,,,precision,"94,36%",
+,,,,,recall,100%,
