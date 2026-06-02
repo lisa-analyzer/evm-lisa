@@ -1,0 +1,9 @@
+{
+    "address": "0xAAA4940aA878D932D3482Bf1DE332E1D50c15AaA",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.9",
+    "contract_name": "BridgeQANX",
+    "compiled_from": "0xAAA4940aA878D932D3482Bf1DE332E1D50c15AaA"
+}

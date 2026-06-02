@@ -1,0 +1,9 @@
+{
+    "address": "0xE5fb4748AeC17B4140cf7b9e17dd935C66dad24A",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "PolyNFTQuery",
+    "compiled_from": "0xE5fb4748AeC17B4140cf7b9e17dd935C66dad24A"
+}

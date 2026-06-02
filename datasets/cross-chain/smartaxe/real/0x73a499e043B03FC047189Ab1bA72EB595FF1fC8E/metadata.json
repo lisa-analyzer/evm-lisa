@@ -1,0 +1,9 @@
+{
+    "address": "0x73a499e043B03FC047189Ab1bA72EB595FF1fC8E",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.7",
+    "contract_name": "CBridgeFacet",
+    "compiled_from": "0x73a499e043B03FC047189Ab1bA72EB595FF1fC8E"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0x2796317b0fF8538F253012862c06787Adfb8cEb6",
+    "is_proxy": true,
+    "implementation_address": "0x5b0000258c622551a1c7c45b9f860ef90200005b",
+    "implementation_url": "https://etherscan.io/address/0x5b0000258c622551a1c7c45b9f860ef90200005b",
+    "compiler_version": "0.6.12",
+    "contract_name": "SynapseBridge",
+    "compiled_from": "0x5b0000258c622551a1c7c45b9f860ef90200005b"
+}

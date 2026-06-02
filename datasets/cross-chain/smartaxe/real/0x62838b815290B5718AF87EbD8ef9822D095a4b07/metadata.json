@@ -1,0 +1,9 @@
+{
+    "address": "0x62838b815290B5718AF87EbD8ef9822D095a4b07",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.4.24",
+    "contract_name": "StakingManager",
+    "compiled_from": "0x62838b815290B5718AF87EbD8ef9822D095a4b07"
+}

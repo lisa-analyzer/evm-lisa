@@ -1,0 +1,9 @@
+{
+    "address": "0xf99d58e463A2E07e5692127302C20A191861b4D6",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.5.4",
+    "contract_name": "Erc20SwapAsset",
+    "compiled_from": "0xf99d58e463A2E07e5692127302C20A191861b4D6"
+}

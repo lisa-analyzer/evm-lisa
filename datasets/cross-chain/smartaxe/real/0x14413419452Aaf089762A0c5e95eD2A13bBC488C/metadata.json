@@ -1,0 +1,9 @@
+{
+    "address": "0x14413419452Aaf089762A0c5e95eD2A13bBC488C",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.5.17",
+    "contract_name": "EthCrossChainManager",
+    "compiled_from": "0x14413419452Aaf089762A0c5e95eD2A13bBC488C"
+}

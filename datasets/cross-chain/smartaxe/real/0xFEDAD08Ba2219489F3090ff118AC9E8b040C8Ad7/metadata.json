@@ -1,0 +1,9 @@
+{
+    "address": "0xFEDAD08Ba2219489F3090ff118AC9E8b040C8Ad7",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.4",
+    "contract_name": "ERC20Handler",
+    "compiled_from": "0xFEDAD08Ba2219489F3090ff118AC9E8b040C8Ad7"
+}

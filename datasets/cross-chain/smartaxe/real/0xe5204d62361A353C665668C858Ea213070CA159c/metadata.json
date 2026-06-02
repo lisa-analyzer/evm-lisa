@@ -1,0 +1,9 @@
+{
+    "address": "0xe5204d62361A353C665668C858Ea213070CA159c",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "PolyNFTWrapper",
+    "compiled_from": "0xe5204d62361A353C665668C858Ea213070CA159c"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0xAAA7A10a8ee237ea61E8AC46C50A8Db8bCC1baaa",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.4",
+    "contract_name": "QANX",
+    "compiled_from": "0xAAA7A10a8ee237ea61E8AC46C50A8Db8bCC1baaa"
+}

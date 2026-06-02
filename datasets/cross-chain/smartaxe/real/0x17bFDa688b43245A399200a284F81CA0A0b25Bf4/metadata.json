@@ -1,0 +1,9 @@
+{
+    "address": "0x17bFDa688b43245A399200a284F81CA0A0b25Bf4",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.4.24",
+    "contract_name": "DandelionVoting",
+    "compiled_from": "0x17bFDa688b43245A399200a284F81CA0A0b25Bf4"
+}

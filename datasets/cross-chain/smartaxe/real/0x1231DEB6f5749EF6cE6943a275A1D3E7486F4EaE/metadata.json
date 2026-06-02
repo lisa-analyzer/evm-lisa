@@ -1,0 +1,9 @@
+{
+    "address": "0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE",
+    "is_proxy": true,
+    "implementation_address": "0xa74c9c1b2194f27c372b0892839624852de21687",
+    "implementation_url": "https://etherscan.io/address/0xa74c9c1b2194f27c372b0892839624852de21687",
+    "compiler_version": "0.8.29",
+    "contract_name": "GenericSwapFacet",
+    "compiled_from": "0xa74c9c1b2194f27c372b0892839624852de21687"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "is_proxy": true,
+    "implementation_address": "0x43506849d7c04f9138d1a2050bbf3a0c054402dd",
+    "implementation_url": "https://etherscan.io/address/0x43506849d7c04f9138d1a2050bbf3a0c054402dd",
+    "compiler_version": "0.6.12",
+    "contract_name": "FiatTokenV2_2",
+    "compiled_from": "0x43506849d7c04f9138d1a2050bbf3a0c054402dd"
+}

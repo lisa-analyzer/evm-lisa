@@ -1,0 +1,9 @@
+{
+    "address": "0xa2569370A9D4841c9a62Fc51269110F2eB7E0171",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "NerveBridgeZap",
+    "compiled_from": "0xa2569370A9D4841c9a62Fc51269110F2eB7E0171"
+}

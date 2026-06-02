@@ -1,0 +1,9 @@
+{
+    "address": "0xe824F81cD136BB7a28480baF8d7E5f0E8E4B693E",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.4.24",
+    "contract_name": "MiniMeToken",
+    "compiled_from": "0xe824F81cD136BB7a28480baF8d7E5f0E8E4B693E"
+}

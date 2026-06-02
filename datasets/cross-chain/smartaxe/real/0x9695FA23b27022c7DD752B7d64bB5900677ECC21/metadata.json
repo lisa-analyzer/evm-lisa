@@ -1,0 +1,9 @@
+{
+    "address": "0x9695FA23b27022c7DD752B7d64bB5900677ECC21",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "Multicall2",
+    "compiled_from": "0x9695FA23b27022c7DD752B7d64bB5900677ECC21"
+}

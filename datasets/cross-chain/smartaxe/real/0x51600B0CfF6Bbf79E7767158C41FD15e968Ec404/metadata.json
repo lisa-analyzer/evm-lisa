@@ -1,0 +1,9 @@
+{
+    "address": "0x51600B0CfF6Bbf79E7767158C41FD15e968Ec404",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.5.4",
+    "contract_name": "BtcSwapAssetV2",
+    "compiled_from": "0x51600B0CfF6Bbf79E7767158C41FD15e968Ec404"
+}

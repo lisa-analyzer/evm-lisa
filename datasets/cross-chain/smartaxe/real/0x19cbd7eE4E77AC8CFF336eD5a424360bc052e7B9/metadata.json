@@ -1,0 +1,9 @@
+{
+    "address": "0x19cbd7eE4E77AC8CFF336eD5a424360bc052e7B9",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.4.24",
+    "contract_name": "VotingRewards",
+    "compiled_from": "0x19cbd7eE4E77AC8CFF336eD5a424360bc052e7B9"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.1",
+    "contract_name": "AnyswapV4Router",
+    "compiled_from": "0x765277EebeCA2e31912C9946eAe1021199B39C61"
+}

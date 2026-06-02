@@ -1,0 +1,9 @@
+{
+    "address": "0xbCefB397a13528F693D929931248C94c4263B763",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "NodeEnv",
+    "compiled_from": "0xbCefB397a13528F693D929931248C94c4263B763"
+}

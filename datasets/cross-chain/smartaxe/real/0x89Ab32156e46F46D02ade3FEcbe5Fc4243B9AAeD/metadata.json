@@ -1,0 +1,9 @@
+{
+    "address": "0x89Ab32156e46F46D02ade3FEcbe5Fc4243B9AAeD",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.10",
+    "contract_name": "PNT",
+    "compiled_from": "0x89Ab32156e46F46D02ade3FEcbe5Fc4243B9AAeD"
+}

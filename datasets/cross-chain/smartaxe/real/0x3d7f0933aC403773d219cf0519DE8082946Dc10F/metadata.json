@@ -1,0 +1,9 @@
+{
+    "address": "0x3d7f0933aC403773d219cf0519DE8082946Dc10F",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.1",
+    "contract_name": "fUSD",
+    "compiled_from": "0x3d7f0933aC403773d219cf0519DE8082946Dc10F"
+}

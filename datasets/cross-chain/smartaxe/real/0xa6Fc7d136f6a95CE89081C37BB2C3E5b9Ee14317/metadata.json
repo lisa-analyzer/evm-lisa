@@ -1,0 +1,9 @@
+{
+    "address": "0xa6Fc7d136f6a95CE89081C37BB2C3E5b9Ee14317",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "SynapseERC20",
+    "compiled_from": "0xa6Fc7d136f6a95CE89081C37BB2C3E5b9Ee14317"
+}

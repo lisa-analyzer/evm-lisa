@@ -1,0 +1,9 @@
+{
+    "address": "0xEfD2F730c9D92E53d0B402ACA05FE597F1A47001",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "SynapseBridge",
+    "compiled_from": "0xEfD2F730c9D92E53d0B402ACA05FE597F1A47001"
+}

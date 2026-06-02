@@ -1,0 +1,9 @@
+{
+    "address": "0xAFAace7138ab3c2BCb2DB4264F8312e1Bbb80653",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.10",
+    "contract_name": "AnyswapV6ERC20",
+    "compiled_from": "0xAFAace7138ab3c2BCb2DB4264F8312e1Bbb80653"
+}

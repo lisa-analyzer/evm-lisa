@@ -1,0 +1,9 @@
+{
+    "address": "0x8474a898677C3bc97f35A86c387aE34Bf272C860",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.17",
+    "contract_name": "EthPnt",
+    "compiled_from": "0x8474a898677C3bc97f35A86c387aE34Bf272C860"
+}

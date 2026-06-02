@@ -1,0 +1,9 @@
+{
+    "address": "0xbd8D369470169f9976c5bCc60318955836843a71",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.17",
+    "contract_name": "AmarokFacet",
+    "compiled_from": "0xbd8D369470169f9976c5bCc60318955836843a71"
+}

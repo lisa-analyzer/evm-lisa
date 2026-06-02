@@ -1,0 +1,9 @@
+{
+    "address": "0x0cD79409eD80d8a153A3c729aa1f8b5D44A29282",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "QBridge",
+    "compiled_from": "0x0cD79409eD80d8a153A3c729aa1f8b5D44A29282"
+}

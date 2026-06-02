@@ -1,0 +1,9 @@
+{
+    "address": "0x0aBCFbfA8e3Fda8B7FBA18721Caf7d5cf55cF5f5",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.5.4",
+    "contract_name": "LtcSwapAsset",
+    "compiled_from": "0x0aBCFbfA8e3Fda8B7FBA18721Caf7d5cf55cF5f5"
+}

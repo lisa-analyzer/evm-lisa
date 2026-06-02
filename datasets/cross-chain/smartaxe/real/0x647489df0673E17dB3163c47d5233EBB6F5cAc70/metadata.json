@@ -1,0 +1,9 @@
+{
+    "address": "0x647489df0673E17dB3163c47d5233EBB6F5cAc70",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.3",
+    "contract_name": "TimelockController",
+    "compiled_from": "0x647489df0673E17dB3163c47d5233EBB6F5cAc70"
+}

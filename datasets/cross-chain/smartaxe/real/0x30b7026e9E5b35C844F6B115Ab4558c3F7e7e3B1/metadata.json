@@ -1,0 +1,9 @@
+{
+    "address": "0x30b7026e9E5b35C844F6B115Ab4558c3F7e7e3B1",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.4",
+    "contract_name": "GenericHandler",
+    "compiled_from": "0x30b7026e9E5b35C844F6B115Ab4558c3F7e7e3B1"
+}

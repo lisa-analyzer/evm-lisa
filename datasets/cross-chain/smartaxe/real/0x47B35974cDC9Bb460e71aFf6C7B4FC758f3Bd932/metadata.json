@@ -1,0 +1,9 @@
+{
+    "address": "0x47B35974cDC9Bb460e71aFf6C7B4FC758f3Bd932",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "MetaSwap",
+    "compiled_from": "0x47B35974cDC9Bb460e71aFf6C7B4FC758f3Bd932"
+}

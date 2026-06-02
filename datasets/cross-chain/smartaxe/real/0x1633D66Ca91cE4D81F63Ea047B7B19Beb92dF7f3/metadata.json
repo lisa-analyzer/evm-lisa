@@ -1,0 +1,9 @@
+{
+    "address": "0x1633D66Ca91cE4D81F63Ea047B7B19Beb92dF7f3",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.17",
+    "contract_name": "MultichainV7Router",
+    "compiled_from": "0x1633D66Ca91cE4D81F63Ea047B7B19Beb92dF7f3"
+}

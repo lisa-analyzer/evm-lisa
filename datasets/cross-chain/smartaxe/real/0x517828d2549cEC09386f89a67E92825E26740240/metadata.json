@@ -1,0 +1,9 @@
+{
+    "address": "0x517828d2549cEC09386f89a67E92825E26740240",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.4",
+    "contract_name": "GenericHandler",
+    "compiled_from": "0x517828d2549cEC09386f89a67E92825E26740240"
+}

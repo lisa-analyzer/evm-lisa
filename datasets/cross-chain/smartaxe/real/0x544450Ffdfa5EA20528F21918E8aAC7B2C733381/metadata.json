@@ -1,0 +1,9 @@
+{
+    "address": "0x544450Ffdfa5EA20528F21918E8aAC7B2C733381",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "MetaSwapDeposit",
+    "compiled_from": "0x544450Ffdfa5EA20528F21918E8aAC7B2C733381"
+}

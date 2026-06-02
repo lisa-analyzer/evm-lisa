@@ -1,0 +1,9 @@
+{
+    "address": "0x3155BA85D5F96b2d030a4966AF206230e46849cb",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.7.6",
+    "contract_name": "ETH_RUNE",
+    "compiled_from": "0x3155BA85D5F96b2d030a4966AF206230e46849cb"
+}

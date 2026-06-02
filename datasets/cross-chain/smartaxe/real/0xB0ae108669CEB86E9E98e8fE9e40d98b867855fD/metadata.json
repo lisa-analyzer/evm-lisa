@@ -1,0 +1,9 @@
+{
+    "address": "0xB0ae108669CEB86E9E98e8fE9e40d98b867855fD",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.6",
+    "contract_name": "NFTRouter",
+    "compiled_from": "0xB0ae108669CEB86E9E98e8fE9e40d98b867855fD"
+}

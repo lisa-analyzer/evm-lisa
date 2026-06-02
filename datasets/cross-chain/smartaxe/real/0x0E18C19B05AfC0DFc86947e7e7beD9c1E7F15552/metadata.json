@@ -1,0 +1,9 @@
+{
+    "address": "0x0E18C19B05AfC0DFc86947e7e7beD9c1E7F15552",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.7.6",
+    "contract_name": "Incentives",
+    "compiled_from": "0x0E18C19B05AfC0DFc86947e7e7beD9c1E7F15552"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0x78e1ad66e64f5cE1E6C38667ccA78D42dfF4e71B",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.4.24",
+    "contract_name": "NodeManager",
+    "compiled_from": "0x78e1ad66e64f5cE1E6C38667ccA78D42dfF4e71B"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "MiniChefV2",
+    "compiled_from": "0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF"
+}

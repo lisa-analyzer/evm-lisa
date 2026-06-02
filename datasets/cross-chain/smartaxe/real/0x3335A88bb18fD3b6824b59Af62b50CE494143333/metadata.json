@@ -1,0 +1,9 @@
+{
+    "address": "0x3335A88bb18fD3b6824b59Af62b50CE494143333",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.16",
+    "contract_name": "RubicProxy",
+    "compiled_from": "0x3335A88bb18fD3b6824b59Af62b50CE494143333"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0xC58226A68a97765fD31Dd462fC8789648E0cCeA1",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.10",
+    "contract_name": "MeterGovERC20V1_1",
+    "compiled_from": "0xC58226A68a97765fD31Dd462fC8789648E0cCeA1"
+}

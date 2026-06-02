@@ -1,0 +1,9 @@
+{
+    "address": "0xad5bAC300E311169F8223484f242d43C627eCa30",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.4",
+    "contract_name": "Bridge",
+    "compiled_from": "0xad5bAC300E311169F8223484f242d43C627eCa30"
+}

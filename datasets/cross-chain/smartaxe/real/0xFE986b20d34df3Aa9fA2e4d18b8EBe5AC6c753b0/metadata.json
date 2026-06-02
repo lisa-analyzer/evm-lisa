@@ -1,0 +1,9 @@
+{
+    "address": "0xFE986b20d34df3Aa9fA2e4d18b8EBe5AC6c753b0",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "AmplificationUtils",
+    "compiled_from": "0xFE986b20d34df3Aa9fA2e4d18b8EBe5AC6c753b0"
+}

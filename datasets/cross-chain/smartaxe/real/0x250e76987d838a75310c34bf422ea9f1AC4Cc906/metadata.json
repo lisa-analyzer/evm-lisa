@@ -1,0 +1,9 @@
+{
+    "address": "0x250e76987d838a75310c34bf422ea9f1AC4Cc906",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.5.17",
+    "contract_name": "LockProxy",
+    "compiled_from": "0x250e76987d838a75310c34bf422ea9f1AC4Cc906"
+}

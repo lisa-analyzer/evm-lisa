@@ -1,0 +1,9 @@
+{
+    "address": "0xBa8Da9dcF11B50B03fd5284f164Ef5cdEF910705",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.10",
+    "contract_name": "AnyswapV6Router",
+    "compiled_from": "0xBa8Da9dcF11B50B03fd5284f164Ef5cdEF910705"
+}

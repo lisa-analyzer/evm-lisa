@@ -1,0 +1,9 @@
+{
+    "address": "0xc284C7dd4dc9A981F4C0cd2C10DA5E91217C3126",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.3",
+    "contract_name": "Router",
+    "compiled_from": "0xc284C7dd4dc9A981F4C0cd2C10DA5E91217C3126"
+}

@@ -1,0 +1,9 @@
+{
+    "address": "0x1e3bEE7628844b914Ff7184c604fE2badd01CA81",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "QBridgeHandler",
+    "compiled_from": "0x1e3bEE7628844b914Ff7184c604fE2badd01CA81"
+}

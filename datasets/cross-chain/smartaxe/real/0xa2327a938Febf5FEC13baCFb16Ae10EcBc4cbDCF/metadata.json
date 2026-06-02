@@ -1,0 +1,9 @@
+{
+    "address": "0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.6.12",
+    "contract_name": "FiatTokenV2_1",
+    "compiled_from": "0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF"
+}

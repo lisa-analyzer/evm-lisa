@@ -1,0 +1,9 @@
+{
+    "address": "0x332730a4F6E03D9C55829435f10360E13cfA41Ff",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.2",
+    "contract_name": "AnyswapV3Router",
+    "compiled_from": "0x332730a4F6E03D9C55829435f10360E13cfA41Ff"
+}

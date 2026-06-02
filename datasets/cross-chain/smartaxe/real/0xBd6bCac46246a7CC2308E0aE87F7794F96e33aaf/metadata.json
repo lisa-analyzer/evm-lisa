@@ -1,0 +1,9 @@
+{
+    "address": "0xBd6bCac46246a7CC2308E0aE87F7794F96e33aaf",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.11",
+    "contract_name": "BridgeUpgradeable",
+    "compiled_from": "0xBd6bCac46246a7CC2308E0aE87F7794F96e33aaf"
+}

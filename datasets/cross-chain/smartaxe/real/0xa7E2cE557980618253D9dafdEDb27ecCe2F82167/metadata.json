@@ -1,0 +1,9 @@
+{
+    "address": "0xa7E2cE557980618253D9dafdEDb27ecCe2F82167",
+    "is_proxy": true,
+    "implementation_address": "0xbd6bcac46246a7cc2308e0ae87f7794f96e33aaf",
+    "implementation_url": "https://etherscan.io/address/0xbd6bcac46246a7cc2308e0ae87f7794f96e33aaf",
+    "compiler_version": "0.8.11",
+    "contract_name": "BridgeUpgradeable",
+    "compiled_from": "0xbd6bcac46246a7cc2308e0ae87f7794f96e33aaf"
+}

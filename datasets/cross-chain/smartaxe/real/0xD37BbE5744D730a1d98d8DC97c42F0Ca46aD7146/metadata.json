@@ -1,0 +1,9 @@
+{
+    "address": "0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.13",
+    "contract_name": "THORChain_Router",
+    "compiled_from": "0xD37BbE5744D730a1d98d8DC97c42F0Ca46aD7146"
+}

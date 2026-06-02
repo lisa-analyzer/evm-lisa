@@ -1,0 +1,9 @@
+{
+    "address": "0x90f8d8b30475b6df833b69D9b5403491416E9927",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.4.24",
+    "contract_name": "Steroids",
+    "compiled_from": "0x90f8d8b30475b6df833b69D9b5403491416E9927"
+}

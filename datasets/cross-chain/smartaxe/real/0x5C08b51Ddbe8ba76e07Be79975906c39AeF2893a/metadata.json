@@ -1,0 +1,9 @@
+{
+    "address": "0x5C08b51Ddbe8ba76e07Be79975906c39AeF2893a",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.1",
+    "contract_name": "fKRW",
+    "compiled_from": "0x5C08b51Ddbe8ba76e07Be79975906c39AeF2893a"
+}

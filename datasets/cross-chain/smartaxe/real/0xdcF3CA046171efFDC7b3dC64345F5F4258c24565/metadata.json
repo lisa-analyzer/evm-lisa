@@ -1,0 +1,9 @@
+{
+    "address": "0xdcF3CA046171efFDC7b3dC64345F5F4258c24565",
+    "is_proxy": false,
+    "implementation_address": null,
+    "implementation_url": null,
+    "compiler_version": "0.8.11",
+    "contract_name": "GenericHandlerUpgradeable",
+    "compiled_from": "0xdcF3CA046171efFDC7b3dC64345F5F4258c24565"
+}
