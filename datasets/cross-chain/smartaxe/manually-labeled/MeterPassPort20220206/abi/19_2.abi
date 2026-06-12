@@ -1,0 +1,275 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint8",
+                "name": "version",
+                "type": "uint8"
+            }
+        ],
+        "name": "Initialized",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "_bridgeAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "_contractAddressToDepositFunctionDepositorOffset",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "_contractAddressToDepositFunctionSignature",
+        "outputs": [
+            {
+                "internalType": "bytes4",
+                "name": "",
+                "type": "bytes4"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "_contractAddressToExecuteFunctionSignature",
+        "outputs": [
+            {
+                "internalType": "bytes4",
+                "name": "",
+                "type": "bytes4"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "_contractAddressToResourceID",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "_contractWhitelist",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "_resourceIDToContractAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "depositor",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "deposit",
+        "outputs": [
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "onlyBridge"
+        ]
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "executeProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "onlyBridge"
+        ]
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "bridgeAddress",
+                "type": "address"
+            }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "initializer"
+        ]
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "contractAddress",
+                "type": "address"
+            }
+        ],
+        "name": "removeResource",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "onlyBridge"
+        ]
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "contractAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes4",
+                "name": "depositFunctionSig",
+                "type": "bytes4"
+            },
+            {
+                "internalType": "uint256",
+                "name": "depositFunctionDepositorOffset",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes4",
+                "name": "executeFunctionSig",
+                "type": "bytes4"
+            }
+        ],
+        "name": "setResource",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "onlyBridge"
+        ]
+    }
+]

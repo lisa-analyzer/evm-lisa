@@ -1,0 +1,143 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_mpc",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "oldMPC",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newMPC",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "applyTime",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogApplyMPC",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "oldMPC",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newMPC",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "effectiveTime",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogChangeMPC",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "applyMPC",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_mpc",
+                "type": "address"
+            }
+        ],
+        "name": "changeMPC",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "onlyMPC"
+        ]
+    },
+    {
+        "inputs": [],
+        "name": "delay",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "delayMPC",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "mpc",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "pendingMPC",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    }
+]

@@ -1,0 +1,99 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "admin",
+                "type": "address"
+            }
+        ],
+        "name": "LogAcceptAdmin",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "admin",
+                "type": "address"
+            }
+        ],
+        "name": "LogSetAdmin",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "oldadmin",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newadmin",
+                "type": "address"
+            }
+        ],
+        "name": "LogTransferAdmin",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "acceptAdmin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "admin",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "pendingAdmin",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newAdmin",
+                "type": "address"
+            }
+        ],
+        "name": "transferAdmin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": [
+            "onlyAdmin"
+        ]
+    }
+]

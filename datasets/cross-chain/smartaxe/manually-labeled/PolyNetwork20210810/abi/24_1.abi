@@ -1,0 +1,395 @@
+[
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "argsBs",
+                "type": "bytes"
+            },
+            {
+                "name": "fromContractAddr",
+                "type": "bytes"
+            },
+            {
+                "name": "fromChainId",
+                "type": "uint64"
+            }
+        ],
+        "name": "unlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "fromAssetHash",
+                "type": "address"
+            },
+            {
+                "name": "toChainId",
+                "type": "uint64"
+            },
+            {
+                "name": "toAssetHash",
+                "type": "bytes"
+            }
+        ],
+        "name": "bindAssetHash",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "toChainId",
+                "type": "uint64"
+            },
+            {
+                "name": "targetProxyHash",
+                "type": "bytes"
+            }
+        ],
+        "name": "bindProxyHash",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            },
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "name": "assetHashMap",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "fromAssetHash",
+                "type": "address"
+            }
+        ],
+        "name": "getBalanceFor",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "fromAssetHash",
+                "type": "address"
+            },
+            {
+                "name": "toChainId",
+                "type": "uint64"
+            },
+            {
+                "name": "toAddress",
+                "type": "bytes"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "lock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isOwner",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "name": "proxyHashMap",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "ethCCMProxyAddr",
+                "type": "address"
+            }
+        ],
+        "name": "setManagerProxy",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "managerProxyContract",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "manager",
+                "type": "address"
+            }
+        ],
+        "name": "SetManagerProxyEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "toChainId",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "name": "targetProxyHash",
+                "type": "bytes"
+            }
+        ],
+        "name": "BindProxyEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "fromAssetHash",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "toChainId",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "name": "targetProxyHash",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "initialAmount",
+                "type": "uint256"
+            }
+        ],
+        "name": "BindAssetEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "toAssetHash",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "toAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "UnlockEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "fromAssetHash",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "fromAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "toChainId",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "name": "toAssetHash",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "toAddress",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "LockEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    }
+]

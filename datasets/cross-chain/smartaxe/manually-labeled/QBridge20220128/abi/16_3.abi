@@ -1,0 +1,1093 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint8",
+                "name": "destinationDomainID",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "Deposit",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "lowLevelData",
+                "type": "bytes"
+            }
+        ],
+        "name": "FailedHandlerExecution",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isPaused",
+                "type": "bool"
+            }
+        ],
+        "name": "PauseChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint8",
+                "name": "originDomainID",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "internalType": "enum QBridge.ProposalStatus",
+                "name": "status",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "ProposalEvent",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint8",
+                "name": "originDomainID",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "internalType": "enum QBridge.ProposalStatus",
+                "name": "status",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "dataHash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "ProposalVote",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+            }
+        ],
+        "name": "RelayerAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+            }
+        ],
+        "name": "RelayerRemoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newThreshold",
+                "type": "uint256"
+            }
+        ],
+        "name": "RelayerThresholdChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "previousAdminRole",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "newAdminRole",
+                "type": "bytes32"
+            }
+        ],
+        "name": "RoleAdminChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            }
+        ],
+        "name": "RoleGranted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            }
+        ],
+        "name": "RoleRevoked",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "DEFAULT_ADMIN_ROLE",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "MAX_RELAYERS",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "RELAYER_ROLE",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "name": "_depositCounts",
+        "outputs": [
+            {
+                "internalType": "uint64",
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+            }
+        ],
+        "name": "addRelayer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "originDomainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "cancelProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "_domainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "nonce",
+                "type": "uint64"
+            }
+        ],
+        "name": "combinedProposalId",
+        "outputs": [
+            {
+                "internalType": "uint72",
+                "name": "proposalID",
+                "type": "uint72"
+            }
+        ],
+        "stateMutability": "pure",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "destinationDomainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "destinationDomainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "depositETH",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "domainID",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "originDomainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            },
+            {
+                "internalType": "bool",
+                "name": "revertOnFail",
+                "type": "bool"
+            }
+        ],
+        "name": "executeProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "expiry",
+        "outputs": [
+            {
+                "internalType": "uint40",
+                "name": "",
+                "type": "uint40"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "fee",
+        "outputs": [
+            {
+                "internalType": "uint128",
+                "name": "",
+                "type": "uint128"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "originDomainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "dataHash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+            }
+        ],
+        "name": "getProposal",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "enum QBridge.ProposalStatus",
+                        "name": "_status",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint200",
+                        "name": "_yesVotes",
+                        "type": "uint200"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "_yesVotesTotal",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint40",
+                        "name": "_proposedBlock",
+                        "type": "uint40"
+                    }
+                ],
+                "internalType": "struct QBridge.Proposal",
+                "name": "proposal",
+                "type": "tuple"
+            },
+            {
+                "internalType": "bool",
+                "name": "hasVoted",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            }
+        ],
+        "name": "getRoleAdmin",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "getRoleMember",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            }
+        ],
+        "name": "getRoleMemberCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "getRoleMemberIndex",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "grantRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "hasRole",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "_domainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint8",
+                "name": "_relayerThreshold",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint128",
+                "name": "_fee",
+                "type": "uint128"
+            },
+            {
+                "internalType": "uint40",
+                "name": "_expiry",
+                "type": "uint40"
+            }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+            }
+        ],
+        "name": "isRelayer",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "lastPauseTime",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "handlerAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "manualRelease",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "paused",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "relayerThreshold",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "relayer",
+                "type": "address"
+            }
+        ],
+        "name": "removeRelayer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "renounceRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "resourceIDToHandlerAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "role",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "revokeRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "handlerAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setBurnable",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "_domainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "nonce",
+                "type": "uint64"
+            }
+        ],
+        "name": "setDepositNonce",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint128",
+                "name": "newFee",
+                "type": "uint128"
+            }
+        ],
+        "name": "setFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "_paused",
+                "type": "bool"
+            }
+        ],
+        "name": "setPaused",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "newThreshold",
+                "type": "uint8"
+            }
+        ],
+        "name": "setRelayerThreshold",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "handlerAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setResource",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "sweep",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "totalRelayers",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "originDomainID",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "depositNonce",
+                "type": "uint64"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "resourceID",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "voteProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    }
+]

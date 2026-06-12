@@ -1,0 +1,88 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_library",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "fallback"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_owners",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_required",
+                "type": "uint256"
+            }
+        ],
+        "name": "initWallet",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "numOwners",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "owners",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "name": "required",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]

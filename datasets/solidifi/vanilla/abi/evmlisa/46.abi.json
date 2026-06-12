@@ -1,0 +1,171 @@
+[
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "dappBoxOrigin",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "fileHash",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "filePathHash",
+                "type": "string"
+            }
+        ],
+        "name": "GetFileExistenceProof",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "enum ProofOfExistence.BlockchainIdentification",
+                "name": "",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "dappBoxOrigin",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "_fileHash",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_filePathHash",
+                "type": "string"
+            },
+            {
+                "internalType": "address",
+                "name": "_contractAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "enum ProofOfExistence.BlockchainIdentification",
+                "name": "_identifier",
+                "type": "uint8"
+            }
+        ],
+        "name": "SetFileExistenceProof",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "dappBoxOrigin",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "fileHash",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "filePathHash",
+                "type": "string"
+            }
+        ],
+        "name": "getQRCode",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "dappBoxOrigin",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "QRCodeHash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "searchExistenceProoUsngQRf",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "enum ProofOfExistence.BlockchainIdentification",
+                "name": "",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

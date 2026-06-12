@@ -1,0 +1,572 @@
+[
+    {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "calcDynamicCommission",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "length",
+                "type": "uint256"
+            }
+        ],
+        "name": "calcDynamicCommissionBegin",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "length",
+                "type": "uint256"
+            }
+        ],
+        "name": "calcDynamicCommissionEnd",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "length",
+                "type": "uint256"
+            }
+        ],
+        "name": "calcDynamicCommissionRange",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "engineerFunds",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "engineerWithdraw",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "engineerWithdrawAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
+            }
+        ],
+        "name": "getDynamicCommissionRecords",
+        "outputs": [
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
+            }
+        ],
+        "name": "getInvestRecords",
+        "outputs": [
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
+            }
+        ],
+        "name": "getStaticCommissionRecords",
+        "outputs": [
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            },
+            {
+                "internalType": "uint256[2]",
+                "name": "",
+                "type": "uint256[2]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getSummary",
+        "outputs": [
+            {
+                "internalType": "uint256[11]",
+                "name": "",
+                "type": "uint256[11]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
+            }
+        ],
+        "name": "getUserByAddress",
+        "outputs": [
+            {
+                "internalType": "uint256[16]",
+                "name": "",
+                "type": "uint256[16]"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "getUserByIndex",
+        "outputs": [
+            {
+                "internalType": "uint256[16]",
+                "name": "",
+                "type": "uint256[16]"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "initialize",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "sponsorAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "investCycle",
+                "type": "uint256"
+            }
+        ],
+        "name": "invest",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "operatorFunds",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "operatorWithdraw",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "operatorWithdrawAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalDynamicCommissionWithdrawAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalInvestAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalInvestCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalStaticCommissionWithdrawAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalUserCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalWithdrawAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "userWithdraw",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "userWithdrawCommission",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

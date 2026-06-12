@@ -1,0 +1,643 @@
+[
+    {
+        "inputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newMinimumTokensToVote",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newMinimumQuorum",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newDebatingPeriodInMinutes",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newTokenAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newChairmanAddress",
+                "type": "address"
+            }
+        ],
+        "name": "ChangeOfRules",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [],
+        "name": "Initialized",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "proposalID",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            }
+        ],
+        "name": "ProposalAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "proposalNumber",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "sign",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "chairman",
+                "type": "address"
+            }
+        ],
+        "name": "ProposalSignedByChairman",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "proposalID",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "result",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "quorum",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "active",
+                "type": "bool"
+            }
+        ],
+        "name": "ProposalTallied",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "proposalID",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "position",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+            }
+        ],
+        "name": "Voted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "receivedEther",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "_from",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "_extraData",
+                "type": "bytes"
+            }
+        ],
+        "name": "receivedTokens",
+        "type": "event"
+    },
+    {
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "fallback"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "contract Token",
+                "name": "_tokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_chairmanAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minimumTokensToVote",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minimumPercentToPassAVote",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minutesForDebate",
+                "type": "uint256"
+            }
+        ],
+        "name": "changeVotingRules",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "proposalNumber",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "destination",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "weiAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes",
+                "name": "transactionBytecode",
+                "type": "bytes"
+            }
+        ],
+        "name": "checkProposalCode",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "codeChecksOut",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "debatingPeriodInMinutes",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "proposalNumber",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes",
+                "name": "transactionBytecode",
+                "type": "bytes"
+            }
+        ],
+        "name": "executeProposal",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "contract Token",
+                "name": "_tokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_chairmanAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minimumTokensToVote",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minimumPercentToPassAVote",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minutesForDebate",
+                "type": "uint256"
+            }
+        ],
+        "name": "init",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "initialized",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "minimumQuorum",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "minimumTokensToVote",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "destination",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "weiAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "transactionDescription",
+                "type": "string"
+            },
+            {
+                "internalType": "bytes",
+                "name": "transactionBytecode",
+                "type": "bytes"
+            }
+        ],
+        "name": "newProposal",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "proposalID",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "numProposals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "proposals",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+            },
+            {
+                "internalType": "bool",
+                "name": "signedByChairman",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "minExecutionDate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "executed",
+                "type": "bool"
+            },
+            {
+                "internalType": "bool",
+                "name": "proposalPassed",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "numberOfVotes",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "proposalHash",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_from",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "_extraData",
+                "type": "bytes"
+            }
+        ],
+        "name": "receiveApproval",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "proposalNumber",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "signProposal",
+                "type": "bool"
+            }
+        ],
+        "name": "sign",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "voteID",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "tokenAddress",
+        "outputs": [
+            {
+                "internalType": "contract Token",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "proposalNumber",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "supportsProposal",
+                "type": "bool"
+            }
+        ],
+        "name": "vote",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "voteID",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

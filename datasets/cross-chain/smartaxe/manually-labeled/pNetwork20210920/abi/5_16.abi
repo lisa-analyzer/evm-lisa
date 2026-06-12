@@ -1,0 +1,17 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isDepositable",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    }
+]

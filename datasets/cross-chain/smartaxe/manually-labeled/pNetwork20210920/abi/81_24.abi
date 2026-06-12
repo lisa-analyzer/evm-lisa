@@ -1,0 +1,754 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "ADJUST_BALANCE_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "hasInitialized",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_address",
+                "type": "address"
+            }
+        ],
+        "name": "getStakedLocks",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "name": "lockDate",
+                        "type": "uint64"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "uint64"
+                    },
+                    {
+                        "name": "uniV2PairAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "wrappedTokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_owner",
+                "type": "address"
+            }
+        ],
+        "name": "adjustBalanceOf",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_script",
+                "type": "bytes"
+            }
+        ],
+        "name": "getEVMScriptExecutor",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "unstake",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_maxLocks",
+                "type": "uint64"
+            }
+        ],
+        "name": "changeMaxAllowedStakeLocks",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getRecoveryVault",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_tokenManager",
+                "type": "address"
+            },
+            {
+                "name": "_vault",
+                "type": "address"
+            },
+            {
+                "name": "_uniV2Pair",
+                "type": "address"
+            },
+            {
+                "name": "_minLockTime",
+                "type": "uint64"
+            },
+            {
+                "name": "_maxLocks",
+                "type": "uint64"
+            }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "maxLocks",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address"
+            }
+        ],
+        "name": "allowRecoverability",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "MAX_LOCKS_LIMIT",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "appId",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "addressUniV2PairBalances",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getInitializationBlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "uniV2Pair",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_owners",
+                "type": "address[]"
+            }
+        ],
+        "name": "adjustBalanceOfMany",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_amount",
+                "type": "uint256"
+            },
+            {
+                "name": "_duration",
+                "type": "uint64"
+            },
+            {
+                "name": "_receiver",
+                "type": "address"
+            }
+        ],
+        "name": "stake",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_MAX_LOCKS_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_vault",
+                "type": "address"
+            }
+        ],
+        "name": "changeVaultContractAddress",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_token",
+                "type": "address"
+            }
+        ],
+        "name": "transferToVault",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_sender",
+                "type": "address"
+            },
+            {
+                "name": "_role",
+                "type": "bytes32"
+            },
+            {
+                "name": "_params",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "canPerform",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getEVMScriptRegistry",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "minLockTime",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "wrappedTokenManager",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_VAULT_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "kernel",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isPetrified",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "addressStakeLocks",
+        "outputs": [
+            {
+                "name": "lockDate",
+                "type": "uint64"
+            },
+            {
+                "name": "duration",
+                "type": "uint64"
+            },
+            {
+                "name": "uniV2PairAmount",
+                "type": "uint256"
+            },
+            {
+                "name": "wrappedTokenAmount",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_LOCK_TIME_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "vault",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_minLockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "changeMinLockTime",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "sender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "receiver",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "uniV2Amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "wrappedTokenAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "duration",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "name": "lockDate",
+                "type": "uint64"
+            }
+        ],
+        "name": "Staked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "receiver",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "uniV2Amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "wrappedTokenAmount",
+                "type": "uint256"
+            }
+        ],
+        "name": "Unstaked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "duration",
+                "type": "uint256"
+            }
+        ],
+        "name": "LockTimeChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "maxLocks",
+                "type": "uint64"
+            }
+        ],
+        "name": "MaxLocksChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "vault",
+                "type": "address"
+            }
+        ],
+        "name": "VaultChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "StakedLockAdjusted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "executor",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "script",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "input",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "returnData",
+                "type": "bytes"
+            }
+        ],
+        "name": "ScriptResult",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "vault",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "RecoverToVault",
+        "type": "event"
+    }
+]

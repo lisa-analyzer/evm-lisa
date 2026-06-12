@@ -1,0 +1,53 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "hasInitialized",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getInitializationBlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isPetrified",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    }
+]

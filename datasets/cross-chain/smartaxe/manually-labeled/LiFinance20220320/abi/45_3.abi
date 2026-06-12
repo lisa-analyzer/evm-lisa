@@ -1,0 +1,17 @@
+[
+    {
+        "inputs": [],
+        "name": "AddressOutOfBounds",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "SliceOutOfBounds",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "SliceOverflow",
+        "type": "error"
+    }
+]

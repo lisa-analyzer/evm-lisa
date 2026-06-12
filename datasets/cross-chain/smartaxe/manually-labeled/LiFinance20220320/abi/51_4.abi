@@ -1,0 +1,286 @@
+[
+    {
+        "inputs": [],
+        "name": "AddressOutOfBounds",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+            }
+        ],
+        "name": "CallError",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "NoRemoteRouter",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "OnlyContractOwner",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "SliceOutOfBounds",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "SliceOverflow",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "Unauthorized",
+        "type": "error"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint32",
+                "name": "origin",
+                "type": "uint32"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "callee",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "home",
+                "type": "address"
+            }
+        ],
+        "name": "LocalCall",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint32",
+                "name": "domain",
+                "type": "uint32"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "callee",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            }
+        ],
+        "name": "RemoteCall",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32[]",
+                "name": "domains",
+                "type": "uint32[]"
+            },
+            {
+                "internalType": "address[]",
+                "name": "routers",
+                "type": "address[]"
+            }
+        ],
+        "name": "batchEnrollRemoteRouters",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32[]",
+                "name": "domains",
+                "type": "uint32[]"
+            },
+            {
+                "internalType": "contract Home[]",
+                "name": "homes",
+                "type": "address[]"
+            }
+        ],
+        "name": "batchSetRoutes",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "domain",
+                "type": "uint32"
+            },
+            {
+                "internalType": "address",
+                "name": "router",
+                "type": "address"
+            }
+        ],
+        "name": "enrollRemoteRouter",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "origin",
+                "type": "uint32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "sender",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "message",
+                "type": "bytes"
+            }
+        ],
+        "name": "handle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "origin",
+                "type": "uint32"
+            },
+            {
+                "internalType": "uint32",
+                "name": "",
+                "type": "uint32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "sender",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "message",
+                "type": "bytes"
+            }
+        ],
+        "name": "handle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "domain",
+                "type": "uint32"
+            },
+            {
+                "internalType": "address",
+                "name": "callee",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "callData",
+                "type": "bytes"
+            }
+        ],
+        "name": "remoteCall",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "domain",
+                "type": "uint32"
+            }
+        ],
+        "name": "routeByDomain",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "domain",
+                "type": "uint32"
+            }
+        ],
+        "name": "routerByDomain",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint32",
+                "name": "domain",
+                "type": "uint32"
+            },
+            {
+                "internalType": "contract Home",
+                "name": "home",
+                "type": "address"
+            }
+        ],
+        "name": "setRoute",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    }
+]

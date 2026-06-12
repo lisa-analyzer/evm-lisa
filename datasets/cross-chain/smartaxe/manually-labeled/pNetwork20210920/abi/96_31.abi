@@ -1,0 +1,1275 @@
+[
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "addressUnlockedRewards",
+        "outputs": [
+            {
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "name": "lockBlock",
+                "type": "uint64"
+            },
+            {
+                "name": "lockTime",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "hasInitialized",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "lockTime",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_beneficiary",
+                "type": "address"
+            }
+        ],
+        "name": "getWithdrawnRewardsInfo",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "lockBlock",
+                        "type": "uint64"
+                    },
+                    {
+                        "name": "lockTime",
+                        "type": "uint64"
+                    }
+                ],
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_dandelionVoting",
+                "type": "address"
+            }
+        ],
+        "name": "changeDandelionVotingContractAddress",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_percentageRewards",
+                "type": "uint256"
+            }
+        ],
+        "name": "changePercentageRewards",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "baseVault",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_script",
+                "type": "bytes"
+            }
+        ],
+        "name": "getEVMScriptExecutor",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiaries",
+                "type": "address[]"
+            },
+            {
+                "name": "_receivers",
+                "type": "address[]"
+            }
+        ],
+        "name": "forceCollectRewardsForMany",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_epochDuration",
+                "type": "uint64"
+            }
+        ],
+        "name": "changeEpochDuration",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_lockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "changeLockTime",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getRecoveryVault",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_MISSING_VOTES_THRESHOLD_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiaries",
+                "type": "address[]"
+            }
+        ],
+        "name": "collectRewardsForMany",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_beneficiary",
+                "type": "address"
+            }
+        ],
+        "name": "getUnlockedRewardsInfo",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "lockBlock",
+                        "type": "uint64"
+                    },
+                    {
+                        "name": "lockTime",
+                        "type": "uint64"
+                    }
+                ],
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "closeRewardsDistributionForCurrentEpoch",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "COLLECT_REWARDS_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "epochDuration",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiary",
+                "type": "address"
+            },
+            {
+                "name": "_receiver",
+                "type": "address"
+            }
+        ],
+        "name": "forceCollectRewardsFor",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "rewardsVault",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isDistributionOpen",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "missingVotesThreshold",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "dandelionVoting",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_EPOCH_DURATION_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiaries",
+                "type": "address[]"
+            },
+            {
+                "name": "_amounts",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "distributeRewardsToMany",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "collectRewards",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "currentEpoch",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_PERCENTAGE_REWARDS_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address"
+            }
+        ],
+        "name": "allowRecoverability",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "appId",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getInitializationBlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_fromBlock",
+                "type": "uint64"
+            }
+        ],
+        "name": "openRewardsDistributionForEpoch",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "startBlockNumberOfCurrentEpoch",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "DISTRIBUTE_REWARDS_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_REWARDS_TOKEN_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "OPEN_REWARDS_DISTRIBUTION_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_token",
+                "type": "address"
+            }
+        ],
+        "name": "transferToVault",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_sender",
+                "type": "address"
+            },
+            {
+                "name": "_role",
+                "type": "bytes32"
+            },
+            {
+                "name": "_params",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "canPerform",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getEVMScriptRegistry",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_rewardsToken",
+                "type": "address"
+            }
+        ],
+        "name": "changeRewardsTokenContractAddress",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiary",
+                "type": "address"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "distributeRewardsTo",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CLOSE_REWARDS_DISTRIBUTION_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_VAULT_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_VOTING_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "lastRewardsDistributionBlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiary",
+                "type": "address"
+            }
+        ],
+        "name": "collectRewardsFor",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_baseVault",
+                "type": "address"
+            },
+            {
+                "name": "_rewardsVault",
+                "type": "address"
+            },
+            {
+                "name": "_dandelionVoting",
+                "type": "address"
+            },
+            {
+                "name": "_rewardsToken",
+                "type": "address"
+            },
+            {
+                "name": "_epochDuration",
+                "type": "uint64"
+            },
+            {
+                "name": "_percentageRewards",
+                "type": "uint256"
+            },
+            {
+                "name": "_lockTime",
+                "type": "uint64"
+            },
+            {
+                "name": "_missingVotesThreshold",
+                "type": "uint256"
+            }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            },
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "addressWithdrawnRewards",
+        "outputs": [
+            {
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "name": "lockBlock",
+                "type": "uint64"
+            },
+            {
+                "name": "lockTime",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "rewardsToken",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "kernel",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "percentageRewards",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiary",
+                "type": "address"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256"
+            },
+            {
+                "name": "_lockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "forceDistributeRewardsTo",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isPetrified",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_beneficiaries",
+                "type": "address[]"
+            },
+            {
+                "name": "_amounts",
+                "type": "uint256[]"
+            },
+            {
+                "name": "_lockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "forceDistributeRewardsToMany",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_missingVotesThreshold",
+                "type": "uint256"
+            }
+        ],
+        "name": "changeMissingVotesThreshold",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_rewardsVault",
+                "type": "address"
+            }
+        ],
+        "name": "changeRewardsVaultContractAddress",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_baseVault",
+                "type": "address"
+            }
+        ],
+        "name": "changeBaseVaultContractAddress",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "CHANGE_LOCK_TIME_ROLE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "PCT_BASE",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "modifiers": []
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "baseVault",
+                "type": "address"
+            }
+        ],
+        "name": "BaseVaultChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "rewardsVault",
+                "type": "address"
+            }
+        ],
+        "name": "RewardsVaultChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "dandelionVoting",
+                "type": "address"
+            }
+        ],
+        "name": "DandelionVotingChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "percentageRewards",
+                "type": "uint256"
+            }
+        ],
+        "name": "PercentageRewardsChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "beneficiary",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "lockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "RewardDistributed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "beneficiary",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "lockBlock",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "name": "lockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "RewardCollected",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "epochDuration",
+                "type": "uint64"
+            }
+        ],
+        "name": "EpochDurationChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "missingVotesThreshold",
+                "type": "uint256"
+            }
+        ],
+        "name": "MissingVoteThresholdChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "lockTime",
+                "type": "uint64"
+            }
+        ],
+        "name": "LockTimeChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "startBlock",
+                "type": "uint64"
+            },
+            {
+                "indexed": false,
+                "name": "endBlock",
+                "type": "uint64"
+            }
+        ],
+        "name": "RewardsDistributionEpochOpened",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "rewardDistributionBlock",
+                "type": "uint64"
+            }
+        ],
+        "name": "RewardsDistributionEpochClosed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "rewardsToken",
+                "type": "address"
+            }
+        ],
+        "name": "RewardsTokenChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "executor",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "script",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "input",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "name": "returnData",
+                "type": "bytes"
+            }
+        ],
+        "name": "ScriptResult",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "vault",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "RecoverToVault",
+        "type": "event"
+    }
+]
