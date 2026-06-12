@@ -20,10 +20,11 @@ evm-testcases/ground-truth/50-ground-truth/**/*.dot
 evm-testcases/ground-truth/50-ground-truth/**/*.js
 
 # Ignore benchmark file
-datasets/**/bytecode/**
-datasets/**/abi/**
+# datasets/**/bytecode/**
+# datasets/**/abi/**
 datasets/**/json/**
 datasets/**/results/**
+datasets/cross-chain/smartaxe/real/*
 scripts/**/images/**
 scripts/**/jars/evm-lisa.jar
 
