@@ -452,7 +452,7 @@ if __name__ == "__main__":
     datasets_path = './../datasets'
 
     if args.cross_chain:
-        compile_bridges(f'{datasets_path}/cross-chain/tdsc')
+        compile_bridges(f'{datasets_path}/cross-chain/tops')
         compile_bridges(f'{datasets_path}/cross-chain/smartaxe/manually-labeled')
         # compile_bridge(f'{datasets_path}/cross-chain/local-dependency')
 
