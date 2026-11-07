@@ -22,6 +22,7 @@ import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.io.*;
@@ -491,20 +492,57 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Computes statistics based on the analysis of jumps within the given
-	 * program.
+	 * Computes jump statistics for the analyzed program. When jump
+	 * classification needs reachability information, the selected statistics
+	 * format reuses the result of one traversal from the CFG entrypoint.
 	 *
 	 * @param checker the jump solver used for the analysis
 	 * @param lisa    the LiSA framework instance
 	 * @param program the program being analyzed
-	 * 
-	 * @return a {@link StatisticsObject} containing the computed statistics
+	 *
+	 * @return the computed statistics, or {@code null} if the CFG has no
+	 *             entrypoint
 	 */
 	public static StatisticsObject<?> computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);
+		EVMCFG cfg = checker.getComputedCFG();
+		Statement entryPoint = cfg.getEntrypoints().stream().findAny().orElse(null);
+		if (entryPoint == null) {
+			log.warn("There are no entrypoints.");
+			return null;
+		}
+
+		Set<Statement> jumps = cfg.getAllJumps();
+		Set<Statement> reachable = jumps.isEmpty() || cfg.getAllPushedJumps().containsAll(jumps)
+				? Collections.emptySet()
+				: getReachableStatements(cfg, entryPoint);
 		if (PAPER_MODE)
-			return computePaperJumps(checker, soundlySolved);
-		return computeJumps(checker, soundlySolved);
+			return computePaperJumps(checker, soundlySolved, reachable);
+		return computeJumps(checker, soundlySolved, reachable);
+	}
+
+	/**
+	 * Returns all statements reachable from the given entrypoint by traversing
+	 * the CFG's outgoing edges once.
+	 *
+	 * @param cfg        the control-flow graph to traverse
+	 * @param entryPoint the statement from which traversal starts
+	 *
+	 * @return the set of statements reachable from {@code entryPoint}
+	 */
+	private static Set<Statement> getReachableStatements(EVMCFG cfg, Statement entryPoint) {
+		Set<Statement> visited = new HashSet<>();
+		Deque<Statement> pending = new ArrayDeque<>();
+		visited.add(entryPoint);
+		pending.add(entryPoint);
+		while (!pending.isEmpty()) {
+			for (Edge edge : cfg.getOutgoingEdges(pending.remove())) {
+				Statement next = edge.getDestination();
+				if (visited.add(next))
+					pending.add(next);
+			}
+		}
+		return visited;
 	}
 
 	/**
@@ -512,11 +550,13 @@ public class EVMLiSA {
 	 *
 	 * @param checker       the jump solver used for analysis
 	 * @param soundlySolved the set of jumps that have been soundly solved
-	 * 
+	 * @param reachable     the statements reachable from the CFG entrypoint
+	 *
 	 * @return a {@link StatisticsObject} containing the computed jump
 	 *             statistics
 	 */
-	private static StatisticsObject<?> computeJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+	private static StatisticsObject<?> computeJumps(JumpSolver checker, Set<Statement> soundlySolved,
+			Set<Statement> reachable) {
 		EVMCFG cfg = checker.getComputedCFG();
 		Set<Statement> unreachableJumpNodes = checker.getUnreachableJumps();
 
@@ -528,12 +568,6 @@ public class EVMLiSA {
 
 		boolean allJumpAreSound = true;
 
-		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
-			log.warn("There are no entrypoints.");
-			return null;
-		}
-
-		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 		Set<Statement> pushedJumps = cfg.getAllPushedJumps();
 
 		if (!JumpSolver.getLinkUnsoundJumpsToAllJumpdest())
@@ -559,7 +593,7 @@ public class EVMLiSA {
 					continue;
 				}
 
-				boolean reachableFrom = cfg.reachableFrom(entryPoint, jumpNode);
+				boolean reachableFrom = reachable.contains(jumpNode);
 				if (reachableFrom && unreachableJumpNodes.contains(jumpNode)) {
 					definitelyUnreachable++;
 					continue;
@@ -619,11 +653,13 @@ public class EVMLiSA {
 	 *
 	 * @param checker       the jump solver used for analysis
 	 * @param soundlySolved the set of jumps that have been soundly solved
-	 * 
+	 * @param reachable     the statements reachable from the CFG entrypoint
+	 *
 	 * @return a {@link StatisticsObject} containing the computed jump
 	 *             statistics
 	 */
-	private static StatisticsObject<?> computePaperJumps(JumpSolver checker, Set<Statement> soundlySolved) {
+	private static StatisticsObject<?> computePaperJumps(JumpSolver checker, Set<Statement> soundlySolved,
+			Set<Statement> reachable) {
 		EVMCFG cfg = checker.getComputedCFG();
 
 		int resolved = 0;
@@ -631,13 +667,6 @@ public class EVMLiSA {
 		int erroneous = 0;
 		int unknown = 0;
 		int topState = 0;
-
-		if (cfg.getEntrypoints().stream().findAny().isEmpty()) {
-			log.warn("There are no entrypoints.");
-			return null;
-		}
-
-		Statement entryPoint = cfg.getEntrypoints().stream().findAny().get();
 
 		// we are safe supposing that we have a single entry point
 		for (Statement jumpNode : cfg.getAllJumps())
@@ -660,7 +689,7 @@ public class EVMLiSA {
 					// value state went to top
 					unknown++;
 					topState++;
-				} else if (!cfg.reachableFrom(entryPoint, jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
+				} else if (!reachable.contains(jumpNode) || checker.getUnreachableJumps().contains(jumpNode))
 					// getUnreachableJumps() contains jumps where the whole
 					// value state went to bottom
 					unreachable++;
