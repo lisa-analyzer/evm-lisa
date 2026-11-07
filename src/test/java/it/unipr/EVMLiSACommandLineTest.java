@@ -15,10 +15,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+/** Tests validation at the EVMLiSA command-line entrypoint. */
 public class EVMLiSACommandLineTest {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	/** Checks that the CLI rejects the conflicting options before analysis. */
 	@Test
 	public void rejectsConflictingAnalysisOptions() throws Exception {
 		Path output = temporaryFolder.newFile("cli.log").toPath();
