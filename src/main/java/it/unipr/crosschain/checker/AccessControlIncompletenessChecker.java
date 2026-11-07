@@ -16,7 +16,10 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,8 +39,8 @@ public class AccessControlIncompletenessChecker implements
 
 	private static final Logger log = LogManager.getLogger(AccessControlIncompletenessChecker.class);
 
-	private Set<Statement> taintedJumpi = new HashSet<>();
-	private Map<Statement, Set<Integer>> jumpiProgramPoints = new HashMap<>();
+	private final Map<Statement, Set<Integer>> jumpiProgramPoints = new HashMap<>();
+	private final Map<Statement, Set<Statement>> unguardedSinksBySource = new HashMap<>();
 	private SmartContract contract;
 	private final Set<String> stateMutabilityPermitted = Set.of("nonpayable", "payable");
 
@@ -66,6 +69,16 @@ public class AccessControlIncompletenessChecker implements
 				|| stmt instanceof Balance;
 	}
 
+	/**
+	 * Resets the checker state for this CFG and indexes the source program
+	 * counters sanitized by its conditional jumps before visiting individual
+	 * sinks.
+	 *
+	 * @param tool  the tool that supplies the taint analysis results
+	 * @param graph the control flow graph being checked
+	 *
+	 * @return {@code true} to continue visiting the graph
+	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
@@ -74,6 +87,8 @@ public class AccessControlIncompletenessChecker implements
 			CFG graph) {
 
 		EVMCFG cfg = ((EVMCFG) graph);
+		jumpiProgramPoints.clear();
+		unguardedSinksBySource.clear();
 
 		for (Statement node : cfg.getNodes())
 			if (node instanceof Jumpi)
@@ -99,7 +114,6 @@ public class AccessControlIncompletenessChecker implements
 					RelationalTaintElement elem2 = taintedStack.getElementAtPosition(2);
 
 					if (RelationalTaintElement.isAtLeastOneTainted(elem1, elem2)) {
-						taintedJumpi.add(node);
 						// Track program points sanitized by this specific Jumpi
 						Set<Integer> jumpiPps = new HashSet<>();
 						if (elem1.isTaint()) {
@@ -184,9 +198,9 @@ public class AccessControlIncompletenessChecker implements
 	}
 
 	/**
-	 * Verifies whether a tainted source can reach an unguarded sink without
-	 * being protected by a conditional jump and, if so, records the
-	 * vulnerability.
+	 * Reports qualifying sources for the given sink. The first query for a
+	 * source collects its unguarded sinks, and subsequent queries in the same
+	 * CFG reuse that result.
 	 *
 	 * @param tool the analysis tool to report warnings on
 	 * @param cfg  the CFG under inspection
@@ -205,34 +219,47 @@ public class AccessControlIncompletenessChecker implements
 				Callvalue.class,
 				Calldatasize.class);
 
-		for (Statement source : sources) {
-			// Check if source can reach sink
-			if (cfg.reachableFromWithoutStatements(source, sink, new HashSet<>())) {
-				int sourcePC = ((ProgramCounterLocation) source.getLocation()).getPc();
+		for (Statement source : sources)
+			if (unguardedSinksBySource.computeIfAbsent(source,
+					s -> findUnguardedSinks(cfg, s, jumpiProgramPoints)).contains(sink))
+				reportVulnerability(tool, cfg, source, sink);
+	}
 
-				// Get all tainted jumpi on the path from source to sink
-				Set<Statement> jumpiBetweenSourceAndSink = cfg.getStatementsInAPathWithTypes(source, sink, Jumpi.class);
+	/**
+	 * Finds the sinks reached before the first guard for this source in the
+	 * checker's depth-first traversal. The traversal checks guards when
+	 * examining edges and checks sinks when popping nodes, preserving the order
+	 * of the previous per-sink searches.
+	 *
+	 * @param cfg        the CFG under inspection
+	 * @param source     the untrusted source statement
+	 * @param sanitizers the source program counters sanitized by each jump
+	 *
+	 * @return the sinks that the checker should inspect for this source
+	 */
+	Set<Statement> findUnguardedSinks(EVMCFG cfg, Statement source, Map<Statement, Set<Integer>> sanitizers) {
+		int sourcePC = ((ProgramCounterLocation) source.getLocation()).getPc();
+		Set<Statement> sinks = new HashSet<>();
+		Set<Statement> visited = new HashSet<>();
+		Deque<Statement> stack = new ArrayDeque<>();
+		stack.push(source);
 
-				// Check if at least one jumpi sanitizes this source's program
-				// point
-				boolean isSanitized = false;
-				for (Statement jumpi : jumpiBetweenSourceAndSink) {
-					Set<Integer> sanitizedPps = jumpiProgramPoints.get(jumpi);
-					if (sanitizedPps == null)
-						continue;
-					if (sanitizedPps.contains(sourcePC)) {
-						isSanitized = true;
-						break;
-					}
-				}
-
-				// If not sanitized by any jumpi on the path, it's a
-				// vulnerability
-				if (!isSanitized) {
-					reportVulnerability(tool, cfg, source, sink);
-				}
+		while (!stack.isEmpty()) {
+			Statement current = stack.pop();
+			if (!visited.add(current))
+				continue;
+			if (isSink(current))
+				sinks.add(current);
+			for (Edge edge : cfg.getOutgoingEdges(current)) {
+				Statement next = edge.getDestination();
+				Set<Integer> sanitizedPCs = sanitizers.get(next);
+				if (sanitizedPCs != null && sanitizedPCs.contains(sourcePC))
+					return sinks;
+				if (!visited.contains(next))
+					stack.push(next);
 			}
 		}
+		return sinks;
 	}
 
 	/**
