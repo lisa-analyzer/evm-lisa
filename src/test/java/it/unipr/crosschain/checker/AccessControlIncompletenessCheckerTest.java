@@ -21,6 +21,7 @@ import org.junit.Test;
 
 public class AccessControlIncompletenessCheckerTest {
 
+	/** Verifies that a guard affects later sinks only for its own source. */
 	@Test
 	public void preservesDepthFirstGuardDiscoveryOrder() {
 		ProgramCounterLocation start = new ProgramCounterLocation(0, 0);
@@ -42,9 +43,13 @@ public class AccessControlIncompletenessCheckerTest {
 		assertEquals(Set.of(first, second), checker.findUnguardedSinks(cfg, source, Map.of(guard, Set.of(1))));
 	}
 
+	/**
+	 * Verifies that a policy without events skips Local Dependency analysis.
+	 */
 	@Test
 	public void localDependencyDoesNotConfigureLiSAForAnEmptyPolicy() {
 		SmartContract contract = new SmartContract() {
+			/** Fails the test if the checker tries to configure LiSA. */
 			@Override
 			public Path getWorkingDirectory() {
 				throw new AssertionError("An empty policy cannot produce local dependency warnings");
@@ -54,6 +59,13 @@ public class AccessControlIncompletenessCheckerTest {
 		xEVMLiSA.runLocalDependencyChecker(contract, new CustomPolicy());
 	}
 
+	/**
+	 * Creates an empty control flow graph for a checker fixture.
+	 *
+	 * @param start the location used in the graph descriptor
+	 *
+	 * @return the empty control flow graph
+	 */
 	private static EVMCFG cfg(ProgramCounterLocation start) {
 		ClassUnit unit = new ClassUnit(start, null, "contract", false);
 		return new EVMCFG(new CodeMemberDescriptor(start, unit, false, "contract"));

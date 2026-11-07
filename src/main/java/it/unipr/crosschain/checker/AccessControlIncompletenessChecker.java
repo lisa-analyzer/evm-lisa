@@ -69,6 +69,16 @@ public class AccessControlIncompletenessChecker implements
 				|| stmt instanceof Balance;
 	}
 
+	/**
+	 * Resets the checker state for this CFG and indexes the source program
+	 * counters sanitized by its conditional jumps before visiting individual
+	 * sinks.
+	 *
+	 * @param tool  the tool that supplies the taint analysis results
+	 * @param graph the control flow graph being checked
+	 *
+	 * @return {@code true} to continue visiting the graph
+	 */
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
@@ -188,9 +198,9 @@ public class AccessControlIncompletenessChecker implements
 	}
 
 	/**
-	 * Verifies whether a tainted source can reach an unguarded sink without
-	 * being protected by a conditional jump and, if so, records the
-	 * vulnerability.
+	 * Reports qualifying sources for the given sink. The first query for a
+	 * source collects its unguarded sinks, and subsequent queries in the same
+	 * CFG reuse that result.
 	 *
 	 * @param tool the analysis tool to report warnings on
 	 * @param cfg  the CFG under inspection

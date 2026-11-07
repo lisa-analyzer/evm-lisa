@@ -533,15 +533,16 @@ public class EVMLiSA {
 	}
 
 	/**
-	 * Computes jump statistics for the analyzed program. Reachability from the
-	 * CFG entrypoint is computed once and reused by the selected statistics
-	 * format. No statistics are returned if the CFG has no entrypoint.
+	 * Computes jump statistics for the analyzed program. When jump
+	 * classification needs reachability information, the selected statistics
+	 * format reuses the result of one traversal from the CFG entrypoint.
 	 *
 	 * @param checker the jump solver used for the analysis
 	 * @param lisa    the LiSA framework instance
 	 * @param program the program being analyzed
 	 *
-	 * @return a {@link StatisticsObject} containing the computed statistics
+	 * @return the computed statistics, or {@code null} if the CFG has no
+	 *             entrypoint
 	 */
 	public static StatisticsObject<?> computeStatistics(JumpSolver checker, LiSA lisa, Program program) {
 		Set<Statement> soundlySolved = getSoundlySolvedJumps(checker, lisa, program);

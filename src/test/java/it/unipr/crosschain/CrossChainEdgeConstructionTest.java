@@ -24,6 +24,8 @@ public class CrossChainEdgeConstructionTest {
 	/**
 	 * Verifies that CLI edge skipping leaves the public graph-building API
 	 * intact.
+	 *
+	 * @throws Exception if the temporary fixture directories cannot be created
 	 */
 	@Test
 	public void cliCanSkipEdgesWhileApiStillBuildsThem() throws Exception {
@@ -49,6 +51,11 @@ public class CrossChainEdgeConstructionTest {
 
 	/**
 	 * Creates a contract with one CFG entrypoint for edge-construction checks.
+	 *
+	 * @param name     the contract name
+	 * @param bytecode the contract bytecode
+	 *
+	 * @return the contract with its CFG attached
 	 */
 	private static SmartContract contract(String name, String bytecode) {
 		SmartContract contract = new SmartContract().setName(name).setBytecode(bytecode);
@@ -62,7 +69,14 @@ public class CrossChainEdgeConstructionTest {
 		return contract;
 	}
 
-	/** Creates an event or function signature with the given name. */
+	/**
+	 * Creates a signature without parameters for the bridge fixture.
+	 *
+	 * @param name the signature name
+	 * @param type the signature type, either event or function
+	 *
+	 * @return the fixture signature
+	 */
 	private static Signature signature(String name, String type) {
 		return new Signature(name, type, Collections.emptyList(), Collections.emptyList(), name + "()", name);
 	}

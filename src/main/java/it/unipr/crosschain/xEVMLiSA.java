@@ -60,8 +60,8 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Analyzes a bridge by examining its smart contracts, building its partial
-	 * cross-chain control flow graph (xCFG) creating cross-chain edges.
+	 * Analyzes the smart contracts in a bridge and builds the aggregate xCFG
+	 * with the cross-chain edges that match its policy.
 	 *
 	 * @param bridge The bridge object containing the set of smart contracts to
 	 *                   be analyzed.
@@ -92,10 +92,9 @@ public class xEVMLiSA {
 	}
 
 	/**
-	 * Gets cross-chain edges by linking events exit points to function entry
-	 * points in different contracts. This method builds the cross-chain control
-	 * flow graph by connecting event emissions in source contracts to function
-	 * invocations in destination contracts based on the bridge policy.
+	 * Creates cross-chain edges from event exit points to function entry points
+	 * in other contracts according to the bridge policy. The caller can add the
+	 * returned edges to the aggregate xCFG.
 	 *
 	 * @param bridge The bridge object containing smart contracts and the policy
 	 *
