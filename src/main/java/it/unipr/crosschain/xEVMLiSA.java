@@ -593,7 +593,8 @@ public class xEVMLiSA {
 	 * passed as arguments to event emissions (LOG instructions). Since events
 	 * represent cross-chain communications in bridge contracts, including
 	 * untrusted blockchain data in event parameters compromises the integrity
-	 * of cross-chain interactions.
+	 * of cross-chain interactions. The analysis runs only when the policy names
+	 * events it can report.
 	 * </p>
 	 *
 	 * @param contract the smart contract to analyze
@@ -603,17 +604,19 @@ public class xEVMLiSA {
 	public static void runLocalDependencyChecker(SmartContract contract, CustomPolicy policy) {
 		log.info("[IN] Running Local Dependency checker on {}.", contract.getName());
 
-		Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
-		program.addCodeMember(contract.getCFG());
-		LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
-		LiSA lisa = new LiSA(conf);
+		if (!policy.getKnownEvents().isEmpty()) {
+			Program program = new Program(new EVMLiSAFeatures(), new EVMLiSATypeSystem());
+			program.addCodeMember(contract.getCFG());
+			LiSAConfiguration conf = LiSAConfigurationManager.createConfiguration(contract);
+			LiSA lisa = new LiSA(conf);
 
-		LocalDependencyChecker checker = new LocalDependencyChecker(contract, policy);
-		conf.semanticChecks.add(checker);
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
-				new LocalDependencyAbstractDomain(),
-				new TypeEnvironment<>(new InferredTypes()));
-		lisa.run(program);
+			LocalDependencyChecker checker = new LocalDependencyChecker(contract, policy);
+			conf.semanticChecks.add(checker);
+			conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+					new LocalDependencyAbstractDomain(),
+					new TypeEnvironment<>(new InferredTypes()));
+			lisa.run(program);
+		}
 
 		log.info(
 				"[OUT] Local Dependency checker ended on {}, with {} definite vulnerabilities found ({} possible).",
