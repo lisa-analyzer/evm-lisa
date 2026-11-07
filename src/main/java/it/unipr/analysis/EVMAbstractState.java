@@ -158,6 +158,12 @@ public class EVMAbstractState
 		return this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * For concrete jump destinations, this method adds the corresponding
+	 * control-flow edge to the CFG if it is not already present.
+	 */
 	@SuppressWarnings("unused")
 	@Override
 	public EVMAbstractState smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
@@ -299,8 +305,9 @@ public class EVMAbstractState
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
 
-							if (!cfg.getEdges().contains(new SequentialEdge((Statement) pp, dest)))
-								cfg.addEdge(new SequentialEdge((Statement) pp, dest));
+							SequentialEdge edge = new SequentialEdge((Statement) pp, dest);
+							if (!cfg.getNodeList().containsEdge(edge))
+								cfg.addEdge(edge);
 							result.add(resultStack);
 						}
 					}
@@ -330,8 +337,9 @@ public class EVMAbstractState
 											.equals(jmpDest.getNumber()))
 									.findFirst().get();
 
-							if (!cfg.getEdges().contains(new TrueEdge((Statement) pp, dest)))
-								cfg.addEdge(new TrueEdge((Statement) pp, dest));
+							TrueEdge edge = new TrueEdge((Statement) pp, dest);
+							if (!cfg.getNodeList().containsEdge(edge))
+								cfg.addEdge(edge);
 							result.add(resultStack);
 						}
 					}

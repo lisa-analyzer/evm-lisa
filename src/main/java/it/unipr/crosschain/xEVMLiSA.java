@@ -35,7 +35,9 @@ public class xEVMLiSA {
 	/**
 	 * Main entry point for running cross-chain analysis on a bridge. This
 	 * method configures EVMLiSA, creates a bridge from the provided paths,
-	 * analyzes it, runs cross-chain checkers, and prints the results.
+	 * analyzes it, runs cross-chain checkers, and prints the results. The CLI
+	 * checkers consume per-contract CFGs, so this path does not materialize the
+	 * aggregate cross-chain graph.
 	 *
 	 * @param bytecodeDirectoryPath path to the directory containing bytecode
 	 *                                  files
@@ -48,7 +50,8 @@ public class xEVMLiSA {
 
 		Bridge bridge = new Bridge(bytecodeDirectoryPath, abiDirectoryPath, policyPath);
 
-		analyzeBridge(bridge);
+		// The CLI checkers consume the per-contract CFGs.
+		analyzeBridge(bridge, false);
 
 		runCrossChainCheckers(bridge);
 
@@ -64,12 +67,26 @@ public class xEVMLiSA {
 	 *                   be analyzed.
 	 */
 	public static void analyzeBridge(Bridge bridge) {
+		analyzeBridge(bridge, true);
+	}
+
+	/**
+	 * Analyzes every contract and optionally materializes the aggregate
+	 * cross-chain graph.
+	 *
+	 * @param bridge               the bridge whose contracts are analyzed
+	 * @param buildCrossChainGraph whether to build the aggregate graph and add
+	 *                                 policy-matched cross-chain edges
+	 */
+	private static void analyzeBridge(Bridge bridge, boolean buildCrossChainGraph) {
 		log.info("Number of contracts to be analyzed: {}.", bridge.getSmartContracts().size());
 
 		EVMLiSA.analyzeSetOfContracts(bridge.getSmartContracts());
-		bridge.buildPartialXCFG();
-		bridge.addEdges(
-				getCrossChainEdgesUsingPolicy(bridge));
+		Set<Edge> crossChainEdges = getCrossChainEdgesUsingPolicy(bridge, buildCrossChainGraph);
+		if (buildCrossChainGraph) {
+			bridge.buildPartialXCFG();
+			bridge.addEdges(crossChainEdges);
+		}
 
 		log.info("Bridge {} analyzed.", bridge.getName());
 	}
@@ -85,15 +102,35 @@ public class xEVMLiSA {
 	 * @return A set of cross-chain edges connecting events to functions
 	 */
 	public static Set<Edge> getCrossChainEdgesUsingPolicy(Bridge bridge) {
-		Set<Edge> crossChainEdges = new HashSet<>();
+		return getCrossChainEdgesUsingPolicy(bridge, true);
+	}
+
+	/**
+	 * Finds policy-matched event and function pairs and optionally materializes
+	 * their cross-chain edges.
+	 *
+	 * @param bridge               the bridge containing contracts and policy
+	 * @param buildCrossChainGraph whether to create and return the matched
+	 *                                 edges
+	 *
+	 * @return the matched edges, or an empty set if edge construction is
+	 *             skipped
+	 */
+	static Set<Edge> getCrossChainEdgesUsingPolicy(Bridge bridge, boolean buildCrossChainGraph) {
+		Set<Edge> crossChainEdges = buildCrossChainGraph ? new HashSet<>() : Collections.emptySet();
 		Set<String> functionsUsed = new HashSet<>();
 		Set<String> eventUsed = new HashSet<>();
 
 		log.info("Computing cross chain edges of {}.", bridge.getName());
 		log.debug("Functions in bridge: {}.", bridge.getFunctions().size());
 		log.debug("Events in bridge: {}.", bridge.getEvents().size());
-		log.debug("Log statement in bridge: {}.",
-				bridge.getXCFG().getAllStatementsByClass(Log1.class, Log2.class, Log3.class, Log4.class).size());
+		if (log.isDebugEnabled()) {
+			long logStatements = bridge.getSmartContracts().stream()
+					.flatMap(contract -> contract.getCFG().getAllStatementsByClass(Log1.class, Log2.class, Log3.class,
+							Log4.class).stream())
+					.distinct().count();
+			log.debug("Log statement in bridge: {}.", logStatements);
+		}
 
 		for (SmartContract contractSource : bridge.getSmartContracts()) {
 			for (SmartContract contractDestination : bridge.getSmartContracts()) {
@@ -107,20 +144,22 @@ public class xEVMLiSA {
 							functionsUsed.add(function.getFullSignature());
 							eventUsed.add(event.getFullSignature());
 
-							crossChainEdges.addAll(
-									addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
+							if (buildCrossChainGraph) {
+								crossChainEdges.addAll(
+										addCrossChainEdges(event.getExitPoints(), function.getEntryPoints()));
 
-							// Debug print
-							for (Statement e : event.getExitPoints()) {
-								for (Statement f : function.getEntryPoints()) {
-									log.debug(
-											"Cross-chain edge added: from contract {} with event {} (name: {}, selector: {}, line: {}) to contract {} with function {} (name: {}, selector: {}, line: {}).",
-											contractSource.getName(),
-											e, event.getFullSignature(), event.getSelector(),
-											((ProgramCounterLocation) e.getLocation()).getSourceCodeLine(),
-											contractDestination.getName(),
-											f, function.getFullSignature(), function.getSelector(),
-											((ProgramCounterLocation) f.getLocation()).getSourceCodeLine());
+								// Debug print
+								for (Statement e : event.getExitPoints()) {
+									for (Statement f : function.getEntryPoints()) {
+										log.debug(
+												"Cross-chain edge added: from contract {} with event {} (name: {}, selector: {}, line: {}) to contract {} with function {} (name: {}, selector: {}, line: {}).",
+												contractSource.getName(),
+												e, event.getFullSignature(), event.getSelector(),
+												((ProgramCounterLocation) e.getLocation()).getSourceCodeLine(),
+												contractDestination.getName(),
+												f, function.getFullSignature(), function.getSelector(),
+												((ProgramCounterLocation) f.getLocation()).getSourceCodeLine());
+									}
 								}
 							}
 						}
@@ -129,8 +168,11 @@ public class xEVMLiSA {
 			}
 		}
 
-		log.debug("Added {} cross chain edges using events exit points and functions entry points.",
-				crossChainEdges.size());
+		if (buildCrossChainGraph)
+			log.debug("Added {} cross chain edges using events exit points and functions entry points.",
+					crossChainEdges.size());
+		else
+			log.debug("Skipped cross-chain edge construction for CLI analysis.");
 		log.info("Functions used: {}/{} ({})\"", functionsUsed.size(), bridge.getFunctions().size(), functionsUsed);
 		log.info("Events used: {}/{} ({})", eventUsed.size(), bridge.getEvents().size(), eventUsed);
 		log.info("Cross chain edges of {} computed.", bridge.getName());
