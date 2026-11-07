@@ -33,6 +33,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.collections4.SetUtils;
@@ -814,6 +815,11 @@ public class EVMLiSA {
 			DOTFileManager.showAllInstructions();
 	}
 
+	/**
+	 * Defines the CLI options, including mutually exclusive analysis modes.
+	 *
+	 * @return the command-line options
+	 */
 	private Options getOptions() {
 		Options options = new Options();
 
@@ -966,8 +972,9 @@ public class EVMLiSA {
 		options.addOption(stackSetSizeOption);
 		options.addOption(benchmarkOption);
 		options.addOption(coresOption);
-		options.addOption(useStorageLiveOption);
-		options.addOption(linkUnsoundJumpsToAllJumpdestOption);
+		options.addOptionGroup(new OptionGroup()
+				.addOption(useStorageLiveOption)
+				.addOption(linkUnsoundJumpsToAllJumpdestOption));
 		options.addOption(enableAllCheckerOption);
 		options.addOption(enableReentrancyCheckerOption);
 		options.addOption(enableTxOriginCheckerOption);
