@@ -49,11 +49,10 @@ import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -94,7 +93,8 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 
 	/**
 	 * {@inheritDoc} Given a program context, retrieves the opcodes and creates
-	 * statements for each of them to build the CFG of the program.
+	 * statements for each of them to build the CFG. Static jump edges are
+	 * indexed by destination program counter while the CFG is constructed.
 	 * 
 	 * @param ctx the context of the program.
 	 * 
@@ -111,28 +111,19 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 		// Save the CFG in the class variable.
 		this.cfg = new EVMCFG(cfgDesc);
 
-		Statement last = null;
+		List<OpcodesContext> opcodes = ctx.opcodes();
+		Statement last = this.visitOpcodes(opcodes.get(0));
+		cfg.addNode(last);
+		cfg.getEntrypoints().add(last);
 
-		// Create a list to store the statements of the CFG.
-		// Retrieve the first statement (entrypoint) of the CFG.
-		ArrayList<Statement> stm = new ArrayList<>();
-		OpcodesContext opCtx = ctx.opcodes(0);
-		Statement st = this.visitOpcodes(opCtx);
-		stm.add(st);
-		cfg.addNode(st);
-		cfg.getEntrypoints().add(st);
-		last = st;
-
-		Map<Statement, BigInteger> map = new HashMap<>();
+		Map<Integer, List<Statement>> jumpsByDestination = new HashMap<>();
 
 		// For each opcode of the program, create a statement and add it to the
 		// CFG.
-		for (int i = 1; i < ctx.opcodes().size(); i++) {
-			opCtx = ctx.opcodes(i);
-			st = this.visitOpcodes(opCtx);
+		for (int i = 1; i < opcodes.size(); i++) {
+			Statement st = this.visitOpcodes(opcodes.get(i));
 
 			cfg.addNode(st);
-			stm.add(st);
 
 			/*
 			 * If the actual statement is a JUMPI, a conditional edge
@@ -140,11 +131,9 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			 * one. Otherwise, a sequential edge (SequentialEdge) is created.
 			 */
 
-			if (st instanceof Jumpi && last instanceof Push)
-				map.put(st, ((Push) last).getInt());
-
-			if (st instanceof Jump && last instanceof Push)
-				map.put(st, ((Push) last).getInt());
+			if ((st instanceof Jump || st instanceof Jumpi) && last instanceof Push)
+				jumpsByDestination.computeIfAbsent(((Push) last).getInt().intValue(), key -> new ArrayList<>())
+						.add(st);
 
 			if (last instanceof Jumpi)
 				cfg.addEdge(new FalseEdge(last, st));
@@ -161,13 +150,16 @@ public class EVMCFGGenerator extends EVMBParserBaseVisitor<Object> {
 			last = st;
 		}
 
-		for (Statement node : cfg.getNodes())
-			for (Entry<Statement, BigInteger> entry : map.entrySet())
-				if (((ProgramCounterLocation) node.getLocation()).getPc() == entry.getValue().intValue())
-					if (entry.getKey() instanceof Jumpi)
-						cfg.addEdge(new TrueEdge(entry.getKey(), node));
-					else
-						cfg.addEdge(new SequentialEdge(entry.getKey(), node));
+		for (Statement node : cfg.getNodes()) {
+			List<Statement> jumps = jumpsByDestination.get(((ProgramCounterLocation) node.getLocation()).getPc());
+			if (jumps == null)
+				continue;
+			for (Statement jump : jumps)
+				if (jump instanceof Jumpi)
+					cfg.addEdge(new TrueEdge(jump, node));
+				else
+					cfg.addEdge(new SequentialEdge(jump, node));
+		}
 		unit.addCodeMember(cfg);
 
 		cfg.computePushedJumps();

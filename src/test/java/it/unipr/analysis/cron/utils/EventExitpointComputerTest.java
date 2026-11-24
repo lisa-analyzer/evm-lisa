@@ -4,6 +4,7 @@ import it.unipr.EVMLiSA;
 import it.unipr.analysis.contract.Signature;
 import it.unipr.analysis.contract.SmartContract;
 import it.unipr.crosschain.Bridge;
+import it.unipr.crosschain.edges.CrossChainEdge;
 import it.unipr.crosschain.xEVMLiSA;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +19,7 @@ public class EventExitpointComputerTest {
 
 	private static final Path outputDirPath = Paths.get("evm-outputs", "event-exitpoint-computer");
 
+	/** Verifies event exitpoints and their cross-chain edges in Thorchain. */
 	@Test
 	public void test01() {
 		Path bytecodePath = Paths.get("evm-testcases", "event-exitpoint-computer", "Thorchain", "bytecode");
@@ -53,6 +55,13 @@ public class EventExitpointComputerTest {
 			}
 		}
 		assert changed;
+		assert bridge.getSmartContracts().stream()
+				.filter(contract -> "5_1".equals(contract.getName()))
+				.flatMap(contract -> contract.getEventsSignature().stream())
+				.filter(event -> "643e927b".equals(event.getSelector()))
+				.flatMap(event -> event.getExitPoints().stream())
+				.flatMap(exit -> bridge.getXCFG().getOutgoingEdges(exit).stream())
+				.anyMatch(CrossChainEdge.class::isInstance);
 	}
 
 }
