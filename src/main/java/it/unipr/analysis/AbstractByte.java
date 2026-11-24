@@ -3,6 +3,7 @@ package it.unipr.analysis;
 import java.util.Objects;
 
 public class AbstractByte {
+	private static final String HEX_DIGITS = "0123456789ABCDEF";
 
 	public static final AbstractByte UNKNOWN = new AbstractByte();
 	private final byte value;
@@ -81,8 +82,17 @@ public class AbstractByte {
 		return Objects.hash(value, isTop);
 	}
 
+	/**
+	 * Represents a concrete byte as two uppercase hexadecimal digits, or
+	 * {@code T} for an unknown byte.
+	 *
+	 * @return the textual representation of this byte
+	 */
 	@Override
 	public String toString() {
-		return this.isTop() ? "T" : String.format("%02X", value);
+		if (isTop())
+			return "T";
+		int unsigned = Byte.toUnsignedInt(value);
+		return new String(new char[] { HEX_DIGITS.charAt(unsigned >>> 4), HEX_DIGITS.charAt(unsigned & 0xF) });
 	}
 }

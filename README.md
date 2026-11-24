@@ -120,6 +120,8 @@ Options:
     --use-live-storage                     Use the live storage in SLOAD.
 ```
 
+Use at most one of `--use-live-storage` and `--link-unsound-jumps-to-all-jumpdest`.
+
 ## The Abstract Stack Set Domain
 
 In analyzing EVM bytecode programs, EVMLiSA employs a domain of sets of abstract stacks to enhance precision, particularly for code containing loops.
